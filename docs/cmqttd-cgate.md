@@ -211,11 +211,11 @@ versioned portable container.
 | `TELEPHONY` and all 5 subcommands | The bare and `?` forms return the exact seven-line native help envelope. `CLEAR_DIVERSION`, `DIVERT`, `ISOLATE_SECONDARY_OUTLET`, `RECALL_LAST_NUMBER_REQUEST`, and `REJECT_INCOMING_CALL` encode exact C-Gate 3.4 application-224 SAL and wait for a correlated positive confirmation on the active PCI generation. Native arity, application, mode/direction and 1–16 Java-UTF-16-code-unit diversion bounds run before I/O; diversion is one literal whitespace token, with no quote or backslash decoding. The captured native malformed non-ASCII conversion is retained. With LOGIN armed, recall stays open and the four mutation forms require authentication. Incoming commands and native line/call/ringing/number/Internet-request events fan out without completing a pending confirmation. There is no MQTT Telephony state contract or durable call/diversion model. A 200 proves interface delivery only, not telephone-unit acceptance. Topology-resolved routes through one to six bridges use exact-once delivery with no application-level readback. See `rust/testdata/fixtures/native_cgate_telephony.json`, `rust/testdata/vectors/telephony.jsonl`, and `system_cgate_telephony.rs` |
 | `DALI` | All 128 maintained paths dispatch: 103 physical leaves and 25 local/help paths. Physical coverage is 48 core, 14 emergency, and 41 specialized gateway, error-reporting, measurement, or session leaves; the six group roots and 19 catalogue/session/gateway-view leaves are local. Core commands retain exact extended-CAL EXEC/POLL/CANCEL and bounded AUTO behavior with source-correlated replies. Specialized memory uses the shared PCI programming lane, page-bounded stores, readback verification, active-generation commits, and no replay after uncertain writes. Catalogue data lives under `%PROJECT%/dali_catalogue/devices/*.json` in the durable virtual FILE repository. Sessions are volatile except explicit gateway-keyed SAVE/LOAD snapshots in cmqttd-json. `EXT_ONLY` extraction/deployment is physical. All four read-only typed extraction selectors are physical: `DALI_ONLY`, `FULL`, `REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`. They execute the exact retained plan, decode line masks, types, common/scene/status/emergency/LED/GTIN/serial fields and the `FULL` extended map, and atomically commit one snapshot on one PCI generation. `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` execute only their source-pinned non-remediating prefix, discard staged masks, and return 502 before `ADDRESS_UNKNOWN`; operation 2 has no allocation target/range bytes and its mask-only reply has no device-to-address receipt. Typed `DALI_ONLY`/`FULL` deployment validates its session, selection, range and gateway locally, then fails before I/O because the native ordered writes, model-field ownership, per-field readback receipts and `FULL` typed/extended atomic boundary are not retained. Mutations require LOGIN when armed. No MQTT DALI state is invented. See [the DALI guide](cgate-dali.md), `rust/testdata/fixtures/native_cgate_dali_help.json`, `rust/testdata/fixtures/native_cgate_dali_specialized.json`, `rust/testdata/vectors/dali.jsonl`, `system_cgate_dali.rs`, and `system_cgate_dali_specialized.rs` |
 | LIGHTING/TRIGGER/ENABLE LABEL and UNICODELABEL | Actual checksummed dynamic-label SAL on the selected application. Supports raw/text payloads, built-in icon references, language selection, native segmented UTF-8, and start/header/chunk/commit dynamic bitmap uploads. Every fragment requires positive PCI delivery confirmation; Enable Unicode and invalid native bounds fail before transmission |
-| Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. Outgoing append and standard/eDLT/FactoryDefault invalidation are committed only for the sending PCI generation, so an old completion cannot cross a reconnect boundary. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
-| LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
-| LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once, requires both PCI confirmation and the source/tag-correlated unit ACK, and reports acceptance separately from physical erasure or persistence |
-| LABEL KFIGET / KFISET | Operates on configured-network application paths for native label-capable applications 48–95, 202 and 203. The application token is only the native `LabelSupportingApplication` class/scope gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET performs three source-acknowledged volatile parameter-`0xFF` writes before IDENTIFY attribute `0x3D`; exactly one source-correlated `8D 3D 80` reply produces eight ordered `300` rows, while zero or multiple replies produce native 524 outcomes. KFISET accepts exactly eight values from 0 through 15, packs them low-nibble then high-nibble, and sends four source-acknowledged parameter-`0xFF` writes, stopping at the first failure. Every write and the GET IDENTIFY request is a generation-safe exact-once send with no transport replay. Both commands use the programming lane and optional LOGIN gate |
-| `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
+| Observed dynamic-label cache | Retains one network-wide ring of up to 4,096 exact incoming and confirmed outgoing label SAL payloads since the current connection, including source/direction and order. Outgoing append and direct-network standard/eDLT/FactoryDefault invalidation are committed only for the sending PCI generation, so an old completion cannot cross a reconnect boundary; routed operations leave this configured-network ring intact. `CMQTT LABELS` exposes the bounded observations with network scope and an unverified recipient; a unit-shaped request is a compatibility alias for the same ring. The Toolkit CLI assembles standard text/icons, Unicode, language selection and dynamic bitmaps while reporting incomplete transactions. This is explicitly not eDLT device-cache readback |
+| LABEL CLEAR | Sends native standard point-to-point label-cache controls for all keys (`A3 FF 00 27`) or one key 1–8 (`A4 FF 00 66 KEY`) to unit 0–255 on the configured network or a topology-resolved one-to-six-bridge target. It uses one generation-safe exact-once send and waits only for the correlated PCI confirmation; there is no unit ACK or device readback. Native C-Gate treats either confirmation outcome as completion, so success reports command acceptance without claiming cache erasure or persistence |
+| LABEL CLEAREDLT | Sends the native KEYGL5 programming control through the shared PCI exactly once on the configured network or a topology-resolved one-to-six-bridge target, requires both PCI confirmation and the direct source/tag or routed Reply Network unit/tag ACK, and reports acceptance separately from physical erasure or persistence |
+| LABEL KFIGET / KFISET | Operates on configured or topology-resolved one-to-six-bridge application paths for native label-capable applications 48–95, 202 and 203. The application token is only the native `LabelSupportingApplication` class/scope gate; it is not encoded into KFIGET's fixed selector `0x1c`. KFIGET performs three route-correlated volatile parameter-`0xFF` writes before IDENTIFY attribute `0x3D`; exactly one direct-source or Reply Network route/unit-correlated `8D 3D 80` reply produces eight ordered `300` rows, while zero or multiple replies produce native 524 outcomes. KFISET accepts exactly eight values from 0 through 15, packs them low-nibble then high-nibble, and sends four correlated writes, stopping at the first failure. Every write and the GET IDENTIFY request is a generation-safe exact-once send with no transport replay. Both commands use the programming lane and optional LOGIN gate |
+| `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` | Sends native `A4 FF 43 B2 B2` exactly once for a database-classified KEYGL5 on the configured network or a topology-resolved one-to-six-bridge target and reports the 202 receipt separately from post-reset defaults, reboot, address retention and persistence |
 | NET PINGU and GET network Units | Actual direct or one-to-six-bridge installation MMI using cmqttd's negotiated PCI checksum mode. Routed requests use native PPM source routing and exact-once transmission; only the matching Reply Network can contribute blocks. Both forms require positive confirmation and contiguous coverage of all addresses 0–255, replace only the addressed network's volatile cache, and report native sorted `302-Units=` output |
 | NET PROJECT_IDENTIFY | Runs the native interface-rooted read-only discovery on cmqttd's configured shared PCI/CNI: one complete installation MMI, all nonzero states counted, address zero skipped, and level-zero IDENTIFY1/IDENTIFY2/parameter-33 discovery followed by a source-correlated six-byte parameter-35 recall from the first readable unit. It returns native `305 Project=NAME UnitCount=N` (or `Project=null`) without changing a project or physical cache. The interface type is case-insensitive and its address must exactly match the imported shared interface; another valid interface returns 502 instead of opening a second connection |
 | NET SYNC and cached unit getters | Uses the configured direct-interface hint or BASIC discovery, then performs complete direct or one-to-six-bridge MMI and confirmed IDENTIFY1/2 plus bounded IDENTIFY4 for every present address. Routed replies must match the first bridge, remaining Reply Network and replying unit; other routes and direct replies are ignored. The addressed network cache is replaced atomically and its sync/duplicate events carry that network address. Direct KEYGL5 metadata retains the configured/fresh type, non-error MMI and unique known-serial guards before the captured OEM `0xFB`, applications and `0xFA` sequence. The first failed optional enrichment stops that sequence without replay and names its unit, field and cause. A definitive failure that leaves the connection healthy adds `300-MetadataWarning=unit <address> <field>: <cause>` to the successful identity-sync response. An incomplete exchange retires the entire PCI generation, returns a field-specific 408 and discards the staged snapshot. Those source-only OEM reads are not route-proven and therefore remain disabled for bridged networks. Cached `GET` issues no bus I/O and `Version` remains IDENTIFY2. Reconnect or transport loss clears every network's volatile presence/level cache, invalidates an in-flight snapshot before commit, returns 408, and emits no false sync-ok |
@@ -342,7 +342,11 @@ automatically retries it. A 200 response proves correlated command acceptance;
 C-Bus provides no readback that can prove which cached dynamic labels the
 firmware erased. Definitive PCI or unit rejection leaves the programming lane
 available, while a timeout or transport loss faults it until reconnect so a
-late reply cannot be assigned to a later command.
+late reply cannot be assigned to a later command. A target network can be the
+configured network or a topology-resolved route through one to six bridges.
+The routed form requires the exact PCI confirmation and Reply Network
+route/unit/tag acknowledgement; direct and neighbouring-route replies are
+ignored.
 
 The standard native cache-clear forms are:
 
@@ -358,7 +362,9 @@ point-to-point frame and is never replayed. Decompiled native C-Gate considers
 both the matching positive (`.`) and negative (`#`) PCI confirmation characters
 complete. cmqttd preserves that response contract, then discards its
 recipient-unverified observed-label ring because any retained entries may be
-stale. No unit acknowledgement or label-cache query follows, so `200 OK`
+stale. A routed target uses the same exact-once confirmation contract but does
+not discard that configured-network ring. No unit acknowledgement or
+label-cache query follows, so `200 OK`
 establishes native command completion only. Native C-Gate publishes no event
 from the label-clear handler, so cmqttd does not invent a label-specific success
 event. Native's optional high-verbosity command/response audit events are
@@ -369,7 +375,9 @@ reconnect.
 `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` accepts a database unit classified
 as KEYGL5 and sends the native `A4 FF 43 B2 B2` programming control. It uses the
 same strict confirmation and source/tag-correlated ACK policy as `CLEAREDLT` and
-never retries automatically. A `202 Done` response proves control acceptance,
+never retries automatically. A topology-resolved remote target uses the same
+one-to-six-bridge Reply Network correlation and does not invalidate the local
+observation ring. A `202 Done` response proves control acceptance,
 not post-reboot defaults, address retention, rendering or power-cycle
 persistence. The database record is not rewritten. The observed dynamic-label
 ring is cleared because its entries may be stale after reset. Use the guarded
@@ -494,14 +502,16 @@ LABEL KFIGET //PROJECT/NETWORK/APPLICATION UNIT
 LABEL KFISET //PROJECT/NETWORK/APPLICATION UNIT KFI1 KFI2 KFI3 KFI4 KFI5 KFI6 KFI7 KFI8
 ```
 
-The application must be on the configured direct network and must be in the
-native label-capable ranges 48–95, 202 or 203. The unit must fit in one byte;
+The application must be on the configured network or a topology-resolved route
+through one to six bridges and must be in the native label-capable ranges
+48–95, 202 or 203. The unit must fit in one byte;
 each KFISET value must be 0–15. KFIGET returns `300-kfi1=...` through final
 `300 kfi8=...`; KFISET returns `200 OK` only after all four writes are acknowledged.
 Zero or multiple valid KFIGET replies return `524 No response.` or
 `524 Too many responses.`; setup, write and transport failures use the native
 application-scoped 408 envelope. `CMQTT CAPABILITIES` reports
-`label_clear: true` and `label_kfi: true`.
+`label_clear: true`, `label_kfi: true`, `label_management_routed: true`, the
+admitted routed command list, and the six-bridge bound.
 
 The application token implements native `LabelSupportingApplication`
 admission and command-address scoping only. It is not placed in the physical KFI
@@ -516,11 +526,19 @@ does not prove a modeled KEYGL5 unit type, and this path has no live-hardware
 acceptance evidence yet.
 
 All KFI parameter-`0xFF` writes and the GET IDENTIFY request are
-generation-safe exact-once sends and never enter the automatic retry table. A
-lost confirmation makes the transaction uncertain and faults the programming
+generation-safe exact-once sends and never enter the automatic retry table.
+For a routed target, every ACK or IDENTIFY reply must match the Reply Network,
+remote unit, parameter and expected payload before it can advance the
+transaction. A lost confirmation makes the transaction uncertain and faults the programming
 lane until reconnect. Late confirmations or identical untagged unit ACKs
 therefore cannot advance a later selector, and replaying GET cannot manufacture
 response multiplicity.
+
+The retained direct commands and routed point-to-point contract are composed
+and bounded in
+[`native_cgate_routed_label_management.json`](../rust/testdata/fixtures/native_cgate_routed_label_management.json).
+That evidence pins exact one- and six-bridge bytes and scripted correlation; it
+does not claim a native remote-command capture or physical bridge acceptance.
 
 These additional commands are **cmqttd extensions**, not claims about native
 C-Gate syntax:

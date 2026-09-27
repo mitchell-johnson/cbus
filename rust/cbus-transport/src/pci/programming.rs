@@ -304,6 +304,28 @@ impl PciClient {
     /// the C-Gate endpoint can distinguish native 524 no-response and
     /// too-many-response outcomes.
     pub async fn get_key_function_indicators(&self, unit: u8) -> Result<Vec<[u8; kfi::COUNT]>> {
+        self.get_key_function_indicators_with_route(unit, &[]).await
+    }
+
+    /// Run the native KFI selector and IDENTIFY sequence through a one-to-six
+    /// bridge source route. Every stateful selector write and the final
+    /// IDENTIFY are sent once. Both the PCI confirmation and Reply Network
+    /// envelope must match before a response can advance the transaction.
+    pub async fn get_key_function_indicators_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+    ) -> Result<Vec<[u8; kfi::COUNT]>> {
+        validate_bridge_route(bridges)?;
+        self.get_key_function_indicators_with_route(unit, bridges)
+            .await
+    }
+
+    async fn get_key_function_indicators_with_route(
+        &self,
+        unit: u8,
+        bridges: &[u8],
+    ) -> Result<Vec<[u8; kfi::COUNT]>> {
         let requests = kfi::get_requests();
         let _lane = self.programming_lane.lock().await;
         if self.programming_fault.load(Ordering::Acquire) {
@@ -316,9 +338,11 @@ impl PciClient {
             complete: false,
         };
         for request in requests.iter().take(3).cloned() {
-            self.kfi_write(unit, request).await?;
+            self.kfi_write(unit, request, bridges).await?;
         }
-        let replies = self.collect_kfi_replies(unit, requests[3].clone()).await?;
+        let replies = self
+            .collect_kfi_replies(unit, requests[3].clone(), bridges)
+            .await?;
         transaction.complete = true;
         Ok(replies)
     }
@@ -333,6 +357,30 @@ impl PciClient {
         unit: u8,
         values: [u8; kfi::COUNT],
     ) -> Result<()> {
+        self.set_key_function_indicators_with_route(unit, values, &[])
+            .await
+    }
+
+    /// Run the native four-write KFISET transaction through a one-to-six
+    /// bridge source route. A write advances only after the exact PCI
+    /// confirmation and route/unit/parameter-correlated unit ACK arrive.
+    pub async fn set_key_function_indicators_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        values: [u8; kfi::COUNT],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.set_key_function_indicators_with_route(unit, values, bridges)
+            .await
+    }
+
+    async fn set_key_function_indicators_with_route(
+        &self,
+        unit: u8,
+        values: [u8; kfi::COUNT],
+        bridges: &[u8],
+    ) -> Result<()> {
         let requests = kfi::set_requests(values)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
         let _lane = self.programming_lane.lock().await;
@@ -346,7 +394,7 @@ impl PciClient {
             complete: false,
         };
         for request in requests {
-            self.kfi_write(unit, request).await?;
+            self.kfi_write(unit, request, bridges).await?;
         }
         transaction.complete = true;
         Ok(())
@@ -354,7 +402,7 @@ impl PciClient {
 
     // Caller holds programming_lane. Native ct requires both normal PCI
     // delivery confirmation and a source-correlated `32 FF 00` unit ACK.
-    async fn kfi_write(&self, unit: u8, request: Cal) -> Result<()> {
+    async fn kfi_write(&self, unit: u8, request: Cal, bridges: &[u8]) -> Result<()> {
         let mut replies = self.packets.subscribe();
         if !self.is_connected() {
             return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
@@ -362,8 +410,8 @@ impl PciClient {
         let packet = Packet::PointToPoint {
             meta: Meta::new(true, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged: !bridges.is_empty(),
+            hops: bridges.to_vec(),
             cals: vec![request],
         };
         // KFI selector writes are stateful and their unit ACK is untagged.
@@ -394,20 +442,35 @@ impl PciClient {
                     }
                     Ok(Some(packet)) => {
                         let cals = match packet {
-                            Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address == Some(unit) =>
+                            Packet::PointToPoint {
+                                meta,
+                                unit_address,
+                                bridged,
+                                hops,
+                                cals,
+                            } if programming_reply_matches(
+                                &meta,
+                                unit_address,
+                                bridged,
+                                &hops,
+                                bridges,
+                                unit,
+                            ) =>
                             {
                                 cals
                             }
                             Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address.is_none()
+                                if bridges.is_empty()
+                                    && meta.source_address.is_none()
                                     && self.local_unit.load(Ordering::Acquire)
                                         == u16::from(unit) =>
                             {
                                 cals
                             }
                             Packet::BareCal(cal)
-                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                                if bridges.is_empty()
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
                             {
                                 vec![cal]
                             }
@@ -451,7 +514,12 @@ impl PciClient {
 
     // Caller holds programming_lane across the three KFIGET selector writes
     // and this complete response window.
-    async fn collect_kfi_replies(&self, unit: u8, request: Cal) -> Result<Vec<[u8; kfi::COUNT]>> {
+    async fn collect_kfi_replies(
+        &self,
+        unit: u8,
+        request: Cal,
+        bridges: &[u8],
+    ) -> Result<Vec<[u8; kfi::COUNT]>> {
         let mut replies = self.packets.subscribe();
         if !self.is_connected() {
             return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
@@ -459,8 +527,8 @@ impl PciClient {
         let packet = Packet::PointToPoint {
             meta: Meta::new(true, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged: !bridges.is_empty(),
+            hops: bridges.to_vec(),
             cals: vec![request],
         };
         // Reply multiplicity is part of KFIGET's native result, so replaying
@@ -521,19 +589,33 @@ impl PciClient {
                     return Err(Error::other("PCI rejected KFIGET IDENTIFY command"));
                 }
                 let cals = match packet {
-                    Packet::PointToPoint { meta, cals, .. }
-                        if meta.source_address == Some(unit) =>
+                    Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    } if programming_reply_matches(
+                        &meta,
+                        unit_address,
+                        bridged,
+                        &hops,
+                        bridges,
+                        unit,
+                    ) =>
                     {
                         cals
                     }
                     Packet::PointToPoint { meta, cals, .. }
-                        if meta.source_address.is_none()
+                        if bridges.is_empty()
+                            && meta.source_address.is_none()
                             && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         cals
                     }
                     Packet::BareCal(cal)
-                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                        if bridges.is_empty()
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         vec![cal]
                     }
@@ -1127,6 +1209,30 @@ impl PciClient {
     /// success proves neither delivery, erasure, nor persistence on the
     /// target unit.
     pub async fn clear_dynamic_label_cache(&self, unit: u8, key: Option<u8>) -> Result<()> {
+        self.clear_dynamic_label_cache_with_route(unit, key, &[])
+            .await
+    }
+
+    /// Send one standard dynamic-label cache clear through a one-to-six
+    /// bridge source route. Native exposes no unit ACK or readback for this
+    /// command, so completion remains the exact PCI confirmation only.
+    pub async fn clear_dynamic_label_cache_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        key: Option<u8>,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.clear_dynamic_label_cache_with_route(unit, key, bridges)
+            .await
+    }
+
+    async fn clear_dynamic_label_cache_with_route(
+        &self,
+        unit: u8,
+        key: Option<u8>,
+        bridges: &[u8],
+    ) -> Result<()> {
         // Validate before taking a lane or attempting any I/O.
         let request = label_clear::request(key)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
@@ -1147,8 +1253,8 @@ impl PciClient {
         let packet = Packet::PointToPoint {
             meta: Meta::new(true, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged: !bridges.is_empty(),
+            hops: bridges.to_vec(),
             cals: vec![request],
         };
         let confirmation = self.send_guarded_once(&packet).await?;
@@ -1193,6 +1299,15 @@ impl PciClient {
             .await
     }
 
+    /// Send the native eDLT label-clear control through a one-to-six bridge
+    /// source route. Success requires the exact PCI confirmation and a
+    /// route/unit/tag-correlated Reply Network ACK.
+    pub async fn clear_edlt_dynamic_labels_routed(&self, bridges: &[u8], unit: u8) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.edlt_oem_control_routed(bridges, unit, [0xc1, 0xea], "eDLT label clear")
+            .await
+    }
+
     /// Send the native C-Gate `CBusEdlt.FactoryDefault` control exactly once.
     ///
     /// The source-correlated unit ACK proves acceptance of the OEM control.
@@ -1200,6 +1315,15 @@ impl PciClient {
     /// state, or power-cycle persistence; callers must report those separately.
     pub async fn factory_default_edlt(&self, unit: u8) -> Result<()> {
         self.edlt_oem_control(unit, [0xb2, 0xb2], "eDLT factory default")
+            .await
+    }
+
+    /// Send the native eDLT factory-default control through a one-to-six
+    /// bridge source route. The accepted Reply Network receipt remains
+    /// evidence of command acceptance, not post-reset physical state.
+    pub async fn factory_default_edlt_routed(&self, bridges: &[u8], unit: u8) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.edlt_oem_control_routed(bridges, unit, [0xb2, 0xb2], "eDLT factory default")
             .await
     }
 
@@ -1307,6 +1431,125 @@ impl PciClient {
         {
             self.release_legacy_confirmation(code);
         }
+        let pci_rejected = format!("PCI rejected {operation}");
+        let unit_rejected = format!("unit rejected {operation}");
+        if result.is_ok()
+            || result.as_ref().is_err_and(|error| {
+                let message = error.to_string();
+                message == pci_rejected || message == unit_rejected
+            })
+        {
+            transaction.complete = true;
+        }
+        result
+    }
+
+    async fn edlt_oem_control_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        control: [u8; 2],
+        operation: &'static str,
+    ) -> Result<()> {
+        if unit == 0 || unit == 255 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                format!("{operation} requires a unit address in 1..254"),
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            client: self,
+            complete: false,
+        };
+        let mut replies = self.packets.subscribe();
+        if !self.is_connected() {
+            return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
+        }
+        let packet = Packet::PointToPoint {
+            meta: Meta::new(true, 1),
+            unit_address: unit,
+            bridged: true,
+            hops: bridges.to_vec(),
+            cals: vec![Cal::Write {
+                parameter: 0xff,
+                data: vec![0x43, control[0], control[1]],
+            }],
+        };
+        let confirmation = self.send_guarded_once(&packet).await?;
+        let code = confirmation.code;
+        let result = tokio::time::timeout(REPLY_TIMEOUT, async {
+            let mut confirmed = None;
+            let mut accepted = None;
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        confirmed = Some(success)
+                    }
+                    Ok(Some(Packet::PointToPoint {
+                        meta,
+                        unit_address,
+                        bridged,
+                        hops,
+                        cals,
+                    })) if programming_reply_matches(
+                        &meta,
+                        unit_address,
+                        bridged,
+                        &hops,
+                        bridges,
+                        unit,
+                    ) =>
+                    {
+                        for cal in cals {
+                            match cal {
+                                Cal::Ack {
+                                    parameter: 0xff,
+                                    data,
+                                } if data == [0x43] => accepted = Some(true),
+                                Cal::Nak {
+                                    parameter: 0xff,
+                                    data,
+                                } if data.starts_with(&[0x43]) => accepted = Some(false),
+                                _ => {}
+                            }
+                        }
+                    }
+                    Ok(Some(Packet::PciError)) => {
+                        return Err(Error::other(format!("PCI rejected {operation}")));
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ));
+                    }
+                }
+                if confirmed == Some(false) {
+                    return Err(Error::other(format!("PCI rejected {operation}")));
+                }
+                if accepted == Some(false) {
+                    return Err(Error::other(format!("unit rejected {operation}")));
+                }
+                if confirmed == Some(true) && accepted == Some(true) {
+                    return Ok(());
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                format!("{operation} timed out"),
+            ))
+        });
+
         let pci_rejected = format!("PCI rejected {operation}");
         let unit_rejected = format!("unit rejected {operation}");
         if result.is_ok()
@@ -4582,6 +4825,117 @@ mod tests {
         ));
         assert_eq!(
             pci.factory_default_edlt(255).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_label_kfi_and_edlt_controls_require_exact_route_receipts() {
+        async fn confirmed_line(
+            remote: &mut BufReader<tokio::io::DuplexStream>,
+            expected: &[u8],
+        ) -> u8 {
+            let request = line(remote).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            code
+        }
+
+        let bridges = [0xfd];
+        let (pci, mut remote, _) = setup().await;
+
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move {
+            worker
+                .clear_dynamic_label_cache_routed(&bridges, 5, Some(8))
+                .await
+        });
+        confirmed_line(&mut remote, b"\\46FD0905A4FF0066089E").await;
+        clear.await.unwrap().unwrap();
+
+        let worker = pci.clone();
+        let get =
+            tokio::spawn(
+                async move { worker.get_key_function_indicators_routed(&bridges, 5).await },
+            );
+        for expected in [
+            b"\\46FD0905A3FF000904".as_slice(),
+            b"\\46FD0905A5FF0082001C6D".as_slice(),
+            b"\\46FD0905A5FF008404FF84".as_slice(),
+        ] {
+            confirmed_line(&mut remote, expected).await;
+            direct_reply(&mut remote, 5, &[0x32, 0xff, 0]).await;
+            assert!(!get.is_finished(), "direct ACK must not satisfy routed KFI");
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0xff, 0]).await;
+        }
+        confirmed_line(&mut remote, b"\\46FD0905213D51").await;
+        routed_reply(
+            &mut remote,
+            &bridges,
+            5,
+            &[
+                0x8d, 0x3d, 0x80, 0x21, 0x43, 0x65, 0x87, 0, 0, 0, 0, 0, 0, 0,
+            ],
+        )
+        .await;
+        assert_eq!(get.await.unwrap().unwrap(), vec![[1, 2, 3, 4, 5, 6, 7, 8]]);
+
+        let worker = pci.clone();
+        let set = tokio::spawn(async move {
+            worker
+                .set_key_function_indicators_routed(&bridges, 5, [1, 2, 3, 4, 5, 6, 7, 8])
+                .await
+        });
+        for expected in [
+            b"\\46FD0905A3FF000904".as_slice(),
+            b"\\46FD0905A5FF0084214323".as_slice(),
+            b"\\46FD0905A5FF008465879B".as_slice(),
+            b"\\46FD0905A4FF006BACF5".as_slice(),
+        ] {
+            confirmed_line(&mut remote, expected).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0xff, 0]).await;
+        }
+        set.await.unwrap().unwrap();
+
+        let worker = pci.clone();
+        let clear_edlt =
+            tokio::spawn(async move { worker.clear_edlt_dynamic_labels_routed(&bridges, 5).await });
+        confirmed_line(&mut remote, b"\\46FD0905A4FF43C1EA1E").await;
+        routed_reply(&mut remote, &bridges, 4, &[0x32, 0xff, 0x43]).await;
+        assert!(!clear_edlt.is_finished());
+        routed_reply(&mut remote, &bridges, 5, &[0x32, 0xff, 0x43]).await;
+        clear_edlt.await.unwrap().unwrap();
+
+        let worker = pci.clone();
+        let factory =
+            tokio::spawn(async move { worker.factory_default_edlt_routed(&bridges, 5).await });
+        confirmed_line(&mut remote, b"\\46FD0905A4FF43B2B265").await;
+        routed_reply(&mut remote, &bridges, 5, &[0x32, 0xff, 0x43]).await;
+        factory.await.unwrap().unwrap();
+
+        let six = [0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9];
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move {
+            worker
+                .clear_dynamic_label_cache_routed(&six, 5, Some(8))
+                .await
+        });
+        confirmed_line(&mut remote, b"\\46FA36FBFCFDFEF905A4FF00660889").await;
+        clear.await.unwrap().unwrap();
+
+        assert_eq!(
+            pci.clear_dynamic_label_cache_routed(&[], 5, None)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.get_key_function_indicators_routed(&[1, 2, 3, 4, 5, 6, 7], 5)
+                .await
+                .unwrap_err()
+                .kind(),
             ErrorKind::InvalidInput
         );
     }

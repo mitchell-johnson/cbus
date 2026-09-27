@@ -4877,6 +4877,12 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["dynamic_labels"], true);
     assert_eq!(document["label_clear"], true);
     assert_eq!(document["label_kfi"], true);
+    assert_eq!(document["label_management_routed"], true);
+    assert_eq!(document["label_management_routed_max_hops"], 6);
+    assert_eq!(
+        document["label_management_routed_commands"],
+        serde_json::json!(["clear", "clearedlt", "kfiget", "kfiset", "factorydefault"])
+    );
     assert_eq!(document["dynamic_label_observation"], true);
     assert_eq!(document["dynamic_label_device_readback"], false);
     assert_eq!(document["edlt_factory_default"], true);
@@ -4909,6 +4915,8 @@ async fn capabilities_report_observation_without_device_readback() {
             "EREPORT MESSAGE",
             "ACCESS_CONTROL",
             "LIGHTING|TRIGGER|ENABLE LABEL",
+            "LABEL CLEAR|CLEAREDLT|KFIGET|KFISET",
+            "DO FactoryDefault",
             "CLOCK",
             "TEMPERATURE BROADCAST",
             "SCENE PLAY",
@@ -5616,6 +5624,137 @@ async fn do_edlt_factory_default_is_guarded_and_sent_once() {
             "{command}"
         );
     }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn routed_label_kfi_and_edlt_commands_use_target_network_only() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    async fn confirm_line<R, W>(reader: &mut R, writer: &mut W, expected: &[u8])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let wire = pci_line(reader).await;
+        assert_eq!(&wire[..wire.len() - 2], expected);
+        writer
+            .write_all(&[wire[wire.len() - 2], b'.'])
+            .await
+            .unwrap();
+    }
+
+    let xml = topology_fixture().replace(
+        r#"<Unit oid="remote-4"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>"#,
+        r#"<Unit oid="remote-4"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>
+        <Unit oid="remote-edlt-5"><Address>5</Address><TagName>Remote eDLT</TagName><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>"#,
+    );
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci, None).unwrap();
+    service
+        .record_label("received", Some(4), 56, &[0xa4, 1, 0, 0, b'L'])
+        .await;
+    let mut client = ClientState::default();
+    let bridges = [253];
+
+    let command = service.handle(&mut client, "[1] LABEL CLEAR //TOPO/253/56 5 8");
+    let peer = confirm_line(
+        &mut remote_read,
+        &mut remote_write,
+        b"\\46FD0905A4FF0066089E",
+    );
+    let (response, ()) = tokio::join!(command, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+
+    let command = service.handle(
+        &mut client,
+        "[2] LABEL KFISET //TOPO/253/56 5 1 2 3 4 5 6 7 8",
+    );
+    let peer = async {
+        for expected in [
+            b"\\46FD0905A3FF000904".as_slice(),
+            b"\\46FD0905A5FF0084214323".as_slice(),
+            b"\\46FD0905A5FF008465879B".as_slice(),
+            b"\\46FD0905A4FF006BACF5".as_slice(),
+        ] {
+            confirm_line(&mut remote_read, &mut remote_write, expected).await;
+            routed_pci_reply(&mut remote_write, &bridges, 5, &[0x32, 0xff, 0]).await;
+        }
+    };
+    let (response, ()) = tokio::join!(command, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+
+    let command = service.handle(&mut client, "[3] LABEL KFIGET //TOPO/253/56 5");
+    let peer = async {
+        for expected in [
+            b"\\46FD0905A3FF000904".as_slice(),
+            b"\\46FD0905A5FF0082001C6D".as_slice(),
+            b"\\46FD0905A5FF008404FF84".as_slice(),
+        ] {
+            confirm_line(&mut remote_read, &mut remote_write, expected).await;
+            routed_pci_reply(&mut remote_write, &bridges, 5, &[0x32, 0xff, 0]).await;
+        }
+        confirm_line(&mut remote_read, &mut remote_write, b"\\46FD0905213D51").await;
+        routed_pci_reply(
+            &mut remote_write,
+            &bridges,
+            5,
+            &[
+                0x8d, 0x3d, 0x80, 0x21, 0x43, 0x65, 0x87, 0, 0, 0, 0, 0, 0, 0,
+            ],
+        )
+        .await;
+    };
+    let (response, ()) = tokio::join!(command, peer);
+    assert_eq!(response.status, 300, "{response:?}");
+    assert_eq!(response.final_text, "300 kfi8=8");
+
+    let command = service.handle(&mut client, "[4] LABEL CLEAREDLT //TOPO/253/p/5");
+    let peer = async {
+        confirm_line(
+            &mut remote_read,
+            &mut remote_write,
+            b"\\46FD0905A4FF43C1EA1E",
+        )
+        .await;
+        routed_pci_reply(&mut remote_write, &bridges, 5, &[0x32, 0xff, 0x43]).await;
+    };
+    let (response, ()) = tokio::join!(command, peer);
+    assert_eq!(response.status, 200, "{response:?}");
+
+    let command = service.handle(&mut client, "[5] DO //TOPO/253/p/5 FactoryDefault");
+    let peer = async {
+        confirm_line(
+            &mut remote_read,
+            &mut remote_write,
+            b"\\46FD0905A4FF43B2B265",
+        )
+        .await;
+        routed_pci_reply(&mut remote_write, &bridges, 5, &[0x32, 0xff, 0x43]).await;
+    };
+    let (response, ()) = tokio::join!(command, peer);
+    assert_eq!(response.status, 202, "{response:?}");
+
+    let labels = service.observed_labels.lock().await;
+    assert_eq!(labels.observations.len(), 1);
+    assert_eq!(labels.observations[0].payload_hex, "a40100004c");
+    drop(labels);
     std::fs::remove_file(path).unwrap();
 }
 

@@ -2514,6 +2514,13 @@ impl Service {
                 "device-family-topology-timing-power-cycle-hardware-acceptance"
             ]);
             capabilities["label_kfi"] = serde_json::Value::Bool(true);
+            capabilities["label_management_routed"] = serde_json::Value::Bool(true);
+            capabilities["label_management_routed_commands"] =
+                serde_json::json!(["clear", "clearedlt", "kfiget", "kfiset", "factorydefault"]);
+            capabilities["label_management_routed_max_hops"] = serde_json::Value::from(6);
+            capabilities["label_management_routed_delivery_semantics"] = serde_json::Value::String(
+                "pci-confirmed-exactly-once-route-unit-tag-correlated-no-replay".to_string(),
+            );
             capabilities["net_unravel"] = serde_json::Value::Bool(true);
             capabilities["net_unravel_direct_safe_planner"] = serde_json::Value::Bool(true);
             capabilities["network_project_identify"] = serde_json::Value::Bool(true);
@@ -2877,6 +2884,8 @@ impl Service {
                 "EREPORT MESSAGE",
                 "ACCESS_CONTROL",
                 "LIGHTING|TRIGGER|ENABLE LABEL",
+                "LABEL CLEAR|CLEAREDLT|KFIGET|KFISET",
+                "DO FactoryDefault",
                 "CLOCK",
                 "TEMPERATURE BROADCAST",
                 "SCENE PLAY",
@@ -5194,11 +5203,6 @@ impl Service {
             final_text: format!("211 Access level set to: {}", level.name()),
             status: 211,
         }
-    }
-
-    fn application_path(&self, address: &str) -> Option<u8> {
-        self.addressed_application(address)
-            .and_then(|(network, application)| (network == self.network).then_some(application))
     }
 
     fn addressed_application(&self, address: &str) -> Option<(u8, u8)> {
@@ -9171,11 +9175,11 @@ impl Service {
         let Some((project, network, unit)) = words
             .get(2)
             .and_then(|address| Server::split_unit(address))
-            .filter(|(project, network, unit)| {
-                *project == self.project && *network == self.network && (1..=254).contains(unit)
+            .filter(|(project, _network, unit)| {
+                *project == self.project && (1..=254).contains(unit)
             })
         else {
-            return err(tag, 404, "404 eDLT is not on this network");
+            return err(tag, 404, "404 eDLT is not in this project");
         };
         let unit_type = self
             .model
@@ -9194,8 +9198,24 @@ impl Service {
             Some(_) => {}
         }
 
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(tag, 408, &format!("408 eDLT route unavailable: {error}"))
+                }
+            }
+        };
+
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        match pci.clear_edlt_dynamic_labels(unit).await {
+        let cleared = if route.is_empty() {
+            pci.clear_edlt_dynamic_labels(unit).await
+        } else {
+            pci.clear_edlt_dynamic_labels_routed(&route, unit).await
+        };
+        match cleared {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(
@@ -9207,7 +9227,9 @@ impl Service {
                 // The clear operation is unit-specific while observed SAL is
                 // network-wide. Discard the cache rather than return entries
                 // that may now be stale for the requested display.
-                self.observed_labels.lock().await.observations.clear();
+                if route.is_empty() {
+                    self.observed_labels.lock().await.observations.clear();
+                }
                 let _ = self.events.send(format!("#e# labels cleared {}", words[2]));
                 response
             }
@@ -9232,8 +9254,8 @@ impl Service {
                 "400 LABEL CLEAR requires an application, unit-id and optional key-number",
             );
         }
-        let Some(application) = self.application_path(words[2]) else {
-            return err(tag, 404, "404 Label application is not on this network");
+        let Some((network, application)) = self.addressed_application(words[2]) else {
+            return err(tag, 404, "404 Label application is not in this project");
         };
         if !((48..=95).contains(&application) || matches!(application, 202 | 203)) {
             return err(tag, 402, "402 Application does not support labels");
@@ -9249,8 +9271,25 @@ impl Service {
             None => None,
         };
 
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(tag, 408, &format!("408 Label route unavailable: {error}"))
+                }
+            }
+        };
+
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        match pci.clear_dynamic_label_cache(unit, key).await {
+        let cleared = if route.is_empty() {
+            pci.clear_dynamic_label_cache(unit, key).await
+        } else {
+            pci.clear_dynamic_label_cache_routed(&route, unit, key)
+                .await
+        };
+        match cleared {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(
@@ -9262,7 +9301,9 @@ impl Service {
                 // Observed dynamic-label traffic is network-wide and cannot
                 // be attributed to a recipient. Any accepted cache clear can
                 // therefore make every retained observation stale.
-                self.observed_labels.lock().await.observations.clear();
+                if route.is_empty() {
+                    self.observed_labels.lock().await.observations.clear();
+                }
                 ok(tag, vec![], "200 OK")
             }
             Err(error) => err(
@@ -9285,8 +9326,8 @@ impl Service {
             };
             return err(tag, 400, syntax);
         }
-        let Some(application) = self.application_path(words[2]) else {
-            return err(tag, 404, "404 Label application is not on this network");
+        let Some((network, application)) = self.addressed_application(words[2]) else {
+            return err(tag, 404, "404 Label application is not in this project");
         };
         // Native kz uses the requested application only to resolve an object
         // and require `LabelSupportingApplication`. It passes the transport,
@@ -9300,7 +9341,15 @@ impl Service {
         let Ok(unit) = words[3].parse::<u8>() else {
             return err(tag, 400, "400 Invalid KFI unit-id");
         };
-        let pci = self.pci.read().await.clone();
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => return err(tag, 408, &format!("408 KFI route unavailable: {error}")),
+            }
+        };
+        let (pci_generation, pci) = self.current_pci_epoch().await;
         if set {
             let mut values = [0u8; cbus_protocol::kfi::COUNT];
             for (value, word) in values.iter_mut().zip(&words[4..]) {
@@ -9312,8 +9361,20 @@ impl Service {
                 }
                 *value = parsed;
             }
-            return match pci.set_key_function_indicators(unit, values).await {
-                Ok(()) => ok(tag, vec![], "200 OK"),
+            let stored = if route.is_empty() {
+                pci.set_key_function_indicators(unit, values).await
+            } else {
+                pci.set_key_function_indicators_routed(&route, unit, values)
+                    .await
+            };
+            return match stored {
+                Ok(()) => {
+                    let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await
+                    else {
+                        return err(tag, 408, "408 KFI write invalidated by PCI reconnect");
+                    };
+                    ok(tag, vec![], "200 OK")
+                }
                 Err(error) => err(
                     tag,
                     408,
@@ -9322,7 +9383,21 @@ impl Service {
             };
         }
 
-        match pci.get_key_function_indicators(unit).await {
+        let replies = if route.is_empty() {
+            pci.get_key_function_indicators(unit).await
+        } else {
+            pci.get_key_function_indicators_routed(&route, unit).await
+        };
+        let replies = match replies {
+            Ok(replies) => {
+                let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+                    return err(tag, 408, "408 KFI read invalidated by PCI reconnect");
+                };
+                Ok(replies)
+            }
+            Err(error) => Err(error),
+        };
+        match replies {
             Ok(replies) if replies.is_empty() => err(tag, 524, "524 No response."),
             Ok(replies) if replies.len() > 1 => err(tag, 524, "524 Too many responses."),
             Ok(replies) => {
@@ -12241,11 +12316,11 @@ impl Service {
         let Some((project, network, unit)) = words
             .get(1)
             .and_then(|address| Server::split_unit(address))
-            .filter(|(project, network, unit)| {
-                *project == self.project && *network == self.network && (1..=254).contains(unit)
+            .filter(|(project, _network, unit)| {
+                *project == self.project && (1..=254).contains(unit)
             })
         else {
-            return err(tag, 404, "404 eDLT is not on this network");
+            return err(tag, 404, "404 eDLT is not in this project");
         };
         let unit_type = self
             .model
@@ -12264,8 +12339,24 @@ impl Service {
             Some(_) => {}
         }
 
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(tag, 408, &format!("408 eDLT route unavailable: {error}"))
+                }
+            }
+        };
+
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        match pci.factory_default_edlt(unit).await {
+        let reset = if route.is_empty() {
+            pci.factory_default_edlt(unit).await
+        } else {
+            pci.factory_default_edlt_routed(&route, unit).await
+        };
+        match reset {
             Ok(()) => {
                 let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                     return err(
@@ -12276,7 +12367,9 @@ impl Service {
                 };
                 // FactoryDefault can invalidate every cached display label.
                 // It does not change the saved database representation here.
-                self.observed_labels.lock().await.observations.clear();
+                if route.is_empty() {
+                    self.observed_labels.lock().await.observations.clear();
+                }
                 let _ = self
                     .events
                     .send(format!("#e# factory default accepted {}", words[1]));

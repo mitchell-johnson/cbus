@@ -353,7 +353,10 @@ KFIGET's fixed selector `0x1c`. KFIGET first sends three volatile
 parameter-`0xFF` writes, so it is a programming operation rather than a
 dynamic-label cache read. Every KFI write and the GET IDENTIFY request is sent
 exactly once with generation-safe confirmation handling and no transport
-replay. A lost confirmation faults the programming lane until reconnect.
+replay. Direct targets require source-correlated unit replies; targets on a
+database-resolved route through one to six bridges require the exact Reply
+Network, unit, parameter and PCI confirmation. A lost confirmation faults the
+programming lane until reconnect.
 
 Native `LABEL CLEAR //PROJECT/NETWORK/APPLICATION UNIT [KEY]` is also
 hardware-backed. The Toolkit CLI exposes it as `cgate label cache-clear` so it
@@ -364,7 +367,11 @@ label, or `cgate edlt-label-clear`, which runs the guarded KEYGL5
 point-to-point command exactly once and waits only for its correlated PCI
 confirmation. Native C-Gate treats either confirmation outcome as command
 completion, and there is no unit ACK or cache readback, so a 200 response does
-not prove erasure, rendering or persistence.
+not prove erasure, rendering or persistence. The same command can target a
+topology-resolved route through one to six bridges without clearing cmqttd's
+configured-network observation cache. `CLEAREDLT` and `DO ... FactoryDefault`
+also support those routes and additionally require the exact routed unit/tag
+acknowledgement.
 
 `NET SYNC` also populates the native KEYGL5 synchronization properties. A unit
 must have non-error present MMI state one or two, exactly one raw IDENTIFY4
@@ -586,7 +593,10 @@ only for direct-network actions. Each routed application command is sent once an
 its exact PCI confirmation; it is never replayed, does not invent remote
 status readback, and changes or invalidates only the target network's live
 cache on the captured PCI generation. Routed label and clock/temperature sends
-do not enter the configured-network observation/application cache. Other routed mutations and some
+do not enter the configured-network observation/application cache. Standard
+label cache clear, KFIGET/KFISET, KEYGL5 CLEAREDLT, and KEYGL5 FactoryDefault
+also resolve one-to-six-bridge targets and reject direct or neighbouring-route
+receipts. Other routed mutations and some
 selector-specific DALI session plans refuse before I/O; the private Schneider
 `patchset.zip`, repository/archive formats, and SQLite/XML schemas are not
 reconstructed; cmqttd transforms only its versioned portable SQLite container

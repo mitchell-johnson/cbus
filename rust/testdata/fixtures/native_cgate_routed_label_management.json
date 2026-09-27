@@ -1,0 +1,81 @@
+{
+  "schema": "cmqttd.native-cgate-routed-label-management-evidence/v1",
+  "scope": "Topology-resolved point-to-point label cache, KFI, and KEYGL5 OEM controls",
+  "grounding": [
+    {
+      "evidence": "native direct LABEL CLEAR, KFIGET/KFISET, CLEAREDLT and FactoryDefault captures retained in decode_to_pci.jsonl, kfi.jsonl and transport regressions",
+      "finding": "The direct captures establish every CAL payload, confirmation requirement, selector order, acknowledgement tag, KFI reply shape and native command result envelope."
+    },
+    {
+      "evidence": "routed RECALL, STORE, Unlock and IDENTIFY implementation vectors and tests in cbus-transport::pci::programming",
+      "finding": "The retained point-to-point source-route contract establishes one-to-six bridges, PCI confirmation allocation, and strict Reply Network first-bridge/remaining-hop/remote-unit correlation."
+    }
+  ],
+  "composed_wire_cases": [
+    {
+      "id": "routed-label-clear-one-bridge-key-8",
+      "route": [
+        253
+      ],
+      "unit": 5,
+      "cal_hex": "A4FF006608",
+      "wire_before_confirmation": "\\46FD0905A4FF0066089E"
+    },
+    {
+      "id": "routed-label-clear-six-bridge-key-8",
+      "route": [
+        250,
+        251,
+        252,
+        253,
+        254,
+        249
+      ],
+      "unit": 5,
+      "cal_hex": "A4FF006608",
+      "wire_before_confirmation": "\\46FA36FBFCFDFEF905A4FF00660889"
+    },
+    {
+      "id": "routed-kfiget-identify-one-bridge",
+      "route": [
+        253
+      ],
+      "unit": 5,
+      "cal_hex": "213D",
+      "wire_before_confirmation": "\\46FD0905213D51"
+    },
+    {
+      "id": "routed-edlt-clear-one-bridge",
+      "route": [
+        253
+      ],
+      "unit": 5,
+      "cal_hex": "A4FF43C1EA",
+      "wire_before_confirmation": "\\46FD0905A4FF43C1EA1E"
+    },
+    {
+      "id": "routed-edlt-factory-default-one-bridge",
+      "route": [
+        253
+      ],
+      "unit": 5,
+      "cal_hex": "A4FF43B2B2",
+      "wire_before_confirmation": "\\46FD0905A4FF43B2B265"
+    }
+  ],
+  "claimed_behavior": [
+    "LABEL CLEAR preserves the native confirmation-only result while sending exactly once through a database-resolved one-to-six-bridge route.",
+    "KFIGET sends three selector writes and one IDENTIFY exactly once; KFISET sends four writes exactly once. Each phase requires its exact PCI confirmation and route/unit/parameter-correlated Reply Network receipt.",
+    "CLEAREDLT and FactoryDefault require exact PCI confirmation plus route/unit/tag-correlated Reply Network acknowledgement.",
+    "Remote operations do not invalidate the configured-network dynamic-label observation ring."
+  ],
+  "acceptance": [
+    "Transport tests pin the exact one- and six-bridge wire bytes, direct and foreign-route isolation, selector ordering, acknowledgement tags, KFI decoding and invalid-route pre-I/O refusal.",
+    "Service tests pin topology resolution, remote KEYGL5 classification, native response envelopes and configured-network cache isolation."
+  ],
+  "limits": [
+    "This is a composition of separately retained native direct command payloads and routed point-to-point contracts; no exact native C-Gate capture of these combined remote commands is claimed.",
+    "Confirmation and acknowledgements prove accepted transport receipts, not cache erasure, rendered labels, reset effects, address retention, reboot behavior or persistence.",
+    "Live physical bridge and remote KEYGL5 acceptance remains outstanding."
+  ]
+}

@@ -871,7 +871,10 @@ device PP scene tables.
 `LABEL CLEAREDLT //PROJECT/NETWORK/p/UNIT` is hardware-backed for KEYGL5. It
 sends one native clear control and requires a correlated unit ACK. Report it as
 accepted, never as verified erasure or persistence; there is no dynamic-label
-cache readback operation.
+cache readback operation. The target may be the configured network or a
+topology-resolved route through one to six bridges. A routed target requires
+the exact PCI confirmation and Reply Network route/unit/tag ACK; remote success
+does not clear the configured-network observation ring.
 
 Standard native cache clear is a separate operation:
 
@@ -891,9 +894,12 @@ high-verbosity audit events remain generic command/response logging. Report
 `native_accepted` and `pci_confirmation_received`, while keeping delivery
 outcome, erasure and persistence unverified. This is also distinct from
 `cgate label clear`, which sends an empty group-label SAL.
+The standard command also accepts a topology-resolved one-to-six-bridge target;
+it retains the same confirmation-only boundary and leaves the local observation
+ring intact.
 
-The native KFI commands are also hardware-backed on the configured direct
-network:
+The native KFI commands are hardware-backed on the configured network or a
+topology-resolved route through one to six bridges:
 
 ```text
 LABEL KFIGET //PROJECT/NETWORK/APPLICATION UNIT
@@ -917,7 +923,12 @@ Every KFI parameter-`0xFF` write and the GET IDENTIFY request is a
 generation-safe exact-once send and never enters automatic retry. A lost
 confirmation faults the programming lane until reconnect, preventing a late
 confirmation or identical untagged ACK from advancing a later selector and
-preventing GET replay from manufacturing response multiplicity.
+preventing GET replay from manufacturing response multiplicity. Routed ACKs
+and IDENTIFY replies additionally require the exact Reply Network, remote unit,
+parameter and payload; direct and neighbouring-route traffic is ignored.
+Review `rust/testdata/fixtures/native_cgate_routed_label_management.json` for
+the exact one/six-bridge composition evidence and its native-capture and
+physical-acceptance limits.
 
 `DO //PROJECT/NETWORK/p/UNIT FactoryDefault` is also hardware-backed for
 KEYGL5. Use `cbus-toolkit cgate edlt-factory-default plan|request` with the
@@ -1066,6 +1077,8 @@ recipient), while
 `label_clear: true` denotes the standard physical all-key/one-key cache-clear
 command above,
 `label_kfi: true` denotes the native physical KFIGET/KFISET sequences above,
+`label_management_routed: true` and its command/max-hop/delivery fields denote
+the routed standard clear, CLEAREDLT, KFIGET, KFISET and FactoryDefault slice,
 `edlt_extended_firmware: true` denotes OEM-routed parameter-`0xFB` physical
 firmware readback during KEYGL5 NET SYNC,
 `edlt_applications: true` denotes the native OEM address-16
@@ -1112,7 +1125,8 @@ named-scene-playback, network-management, and specialist application slices; ins
 command, delivery, state-scope, and readback fields before using it.
 `bridged_mutation_commands` lists `LIGHTING`, `DO lighting`, `TRIGGER`,
 `ENABLE SET`, routed label families, `CLOCK`, `TEMPERATURE BROADCAST`,
-`SCENE PLAY`, `NET LEARN`, `NETWORK LOCATE`, the specialist application families, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
+`SCENE PLAY`, standard label management, KEYGL5 FactoryDefault, `NET LEARN`,
+`NETWORK LOCATE`, the specialist application families, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
 method/protection/lock/NVM fields preserve its narrower scope rather than
 implying support for other routed writes,
 `pp_reset_to_defaults: true` denotes specification-backed staged
