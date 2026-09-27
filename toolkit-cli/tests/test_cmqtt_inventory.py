@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from cbus_toolkit.cgate import CGateResponse
+from cbus_toolkit.cgate import CGateError, CGateResponse
 from cbus_toolkit.cli import build_parser
 from cbus_toolkit.cmqtt import edlt_label_inventory
 from cbus_toolkit.edlt import configuration_crc
@@ -71,7 +71,7 @@ def labelled(text):
 
 class InventoryClient:
     def __init__(self, identities, *, images=None, checks=None, observations=None,
-                 physical_serials=None):
+                 physical_serials=None, pingu_reply=None):
         self.identities = dict(identities)
         self.images = dict(images or {})
         self.checks = dict(checks or {address: 'Single unit detected' for address in identities})
@@ -81,6 +81,7 @@ class InventoryClient:
                                 requested_address='//TEST/254')
         self.observations = observations
         self.physical_serials = dict(physical_serials or {})
+        self.pingu_reply = pingu_reply
         self.serial_read_positions = {}
         self.calls = []
 
@@ -108,6 +109,13 @@ class InventoryClient:
             lines = [f'120-{status} at address: {address}'
                      for address, status in sorted(self.checks.items())]
             return native((*lines, '200 OK.'), 200)
+        if words[:2] == ['NET', 'PINGU']:
+            if isinstance(self.pingu_reply, Exception):
+                raise self.pingu_reply
+            if self.pingu_reply is not None:
+                return self.pingu_reply
+            addresses = ', '.join(map(str, sorted(self.identities)))
+            return native((f'302-Units={addresses}', '200 OK.'), 200)
         if words[:2] == ['UNIT', 'IDENTIFY']:
             address = int(words[2].rsplit('/', 1)[1])
             attribute = int(words[3])
@@ -156,6 +164,10 @@ def test_network_inventory_refreshes_once_orders_units_and_observes_once():
     assert all('observed_dynamic_labels' not in unit for unit in result['units'])
     assert client.calls.count('NET SYNC //TEST/254 fast') == 1
     assert client.calls.count('NET CHECKUNIT //TEST/254 *') == 1
+    assert client.calls.count('NET PINGU //TEST/254') == 1
+    assert result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['agrees_with_fresh_inventory']
+    assert result['mmi_coverage']['addresses'] == [5, 9, 16]
     assert client.calls.count('CMQTT LABELS //TEST/254') == 1
     assert client.calls.count('UNIT IDENTIFY //TEST/254/p/5 4') == 2
     assert client.calls.count('UNIT IDENTIFY //TEST/254/p/9 4') == 2
@@ -203,10 +215,105 @@ def test_mmi_candidate_without_identify_reply_keeps_selection_incomplete():
     assert not result['inventory_complete']
     assert not result['fresh_inventory']['complete']
     assert [item['address'] for item in result['unknown']] == [0]
+    assert result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['addresses'] == [5]
+    assert result['mmi_coverage']['checkunit_only_addresses'] == [0]
+    assert not result['mmi_coverage']['agrees_with_fresh_inventory']
     assert result['supported_addresses'] == [5]
     assert [item['address'] for item in result['units']] == ['//TEST/254/p/5']
     assert result['units'][0]['physical_serial_verified']
     assert not any('/p/0' in call for call in client.calls)
+
+
+def test_persistent_unidentified_mmi_candidate_stays_incomplete():
+    client = InventoryClient(
+        {5: ('KEYGL5', '5.5.00', '100.5')}, images={5: labelled('Five')},
+        checks={0: 'No units detected', 5: 'Single unit detected'},
+        pingu_reply=native(('302-Units=0, 5', '200 OK.'), 200))
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['selection_complete']
+    assert result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['addresses'] == [0, 5]
+    assert result['mmi_coverage']['unidentified_mmi_addresses'] == [0]
+    assert not result['mmi_coverage']['agrees_with_fresh_inventory']
+    assert [item['address'] for item in result['units']] == ['//TEST/254/p/5']
+
+
+@pytest.mark.parametrize('pingu_reply', [
+    native(('302-Units=5, 5', '200 OK.'), 200),
+    native(('302-Units=5, 0', '200 OK.'), 200),
+    native(('302-Units=256', '200 OK.'), 200),
+    native(('302-Units=05', '200 OK.'), 200),
+    native(('302-Units=5', '200-Extra', '200 OK.'), 200),
+    native(('302-Units=5', '408 Failure'), 408),
+])
+def test_invalid_full_mmi_reply_never_certifies_selection(pingu_reply):
+    client = InventoryClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                             images={5: labelled('Five')}, pingu_reply=pingu_reply)
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['selection_complete']
+    assert not result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['error']
+    assert [item['address'] for item in result['units']] == ['//TEST/254/p/5']
+
+
+def test_full_mmi_missing_fresh_identity_keeps_verified_read_incomplete():
+    client = InventoryClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                             images={5: labelled('Five')},
+                             pingu_reply=native(('302-Units=', '200 OK.'), 200))
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['selection_complete']
+    assert result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['identified_not_in_mmi_addresses'] == [5]
+    assert result['mmi_coverage']['checkunit_only_addresses'] == [5]
+
+
+def test_full_mmi_new_address_not_in_fresh_identity_stays_incomplete():
+    client = InventoryClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                             images={5: labelled('Five')},
+                             pingu_reply=native(('302-Units=5, 17', '200 OK.'), 200))
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['selection_complete']
+    assert result['mmi_coverage']['verified']
+    assert result['mmi_coverage']['mmi_only_addresses'] == [17]
+    assert result['mmi_coverage']['unidentified_mmi_addresses'] == [17]
+    assert [item['address'] for item in result['units']] == ['//TEST/254/p/5']
+
+
+def test_full_mmi_native_error_preserves_reply_and_device_read():
+    error = CGateError(native(('408 Physical installation MMI failed: incomplete coverage',), 408))
+    client = InventoryClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                             images={5: labelled('Five')}, pingu_reply=error)
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['selection_complete']
+    assert result['mmi_coverage']['reply'] == list(error.response.lines)
+    assert result['mmi_coverage']['error']['type'] == 'CGateError'
+    assert [item['address'] for item in result['units']] == ['//TEST/254/p/5']
+
+
+def test_full_mmi_transport_failure_stops_later_physical_reads():
+    client = InventoryClient({5: ('KEYGL5', '5.5.00', '100.5')},
+                             images={5: labelled('Five')},
+                             pingu_reply=TimeoutError('incomplete MMI reply'))
+
+    result = edlt_label_inventory(client, '//TEST/254')
+
+    assert not result['complete']
+    assert result['mmi_coverage']['error']['type'] == 'SerialTransportError'
+    assert result['units'] == []
+    assert result['read_errors'][0]['type'] == 'NotAttempted'
+    assert result['observation_error']['type'] == 'NotAttempted'
+    assert client.calls[-1] == 'NET PINGU //TEST/254'
 
 
 def test_read_failure_retains_prior_success_and_network_observations():

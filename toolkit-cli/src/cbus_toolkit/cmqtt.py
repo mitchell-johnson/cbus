@@ -528,6 +528,72 @@ def _error(address, error):
     return {'address': address, 'type': type(error).__name__, 'error': str(error)[:1024]}
 
 
+def _full_mmi_coverage(scanner, network, inventory):
+    """Cross-check a fresh identity scan against an independent full MMI read.
+
+    PINGU's reader rejects missing or repeated address ranges. An address
+    nominated by CHECKUNIT remains unresolved even if a later PINGU omits it:
+    these are sequential observations, not proof that the first was spurious.
+    """
+    command = f'NET PINGU {network}'
+    candidates = {record.address for record in inventory.records
+                  if record.presence != 'unchecked'}
+    identified = {record.address for record in inventory.records if record.status == 'ok'}
+    result = {
+        'command': command,
+        'reply': None,
+        'verified': False,
+        'addresses': None,
+        'fresh_record_addresses': sorted(record.address for record in inventory.records),
+        'checkunit_candidate_addresses': sorted(candidates),
+        'identified_addresses': sorted(identified),
+        'agrees_with_fresh_inventory': False,
+        'checkunit_only_addresses': [],
+        'mmi_only_addresses': [],
+        'unidentified_mmi_addresses': [],
+        'identified_not_in_mmi_addresses': [],
+        'error': None,
+    }
+    from .cgate import CGateError
+    from .serials import SerialTransportError
+    try:
+        response = scanner._command(command)
+        result['reply'] = list(response.lines)
+        if response.code != 200 or len(response.lines) != 2 or response.lines[1] != '200 OK.':
+            raise ValueError('Expected an exact successful NET PINGU reply')
+        match = re.fullmatch(r'302-Units=([0-9]{1,3}(?:, [0-9]{1,3})*)?', response.lines[0])
+        if match is None:
+            raise ValueError('NET PINGU did not return an exact unit address list')
+        tokens = match[1].split(', ') if match[1] else []
+        addresses = [int(token) for token in tokens]
+        if (any(address > 255 or token != str(address)
+                for token, address in zip(tokens, addresses))
+                or addresses != sorted(set(addresses))):
+            raise ValueError('NET PINGU addresses must be unique, ordered decimal values in 0..255')
+    except SerialTransportError as error:
+        result['error'] = _error(network, error)
+        return result, False
+    except CGateError as error:
+        result['reply'] = list(error.response.lines)
+        result['error'] = _error(network, error)
+        return result, True
+    except Exception as error:
+        result['error'] = _error(network, error)
+        return result, True
+
+    observed = set(addresses)
+    result.update(
+        verified=True,
+        addresses=addresses,
+        agrees_with_fresh_inventory=(observed == candidates == identified),
+        checkunit_only_addresses=sorted(candidates - observed),
+        mmi_only_addresses=sorted(observed - candidates),
+        unidentified_mmi_addresses=sorted(observed - identified),
+        identified_not_in_mmi_addresses=sorted(identified - observed),
+    )
+    return result, True
+
+
 def edlt_label_inventory(client, network):
     """Read every exact supported eDLT found by one fresh network scan.
 
@@ -537,7 +603,9 @@ def edlt_label_inventory(client, network):
     network = _network(network)  # Validate before the first command.
     from .cgate import CGateError
     from .serials import NativeSerials
-    inventory = NativeSerials(client).refresh(network)
+    scanner = NativeSerials(client)
+    inventory = scanner.refresh(network)
+    coverage, connection_usable = _full_mmi_coverage(scanner, network, inventory)
     classified = {'unsupported': [], 'unknown': [], 'ambiguous': [], 'other': []}
     supported = []
     for record in sorted(inventory.records, key=lambda item: item.address):
@@ -548,8 +616,12 @@ def edlt_label_inventory(client, network):
             classified[kind].append(record.as_dict())
 
     units, read_errors = [], []
-    connection_usable = True
     for position, record in enumerate(supported):
+        if not connection_usable:
+            read_errors.append({'address': f'{network}/p/{record.address}',
+                                'type': 'NotAttempted',
+                                'error': 'A prior transport failure made the connection unusable'})
+            continue
         address = f'{network}/p/{record.address}'
         try:
             unit = _edlt_static_labels(client, address, database_name=False,
@@ -587,6 +659,7 @@ def edlt_label_inventory(client, network):
                              'error': 'A prior transport failure made the connection unusable'}
 
     selection_complete = (inventory.refresh_completed and not inventory.errors
+                          and coverage['agrees_with_fresh_inventory']
                           and not classified['unsupported'] and not classified['unknown']
                           and not classified['ambiguous'])
     complete = (selection_complete and inventory.complete and not read_errors
@@ -599,6 +672,7 @@ def edlt_label_inventory(client, network):
         'selection_complete': selection_complete,
         'inventory_complete': inventory.complete,
         'fresh_inventory': inventory.as_dict(),
+        'mmi_coverage': coverage,
         'supported_addresses': [record.address for record in supported],
         'units': units,
         'unsupported': classified['unsupported'],

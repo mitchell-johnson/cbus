@@ -244,7 +244,8 @@ The CLI provides both a selected-device
 `cgate edlt-labels //PROJECT/NETWORK/p/UNIT` read and a bounded fresh-network
 `cgate edlt-labels --network //PROJECT/NETWORK` inventory through cmqttd's
 physical C-Gate service. The network form performs one `NET SYNC` plus
-`NET CHECKUNIT` serial refresh, classifies every fresh record and reads exact
+`NET CHECKUNIT` serial refresh, then independently checks the full address
+range with `NET PINGU`. It classifies every fresh record and reads exact
 KEYGL5 5.5.00 devices in numeric address order. It preserves successful static
 configuration reads alongside unsupported firmware, unknown or ambiguous
 identities and per-device failures; an incomplete report is returned with a
@@ -252,7 +253,10 @@ nonzero exit status.
 An address nominated by the fresh wildcard MMI but producing no IDENTIFY4 reply
 remains an unknown identity, even when CHECKUNIT describes the observation as
 `No units detected`. This prevents a silent physical unit from being excluded
-while the all-eDLT inventory is reported complete.
+while the all-eDLT inventory is reported complete. The JSON `mmi_coverage`
+records the full-range reply, identified addresses and any disagreement; a
+later PINGU omission does not erase an earlier unresolved candidate. Network
+selection is complete only when both observations agree on healthy identities.
 
 Each selected read obtains live identity and OEM memory without Windows or a
 second CNI connection, resolves all 64 static strings and their widget, page and

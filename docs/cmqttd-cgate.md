@@ -501,7 +501,9 @@ cbus-toolkit cgate --host 127.0.0.1 --timeout 30 \
 ```
 
 The network form performs exactly one whole-network native serial refresh:
-`NET SYNC` followed by `NET CHECKUNIT`. It classifies the fresh records and
+`NET SYNC` followed by `NET CHECKUNIT`. A separate read-only `NET PINGU`
+checks full 0–255 MMI coverage and compares its addresses with every fresh
+candidate and healthy identity. It classifies the fresh records and
 selects exact supported KEYGL5 firmware 5.5.00 devices in numeric address order.
 Known other families remain visible as `other_units`. Unsupported KEYGL5
 firmware, unknown or ambiguous identities, successful device reads and
@@ -511,7 +513,13 @@ earlier evidence. A selection, device-read or observation failure leaves
 An address nominated by the fresh whole-network MMI but returning no IDENTIFY4
 reply remains an unknown identity even though the native CHECKUNIT wording is
 `No units detected`. The bounded inventory therefore stays incomplete instead
-of excluding a possibly silent physical unit.
+of excluding a possibly silent physical unit. Its `mmi_coverage` object reports
+the independently observed addresses, disagreements and errors. A later PINGU
+that omits an earlier unidentified candidate is recorded as discordance, not
+proof of absence. PINGU failure or disagreement keeps `selection_complete=false`;
+successful coverage and exact agreement are required before `complete=true`.
+These are sequential observations, not an atomic network snapshot or a
+guarantee that every physical device will respond to MMI.
 
 For each selected device, the JSON includes the live identity, all 64 static
 strings and their widget, page and scene references, verification flags and a
