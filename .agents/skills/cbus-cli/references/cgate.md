@@ -1188,6 +1188,9 @@ invocations; `TRIGGER EVENT` and `EVENT_CHANNEL LIST` enter at Program, while
 `TREE`/`TREEXML` and `GETSTATE` enter at Monitor. These checks run before
 mutation or PCI dispatch, including `DBSETXML` documents; `EVENTS` follows the
 captured `EVENT` Monitor floor. `ACCESS` retains its Clipsal/Max family check.
+The 58 expansion observations appear in the Toolkit CLI's C-Gate contract
+inventory as source-bound known facts for exact invocations; their handler-role
+subaxes remain unresolved and do not count as functional acceptance.
 The remaining object-specific and command-level rules are unresolved, so
 `access_global_command_level_matrix` stays false. The C-Gate listener can
 require mutual TLS with `--cgate-tls-client-ca <bundle.pem>` in addition to its

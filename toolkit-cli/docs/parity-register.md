@@ -56,8 +56,9 @@ changes no provisional source count, and supplies no physical cache readback.
   C-Gate paths.
 - `research/build_cgate_contract_inventory.py` derives that inventory from the
   Rust routing matrix, declarative application arities, endpoint authorization
-  policy and public-help syntax hashes. It records unknown selector/state
-  fields explicitly instead of deriving them from a command name.
+  policy, public-help syntax hashes and the sanitized native handler-role
+  expansion probe. It records unknown selector/state fields explicitly instead
+  of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
   deterministically from the committed documentation/executable surface
   censuses, feature ledger, Rust capability matrix, parity roadmap and
@@ -214,6 +215,18 @@ for all five TELEPHONY leaves as minimum `Program`, including
 `RECALL_LAST_NUMBER_REQUEST`; that read-like leaf remains outside the optional
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
 authorization axis.
+
+The inventory also records 58 exact native handler-entry role probes, each
+captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
+sessions. Their pinned fixture is
+`rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json`.
+Each observed lower role returned `420 Access denied.`, while the recorded
+minimum role advanced past that entry gate. The generator checks the fixture,
+capture script, local harness, Rust handler registry and role gradient before
+emitting these known facts. All 58 `handler_roles` subaxes remain
+`unresolved`: one invocation does not establish other selectors, later
+object-level authorization or successful physical delivery. The corresponding
+authorization axes remain partial and none gains functional acceptance.
 
 A pinned, sanitized original C-Gate 3.4.0.2001 command-session trace plus the
 public HELP syntax and production endpoint now expand five command paths:

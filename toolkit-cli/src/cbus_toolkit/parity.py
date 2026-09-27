@@ -301,6 +301,8 @@ def validate_cgate_contract_inventory(
             or not SHA256_RE.fullmatch(source["sha256"])
         ):
             raise ValueError(f"C-Gate contract source is invalid: {source_name!r}")
+    if not {"access_handler_registry", "native_handler_role_expansion"} <= set(sources):
+        raise ValueError("C-Gate contract native handler role sources are missing")
     contracts = inventory.get("contracts")
     if not isinstance(contracts, list) or len(contracts) != 442:
         raise ValueError("C-Gate contract inventory requires exactly 442 contracts")
@@ -315,6 +317,7 @@ def validate_cgate_contract_inventory(
         for axis_name, subaxis_names in CGATE_CONTRACT_AXIS_SCHEMA.items()
         for subaxis_name in subaxis_names
     }
+    native_role_observations = 0
     for index, contract in enumerate(contracts):
         context = f"C-Gate contract {index}"
         if not isinstance(contract, dict):
@@ -346,6 +349,49 @@ def validate_cgate_contract_inventory(
         if contract.get("contract_sha256") != _canonical_object_digest(unsigned):
             raise ValueError(f"{contract_id} contract digest changed")
         statuses, substatuses = _validate_contract_axes(axes, context=contract_id)
+        roles_axis = axes["authorization"]["subaxes"]["handler_roles"]
+        roles_known = roles_axis.get("known", {})
+        if not isinstance(roles_known, dict):
+            raise ValueError(f"{contract_id} native handler known facts are invalid")
+        observation = roles_known.get("native_handler_entry")
+        if observation is not None:
+            native_role_observations += 1
+            if (
+                roles_axis["status"] != "unresolved"
+                or "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json"
+                not in roles_axis["source_refs"]
+                or not isinstance(observation, dict)
+                or set(observation)
+                != {
+                    "invocation",
+                    "minimum_access_level_at_handler_entry",
+                    "lower_access_status",
+                    "at_floor_status",
+                    "observed_roles",
+                    "fixture_sha256",
+                    "scope",
+                }
+                or not isinstance(observation["invocation"], str)
+                or not (
+                    observation["invocation"] == path
+                    or observation["invocation"].startswith(f"{path} ")
+                )
+                or observation["minimum_access_level_at_handler_entry"]
+                not in {
+                    "None", "Connect", "Monitor", "Operate", "Admin",
+                    "Program", "Debug", "Clipsal", "Max",
+                }
+                or observation["lower_access_status"] != 420
+                or type(observation["at_floor_status"]) is not int
+                or not 100 <= observation["at_floor_status"] <= 599
+                or observation["at_floor_status"] == 420
+                or observation["observed_roles"] != 9
+                or observation["fixture_sha256"]
+                != sources["native_handler_role_expansion"]["sha256"]
+                or observation["scope"]
+                != "exact_invocation_only; no_later_object_or_physical_success_claim"
+            ):
+                raise ValueError(f"{contract_id} native handler entry evidence changed")
         for name, status in statuses.items():
             axis_counts[name][status] += 1
         for name, status in substatuses.items():
@@ -358,6 +404,8 @@ def validate_cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
+        "native_handler_role_observations": 58,
+        "native_handler_role_unresolved": 58,
     }
     if not isinstance(counts, dict) or any(
         counts.get(key) != value for key, value in expected_fixed.items()
@@ -365,6 +413,8 @@ def validate_cgate_contract_inventory(
         raise ValueError("C-Gate contract inventory fixed counts changed")
     if inventory_counts != Counter({"primary": 431, "supplement": 11}):
         raise ValueError("C-Gate contract inventory path classes changed")
+    if native_role_observations != counts["native_handler_role_observations"]:
+        raise ValueError("C-Gate contract native handler observation count changed")
     expected_axis_counts = {
         key: dict(sorted(value.items())) for key, value in axis_counts.items()
     }
