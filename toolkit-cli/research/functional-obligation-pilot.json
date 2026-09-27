@@ -42,7 +42,7 @@
         "syntax_end_line": 2631,
         "syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
       },
-      "contract_sha256": "ca7fa12124c8cc99330d0ef1dc8abbd584466655c74478b85fd32d868c9e8d3d",
+      "contract_sha256": "8a37cb3d00bb36e1cac67f8715864ca8ae1250abd37b5c218e2b4a8b22a8ea6a",
       "native_cases": [
         {"command": "SESSION_ID ALL", "status": 300},
         {"command": "SESSION_ID ALL ignored-by-native", "status": 300}
