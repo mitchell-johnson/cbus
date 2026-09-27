@@ -70,6 +70,7 @@ struct Hub {
     server: Server,
     subs: HashMap<u64, HubSub>,
     next: u64,
+    console_connected_at: String,
 }
 
 impl Hub {
@@ -83,6 +84,7 @@ impl Hub {
             server,
             subs: HashMap::new(),
             next: 1,
+            console_connected_at: Local::now().format("%Y%m%d-%H%M%S").to_string(),
         }
     }
 
@@ -153,22 +155,23 @@ impl Hub {
             Some(selector) if selector == "ALL" => {
                 let mut sessions: Vec<_> = self.subs.iter().collect();
                 sessions.sort_by_key(|(id, _)| **id);
-                let rows: Vec<_> = sessions
-                    .into_iter()
-                    .map(|(id, sub)| {
-                        let mut row = format!(
-                            "sessionID=cmd{} origin=/{} from={}",
-                            id * 2 + 1,
-                            sub.peer,
-                            sub.connected_at
-                        );
-                        if let Some(session_tag) = &sub.session_tag {
-                            row.push_str(" tag=");
-                            row.push_str(session_tag);
-                        }
-                        row
-                    })
-                    .collect();
+                let mut rows = vec![format!(
+                    "sessionID=cmd1 origin=internal from={} tag=Console",
+                    self.console_connected_at
+                )];
+                rows.extend(sessions.into_iter().map(|(id, sub)| {
+                    let mut row = format!(
+                        "sessionID=cmd{} origin=/{} from={}",
+                        id * 2 + 1,
+                        sub.peer,
+                        sub.connected_at
+                    );
+                    if let Some(session_tag) = &sub.session_tag {
+                        row.push_str(" tag=");
+                        row.push_str(session_tag);
+                    }
+                    row
+                }));
                 let (last, preceding) = rows.split_last().expect("origin session is live");
                 Response {
                     tag,
@@ -263,7 +266,7 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             if writer.write_all(line.as_bytes()).await.is_err() {
                 break;
             }
-            if writer.write_all(b"\n").await.is_err() {
+            if writer.write_all(b"\r\n").await.is_err() {
                 break;
             }
         }

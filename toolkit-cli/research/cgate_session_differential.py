@@ -57,6 +57,10 @@ class ProbeBehaviorError(Exception):
         self.failed_case_id = failed_case_id
 
 
+class ProbeGreetingError(ValueError):
+    """A connected server violated the native command-session greeting."""
+
+
 def digest(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
@@ -179,18 +183,27 @@ def query_ids(cases: list[dict]) -> dict[str, str]:
     return ids
 
 
-def canonicalize(cases: list[dict], *, native: bool, peer_ports: dict[str, int] | None = None) -> tuple[list[list[str]], list[str]]:
+def canonicalize(cases: list[dict], *, peer_ports: dict[str, int] | None = None) -> tuple[list[list[str]], list[str]]:
     ids = query_ids(cases)
     seen_ports: dict[str, int] = {}
     seen_times: dict[str, str] = {}
-    excluded: list[str] = []
+    console_rows: list[str] = []
+    console_time: str | None = None
     canonical: list[list[str]] = []
     for index, (_, _, command, _) in enumerate(CASE_SPECS):
         rows = []
         for line in cases[index]["reply"]:
-            if command.startswith("SESSION_ID ALL") and native and INTERNAL_RE.fullmatch(line):
-                datetime.strptime(line.split(" from=", 1)[1].split(" tag=", 1)[0], "%Y%m%d-%H%M%S")
-                excluded.append(line)
+            if command.startswith("SESSION_ID ALL") and INTERNAL_RE.fullmatch(line):
+                stamp = line.split(" from=", 1)[1].split(" tag=", 1)[0]
+                datetime.strptime(stamp, "%Y%m%d-%H%M%S")
+                if console_time is not None and console_time != stamp:
+                    raise ValueError("internal Console connection time changed")
+                console_time = stamp
+                console_rows.append(line)
+                rows.append(
+                    "300-sessionID=<internal-console> origin=internal "
+                    "from=<time-console> tag=Console"
+                )
                 continue
             if command == "SESSION_ID":
                 match = QUERY_RE.fullmatch(line)
@@ -222,20 +235,26 @@ def canonicalize(cases: list[dict], *, native: bool, peer_ports: dict[str, int] 
             else:
                 rows.append(line)
         canonical.append(rows)
-    if native and len(excluded) != 3:
-        raise ValueError(f"native ALL must contain exactly three excluded internal Console rows; got {len(excluded)}")
+    if len(console_rows) != 3:
+        raise ValueError(
+            f"ALL must contain exactly three internal Console rows; got {len(console_rows)}"
+        )
     if set(seen_ports) != {"a", "b"} or seen_ports["a"] == seen_ports["b"]:
         raise ValueError("ALL did not identify two distinct live external peers")
-    return canonical, excluded
+    return canonical, console_rows
 
 
-def read_reply(stream: socket.SocketIO, tag: str) -> list[str]:
+def read_reply(stream: socket.SocketIO, tag: str) -> tuple[list[str], list[str]]:
     reply = []
+    wire = []
     for _ in range(20):
         raw = stream.readline()
         if not raw:
             raise ConnectionError("mock closed before a terminal reply")
-        line = raw.decode("utf-8").rstrip("\r\n")
+        if not raw.endswith(b"\r\n"):
+            raise ValueError("Rust reply does not use native CRLF framing")
+        wire.append(raw.decode("utf-8"))
+        line = raw[:-2].decode("utf-8")
         prefix = f"[{tag}] "
         if not line.startswith(prefix):
             raise ValueError(f"mock did not echo client-assigned tag {tag}: {line}")
@@ -244,7 +263,7 @@ def read_reply(stream: socket.SocketIO, tag: str) -> list[str]:
             raise ValueError(f"mock emitted invalid status framing: {line}")
         reply.append(body)
         if body[3] == " ":
-            return reply
+            return reply, wire
     raise ValueError("mock reply exceeded twenty lines without terminal framing")
 
 
@@ -256,22 +275,29 @@ def probe_port(port: int) -> tuple[list[dict], dict[str, int]]:
             sock = socket.create_connection(("127.0.0.1", port), timeout=5)
             sock.settimeout(5)
             stream = sock.makefile("rwb", buffering=0)
-            hello = stream.readline().decode("utf-8").rstrip("\r\n")
-            if not hello.startswith("201 ") or "ready" not in hello.lower():
-                raise ValueError(f"Rust C-Gate greeting changed: {hello}")
             sessions[connection], files[connection] = sock, stream
+            greeting = stream.readline()
+            if not greeting.endswith(b"\r\n"):
+                raise ProbeGreetingError("Rust greeting does not use native CRLF framing")
+            try:
+                hello = greeting[:-2].decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise ProbeGreetingError("Rust greeting is not UTF-8") from exc
+            if not hello.startswith("201 ") or "ready" not in hello.lower():
+                raise ProbeGreetingError(f"Rust C-Gate greeting changed: {hello}")
         peer_ports = {name: sock.getsockname()[1] for name, sock in sessions.items()}
         cases = []
         for index, (case_id, connection, command, _) in enumerate(CASE_SPECS):
             tag = f"d{index:02d}"
             stream = files[connection]
             try:
-                sessions[connection].sendall(f"[{tag}] {command}\n".encode("utf-8"))
-                reply = read_reply(stream, tag)
+                sessions[connection].sendall(f"[{tag}] {command}\r\n".encode("utf-8"))
+                reply, wire_reply = read_reply(stream, tag)
             except (OSError, ValueError, ConnectionError, TimeoutError) as exc:
                 raise ProbeBehaviorError(cases, case_id, exc) from exc
             cases.append({"id": case_id, "connection": connection, "command": command,
-                          "client_tag": tag, "status": int(reply[-1][:3]), "reply": reply})
+                          "client_tag": tag, "status": int(reply[-1][:3]),
+                          "reply": reply, "wire_reply": wire_reply})
         return cases, peer_ports
     finally:
         for stream in files.values():
@@ -310,7 +336,7 @@ def probe(binary: Path) -> tuple[list[dict], dict[str, int]]:
 
 def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tuple[dict, int]:
     receipt = {
-        "format": "cgate-session-differential-v1",
+        "format": "cgate-session-differential-v2",
         "scope": "nine SESSION_ID cases on two owned IPv4 loopback command connections",
         "obligation_ids": sorted({item[3] for item in CASE_SPECS}),
         "native_capture": {"path": NATIVE.relative_to(ROOT).as_posix(), "sha256": digest(NATIVE)},
@@ -326,10 +352,12 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
         "normalization": [
             "map queried cmdN IDs to connection a/b; require distinct IDs",
             "validate external IPv4 loopback peer ports and stable connection timestamps, then replace only their values",
-            "exclude only native cmd1 origin=internal tag=Console rows; retain external 300-/300 framing",
+            "require matching internal cmd1 Console rows with stable timestamps and preserve all 300-/300 framing",
             "require every Rust reply line to echo its exact client-assigned tag",
         ],
-        "cases": [], "excluded_native_rows": [], "result": "blocked", "errors": [],
+        "cases": [], "native_console_rows": [], "rust_console_rows": [],
+        "peer_ports": None,
+        "result": "blocked", "errors": [], "greeting_result": "unassessed",
         "normalization_errors": [],
         "executed": 0, "passed": 0, "failed": 0, "skipped": 9,
     }
@@ -338,13 +366,16 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
         if not binary.is_file() or not binary.stat().st_mode & 0o111:
             raise FileNotFoundError(f"executable mock binary missing: {binary}")
         expected_cases = native["cases"][:len(CASE_SPECS)]
-        expected, excluded = canonicalize(expected_cases, native=True)
-        receipt["excluded_native_rows"] = excluded
+        expected, native_console_rows = canonicalize(expected_cases)
+        receipt["native_console_rows"] = native_console_rows
         actual_cases, peer_ports = (
             probe_port(endpoint_port) if endpoint_port is not None else probe(binary)
         )
+        receipt["peer_ports"] = peer_ports
+        receipt["greeting_result"] = "passed"
         try:
-            actual, _ = canonicalize(actual_cases, native=False, peer_ports=peer_ports)
+            actual, rust_console_rows = canonicalize(actual_cases, peer_ports=peer_ports)
+            receipt["rust_console_rows"] = rust_console_rows
         except ValueError as exc:
             # A syntactically wrong but fully executed mock run is a failed
             # differential, never an infrastructure skip.
@@ -359,6 +390,8 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
                 "command": command, "result": "passed" if matched else "failed",
                 "native_status": native_case["status"], "rust_status": actual_case["status"],
                 "native_normalized": expected[index], "rust_normalized": actual[index],
+                "rust_reply": actual_case["reply"],
+                "rust_wire_reply": actual_case["wire_reply"],
                 "client_tag_echoed": True,
             })
         receipt["executed"] = len(CASE_SPECS)
@@ -370,6 +403,11 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
             else "failed"
         )
         return receipt, 0 if receipt["result"] == "passed" else 1
+    except ProbeGreetingError as exc:
+        receipt["result"] = "failed"
+        receipt["greeting_result"] = "failed"
+        receipt["errors"].append(str(exc))
+        return receipt, 1
     except ProbeBehaviorError as exc:
         receipt["result"] = "failed"
         receipt["errors"].append(str(exc))
@@ -390,8 +428,8 @@ def run(binary: Path, provenance: str, endpoint_port: int | None = None) -> tupl
 def validate_passed_receipt(receipt: dict) -> None:
     """Reject stale or partial captures before using one as parity evidence."""
     native = validate_native()
-    canonical_native, excluded_native = canonicalize(native["cases"][:9], native=True)
-    if receipt.get("format") != "cgate-session-differential-v1":
+    canonical_native, native_console_rows = canonicalize(native["cases"][:9])
+    if receipt.get("format") != "cgate-session-differential-v2":
         raise ValueError("SESSION_ID differential receipt format changed")
     product = receipt.get("product")
     if product not in {"cgate-mock", "cmqttd"}:
@@ -416,9 +454,16 @@ def validate_passed_receipt(receipt: dict) -> None:
     if (receipt.get("result") != "passed" or receipt.get("executed") != 9
             or receipt.get("passed") != 9 or receipt.get("failed") != 0
             or receipt.get("skipped") != 0 or receipt.get("errors")
-            or receipt.get("normalization_errors")):
+            or receipt.get("normalization_errors")
+            or receipt.get("greeting_result") != "passed"):
         raise ValueError("SESSION_ID differential did not pass all nine required cases")
     cases = receipt.get("cases")
+    peer_ports = receipt.get("peer_ports")
+    if (not isinstance(peer_ports, dict) or set(peer_ports) != {"a", "b"}
+            or any(type(port) is not int or not 1 <= port <= 65535
+                   for port in peer_ports.values())
+            or peer_ports["a"] == peer_ports["b"]):
+        raise ValueError("SESSION_ID differential peer ports changed")
     if (not isinstance(cases, list) or len(cases) != len(CASE_SPECS)
             or any(case.get("id") != spec[0]
                    or case.get("obligation_id") != spec[3]
@@ -432,9 +477,26 @@ def validate_passed_receipt(receipt: dict) -> None:
                    or case.get("native_normalized") != case.get("rust_normalized")
                    for index, (case, spec) in enumerate(zip(cases, CASE_SPECS)))):
         raise ValueError("SESSION_ID differential case evidence changed")
-    excluded = receipt.get("excluded_native_rows")
-    if excluded != excluded_native:
-        raise ValueError("SESSION_ID differential internal Console exclusion changed")
+    raw_cases = []
+    for index, case in enumerate(cases):
+        reply = case.get("rust_reply")
+        wire = case.get("rust_wire_reply")
+        tag = f"d{index:02d}"
+        if (not isinstance(reply, list) or not reply
+                or not all(isinstance(row, str) for row in reply)
+                or wire != [f"[{tag}] {row}\r\n" for row in reply]):
+            raise ValueError("SESSION_ID differential Rust wire reply changed")
+        raw_cases.append({"reply": reply})
+    try:
+        raw_canonical, raw_console_rows = canonicalize(raw_cases, peer_ports=peer_ports)
+    except ValueError as exc:
+        raise ValueError(f"SESSION_ID differential Rust raw reply changed: {exc}") from exc
+    if raw_canonical != [case["rust_normalized"] for case in cases]:
+        raise ValueError("SESSION_ID differential Rust raw normalization changed")
+    if receipt.get("native_console_rows") != native_console_rows:
+        raise ValueError("SESSION_ID differential native Console evidence changed")
+    if receipt.get("rust_console_rows") != raw_console_rows:
+        raise ValueError("SESSION_ID differential Rust Console evidence changed")
 
 
 def main() -> int:

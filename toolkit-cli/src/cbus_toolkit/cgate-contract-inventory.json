@@ -11,7 +11,7 @@
       "sha256": "fdf01acf8dd3eb037c469732e4cbf36cbaef7ca19612fd9ffedebc196248758c"
     },
     "service": {
-      "sha256": "ad00e6db925d78cd627273b718af2a56cf8ce3ff425463211925b1579071c42d"
+      "sha256": "1a6c2d23ab1c666cd620ba5188f422f9161d17eaa5f61dd1d9d64bcdec88c8d4"
     },
     "event_mode": {
       "sha256": "8821377d31743bcd9265aa9509c12e2070531cee191fddc916659ba78740413c"
@@ -78911,10 +78911,7 @@
               "status": "resolved",
               "value": {
                 "cbus_address_argument": false,
-                "scope": {
-                  "native": "all_open_command_sessions_including_internal_console",
-                  "endpoint": "live_external_tcp_tls_sessions_only"
-                }
+                "scope": "all_open_command_sessions_including_internal_console"
               },
               "source_refs": [
                 "toolkit-cli/docs/toolkit-surface.json#cgate:SESSION_ID ALL",
@@ -79013,8 +79010,7 @@
             "state_effect": {
               "status": "resolved",
               "value": {
-                "native_registry": "read_all_open_sessions_including_internal_console",
-                "endpoint_registry": "read_all_live_external_tcp_tls_sessions_only",
+                "command_session_registry": "read_all_open_sessions_including_internal_console",
                 "endpoint_audit_log": "append_command_record"
               },
               "source_refs": [
@@ -79051,8 +79047,8 @@
           }
         }
       },
-      "axes_sha256": "f2264ebb3792e0977cc1bb9098856dbd17586e22b00cff985f7bdd4fa922af17",
-      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5"
+      "axes_sha256": "97ba3966e5b2bb55f78474f4efe9a0de47aa45e76b57842ffbdf0614829ac192",
+      "contract_sha256": "ca7fa12124c8cc99330d0ef1dc8abbd584466655c74478b85fd32d868c9e8d3d"
     },
     {
       "id": "cgate-contract:79c348f8a682ea25",

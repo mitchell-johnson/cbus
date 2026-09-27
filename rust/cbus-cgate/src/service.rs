@@ -808,11 +808,21 @@ struct CommandSessions {
 
 impl Default for CommandSessions {
     fn default() -> Self {
+        let mut sessions = BTreeMap::new();
+        sessions.insert(
+            1,
+            CommandSession {
+                origin: "internal".to_string(),
+                connected_at: Local::now().format("%Y%m%d-%H%M%S").to_string(),
+                tag: Some("Console".to_string()),
+            },
+        );
         Self {
-            // Native C-Gate reserves cmd1 for its internal console. cmqttd has
-            // no console session to report, so the first real client is cmd3.
+            // Native C-Gate reports cmd1 as its internal Console session.
+            // Keep the compatibility row even though cmqttd has no interactive
+            // console; external command connections still begin at cmd3.
             next_id: 3,
-            sessions: BTreeMap::new(),
+            sessions,
         }
     }
 }

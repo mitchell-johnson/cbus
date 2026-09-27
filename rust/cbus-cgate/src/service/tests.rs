@@ -5744,10 +5744,12 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
         "SESSION_ID ALL ignored-by-native",
     )
     .await;
-    assert_eq!(all.len(), 2);
-    assert!(all[0].starts_with("[3] 300-sessionID=cmd3 origin=/127.0.0.1:"));
-    assert!(all[0].contains(" from="));
-    assert!(all[1].starts_with("[3] 300 sessionID=cmd5 origin=/127.0.0.1:"));
+    assert_eq!(all.len(), 3);
+    assert!(all[0].starts_with("[3] 300-sessionID=cmd1 origin=internal from="));
+    assert!(all[0].ends_with(" tag=Console"));
+    assert!(all[1].starts_with("[3] 300-sessionID=cmd3 origin=/127.0.0.1:"));
+    assert!(all[1].contains(" from="));
+    assert!(all[2].starts_with("[3] 300 sessionID=cmd5 origin=/127.0.0.1:"));
 
     assert_eq!(
         command_lines(
@@ -5766,7 +5768,7 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
         "SESSION_ID ALL",
     )
     .await;
-    assert!(tagged[0].ends_with(" tag=C-Bus Toolkit test"));
+    assert!(tagged[1].ends_with(" tag=C-Bus Toolkit test"));
     assert_eq!(
         command_lines(
             &mut first_reader,
@@ -5808,9 +5810,10 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
         "SESSION_ID ALL",
     )
     .await;
-    assert_eq!(remaining.len(), 1);
-    assert!(remaining[0].starts_with("[12] 300 sessionID=cmd5 "));
-    assert!(!remaining[0].contains("cmd3"));
+    assert_eq!(remaining.len(), 2);
+    assert!(remaining[0].starts_with("[12] 300-sessionID=cmd1 origin=internal from="));
+    assert!(remaining[1].starts_with("[12] 300 sessionID=cmd5 "));
+    assert!(!remaining.iter().any(|line| line.contains("cmd3")));
 
     assert_eq!(
         command_lines(&mut second_reader, &mut second_writer, "13", "EXIT").await,
