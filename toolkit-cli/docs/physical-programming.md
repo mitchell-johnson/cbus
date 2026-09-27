@@ -96,9 +96,10 @@ execution of the original Toolkit UI.
 ## Evidence
 
 `tests/test_physical_programming.py` exercises all ten methods, both save forms,
-dry-run, capability and schema refusal, uncertain save handling, fresh-read
-mismatch, and zero replay. `tests/test_cli_physical_programming.py` pins the
-exact tagged C-Gate command order through the production socket client.
+dry-run, capability and schema refusal (including the mixed-method unit-wide NCC
+preflight), uncertain save handling, fresh-read mismatch, and zero replay.
+`tests/test_cli_physical_programming.py` pins the exact tagged C-Gate command
+order through the production socket client.
 `tests/test_cmqtt_interop.py` drives a direct-method physical write and fresh
 reload through the production Python CLI, real cmqttd, and an independent
 synthetic PCI.
@@ -106,5 +107,7 @@ synthetic PCI.
 The other nine method transports and routed correlation are Rust-owned. Their
 machine-readable roster and scripted boundary are in
 `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
-`native_cgate_routed_pp_protection.json`. Those fixtures explicitly do not
+`native_cgate_routed_pp_protection.json`, and the exact C-Bus 3 nonvolatile
+sequence is retained in the [routed NVM commit fixture](../../rust/testdata/fixtures/native_cgate_routed_nvm_commit.json).
+Those fixtures explicitly do not
 claim a live bridge, power-cycle persistence, or broad hardware acceptance.

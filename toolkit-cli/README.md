@@ -2,8 +2,9 @@
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
-current ledger has **39 areas: 18 implemented, 19 in progress and 2 pending**,
-and `census_complete` is `false`. Run
+current ledger has **39 areas: 18 implemented, 19 in progress and 2 pending**.
+The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate
+of Toolkit functionality, and `census_complete` is `false`. Run
 `cbus-toolkit coverage --require-complete` to inspect the machine-readable
 ledger; it deliberately exits nonzero while the census or acceptance work is
 unfinished.
@@ -327,8 +328,9 @@ After a confirmed save, a new locked PP session physically reloads the target
 and compares every edited value using its declared schema type. No mutation is
 retried. `--dry-run` stops after temporary staging and same-session readback.
 The JSON leaves power-cycle persistence, the broad hardware matrix, and the
-original Toolkit workflow unverified. Routed NCC apply additionally requires
-cmqttd's separate routed Save-to-NVM capability. See
+original Toolkit workflow unverified. Applying any decoded unit specification
+that contains an NCC parameter additionally requires cmqttd's separate routed
+Save-to-NVM capability, even when the selected edit uses another method. See
 [guarded physical programming](docs/physical-programming.md) for failure
 evidence, exact scope, and tests.
 

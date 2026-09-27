@@ -207,9 +207,10 @@
         "docs/physical-programming.md",
         "../rust/testdata/fixtures/native_cgate_routed_pp_methods.json",
         "../rust/testdata/fixtures/native_cgate_routed_pp_protection.json",
+        "../rust/testdata/fixtures/native_cgate_routed_nvm_commit.json",
         "../docs/cmqttd-cgate.md"
       ],
-      "limits": "Database programming and independent raw fixture writes persist; native PP KEY4 UnitName read/edit/SAVE/readback succeeds against synthetic legacy memory. The typed cmqttd physical workflow capability-gates and schema-binds direct, paged, ncc, edlt, giu, sgiu, dali, goc, gocbyt and goc2 LOAD/edit/one-SAVE/fresh-LOAD verification with no mutation replay. Focused Python tests cover all ten methods, both save forms, dry-run, mismatch and uncertainty; one real Python CLI to cmqttd to synthetic-PCI test proves direct-method write/fresh readback. The remaining method transports have scripted Rust route/correlation evidence only. Live bridges, broad device/firmware hardware, original Toolkit workflows, checksum/protection variation and power-cycle persistence remain incomplete."
+      "limits": "Database programming and independent raw fixture writes persist; native PP KEY4 UnitName read/edit/SAVE/readback succeeds against synthetic legacy memory. The typed cmqttd physical workflow capability-gates and schema-binds direct, paged, ncc, edlt, giu, sgiu, dali, goc, gocbyt and goc2 LOAD/edit/one-SAVE/fresh-LOAD verification with no mutation replay. Focused Python tests cover all ten methods, both save forms, dry-run, mismatch and uncertainty; apply inspects the complete loaded schema and requires the routed NVM capability before mutation whenever any NCC parameter is present. One real Python CLI to cmqttd to synthetic-PCI test proves direct-method write/fresh readback. The remaining method transports have scripted Rust route/correlation evidence only. Live bridges, broad device/firmware hardware, original Toolkit workflows, checksum/protection variation and power-cycle persistence remain incomplete."
     },
     {
       "id": "unit-copy-convert-reset",

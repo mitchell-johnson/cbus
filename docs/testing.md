@@ -61,6 +61,11 @@ wrong-operation statuses, and faults without replay after a lost result. Its
 evidence boundary is recorded in
 `rust/testdata/fixtures/native_cgate_routed_nvm_commit.json`.
 
+Focused transport tests also cover selected-serial addressing, protected unit
+readdressing, direct eDLT label clear, and physical PP one-shot sends. A timed-out
+send keeps its allocated confirmation code quarantined until PCI reconnect, so
+a late receipt cannot satisfy a later operation; the uncertain send is never
+replayed.
 
 `cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. Focused `DBSETXML` tests cover scalar fields and complete typed Unit, Level, NetVar, Group, Application, and Network/Interface replacement, including mixed Network documents with Unit and Application children; submitted-root `301 OID` receipts; Unit scalar/PP ambiguity checks; project-wide OID and sibling-address conflicts before mutation; subtree retirement; inherited namespace/comment/PI retention; and copy/rename/delete/archive/restart lifecycle. The production Python C-Gate client and real cmqttd daemon repeat typed subtree exchanges. Hardware-service tests pin configured-Network replacement at the same address/interface binding, preservation of physical inventory/live levels/state/retries, durable restart readback, rollback for a move or rebind, and no PCI I/O. The mixed tree composes separately retained native complete-Network and complete-Unit contracts; no exact native combined replacement capture is claimed. `rust/testdata/fixtures/native_cgate_legacy_database.json` and `rust/testdata/vectors/cgate_dbsetxml.jsonl` retain the oracle summary and exact documents/readbacks.
 
@@ -87,8 +92,8 @@ capabilities, topology parser failures, and MQTT lighting continuity. Focused
 service tests additionally pin the exact one-bridge NET LEARN and every LOCATE
 selector frame, unrelated-reply isolation, one-to-six-route vector boundary,
 pre-I/O route refusal and reconnect invalidation. They also drive physical
-TOPOLOGY EXPLORE and the direct
-UNRAVEL planner through complete scripted before/after inventories. The five independent
+TOPOLOGY EXPLORE and the direct and topology-resolved UNRAVEL planners through
+complete route-correlated scripted before/after inventories. The five independent
 packet vectors live in `rust/testdata/vectors/network_management.jsonl`; the
 sanitized build-2001 help/runtime/class evidence lives in
 `rust/testdata/fixtures/native_cgate_net_lifecycle.json`.

@@ -13,8 +13,8 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 | Product | Compatibility measure | Current state |
 | --- | --- | --- |
-| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The strict ledger has 39 areas: **18 implemented, 19 in progress, and 2 pending**. `coverage` reports `complete: false` and `census_complete: false`; the categories are not a percentage of Toolkit functionality. |
-| `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All 429 non-obsolete primary paths are routed and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
+| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The strict ledger has 39 areas: **18 implemented, 19 in progress, and 2 pending**. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. `coverage` reports `complete: false` and `census_complete: false`. |
+| `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All **429/429 non-obsolete** primary paths are routed (100% command-path routing) and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
 | `cgate-mock` | In-memory C-Gate command surface | All **431** maintained paths parse and dispatch with deterministic protocol-shaped behavior. It does not provide persistent vendor storage, physical C-Bus effects, or device timing. |
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
@@ -25,6 +25,7 @@ Raw `cgate exec` and `cgate run` can forward the command surface exposed by the 
 | --- | --- |
 | Create, inspect, edit, validate, or export Toolkit XML/CBZ projects | `cbus-toolkit project` |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
+| Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
 | Discover CNI2/Wiser interfaces without opening them | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` |
@@ -138,7 +139,7 @@ display/sort preferences, complete original combined
 parent/SceneManager controls, original interactive Reset/multi-panel execution and
 physical acceptance remain outstanding.
 
-**Full Toolkit parity is not complete.** The feature ledger currently records 39 areas: 18 implemented, 19 in progress, and 2 pending. These categories are not a percentage of Toolkit functionality. Check the current machine-readable status with:
+**Full Toolkit parity is not complete.** The feature ledger currently records 39 areas: 18 implemented, 19 in progress, and 2 pending. The simple implemented-row ratio is **18/39 = 46.15%**; it is not a percentage of Toolkit functionality. Check the current machine-readable status with:
 
 ```sh
 cbus-toolkit coverage --require-complete
@@ -604,7 +605,7 @@ cache on the captured PCI generation. Routed label and clock/temperature sends
 do not enter the configured-network observation/application cache. Standard
 label cache clear, KFIGET/KFISET, KEYGL5 CLEAREDLT, and KEYGL5 FactoryDefault
 also resolve one-to-six-bridge targets and reject direct or neighbouring-route
-receipts. Other routed mutations and some
+receipts. Unsupported selector forms inside otherwise-routed handlers and some
 selector-specific DALI session plans refuse before I/O; the private Schneider
 `patchset.zip`, repository/archive formats, and SQLite/XML schemas are not
 reconstructed; cmqttd transforms only its versioned portable SQLite container

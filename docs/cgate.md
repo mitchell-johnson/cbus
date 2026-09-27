@@ -2,8 +2,11 @@
 
 For the physical C-Gate service embedded in `cmqttd`, see [supported operations
 and replacement status](cmqttd-cgate.md). It shares the real CNI with MQTT and
-supports live eDLT reads plus direct and bridged read-only network discovery.
-The rest of this document describes the separate mock.
+provides persistent local/session behavior plus the guarded direct and
+one-to-six-bridge physical reads and writes listed
+in that replacement guide. Selector, vendor-format, device and hardware
+acceptance limits remain explicit. The rest of this document describes the
+separate mock.
 
 `cbus-cgate` provides a bounded, stateful C-Gate 3.4 command model. `cgate-mock` exposes that model over TCP for integration tests and local tooling.
 

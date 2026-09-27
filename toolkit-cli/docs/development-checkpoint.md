@@ -4,7 +4,7 @@ Updated **27 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.
 
 ## Current product state
 
-The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **39 areas: 18 implemented, 19 in progress and 2 pending**. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
+The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **39 areas: 18 implemented, 19 in progress and 2 pending**. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
 
 `cbus-toolkit cgate exec` sends one raw command and `cbus-toolkit cgate run` sends a batch in one session. Together they can reach the command surface exposed by the selected native C-Gate, `cgate-mock` or embedded `cmqttd` service. That transport reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect. Each typed workflow keeps its own validation and acceptance boundary.
 
@@ -50,6 +50,8 @@ The live eDLT path now supports three related typed reads through the C-Gate ser
 The audit fails closed on missing or changed identity, membership, image or mapping evidence. It deliberately excludes dynamic-label traffic from fingerprints because those records are transient, recipient-unverified and incomplete. Its software checkpoint does not prove display rendering, an eDLT's dynamic-label cache, power-cycle persistence or an atomic multi-device snapshot. See [eDLT label audit](edlt-label-audit.md).
 
 Other substantial accepted areas include guarded native thermostat scheduling composition, bounded Windows registry observation, native database CSV projection for the documented unit profiles, eDLT parent and SceneManager metadata composition, project and unit editing, commissioning helpers, route codecs, update diagnostics and the device-specific functions listed in [implementation status](implementation-status.md). The linked feature documents preserve the exact source, profile and backend limits.
+
+This phase also adds typed [physical PP programming](physical-programming.md) for all ten declared methods with a distinct fresh physical reload and a unit-wide NCC capability preflight; typed [network learning and locate](network-learning-locate.md) commands for all retained grades and selectors; and combined automatic eDLT Applications/Corridor/operation-1 Reset metadata with retained SceneManager action creation and contiguous fresh-graph Blank binding. These functions expand existing in-progress areas and do not promote a strict-ledger row.
 
 ## Remaining completion work
 

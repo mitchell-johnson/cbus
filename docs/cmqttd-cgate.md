@@ -8,7 +8,7 @@ operations listed here. `cgate-mock` remains a separate test server.
 The executable primary-routing matrix covers all 431 maintained paths: 230 are
 physical, 199 are local/session, none is a blanket fail-closed 502 path, and
 `NET CHECK_UNRAVEL` plus `NET STATE_INTERVAL` retain their native obsolete 400
-behavior. All 429 non-obsolete paths therefore have a primary route.
+behavior. All **429/429 non-obsolete** paths therefore have a primary route.
 The rejected class is also empty. `CMQTT CAPABILITIES` reports
 `full_cgate_command_path_coverage: true` and the seven inventory/class counters;
 it still reports `full_cgate_compatibility: false` because a
@@ -301,8 +301,9 @@ The maintained Python client wraps this surface with
 capability document before locking, binds every selected parameter to one
 declared programming method, stages and reads edits in one owned session, sends
 one SAVE/SAVE_TO_SOURCE, and uses a distinct physical PP LOAD session for
-schema-aware verification. It never retries a mutation. Routed NCC apply
-requires the separate routed NVM capability. See
+schema-aware verification. It never retries a mutation. Apply to any loaded
+schema containing an NCC parameter requires the separate routed NVM capability,
+even when another method is selected for the edit. See
 [`toolkit-cli/docs/physical-programming.md`](../toolkit-cli/docs/physical-programming.md)
 for the JSON evidence and the live-bridge, hardware-matrix, original-Toolkit,
 and power-cycle boundaries.

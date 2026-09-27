@@ -58,8 +58,9 @@ snapshot, display rendering, power-cycle persistence or dynamic-cache readback.
    typed workflow deliberately reports that evidence as false.
 
 The admitted methods are direct, paged, ncc, edlt, giu, sgiu, dali, goc,
-gocbyt, and goc2. Routed NCC apply additionally needs cmqttd's routed NVM
-capability. The complete contract is `toolkit-cli/docs/physical-programming.md`.
+gocbyt, and goc2. Apply to any loaded specification containing an NCC parameter
+needs cmqttd's routed NVM capability, even when another method is selected. The
+complete contract is `toolkit-cli/docs/physical-programming.md`.
 
 ## Test a PCI/CNI client locally
 
