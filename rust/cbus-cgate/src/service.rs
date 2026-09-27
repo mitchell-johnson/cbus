@@ -3163,6 +3163,9 @@ impl Service {
             ]);
             capabilities["telephony_event_fanout"] = serde_json::Value::Bool(true);
             capabilities["telephony_mqtt_state"] = serde_json::Value::Bool(false);
+            capabilities["telephony_minimum_access_level"] =
+                serde_json::Value::String("Program".to_string());
+            capabilities["telephony_access_level_enforced"] = serde_json::Value::Bool(true);
             capabilities["identify_control"] = serde_json::Value::Bool(true);
             capabilities["identify_application"] = serde_json::Value::from(APP_IDENTIFY);
             capabilities["identify_commands"] =
@@ -3330,6 +3333,16 @@ impl Service {
             }
             if !is_telephony_subcommand(sub) {
                 return err(tag, 400, "400 Syntax Error.");
+            }
+            // All five native TELEPHONY handlers declare Program access,
+            // including RECALL_LAST_NUMBER_REQUEST.  The optional recovery
+            // token's operation-based gate is separate from ACCESS roles.
+            if self.ensure_access_level(client).await < CgateAccessLevel::Program {
+                return err(
+                    tag,
+                    420,
+                    "420 Access denied: TELEPHONY (Program access required)",
+                );
             }
             return self.telephony(tag, &words, sub).await;
         }

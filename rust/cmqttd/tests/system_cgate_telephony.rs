@@ -121,6 +121,8 @@ async fn telephony_native_family_is_confirmed_authenticated_and_keeps_mqtt_live(
     );
     assert_eq!(capabilities["telephony_event_fanout"], true);
     assert_eq!(capabilities["telephony_mqtt_state"], false);
+    assert_eq!(capabilities["telephony_minimum_access_level"], "Program");
+    assert_eq!(capabilities["telephony_access_level_enforced"], true);
     assert_eq!(
         capabilities["telephony_commands"].as_array().unwrap().len(),
         5
@@ -356,4 +358,217 @@ async fn telephony_native_family_is_confirmed_authenticated_and_keeps_mqtt_live(
     drop(sys);
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
+}
+
+#[tokio::test]
+async fn telephony_access_level_is_per_session_and_denies_before_pci() {
+    let state = cbus_test_support::proc::temp_path("cgate-telephony-access.json");
+    let mut sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| line.split_once("C-Gate service listening on "))
+        .map(|(_, address)| address.trim().to_string())
+        .unwrap();
+    let stream = TcpStream::connect(&address).await.unwrap();
+    let (reader, mut low_writer) = stream.into_split();
+    let mut low_reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    low_reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "add-monitor",
+            "ACCESS ADD user reader reader-pass Monitor"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "add-program",
+            "ACCESS ADD user programmer program-pass Program"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "add-admin",
+            "ACCESS ADD user administrator admin-pass Admin"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "login-monitor",
+            "LOGIN reader reader-pass"
+        )
+        .await,
+        ["211 Access level set to: Monitor"]
+    );
+    assert_eq!(
+        command(&mut low_reader, &mut low_writer, "help", "TELEPHONY ?").await[0],
+        "101-Help: TELEPHONY commands:"
+    );
+
+    let commands = [
+        ("TELEPHONY CLEAR_DIVERSION 254/224", "05E0000984"),
+        ("TELEPHONY REJECT_INCOMING_CALL 254/224", "05E0000982"),
+        (
+            "TELEPHONY ISOLATE_SECONDARY_OUTLET 254/224 isolate",
+            "05E0000A8001",
+        ),
+        (
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out",
+            "05E0000A8101",
+        ),
+        ("TELEPHONY DIVERT 254/224 1", "05E000A28331"),
+    ];
+    let initial_counts = commands
+        .iter()
+        .map(|(_, payload)| sys.pci.count_payload(&checksummed(payload)))
+        .collect::<Vec<_>>();
+    for (index, (text, _)) in commands.iter().enumerate() {
+        assert_eq!(
+            command(&mut low_reader, &mut low_writer, &index.to_string(), text).await,
+            ["420 Access denied: TELEPHONY (Program access required)"],
+            "{text}"
+        );
+    }
+    for ((_, payload), before) in commands.iter().zip(&initial_counts) {
+        assert_eq!(sys.pci.count_payload(&checksummed(payload)), *before);
+    }
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "login-admin",
+            "LOGIN administrator admin-pass"
+        )
+        .await,
+        ["211 Access level set to: Admin"]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "admin-denied",
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out"
+        )
+        .await,
+        ["420 Access denied: TELEPHONY (Program access required)"]
+    );
+    assert_eq!(
+        sys.pci.count_payload(&checksummed("05E0000A8101")),
+        initial_counts[3]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "restore-monitor",
+            "LOGIN reader reader-pass"
+        )
+        .await,
+        ["211 Access level set to: Monitor"]
+    );
+
+    let stream = TcpStream::connect(&address).await.unwrap();
+    let (reader, mut program_writer) = stream.into_split();
+    let mut program_reader = BufReader::new(reader);
+    greeting.clear();
+    program_reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+    assert_eq!(
+        command(
+            &mut program_reader,
+            &mut program_writer,
+            "login-program",
+            "LOGIN programmer program-pass"
+        )
+        .await,
+        ["211 Access level set to: Program"]
+    );
+    let recall = checksummed("05E0000A8101");
+    let before = sys.pci.count_payload(&recall);
+    assert_eq!(
+        command(
+            &mut program_reader,
+            &mut program_writer,
+            "program-recall",
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(sys.pci.count_payload(&recall), before + 1);
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "monitor-still-denied",
+            "TELEPHONY RECALL_LAST_NUMBER_REQUEST 254/224 out"
+        )
+        .await,
+        ["420 Access denied: TELEPHONY (Program access required)"]
+    );
+    assert_eq!(sys.pci.count_payload(&recall), before + 1);
+
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "upgrade",
+            "LOGIN programmer program-pass"
+        )
+        .await,
+        ["211 Access level set to: Program"]
+    );
+    let clear = checksummed("05E0000984");
+    let before = sys.pci.count_payload(&clear);
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "upgraded-clear",
+            "TELEPHONY CLEAR_DIVERSION 254/224"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(sys.pci.count_payload(&clear), before + 1);
+
+    assert_eq!(
+        command(&mut low_reader, &mut low_writer, "logout", "LOGOUT").await,
+        ["211 Access level set to: Clipsal"]
+    );
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
 }
