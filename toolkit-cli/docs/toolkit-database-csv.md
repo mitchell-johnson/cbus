@@ -82,6 +82,13 @@ The admitted RELAY4 4.4 shape has applications `56 255`, groups 1 through 8 foll
 
 `cgate database-csv` validates the selected unit path and columns before connecting. It issues exactly one `DBGETXML //PROJECT` command, retains both repeated-347 and statusless tagged XML continuation lines, applies the same bounded native profile in memory, closes the C-Gate connection and only then creates the output exclusively. It does not open a C-Bus network or access a physical device. Unsupported profiles and the missing Area13 fixture stop without creating an output file. TLS and the standard C-Gate host, port and timeout options are available through the parent `cgate` command.
 
+The read-only CSV path alone raises the receive-line ceiling to the 8 MiB snapshot
+bound plus framing headroom. The Rust listeners may send a whole project as
+one `347` XML line; a valid project larger than the general C-Gate client's
+1 MiB default must still reach the bounded projector. The explicit Area
+mutation path and other C-Gate commands retain that default. A larger snapshot or response remains rejected before
+any CSV output is created.
+
 Multi-unit export uses `--native-xml-units` offline or `--units` live for an explicit ordered selection, or `--native-xml-network` offline / `--network` live for every unit in one network. Explicit selections must contain unique canonical paths from one project; they may span its networks. Network selection preserves the XML document's unit order, including an empty network. It does not sort by address or infer Toolkit's unit-manager enumeration order. Each operation parses one project snapshot, applies the existing admitted projector separately to every selected unit, and sends those values through the same serializer to produce one header, all rows and one final blank line. Live export still requests exactly one `DBGETXML //PROJECT` snapshot.
 
 Whole-project export uses `--native-xml-project //PROJECT` offline or

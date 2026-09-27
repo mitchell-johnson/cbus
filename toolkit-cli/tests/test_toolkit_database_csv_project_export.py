@@ -9,7 +9,7 @@ import pytest
 
 from cbus_toolkit import toolkit_database_csv_cli as boundary
 from cbus_toolkit import toolkit_database_csv_native as native
-from cbus_toolkit.toolkit_database_csv import COLUMNS
+from cbus_toolkit.toolkit_database_csv import COLUMNS, MAX_CAPTURE_BYTES
 from tests.test_cgate import peer
 from tests.test_toolkit_database_csv_native import native_xml, oid
 from tests import test_toolkit_database_csv_selection_export as selection_tests
@@ -186,6 +186,20 @@ def test_live_project_uses_exactly_one_snapshot(tmp_path):
     assert sent == [b'[1] DBGETXML //CSVTEST\r\n']
     assert result['projection']['project_path'] == '//CSVTEST'
     assert result['native_database_mutated'] is False
+    assert output.read_bytes() == b'Unit Address,\r\n4,\r\n4,\r\n\r\n'
+
+
+def test_live_project_accepts_one_large_bounded_xml_wire_line(tmp_path):
+    xml = project_xml().replace('</Project>', '<!--' + 'x' * 1_100_000 + '--></Project>')
+    assert 1024 * 1024 < len(xml.encode()) < MAX_CAPTURE_BYTES
+    response = b'[1] 343-Begin XML snippet\r\n[1] 347-' + xml.encode() + b'\r\n[1] 344 End XML snippet\r\n'
+    output = tmp_path / 'large.csv'
+    with peer([[response]]) as ((host, port), sent):
+        code, result = invoke(['cgate', '--host', host, '--port', port, 'database-csv',
+            '--project', '//CSVTEST', '--columns', 'address', '--output', output], offline=False)
+    assert code == 0, result
+    assert sent == [b'[1] DBGETXML //CSVTEST\r\n']
+    assert result['report']['unit_count'] == 2
     assert output.read_bytes() == b'Unit Address,\r\n4,\r\n4,\r\n\r\n'
 
 

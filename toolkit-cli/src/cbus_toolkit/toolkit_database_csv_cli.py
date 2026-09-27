@@ -468,7 +468,13 @@ def live(args, client_factory, ssl_context):
     if output.exists():
         raise FileExistsError('Output already exists: ' + str(output))
 
-    with client_factory(args.host, port, timeout=args.timeout, ssl_context=ssl_context) as client:
+    # Native and modeled DBGETXML may carry the bounded 8 MiB snapshot on one
+    # 347 line. Keep this exception local to read-only CSV; the separate Area
+    # mutation path and ordinary C-Gate commands retain their prior limit.
+    connection_options = {'timeout': args.timeout, 'ssl_context': ssl_context}
+    if not args.apply_missing_area:
+        connection_options['max_line_bytes'] = MAX_CAPTURE_BYTES + 1024
+    with client_factory(args.host, port, **connection_options) as client:
         mutation = None
         if args.apply_missing_area:
             from .toolkit_database_csv_area import NativeCSVAreaGroups
