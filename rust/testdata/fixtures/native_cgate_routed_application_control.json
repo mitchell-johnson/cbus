@@ -29,7 +29,7 @@
   ],
   "limits": [
     "A positive PCI confirmation proves interface acceptance only. No remote application-level acknowledgement, Reply Network SAL observation, device state, controller action, timing, or persistence is claimed.",
-    "Unit readdressing remains a separate point-to-point routed gap; label management and KEYGL5 synchronization metadata are tracked in native_cgate_routed_label_management.json and native_cgate_routed_edlt_metadata.json.",
+    "Unit readdressing, label management and KEYGL5 synchronization metadata are separate point-to-point contracts tracked in native_cgate_routed_unit_readdress.json, native_cgate_routed_label_management.json and native_cgate_routed_edlt_metadata.json.",
     "ENABLE REMOVE remains a local saved-value operation. Live physical bridge and controller acceptance remains outstanding."
   ]
 }

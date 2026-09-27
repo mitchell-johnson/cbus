@@ -31,11 +31,11 @@
     "Direct, neighbouring-route, wrong-unit, wrong-parameter and wrong-tag replies cannot advance routed OEM programming.",
     "Every stateful selector and STORE is issued once; incomplete correlation retires the programming generation without replay.",
     "The C-Gate service test executes a page-aware routed PP SAVE and commits only the owned target-network session after verified readback.",
-    "CMQTT CAPABILITIES exposes every admitted routed method and the separate Save-to-NVM boundary."
+    "CMQTT CAPABILITIES exposes every admitted routed method and routed Save-to-NVM completion boundary."
   ],
   "evidence_boundaries": [
     "No live bridge or routed unit was modified for this acceptance.",
     "Successful protocol acknowledgement and readback do not establish power-cycle persistence or every device-family firmware behavior.",
-    "Routed C-Bus 3 Save-to-NVM is separately capability-gated until its extended-CAL route is accepted."
+    "Routed C-Bus 3 Save-to-NVM extended-CAL composition is covered by native_cgate_routed_nvm_commit.json; live bridge delivery and power-cycle durability remain unverified."
   ]
 }

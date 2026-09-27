@@ -116,5 +116,5 @@
     "native": "C-Gate returned 200 before PCI confirmation; deliberate NAK and NET CLOSE probes still returned 200",
     "cmqttd": "returns success only after correlated confirmation on the active PCI generation; NAK, timeout, closure, or reconnect fail closed"
   },
-  "routing_boundary": "No routed Audio write was evidenced. cmqttd accepts only its bound direct application and fails closed for other paths."
+  "routing_boundary": "This original capture contains no routed Audio write. Current cmqttd routed composition is evidenced separately by native_cgate_routed_application_control.json and does not claim live remote-controller acceptance or state readback."
 }
