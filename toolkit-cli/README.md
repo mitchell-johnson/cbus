@@ -143,6 +143,16 @@ The [receipt](docs/toolkit-update-package-file.md) records exact source and
 package digests. A match does not establish publisher trust, applicability or
 permission to install; the command neither downloads nor executes the file.
 
+`update-applicability-preflight --catalogue-response raw-catalogue.json
+--node-id ID --platform windows_x86_64 --at-utc 2026-09-15T00:00:00Z`
+inspects one untrusted catalogue candidate under an explicit evaluation
+context. The bounded [preflight contract](docs/toolkit-update-applicability-preflight.md)
+checks source order, architecture-specific file selection, date/media fields
+and HTTPS URI shape. Twenty original-method outcomes matched on the disposable
+Windows profile. The supplied UTC instant is not the original updater's local
+wall clock; publisher trust, rollout policy, download and installation remain
+unassessed.
+
 `update-revocation-stages revocation.json --signer-certificate signer.der --at-utc 2026-09-15T00:00:00Z`
 evaluates seven offline stages for signed revocation metadata, including the
 original embedded signer identity. The separate
@@ -2145,7 +2155,7 @@ wheel; each linked record identifies its runtime, source scope and date:
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
 - [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, project/DLTP images, and combined Schneider C-Gate/physical acceptance remain outstanding. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
-- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md), [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md) and [local package join](docs/toolkit-update-package-bundle.md): independent diagnostics plus exact source-file and selected package-byte receipts, with explicit trust and availability limits.
+- [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md), [applicability preflight](docs/toolkit-update-applicability-preflight.md), [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md) and [local package join](docs/toolkit-update-package-bundle.md): independent diagnostics plus exact source-file and selected package-byte receipts, with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.
 - [Database CSV export](docs/toolkit-database-csv.md): 82 current core/CLI tests, two host Windows-adapter guards, five owned Windows tests and one owned C-Gate acceptance for captured values, exact saved column selection, cached-object projection, RELAY4/generic/KEYE1-3/DIMDN8/RELDN12/SENPIROA file/live native XML, explicit ordered multi-unit and network-document-order export from one shared snapshot/request with whole-selection rejection before output creation, KEYE per-block secondary-application associations, ordered repeated group associations, guarded Area13 persistence, portable UTF-8 and Toolkit-native Windows ACP output; the historical 23-test checkpoint includes 88 fresh original cases per run, while original Toolkit manager enumeration remains unverified.
 - [Thermostat temperature conversions](docs/thermostat-temperature.md): 17 tests with 28,840 fresh original cases per run and separate original Windows arithmetic acceptance.

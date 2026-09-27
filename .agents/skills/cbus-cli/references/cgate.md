@@ -1411,21 +1411,20 @@ and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
 time fields. `EVENT` and its `EVENTS` alias default to `e0s0c0` on a new cmqttd
 connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
 stream, even when extra words follow the verb. These operations are volatile
-and perform no PCI or persistent database I/O. The original C-Gate
-`SESSION_ID ALL` trace also lists its internal console session; cmqttd
-currently lists external TCP/TLS command sessions only. Treat that as an open
-compatibility difference, not accepted parity.
-For the narrower external loopback `SESSION_ID` profile, use the
+and perform no PCI or persistent database I/O. Both Rust servers include a
+native-shaped internal `cmd1` Console row in `SESSION_ID ALL`; it is a
+compatibility row in cmqttd, which has no interactive console.
+For the captured loopback `SESSION_ID` profile, use the
 [nine-case differential runner](../../../../toolkit-cli/docs/cgate-session-differential.md).
 It tests query, ALL, one-shot TAG, errors and ignored ALL trailing words
 against the pinned original capture through both a fresh `cgate-mock` process
 and a separately provisioned offline `cmqttd --cgate-bind` listener. The
 runner normalizes only queried session numbers, validated peer ports and
-connection times; it records the exact excluded native internal Console row.
+connection times. It compares the Console row and native CRLF line endings.
 Check `result`, `executed`, `failed` and `skipped` in each artifact-specific
 receipt before claiming a scoped differential pass. Native tag-prefix lines
 were stripped in the retained capture, and this receipt does not establish
-physical, TLS, authorization-policy or unfiltered ALL acceptance.
+physical, TLS, authorization-policy or broader session acceptance.
 
 The native `EVENT`/`EVENTS` setter consumes its first mode token and ignores
 later words. `ON`/`OFF` and

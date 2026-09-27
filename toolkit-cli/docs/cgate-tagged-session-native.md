@@ -40,9 +40,10 @@ child and bound to loopback. The captured cleanup confirms process exit,
 removal of the temporary work directory, reserved-socket closure and log
 closure. The capture did not contact house devices.
 
-The [session differential](cgate-session-differential.md) still requires its
-earlier nine-case payload capture and excludes the native Console row. This
-new envelope is captured but not yet required by that differential. No runner,
-parity builder, acceptance status or completion credit changes in this slice.
+The [session differential](cgate-session-differential.md) still uses its
+earlier nine-case payload capture. It now compares the internal Console row
+and CRLF rather than excluding the row. This eleven-case tagged envelope is
+captured but not yet required by that differential; native client-prefix
+equivalence for these exact commands is a separate acceptance gap.
 Other tag forms, concurrent commands, TLS and non-loopback peers remain
 outside this capture's scope; issue #17 remains open.

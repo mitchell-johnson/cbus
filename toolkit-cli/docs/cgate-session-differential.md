@@ -2,8 +2,8 @@
 
 This acceptance slice compares nine ordered `SESSION_ID` command cases from
 the retained, owned C-Gate 3.4.0.2001 loopback capture with fresh Rust TCP
-sessions. It covers three defined functions: own-session query, listing live
-external command sessions, and one-shot session tagging. It does not cover
+sessions. It covers three defined functions: own-session query, listing the
+internal Console and live external command sessions, and one-shot tagging. It does not cover
 Toolkit GUI behavior, physical C-Bus I/O, TLS, non-loopback peers, ACCESS/LOGIN
 variations, persistence, or the rest of C-Gate's command surface.
 
@@ -52,21 +52,22 @@ malformed tagged reply and other executed behavior differences yield a
 matching cases yield a **passed** receipt and exit 0.
 
 The comparison maps the two separately observed `cmdN` session IDs to logical
-connections `a` and `b`. It validates that each external listing row reports
+connections `a` and `b`. It requires the internal `cmd1` Console row in each
+listing with a stable, valid connection time. It validates that each external listing row reports
 the corresponding live loopback peer port, a well-formed stable connection
 time, the exact tag text and the original continuation or terminal status
 separator. It then substitutes only the variable IDs, ports and times. It
-checks that every Rust reply echoes its supplied client tag. The original
+requires native CRLF line endings and checks that every Rust reply echoes its supplied client tag. The original
 capture stores tag-stripped response payloads. The separate
 [full-envelope native capture](cgate-tagged-session-native.md) now preserves
 the original client prefixes, status separators, CRLF and internal Console
 row. That envelope is captured but not yet required by this differential;
-the existing comparator still uses the earlier payload-only capture.
+the comparator still uses the earlier payload-only original capture.
 
-Native `SESSION_ID ALL` additionally lists an internal `cmd1` Console row.
-The runner excludes only that exact native row and records each exclusion in
-the receipt; any other extra row fails. The external rows retain their
-`300-`/`300 ` framing. Full unfiltered ALL parity remains open. The first
+Both Rust servers now include the native `cmd1` Console row. The runner compares
+it, including its position and `300-` continuation delimiter; any missing or
+extra row fails. The external rows retain their `300-`/`300 ` framing. This is
+the complete row set for the captured two-client loopback profile. The first
 pre-fix mock artifact and its red nine-case receipt are retained as
 `research/fixtures/cgate-session-differential-pre-fix.json`. A new accepted
 receipt must name the exact rebuilt binary SHA-256 and match the source
@@ -90,8 +91,15 @@ rebuilt from source commit `7457ef0` is
 9 passed, 0 failed/skipped. Independently, the offline cmqttd artifact is
 `b3bc5ad3ec4297c3ef675a4760af5257c5b528a6280fd121f97c60a26aaa2801`:
 9 passed, 0 failed/skipped. Each sanitized receipt identifies its artifact,
-source revision and source-file hashes. These hashes belong to those exact
-local builds; a later build needs a new receipt.
+source revision and source-file hashes. The hashes above document the previous
+external-row-only acceptance and are invalidated by the Console/CRLF source
+change. The current v2 [mock receipt](../research/fixtures/cgate-session-differential-fixed.json)
+binds artifact SHA-256
+`139c220c8b3b6333f53c5e0885b8cfdbd349c18d6796505ecae4b1e595dc3ebd`;
+the separate [cmqttd receipt](../research/fixtures/cgate-session-differential-cmqttd.json)
+binds `5a3dfc590624605725216bbf697e71e6123c1ba803f3341d6c2ab09c375579d6`.
+Both pass 9/9 full-row loopback comparisons with no failed or skipped cases.
+Their source fingerprints include the updated comparator and contract pilot.
 
 The three functional obligations stay `in_progress`. Even a green scoped
 original-differential receipt does not resolve their physical applicability,

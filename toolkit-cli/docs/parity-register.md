@@ -155,11 +155,12 @@ anchor and its own C-Gate path contract. The original C-Gate 3.4.0.2001
 loopback capture pins observed nominal and error commands. A fresh cmqttd
 listener with synthetic PCI matched all nine scoped native response payloads,
 with zero skipped cases. The three `original_differential` dimensions are
-accepted only for that external IPv4 loopback profile. The native capture
+accepted only for that owned IPv4 loopback profile. The native capture
 stored tag-stripped payloads: Rust client-tag echo was checked on the wire,
-but native tag-prefix framing remains outside this receipt. The native
-internal Console row is recorded and excluded only from the scoped external
-ALL comparison. The three implementation statuses remain `in_progress`; the
+but native tag-prefix framing remains outside this receipt. The refreshed
+source-bound receipt compares the internal Console row and requires CRLF from
+both Rust servers; the prior external-row-only receipts are stale.
+The three implementation statuses remain `in_progress`; the
 broad path contracts remain provisional. Their physical behavior is a candidate for
 not-applicable because the observed native operations used no physical network,
 but `physical` stays `unassessed` and applicability stays `unresolved` until a
@@ -220,9 +221,8 @@ behavior remains unresolved. `SESSION_ID`, `SESSION_ID ALL`, and the
 `EVENT` mode case/numeric forms remain unresolved. Native
 `SESSION_ID ALL` ignores trailing words, a tag can be set only once, `EVENT`
 starts at `e0s0c0`, and `QUIT`/`EXIT` flush `204` before EOF. The original trace
-also includes an internal console session in `SESSION_ID ALL`; cmqttd currently
-lists only its live external TCP/TLS sessions. That difference is recorded in
-the target/effect fields and remains a parity gap. The original trace
+also includes an internal console session in `SESSION_ID ALL`; both Rust servers
+now emit its native-shaped `cmd1` row. The original trace
 did not exercise every ACCESS role, malformed selector, transport, timeout or
 event-interleaving case, so those response/event and functional-acceptance
 subaxes remain unresolved. The source digest and required native cases are

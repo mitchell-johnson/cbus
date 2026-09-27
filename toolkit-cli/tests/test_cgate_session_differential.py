@@ -215,5 +215,6 @@ def test_pre_fix_receipt_is_red_without_skipped_cases():
         differential.validate_passed_receipt(receipt)
     receipt["format"] = "cgate-session-differential-v2"
     receipt["source_fingerprint"] = differential.source_fingerprint()
+    receipt["pilot_manifest"]["sha256"] = differential.digest(differential.PILOT)
     with pytest.raises(ValueError, match="lacks exact current Rust artifact hash"):
         differential.validate_passed_receipt(receipt)

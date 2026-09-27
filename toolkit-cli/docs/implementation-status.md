@@ -11,10 +11,11 @@ and 39 provisional umbrella obligations plus 442 provisional C-Gate path
 obligations. Three narrow `SESSION_ID` functions are defined separately,
 giving 484 registered obligations, zero fully accepted obligations and one
 scoped original-differential evidence receipt. The three `SESSION_ID` functions
-have accepted original-differential evidence for external IPv4 loopback
-response payloads only; implementation remains in progress and physical
-acceptance is unassessed. The native internal Console row and native client-tag
-prefix capture remain outside that receipt. See the
+have accepted original-differential evidence for an owned IPv4 loopback
+profile that now includes the internal Console row and native CRLF framing;
+implementation remains in progress and physical acceptance is unassessed.
+The separate native client-tag prefix capture remains outside that nine-case
+receipt. See the
 [nine-case comparison](cgate-session-differential.md). These overlapping records are not a
 deduplicated functional denominator.
 Functional percentages remain unavailable until P0 resolves the source records
