@@ -413,6 +413,8 @@ async fn cni_discover_report(
             json!({
                 "source": item.source.to_string(),
                 "raw_hex": hex::encode(&item.raw),
+                "raw_length": item.raw_length,
+                "raw_truncated": item.raw_truncated,
                 "error": item.error,
             })
         })

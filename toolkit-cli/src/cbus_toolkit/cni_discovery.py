@@ -232,16 +232,10 @@ def discover_cni(*, bind="0.0.0.0", listen_port=DISCOVERY_PORT,
         peer.close()
 
 
-def scan_cni(probes, *, listen_port=DISCOVERY_PORT,
-             discovery_port=DISCOVERY_PORT, timeout=2.0, max_datagrams=256,
-             include_hidden=False, discover=discover_cni):
-    """Run an explicit bounded sequence of independent CNI/Wiser UDP probes.
-
-    Every route is validated before the first socket opens. Each successful
-    probe uses the captured single-query contract; failures in one local
-    adapter do not erase observations from later probes. No result proves that
-    a device is absent or that its advertised TCP service is reachable.
-    """
+def validate_scan_cni(probes, *, listen_port=DISCOVERY_PORT,
+                      discovery_port=DISCOVERY_PORT, timeout=2.0,
+                      max_datagrams=256, include_hidden=False):
+    """Validate every route and scan bound without opening a socket."""
     if not isinstance(probes, (list, tuple)) or not 1 <= len(probes) <= MAX_DISCOVERY_PROBES:
         raise ValueError(f"CNI discovery requires 1..={MAX_DISCOVERY_PROBES} probes")
     routes = tuple(_probe(value) for value in probes)
@@ -257,6 +251,24 @@ def scan_cni(probes, *, listen_port=DISCOVERY_PORT,
         raise ValueError(
             f"CNI discovery configured scan window must be <= {MAX_DISCOVERY_SCAN_SECONDS} seconds"
         )
+    return routes
+
+
+def scan_cni(probes, *, listen_port=DISCOVERY_PORT,
+             discovery_port=DISCOVERY_PORT, timeout=2.0, max_datagrams=256,
+             include_hidden=False, discover=discover_cni):
+    """Run an explicit bounded sequence of independent CNI/Wiser UDP probes.
+
+    Every route is validated before the first socket opens. Each successful
+    probe uses the captured single-query contract; failures in one local
+    adapter do not erase observations from later probes. No result proves that
+    a device is absent or that its advertised TCP service is reachable.
+    """
+    routes = validate_scan_cni(
+        probes, listen_port=listen_port, discovery_port=discovery_port,
+        timeout=timeout, max_datagrams=max_datagrams,
+        include_hidden=include_hidden,
+    )
 
     observations = []
     for bind, destination in routes:
@@ -419,6 +431,7 @@ def plan_host_cni_probes(*, interfaces=None, net_if_addrs=None, net_if_stats=Non
         "skipped": skipped,
         "probe_count": len(selected),
         "network_state_snapshot_atomic": False,
+        "egress_interface_verified": False,
         "absence_proven": False,
     }
 
@@ -437,4 +450,5 @@ def scan_host_cni(*, interfaces=None, net_if_addrs=None, net_if_stats=None,
         probe["adapter"] = adapter
     report["automatic_adapter_enumeration"] = True
     report["adapter_enumeration"] = plan
+    report["egress_interface_verified"] = False
     return report

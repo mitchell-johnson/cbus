@@ -278,6 +278,7 @@ class CniHostAdapterTests(unittest.TestCase):
             "down_or_status_unavailable", "loopback_multicast_or_point_to_point",
             "no_usable_directed_broadcast"})
         self.assertFalse(plan["network_state_snapshot_atomic"])
+        self.assertFalse(plan["egress_interface_verified"])
         self.assertFalse(plan["absence_proven"])
 
     def test_auto_scan_preserves_per_adapter_failures_and_never_infers_absence(self):
@@ -302,6 +303,7 @@ class CniHostAdapterTests(unittest.TestCase):
         self.assertFalse(report["scan_complete"])
         self.assertFalse(report["absence_proven"])
         self.assertTrue(report["automatic_adapter_enumeration"])
+        self.assertFalse(report["egress_interface_verified"])
 
     def test_requested_adapter_and_invalid_inventory_fail_before_probe(self):
         addrs, stats = self.providers()
@@ -369,13 +371,33 @@ class CniDiscoveryCliTests(unittest.TestCase):
         args = cli.build_parser().parse_args([
             "interface", "scan-cni", "--auto-adapters", "--plan-only",
             "--interface", "en0"])
+        selected = [{"bind": "192.0.2.10", "destination": "192.0.2.255"}]
         with patch("cbus_toolkit.cni_discovery.plan_host_cni_probes",
-                   return_value={"probe_count": 1}) as plan, patch(
+                   return_value={"probe_count": 1, "selected": selected}) as plan, patch(
                        "cbus_toolkit.cni_discovery.scan_host_cni") as scan:
             report, status = cli.run(args)
-        self.assertEqual((report, status), ({"probe_count": 1}, 0))
+        self.assertEqual((report, status), ({"probe_count": 1, "selected": selected}, 0))
         self.assertEqual(plan.call_args.kwargs["interfaces"], ["en0"])
         scan.assert_not_called()
+
+    def test_auto_plan_only_rejects_scan_bounds_without_discovery(self):
+        from cbus_toolkit import cli
+
+        selected = [{"bind": "192.0.2.10", "destination": "192.0.2.255"},
+                    {"bind": "198.51.100.10", "destination": "198.51.100.255"}]
+        for option, value in (("--timeout", "151"),
+                              ("--discovery-port", "0"),
+                              ("--max-datagrams", "4097")):
+            with self.subTest(option=option):
+                args = cli.build_parser().parse_args([
+                    "interface", "scan-cni", "--auto-adapters", "--plan-only",
+                    option, value])
+                with patch("cbus_toolkit.cni_discovery.plan_host_cni_probes",
+                           return_value={"probe_count": 2, "selected": selected}), patch(
+                               "cbus_toolkit.cni_discovery.scan_host_cni") as scan:
+                    with self.assertRaises(ValueError):
+                        cli.run(args)
+                scan.assert_not_called()
 
     def test_cli_emits_machine_readable_endpoint_without_opening_tcp(self):
         address, thread, errors = responder((CNI2,))

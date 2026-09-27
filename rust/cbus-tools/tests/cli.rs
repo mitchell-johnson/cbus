@@ -123,7 +123,8 @@ fn cni_discover_reports_valid_duplicate_hidden_and_malformed_datagrams() {
             hex::decode("cb81000020e8f5528101000101810b00022711811d000101800100028c26").unwrap();
         let hidden =
             hex::decode("cb810000000000028101000102810b00022711811d000100800100020000").unwrap();
-        for payload in [&visible[..], &visible[..], &hidden[..], b"noise"] {
+        let malformed = vec![b'X'; 1_024];
+        for payload in [&visible[..], &visible[..], &hidden[..], &malformed[..]] {
             socket.send_to(payload, source).unwrap();
         }
     });
@@ -158,6 +159,12 @@ fn cni_discover_reports_valid_duplicate_hidden_and_malformed_datagrams() {
     assert_eq!(report["duplicates_ignored"], 1);
     assert_eq!(report["hidden_ignored"], 1);
     assert_eq!(report["malformed"].as_array().unwrap().len(), 1);
+    assert_eq!(report["malformed"][0]["raw_length"], 1_024);
+    assert_eq!(report["malformed"][0]["raw_truncated"], true);
+    assert_eq!(
+        report["malformed"][0]["raw_hex"].as_str().unwrap().len(),
+        128
+    );
     assert_eq!(report["query_sent_once"], true);
     assert_eq!(report["tcp_connection_opened"], false);
     assert_eq!(report["absence_proven"], false);

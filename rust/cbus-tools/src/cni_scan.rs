@@ -195,6 +195,7 @@ fn plan_adapters(
         "skipped": skipped,
         "probe_count": selected.len(),
         "network_state_snapshot_atomic": false,
+        "egress_interface_verified": false,
         "absence_proven": false,
     });
     Ok((selected, plan))
@@ -324,6 +325,7 @@ pub(crate) async fn scan(args: ScanArgs) -> Result<Value, String> {
     if let Some((_, plan)) = plan {
         report["automatic_adapter_enumeration"] = json!(true);
         report["adapter_enumeration"] = plan;
+        report["egress_interface_verified"] = json!(false);
     }
     Ok(report)
 }
@@ -367,6 +369,7 @@ mod tests {
         assert_eq!(routes[0].destination, Ipv4Addr::new(10, 2, 3, 255));
         assert_eq!(routes[1].destination, Ipv4Addr::new(192, 168, 10, 255));
         assert_eq!(plan["probe_count"], 2);
+        assert_eq!(plan["egress_interface_verified"], false);
         assert_eq!(plan["absence_proven"], false);
         assert_eq!(plan["skipped"].as_array().unwrap().len(), 2);
     }

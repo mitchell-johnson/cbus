@@ -92,7 +92,8 @@ cbus-toolkit interface scan-cni --auto-adapters --interface en0
 
 `--interface` is optional and repeatable. The CLI derives directed broadcast
 routes from operational adapters, records skipped addresses and their reasons,
-and attaches the selected adapter to each probe result. To survey several
+and attaches the planned adapter to each probe result; actual packet egress is
+not verified. To survey several
 chosen adapters or subnets manually, pass one numeric local-address and
 destination pair per probe:
 

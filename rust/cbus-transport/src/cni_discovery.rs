@@ -1,6 +1,7 @@
 //! Bounded IPv4 UDP discovery for CNI2 and Wiser interfaces.
 
 use cbus_protocol::cni_discovery::{decode_discovery_reply, DiscoveryReply, DISCOVERY_QUERY};
+use ring::digest::{digest, SHA256};
 use std::collections::HashSet;
 use std::net::{SocketAddr, SocketAddrV4};
 use std::time::Duration;
@@ -9,6 +10,8 @@ use tokio::time::{timeout_at, Instant};
 
 /// Hard bound for a single discovery run.
 pub const MAX_DISCOVERY_DATAGRAMS: usize = 4_096;
+/// Keep malformed evidence bounded even when a peer sends a maximal UDP datagram.
+pub const MAX_MALFORMED_RAW_PREFIX: usize = 64;
 
 /// Inputs to one read-only CNI discovery broadcast.
 #[derive(Debug, Clone)]
@@ -44,8 +47,12 @@ pub struct DiscoveryObservation {
 pub struct MalformedObservation {
     /// UDP peer that sent the datagram.
     pub source: SocketAddr,
-    /// Exact raw datagram bytes.
+    /// The first at most 64 bytes of the datagram.
     pub raw: Vec<u8>,
+    /// Original datagram length before truncation.
+    pub raw_length: usize,
+    /// Whether raw contains only a prefix of the datagram.
+    pub raw_truncated: bool,
     /// Decoder rejection reason.
     pub error: String,
 }
@@ -114,7 +121,7 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
 
     let deadline = Instant::now() + config.timeout;
     let mut buffer = vec![0u8; 65_535];
-    let mut seen = HashSet::<(SocketAddr, Vec<u8>)>::new();
+    let mut seen = HashSet::<(SocketAddr, usize, [u8; 32])>::new();
     let mut devices = Vec::new();
     let mut malformed = Vec::new();
     let mut duplicates_ignored = 0usize;
@@ -136,17 +143,21 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
         };
         let (length, source) = received;
         datagrams_received += 1;
-        let raw = buffer[..length].to_vec();
-        if !seen.insert((source, raw.clone())) {
+        let raw = &buffer[..length];
+        let mut fingerprint = [0u8; 32];
+        fingerprint.copy_from_slice(digest(&SHA256, raw).as_ref());
+        if !seen.insert((source, length, fingerprint)) {
             duplicates_ignored += 1;
             continue;
         }
-        match decode_discovery_reply(&raw) {
+        match decode_discovery_reply(raw) {
             Ok(reply) => {
                 let SocketAddr::V4(source) = source else {
                     malformed.push(MalformedObservation {
                         source,
-                        raw,
+                        raw: raw[..raw.len().min(MAX_MALFORMED_RAW_PREFIX)].to_vec(),
+                        raw_length: length,
+                        raw_truncated: length > MAX_MALFORMED_RAW_PREFIX,
                         error: "CNI discovery reply source must be IPv4".to_string(),
                     });
                     continue;
@@ -155,11 +166,17 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
                     hidden_ignored += 1;
                     continue;
                 }
-                devices.push(DiscoveryObservation { source, raw, reply });
+                devices.push(DiscoveryObservation {
+                    source,
+                    raw: raw.to_vec(),
+                    reply,
+                });
             }
             Err(error) => malformed.push(MalformedObservation {
                 source,
-                raw,
+                raw: raw[..raw.len().min(MAX_MALFORMED_RAW_PREFIX)].to_vec(),
+                raw_length: length,
+                raw_truncated: length > MAX_MALFORMED_RAW_PREFIX,
                 error: error.to_string(),
             }),
         }
@@ -174,7 +191,12 @@ pub async fn discover(config: &DiscoveryConfig) -> Result<DiscoveryReport, Strin
         )
     });
     malformed.sort_by(|left, right| {
-        (&left.source, &left.raw, &left.error).cmp(&(&right.source, &right.raw, &right.error))
+        (&left.source, &left.raw, left.raw_length, &left.error).cmp(&(
+            &right.source,
+            &right.raw,
+            right.raw_length,
+            &right.error,
+        ))
     });
     Ok(DiscoveryReport {
         local,
@@ -231,6 +253,43 @@ mod tests {
         assert_eq!(report.hidden_ignored, 1);
         assert_eq!(report.malformed.len(), 1);
         assert_eq!(report.devices[0].reply.product_name(), "cni2");
+    }
+
+    #[tokio::test]
+    async fn long_malformed_datagrams_keep_only_prefix_and_full_content_dedupe() {
+        let peer = UdpSocket::bind((Ipv4Addr::LOCALHOST, 0)).await.unwrap();
+        let peer_address = match peer.local_addr().unwrap() {
+            SocketAddr::V4(value) => value,
+            SocketAddr::V6(_) => unreachable!(),
+        };
+        let responder = tokio::spawn(async move {
+            let mut query = [0u8; 64];
+            let (_, source) = peer.recv_from(&mut query).await.unwrap();
+            let first = vec![b'X'; 2_048];
+            let mut second = first.clone();
+            second[2_047] = b'Y';
+            for payload in [&first[..], &first[..], &second[..]] {
+                peer.send_to(payload, source).await.unwrap();
+            }
+        });
+        let report = discover(&DiscoveryConfig {
+            bind: SocketAddrV4::new(Ipv4Addr::LOCALHOST, 0),
+            destination: peer_address,
+            timeout: Duration::from_millis(100),
+            max_datagrams: 16,
+            include_hidden: false,
+        })
+        .await
+        .unwrap();
+        responder.await.unwrap();
+        assert_eq!(report.datagrams_received, 3);
+        assert_eq!(report.duplicates_ignored, 1);
+        assert_eq!(report.malformed.len(), 2);
+        for item in &report.malformed {
+            assert_eq!(item.raw.len(), MAX_MALFORMED_RAW_PREFIX);
+            assert_eq!(item.raw_length, 2_048);
+            assert!(item.raw_truncated);
+        }
     }
 
     #[tokio::test]

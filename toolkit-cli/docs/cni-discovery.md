@@ -39,14 +39,19 @@ cbus-toolkit interface scan-cni --auto-adapters --plan-only
 cbus-toolkit interface scan-cni --auto-adapters --timeout 2
 ```
 
-The first command only prints a route plan and sends no packets. The second
-queries each admitted active adapter's directed broadcast address once. Use
+The first command validates the scan bounds, prints a route plan and sends no
+packets. The second binds each admitted local IPv4 address and sends one query
+to its derived directed broadcast. Use
 `--interface NAME` (repeatable) to restrict both planning and scanning to
 named adapters. The JSON plan shows the selected interface, local bind,
 netmask, derived destination and reported broadcast, plus skipped addresses
 and their reasons. Scan results attach that adapter record to each per-route
-observation. Interface status and address lists are separate OS observations,
-so the snapshot is not atomic; a route may change before or during scanning.
+observation. `adapter` identifies the OS record used to plan a route;
+`egress_interface_verified=false` means the socket is not pinned to that
+adapter and the actual outbound interface was not observed. Overlapping
+subnets can route multiple planned probes through one interface. Interface
+status and address lists are separate OS observations, so the snapshot is not
+atomic; a route may change before or during scanning.
 
 Only operational, non-loopback, non-point-to-point IPv4 addresses with a
 contiguous netmask and a usable directed broadcast are selected. Inconsistent
@@ -176,16 +181,17 @@ Toolkit run or physical interface acceptance.
 
 Injected adapter inventories test automatic route selection, adapter filters,
 malformed netmasks and broadcasts, an unavailable route followed by a valid
-one, and the no-I/O plan path. The Rust planner tests directed broadcasts,
+one, and the no-I/O plan path with scan-bound validation. The Rust planner tests directed broadcasts,
 unsafe adapters and unusable requested routes; its executable tests cover
 explicit multi-route outcomes and no-I/O preflight rejection. Both planners
 were also run read-only against this Mac's live adapter inventory, with four
 eligible routes each; those address-bearing plans remain uncommitted. These
 checks are not Windows or broad physical-network acceptance.
 
-An operator-authorized read-only scan on 27 September 2026 sent one query from
-each of two active Mac adapters on the house subnet. Each route received one
+An operator-authorized read-only scan on 27 September 2026 bound one query to
+each of two local IPv4 addresses assigned to active Mac adapters. Each route received one
 valid CNI2 reply advertising the same endpoint; the raw address-bearing
 output remains outside the repository. This checks per-route reporting on
 that host only. It does not establish original Toolkit behavior, TCP
-reachability or ownership, C-Bus network identity, or other adapters/subnets.
+reachability or ownership, C-Bus network identity, verified physical egress,
+or other adapters/subnets.

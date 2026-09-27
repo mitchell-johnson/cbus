@@ -43,7 +43,9 @@ transport errors. `absence_proven` and `ownership_checked` remain false even
 after every reply window completes. Both CLIs also accept `--auto-adapters`
 to derive directed broadcasts from active IPv4 adapters and `--plan-only` to
 preview them without sending. Python needs the optional `network` extra;
-Rust uses its host adapter library. These commands do not scan arbitrary IP
+Rust uses its host adapter library. The named adapter is planning provenance;
+both tools report `egress_interface_verified=false` because they do not pin or
+observe the socket's actual egress. These commands do not scan arbitrary IP
 ranges or implement native C-Gate `PORT CNISCAN2` status and TCP ownership
 behavior. See `toolkit-cli/docs/cni-discovery.md`.
 

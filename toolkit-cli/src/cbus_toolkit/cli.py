@@ -3313,7 +3313,7 @@ def _memory(args):
 def run(args):
     if args.area == "interface":
         from .cni_discovery import (discover_cni, plan_host_cni_probes, scan_cni,
-                                    scan_host_cni)
+                                    scan_host_cni, validate_scan_cni)
         if args.action == "discover-cni":
             return discover_cni(
                 bind=args.bind,
@@ -3332,7 +3332,12 @@ def run(args):
             include_hidden=args.include_hidden)
         if args.auto_adapters:
             if args.plan_only:
-                return plan_host_cni_probes(interfaces=args.interface), 0
+                plan = plan_host_cni_probes(interfaces=args.interface)
+                validate_scan_cni(
+                    [item["bind"] + "@" + item["destination"]
+                     for item in plan["selected"]], **scan_options,
+                )
+                return plan, 0
             return scan_host_cni(interfaces=args.interface, **scan_options), 0
         return scan_cni(args.probe, **scan_options), 0
     if args.area == "thermostat-temperature":
