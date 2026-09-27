@@ -276,7 +276,7 @@ was a disposable loopback-only C-Gate 3.4.0.2001 process with no C-Bus endpoint.
 ### AIRCON/HVAC commands
 
 cmqttd implements every AIRCON subcommand registered by C-Gate 3.4 for its
-configured direct network. Inspect native-shaped help with `AIRCON ?`. The
+configured network or a topology-resolved route through one to six bridges. Inspect native-shaped help with `AIRCON ?`. The
 application target must resolve to application 172 (`$AC`), using either
 `NETWORK/APPLICATION` or `//PROJECT/NETWORK/APPLICATION` form:
 
@@ -329,7 +329,7 @@ HVAC acceptance has been performed.
 ### Audio commands
 
 cmqttd implements every maintained C-Gate 3.4 `AUDIO` subcommand for Audio
-application 205 (`$CD`) on its configured direct network. Start with `AUDIO ?`
+application 205 (`$CD`) on its configured network or a topology-resolved route through one to six bridges. Start with `AUDIO ?`
 to retrieve the native-shaped command list. Use `APP` as either
 `NETWORK/205` or `//PROJECT/NETWORK/205`:
 
@@ -375,8 +375,7 @@ responses.
 
 All valid commands wait for the correlated PCI confirmation on the active
 connection generation. A 200 proves interface delivery only, not
-audio-controller acceptance or resulting state. Routed Audio writes fail
-closed. When LOGIN is armed, authenticate for the thirteen state-changing
+audio-controller acceptance or resulting state. A topology-resolved one-to-six-bridge target uses exact-once PPM delivery and has no application-level readback. When LOGIN is armed, authenticate for the thirteen state-changing
 forms; current-feed, output status/error, request-current-feed and the two zone
 metadata requests remain open.
 
@@ -397,7 +396,7 @@ pending and rejects the retired generation's eventual success.
 ### Security commands
 
 cmqttd implements the complete maintained C-Gate 3.4 SECURITY family for
-application 208 (`$D0`) on its configured direct network. Inspect native help
+application 208 (`$D0`) on its configured network or a topology-resolved route through one to six bridges. Inspect native help
 with `SECURITY ?`:
 
 ```text
@@ -437,7 +436,7 @@ confirmation.
 ### Measurement data
 
 cmqttd implements the complete maintained C-Gate 3.4 Measurement family on
-the configured direct network:
+the configured network or a topology-resolved route through one to six bridges:
 
 ```text
 MEASUREMENT DATA NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS
@@ -447,8 +446,7 @@ MEASUREMENT DATA NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS
 channel are bytes. Scalar integers accept C-Gate `$` hexadecimal notation.
 The exact SAL order is `0E device channel units multiplier value-msb
 value-lsb`. A 200 proves only correlated PCI confirmation. With the optional
-LOGIN gate armed, authenticate before DATA. Do not claim bridged write support
-or physical sensor acceptance.
+LOGIN gate armed, authenticate before DATA. Routed writes are exact-once through one to six bridges and have no application-level readback. Do not claim physical sensor acceptance.
 
 Incoming application-228 samples appear on `EVENT ON` as
 `#e# measurement data //PROJECT/NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS sourceUnit=SOURCE`.
@@ -462,7 +460,7 @@ behavior in `native_cgate_measurement.json`, `measurement.jsonl`, and
 ### Media Transport commands
 
 cmqttd implements the complete maintained C-Gate 3.4 `MEDIATRANSPORT` family
-for application 192 (`$C0`) on its configured direct network. Use
+for application 192 (`$C0`) on its configured network or a topology-resolved route through one to six bridges. Use
 `MEDIATRANSPORT ?` for the captured native help. The grammar is:
 
 ```text
@@ -497,8 +495,7 @@ armed. Controls and bus-report injection require LOGIN. Every admitted command i
 waits for a positive correlated confirmation from the active shared PCI
 generation. A 200 proves interface delivery only, not media-device acceptance
 or resulting state. Incoming commands/reports fan out as `#e# mediatransport`
-events. cmqttd exposes no MQTT Media Transport entity or state. Bridged routing
-remains unsupported. Ground exact behavior in
+events. cmqttd exposes no MQTT Media Transport entity or state. Topology-resolved routes through one to six bridges use exact-once PPM delivery with no media-device readback. Ground exact behavior in
 `rust/testdata/fixtures/native_cgate_mediatransport.json`,
 `rust/testdata/vectors/mediatransport.jsonl`, and
 `rust/cmqttd/tests/system_cgate_mediatransport.rs`. `CMQTT CAPABILITIES` advertises application 192, `pci-confirmed-broadcast`, `exactly-once-no-replay`, all 21 message names, event fanout, and `mediatransport_mqtt_state: false`.
@@ -507,7 +504,7 @@ remains unsupported. Ground exact behavior in
 
 cmqttd implements the maintained physical child paths for Identify application
 251 (`$FB`), Short Message application 173 (`$AD`), and Error Reporting
-application 206 (`$CE`) on its configured direct network:
+application 206 (`$CE`) on its configured network or a topology-resolved route through one to six bridges:
 
 ```text
 IDENTIFY OFF|ON|TERMINATERAMP APP/GROUP [FORCE]
@@ -560,17 +557,16 @@ and `shortmessage_native_3_4_malformed_send_reproduced: false`.
 ### Access Control commands
 
 `ACCESS_CONTROL CLOSE APP ZONE POINT` and `ACCESS_CONTROL LOCK APP ZONE POINT`
-are physical for direct application 213. cmqttd validates byte-sized zone and
+are physical for application 213 on the configured network or a topology-resolved route through one to six bridges. cmqttd validates byte-sized zone and
 point values before I/O, encodes the retained `0x02` CLOSE or `0x0A` LOCK SAL,
 sends it exactly once, and requires the correlated confirmation on the current
 PCI generation. A 200 proves interface delivery only; it does not prove a door
-or controller changed state or persisted it. Routed Access Control writes and
-TLS-client-certificate identity mapping are outside the evidenced scope.
+or controller changed state or persisted it. Routed Access Control delivery is exact-once and has no controller readback. TLS-client-certificate identity mapping remains outside the evidenced scope.
 
 ### Telephony commands
 
 cmqttd implements the complete maintained C-Gate 3.4 `TELEPHONY` family for
-application 224 (`$E0`) on its configured direct network. Inspect the exact
+application 224 (`$E0`) on its configured network or a topology-resolved route through one to six bridges. Inspect the exact
 native help with `TELEPHONY ?`:
 
 ```text
@@ -581,8 +577,7 @@ TELEPHONY RECALL_LAST_NUMBER_REQUEST APP in|out
 TELEPHONY REJECT_INCOMING_CALL APP
 ```
 
-`APP` accepts `NETWORK/224` or `//PROJECT/NETWORK/224`. Keep it on the
-configured direct network; foreign, absent and routed paths fail closed.
+`APP` accepts `NETWORK/224` or `//PROJECT/NETWORK/224`. The configured network and topology-resolved routes through one to six bridges are admitted; foreign, absent and unroutable paths fail before I/O.
 Modes and directions are case-insensitive. `NUMBER` is exactly one literal
 whitespace-delimited token with Java UTF-16 length 1–16. Do not shell-decode
 quotes or backslashes: `\q` sends the two bytes `5C 71`, and `""` sends two
@@ -1079,10 +1074,10 @@ parameter-35 write,
 `physical_pp_routed_save: true`
 expose the bounded routed programming slice.
 `physical_application_routed_control: true` exposes the
-Lighting/Trigger/Enable-SET slice; inspect its family,
+Lighting/Trigger/Enable-SET, network-management, and specialist application slices; inspect its family,
 command, delivery, state-scope, and readback fields before using it.
 `bridged_mutation_commands` lists `LIGHTING`, `DO lighting`, `TRIGGER`,
-`ENABLE SET`, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
+`ENABLE SET`, `NET LEARN`, `NETWORK LOCATE`, the specialist application families, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
 method/protection/lock/NVM fields preserve its narrower scope rather than
 implying support for other routed writes,
 `pp_reset_to_defaults: true` denotes specification-backed staged

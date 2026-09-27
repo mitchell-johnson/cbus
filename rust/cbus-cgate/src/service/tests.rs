@@ -4898,6 +4898,16 @@ async fn capabilities_report_observation_without_device_readback() {
             "ENABLE SET",
             "NET LEARN",
             "NETWORK LOCATE",
+            "AIRCON",
+            "AUDIO",
+            "SECURITY",
+            "MEASUREMENT DATA",
+            "MEDIATRANSPORT",
+            "TELEPHONY",
+            "IDENTIFY",
+            "SHORTMESSAGE",
+            "EREPORT MESSAGE",
+            "ACCESS_CONTROL",
             "NET SET_PROJECT_IDENTIFY",
             "PP SAVE",
             "PP SAVE_TO_SOURCE"
@@ -4906,8 +4916,25 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["physical_application_routed_control"], true);
     assert_eq!(
         document["physical_application_routed_families"],
-        serde_json::json!(["lighting", "trigger", "enable-set", "network-management"])
+        serde_json::json!([
+            "lighting",
+            "trigger",
+            "enable-set",
+            "network-management",
+            "aircon",
+            "audio",
+            "security",
+            "measurement",
+            "media-transport",
+            "telephony",
+            "identify",
+            "short-message",
+            "error-reporting",
+            "access-control"
+        ])
     );
+    assert_eq!(document["specialist_application_routed_max_hops"], 6);
+    assert_eq!(document["specialist_application_routed_readback"], false);
     assert_eq!(
         document["physical_application_routed_delivery_semantics"],
         "pci-confirmed-exactly-once-no-replay-no-device-readback"
@@ -9799,6 +9826,153 @@ async fn bridged_standard_application_control_is_exact_once_and_target_scoped() 
         None,
         "the replacement generation's invalidation must not be overwritten"
     );
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn bridged_specialist_application_families_use_exact_route_and_one_shot_confirmation() {
+    let path = state_path();
+    let xml = topology_fixture().replace(
+        "</Project>",
+        r#"<Network oid="network-252">
+        <TagName>Unroutable</TagName><Address>252</Address>
+        <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>253/p/252</InterfaceAddress></Interface>
+        </Network></Project>"#,
+    );
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci_client, None).unwrap();
+    let cases: Vec<(&str, u8, Vec<u8>)> = vec![
+        (
+            "MEASUREMENT DATA //TOPO/253/228/1/1 10234 -2 2",
+            228,
+            vec![0x0e, 0x01, 0x01, 0x02, 0xfe, 0x27, 0xfa],
+        ),
+        ("AIRCON REFRESH //TOPO/253/172 1", 172, vec![0x21, 0x01]),
+        ("AUDIO ON //TOPO/253/205 Z 255", 205, vec![0x79, 0xff]),
+        (
+            "SECURITY STATUS_REQUEST //TOPO/253/208 1",
+            208,
+            vec![0x09, 0xa0],
+        ),
+        (
+            "MEDIATRANSPORT STOP //TOPO/253/192 2",
+            192,
+            vec![0x01, 0x02],
+        ),
+        (
+            "TELEPHONY CLEAR_DIVERSION //TOPO/253/224",
+            224,
+            vec![0x09, 0x84],
+        ),
+        ("IDENTIFY ON //TOPO/253/251/1", 251, vec![0x79, 0x01]),
+        (
+            "SHORTMESSAGE REFRESH //TOPO/253/173 4",
+            173,
+            vec![0x01, 0x04],
+        ),
+        (
+            "EREPORT MESSAGE //TOPO/253/206 ACK 1023 n n n 7 255 255 255",
+            206,
+            vec![0x25, 0xff, 0xc7, 0xff, 0xff, 0xff],
+        ),
+        (
+            "ACCESS_CONTROL CLOSE //TOPO/253/213 1 2",
+            213,
+            vec![0x02, 0x01, 0x02],
+        ),
+    ];
+
+    for (index, (command, application, sal)) in cases.into_iter().enumerate() {
+        let delivery = tokio::spawn({
+            let service = service.clone();
+            let command = command.to_string();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        &format!("[specialist-{index}] {command}"),
+                    )
+                    .await
+            }
+        });
+        let request = database_pci_line(&mut remote_read).await;
+        let mut expected = vec![0x03, 253, 0x09, application];
+        expected.extend_from_slice(&sal);
+        let checksum = 0u8.wrapping_sub(
+            expected
+                .iter()
+                .fold(0u8, |sum, byte| sum.wrapping_add(*byte)),
+        );
+        expected.push(checksum);
+        let expected = format!("\\{}", hex::encode_upper(expected));
+        assert_eq!(
+            &request[..request.len() - 2],
+            expected.as_bytes(),
+            "{command}"
+        );
+        let code = request[request.len() - 2];
+        if index == 0 {
+            let wrong = if code == b'z' { b'y' } else { b'z' };
+            remote_write.write_all(&[wrong, b'.']).await.unwrap();
+            routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 1, 0]).await;
+            tokio::task::yield_now().await;
+            assert!(
+                !delivery.is_finished(),
+                "foreign route traffic or an unrelated confirmation completed {command}"
+            );
+        }
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let response = delivery.await.unwrap();
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+
+    for command in [
+        "AIRCON REFRESH //TOPO/252/172 1",
+        "SECURITY STATUS_REQUEST //OTHER/253/208 1",
+    ] {
+        let response = service
+            .handle(&mut ClientState::default(), &format!("[refuse] {command}"))
+            .await;
+        assert!(response.status >= 400, "{command}: {response:?}");
+        assert!(
+            tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+                .await
+                .is_err(),
+            "unroutable specialist application wrote to PCI: {command}"
+        );
+    }
+
+    let stale = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[stale-specialist] AIRCON REFRESH //TOPO/253/172 1",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    let code = request[request.len() - 2];
+    let (replacement, _replacement_remote) = pci();
+    service.set_pci(replacement).await;
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let response = stale.await.unwrap();
+    assert_eq!(response.status, 502, "{response:?}");
+    assert!(response.final_text.contains("generation changed"));
 
     std::fs::remove_file(path).unwrap();
 }

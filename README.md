@@ -392,7 +392,7 @@ returns 408, and emits no sync-ok. These properties are separate from the unsupp
 label-cache query.
 
 `AIRCON ?` lists the complete C-Gate 3.4 AIRCON command family. The eleven
-commands use application 172 on the configured direct network. With
+commands use application 172 on the configured network or a topology-resolved route through one to six bridges. With
 `--cgate-auth-file`, the ten state-changing commands require `LOGIN`; `REFRESH`
 remains open. A 200 response means the PCI confirmed the broadcast. It does not
 establish controller acceptance or the resulting HVAC state. Incoming AIRCON
@@ -405,8 +405,7 @@ encoding, including native low-bit transformations and the native 0..7 error
 code range. Read/report requests remain open under the optional LOGIN gate;
 amplifier, feed, ramp, mute and common-control operations require `LOGIN` when
 the gate is armed. Success requires a correlated confirmation on the current
-PCI generation. Routed Audio writes remain fail closed because no retained
-routed-write capture exists. Incoming Audio command traffic reaches C-Gate
+PCI generation. A topology-resolved one-to-six-bridge target uses the same SAL in one exact PPM send, accepts only its allocated confirmation, and has no invented device readback. Incoming Audio command traffic reaches C-Gate
 event clients. C-Gate 3.4 advertises Audio `label` and `load_icon` events, but
 the retained build silently drops valid standard frames because of a decoder
 length bug; cmqttd decodes the intended retained A0 layout as an explicit
@@ -414,7 +413,7 @@ repair and does not claim byte-for-byte native event behavior for those two
 events. No MQTT Audio state schema is invented.
 
 `SECURITY ?` lists all seven maintained C-Gate 3.4 Security commands for
-application 208 on the configured direct network. `STATUS_REQUEST` and
+application 208 on the configured network or a topology-resolved route through one to six bridges. `STATUS_REQUEST` and
 `REQUEST_ZONE_NAME` remain open under the optional LOGIN gate; arm, tamper,
 alarm, keypad and display-message control require `LOGIN` when the gate is
 armed. A 200 response means the shared PCI confirmed the broadcast; it does
@@ -429,7 +428,7 @@ clients and populate native-shaped application/device/channel GET properties;
 cmqttd does not publish them as MQTT state.
 
 `MEDIATRANSPORT ?` lists all 21 maintained C-Gate 3.4 Media Transport
-commands and reports for application 192 on the configured direct network.
+commands and reports for application 192 on the configured network or a topology-resolved route through one to six bridges.
 Playback, navigation, enumeration, status, track totals and fragmented names
 use exact native SAL, one send, and positive PCI confirmation. With
 `--cgate-auth-file`, status and enumeration requests remain open while controls
@@ -448,8 +447,7 @@ does not prove telephone acceptance, call state or persistence. cmqttd does
 not invent an MQTT Telephony state schema.
 
 The maintained `IDENTIFY` control leaves (`OFF`, `ON`, `RAMP`, and
-`TERMINATERAMP`) drive application 251 groups on the configured direct
-network. They use the native lighting-shaped SAL, including byte or percentage
+`TERMINATERAMP`) drive application 251 groups on the configured network or a topology-resolved route through one to six bridges. They use the native lighting-shaped SAL, including byte or percentage
 levels, native duration suffixes, and optional `FORCE`. cmqttd accepts only
 application 251: the retained native build falsely reports success without
 sending a packet for other applications, so that unsafe behavior fails before

@@ -180,6 +180,18 @@ they are not the current broad-suite total.
 
 ## cmqttd hardware-service addition (2026-09-24)
 
+The embedded service now sends every maintained Air-Conditioning, Audio,
+Security, Measurement, Media Transport, Telephony, Identify, Short Message,
+Error Reporting, and Access Control command to either the configured network
+or a database-resolved route through one to six bridges. It composes the
+already source-pinned SAL with the retained PPM route envelope, transmits once,
+accepts only the allocated PCI confirmation, and rejects foreign, absent, or
+unroutable targets before bus I/O. A successful routed response establishes
+interface delivery only; it does not establish application-level receipt,
+controller state, persistence, or physical bridge acceptance. Exact family
+frames, unrelated-traffic exclusion, reconnect invalidation, and no-replay
+behavior are pinned by protocol vectors and service tests.
+
 The CLI provides both a selected-device
 `cgate edlt-labels //PROJECT/NETWORK/p/UNIT` read and a bounded fresh-network
 `cgate edlt-labels --network //PROJECT/NETWORK` inventory through cmqttd's

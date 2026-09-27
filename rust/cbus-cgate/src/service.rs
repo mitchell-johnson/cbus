@@ -2770,8 +2770,36 @@ impl Service {
             capabilities["bridged_syncnew_general"] = serde_json::Value::Bool(true);
             capabilities["bridged_project_identity_write"] = serde_json::Value::Bool(true);
             capabilities["physical_application_routed_control"] = serde_json::Value::Bool(true);
-            capabilities["physical_application_routed_families"] =
-                serde_json::json!(["lighting", "trigger", "enable-set", "network-management"]);
+            capabilities["physical_application_routed_families"] = serde_json::json!([
+                "lighting",
+                "trigger",
+                "enable-set",
+                "network-management",
+                "aircon",
+                "audio",
+                "security",
+                "measurement",
+                "media-transport",
+                "telephony",
+                "identify",
+                "short-message",
+                "error-reporting",
+                "access-control"
+            ]);
+            capabilities["specialist_application_routed_families"] = serde_json::json!([
+                "aircon",
+                "audio",
+                "security",
+                "measurement",
+                "media-transport",
+                "telephony",
+                "identify",
+                "short-message",
+                "error-reporting",
+                "access-control"
+            ]);
+            capabilities["specialist_application_routed_max_hops"] = serde_json::Value::from(6);
+            capabilities["specialist_application_routed_readback"] = serde_json::Value::Bool(false);
             capabilities["physical_application_routed_commands"] = serde_json::json!([
                 "ON",
                 "OFF",
@@ -2790,7 +2818,17 @@ impl Service {
                 "NETWORK LOCATE UNIT",
                 "NETWORK LOCATE APP",
                 "NETWORK LOCATE GROUP",
-                "NETWORK LOCATE SERIAL"
+                "NETWORK LOCATE SERIAL",
+                "AIRCON *",
+                "AUDIO *",
+                "SECURITY *",
+                "MEASUREMENT DATA",
+                "MEDIATRANSPORT *",
+                "TELEPHONY *",
+                "IDENTIFY *",
+                "SHORTMESSAGE *",
+                "EREPORT MESSAGE",
+                "ACCESS_CONTROL CLOSE|LOCK"
             ]);
             capabilities["physical_application_routed_delivery_semantics"] =
                 serde_json::Value::String(
@@ -2806,6 +2844,16 @@ impl Service {
                 "ENABLE SET",
                 "NET LEARN",
                 "NETWORK LOCATE",
+                "AIRCON",
+                "AUDIO",
+                "SECURITY",
+                "MEASUREMENT DATA",
+                "MEDIATRANSPORT",
+                "TELEPHONY",
+                "IDENTIFY",
+                "SHORTMESSAGE",
+                "EREPORT MESSAGE",
+                "ACCESS_CONTROL",
                 "NET SET_PROJECT_IDENTIFY",
                 "PP SAVE",
                 "PP SAVE_TO_SOURCE"
@@ -5081,6 +5129,11 @@ impl Service {
     }
 
     fn application_path(&self, address: &str) -> Option<u8> {
+        self.addressed_application(address)
+            .and_then(|(network, application)| (network == self.network).then_some(application))
+    }
+
+    fn addressed_application(&self, address: &str) -> Option<(u8, u8)> {
         let parts: Vec<_> = address
             .trim_start_matches('/')
             .split('/')
@@ -5093,10 +5146,10 @@ impl Service {
         };
         let network = network.parse::<u8>().ok()?;
         let application = parse_application(application)?;
-        (project == self.project && network == self.network).then_some(application)
+        (project == self.project).then_some((network, application))
     }
 
-    fn direct_group_path(&self, address: &str) -> Option<(u8, u8)> {
+    fn group_path(&self, address: &str) -> Option<(u8, u8, u8)> {
         if address.starts_with('!') {
             return None;
         }
@@ -5115,7 +5168,7 @@ impl Service {
         let network = network.parse::<u8>().ok()?;
         let application = parse_application(application)?;
         let group = group.parse::<u8>().ok()?;
-        (project == self.project && network == self.network).then_some((application, group))
+        (project == self.project).then_some((network, application, group))
     }
 
     async fn measurement_get(&self, tag: &str, address: &str, attribute: &str) -> Option<Response> {
@@ -5215,7 +5268,7 @@ impl Service {
         })
     }
 
-    fn mediatransport_application(&self, tag: &str, address: &str) -> Result<u8, Response> {
+    fn mediatransport_application(&self, tag: &str, address: &str) -> Result<(u8, u8), Response> {
         let parts = address
             .trim_start_matches('/')
             .split('/')
@@ -5235,20 +5288,23 @@ impl Service {
                 &format!("401 Bad object or device ID: {address} (Object not found)"),
             )
         };
-        let application = match parts.as_slice() {
+        let (network, application) = match parts.as_slice() {
             [network, application] => {
                 let network = network.parse::<u8>().map_err(|_| network_not_found())?;
-                if network != self.network {
-                    return Err(network_not_found());
-                }
-                parse_application(application).ok_or_else(object_not_found)?
+                (
+                    network,
+                    parse_application(application).ok_or_else(object_not_found)?,
+                )
             }
             [project, network, application] => {
                 let network = network.parse::<u8>().map_err(|_| object_not_found())?;
-                if *project != self.project || network != self.network {
+                if *project != self.project {
                     return Err(object_not_found());
                 }
-                parse_application(application).ok_or_else(object_not_found)?
+                (
+                    network,
+                    parse_application(application).ok_or_else(object_not_found)?,
+                )
             }
             [_] => return Err(network_not_found()),
             _ => return Err(object_not_found()),
@@ -5260,7 +5316,7 @@ impl Service {
                 &format!("402 Operation not supported by: {address}"),
             ));
         }
-        Ok(application)
+        Ok((network, application))
     }
 
     async fn net_pingu(
@@ -7081,17 +7137,19 @@ impl Service {
         let Some(target) = words.get(2) else {
             return err(tag, 400, "400 Syntax Error: Missing parameter : <channel>");
         };
-        let (device, channel) = match self.parse_measurement_address(tag, target) {
+        let (network, device, channel) = match self.parse_measurement_address(tag, target) {
             Ok(address) => address,
             Err(response) => return response,
         };
         // Native C-Gate resolves (and therefore creates) the dynamic
         // device/channel object before parsing DATA's scalar arguments.
-        self.measurement_state
-            .lock()
-            .await
-            .entry((device, channel))
-            .or_insert(None);
+        if network == self.network {
+            self.measurement_state
+                .lock()
+                .await
+                .entry((device, channel))
+                .or_insert(None);
+        }
         let Some(value) = words.get(3) else {
             return err(tag, 400, "400 Syntax Error: Missing parameter : <value>");
         };
@@ -7132,7 +7190,8 @@ impl Service {
             Ok(value) => value as u8,
             Err(response) => return response,
         };
-        self.send_application(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::MeasurementData(MeasurementData {
                 device,
@@ -7141,13 +7200,21 @@ impl Service {
                 multiplier,
                 units,
             }),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Measurement data delivery",
+            false,
         )
         .await
     }
 
-    fn parse_measurement_address(&self, tag: &str, target: &str) -> Result<(u8, u8), Response> {
+    fn parse_measurement_address(&self, tag: &str, target: &str) -> Result<(u8, u8, u8), Response> {
         let parts: Vec<_> = target
             .trim_start_matches('/')
             .split('/')
@@ -7172,7 +7239,14 @@ impl Service {
                 ));
             }
         };
-        if project != self.project || network.parse::<u8>().ok() != Some(self.network) {
+        let Some(network) = network.parse::<u8>().ok() else {
+            return Err(err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {target} (Network not found)"),
+            ));
+        };
+        if project != self.project {
             return Err(err(
                 tag,
                 401,
@@ -7212,7 +7286,7 @@ impl Service {
                 &format!("401 Bad object or device ID: {target} (channel value out of range)"),
             ));
         };
-        Ok((device, channel))
+        Ok((network, device, channel))
     }
 
     async fn aircon(&self, tag: &str, words: &[&str], sub: &str) -> Response {
@@ -7262,7 +7336,7 @@ impl Service {
         }
 
         let target = words[2];
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if application != 172 {
@@ -7447,11 +7521,16 @@ impl Service {
         };
 
         let _commands = self.commands.lock().await;
-        self.send_application(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::Aircon(command),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(tag, 404, "404 Network is not connected to this service"),
+            ),
             "Air-Conditioning delivery",
+            false,
         )
         .await
     }
@@ -7465,7 +7544,7 @@ impl Service {
             );
         }
         let target = words[2];
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             let reason = if target.starts_with("//") && target != "?" {
                 "Object not found"
             } else {
@@ -7738,8 +7817,22 @@ impl Service {
         } else {
             ok(tag, vec![], "200 OK.")
         };
-        self.send_application(tag, Sal::AudioCommand(command), response, "Audio delivery")
-            .await
+        self.send_application_to_network(
+            network,
+            tag,
+            Sal::AudioCommand(command),
+            (
+                response,
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
+            "Audio delivery",
+            false,
+        )
+        .await
     }
 
     async fn mediatransport(&self, tag: &str, words: &[&str], sub: &str) -> Response {
@@ -7775,9 +7868,10 @@ impl Service {
         }
 
         let target = words[2];
-        if let Err(response) = self.mediatransport_application(tag, target) {
-            return response;
-        }
+        let (network, _) = match self.mediatransport_application(tag, target) {
+            Ok(address) => address,
+            Err(response) => return response,
+        };
         if supplied < parameters.len() {
             return err(
                 tag,
@@ -7962,11 +8056,20 @@ impl Service {
         };
 
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::MediaTransport(command),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Media Transport delivery",
+            true,
         )
         .await
     }
@@ -7999,7 +8102,7 @@ impl Service {
             return err(tag, 400, "400 Syntax Error: Too many parameters");
         }
         let target = words[2];
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if application != 208 {
@@ -8106,11 +8209,16 @@ impl Service {
             _ => unreachable!(),
         };
         let _commands = self.commands.lock().await;
-        self.send_application(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::SecurityCommand(command),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(tag, 404, "404 Network is not connected to this service"),
+            ),
             "Security delivery",
+            false,
         )
         .await
     }
@@ -8123,7 +8231,7 @@ impl Service {
                 "400 Syntax Error: Missing parameter : <application>",
             );
         };
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             let reason = if target.starts_with("//") && target != "?" {
                 "Object not found"
             } else {
@@ -8211,11 +8319,20 @@ impl Service {
             );
         }
         let _commands = self.commands.lock().await;
-        self.send_application(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::TelephonyCommand(command),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Telephony delivery",
+            false,
         )
         .await
     }
@@ -8228,14 +8345,14 @@ impl Service {
                 "400 Syntax Error: Missing parameter : <object-id>",
             );
         };
-        let Some((application, group)) = self.direct_group_path(target) else {
+        let Some((network, application, group)) = self.group_path(target) else {
             return err(
                 tag,
                 401,
                 &format!("401 Bad object or device ID: {target} (Network not found)"),
             );
         };
-        let canonical = format!("//{}/{}/{application}/{group}", self.project, self.network);
+        let canonical = format!("//{}/{network}/{application}/{group}", self.project);
         if application != APP_IDENTIFY {
             // Native 3.4 reports 200 without emitting a packet when a generic
             // application dynamically accepts this lighting-shaped method.
@@ -8314,11 +8431,20 @@ impl Service {
             _ => return err(tag, 400, "400 Syntax Error."),
         };
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::Identify(command),
-            ok(tag, vec![], &format!("200 OK: {canonical}")),
+            (
+                ok(tag, vec![], &format!("200 OK: {canonical}")),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Identify delivery",
+            true,
         )
         .await
     }
@@ -8331,7 +8457,7 @@ impl Service {
                 "400 Syntax Error: Missing parameter : <application>",
             );
         };
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             return err(
                 tag,
                 401,
@@ -8433,11 +8559,20 @@ impl Service {
             _ => return err(tag, 400, "400 Syntax Error."),
         };
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::ShortMessageCommand(command),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Short Message delivery",
+            true,
         )
         .await
     }
@@ -8450,7 +8585,7 @@ impl Service {
                 "400 Syntax Error: Missing parameter : <application>",
             );
         };
-        let Some(application) = self.application_path(target) else {
+        let Some((network, application)) = self.addressed_application(target) else {
             return err(
                 tag,
                 401,
@@ -8537,7 +8672,8 @@ impl Service {
             },
         };
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::ErrorReport(ErrorReportMessage {
                 message_type,
@@ -8550,8 +8686,16 @@ impl Service {
                 data1,
                 data2,
             }),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(
+                    tag,
+                    401,
+                    &format!("401 Bad object or device ID: {target} (Network not found)"),
+                ),
+            ),
             "Error Reporting delivery",
+            true,
         )
         .await
     }
@@ -8564,7 +8708,7 @@ impl Service {
                 "400 Syntax Error: ACCESSCONTROL CLOSE|LOCK <application> <zone> <point>",
             );
         }
-        let Some(application) = self.application_path(words[2]) else {
+        let Some((network, application)) = self.addressed_application(words[2]) else {
             return err(tag, 401, "401 Access Control application not found");
         };
         if application != 213 {
@@ -8584,11 +8728,16 @@ impl Service {
             AccessControlMessage::Lock { zone, point }
         };
         let _commands = self.commands.lock().await;
-        self.send_application_once(
+        self.send_application_to_network(
+            network,
             tag,
             Sal::AccessControl(message),
-            ok(tag, vec![], "200 OK."),
+            (
+                ok(tag, vec![], "200 OK."),
+                err(tag, 401, "401 Access Control application not found"),
+            ),
             "Access Control delivery",
+            true,
         )
         .await
     }
@@ -9401,6 +9550,61 @@ impl Service {
             sals: vec![sal],
         };
         let result = match pci.send_confirmed_once(&packet).await {
+            Ok(()) => response,
+            Err(error) => err(tag, 502, &format!("502 {operation} failed: {error}")),
+        };
+        let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return err(
+                tag,
+                502,
+                &format!("502 {operation} failed: PCI connection generation changed"),
+            );
+        };
+        result
+    }
+
+    /// Deliver an application command to the configured network or to a
+    /// database-resolved route. Direct commands retain their established
+    /// retry policy; every routed command is a single, confirmation-correlated
+    /// send because a lost bridge confirmation cannot establish whether the
+    /// downstream application acted.
+    async fn send_application_to_network(
+        &self,
+        network: u8,
+        tag: &str,
+        sal: Sal,
+        responses: (Response, Response),
+        operation: &str,
+        direct_exact_once: bool,
+    ) -> Response {
+        let (response, missing_network) = responses;
+        if network == self.network {
+            return if direct_exact_once {
+                self.send_application_once(tag, sal, response, operation)
+                    .await
+            } else {
+                self.send_application(tag, sal, response, operation).await
+            };
+        }
+
+        let route = match self.route_to_network(network).await {
+            Ok(route) => route,
+            Err(error) => {
+                if error == "network not found" {
+                    return missing_network;
+                }
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical application route unavailable: {error}"),
+                );
+            }
+        };
+        let (generation, pci) = self.current_pci_epoch().await;
+        let result = match pci
+            .send_routed_application_confirmed_once(&route, sal)
+            .await
+        {
             Ok(()) => response,
             Err(error) => err(tag, 502, &format!("502 {operation} failed: {error}")),
         };
