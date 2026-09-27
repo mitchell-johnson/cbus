@@ -217,7 +217,9 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     assert!(capabilities.contains("\"bridged_network_max_hops\":6"));
     assert!(capabilities.contains("\"physical_pp_routed_load\":true"));
     assert!(capabilities.contains("\"physical_pp_routed_save\":true"));
-    assert!(capabilities.contains("\"physical_pp_routed_methods\":[\"direct\"]"));
+    assert!(capabilities.contains(
+        "\"physical_pp_routed_methods\":[\"dali\",\"direct\",\"edlt\",\"giu\",\"goc\",\"goc2\",\"gocbyt\",\"ncc\",\"paged\",\"sgiu\"]"
+    ));
     assert!(capabilities
         .contains("\"physical_pp_routed_save_protection\":[\"none\",\"checksum\",\"lock\"]"));
     assert!(capabilities.contains("\"physical_pp_routed_lock\":true"));

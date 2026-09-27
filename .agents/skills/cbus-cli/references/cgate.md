@@ -725,19 +725,19 @@ Enable Control, clock date/time/refresh, Temperature Broadcast, `NET PINGU`, `NE
 `NET CHECKUNIT`, physical `NET CLOCKS`, physical `PP LOAD`, and readback-verified physical `PP SAVE` for
 `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
 `goc2` parameters using decoded unit specifications on the configured network.
-Across a resolved route through one to six bridges, PP LOAD is limited to
-standard-CAL `direct` parameters and PP SAVE/SAVE_TO_SOURCE is limited to
-`direct` parameters with `none`, `checksum`, or `lock` protection. Routed
-identity, pre-read, tagged STORE acknowledgement and readback require the exact
-Reply Network, remote unit, parameter, tag and count. A lock-protected range
-first requires the exact one-byte routed Unlock challenge and its allocated
-PCI confirmation. The unlock and each STORE are sent once, the owned session
-commits only on the captured shared PCI generation, and neither network
-physical cache is changed. Routed LOAD rejects non-direct schema entries after
-identity and before parameter I/O. A routed SAVE containing page-aware,
-OEM/GOC, or Save-to-NVM work returns 502 before physical identity or write I/O.
-Ground the composed protection contract and its physical boundary in
-`rust/testdata/fixtures/native_cgate_routed_pp_protection.json`.
+Across a resolved route through one to six bridges, PP LOAD and
+PP SAVE/SAVE_TO_SOURCE support `direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`,
+`dali`, `goc`, `gocbyt`, and `goc2` schema methods. Routed identity, page or
+memory selectors, pre-read, tagged STORE acknowledgement and readback require
+the exact Reply Network, remote unit, parameter, tag and count. A
+lock-protected `direct`, `paged`, or `ncc` range first requires the exact
+one-byte routed Unlock challenge and its allocated PCI confirmation. The
+unlock and each STORE are sent once, the owned session commits only on the
+captured shared PCI generation, and neither network physical cache is changed.
+Routed Save-to-NVM remains capability-gated separately. Ground the composed
+contracts and physical boundary in
+`rust/testdata/fixtures/native_cgate_routed_pp_protection.json` and
+`rust/testdata/fixtures/native_cgate_routed_pp_methods.json`.
 
 Standard application control also uses a database-resolved route through one
 to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`

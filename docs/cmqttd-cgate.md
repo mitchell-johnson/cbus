@@ -190,8 +190,8 @@ versioned portable container.
 | `DEPLOY_QUEUE ADD/DELETE/DELETE_ALL/LIST/RETRY` | Dedicated runtime queue over PROGRAMMER task groups with retained help, 450/451/501/502 errors, TaskGroupSummary JSON field order/timestamps, ALL/PENDING/FAILED/COMPLETED bulk deletion, per-entry 120/501 rows, and all four event channels. ADD validates/registers an INIT task and acknowledges before asynchronous execution. The first instruction fault stops in ERROR and emits a structured cmqttd debug receipt before ended; this does not claim native diagnostic-string equivalence. RETRY admits only a queued STOPPED/ERROR task, refreshes the reinitialized timestamps/countdown and deliberately re-executes it. LIST, terminal DELETE and DELETE_ALL remain local. Queue state is never persisted. PP/DALI work uses the shared cmqttd CNI and preserves MQTT operation. See `rust/testdata/fixtures/native_cgate_deploy_queue.json` and `rust/cmqttd/tests/system_cgate_pp_programmer.rs` |
 | `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Blocks are 1–12 bytes, non-overlapping, wholly inside 114–241 or 247–254, for an effective maximum of 136 bytes. The patch-version parameter is native F2 (`0xF2`); target `FF` is reserved and may only be explicitly admitted as a current version for manual interrupted-write recovery. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. Already-target recovery is read-only when blocks/control match or repairs only enable when needed. A 200 reports full-pipeline, repaired-enable-only, or verified-read-only disposition. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
-| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds. On a resolved one-to-six-bridge target, LOAD is limited to schema `direct` parameters backed by standard CAL RECALL. Every identity and parameter reply must match the exact Reply Network, unit, parameter and total count, and only the owned target-network session is updated on the captured PCI generation |
-| Physical PP SAVE/SAVE_TO_SOURCE | Direct-network behavior writes dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. A resolved one-to-six-bridge target admits only standard-CAL `direct` parameters with `none`, `checksum`, or `lock` protection. Its pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count. Lock protection additionally requires a one-byte challenge from that exact route/unit/parameter plus the allocated PCI confirmation before STORE. No routed programming request is replayed; the owned session commits only on the captured PCI generation. Routed `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, `goc2`, and Save-to-NVM refuse before physical identity or write I/O. Direct page-aware writes, OEM/GOC methods, unlocks, and C-Bus 3 NVM commit retain their existing behavior |
+| Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds. The same methods work on a resolved one-to-six-bridge target. Every selector acknowledgement, identity and parameter reply must match the exact Reply Network, unit, parameter, tag and total count, and only the owned target-network session is updated on the captured PCI generation |
+| Physical PP SAVE/SAVE_TO_SOURCE | Direct and resolved one-to-six-bridge targets write dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum` and supported `lock` protection. Routed page/memory selectors, pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count. Lock protection for `direct`, `paged`, and `ncc` additionally requires a one-byte challenge from that exact route/unit/parameter plus the allocated PCI confirmation before STORE. No routed programming request is replayed; the owned session commits only on the captured PCI generation. Routed C-Bus 3 Save-to-NVM remains separately capability-gated; direct NVM commit retains its existing behavior |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI for the configured network and for a topology-resolved route through one to six bridges. Routed Lighting composes the retained standard SAL with the evidenced PPM source-route envelope, sends it exactly once, and accepts only its allocated PCI confirmation. It invalidates only the target network's older level on the captured PCI generation and deliberately issues no routed status request; confirmation is distinct from observed physical brightness or controller action |
 | `DO` lighting methods, direct/bridged `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting aliases use the same direct or one-to-six-bridge exact-once physical backend and retain native `202 Done: object` framing. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct or one-to-six-bridge planner described above, with exact routed receipts and final target inventory. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
@@ -289,12 +289,11 @@ Unknown schemas, unsupported layouts, incomplete replies and changed or ended
 sessions fail without replacing the previously staged values.
 
 For a database-resolved route through one to six bridges, physical LOAD uses
-the same `direct` CAL RECALL body inside the established source-route wrapper.
-The response must carry the exact Reply Network, remote unit, parameter and
-total byte count. Only standard recall-backed `direct` schema parameters are
-admitted; page-aware and OEM/GOC methods return 502. A successful load records
-the routed source in the owned session and changes no direct- or target-network
-physical cache.
+the same standard CAL, page-aware, OEM-memory and GOC request bodies inside the
+established source-route wrapper. Selector acknowledgements and responses must
+carry the exact Reply Network, remote unit, parameter, tag and total byte count.
+A successful load records the routed source in the owned session and changes no
+direct- or target-network physical cache.
 
 Physical SAVE uses captured tagged direct STORE for standard parameters, native
 page selection plus tagged STORE for `paged`/`ncc`, and the OEM `0x41` address
@@ -319,15 +318,16 @@ later transaction. MQTT remains active through the shared packet fanout. An
 unchanged or tag-filtered save issues no NVM command. A
 transport failure can still leave earlier independently acknowledged ranges
 written, so multi-range recovery and power-loss acceptance remain outstanding.
-Routed SAVE reuses only the standard tagged STORE subset: `direct` parameters
-with `none`, `checksum`, or `lock` protection. Its pre-read and readback are
-routed RECALLs, and every ACK additionally matches the STORE tag. A locked
-range first sends the evidenced Unlock CAL once and requires both its allocated
-PCI confirmation and a one-byte challenge from the exact Reply Network, unit,
-and parameter. Each STORE is sent once; a missing or malformed challenge,
-confirmation, ACK, or readback faults the programming lane until reconnect.
-Routed page-aware, OEM/GOC and Save-to-NVM operations are rejected before
-physical identity or write I/O. `CMQTT CAPABILITIES` publishes this exact scope.
+Routed SAVE supports standard `direct`, page-aware `paged`/`ncc`, OEM
+`edlt`/`giu`/`sgiu`/`dali`, and `goc`/`gocbyt`/`goc2` transfers. Every selector,
+pre-read, STORE acknowledgement and readback is route-correlated, and every ACK
+also matches its STORE tag. A locked `direct`, `paged`, or `ncc` range sends the
+evidenced Unlock CAL once and requires both its allocated PCI confirmation and
+a one-byte challenge from the exact Reply Network, unit, and parameter. Each
+stateful request is sent once; a missing or malformed challenge, confirmation,
+ACK, or readback faults the programming lane until reconnect. Routed
+Save-to-NVM remains separately capability-gated. `CMQTT CAPABILITIES` publishes
+this exact scope.
 
 Dynamic-label commands use the same syntax produced by `cbus-toolkit` for
 lighting applications 48–95, Trigger Control 202, and Enable Control 203.
@@ -725,11 +725,12 @@ non-inventoried service commands. Full replacement still requires:
   carry the same confirmed-count evidence. Factory/special parameters clear
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
-- Remaining routed write/programming operations outside standard `direct` PP
-  LOAD, `none`/`checksum`/`lock` PP SAVE, project-identity writes, and the standard
-  Lighting/Trigger/Enable SAL slice; general serial-address commissioning,
-  arbitrary second-interface commissioning; and the remaining commissioning
-  state transitions. The read-only interface-rooted `NET PROJECT_IDENTIFY` workflow
+- Routed C-Bus 3 Save-to-NVM completion and hardware acceptance for the routed
+  `direct`, `paged`/`ncc`, OEM `edlt`/`giu`/`sgiu`/`dali`, and
+  `goc`/`gocbyt`/`goc2` PP implementations; general serial-address
+  commissioning, arbitrary second-interface commissioning; and the remaining
+  commissioning state transitions. The read-only interface-rooted
+  `NET PROJECT_IDENTIFY` workflow
   is implemented for cmqttd's configured shared interface. The distinct physical
   `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented for direct and
   one-to-six-bridge networks with strict Reply Network correlation, one STORE,
@@ -967,8 +968,9 @@ service regression replaces the shared PCI while a confirmed request is
 pending and rejects the retired generation. This evidence does not establish
 physical media-device acceptance or readback.
 
-`cbus-transport` tests pin direct routing for standard recall/tagged STORE,
-page-aware recall, page selection, cross-page tagged STORE, the native
+`cbus-transport` tests pin direct and one-to-six-bridge routing for standard
+recall/tagged STORE, page-aware recall, page selection, cross-page tagged
+STORE, OEM-memory and GOC selectors/writes/readback, plus the native
 protected-parameter unlock request/reply phase, and
 the separate programming route for segmented OEM recall/tagged STORE, plus the
 protected unit-address challenge and special STORE, including

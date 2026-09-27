@@ -177,15 +177,16 @@ one- and six-bridge cases are the `en-cmqttd-routed-application-*` vectors in
 `testdata/vectors/encode.jsonl`; they do not imply routed status readback or
 remote controller state.
 
-Routed standard PP uses the PTP form with the same one-to-six-bridge envelope.
-RECALL, tagged STORE, and lock-protection Unlock each require an exact Reply
-Network, terminal unit, and parameter; STORE also requires its exact tag and
-full readback. The routed Unlock carries the required outer checksum and waits
-for both its allocated PCI confirmation and an exact one-byte challenge. It is
-sent once and is never entered into the replay table. The one- and six-bridge
-unlock requests and replies are the `*-routed-pp-unlock-*` vectors. They do not
-establish page-aware, OEM/GOC, Save-to-NVM, device-persistence, or power-cycle
-behavior.
+Routed PP uses the PTP form with the same one-to-six-bridge envelope. Standard
+CAL, page-aware `paged`/`ncc`, OEM memory, and GOC selectors, RECALLs and tagged
+STOREs each require an exact Reply Network, terminal unit, parameter and tag as
+applicable; reads also require the exact total count and every STORE receives a
+full readback. The routed Unlock for `direct`, `paged`, and `ncc` carries the
+required outer checksum and waits for both its allocated PCI confirmation and
+an exact one-byte challenge. It is sent once and is never entered into the
+replay table. The `*-routed-pp-*` vectors pin one- and six-bridge boundaries.
+They do not establish routed Save-to-NVM, device-persistence, power-cycle, or
+every firmware-family behavior.
 
 ## MQTT convention
 

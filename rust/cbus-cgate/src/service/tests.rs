@@ -5144,11 +5144,21 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["physical_pp_routed_save"], true);
     assert_eq!(
         document["physical_pp_routed_methods"],
-        serde_json::json!(["direct"])
+        serde_json::json!([
+            "dali", "direct", "edlt", "giu", "goc", "goc2", "gocbyt", "ncc", "paged", "sgiu"
+        ])
     );
     assert_eq!(
         document["physical_pp_routed_save_protection"],
         serde_json::json!(["none", "checksum", "lock"])
+    );
+    assert_eq!(
+        document["physical_pp_routed_lock_methods"],
+        serde_json::json!(["direct", "ncc", "paged"])
+    );
+    assert_eq!(
+        document["physical_pp_routed_unsupported_methods"],
+        serde_json::json!([])
     );
     assert_eq!(document["physical_pp_routed_lock"], true);
     assert_eq!(document["physical_pp_routed_nvm_commit"], false);
@@ -10161,23 +10171,47 @@ async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_netwo
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 200, "{command}: {response:?}");
     }
-    let unsupported = service
-        .handle(
-            &mut client,
-            "[pp-save-unsupported] PP SAVE U //TOPO/253/p/4 Paged",
-        )
-        .await;
-    assert_eq!(unsupported.status, 502, "{unsupported:?}");
+    let saving_paged = tokio::spawn({
+        let service = service.clone();
+        let mut client = client.clone();
+        async move {
+            service
+                .handle(
+                    &mut client,
+                    "[pp-save-paged] PP SAVE U //TOPO/253/p/4 Paged",
+                )
+                .await
+        }
+    });
+    answer_identity(&mut remote_read, &mut remote_write, 1, b"TESTUNIT").await;
+    answer_identity(&mut remote_read, &mut remote_write, 2, b"1.2.03").await;
     assert_eq!(
-        unsupported.final_text,
-        "502 Routed PP SAVE supports direct CAL parameters with none/checksum/lock protection only"
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041B01200173\r"
     );
-    assert!(
-        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
-            .await
-            .is_err(),
-        "unsupported routed PP SAVE must fail before PCI I/O"
+    database_pci_reply(&mut remote_write, 4, &[0x82, 0x20, 0x11]).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 0x20, 0x22]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x82, 0x20, 0x33]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x21, 0x44]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x20, 0x11]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904390176\r"
     );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x81, 1]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A3200042AB\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x20, 0]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041B01200173\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x20, 0x42]).await;
+    let paged_saved = saving_paged.await.unwrap();
+    assert_eq!(paged_saved.status, 200, "{paged_saved:?}");
+    assert!(service.model.lock().await.sessions["U"].dirty.is_empty());
 
     for command in [
         "[pp-start-nvm] PP START N REMOTE",

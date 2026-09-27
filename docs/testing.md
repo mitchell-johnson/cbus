@@ -47,13 +47,14 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 `cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services. The MQTT consistency regressions cover immediate opposite QoS 1 commands, PUBACKs, delayed and lost PCI confirmations, FIFO blocking, outcome-uncertain failure, per-command physical level requests, C-Gate cache population only from bus reports, transport-state publication, and a forced post-reconnect sweep.
 
-Routed PP tests cover one- and six-bridge standard CAL encoding plus exact
-Reply Network, unit, parameter, tag and length correlation. Lock-protected
-SAVE additionally exercises the routed Unlock challenge and its PCI
-confirmation before the tagged STORE; direct and neighbouring-route replies
-cannot advance it, and a lost confirmation is never replayed. The retained
-composition evidence and physical-acceptance boundary are recorded in
-`rust/testdata/fixtures/native_cgate_routed_pp_protection.json`.
+Routed PP tests cover one- and six-bridge standard CAL, page-aware, OEM memory,
+and GOC encoding plus exact Reply Network, unit, parameter, tag and length
+correlation. Lock-protected SAVE additionally exercises the routed Unlock
+challenge and its PCI confirmation before the tagged STORE; direct and
+neighbouring-route replies cannot advance it, and a lost confirmation is never
+replayed. The retained composition evidence and physical-acceptance boundary
+are recorded in `rust/testdata/fixtures/native_cgate_routed_pp_protection.json`
+and `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`.
 
 `cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. Focused `DBSETXML` tests cover scalar fields and complete typed Unit, Level, NetVar, Group, Application, and Network/Interface replacement, including mixed Network documents with Unit and Application children; submitted-root `301 OID` receipts; Unit scalar/PP ambiguity checks; project-wide OID and sibling-address conflicts before mutation; subtree retirement; inherited namespace/comment/PI retention; and copy/rename/delete/archive/restart lifecycle. The production Python C-Gate client and real cmqttd daemon repeat typed subtree exchanges. Hardware-service tests pin configured-Network replacement at the same address/interface binding, preservation of physical inventory/live levels/state/retries, durable restart readback, rollback for a move or rebind, and no PCI I/O. The mixed tree composes separately retained native complete-Network and complete-Unit contracts; no exact native combined replacement capture is claimed. `rust/testdata/fixtures/native_cgate_legacy_database.json` and `rust/testdata/vectors/cgate_dbsetxml.jsonl` retain the oracle summary and exact documents/readbacks.
 

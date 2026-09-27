@@ -2399,6 +2399,46 @@ impl PciClient {
         length: usize,
         dialect: GocProgramming,
     ) -> Result<Vec<u8>> {
+        self.read_goc_memory_with_route(
+            unit,
+            address,
+            length,
+            dialect,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
+    /// Read GOC programming memory through a one-to-six bridge source route.
+    /// Both the selector acknowledgement and every recall fragment must carry
+    /// the exact Reply Network, remote unit, parameter and selector tag.
+    pub async fn read_goc_memory_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: GocProgramming,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.read_goc_memory_with_route(
+            unit,
+            address,
+            length,
+            dialect,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
+    }
+
+    async fn read_goc_memory_with_route(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: GocProgramming,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<Vec<u8>> {
         if length == 0
             || length > 65_536
             || address
@@ -2421,7 +2461,7 @@ impl PciClient {
             complete: false,
         };
         let result = self
-            .read_goc_memory_inner(unit, address, length, dialect)
+            .read_goc_memory_inner(unit, address, length, dialect, route)
             .await?;
         transaction.complete = true;
         Ok(result)
@@ -2433,6 +2473,7 @@ impl PciClient {
         address: u32,
         length: usize,
         dialect: GocProgramming,
+        route: ProgrammingRoute<'_>,
     ) -> Result<Vec<u8>> {
         let mut result = Vec::with_capacity(length);
         while result.len() < length {
@@ -2449,7 +2490,7 @@ impl PciClient {
                 u8::MAX,
                 0,
                 Some(0x42),
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await
             .map_err(|error| {
@@ -2472,7 +2513,7 @@ impl PciClient {
                     u8::MAX,
                     usize::from(count),
                     None,
-                    ProgrammingRoute::DirectChecksummed,
+                    route,
                 )
                 .await
                 .map_err(|error| {
@@ -2699,6 +2740,30 @@ impl PciClient {
         address: u32,
         length: usize,
     ) -> Result<Vec<u8>> {
+        self.recall_paged_parameter_with_route(unit, address, length, None)
+            .await
+    }
+
+    /// Recall a page-aware logical range through a one-to-six bridge route.
+    pub async fn recall_paged_parameter_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.recall_paged_parameter_with_route(unit, address, length, Some(bridges))
+            .await
+    }
+
+    async fn recall_paged_parameter_with_route(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        bridges: Option<&[u8]>,
+    ) -> Result<Vec<u8>> {
         if length == 0
             || length > 65_536
             || address
@@ -2739,7 +2804,10 @@ impl PciClient {
                     parameter,
                     usize::from(count),
                     None,
-                    ProgrammingRoute::DirectUnchecksummed,
+                    bridges.map_or(
+                        ProgrammingRoute::DirectUnchecksummed,
+                        ProgrammingRoute::Routed,
+                    ),
                 )
                 .await
                 .map_err(|error| {
@@ -2769,6 +2837,33 @@ impl PciClient {
         address: u32,
         data: &[u8],
         locked: bool,
+    ) -> Result<()> {
+        self.store_paged_parameter_verified_with_route(unit, address, data, locked, None)
+            .await
+    }
+
+    /// Store and verify a page-aware logical range through a one-to-six
+    /// bridge route, including route-correlated unlock challenges.
+    pub async fn store_paged_parameter_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        locked: bool,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.store_paged_parameter_verified_with_route(unit, address, data, locked, Some(bridges))
+            .await
+    }
+
+    async fn store_paged_parameter_verified_with_route(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        locked: bool,
+        bridges: Option<&[u8]>,
     ) -> Result<()> {
         if data.is_empty()
             || data.len() > 65_536
@@ -2806,7 +2901,10 @@ impl PciClient {
                         page,
                         0,
                         None,
-                        ProgrammingRoute::DirectUnchecksummed,
+                        bridges.map_or(
+                            ProgrammingRoute::DirectUnchecksummed,
+                            ProgrammingRoute::Routed,
+                        ),
                     )
                     .await?;
                 if !reply.is_empty() {
@@ -2821,7 +2919,16 @@ impl PciClient {
                 .min(12)
                 .min(256 - usize::from(parameter));
             if locked {
-                self.programming_unlock(unit, parameter).await?;
+                if let Some(route) = bridges {
+                    self.programming_unlock_with_route(
+                        unit,
+                        parameter,
+                        ProgrammingRoute::Routed(route),
+                    )
+                    .await?;
+                } else {
+                    self.programming_unlock(unit, parameter).await?;
+                }
             }
             let mut tagged = Vec::with_capacity(count + 1);
             tagged.push(transaction_tag);
@@ -2835,7 +2942,10 @@ impl PciClient {
                 parameter,
                 0,
                 Some(transaction_tag),
-                ProgrammingRoute::DirectChecksummed,
+                bridges.map_or(
+                    ProgrammingRoute::DirectChecksummed,
+                    ProgrammingRoute::Routed,
+                ),
             )
             .await?;
             written += count;
@@ -2861,7 +2971,10 @@ impl PciClient {
                     parameter,
                     usize::from(count),
                     None,
-                    ProgrammingRoute::DirectUnchecksummed,
+                    bridges.map_or(
+                        ProgrammingRoute::DirectUnchecksummed,
+                        ProgrammingRoute::Routed,
+                    ),
                 )
                 .await?,
             );
@@ -3732,8 +3845,35 @@ impl PciClient {
     /// pointer and tagged 0x42 data path, then reselect and read the entire
     /// range back before reporting success.
     pub async fn write_memory_verified(&self, unit: u8, address: u32, data: &[u8]) -> Result<()> {
-        self.write_oem_memory_verified_inner(unit, address, data, false, false)
-            .await
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            false,
+            ProgrammingRoute::Oem,
+        )
+        .await
+    }
+
+    /// Store and verify OEM physical memory through a one-to-six bridge route.
+    pub async fn write_memory_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            false,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
     }
 
     /// Store GIU memory while the native run flag is halted, restore it, and
@@ -3744,8 +3884,36 @@ impl PciClient {
         address: u32,
         data: &[u8],
     ) -> Result<()> {
-        self.write_oem_memory_verified_inner(unit, address, data, true, false)
-            .await
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            true,
+            false,
+            ProgrammingRoute::Oem,
+        )
+        .await
+    }
+
+    /// Store GIU memory through a one-to-six bridge route while preserving
+    /// the native halt/write/resume/readback transaction.
+    pub async fn write_giu_memory_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            true,
+            false,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
     }
 
     /// Store SGIU memory with the native twelve-byte block limit and verify it.
@@ -3755,8 +3923,35 @@ impl PciClient {
         address: u32,
         data: &[u8],
     ) -> Result<()> {
-        self.write_oem_memory_verified_inner(unit, address, data, false, false)
-            .await
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            false,
+            ProgrammingRoute::Oem,
+        )
+        .await
+    }
+
+    /// Store and verify SGIU memory through a one-to-six bridge route.
+    pub async fn write_sgiu_memory_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            false,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
     }
 
     /// Store DALI-unit programming memory after C-Gate's one-second settling
@@ -3767,8 +3962,36 @@ impl PciClient {
         address: u32,
         data: &[u8],
     ) -> Result<()> {
-        self.write_oem_memory_verified_inner(unit, address, data, false, true)
-            .await
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            true,
+            ProgrammingRoute::Oem,
+        )
+        .await
+    }
+
+    /// Store and verify DALI-unit programming memory through a one-to-six
+    /// bridge route after the native settling interval.
+    pub async fn write_dali_memory_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.write_oem_memory_verified_inner(
+            unit,
+            address,
+            data,
+            false,
+            true,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
     }
 
     async fn write_oem_memory_verified_inner(
@@ -3778,6 +4001,7 @@ impl PciClient {
         data: &[u8],
         halt: bool,
         settle: bool,
+        route: ProgrammingRoute<'_>,
     ) -> Result<()> {
         if data.is_empty()
             || data.len() > 65_536
@@ -3808,7 +4032,7 @@ impl PciClient {
                 0xfc,
                 0,
                 Some(3),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
         }
@@ -3829,7 +4053,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
             let mut tagged = Vec::with_capacity(chunk.len() + 1);
@@ -3844,7 +4068,7 @@ impl PciClient {
                 1,
                 0,
                 Some(0x42),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
         }
@@ -3859,7 +4083,7 @@ impl PciClient {
                 0xfc,
                 0,
                 Some(3),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
         }
@@ -3879,7 +4103,7 @@ impl PciClient {
                 0,
                 0,
                 Some(0x41),
-                ProgrammingRoute::Oem,
+                route,
             )
             .await?;
             let count = (data.len() - actual.len()).min(128) as u8;
@@ -3890,7 +4114,7 @@ impl PciClient {
                     1,
                     usize::from(count),
                     None,
-                    ProgrammingRoute::Oem,
+                    route,
                 )
                 .await?,
             );
@@ -3910,6 +4134,46 @@ impl PciClient {
         address: u32,
         data: &[u8],
         dialect: GocProgramming,
+    ) -> Result<()> {
+        self.write_goc_memory_verified_with_route(
+            unit,
+            address,
+            data,
+            dialect,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
+    /// Store and verify one GOC programming range through a one-to-six
+    /// bridge source route. Stateful selector and STORE writes are never
+    /// replayed after an uncertain result.
+    pub async fn write_goc_memory_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        dialect: GocProgramming,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.write_goc_memory_verified_with_route(
+            unit,
+            address,
+            data,
+            dialect,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
+    }
+
+    async fn write_goc_memory_verified_with_route(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        dialect: GocProgramming,
+        route: ProgrammingRoute<'_>,
     ) -> Result<()> {
         if data.is_empty()
             || data.len() > 65_536
@@ -3949,12 +4213,12 @@ impl PciClient {
                 u8::MAX,
                 0,
                 Some(tag),
-                ProgrammingRoute::DirectChecksummed,
+                route,
             )
             .await?;
         }
         let actual = self
-            .read_goc_memory_inner(unit, address, data.len(), dialect)
+            .read_goc_memory_inner(unit, address, data.len(), dialect, route)
             .await?;
         if actual != data {
             return Err(Error::other("GOC memory readback did not match STORE"));
@@ -7246,6 +7510,143 @@ mod tests {
         assert_eq!(line(&mut remote).await, b"\\4605001AFF0399\r");
         reply(&mut remote, 5, &[0x84, 0xff, 0xaa, 0xbb, 0xcc]).await;
         write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_oem_memory_store_correlates_one_and_six_bridge_replies() {
+        async fn run(
+            bridges: Vec<u8>,
+            selector: &'static [u8],
+            store: &'static [u8],
+            recall: &'static [u8],
+        ) {
+            let (pci, mut remote, _) = setup().await;
+            let operation_route = bridges.clone();
+            let write = tokio::spawn(async move {
+                pci.write_memory_verified_routed(&operation_route, 6, 0x1000, &[0xaa, 0xbb])
+                    .await
+            });
+            let mut wrong_route = bridges.clone();
+            wrong_route[0] = wrong_route[0].wrapping_sub(1);
+
+            assert_eq!(line(&mut remote).await, selector);
+            direct_reply(&mut remote, 6, &[0x32, 0, 0x41]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0x32, 0, 0x41]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0, 0x41]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 1, 0x41]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0, 0x42]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0, 0x41]).await;
+
+            assert_eq!(line(&mut remote).await, store);
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 1, 0x43]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 1, 0x42]).await;
+
+            assert_eq!(line(&mut remote).await, selector);
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0, 0x41]).await;
+            assert_eq!(line(&mut remote).await, recall);
+            routed_reply(&mut remote, &bridges, 5, &[0x83, 1, 0xaa, 0xbb]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x83, 2, 0xaa, 0xbb]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x83, 1, 0xaa, 0xbb]).await;
+            write.await.unwrap().unwrap();
+        }
+
+        run(
+            vec![0xfd],
+            b"\\46FD0906A400410010B9\r",
+            b"\\46FD0906A40142AABB62\r",
+            b"\\46FD09061A010291\r",
+        )
+        .await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF906A400410010A4\r",
+            b"\\46FA36FBFCFDFEF906A40142AABB4D\r",
+            b"\\46FA36FBFCFDFEF9061A01027C\r",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_goc_store_preserves_dialect_and_exact_reply_network() {
+        let bridges = vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9];
+        let operation_route = bridges.clone();
+        let (pci, mut remote, _) = setup().await;
+        let write = tokio::spawn(async move {
+            pci.write_goc_memory_verified_routed(
+                &operation_route,
+                6,
+                0x1234,
+                &[0xaa, 0xbb],
+                GocProgramming::Goc2,
+            )
+            .await
+        });
+        assert_eq!(
+            line(&mut remote).await,
+            b"\\46FA36FBFCFDFEF906A6FF001234AABB49\r"
+        );
+        direct_reply(&mut remote, 6, &[0x32, 0xff, 0]).await;
+        routed_reply(
+            &mut remote,
+            &[0xf9, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            6,
+            &[0x32, 0xff, 0],
+        )
+        .await;
+        routed_reply(&mut remote, &bridges, 6, &[0x32, 0xff, 0]).await;
+        assert_eq!(
+            line(&mut remote).await,
+            b"\\46FA36FBFCFDFEF906A4FF4212346E\r"
+        );
+        routed_reply(&mut remote, &bridges, 6, &[0x32, 0xff, 0x42]).await;
+        assert_eq!(line(&mut remote).await, b"\\46FA36FBFCFDFEF9061AFF027E\r");
+        routed_reply(&mut remote, &bridges, 6, &[0x83, 0xff, 0xaa, 0xbb]).await;
+        write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_paged_store_selects_and_verifies_one_and_six_bridge_routes() {
+        async fn run(
+            bridges: Vec<u8>,
+            set_page: &'static [u8],
+            store: &'static [u8],
+            recall: &'static [u8],
+        ) {
+            let operation_route = bridges.clone();
+            let (pci, mut remote, _) = setup().await;
+            let write = tokio::spawn(async move {
+                pci.store_paged_parameter_verified_routed(
+                    &operation_route,
+                    6,
+                    0x0120,
+                    &[0x42],
+                    false,
+                )
+                .await
+            });
+            assert_eq!(line(&mut remote).await, set_page);
+            routed_reply(&mut remote, &bridges, 6, &[0x81, 1]).await;
+            assert_eq!(line(&mut remote).await, store);
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x20, 0]).await;
+            assert_eq!(line(&mut remote).await, recall);
+            routed_reply(&mut remote, &bridges, 6, &[0x82, 0x20, 0x42]).await;
+            write.await.unwrap().unwrap();
+        }
+
+        run(
+            vec![0xfd],
+            b"\\46FD0906390174\r",
+            b"\\46FD0906A3200042A9\r",
+            b"\\46FD09061B01200171\r",
+        )
+        .await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF90639015F\r",
+            b"\\46FA36FBFCFDFEF906A320004294\r",
+            b"\\46FA36FBFCFDFEF9061B0120015C\r",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]

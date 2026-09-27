@@ -2474,12 +2474,14 @@ impl Service {
             // invocation while retaining one static capability document.
             capabilities["physical_pp_routed_load"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_save"] = serde_json::Value::Bool(true);
-            capabilities["physical_pp_routed_methods"] = serde_json::json!(["direct"]);
+            capabilities["physical_pp_routed_methods"] = serde_json::json!([
+                "dali", "direct", "edlt", "giu", "goc", "goc2", "gocbyt", "ncc", "paged", "sgiu"
+            ]);
             capabilities["physical_pp_routed_save_protection"] =
                 serde_json::json!(["none", "checksum", "lock"]);
-            capabilities["physical_pp_routed_unsupported_methods"] = serde_json::json!([
-                "dali", "edlt", "giu", "goc", "goc2", "gocbyt", "ncc", "paged", "sgiu"
-            ]);
+            capabilities["physical_pp_routed_lock_methods"] =
+                serde_json::json!(["direct", "ncc", "paged"]);
+            capabilities["physical_pp_routed_unsupported_methods"] = serde_json::json!([]);
             capabilities["physical_pp_routed_lock"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_nvm_commit"] = serde_json::Value::Bool(false);
             capabilities["physical_pp_routed_delivery_semantics"] = serde_json::Value::String(
@@ -11095,13 +11097,26 @@ impl Service {
                 if method.is_empty() {
                     method = "direct".to_string();
                 }
-                if method != "direct"
-                    || !matches!(layout.transfer, unitspec::ParameterTransfer::Recall { .. })
-                {
+                let routed_supported = match layout.transfer {
+                    unitspec::ParameterTransfer::Recall { .. } => matches!(
+                        method.as_str(),
+                        "direct" | "giu" | "sgiu" | "dali" | "goc" | "gocbyt" | "goc2"
+                    ),
+                    unitspec::ParameterTransfer::Paged { .. } => {
+                        matches!(method.as_str(), "paged" | "ncc")
+                    }
+                    unitspec::ParameterTransfer::Memory { .. } => {
+                        matches!(method.as_str(), "edlt" | "giu" | "sgiu" | "dali")
+                    }
+                    unitspec::ParameterTransfer::GocMemory { .. } => {
+                        matches!(method.as_str(), "goc" | "gocbyt" | "goc2")
+                    }
+                };
+                if !routed_supported {
                     return err(
                         tag,
                         502,
-                        "502 Routed PP LOAD supports direct CAL parameters only",
+                        "502 Routed PP LOAD does not support this program-method/layout pair",
                     );
                 }
             }
@@ -11206,10 +11221,14 @@ impl Service {
         }
         let mut paged = Vec::<(u32, Vec<u8>)>::with_capacity(paged_merged.len());
         for (start, end) in paged_merged {
-            match pci
-                .recall_paged_parameter(unit, start, (end - start) as usize)
-                .await
-            {
+            let result = if route.is_empty() {
+                pci.recall_paged_parameter(unit, start, (end - start) as usize)
+                    .await
+            } else {
+                pci.recall_paged_parameter_routed(&route, unit, start, (end - start) as usize)
+                    .await
+            };
+            match result {
                 Ok(bytes) => paged.push((start, bytes)),
                 Err(error) => {
                     return err(
@@ -11226,7 +11245,12 @@ impl Service {
             while bytes.len() < (end - start) as usize {
                 let address = start + bytes.len() as u32;
                 let count = ((end - address) as usize).min(65_536);
-                match pci.read_memory(unit, address, count).await {
+                let result = if route.is_empty() {
+                    pci.read_memory(unit, address, count).await
+                } else {
+                    pci.read_memory_routed(&route, unit, address, count).await
+                };
+                match result {
                     Ok(chunk) => bytes.extend(chunk),
                     Err(error) => {
                         return err(
@@ -11241,10 +11265,14 @@ impl Service {
         }
         let mut goc = Vec::<(GocProgramming, u32, Vec<u8>)>::with_capacity(goc_merged.len());
         for (dialect, start, end) in goc_merged {
-            match pci
-                .read_goc_memory(unit, start, (end - start) as usize, dialect)
-                .await
-            {
+            let result = if route.is_empty() {
+                pci.read_goc_memory(unit, start, (end - start) as usize, dialect)
+                    .await
+            } else {
+                pci.read_goc_memory_routed(&route, unit, start, (end - start) as usize, dialect)
+                    .await
+            };
+            match result {
                 Ok(bytes) => goc.push((dialect, start, bytes)),
                 Err(error) => {
                     return err(
@@ -11505,6 +11533,9 @@ impl Service {
                     .unwrap_or("none")
                     .trim()
                     .to_ascii_lowercase();
+                if matches!(protection.as_str(), "factory" | "special") {
+                    continue;
+                }
                 let mut method = param
                     .get("ProgramMethod")
                     .unwrap_or("")
@@ -11517,14 +11548,28 @@ impl Service {
                     Ok(layout) => layout,
                     Err(error) => return err(tag, 502, &format!("502 {error}")),
                 };
-                if method != "direct"
-                    || !matches!(layout.transfer, unitspec::ParameterTransfer::Recall { .. })
-                    || !matches!(protection.as_str(), "none" | "checksum" | "lock")
+                let locked = protection == "lock";
+                let routed_supported = match layout.transfer {
+                    unitspec::ParameterTransfer::Recall { .. } => matches!(
+                        method.as_str(),
+                        "direct" | "giu" | "sgiu" | "dali" | "goc" | "gocbyt" | "goc2"
+                    ),
+                    unitspec::ParameterTransfer::Paged { .. } => {
+                        matches!(method.as_str(), "paged" | "ncc")
+                    }
+                    unitspec::ParameterTransfer::Memory { .. } => {
+                        !locked && matches!(method.as_str(), "edlt" | "giu" | "sgiu" | "dali")
+                    }
+                    unitspec::ParameterTransfer::GocMemory { .. } => {
+                        !locked && matches!(method.as_str(), "goc" | "gocbyt" | "goc2")
+                    }
+                };
+                if !routed_supported || !matches!(protection.as_str(), "none" | "checksum" | "lock")
                 {
                     return err(
                         tag,
                         502,
-                        "502 Routed PP SAVE supports direct CAL parameters with none/checksum/lock protection only",
+                        "502 Routed PP SAVE does not support this program-method/layout/protection combination",
                     );
                 }
                 selected_write = true;
@@ -11762,21 +11807,53 @@ impl Service {
                     }
                 }
                 Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
-                Space::Paged => pci.recall_paged_parameter(unit, start, count).await,
+                Space::Paged => {
+                    if route.is_empty() {
+                        pci.recall_paged_parameter(unit, start, count).await
+                    } else {
+                        pci.recall_paged_parameter_routed(&route, unit, start, count)
+                            .await
+                    }
+                }
                 Space::Memory | Space::Giu | Space::Sgiu | Space::Dali => {
-                    pci.read_memory(unit, start, count).await
+                    if route.is_empty() {
+                        pci.read_memory(unit, start, count).await
+                    } else {
+                        pci.read_memory_routed(&route, unit, start, count).await
+                    }
                 }
                 Space::Goc => {
-                    pci.read_goc_memory(unit, start, count, GocProgramming::Goc)
-                        .await
+                    if route.is_empty() {
+                        pci.read_goc_memory(unit, start, count, GocProgramming::Goc)
+                            .await
+                    } else {
+                        pci.read_goc_memory_routed(&route, unit, start, count, GocProgramming::Goc)
+                            .await
+                    }
                 }
                 Space::GocByt => {
-                    pci.read_goc_memory(unit, start, count, GocProgramming::GocByt)
+                    if route.is_empty() {
+                        pci.read_goc_memory(unit, start, count, GocProgramming::GocByt)
+                            .await
+                    } else {
+                        pci.read_goc_memory_routed(
+                            &route,
+                            unit,
+                            start,
+                            count,
+                            GocProgramming::GocByt,
+                        )
                         .await
+                    }
                 }
                 Space::Goc2 => {
-                    pci.read_goc_memory(unit, start, count, GocProgramming::Goc2)
-                        .await
+                    if route.is_empty() {
+                        pci.read_goc_memory(unit, start, count, GocProgramming::Goc2)
+                            .await
+                    } else {
+                        pci.read_goc_memory_routed(&route, unit, start, count, GocProgramming::Goc2)
+                            .await
+                    }
                 }
             };
             let original = match original {
@@ -11862,38 +11939,114 @@ impl Service {
                     }
                 }
                 Space::Paged => {
-                    pci.store_paged_parameter_verified(unit, item.start, modified, item.locked)
+                    if route.is_empty() {
+                        pci.store_paged_parameter_verified(unit, item.start, modified, item.locked)
+                            .await
+                    } else {
+                        pci.store_paged_parameter_verified_routed(
+                            &route,
+                            unit,
+                            item.start,
+                            modified,
+                            item.locked,
+                        )
                         .await
+                    }
                 }
-                Space::Memory => pci.write_memory_verified(unit, item.start, modified).await,
+                Space::Memory => {
+                    if route.is_empty() {
+                        pci.write_memory_verified(unit, item.start, modified).await
+                    } else {
+                        pci.write_memory_verified_routed(&route, unit, item.start, modified)
+                            .await
+                    }
+                }
                 Space::Giu => {
-                    pci.write_giu_memory_verified(unit, item.start, modified)
-                        .await
+                    if route.is_empty() {
+                        pci.write_giu_memory_verified(unit, item.start, modified)
+                            .await
+                    } else {
+                        pci.write_giu_memory_verified_routed(&route, unit, item.start, modified)
+                            .await
+                    }
                 }
                 Space::Sgiu => {
-                    pci.write_sgiu_memory_verified(unit, item.start, modified)
-                        .await
+                    if route.is_empty() {
+                        pci.write_sgiu_memory_verified(unit, item.start, modified)
+                            .await
+                    } else {
+                        pci.write_sgiu_memory_verified_routed(&route, unit, item.start, modified)
+                            .await
+                    }
                 }
                 Space::Dali => {
-                    pci.write_dali_memory_verified(unit, item.start, modified)
-                        .await
+                    if route.is_empty() {
+                        pci.write_dali_memory_verified(unit, item.start, modified)
+                            .await
+                    } else {
+                        pci.write_dali_memory_verified_routed(&route, unit, item.start, modified)
+                            .await
+                    }
                 }
                 Space::Goc => {
-                    pci.write_goc_memory_verified(unit, item.start, modified, GocProgramming::Goc)
+                    if route.is_empty() {
+                        pci.write_goc_memory_verified(
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::Goc,
+                        )
                         .await
+                    } else {
+                        pci.write_goc_memory_verified_routed(
+                            &route,
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::Goc,
+                        )
+                        .await
+                    }
                 }
                 Space::GocByt => {
-                    pci.write_goc_memory_verified(
-                        unit,
-                        item.start,
-                        modified,
-                        GocProgramming::GocByt,
-                    )
-                    .await
+                    if route.is_empty() {
+                        pci.write_goc_memory_verified(
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::GocByt,
+                        )
+                        .await
+                    } else {
+                        pci.write_goc_memory_verified_routed(
+                            &route,
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::GocByt,
+                        )
+                        .await
+                    }
                 }
                 Space::Goc2 => {
-                    pci.write_goc_memory_verified(unit, item.start, modified, GocProgramming::Goc2)
+                    if route.is_empty() {
+                        pci.write_goc_memory_verified(
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::Goc2,
+                        )
                         .await
+                    } else {
+                        pci.write_goc_memory_verified_routed(
+                            &route,
+                            unit,
+                            item.start,
+                            modified,
+                            GocProgramming::Goc2,
+                        )
+                        .await
+                    }
                 }
             };
             if let Err(error) = result {
