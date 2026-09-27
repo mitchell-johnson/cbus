@@ -1,0 +1,130 @@
+<Installation>
+  <!--Synthetic KEYGL5 5.5.00 CSV association fixture; no site data.-->
+  <Project>
+    <Address>CSVTEST</Address>
+    <Network>
+      <Address>254</Address>
+      <Application>
+        <OID>00000000-0000-0000-0000-000000000056</OID>
+        <TagName>Lighting</TagName>
+        <Address>56</Address>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015346</OID>
+          <TagName>P10</TagName>
+          <Address>10</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015348</OID>
+          <TagName>P12</TagName>
+          <Address>12</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015349</OID>
+          <TagName>P13</TagName>
+          <Address>13</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015352</OID>
+          <TagName>P16</TagName>
+          <Address>16</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015591</OID>
+          <TagName>&lt;Unused&gt;</TagName>
+          <Address>255</Address>
+        </Group>
+      </Application>
+      <Application>
+        <OID>00000000-0000-0000-0000-000000000057</OID>
+        <TagName>Secondary</TagName>
+        <Address>57</Address>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015603</OID>
+          <TagName>S11</TagName>
+          <Address>11</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015607</OID>
+          <TagName>S15</TagName>
+          <Address>15</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000015847</OID>
+          <TagName>&lt;Unused&gt;</TagName>
+          <Address>255</Address>
+        </Group>
+      </Application>
+      <Application>
+        <OID>00000000-0000-0000-0000-000000000203</OID>
+        <TagName>Enable</TagName>
+        <Address>203</Address>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000052982</OID>
+          <TagName>E14</TagName>
+          <Address>14</Address>
+        </Group>
+      </Application>
+      <Unit>
+        <OID>00000000-0000-0000-0000-000000000500</OID>
+        <TagName>Kitchen</TagName>
+        <Address>4</Address>
+        <UnitType>KEYGL5</UnitType>
+        <UnitName>eDLT Synthetic</UnitName>
+        <SerialNumber />
+        <FirmwareVersion>5.5.00</FirmwareVersion>
+        <CatalogNumber>5055EDL</CatalogNumber>
+        <PP Name="Application" Value="0x38 0x39" />
+        <PP Name="PrimaryApplication" Value="56" />
+        <PP Name="SecondaryApplication" Value="57" />
+        <PP Name="Widget6WidgetType" Value="2" />
+        <PP Name="Widget6WidgetByteValue1" Value="0" />
+        <PP Name="Widget6WidgetByteValue6" Value="10" />
+        <PP Name="Widget7WidgetType" Value="3" />
+        <PP Name="Widget7WidgetByteValue1" Value="128" />
+        <PP Name="Widget7WidgetByteValue6" Value="11" />
+        <PP Name="Widget8WidgetType" Value="4" />
+        <PP Name="Widget8WidgetByteValue1" Value="0" />
+        <PP Name="Widget8WidgetByteValue6" Value="12" />
+        <PP Name="Widget9WidgetType" Value="5" />
+        <PP Name="Widget9WidgetByteValue1" Value="0" />
+        <PP Name="Widget9WidgetByteValue6" Value="13" />
+        <PP Name="Widget10WidgetType" Value="14" />
+        <PP Name="Widget10WidgetByteValue1" Value="128" />
+        <PP Name="Widget10WidgetByteValue6" Value="14" />
+        <PP Name="Widget11WidgetType" Value="15" />
+        <PP Name="Widget11WidgetByteValue1" Value="128" />
+        <PP Name="Widget11WidgetByteValue6" Value="15" />
+        <PP Name="Widget12WidgetType" Value="16" />
+        <PP Name="Widget12WidgetByteValue1" Value="0" />
+        <PP Name="Widget12WidgetByteValue6" Value="16" />
+        <PP Name="Widget13WidgetType" Value="7" />
+        <PP Name="Widget13WidgetByteValue1" Value="0" />
+        <PP Name="Widget13WidgetByteValue6" Value="88" />
+        <PP Name="Widget14WidgetType" Value="0" />
+        <PP Name="Widget14WidgetByteValue1" Value="0" />
+        <PP Name="Widget14WidgetByteValue6" Value="97" />
+        <PP Name="Widget15WidgetType" Value="0" />
+        <PP Name="Widget15WidgetByteValue1" Value="0" />
+        <PP Name="Widget15WidgetByteValue6" Value="255" />
+        <PP Name="Widget16WidgetType" Value="0" />
+        <PP Name="Widget16WidgetByteValue1" Value="0" />
+        <PP Name="Widget16WidgetByteValue6" Value="255" />
+        <PP Name="Widget17WidgetType" Value="0" />
+        <PP Name="Widget17WidgetByteValue1" Value="0" />
+        <PP Name="Widget17WidgetByteValue6" Value="255" />
+        <PP Name="Widget18WidgetType" Value="0" />
+        <PP Name="Widget18WidgetByteValue1" Value="0" />
+        <PP Name="Widget18WidgetByteValue6" Value="255" />
+        <PP Name="Widget19WidgetType" Value="0" />
+        <PP Name="Widget19WidgetByteValue1" Value="0" />
+        <PP Name="Widget19WidgetByteValue6" Value="255" />
+        <PP Name="Widget20WidgetType" Value="0" />
+        <PP Name="Widget20WidgetByteValue1" Value="0" />
+        <PP Name="Widget20WidgetByteValue6" Value="255" />
+        <PP Name="Widget21WidgetType" Value="0" />
+        <PP Name="Widget21WidgetByteValue1" Value="0" />
+        <PP Name="Widget21WidgetByteValue6" Value="255" />
+      </Unit>
+    </Network>
+  </Project>
+</Installation>

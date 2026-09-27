@@ -1,0 +1,127 @@
+{
+  "format": "cbus-toolkit-database-csv-keygl5-profile-review-v1",
+  "date": "2026-09-28",
+  "passed": true,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_method_spans": {
+    "CIS_TCBusEDLTUnit.CIS_TCBusEDLTUnit": {
+      "start": "0x1384ae8",
+      "end": "0x1384b54",
+      "bytes": 108,
+      "sha256": "90889f5ac4827469357e9dc230fc874a01f8e824e039e941dea8e8dee9e9e8b3"
+    },
+    "CIS_TKEYGL5.CIS_TKEYGL5": {
+      "start": "0x139c130",
+      "end": "0x139c1a4",
+      "bytes": 116,
+      "sha256": "fc45999ea6a985ff873d6c2f915b5eb0de8473e8dc117fd2f08b54bba9f06875"
+    },
+    "CIS_TCBusEDLTCGateAgent.CIS_TCBusEDLTCGateAgent": {
+      "start": "0x139c1a4",
+      "end": "0x139c1c8",
+      "bytes": 36,
+      "sha256": "493499a000fb61f5b27c61ade0ec1e66b51013d7fbddd5a332d438acd7fe6858"
+    },
+    "CIS_TCISUnitFactory.TUnitTypeFactory.GetUnit": {
+      "start": "0xc1a7b0",
+      "end": "0xc1a9ec",
+      "bytes": 572,
+      "sha256": "c1880a392aa24f74c6d71b3bf261c0b3319485000598a41fadbdae3eb9ab0095"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x12d131c",
+      "end": "0x12d1b18",
+      "bytes": 2044,
+      "sha256": "6dc985e22ec7f8bf71ae0cb0d6a943e9d7438f6ba9d4745d407e956de4f0d095"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.LoadDatabaseUnitGroups": {
+      "start": "0x12d1304",
+      "end": "0x12d131c",
+      "bytes": 24,
+      "sha256": "5826b173bf038cf0e648910eabdc44ecc1733a0f88d0f59e0689583e491b5a7b"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.GetAreaIfAvailable": {
+      "start": "0xf34770",
+      "end": "0xf34788",
+      "bytes": 24,
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.IsInteractionGroup": {
+      "start": "0xf2ffe0",
+      "end": "0xf2fff8",
+      "bytes": 24,
+      "sha256": "bb8505d89cf347e0bfdd269882bba3e8e0d8adeaef8322723007a6ff3c0b3870"
+    },
+    "CIS_TCommonCBus.TCBUSUnitManager.AsCSV": {
+      "start": "0xf306bc",
+      "end": "0xf30c98",
+      "bytes": 1500,
+      "sha256": "5c50d7859b4651db79cee62c5c92219e9ca7388431fe6bd3b5d43572c9634d8a"
+    },
+    "System.InitUnits": {
+      "start": "0x6070c4",
+      "end": "0x607130",
+      "bytes": 108,
+      "sha256": "d7643a8d1e87cd5ce7af3f2b9658cc42a7a30970cf867b99b38d2f2f1a333a5a"
+    }
+  },
+  "registration_table_evidence": {
+    "base_initializer_file_offset": "0xd433b8",
+    "legacy_keygl5_initializer_file_offset": "0xd45980",
+    "base_entry_precedes_legacy_entry": true,
+    "base_registration": "KEYGL5 firmware 0..9 -> TCBusEDLTUnit",
+    "legacy_registration": "KEYGL5 firmware 0..9 -> TKEYGL5",
+    "factory_lookup": "First matching registration in stored order",
+    "agent_registration": "TCBusEDLTUnit -> TCBusEDLTCGateAgent by exact class identity",
+    "class_selection_limit": "The exact pinned initialization table and forward factory lookup select TCBusEDLTUnit; full GUI report execution and arbitrary plugin registration histories were not exercised.",
+    "initializer_iteration": "System.InitUnits calls initializer pointers at table + 8*index with index ascending; the base entry precedes the legacy KEYGL5 entry."
+  },
+  "base_vmt": {
+    "class": "TCBusEDLTUnit",
+    "address": "0xcd9e34",
+    "area_getter": "0xf34770 (base nil getter)",
+    "interaction_predicate": "0xf2ffe0 (base true for each supplied slot)"
+  },
+  "group_loader_facts": {
+    "slot_range": "Widget6..Widget21 inclusive, ascending",
+    "stored_inputs": "Application pair, PrimaryApplication, SecondaryApplication, WidgetNWidgetType, WidgetNWidgetByteValue1 and WidgetNWidgetByteValue6",
+    "byte6_group_types": [
+      2,
+      3,
+      4,
+      5,
+      14,
+      15,
+      16
+    ],
+    "other_type_group": 255,
+    "type14_application": 203,
+    "other_application": "SecondaryApplication when WidgetByteValue1 bit 7 is set, PrimaryApplication otherwise",
+    "group_lookup": "GroupByAddress(create=true); read-only adapter requires the selected group to exist",
+    "area": "Base getter returns nil; original serializer renders unavailable Area",
+    "interaction": "Base predicate true for all sixteen appended widget groups"
+  },
+  "original_serializer_vector": "toolkit-cli/research/fixtures/toolkit-database-csv-original-vectors.json / one-complete-all (all 16 KEYGL5 group columns)",
+  "synthetic_fixture": {
+    "path": "toolkit-cli/research/fixtures/toolkit-database-csv-keygl5-synthetic.xml",
+    "sha256": "7e3a2437d1326a482d9265e1ba9d8a47faa179aaaa665c7f643a6d4e19acb75b",
+    "site_data": false
+  },
+  "focused_validation": {
+    "command": "PYTHONPATH=src:tests:. /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m unittest tests.test_toolkit_database_csv tests.test_toolkit_database_csv_projection tests.test_toolkit_database_csv_native tests.test_toolkit_database_csv_keygl5 tests.test_cli_toolkit_database_csv tests.test_toolkit_database_csv_selection_export tests.test_toolkit_database_csv_project_export -v",
+    "tests_run": 76,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "limits": [
+    "Synthetic fixture and static original source; original GUI report and original cold XML loading were not executed end to end.",
+    "No live C-Gate, CNI or physical device was accessed.",
+    "Only complete and consistent KEYGL5 5.5.00 / 5055EDL PP snapshots with pre-existing group metadata are admitted.",
+    "The read-only profile intentionally rejects missing groups that the original GroupByAddress(create=true) path may create and save.",
+    "Other firmware, partial PP snapshots, and cached profile inference outside this bounded type remain unsupported."
+  ]
+}

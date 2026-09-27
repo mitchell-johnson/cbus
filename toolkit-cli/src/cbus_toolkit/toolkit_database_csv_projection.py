@@ -4,6 +4,7 @@ This is the finite cached-object boundary captured from Toolkit 1.18.  It does
 not parse a project or access native storage.  The admitted RELAY4 and KEYE
 profiles replay the two Area getter loads and group lookup/reference changes;
 the RELAY4 profile also models the captured optional missing-unused-group save.
+The KEYGL5 profile consumes sixteen already-resolved functional widget groups.
 """
 from __future__ import annotations
 
@@ -180,7 +181,9 @@ def _class(unit):
         return _DIN_TYPES[kind]
     if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
         return _SENSOR_TYPES[kind]
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN and sensor type/firmware pairs')
+    if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
+        return 'TCBusEDLTUnit'
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, sensor and KEYGL5 type/firmware pairs')
 
 
 def _validated_groups(unit, groups):
@@ -274,7 +277,8 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Group-save observation was supplied but the projection did not require a save')
 
     cache = {group.identity: group for group in current}
-    interaction_count = {'TRELAY4': 6, 'TRELDN12': 12}.get(selected_class, 8)
+    interaction_count = {'TRELAY4': 6, 'TRELDN12': 12,
+                         'TCBusEDLTUnit': 16}.get(selected_class, 8)
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities))
     area = cache[area_identity].tag if area_identity is not None else None

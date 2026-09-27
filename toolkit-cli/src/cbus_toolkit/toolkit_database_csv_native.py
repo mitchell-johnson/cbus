@@ -247,6 +247,54 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_addresses = group_values
         group_applications = (primary,) * len(group_addresses)
         area_address = 255
+    elif (unit_type == 'KEYGL5' and firmware == '5.5.00'
+          and _field(unit, 'CatalogNumber') == '5055EDL'):
+        # The original eDLT agent loads Widget6..Widget21 in this order. Its
+        # group getter uses ByteValue6 for types 2/3/4/5/14/15/16, and 255
+        # otherwise. Type 14 resolves in Enable (203); other types select
+        # Primary/SecondaryApplication through ByteValue1 bit 7.
+        app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
+        primary_values = _tokens(_parameter(unit, 'PrimaryApplication'),
+                                 'PrimaryApplication', count=1)
+        secondary_values = _tokens(_parameter(unit, 'SecondaryApplication'),
+                                   'SecondaryApplication', count=1)
+        primary_address, secondary_address = app_values
+        if (primary_values != (primary_address,) or
+                secondary_values != (secondary_address,)):
+            raise ValueError('KEYGL5 stored application fields disagree')
+        if primary_address == 255:
+            raise ValueError('KEYGL5 requires a resolved primary application')
+        primary = _one_by_address(network, 'Application', primary_address)
+        secondary_node = (None if secondary_address == 255 else
+                          _one_by_address(network, 'Application', secondary_address))
+        secondary = '' if secondary_node is None else _field(secondary_node, 'TagName')
+        enable_node = None
+        group_addresses = []
+        group_applications = []
+        for slot in range(6, 22):
+            prefix = f'Widget{slot}'
+            kind, = _tokens(_parameter(unit, prefix + 'WidgetType'),
+                            prefix + 'WidgetType', count=1)
+            control, = _tokens(_parameter(unit, prefix + 'WidgetByteValue1'),
+                               prefix + 'WidgetByteValue1', count=1)
+            stored_group, = _tokens(_parameter(unit, prefix + 'WidgetByteValue6'),
+                                    prefix + 'WidgetByteValue6', count=1)
+            if kind == 14:
+                if enable_node is None:
+                    enable_node = _one_by_address(network, 'Application', 203)
+                application = enable_node
+            elif control & 128:
+                if secondary_node is None:
+                    raise ValueError('KEYGL5 secondary widget requires a configured secondary application')
+                application = secondary_node
+            else:
+                application = primary
+            group_applications.append(application)
+            group_addresses.append(stored_group if kind in (2, 3, 4, 5, 14, 15, 16)
+                                   else 255)
+        group_addresses = tuple(group_addresses)
+        group_applications = tuple(group_applications)
+        area_address = None
     elif unit_type == 'OWNED_UNKNOWN' and firmware == '4.4':
         if _children(unit, 'PP'):
             raise ValueError('Captured native generic profile requires no stored PP records')
@@ -258,7 +306,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA 2.4.00 and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     application_groups = {}
