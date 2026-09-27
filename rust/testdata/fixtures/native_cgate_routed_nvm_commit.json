@@ -44,7 +44,7 @@
   "evidence_boundaries": [
     "No physical bridge or routed C-Bus 3 unit completed this sequence in the acceptance run.",
     "A successful status proves the retained command exchange, not NVM durability or power-cycle survival.",
-    "Routed parameter transfers remain limited to ProgramMethod=direct with none/checksum/lock protection; page-aware and OEM/GOC parameter methods are outside this slice.",
+    "This NVM fixture exercises the routed direct-method STORE/readback before EXECUTE/POLL; native_cgate_routed_pp_methods.json separately covers direct, page-aware, NCC, OEM and GOC-family transfer methods, while live hardware and power-cycle durability remain unverified.",
     "Multi-range recovery after an earlier confirmed STORE and later failure remains an operator workflow boundary."
   ]
 }
