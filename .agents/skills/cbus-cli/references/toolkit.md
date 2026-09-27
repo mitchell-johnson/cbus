@@ -35,6 +35,13 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
+`pci routed-write` supports either literal bridge/reply bytes or a typed legacy
+XML/CBZ route. The typed form takes `--project-file`, `--source-network`,
+`--target-network`, and the global `--local-unit`; it binds the file digest and
+derives the exact return path before one non-replayed send. Use this only for
+the bounded CAL transport workflow. Device programming methods, readback,
+commit and persistence remain the responsibility of their typed workflow.
+
 ## Offline project example
 
 ```sh

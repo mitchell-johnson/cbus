@@ -161,6 +161,25 @@ class ProjectDocument:
         if source.stat().st_size > MAX_DOCUMENT_BYTES:
             raise ProjectError("Project file exceeds the configured size limit")
         data = source.read_bytes()
+        return cls.from_snapshot(data, source=source, xml_member=xml_member)
+
+    @classmethod
+    def from_snapshot(
+        cls,
+        data: bytes,
+        *,
+        source: Path | None = None,
+        xml_member: str | None = None,
+    ) -> ProjectDocument:
+        """Parse one exact XML/CBZ byte snapshot.
+
+        This entry point lets a caller bind a digest and the parsed DOM to the
+        same immutable bytes. ``load`` remains the normal path-based API.
+        """
+        if type(data) is not bytes:
+            raise TypeError("Project snapshot must be bytes")
+        if len(data) > MAX_DOCUMENT_BYTES:
+            raise ProjectError("Project file exceeds the configured size limit")
         if not is_zipfile(BytesIO(data)):
             if xml_member is not None:
                 raise ProjectError("xml_member is only valid for a CBZ archive")

@@ -287,6 +287,21 @@ The client sends once and never retries an uncertain write. A matching ACK is
 wire-correlation evidence; it does not prove physical delivery, parameter
 readback or persistence. See [routed WRITE](docs/pci-routed-write.md).
 
+When a legacy XML/CBZ project is the topology source, let the CLI derive both
+the outgoing bridge route and independent ACK path:
+
+```sh
+cbus-toolkit pci --host 127.0.0.1 --port 10001 --local-unit 16 routed-write \
+  4 7 AABB --expected-ack-tag 0x55 --project-file house.cbz \
+  --project-name GRENACHE --source-network 254 --target-network 252
+```
+
+This typed form binds the complete project file by SHA-256 and checks it again
+immediately before the one-shot handoff. Ambiguous, cyclic, disconnected,
+unsupported, stale, or deeper-than-six-bridge topology fails before a write.
+Its receipt still does not establish live bridge acceptance, parameter
+readback, device commit, reboot behavior or nonvolatile persistence.
+
 ```sh
 cbus-toolkit cgate exec 'GET cgate version'
 cbus-toolkit cgate exec 'PROJECT LIST'
