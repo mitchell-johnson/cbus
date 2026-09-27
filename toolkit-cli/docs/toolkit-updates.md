@@ -82,6 +82,13 @@ canonicalization consistency only. Signature-chain/revocation validation, Window
 platform selection, percentage visibility and local condition evaluation remain
 outside this API. Full SESU Check for Updates parity is not claimed.
 
+`update-package-file --catalogue-response raw-catalogue.json --node-id ID
+--file-id ID --package-path local-package.exe` emits an [offline package-file
+receipt](toolkit-update-package-file.md) comparing an already-local regular
+file with an explicitly selected raw-catalogue descriptor. It does not download
+the file or establish authenticity, publisher trust, applicability or
+installation permission.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

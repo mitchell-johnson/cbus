@@ -49,19 +49,57 @@ jobs:
         working-directory: toolkit-cli
         run: >-
           make check-offline
-          PYTEST_EXTRA="--junitxml=${RUNNER_TEMP}/toolkit-offline.xml -ra"
+          PYTEST_EXTRA="-p research.ci_test_results --cbus-ci-trace=${RUNNER_TEMP}/toolkit-offline-trace.json --junitxml=${RUNNER_TEMP}/toolkit-offline.xml -ra"
+
+      - name: Audit Toolkit offline execution and skips
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          .venv/bin/python research/ci_test_results.py
+          --selection offline
+          --junit "${RUNNER_TEMP}/toolkit-offline.xml"
+          --trace "${RUNNER_TEMP}/toolkit-offline-trace.json"
+          --output "${RUNNER_TEMP}/toolkit-offline-results.json"
+          --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
+        if: ${{ always() }}
         working-directory: toolkit-cli
         run: >-
           make check-cgate-interop
-          CGATE_INTEROP_PYTEST_EXTRA="--junitxml=${RUNNER_TEMP}/cgate-interop.xml -ra"
+          CGATE_INTEROP_PYTEST_EXTRA="-p research.ci_test_results --cbus-ci-trace=${RUNNER_TEMP}/cgate-interop-trace.json --junitxml=${RUNNER_TEMP}/cgate-interop.xml -ra"
+
+      - name: Audit cgate-mock interoperability execution
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          .venv/bin/python research/ci_test_results.py
+          --selection cgate-mock
+          --junit "${RUNNER_TEMP}/cgate-interop.xml"
+          --trace "${RUNNER_TEMP}/cgate-interop-trace.json"
+          --output "${RUNNER_TEMP}/cgate-interop-results.json"
+          --require-module tests/test_rust_cgate_interop.py
+          --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
+        if: ${{ always() }}
         working-directory: toolkit-cli
         run: >-
           make check-cmqtt-interop
-          CMQTT_INTEROP_PYTEST_EXTRA="--junitxml=${RUNNER_TEMP}/cmqttd-interop.xml -ra"
+          CMQTT_INTEROP_PYTEST_EXTRA="-p research.ci_test_results --cbus-ci-trace=${RUNNER_TEMP}/cmqttd-interop-trace.json --junitxml=${RUNNER_TEMP}/cmqttd-interop.xml -ra"
+
+      - name: Audit cmqttd interoperability execution
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          .venv/bin/python research/ci_test_results.py
+          --selection cmqttd
+          --junit "${RUNNER_TEMP}/cmqttd-interop.xml"
+          --trace "${RUNNER_TEMP}/cmqttd-interop-trace.json"
+          --output "${RUNNER_TEMP}/cmqttd-interop-results.json"
+          --require-module tests/test_cmqtt_interop.py
+          --require-module tests/test_cmqtt_programming_methods_interop.py
+          --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain executed Toolkit tests and skips
         if: ${{ always() }}
@@ -71,8 +109,14 @@ jobs:
           if-no-files-found: error
           path: |
             ${{ runner.temp }}/toolkit-offline.xml
+            ${{ runner.temp }}/toolkit-offline-trace.json
+            ${{ runner.temp }}/toolkit-offline-results.json
             ${{ runner.temp }}/cgate-interop.xml
+            ${{ runner.temp }}/cgate-interop-trace.json
+            ${{ runner.temp }}/cgate-interop-results.json
             ${{ runner.temp }}/cmqttd-interop.xml
+            ${{ runner.temp }}/cmqttd-interop-trace.json
+            ${{ runner.temp }}/cmqttd-interop-results.json
 
   toolkit-wheel:
     name: Toolkit isolated installed wheel
@@ -88,7 +132,18 @@ jobs:
         working-directory: toolkit-cli
         run: >-
           make check-wheel WHEEL_PY=python
-          PYTEST_EXTRA="--junitxml=${RUNNER_TEMP}/toolkit-wheel.xml -ra"
+          PYTEST_EXTRA="-p research.ci_test_results --cbus-ci-trace=${RUNNER_TEMP}/toolkit-wheel-trace.json --junitxml=${RUNNER_TEMP}/toolkit-wheel.xml -ra"
+
+      - name: Audit installed-wheel execution and skips
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          python research/ci_test_results.py
+          --selection installed-wheel
+          --junit "${RUNNER_TEMP}/toolkit-wheel.xml"
+          --trace "${RUNNER_TEMP}/toolkit-wheel-trace.json"
+          --output "${RUNNER_TEMP}/toolkit-wheel-results.json"
+          --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips
         if: ${{ always() }}
@@ -96,7 +151,10 @@ jobs:
         with:
           name: toolkit-wheel-results-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
-          path: ${{ runner.temp }}/toolkit-wheel.xml
+          path: |
+            ${{ runner.temp }}/toolkit-wheel.xml
+            ${{ runner.temp }}/toolkit-wheel-trace.json
+            ${{ runner.temp }}/toolkit-wheel-results.json
 
   toolkit-native-release:
     name: Provisioned native release gate

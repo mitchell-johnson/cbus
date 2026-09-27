@@ -40,8 +40,21 @@ second invocation. The focused
 `check-cgate-interop` and `check-cmqtt-interop` targets deliberately do not
 build a missing binary: they fail before collection. CI builds the two servers
 once, runs the offline and two interop selections separately, and retains a
-JUnit report for each selection. A green source job therefore cannot conceal a
-cmqttd suite that skipped because its binary was absent.
+JUnit report and a checked execution receipt for each selection. The CI pytest
+plugin records the collected and started node IDs plus every call outcome. The
+audit compares that trace to JUnit, requires at least one passing test in the
+`cgate-mock` module and in each cmqttd interop module, and fails if a selection
+is missing, truncated, or entirely skipped. A green source job therefore cannot
+conceal a cmqttd suite that skipped because its binary was absent.
+
+The `toolkit-*-results.json` artifacts record the exact source revision,
+JUnit/trace hashes, case IDs and outcomes, call events, and reported pass/skip/
+failure counts. Pytest's JUnit counter includes `unittest` subtest events that
+it does not emit as individual `<testcase>` elements. Receipts give those
+events occurrence numbers under the parent test and report the unitemized
+subtest count separately; they do not invent semantic IDs for them. The job
+summary shows actual counters, including provisioning skips, rather than
+inferring a zero-skip run from a green job.
 
 `make check-wheel` builds a fresh wheel, creates a temporary Python 3.13
 environment, installs the wheel with all supported extras, and runs the same
@@ -51,6 +64,9 @@ unless it is under the temporary environment's `site-packages`; importing
 `src/cbus_toolkit` cannot satisfy this gate. The temporary wheel and
 environment are removed after either success or failure. The independent CI
 wheel job retains its JUnit report, including every provisioning-gated skip.
+It also retains and audits the same execution trace and result receipt as the
+source job. The wheel gate still checks the imported package location before
+pytest collection begins.
 
 ## Provisioned release gates
 

@@ -45,6 +45,14 @@ With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.
 
+`update-package-file --catalogue-response raw-catalogue.json --node-id ID
+--file-id ID --package-path local-package.exe` compares one already-local
+regular file with the selected untrusted SESU size and SHA-1 descriptor. A
+matching receipt exits zero; a mismatch emits a negative receipt and exits one.
+It does not fetch, authenticate, approve or execute an update. Inspect
+`toolkit-cli/docs/toolkit-update-package-file.md` before using its bounded
+file-input profile.
+
 `pci routed-write` supports either literal bridge/reply bytes or a typed legacy
 XML/CBZ route. The typed form takes `--project-file`, `--source-network`,
 `--target-network`, and the global `--local-unit`; it binds the file digest and

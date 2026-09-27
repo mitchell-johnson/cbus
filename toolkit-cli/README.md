@@ -136,6 +136,13 @@ Its [combined 56-test checkpoint](docs/toolkit-update-metadata.md) passes both
 Python versions and includes the new routing CLI and existing update,
 percentage and JSON output regressions. GUI runtime effects remain incomplete.
 
+`update-package-file --catalogue-response raw-catalogue.json --node-id ID
+--file-id ID --package-path local-package.exe` checks the bytes of one already
+local file against the selected untrusted catalogue size and SHA-1 descriptor.
+The [receipt](docs/toolkit-update-package-file.md) records exact source and
+package digests. A match does not establish publisher trust, applicability or
+permission to install; the command neither downloads nor executes the file.
+
 `update-revocation-stages revocation.json --signer-certificate signer.der --at-utc 2026-09-15T00:00:00Z`
 evaluates seven offline stages for signed revocation metadata, including the
 original embedded signer identity. The separate

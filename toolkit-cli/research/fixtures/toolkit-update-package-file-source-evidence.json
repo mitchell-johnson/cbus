@@ -1,0 +1,50 @@
+{
+  "format": "cbus-toolkit-update-package-file-source-evidence-v1",
+  "recorded_at_utc": "2026-09-27T13:16:10Z",
+  "scope": "Sanitized offline artifact and IL evidence for a local package-file receipt; no live update request or installation",
+  "retained_private_artifacts": {
+    "toolkit_1_18_0_2754_setup_sha256": "34811c4837ab484061760ebe8b02d059c59b57d8a40a8324391aa1bdd12f9c41",
+    "windows_setup_authenticode_observed_status": "Valid",
+    "windows_setup_signer_subject": "SCHNEIDER ELECTRIC USA, INC.",
+    "sesu_static_inputs_archive_sha256": "2c0248edcbbb9dc859e1813fd8dec99f98eab09433beabb938c9fc4a4ce1bf33",
+    "sesu_common_assembly_sha256": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+    "sesu_brick_assembly_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+    "selected_methods_il_sha256": "8f921d3c1b1a0dc55834ea74d9e6c83c9517369b3282b5b405f1e479f8cee7e1",
+    "method_inventory_sha256": "6b1708300f47c617e0dab410eadc6894f8373b4d3ea2ba63729e9f9de47aa7fd"
+  },
+  "committed_fixture": {
+    "path": "research/fixtures/toolkit-update-metadata-vectors.json",
+    "file_sha256": "71a70a37288a6534299c3d609becb261f1f1e1a0bdadc6c2231c5c6071b4a04a",
+    "raw_catalogue_body_sha256": "4444edb826360c2909b740c6152bc2d9f76f6ce471400cda1bbaf49dfbe97ad9",
+    "raw_catalogue_nodes": 7,
+    "selected_first_file_size": 176269496,
+    "selected_first_file_security_sha1": "4e19dbe51d000718b92cf018f962eb6ee252022e"
+  },
+  "original_il": [
+    {
+      "method": "MultiPlatformUpdate constructor",
+      "rva": "0x35b8",
+      "il_text_sha256": "9fad1787743cd95a8e86f856ae21ad08bd6dcdff6cc277d9333341b95871b757",
+      "observation": "Sets DownloadChannel.MustCheckSignatureAfterDownload to false before file selection and metadata validation"
+    },
+    {
+      "method": "MultiPlatformUpdate file selection",
+      "rva": "0x3fc8",
+      "il_text_sha256": "b9d189e593ed4c72cef4e8feff5698c97b2af8f1e5731340e4c2d3e9f6089a15",
+      "observation": "Selects first architecture-matching file whose ID is in node.Urls; this local receipt does not auto-select"
+    },
+    {
+      "method": "MultiPlatformUpdate file security copy",
+      "rva": "0x41d8",
+      "il_text_sha256": "b06753c5dcae10a017c535c7ddced4d611dd2e927b80278915633347876ad7f8",
+      "observation": "Copies selected file security dictionary entries into model fields; this is not itself digest verification"
+    },
+    {
+      "method": "SesuConnect.GetUpdates",
+      "rva": "0x57f4",
+      "il_text_sha256": "5e1d1911514a7c915f410fc446e50f6c5bc87d79d5ed2acb7261dda3b15b3e03",
+      "observation": "Requires the separate IsMetadataValidated flag before adding applicable candidates in returned order; does not perform client version ordering"
+    }
+  ],
+  "acceptance_limit": "Synthetic byte comparisons and a captured original descriptor establish only offline field/byte behavior; no original download, publisher trust, revocation freshness, host applicability, or install result is accepted"
+}

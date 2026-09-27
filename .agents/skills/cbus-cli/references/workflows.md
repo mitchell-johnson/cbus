@@ -169,6 +169,15 @@ cargo build --release --workspace
 
 For documentation or skill-only changes, validate links, examples, frontmatter, and the skill package. Run binary smoke checks when command syntax was changed.
 
+CI retains a JUnit file, a pytest execution trace, and a checked
+`toolkit-*-results.json` receipt for each offline, Rust interoperability, and
+installed-wheel selection. Read the receipt's actual pass/skip counts and
+`call_events` before describing a green run; `unittest` subtests increase
+pytest's counter without separate JUnit case IDs. The interop audits require
+passing tests from the cgate-mock module and both cmqttd modules. Provisioned
+native and hardware release gates have separate strict receipts and reject
+missing provision or any skipped selected test.
+
 For Toolkit changes, create `toolkit-cli/.venv` with Python 3.13 and the
 `test,research,serial,usb` extras, then run `make check`,
 `make check-interop`, and `make check-wheel` from `toolkit-cli/`.

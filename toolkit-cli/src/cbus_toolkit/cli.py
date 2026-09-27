@@ -1218,6 +1218,8 @@ def build_parser():
     update_options(commands)
     from .toolkit_update_metadata_cli import options as metadata_options
     metadata_options(commands)
+    from .toolkit_update_package_file_cli import options as package_file_options
+    package_file_options(commands)
     from .toolkit_update_revocation_cli import options as revocation_options
     revocation_options(commands)
     from .toolkit_update_conditions_cli import options as condition_options
@@ -3331,6 +3333,9 @@ def run(args):
     if args.area == "update-metadata-stages":
         from .toolkit_update_metadata_cli import run as metadata_run
         return metadata_run(args)
+    if args.area == "update-package-file":
+        from .toolkit_update_package_file_cli import run as package_file_run
+        return package_file_run(args)
     if args.area == "update-revocation-stages":
         from .toolkit_update_revocation_cli import run as revocation_run
         return revocation_run(args)
