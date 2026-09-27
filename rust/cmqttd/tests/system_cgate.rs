@@ -98,6 +98,7 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         specs.join("TESTUNIT.xml"),
         r#"<UnitSpecification><Parameters>
         <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Locked</Name><Type>int</Type><Address>$22</Address><ProgramMethod>direct</ProgramMethod><Protection>lock</Protection><Tag>Lock</Tag></Param>
         </Parameters></UnitSpecification>"#,
     )
     .unwrap();
@@ -217,6 +218,9 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     assert!(capabilities.contains("\"physical_pp_routed_load\":true"));
     assert!(capabilities.contains("\"physical_pp_routed_save\":true"));
     assert!(capabilities.contains("\"physical_pp_routed_methods\":[\"direct\"]"));
+    assert!(capabilities
+        .contains("\"physical_pp_routed_save_protection\":[\"none\",\"checksum\",\"lock\"]"));
+    assert!(capabilities.contains("\"physical_pp_routed_lock\":true"));
     assert!(capabilities.contains("\"physical_application_routed_control\":true"));
     assert!(capabilities.contains(
         "\"physical_application_routed_delivery_semantics\":\"pci-confirmed-exactly-once-no-replay-no-device-readback\""
@@ -632,6 +636,113 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         1,
         "routed PP STORE must never replay"
     );
+    assert_eq!(sys.pci.connections(), 1);
+
+    assert!(command(&mut reader, &mut writer, "PP START PPL REMOTE")
+        .await
+        .contains("200 OK"));
+    assert!(
+        command(&mut reader, &mut writer, "PP NEW PPL TESTUNIT 1.2.03")
+            .await
+            .contains("200 OK")
+    );
+    assert!(command(&mut reader, &mut writer, "PP SET PPL Locked 0x06")
+        .await
+        .contains("200 OK"));
+    let publishes_before_lock = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+    let identify_1_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042101"))
+        .count();
+    let identify_2_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042102"))
+        .count();
+    let lock_recall_before = sys.pci.count_payload("46FD09041A220173");
+    let lock_save = command(&mut reader, &mut writer, "PP SAVE PPL //TOPO/253/p/4 Lock");
+    let peer = async {
+        require(STARTUP, "routed locked PP identity type", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042101"))
+                .count()
+                > identify_1_before
+        })
+        .await;
+        let mut reply = vec![0x89, 1];
+        reply.extend_from_slice(b"TESTUNIT");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+        require(STARTUP, "routed locked PP identity firmware", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042102"))
+                .count()
+                > identify_2_before
+        })
+        .await;
+        let mut reply = vec![0x87, 2];
+        reply.extend_from_slice(b"1.2.03");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+
+        require(STARTUP, "routed locked PP pre-read", || {
+            sys.pci.count_payload("46FD09041A220173") > lock_recall_before
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x82, 0x22, 0x01]));
+        require(STARTUP, "routed PP lock challenge", || {
+            sys.pci.count_payload("46FD090411227D") == 1
+        })
+        .await;
+        // Direct and neighbouring-route challenges cannot unlock the remote
+        // parameter. Direct MQTT observations continue through the same PCI.
+        sys.pci
+            .inject(&pci_wire(&[0x86, 4, 0x10, 0x01, 0x00, 0x82, 0x22, 0x11]));
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x82, 0x22, 0x22]));
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x82, 0x22, 0x5a]));
+
+        require(STARTUP, "routed locked PP exact-once STORE", || {
+            sys.pci.count_payload("46FD0904A3220006E5") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0x32, 0x22, 0x00]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x32, 0x22, 0x00]));
+        require(STARTUP, "routed locked PP readback", || {
+            sys.pci.count_payload("46FD09041A220173") > lock_recall_before + 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x82, 0x22, 0x06]));
+    };
+    let (lock_saved, ()) = tokio::join!(lock_save, peer);
+    assert!(lock_saved.contains("200 OK"), "{lock_saved:?}");
+    assert_eq!(sys.pci.count_payload("46FD090411227D"), 1);
+    assert_eq!(sys.pci.count_payload("46FD0904A3220006E5"), 1);
+    require(
+        COMMAND_DRAIN,
+        "MQTT continuity during routed PP unlock",
+        || {
+            sys.broker
+                .find_publishes("homeassistant/light/cbus_1/state")
+                .len()
+                > publishes_before_lock
+        },
+    )
+    .await;
     assert_eq!(sys.pci.connections(), 1);
 
     // Standard routed SAL control is a one-shot PPM frame. The only success

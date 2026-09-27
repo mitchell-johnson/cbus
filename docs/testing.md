@@ -47,6 +47,14 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 `cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services. The MQTT consistency regressions cover immediate opposite QoS 1 commands, PUBACKs, delayed and lost PCI confirmations, FIFO blocking, outcome-uncertain failure, per-command physical level requests, C-Gate cache population only from bus reports, transport-state publication, and a forced post-reconnect sweep.
 
+Routed PP tests cover one- and six-bridge standard CAL encoding plus exact
+Reply Network, unit, parameter, tag and length correlation. Lock-protected
+SAVE additionally exercises the routed Unlock challenge and its PCI
+confirmation before the tagged STORE; direct and neighbouring-route replies
+cannot advance it, and a lost confirmation is never replayed. The retained
+composition evidence and physical-acceptance boundary are recorded in
+`rust/testdata/fixtures/native_cgate_routed_pp_protection.json`.
+
 `cgate-mock` tests exercise tagged framing, multiline replies, shared state, per-session project selection, event filtering and fanout, here-documents, command inventory reachability, and programming access. Focused `DBSETXML` tests cover scalar fields and complete typed Unit, Level, NetVar, Group, Application, and Network/Interface replacement; submitted-root `301 OID` receipts; conflict-before-mutation behavior; subtree retirement; namespace/comment retention; and copy/rename/delete/archive/restart lifecycle. The production Python C-Gate client and real cmqttd daemon repeat an Application/Group/Level exchange. Hardware-service tests pin atomic durable restart readback and no PCI I/O. A Network document containing Unit remains a pre-mutation refusal because retained native replacement evidence does not cover that mixed subtree. `rust/testdata/fixtures/native_cgate_legacy_database.json` and `rust/testdata/vectors/cgate_dbsetxml.jsonl` retain the oracle summary and exact documents/readbacks.
 
 `cmqttd/tests/system_cgate_dali.rs` launches the real daemon with the scripted

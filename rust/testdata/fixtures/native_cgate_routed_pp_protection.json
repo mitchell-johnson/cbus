@@ -1,0 +1,45 @@
+{
+  "format": "cmqttd-native-cgate-routed-pp-protection-evidence-v1",
+  "date": "2026-09-27",
+  "passed": true,
+  "scope": "Composition of retained native lock-protected standard-CAL programming and retained one-through-six-bridge Unlock/Reply Network behavior; scripted cmqttd acceptance only, with no live bridge or power-cycle claim",
+  "retained_native_evidence": [
+    {
+      "path": "rust/testdata/vectors/decode_to_pci.jsonl",
+      "id": "tp-0101-cgate-protected-parameter-unlock",
+      "finding": "Literal native C-Gate direct lock-protection request uses CAL Unlock for the target parameter before STORE."
+    },
+    {
+      "path": "rust/testdata/vectors/decode_to_pci.jsonl",
+      "id": "tp-cgate-syncnew-duplicate-probe-1",
+      "finding": "Literal native C-Gate uses the same Unlock CAL in a confirmed programming exchange; the routed SYNCNEW implementation and its retained classfile evidence establish exact Reply Network correlation for this CAL through one to six bridges."
+    },
+    {
+      "path": "toolkit-cli/research/fixtures/pci-routed-recall-original-vectors.json",
+      "sha256": "0a090870b4ad1738a93c100021de62371668d295250bdc3e7ac3a1389ec2fa9e",
+      "finding": "Original receiver correlation accepts Reply Network paths through one to six bridges and rejects route, unit and CAL mismatches."
+    },
+    {
+      "path": "rust/testdata/fixtures/native_cgate_routed_project_identity.json",
+      "finding": "The retained CBusBaseNetwork/CBusUnit class path keeps a resolved bridged network bound to standard-CAL programming commands."
+    }
+  ],
+  "cmqttd_wire_vectors": [
+    "en-cmqttd-routed-pp-unlock-one-bridge",
+    "en-cmqttd-routed-pp-unlock-six-bridges",
+    "fp-cmqttd-routed-pp-unlock-one-bridge",
+    "fp-cmqttd-routed-pp-unlock-six-bridges"
+  ],
+  "cmqttd_acceptance": [
+    "Transport tests require the exact Reply Network, remote unit and parameter for the unlock challenge, then the exact parameter/tag acknowledgement and full routed readback.",
+    "Direct and neighbouring-route challenges and acknowledgements cannot complete the operation.",
+    "The routed unlock and every later STORE are sent exactly once; a lost confirmation or incomplete reply faults the shared programming generation without replay.",
+    "The service test performs a routed lock-protected PP SAVE while retaining the owned target-network session and leaving physical caches untouched."
+  ],
+  "evidence_boundaries": [
+    "No physical bridge or routed unit completed a lock-protected write in this acceptance run.",
+    "This evidence covers ProgramMethod=direct standard CAL parameters with Protection=lock only.",
+    "Page-aware lock protection, OEM/GOC methods and C-Bus 3 Save-to-NVM remain rejected before physical identity or write I/O.",
+    "No successful acknowledgement is treated as proof of NVM persistence or power-cycle survival."
+  ]
+}

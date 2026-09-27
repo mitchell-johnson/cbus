@@ -4980,9 +4980,9 @@ async fn capabilities_report_observation_without_device_readback() {
     );
     assert_eq!(
         document["physical_pp_routed_save_protection"],
-        serde_json::json!(["none", "checksum"])
+        serde_json::json!(["none", "checksum", "lock"])
     );
-    assert_eq!(document["physical_pp_routed_lock"], false);
+    assert_eq!(document["physical_pp_routed_lock"], true);
     assert_eq!(document["physical_pp_routed_nvm_commit"], false);
     assert_eq!(
         document["physical_pp_routed_state_scope"],
@@ -9441,6 +9441,7 @@ async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_netwo
         spec_dir.join("TESTUNIT.xml"),
         r#"<UnitSpecification><Parameters>
         <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Locked</Name><Type>int</Type><Address>$22</Address><ProgramMethod>direct</ProgramMethod><Protection>lock</Protection><Tag>Lock</Tag></Param>
         <Param><Name>Paged</Name><Type>int</Type><Address>$120</Address><ProgramMethod>paged</ProgramMethod><Protection>none</Protection><Tag>Paged</Tag></Param>
         </Parameters></UnitSpecification>"#,
     )
@@ -9563,6 +9564,62 @@ async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_netwo
     }
 
     for command in [
+        "[pp-start-lock] PP START L REMOTE",
+        "[pp-new-lock] PP NEW L TESTUNIT 1.2.03",
+        "[pp-set-lock] PP SET L Locked 0x06",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 200, "{command}: {response:?}");
+    }
+    let saving_lock = tokio::spawn({
+        let service = service.clone();
+        let mut client = client.clone();
+        async move {
+            service
+                .handle(&mut client, "[pp-save-lock] PP SAVE L //TOPO/253/p/4 Lock")
+                .await
+        }
+    });
+    answer_identity(&mut remote_read, &mut remote_write, 1, b"TESTUNIT").await;
+    answer_identity(&mut remote_read, &mut remote_write, 2, b"1.2.03").await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A220173\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x22, 0x01]).await;
+
+    let unlock = database_pci_line(&mut remote_read).await;
+    assert_eq!(&unlock[..unlock.len() - 2], b"\\46FD090411227D");
+    let unlock_confirmation = unlock[unlock.len() - 2];
+    database_pci_reply(&mut remote_write, 4, &[0x82, 0x22, 0x11]).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 0x22, 0x22]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x82, 0x22, 0x33]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x23, 0x44]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x22, 0x5a]).await;
+    remote_write
+        .write_all(&[unlock_confirmation, b'.'])
+        .await
+        .unwrap();
+
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A3220006E5\r"
+    );
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0x32, 0x22, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0x32, 0x22, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x23, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x22, 1]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x22, 0]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A220173\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x82, 0x22, 0x06]).await;
+    let locked_saved = saving_lock.await.unwrap();
+    assert_eq!(locked_saved.status, 200, "{locked_saved:?}");
+    assert!(service.model.lock().await.sessions["L"].dirty.is_empty());
+
+    for command in [
         "[pp-start-unsupported] PP START U REMOTE",
         "[pp-new-unsupported] PP NEW U TESTUNIT 1.2.03",
         "[pp-set-unsupported] PP SET U Paged 0x42",
@@ -9579,7 +9636,7 @@ async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_netwo
     assert_eq!(unsupported.status, 502, "{unsupported:?}");
     assert_eq!(
         unsupported.final_text,
-        "502 Routed PP SAVE supports direct CAL parameters with none/checksum protection only"
+        "502 Routed PP SAVE supports direct CAL parameters with none/checksum/lock protection only"
     );
     assert!(
         tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())

@@ -188,6 +188,14 @@ ACCESS model and portable transforms deliberately differ from native storage;
 and tests cannot establish every device family, bridge, adapter, timing,
 power-loss or physical-persistence outcome.
 
+Within the routed physical PP selector, standard-CAL `direct` parameters now
+admit `none`, `checksum`, and `lock` protection. The lock path requires the
+exact one-byte Reply Network challenge and PCI confirmation before its
+exact-once tagged STORE and complete routed readback. Page-aware, OEM/GOC and
+C-Bus 3 Save-to-NVM work remains a pre-I/O refusal. This narrows a selector
+boundary without changing the 431-path command inventory or the false full
+compatibility flag.
+
 The embedded endpoint also implements the native general object and discovery
 surface used by command files and inventory clients: silent untagged `#`/`//`
 comments, 301 `OID`, native timestamped `BROADCAST_EVENT` fanout, the `SHOW`

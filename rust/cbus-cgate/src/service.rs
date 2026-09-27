@@ -2476,11 +2476,11 @@ impl Service {
             capabilities["physical_pp_routed_save"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_methods"] = serde_json::json!(["direct"]);
             capabilities["physical_pp_routed_save_protection"] =
-                serde_json::json!(["none", "checksum"]);
+                serde_json::json!(["none", "checksum", "lock"]);
             capabilities["physical_pp_routed_unsupported_methods"] = serde_json::json!([
                 "dali", "edlt", "giu", "goc", "goc2", "gocbyt", "ncc", "paged", "sgiu"
             ]);
-            capabilities["physical_pp_routed_lock"] = serde_json::Value::Bool(false);
+            capabilities["physical_pp_routed_lock"] = serde_json::Value::Bool(true);
             capabilities["physical_pp_routed_nvm_commit"] = serde_json::Value::Bool(false);
             capabilities["physical_pp_routed_delivery_semantics"] = serde_json::Value::String(
                 "reply-network-unit-parameter-tag-correlated-exactly-once-no-replay".to_string(),
@@ -11246,12 +11246,12 @@ impl Service {
                 };
                 if method != "direct"
                     || !matches!(layout.transfer, unitspec::ParameterTransfer::Recall { .. })
-                    || !matches!(protection.as_str(), "none" | "checksum")
+                    || !matches!(protection.as_str(), "none" | "checksum" | "lock")
                 {
                     return err(
                         tag,
                         502,
-                        "502 Routed PP SAVE supports direct CAL parameters with none/checksum protection only",
+                        "502 Routed PP SAVE supports direct CAL parameters with none/checksum/lock protection only",
                     );
                 }
                 selected_write = true;
@@ -11561,8 +11561,18 @@ impl Service {
             }
             let result = match item.space {
                 Space::Standard if item.locked => {
-                    pci.store_locked_parameter_verified(unit, item.start as u8, modified)
+                    if route.is_empty() {
+                        pci.store_locked_parameter_verified(unit, item.start as u8, modified)
+                            .await
+                    } else {
+                        pci.store_locked_parameter_verified_routed(
+                            &route,
+                            unit,
+                            item.start as u8,
+                            modified,
+                        )
                         .await
+                    }
                 }
                 Space::Standard => {
                     if route.is_empty() {

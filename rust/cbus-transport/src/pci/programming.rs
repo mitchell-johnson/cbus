@@ -2515,17 +2515,38 @@ impl PciClient {
     }
 
     async fn programming_unlock(&self, unit: u8, parameter: u8) -> Result<u8> {
+        self.programming_unlock_with_route(unit, parameter, ProgrammingRoute::DirectUnchecksummed)
+            .await
+    }
+
+    async fn programming_unlock_with_route(
+        &self,
+        unit: u8,
+        parameter: u8,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<u8> {
         let mut replies = self.packets.subscribe();
+        let (bridged, hops, checksum) = match route {
+            ProgrammingRoute::Routed(bridges) => (true, bridges.to_vec(), true),
+            _ => (false, Vec::new(), false),
+        };
         let packet = Packet::PointToPoint {
             // Native C-Gate's dd command is deliberately unchecksummed and
-            // asks the PCI to confirm delivery separately.
-            meta: Meta::new(false, 1),
+            // asks the PCI to confirm delivery separately. A source-routed
+            // packet requires its normal outer checksum.
+            meta: Meta::new(checksum, 1),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged,
+            hops,
             cals: vec![Cal::Unlock { parameter }],
         };
-        let confirmation = self.send_guarded(&packet).await?;
+        let confirmation = if matches!(route, ProgrammingRoute::Routed(_)) {
+            // A protected remote STORE is an exactly-once programming
+            // transaction. Never register its stateful unlock for replay.
+            self.send_guarded_once(&packet).await?
+        } else {
+            self.send_guarded(&packet).await?
+        };
         let code = confirmation.code;
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             let mut confirmed = false;
@@ -2540,20 +2561,42 @@ impl PciClient {
                     }
                     Ok(Some(packet)) => {
                         let cals = match packet {
-                            Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address == Some(unit) =>
+                            Packet::PointToPoint {
+                                meta,
+                                unit_address,
+                                bridged,
+                                hops,
+                                cals,
+                            } if match route {
+                                ProgrammingRoute::Routed(bridges) => programming_reply_matches(
+                                    &meta,
+                                    unit_address,
+                                    bridged,
+                                    &hops,
+                                    bridges,
+                                    unit,
+                                ),
+                                _ => !bridged && meta.source_address == Some(unit),
+                            } =>
                             {
                                 cals
                             }
-                            Packet::PointToPoint { meta, cals, .. }
-                                if meta.source_address.is_none()
-                                    && self.local_unit.load(Ordering::Acquire)
-                                        == u16::from(unit) =>
+                            Packet::PointToPoint {
+                                meta,
+                                bridged,
+                                cals,
+                                ..
+                            } if !matches!(route, ProgrammingRoute::Routed(_))
+                                && !bridged
+                                && meta.source_address.is_none()
+                                && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                             {
                                 cals
                             }
                             Packet::BareCal(cal)
-                                if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                                if !matches!(route, ProgrammingRoute::Routed(_))
+                                    && self.local_unit.load(Ordering::Acquire)
+                                        == u16::from(unit) =>
                             {
                                 vec![cal]
                             }
@@ -2892,6 +2935,32 @@ impl PciClient {
         .await
     }
 
+    /// Unlock, store and verify one lock-protected standard CAL parameter
+    /// through a one-to-six bridge source route.
+    ///
+    /// The unlock challenge, tagged STORE acknowledgement and complete
+    /// readback must all carry the exact Reply Network, remote unit and
+    /// parameter. Every request is sent once; an incomplete phase retires the
+    /// programming lane so a late challenge or acknowledgement cannot be
+    /// consumed by a later operation.
+    pub async fn store_locked_parameter_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.store_parameter_verified_inner(
+            unit,
+            parameter,
+            data,
+            true,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
+    }
+
     async fn store_parameter_verified_inner(
         &self,
         unit: u8,
@@ -2923,7 +2992,8 @@ impl PciClient {
             let offset = chunk_index * 12;
             let target = parameter + offset as u8;
             if locked {
-                self.programming_unlock(unit, target).await?;
+                self.programming_unlock_with_route(unit, target, route)
+                    .await?;
             }
             let tag = chunk_index as u8;
             let mut tagged = Vec::with_capacity(chunk.len() + 1);
@@ -5989,6 +6059,109 @@ mod tests {
         );
         assert_eq!(
             pci.store_parameter_verified_routed(&[1, 2, 3, 4, 5, 6, 7], 6, 1, &[1])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_locked_parameter_store_correlates_unlock_store_and_readback() {
+        async fn run(
+            bridges: Vec<u8>,
+            expected_unlock: &'static [u8],
+            expected_store: &'static [u8],
+            expected_recall: &'static [u8],
+        ) {
+            let (pci, mut remote, _) = setup().await;
+            let operation_bridges = bridges.clone();
+            let write = tokio::spawn(async move {
+                pci.store_locked_parameter_verified_routed(&operation_bridges, 6, 0x20, &[0x06])
+                    .await
+            });
+
+            let unlock = line(&mut remote).await;
+            assert_eq!(&unlock[..unlock.len() - 2], expected_unlock);
+            let confirmation = unlock[unlock.len() - 2];
+            let mut wrong_route = bridges.clone();
+            wrong_route[0] = wrong_route[0].wrapping_sub(1);
+            direct_reply(&mut remote, 6, &[0x82, 0x20, 0x11]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0x82, 0x20, 0x22]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x82, 0x20, 0x33]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x82, 0x21, 0x44]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x82, 0x20, 0x5a]).await;
+            remote
+                .get_mut()
+                .write_all(&[confirmation, b'.'])
+                .await
+                .unwrap();
+
+            assert_eq!(line(&mut remote).await, expected_store);
+            direct_reply(&mut remote, 6, &[0x32, 0x20, 0]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0x32, 0x20, 0]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x32, 0x20, 0]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x21, 0]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x20, 1]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x32, 0x20, 0]).await;
+
+            assert_eq!(line(&mut remote).await, expected_recall);
+            direct_reply(&mut remote, 6, &[0x82, 0x20, 0x06]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0x82, 0x20, 0x06]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0x82, 0x20, 0x06]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x82, 0x21, 0x06]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0x82, 0x20, 0x06]).await;
+            write.await.unwrap().unwrap();
+        }
+
+        run(
+            vec![0xfd],
+            b"\\46FD090611207D",
+            b"\\46FD0906A3200006E5\r",
+            b"\\46FD09061A200173\r",
+        )
+        .await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF906112068",
+            b"\\46FA36FBFCFDFEF906A3200006D0\r",
+            b"\\46FA36FBFCFDFEF9061A20015E\r",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_locked_parameter_lost_unlock_confirmation_is_never_replayed() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .store_locked_parameter_verified_routed(&[0xfd], 6, 0x20, &[0x06])
+                .await
+        });
+        let unlock = line(&mut remote).await;
+        assert_eq!(&unlock[..unlock.len() - 2], b"\\46FD090611207D");
+        routed_reply(&mut remote, &[0xfd], 6, &[0x82, 0x20, 0x5a]).await;
+
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            write.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "routed unlock was replayed after its confirmation was lost",
+        )
+        .await;
+
+        assert_eq!(
+            pci.store_locked_parameter_verified_routed(&[], 6, 0x20, &[0x06])
                 .await
                 .unwrap_err()
                 .kind(),

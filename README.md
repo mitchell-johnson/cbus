@@ -572,9 +572,11 @@ direct and one-to-six-bridge targets with strict Reply Network correlation, one
 fixed-tag STORE, routed readback, generation-bound target-cache updates, and no
 automatic replay after uncertainty. Physical PP LOAD also supports routed
 standard `direct` schema parameters, and PP SAVE/SAVE_TO_SOURCE supports routed
-`direct` parameters with `none` or `checksum` protection using exact
-Reply-Network/unit/parameter/tag correlation and verified readback. Routed
-unlock, page-aware, OEM/GOC, and Save-to-NVM methods still refuse before I/O.
+`direct` parameters with `none`, `checksum`, or `lock` protection using exact
+Reply-Network/unit/parameter/tag correlation and verified readback. A routed
+lock challenge is also bound to that exact route, unit, parameter, and PCI
+confirmation and is never replayed. Routed page-aware, OEM/GOC, and
+Save-to-NVM methods still refuse before I/O.
 Lighting ON/OFF/RAMP/STOP, their bare and `DO` aliases, Trigger EVENT/
 INDICATORKILL, and Enable SET use topology-resolved one-to-six-bridge standard
 SAL frames. Each routed application command is sent once and waits only for
