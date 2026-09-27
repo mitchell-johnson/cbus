@@ -1,0 +1,178 @@
+{
+  "format": "cbus-edlt-underlying-cache-contract-review-v2",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "classes": {
+    "ku": {
+      "sha256": "c98acd561a74e90d23fadc29a7e7aa9a334825efc37455df8b29990cad7e93ba",
+      "methods": 2
+    },
+    "kt": {
+      "sha256": "ed16985c5944343724af27e4fe435e98f77c1f7a74bd8fd342489c6e95993af6",
+      "methods": 2
+    },
+    "kv": {
+      "sha256": "31eecb976d9c283d6364daf9e057c7e3a4593473fee1939dd9925b11e00a3a1e",
+      "methods": 7
+    },
+    "com/clipsal/cgate/cbus/app/CBusLabelCommand": {
+      "sha256": "a7ff30c7445945acfb8a3cc5d742c11fb451603b6efd713bd7635ede51edefd7",
+      "methods": 7
+    },
+    "com/clipsal/cgate/cbus/app/LabelSupportingApplication": {
+      "sha256": "c1593f10c95203b89ed94c7ee68abd16c3e2362ac23be7db0dda9b94a4b0da27",
+      "methods": 15
+    }
+  },
+  "confirmed_contracts": {
+    "ku": "Unit-addressed clear request body A3FF0027; no cache response parser",
+    "kt": "Unit-addressed eDLT clear request body A4FF0066 followed by scope byte; no cache response parser",
+    "kv": "KFI request 213D, response prefix 8D3D80, decoder returns eight 4-bit key-function indicators, not label strings",
+    "label_application": "Text/icon/unicode SAL send paths and incoming label event decode; observed source unit is broadcaster, not proof of receiving device cache"
+  },
+  "firmware_packages": [
+    {
+      "package": "eDLTFirmware_1.3.0.zip",
+      "sha256": "47c58e7dfefae4786c2536b6949e5fafa8c8877a0e3785791a35884809b4ac3d",
+      "main_images": [
+        {
+          "name": "edlt_main_hwv1_1.3.0.bin",
+          "uncompressed_bytes": 227288,
+          "encrypted": true
+        }
+      ]
+    },
+    {
+      "package": "eDLTFirmware_1.4.0.zip",
+      "sha256": "b069b3aa6aa414839d880fd8163f15db8afa6de67475925a5f27bf75267daa61",
+      "main_images": [
+        {
+          "name": "edlt_main_hwv1_1.4.0.bin",
+          "uncompressed_bytes": 227288,
+          "encrypted": true
+        }
+      ]
+    },
+    {
+      "package": "eDLTFirmware_1.5.0.zip",
+      "sha256": "93e258c9bf2482a20579a4abf1d125956fe074a11ed8ef823e871773870a946b",
+      "main_images": [
+        {
+          "name": "edlt_main_hwv1_1.5.0.bin",
+          "uncompressed_bytes": 237320,
+          "encrypted": true
+        },
+        {
+          "name": "edlt_main_hwv2_1.5.0.bin",
+          "uncompressed_bytes": 240235,
+          "encrypted": true
+        }
+      ]
+    },
+    {
+      "package": "eDLTFirmware_1.7.0.zip",
+      "sha256": "f937ccf1ec0d13939e0ba677ee54fe44b2d4a250fe0b578a0dd82effbbc05a34",
+      "main_images": [
+        {
+          "name": "edlt_main_hwv1_1_7_0.bin",
+          "uncompressed_bytes": 245991,
+          "encrypted": true
+        },
+        {
+          "name": "edlt_main_hwv2_1_7_0.bin",
+          "uncompressed_bytes": 244313,
+          "encrypted": true
+        },
+        {
+          "name": "edlt_main_hwv3_1_7_0.bin",
+          "uncompressed_bytes": 334704,
+          "encrypted": true
+        }
+      ]
+    }
+  ],
+  "device_cache_readback_contract_established": false,
+  "absence_proved": false,
+  "boundary": "No authenticated device-cache address/schema/request-response contract established. Installer firmware archive directory is readable but main images are encrypted; no firmware dispatch analysis was completed. Native KFIGET must not be interpreted as cache readback.",
+  "hardware_io": false,
+  "docker_modified": false,
+  "vendor_binary_committed": false,
+  "work_item": "P6.05",
+  "target": {
+    "toolkit": "1.18.0.2754",
+    "cgate": "3.4.0.2001"
+  },
+  "prior_private_receipt_sha256": "d661adc489b7ce8a10c5c3d2088b3b669709ac8029d88bf8c13d55b33c314e17",
+  "retained_native_scope": {
+    "path": "research/fixtures/edlt-dynamic-cache-native-scope.json",
+    "sha256": "320475d86e8b66475130a525c524861cf8e1969f0d7e6ade3b8c4d128a6315b3"
+  },
+  "fresh_javap_sha256": "84b104025c4f45b26568866cecfcc5a79c2114a0d402a71ee86b32af30f58b45",
+  "decoder_probe": {
+    "method": "kv.m(java.lang.String)",
+    "execution": "original pinned jar on host JDK 11; static method only; no native server, unit or transport instantiated",
+    "input_prefix": "fourteen synthetic zero characters, not a captured or validated wire frame",
+    "cases": [
+      {
+        "input": null,
+        "result": null
+      },
+      {
+        "input": "",
+        "result": null
+      },
+      {
+        "input": "0000000000000001234567",
+        "result": [
+          1,
+          0,
+          3,
+          2,
+          5,
+          4,
+          7,
+          6
+        ]
+      },
+      {
+        "input": "0000000000000010325476",
+        "result": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "input": "00000000000000FFFFFFFF",
+        "result": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ]
+      }
+    ],
+    "stdout_sha256": "d397c0fff881b5a49af2ad282488e0228b31b241a3e4eda660a23c679eee4c86",
+    "harness_sha256": "8391b33eb55c7f147b8d5e7193872dcd80d9ff02be6d0469b3ef6120e273cdc7",
+    "wire_response_validity_proven": false,
+    "device_cache_readback_proven": false
+  },
+  "vm_this_slice": {
+    "booted": false,
+    "reason": "Reused hash-bound original offline VM GUI and native help captures; no new GUI observation claimed"
+  },
+  "invalidation": [
+    "Changed source artifact hashes",
+    "New evidenced firmware or generic read request/response schema",
+    "New original Toolkit cache inventory flow",
+    "Promoting observed SAL labels or saved project definitions to physical cache state"
+  ]
+}

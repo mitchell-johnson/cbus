@@ -94,3 +94,37 @@ guards the registry/help agreement and native rejection cases. Existing
 observation provenance boundary. A future release or firmware inquiry needs a
 new native capture and source analysis; this fixture must not be stretched to
 that target.
+
+## Underlying command and decoder evidence
+
+The [underlying-contract receipt](../research/experiments/2026-09-28/underlying-label-cache-contract.json)
+extends the command/help and retained offline Windows GUI evidence with five
+hash-bound classes from the same original C-Gate jar. Fresh disassembly checks
+confirm that the clear request builders (`ku` and `kt`) construct clear
+operations, while `kv` requests `213D`, recognizes response prefix `8D3D80`,
+and decodes four bytes into eight 4-bit key-function indicators. The SAL
+application paths send labels or decode received broadcasts; a broadcaster's
+address does not identify the receiving unit's cache contents.
+
+A separate host-Java probe invoked only the original `kv.m(String)` static
+decoder, without creating a C-Gate server or device transport. Null and empty
+inputs returned null; synthetic byte suffixes `01234567`, `10325476` and
+`FFFFFFFF` returned the exact eight-nibble arrays in the receipt. The probe
+uses a deliberately synthetic prefix: this helper alone does not establish
+frame validity, successful wire exchange, or a read-only operation. In
+particular, it does not remove KFIGET's selector writes described above.
+The [small authored probe](../research/experiments/2026-09-28/CbusKfiDecoderProbe.java)
+can be compiled with `javac -d <empty-owned-directory>` and run with that
+directory plus the pinned jar and its `lib/*` on the classpath. Keep the output
+directory isolated: unrelated extracted obfuscated classes can shadow jar
+classes on case-insensitive filesystems. The jar and raw disassembly remain
+private; no vendor code is included in the receipt.
+
+Retained firmware package directory inspection found encrypted main images
+in eDLT 1.3.0, 1.4.0, 1.5.0 and 1.7.0 archives. Their hashes bind that bounded
+observation; it is not firmware dispatch analysis or proof that a diagnostic
+read is impossible. No cache address layout, enumeration/pagination rule,
+request/response correlation, terminator, or completeness contract has been
+established. **P6.05 / issue #49 remains open.** A future implementation needs
+those details plus independent native and physical acceptance. No guessed
+CLI or cmqttd readback route is introduced by this evidence update.
