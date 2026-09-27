@@ -85,7 +85,13 @@ fn decode_missing_argument_usage_error() {
 fn help_exits_zero_and_lists_subcommands() {
     let (status, out, _err) = run(BIN, &["--help"]);
     assert!(status.success());
-    for sub in ["decode", "dump-labels", "interrogate", "cni-discover"] {
+    for sub in [
+        "decode",
+        "dump-labels",
+        "interrogate",
+        "cni-discover",
+        "cni-scan",
+    ] {
         assert!(out.contains(sub), "missing {sub} in help: {out}");
     }
 }
@@ -169,6 +175,90 @@ fn cni_discover_rejects_unbounded_inputs_before_socket_io() {
         let (status, _out, err) = run(BIN, &args);
         assert_eq!(status.code(), Some(1), "{args:?}: {err}");
         assert!(err.contains("CNI discovery"), "{args:?}: {err}");
+    }
+}
+
+#[test]
+fn cni_scan_reports_each_route_without_inventing_absence() {
+    let socket = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+    socket
+        .set_read_timeout(Some(std::time::Duration::from_secs(2)))
+        .unwrap();
+    let port = socket.local_addr().unwrap().port().to_string();
+    let peer = std::thread::spawn(move || {
+        let mut query = [0u8; 64];
+        let (size, source) = socket.recv_from(&mut query).unwrap();
+        assert_eq!(
+            &query[..size],
+            cbus_protocol::cni_discovery::DISCOVERY_QUERY
+        );
+        let visible =
+            hex::decode("cb81000020e8f5528101000101810b00022711811d000101800100028c26").unwrap();
+        socket.send_to(&visible, source).unwrap();
+    });
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "cni-scan",
+            "--probe",
+            "127.0.0.1@255.255.255.255",
+            "--probe",
+            "127.0.0.1@127.0.0.1",
+            "--listen-port",
+            "0",
+            "--discovery-port",
+            &port,
+            "--timeout",
+            "0.1",
+        ],
+    );
+    peer.join().unwrap();
+    assert!(status.success(), "{err}");
+    let report: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(report["format"], "cbus-cni-multi-discovery-v1");
+    assert_eq!(report["probe_count"], 2);
+    assert_eq!(report["probes"][1]["outcome"], "devices_observed");
+    assert_eq!(
+        report["probes"][1]["observation"]["devices"][0]["endpoint"],
+        "127.0.0.1:10001"
+    );
+    assert_eq!(report["absence_proven"], false);
+    assert_eq!(report["tcp_connection_opened"], false);
+}
+
+#[test]
+fn cni_scan_rejects_bad_routes_before_socket_io() {
+    for args in [
+        vec![
+            "cni-scan",
+            "--probe",
+            "127.0.0.1@127.0.0.1",
+            "--probe",
+            "127.0.0.1@127.0.0.1",
+        ],
+        vec!["cni-scan", "--probe", "not-an-ip@127.0.0.1"],
+        vec![
+            "cni-scan",
+            "--probe",
+            "127.0.0.1@127.0.0.1",
+            "--timeout",
+            "301",
+        ],
+        vec![
+            "cni-scan",
+            "--probe",
+            "127.0.0.1@127.0.0.1",
+            "--max-datagrams",
+            "4097",
+        ],
+        vec!["cni-scan", "--probe", "127.0.0.1@127.0.0.1", "--plan-only"],
+    ] {
+        let (status, _out, err) = run(BIN, &args);
+        assert_eq!(status.code(), Some(1), "{args:?}: {err}");
+        assert!(
+            err.contains("CNI discovery") || err.contains("require --auto-adapters"),
+            "{args:?}: {err}"
+        );
     }
 }
 

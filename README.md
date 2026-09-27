@@ -28,7 +28,7 @@ Raw `cgate exec` and `cgate run` can forward the command surface exposed by the 
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |
-| Discover CNI2/Wiser interfaces without opening them | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover` |
+| Discover CNI2/Wiser interfaces without opening them | `cbus-toolkit interface discover-cni` or `cbus-tools cni-discover`; use `scan-cni` / `cni-scan` for multiple routes |
 | Connect C-Bus lights to MQTT and Home Assistant | `cmqttd` |
 | Inventory live eDLT labels without Windows, while MQTT keeps running | `cbus-toolkit cgate edlt-labels --network //PROJECT/NETWORK`, connected to `cmqttd` |
 | Create or compare a serial-bound eDLT label baseline | `cbus-toolkit cgate edlt-label-audit //PROJECT/NETWORK` |
@@ -97,8 +97,9 @@ LOCAL_IP@SUBNET_BROADCAST` records each chosen route independently. Install the
 CLI's optional `network` extra to use `scan-cni --auto-adapters --plan-only`
 for an OS-derived route preview, followed by `scan-cni --auto-adapters` to
 query active IPv4 adapters. A zero-reply result does not prove that no
-interface exists. The Rust tools expose the same single-route wire codec and
-JSON boundary as `cbus-tools cni-discover`;
+interface exists. `cbus-tools cni-scan` supports explicit and OS-derived
+multi-route scans with the same bounded result envelope; `cni-discover` exposes
+the single-route wire codec and JSON boundary;
 see the [discovery contract](toolkit-cli/docs/cni-discovery.md).
 
 ### Toolkit compatibility and current status

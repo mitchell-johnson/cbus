@@ -23,6 +23,11 @@ and raw-field schema without opening the advertised TCP service. Pass
 `--bind LOCAL_IPV4` on a multi-adapter host; no-reply output is not proof that
 an interface is absent. See [CNI discovery](../toolkit-cli/docs/cni-discovery.md).
 
+Use `cbus-toolkit interface scan-cni --auto-adapters --plan-only` or
+`cbus-tools cni-scan --auto-adapters --plan-only` to inspect active IPv4
+directed-broadcast routes without sending traffic. Remove `--plan-only` for a
+bounded per-route scan; the Python form needs its optional `network` extra.
+
 `cbus-toolkit coverage --require-complete` reports the outstanding work and deliberately returns nonzero while full Toolkit parity remains incomplete.
 
 ## Build the Rust programs

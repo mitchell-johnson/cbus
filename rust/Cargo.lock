@@ -221,6 +221,7 @@ dependencies = [
  "cbus-transport",
  "clap",
  "hex",
+ "if-addrs",
  "roxmltree",
  "serde",
  "serde_json",

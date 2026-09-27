@@ -10,7 +10,7 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Decode one serial frame | `cbus-tools decode` | None |
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
-| Discover CNI2/Wiser endpoints | `cbus-toolkit interface discover-cni`, `interface scan-cni`, or `cbus-tools cni-discover` | One bounded IPv4 UDP query per selected route; does not open TCP or C-Bus |
+| Discover CNI2/Wiser endpoints | `cbus-toolkit interface discover-cni` / `scan-cni`, or `cbus-tools cni-discover` / `cni-scan` | One bounded IPv4 UDP query per selected route; does not open TCP or C-Bus |
 | Verify a selected-serial plan | `cbus-tools serial-verify` | Sends bounded read-only MMI and IDENTIFY traffic |
 | Apply a selected-serial plan | `cbus-tools serial-apply` | Writes a durable local journal, sends one address broadcast, then reads state |
 | Bridge C-Bus and MQTT/Home Assistant | `cmqttd` | Long-running network and MQTT traffic; accepts control messages |
@@ -30,7 +30,8 @@ review; discovery does not prove TCP reachability, exclusive ownership,
 identity authenticity, physical C-Bus attachment or absence after zero replies.
 
 For several explicit adapter/subnet pairs, use `cbus-toolkit interface scan-cni
---probe BIND_IPV4@DESTINATION_IPV4` with 1–16 unique `--probe` options. For
+--probe BIND_IPV4@DESTINATION_IPV4` or `cbus-tools cni-scan --probe
+BIND_IPV4@DESTINATION_IPV4` with 1–16 unique `--probe` options. For
 example, `--probe 192.0.2.10@192.0.2.255 --probe
 198.51.100.10@198.51.100.255` sends one captured query per route, in order.
 The sum of configured per-route reply windows is capped at 300 seconds. Read
@@ -39,9 +40,12 @@ each `cbus-cni-multi-discovery-v1` probe outcome: `devices_observed`,
 `transport_error`. A failed probe does not suppress later ones; a failed send
 has unknown delivery and is never retried. `scan_complete` excludes caps and
 transport errors. `absence_proven` and `ownership_checked` remain false even
-after every reply window completes. This command does not enumerate adapters,
-scan arbitrary IP ranges, or implement native C-Gate `PORT CNISCAN2` status
-and TCP ownership behavior. See `toolkit-cli/docs/cni-discovery.md`.
+after every reply window completes. Both CLIs also accept `--auto-adapters`
+to derive directed broadcasts from active IPv4 adapters and `--plan-only` to
+preview them without sending. Python needs the optional `network` extra;
+Rust uses its host adapter library. These commands do not scan arbitrary IP
+ranges or implement native C-Gate `PORT CNISCAN2` status and TCP ownership
+behavior. See `toolkit-cli/docs/cni-discovery.md`.
 
 ### Guarded physical PP programming
 

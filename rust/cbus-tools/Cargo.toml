@@ -12,6 +12,7 @@ clap = { workspace = true }
 serde_json = { workspace = true }
 hex = { workspace = true }
 tokio = { workspace = true }
+if-addrs = { workspace = true }
 [dependencies.roxmltree]
 workspace = true
 

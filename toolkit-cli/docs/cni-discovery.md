@@ -57,6 +57,15 @@ usable route. The optional `psutil` package supplies the cross-platform OS
 adapter inventory. Automatic scanning does not claim that an unobserved CNI
 is absent. Host firewall, VLAN, routing and subnet boundaries still matter.
 
+The Rust `cbus-tools cni-scan` command accepts the same `--auto-adapters`,
+`--interface` and `--plan-only` forms. It derives routes through the host's
+native interface inventory and needs no optional Python package:
+
+```sh
+cbus-tools cni-scan --auto-adapters --plan-only
+cbus-tools cni-scan --auto-adapters --timeout 2
+```
+
 ## Explicit multi-adapter and subnet scan
 
 `scan-cni --probe` repeats the same captured query for each *explicit* local
@@ -70,6 +79,10 @@ cbus-toolkit interface scan-cni \
   --probe 198.51.100.10@198.51.100.255 \
   --timeout 2
 ```
+
+The Rust equivalent is `cbus-tools cni-scan --probe
+192.0.2.10@192.0.2.255` (repeat `--probe` for more routes). Both tools emit
+the `cbus-cni-multi-discovery-v1` envelope and preserve each route's outcome.
 
 The command accepts 1–16 unique pairs and validates all of them before any
 socket opens. It probes sequentially; `--timeout` and `--max-datagrams` apply
@@ -163,10 +176,12 @@ Toolkit run or physical interface acceptance.
 
 Injected adapter inventories test automatic route selection, adapter filters,
 malformed netmasks and broadcasts, an unavailable route followed by a valid
-one, and the no-I/O plan path. They are portable fixtures rather than Windows
-or physical-network acceptance. The Rust `cbus-tools cni-discover` command
-retains its single-route interface; automatic adapter enumeration is currently
-provided by the Python CLI.
+one, and the no-I/O plan path. The Rust planner tests directed broadcasts,
+unsafe adapters and unusable requested routes; its executable tests cover
+explicit multi-route outcomes and no-I/O preflight rejection. Both planners
+were also run read-only against this Mac's live adapter inventory, with four
+eligible routes each; those address-bearing plans remain uncommitted. These
+checks are not Windows or broad physical-network acceptance.
 
 An operator-authorized read-only scan on 27 September 2026 sent one query from
 each of two active Mac adapters on the house subnet. Each route received one

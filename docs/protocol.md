@@ -145,6 +145,8 @@ Network-interface discovery is a separate IPv4 UDP exchange. `cbus-tools
 cni-discover` and `cbus-toolkit interface discover-cni` send the exact retained
 19-byte query once and strictly decode fixed 30-byte CNI2/Wiser replies through
 a bounded deadline. See the [discovery contract](../toolkit-cli/docs/cni-discovery.md).
+Their `cni-scan` / `scan-cni` companions repeat that query for bounded
+explicit or OS-derived IPv4 routes and retain a separate result for each.
 
 C-Gate `PORT CNISCAN` and `PORT CNISCAN2` use related but distinct retained
 protocols. The legacy scan binds UDP 30718, sends `00 00 00 F8`, accepts only

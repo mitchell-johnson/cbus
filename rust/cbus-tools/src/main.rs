@@ -23,6 +23,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+mod cni_scan;
+
 #[derive(Parser)]
 #[command(name = "cbus-tools", about = "C-Bus debugging tools")]
 struct Cli {
@@ -50,6 +52,40 @@ enum Command {
         #[arg(long, default_value_t = 2.0)]
         timeout: f64,
         /// Maximum accepted datagrams before reporting an incomplete result
+        #[arg(long, default_value_t = 256)]
+        max_datagrams: usize,
+        /// Include product-id 2 replies hidden by captured Toolkit behavior
+        #[arg(long)]
+        include_hidden: bool,
+    },
+    /// Scan explicit routes or active host IPv4 adapters for CNI2/Wiser devices
+    CniScan {
+        /// Local IPv4 bind and broadcast/unicast destination; repeat for each route
+        #[arg(
+            long,
+            conflicts_with = "auto_adapters",
+            required_unless_present = "auto_adapters"
+        )]
+        probe: Vec<String>,
+        /// Derive directed-broadcast routes from active host IPv4 adapters
+        #[arg(long, conflicts_with = "probe", required_unless_present = "probe")]
+        auto_adapters: bool,
+        /// With --auto-adapters, restrict the scan to these adapter names
+        #[arg(long)]
+        interface: Vec<String>,
+        /// With --auto-adapters, print the route plan without sending discovery traffic
+        #[arg(long)]
+        plan_only: bool,
+        /// Local UDP port for each sequential probe; 0 selects an ephemeral port
+        #[arg(long, default_value_t = cbus_protocol::cni_discovery::DISCOVERY_PORT)]
+        listen_port: u16,
+        /// Destination UDP port
+        #[arg(long, default_value_t = cbus_protocol::cni_discovery::DISCOVERY_PORT)]
+        discovery_port: u16,
+        /// Reply window for each route in seconds
+        #[arg(long, default_value_t = 2.0)]
+        timeout: f64,
+        /// Maximum accepted datagrams per route
         #[arg(long, default_value_t = 256)]
         max_datagrams: usize,
         /// Include product-id 2 replies hidden by captured Toolkit behavior
@@ -195,6 +231,37 @@ fn main() {
                 std::process::exit(1);
             }
         }
+        Command::CniScan {
+            probe,
+            auto_adapters,
+            interface,
+            plan_only,
+            listen_port,
+            discovery_port,
+            timeout,
+            max_datagrams,
+            include_hidden,
+        } => {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let args = cni_scan::ScanArgs {
+                probes: probe,
+                auto_adapters,
+                interfaces: interface,
+                plan_only,
+                listen_port,
+                discovery_port,
+                timeout,
+                max_datagrams,
+                include_hidden,
+            };
+            match rt.block_on(cni_scan::scan(args)) {
+                Ok(report) => println!("{}", serde_json::to_string_pretty(&report).unwrap()),
+                Err(error) => {
+                    eprintln!("error: {error}");
+                    std::process::exit(1);
+                }
+            }
+        }
         Command::Decode {
             packet,
             no_checksum,
@@ -279,6 +346,33 @@ async fn cni_discover_cmd(
     max_datagrams: usize,
     include_hidden: bool,
 ) -> Result<(), String> {
+    let report = cni_discover_report(
+        bind,
+        listen_port,
+        destination,
+        discovery_port,
+        timeout,
+        max_datagrams,
+        include_hidden,
+    )
+    .await?;
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&report)
+            .map_err(|error| format!("Unable to encode CNI discovery report: {error}"))?
+    );
+    Ok(())
+}
+
+async fn cni_discover_report(
+    bind: Ipv4Addr,
+    listen_port: u16,
+    destination: Ipv4Addr,
+    discovery_port: u16,
+    timeout: f64,
+    max_datagrams: usize,
+    include_hidden: bool,
+) -> Result<Value, String> {
     use cbus_transport::cni_discovery::{discover, DiscoveryConfig};
 
     if !timeout.is_finite() || timeout <= 0.0 || timeout > 300.0 {
@@ -323,29 +417,24 @@ async fn cni_discover_cmd(
             })
         })
         .collect::<Vec<_>>();
-    println!(
-        "{}",
-        serde_json::to_string_pretty(&json!({
-            "format": "cbus-cni-discovery-v1",
-            "query_hex": hex::encode(cbus_protocol::cni_discovery::DISCOVERY_QUERY),
-            "query_sent_once": true,
-            "listen": {"address": report.local.ip().to_string(), "port": report.local.port()},
-            "destination": {"address": report.destination.ip().to_string(), "port": report.destination.port()},
-            "collection_complete": report.collection_complete,
-            "collection_ended": if report.collection_complete {"deadline"} else {"datagram_limit"},
-            "datagrams_received": report.datagrams_received,
-            "duplicates_ignored": report.duplicates_ignored,
-            "hidden_ignored": report.hidden_ignored,
-            "devices": devices,
-            "malformed": malformed,
-            "read_only": true,
-            "tcp_connection_opened": false,
-            "absence_proven": false,
-            "scope": "Captured fixed-layout IPv4 UDP discovery; no TCP reachability, ownership, identity authenticity or physical-network validation",
-        }))
-        .map_err(|error| format!("Unable to encode CNI discovery report: {error}"))?
-    );
-    Ok(())
+    Ok(json!({
+        "format": "cbus-cni-discovery-v1",
+        "query_hex": hex::encode(cbus_protocol::cni_discovery::DISCOVERY_QUERY),
+        "query_sent_once": true,
+        "listen": {"address": report.local.ip().to_string(), "port": report.local.port()},
+        "destination": {"address": report.destination.ip().to_string(), "port": report.destination.port()},
+        "collection_complete": report.collection_complete,
+        "collection_ended": if report.collection_complete {"deadline"} else {"datagram_limit"},
+        "datagrams_received": report.datagrams_received,
+        "duplicates_ignored": report.duplicates_ignored,
+        "hidden_ignored": report.hidden_ignored,
+        "devices": devices,
+        "malformed": malformed,
+        "read_only": true,
+        "tcp_connection_opened": false,
+        "absence_proven": false,
+        "scope": "Captured fixed-layout IPv4 UDP discovery; no TCP reachability, ownership, identity authenticity or physical-network validation",
+    }))
 }
 
 // ------------------------------------------------------------------ decode
