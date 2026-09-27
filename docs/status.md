@@ -32,6 +32,11 @@ Full Toolkit parity remains unfinished. The ledger records 39 feature areas: 18 
 
 ## Current limits and outstanding work
 
+The [implementation review and path to full parity](parity-review-and-roadmap.md)
+turns the remaining scope into dependency-ordered work packages with explicit
+acceptance criteria. It also explains why category counts and command routing
+cannot establish a percentage of full Toolkit functionality.
+
 - `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and routes every non-obsolete primary inventory path as listed in [its replacement ledger](cmqttd-cgate.md).
 - Complete primary routing means every maintained inventory path has a physical or local/session handler. Selector-specific unsupported forms can still refuse before I/O, and this does not establish every native format, device-specific side effect, timing characteristic, topology, or physical result.
 - The PCI simulator models the protocol behavior needed by the workspace and test suite. It is not a complete electrical or timing simulation of every C-Bus unit.

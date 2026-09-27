@@ -147,6 +147,10 @@ cbus-toolkit coverage --require-complete
 
 This intentionally returns exit status `1` while parity remains unfinished. The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md) describe supported profiles, test evidence, and remaining work. The [Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.
 
+The [implementation review and path to full parity](docs/parity-review-and-roadmap.md)
+audits the current implementation, identifies remaining defects and acceptance
+gaps, and defines the dependency order and exit criteria for reaching 100%.
+
 ## MQTT and Home Assistant bridge
 
 Build the Rust tools with a current stable Rust toolchain, from the repository root:
@@ -676,6 +680,7 @@ For a PCI/CNI test endpoint, run `rust/target/release/cbus-simulator 127.0.0.1 1
 
 ## Documentation and AI agents
 
+- [Implementation review and path to 100%](docs/parity-review-and-roadmap.md)
 - [Toolkit CLI guide](toolkit-cli/README.md) and [feature status](toolkit-cli/docs/implementation-status.md)
 - [Architecture](docs/architecture.md), [command reference](docs/commands.md), and [protocols](docs/protocol.md)
 - [MQTT bridge configuration](docs/configuration.md), [C-Gate compatibility](docs/cgate.md), and [physical DALI commands](docs/cgate-dali.md)
