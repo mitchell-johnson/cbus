@@ -76,6 +76,7 @@ class _AcceptancePlugin:
         self.nonempty = {path.resolve() for path in selected if path.stat().st_size}
         self.nodeids: list[str] = []
         self.executed_nodeids: set[str] = set()
+        self.deselected_nodeids: list[str] = []
         self.failures: list[dict[str, str]] = []
         self.errors: list[dict[str, str]] = []
         self.skipped: list[dict[str, str]] = []
@@ -99,6 +100,9 @@ class _AcceptancePlugin:
                 "test": _sanitized_nodeid(report.nodeid),
                 "traceback": _sanitized_detail(report.longrepr),
             })
+
+    def pytest_deselected(self, items):
+        self.deselected_nodeids.extend(_sanitized_nodeid(item.nodeid) for item in items)
 
     def pytest_internalerror(self, excrepr):
         self.errors.append({
@@ -145,6 +149,13 @@ class _AcceptancePlugin:
                     "test": relative,
                     "traceback": "Selected nonempty test module collected zero tests",
                 })
+        if self.deselected_nodeids:
+            self.errors.append({
+                "test": "pytest-selection",
+                "traceback": (
+                    f"{len(self.deselected_nodeids)} selected tests were deselected"
+                ),
+            })
         unexecuted = sorted(set(self.nodeids) - self.executed_nodeids)
         if unexecuted:
             preview = ", ".join(unexecuted[:10])

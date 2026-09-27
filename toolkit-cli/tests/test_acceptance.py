@@ -111,6 +111,30 @@ class AcceptanceRunnerTests(unittest.TestCase):
             self.assertEqual(outcome.tests_run, 0)
             self.assertIn('no execution result', outcome.errors[0]['traceback'])
 
+    def test_local_pytest_hook_cannot_silently_deselect_a_selected_case(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            (tests / 'conftest.py').write_text(
+                'def pytest_collection_modifyitems(items):\n'
+                '    kept = [item for item in items if item.name == "test_passes"]\n'
+                '    removed = [item for item in items if item.name != "test_passes"]\n'
+                '    items[:] = kept\n'
+                '    if removed:\n'
+                '        removed[0].config.hook.pytest_deselected(items=removed)\n'
+            )
+            module = tests / 'test_conftest_selection.py'
+            module.write_text(
+                'def test_passes():\n    assert True\n\n'
+                'def test_must_not_disappear():\n    assert False\n'
+            )
+            with patch.object(acceptance, 'ROOT', root):
+                outcome = acceptance.run_pytest([module], verbose=False)
+            self.assertFalse(outcome.was_successful())
+            self.assertEqual(outcome.tests_run, 1)
+            self.assertTrue(any(row['test'] == 'pytest-selection' for row in outcome.errors))
+
     def test_acceptance_receipt_rejects_selected_zero_collection_module(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
