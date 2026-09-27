@@ -559,7 +559,11 @@ P3/P4; runs alongside P5 with separate device ownership.
   Editor controls and a project-level `TagDLT` record to private screenshots
   and XML hashes. The project's dynamic label is separate from unit static
   strings; the selected group value was not displayed in the GUI, and no
-  device-cache readback occurred. P0 census and P6 acceptance remain open.
+  device-cache readback occurred. A further bounded original-C-Gate
+  [generic `GET` probe](../toolkit-cli/docs/edlt-dynamic-cache-boundary.md#generic-get-and-audio-label-command-check)
+  could not resolve an unopened synthetic KEYGL5 database unit, so it does
+  not establish whether a live unit has a cache property. P0 census and P6
+  acceptance remain open.
 - [ ] **P6.06** ([#50](https://github.com/mitchell-johnson/cbus/issues/50)) — Validate static/dynamic labels after programming, disconnect, restart and
   power cycle, with serial-bound before/after identity and external display
   observations where needed.

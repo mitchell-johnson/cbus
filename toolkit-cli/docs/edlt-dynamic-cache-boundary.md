@@ -169,3 +169,38 @@ before it can become a new readback API. If no such request appears, keep the
 bounded limitation and investigate official device diagnostics or a new
 firmware-specific protocol separately. This experiment must not use the
 saved project or an observed SAL frame as a substitute for device readback.
+
+## Generic GET and audio-label command check
+
+The pinned C-Gate manual (PDF SHA-256
+`812f84b0206b8714e6780b80ea5dfe6347357530aa899f6aecc0f7da8f44c97b`)
+describes `GET object-identifier [parameter | ? | * | ??]` on printed page
+140. This generic property interface deserves a separate check from the
+`LABEL` subcommand registry. The same manual's page 97 describes
+`AUDIO ZONE_FEED_LABEL_REQUEST` on application 205: it instructs a matrix
+switcher to **send** feed description and Dynamic 1/2 labels to DLT devices.
+That is a label-source rebroadcast, not an inventory of a receiving eDLT.
+
+The [bounded GET receipt](../research/fixtures/edlt-dynamic-cache-get-scope.json)
+records one fresh original C-Gate 3.4.0.2001 child in the disposable Windows
+VM. Its six listeners were loopback-only. The child created `XDLT` and one
+synthetic KEYGL5 5.5.00 **database** unit with only `127.0.0.1:1` configured as
+its CNI. The probe sent no `NET OPEN` or `PROJECT START` command. `DBGETXML`
+confirmed the synthetic unit.
+`GET /db//XDLT/254/p/5 ?`, `??`, `*`, and named candidate properties all
+returned `401 Network not found`; `GET //XDLT/254/p/5 ?` returned `401 Unit
+not found`. These replies did **not** reach an open unit's property inventory.
+They therefore cannot strengthen the native-cache absence claim. The owned
+Java child exited, its temporary home was removed, and the original C-Gate
+home was restored. The receipt binds the retained raw captures and scripts by
+SHA-256 without including the vendor binary or site project.
+
+Disassembly of the pinned `CBusEdlt` constructor registers `WidgetGroups` as
+a declared property and `FactoryDefault` as a method; it does not register a
+declared dynamic-label getter. Inherited or runtime properties have not been
+exhausted by that inspection. **Issue #49 stays open.** A decisive generic
+`GET` check requires an isolated, open, serial-identified KEYGL5 unit and the
+original server's `?`, `*`, and `??` property replies, followed by any candidate
+request on a known pre-existing label after the observer restarts. Physical
+display and bus capture must establish that the value came from the unit,
+rather than saved `TagsDLT` or fresh label SAL.

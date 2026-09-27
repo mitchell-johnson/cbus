@@ -1,0 +1,111 @@
+{
+  "decision": {
+    "device_cache_readback_implemented": false,
+    "generic_get_cache_property_absence_proven": false,
+    "issue_49_remains_open": true,
+    "native_label_family_getter_absence_remains_supported_by_prior_fixture": true,
+    "physical_firmware_cache_query_absence_proven": false
+  },
+  "edlt_declared_constructor": {
+    "limitation": "Declared constructor inspection does not enumerate every inherited or future runtime property.",
+    "method_registered": "FactoryDefault",
+    "property_registered": "WidgetGroups",
+    "source": "same pinned CBusEdlt.class; registration visible in constructor disassembly"
+  },
+  "format": "cbus-edlt-dynamic-cache-get-scope-v1",
+  "manual_reading": {
+    "audio_zone_feed_label_request": {
+      "application": 205,
+      "meaning": "Instructs a matrix switcher to send feed description and Dynamic 1/2 labels to DLT labelling devices; it does not request contents from a receiving eDLT.",
+      "printed_page": 97
+    },
+    "generic_get": {
+      "meaning": "Named object parameters or parameter inventory; no dynamic-label cache property is documented here.",
+      "printed_page": 140,
+      "syntax": "GET object-identifier [parameter | ? | * | ??]"
+    }
+  },
+  "next_acceptance": "With an isolated, open, serial-identified KEYGL5 5.5.00 and captured original Toolkit/C-Gate session, enumerate GET ?/*/?? and trace any candidate request against a known pre-existing label across observer restart; distinguish unit cache from project TagsDLT and newly observed SAL.",
+  "owned_original_cgate": {
+    "capture_script": "research/experiments/2026-09-28/cgate-dynamic-cache-vm-capture.ps1",
+    "capture_script_sha256": "0d1897abda6c35b68d875f228bf3f155b6717e540cc19ba4d48fc94e80f09df7",
+    "cleanup": {
+      "ipv4_default_route_count_after": 1,
+      "original_cgate_home_restored": true,
+      "owned_java_child_exited": true,
+      "owned_work_removed": true
+    },
+    "get_cases": [
+      {
+        "command": "GET /db//XDLT/254/p/5 ?",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 ??",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 *",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 DynamicLabels",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 LabelCache",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 Labels",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET /db//XDLT/254/p/5 WidgetGroups",
+        "response": [
+          "401 Bad object or device ID: /db//XDLT/254/p/5 (Network not found)"
+        ]
+      },
+      {
+        "command": "GET //XDLT/254/p/5 ?",
+        "response": [
+          "401 Bad object or device ID: //XDLT/254/p/5 (Unit not found)"
+        ]
+      }
+    ],
+    "guest": "disposable UTM Windows 11 VM",
+    "interpretation": "GET could not resolve the unopened synthetic database unit. These 401 replies do not test the property inventory of an open physical KEYGL5 and do not establish absence of a cache getter.",
+    "no_explicit_net_open_or_project_start_command_sent": true,
+    "only_configured_cni_endpoint": "127.0.0.1:1",
+    "private_cleanup_receipt_sha256": "290324af056c98f3cf24eda8c4cc595b507553c998e3ec754334c3d7ce563e43",
+    "private_prepare_receipt_sha256": "bdf3ff66d1083626230d51c127bcf281f58ec77332b299c432725a2e8500273b",
+    "private_raw_capture_sha256": "5484df94cc765e85411965d80137a94507fd6aeb81d1b8f05ffedb49251a4e32",
+    "project": "XDLT",
+    "service_mode": "Fresh original C-Gate child with six loopback listeners; synthetic project created only in its owned temporary home",
+    "service_script": "research/experiments/2026-09-28/cgate-dynamic-cache-vm-service.ps1",
+    "service_script_sha256": "9b48595c407f09ed4cea9ccb017f5683bedd77bbb52c7c56baf6523140e01d2c",
+    "synthetic_dbgetxml_unit_status": "344 End XML snippet",
+    "unit": "synthetic KEYGL5 / firmware 5.5.00, database record only"
+  },
+  "target": {
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "cgate_manual_pdf_sha256": "812f84b0206b8714e6780b80ea5dfe6347357530aa899f6aecc0f7da8f44c97b",
+    "cgate_version": "3.4.0.2001",
+    "edlt_class_sha256": "6d9733794c5228700d00525f6c173ce4af6e4f11ed9ddc1c3a0673e73a492094",
+    "edlt_javap_sha256": "898da7d3c7cedd558f582bf4ba2fdf8ed2983f6e707f947ddc07967e670cd2f0",
+    "toolkit_version": "1.18.0.2754"
+  },
+  "work_item": "P6.05"
+}
