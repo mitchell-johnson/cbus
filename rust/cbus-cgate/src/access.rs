@@ -59,6 +59,66 @@ impl CgateAccessLevel {
     }
 }
 
+/// Handler-level floors observed on an owned C-Gate 3.4.0.2001 loopback
+/// oracle. These entries name only the commands probed with a syntactically
+/// useful invocation in `native_cgate_authorization_probe.json`. A 420 on
+/// admitted lower sessions and a non-420 response at the floor establish
+/// dispatch order (the native None session has earlier parser quirks for DB
+/// verbs). These probes do not prove that an absent project/device would
+/// have completed the
+/// handler's later authorization and physical checks.
+///
+/// Keep this a partial matrix until the remaining native handlers have
+/// independent cases. The recovery-token gate is a separate cmqttd policy.
+pub(crate) const NATIVE_PROBED_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("NOOP", CgateAccessLevel::Connect),
+    ("APIVER", CgateAccessLevel::Monitor),
+    ("HELP", CgateAccessLevel::Monitor),
+    ("EVENT", CgateAccessLevel::Monitor),
+    ("GET", CgateAccessLevel::Monitor),
+    ("DBGET", CgateAccessLevel::Monitor),
+    ("DBGETXML", CgateAccessLevel::Monitor),
+    ("BROADCAST_EVENT", CgateAccessLevel::Operate),
+    ("SESSION_ID", CgateAccessLevel::Operate),
+    ("DBSET", CgateAccessLevel::Operate),
+    ("LIGHTING ON", CgateAccessLevel::Operate),
+    ("LIGHTING OFF", CgateAccessLevel::Operate),
+    ("LIGHTING LABEL", CgateAccessLevel::Operate),
+    ("SCENE PLAY", CgateAccessLevel::Operate),
+    ("AIRCON REFRESH", CgateAccessLevel::Operate),
+    ("AUDIO CURRENT_FEED", CgateAccessLevel::Operate),
+    ("SECURITY STATUS_REQUEST", CgateAccessLevel::Operate),
+    ("EREPORT MESSAGE", CgateAccessLevel::Operate),
+    ("PROJECT LIST", CgateAccessLevel::Admin),
+    ("PROJECT USE", CgateAccessLevel::Admin),
+    ("PROJECT NEW", CgateAccessLevel::Admin),
+    ("CONFIG GET", CgateAccessLevel::Admin),
+    ("CONFIG SET", CgateAccessLevel::Admin),
+    ("DBSETXML", CgateAccessLevel::Admin),
+    ("NET LIST", CgateAccessLevel::Program),
+    ("NET PINGU", CgateAccessLevel::Program),
+    ("FILE DIR", CgateAccessLevel::Program),
+    ("FILE MKDIR", CgateAccessLevel::Program),
+    ("CGL EXPORT", CgateAccessLevel::Program),
+    ("DALI SESSION LIST", CgateAccessLevel::Program),
+    ("PP LOCK", CgateAccessLevel::Clipsal),
+];
+
+/// Longest matching native-observed command path. The caller supplies
+/// uppercase whitespace-delimited words from the C-Gate parser.
+pub(crate) fn native_minimum_for(upper: &[String]) -> Option<CgateAccessLevel> {
+    for len in (1..=upper.len().min(3)).rev() {
+        let path = upper[..len].join(" ");
+        if let Some((_, level)) = NATIVE_PROBED_COMMANDS
+            .iter()
+            .find(|(candidate, _)| *candidate == path)
+        {
+            return Some(*level);
+        }
+    }
+    None
+}
+
 /// One durable access-list row. User credentials are never retained in
 /// plaintext. The digest is bound to the case-sensitive username so equal
 /// passwords do not have equal stored values across users.
@@ -201,5 +261,55 @@ mod tests {
             "192.168.255.255".parse().unwrap(),
             "192.169.20.44".parse().unwrap()
         ));
+    }
+
+    #[test]
+    fn probed_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        assert_eq!(evidence["oracle"]["cleanup_complete"], true);
+        let roles = evidence["roles"].as_object().unwrap();
+        for (path, minimum) in NATIVE_PROBED_COMMANDS {
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                let responses = record["responses"].as_object().unwrap();
+                let (_, reply) = responses
+                    .iter()
+                    .find(|(command, _)| {
+                        command.as_str() == *path || command.starts_with(&format!("{path} "))
+                    })
+                    .unwrap_or_else(|| panic!("missing native probe for {path}"));
+                let reply = reply.as_str().unwrap();
+                // The native None session applies an earlier syntax check
+                // to DB verbs; the handler-level floor is still visible on
+                // the admitted Connect..Max sessions.
+                if level == CgateAccessLevel::None && matches!(*path, "DBGET" | "DBSET") {
+                    continue;
+                }
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {path} at {role}: {reply}"
+                );
+                let command = responses
+                    .keys()
+                    .find(|command| {
+                        command.as_str() == *path || command.starts_with(&format!("{path} "))
+                    })
+                    .unwrap();
+                let upper = command
+                    .split_whitespace()
+                    .map(str::to_ascii_uppercase)
+                    .collect::<Vec<_>>();
+                assert_eq!(native_minimum_for(&upper), Some(*minimum));
+            }
+        }
+        assert_eq!(native_minimum_for(&["UNPROBED".into()]), None);
     }
 }

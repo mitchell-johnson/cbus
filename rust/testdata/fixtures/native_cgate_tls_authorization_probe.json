@@ -1,0 +1,46 @@
+{
+  "format": "native-cgate-tls-authorization-probe-v1",
+  "captured_at": "2026-09-27T22:01:35.414869+00:00",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "transport": "owned Java 11 loopback listener, generated short-lived PKI, empty project set, no C-Bus endpoint",
+    "listener_ownership_verified": true,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "server_log_sha256": "294bce988fb52a5c12ff5da6e04d06ad93546ea922f7c5fd79bff0dfbf765394"
+  },
+  "capture_script_sha256": "5909e099bd5606a0210a545e828ff093efcd1618590ca69cdadf29c63f42fb74",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "pki_helper_sha256": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd",
+  "method": "A trusted client certificate with subject CN=client and an ACCESS user named client at Admin was presented. LOGIN was queried before and after username/password login and LOGOUT. No credential or key bytes are retained.",
+  "cases": {
+    "missing_client_certificate": {
+      "tls_failure_type": "SSLError",
+      "tls_failure_reason": "SSLV3_ALERT_BAD_CERTIFICATE",
+      "greeting_received": false
+    },
+    "trusted_certificate": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "tls_version": "TLSv1.2",
+      "initial_level": "210 Access level: Clipsal",
+      "admin_login": "211 Access level set to: Admin",
+      "after_login": "210 Access level: Admin",
+      "logout": "211 Access level set to: Clipsal",
+      "after_logout": "210 Access level: Clipsal"
+    },
+    "trusted_reconnect": {
+      "initial_level": "210 Access level: Clipsal"
+    }
+  },
+  "public_pki": {
+    "algorithm": "RSA-2048/SHA-256",
+    "server_dns_names": [
+      "localhost"
+    ],
+    "server_certificate_sha256": "1b9171a688ef8f44a74db998cd989fd3c32add20cdc5e3e1eb3c1d16112c507f",
+    "ca_certificate_sha256": "8e2ed0f1331717dab7db1a8cf81d29e547d55113a07662a1dd177a4b3ce3f5ab"
+  }
+}

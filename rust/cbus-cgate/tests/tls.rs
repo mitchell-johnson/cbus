@@ -12,7 +12,7 @@
 //! before the TLS connection reaches EOF. (c) missing cert/key files fail
 //! closed at startup is covered by `cmqttd` `cgate_tls_config` unit tests.
 
-use cbus_cgate::service::Service;
+use cbus_cgate::service::{ClientState, Service};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
@@ -65,6 +65,26 @@ fn test_server_config() -> Arc<rustls::ServerConfig> {
     )
 }
 
+fn test_server_config_with_client_ca() -> Arc<rustls::ServerConfig> {
+    let cert_data = std::fs::read(fixture("cgate-tls-test-cert.pem")).expect("test cert");
+    let key_data = std::fs::read(fixture("cgate-tls-test-key.pem")).expect("test key");
+    let certs: Vec<_> = rustls_pemfile::certs(&mut cert_data.as_slice())
+        .collect::<Result<_, _>>()
+        .expect("parse test cert");
+    let key = rustls_pemfile::private_key(&mut key_data.as_slice())
+        .expect("parse test key")
+        .expect("test key present");
+    let verifier = rustls::server::WebPkiClientVerifier::builder(trusted_roots())
+        .build()
+        .expect("client CA verifier");
+    Arc::new(
+        rustls::ServerConfig::builder()
+            .with_client_cert_verifier(verifier)
+            .with_single_cert(certs, key)
+            .expect("test server config"),
+    )
+}
+
 fn trusted_roots() -> Arc<rustls::RootCertStore> {
     let cert_data = std::fs::read(fixture("cgate-tls-test-cert.pem")).expect("test cert");
     let certs: Vec<_> = rustls_pemfile::certs(&mut cert_data.as_slice())
@@ -82,6 +102,23 @@ fn client_config(roots: Arc<rustls::RootCertStore>) -> Arc<rustls::ClientConfig>
         rustls::ClientConfig::builder()
             .with_root_certificates((*roots).clone())
             .with_no_client_auth(),
+    )
+}
+
+fn client_config_with_identity(roots: Arc<rustls::RootCertStore>) -> Arc<rustls::ClientConfig> {
+    let cert_data = std::fs::read(fixture("cgate-tls-test-cert.pem")).expect("test cert");
+    let key_data = std::fs::read(fixture("cgate-tls-test-key.pem")).expect("test key");
+    let certs: Vec<_> = rustls_pemfile::certs(&mut cert_data.as_slice())
+        .collect::<Result<_, _>>()
+        .expect("parse test cert");
+    let key = rustls_pemfile::private_key(&mut key_data.as_slice())
+        .expect("parse test key")
+        .expect("test key present");
+    Arc::new(
+        rustls::ClientConfig::builder()
+            .with_root_certificates((*roots).clone())
+            .with_client_auth_cert(certs, key)
+            .expect("test client identity"),
     )
 }
 
@@ -128,6 +165,126 @@ where
             return code;
         }
     }
+}
+
+async fn command_reply<R, W>(reader: &mut R, writer: &mut W, tag: &str, body: &str) -> String
+where
+    R: tokio::io::AsyncBufRead + Unpin,
+    W: tokio::io::AsyncWrite + Unpin,
+{
+    writer
+        .write_all(format!("[{tag}] {body}\n").as_bytes())
+        .await
+        .expect("write command");
+    loop {
+        let mut line = String::new();
+        reader.read_line(&mut line).await.expect("reply");
+        let line = line.trim().to_string();
+        if cbus_cgate::is_event_line(&line) {
+            continue;
+        }
+        let payload = line
+            .strip_prefix(&format!("[{tag}] "))
+            .unwrap_or_else(|| panic!("missing tag in {line:?}"));
+        if payload.as_bytes()[3] == b' ' {
+            return payload.to_string();
+        }
+    }
+}
+
+#[tokio::test]
+async fn client_certificate_admits_transport_but_access_login_sets_role() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_tls_authorization_probe.json"
+    ))
+    .expect("native TLS authorization fixture");
+    assert_eq!(evidence["oracle"]["cleanup_complete"], true);
+    assert_eq!(
+        evidence["cases"]["trusted_certificate"]["initial_level"],
+        "210 Access level: Clipsal"
+    );
+    assert_eq!(
+        evidence["cases"]["trusted_certificate"]["after_login"],
+        "210 Access level: Admin"
+    );
+
+    let (service, _remote, state) = test_service();
+    let mut bootstrap = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut bootstrap,
+                "[add] ACCESS ADD user 127.0.0.1 test-password Admin",
+            )
+            .await
+            .status,
+        200
+    );
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let port = listener.local_addr().expect("addr").port();
+    let running = service.clone();
+    tokio::spawn(async move {
+        running
+            .serve_tls(listener, test_server_config_with_client_ca())
+            .await
+            .expect("serve_tls");
+    });
+
+    // The CA verifier rejects an absent client identity before any C-Gate
+    // greeting. The trusted identity below reaches LOGIN at the address role.
+    if let Ok(stream) = tls_connect(port, client_config(trusted_roots())).await {
+        let (rd, _wr) = tokio::io::split(stream);
+        let mut reader = BufReader::new(rd);
+        let mut greeting = String::new();
+        let result = tokio::time::timeout(Duration::from_secs(3), reader.read_line(&mut greeting))
+            .await
+            .expect("server must reject missing certificate promptly");
+        assert!(result.is_err() || result.unwrap() == 0);
+        assert!(greeting.is_empty());
+    }
+
+    let stream = tls_connect(port, client_config_with_identity(trusted_roots()))
+        .await
+        .expect("trusted TLS identity");
+    let (rd, mut writer) = tokio::io::split(stream);
+    let mut reader = BufReader::new(rd);
+    assert!(read_greeting(&mut reader).await.starts_with("201 "));
+    assert_eq!(
+        command_reply(&mut reader, &mut writer, "initial", "LOGIN").await,
+        "210 Access level: Clipsal"
+    );
+    assert_eq!(
+        command_reply(
+            &mut reader,
+            &mut writer,
+            "admin",
+            "LOGIN 127.0.0.1 test-password",
+        )
+        .await,
+        "211 Access level set to: Admin"
+    );
+    assert_eq!(
+        command_reply(&mut reader, &mut writer, "elevated", "LOGIN").await,
+        "210 Access level: Admin"
+    );
+    assert_eq!(
+        command_reply(&mut reader, &mut writer, "logout", "LOGOUT").await,
+        "211 Access level set to: Clipsal"
+    );
+    drop(reader);
+    drop(writer);
+
+    let stream = tls_connect(port, client_config_with_identity(trusted_roots()))
+        .await
+        .expect("trusted TLS reconnect");
+    let (rd, mut writer) = tokio::io::split(stream);
+    let mut reader = BufReader::new(rd);
+    read_greeting(&mut reader).await;
+    assert_eq!(
+        command_reply(&mut reader, &mut writer, "reconnect", "LOGIN").await,
+        "210 Access level: Clipsal"
+    );
+    std::fs::remove_file(state).ok();
 }
 
 #[tokio::test]

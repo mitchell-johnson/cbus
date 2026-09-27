@@ -13176,6 +13176,308 @@ async fn auth_gate_dormant_exposes_native_login_and_leaves_programming_ungated()
 }
 
 #[tokio::test]
+async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+
+    let (mut owner_reader, mut owner_writer) = connect_command_session(address).await;
+    for (role, name) in [
+        ("None", "none"),
+        ("Connect", "connect"),
+        ("Monitor", "monitor"),
+        ("Operate", "operate"),
+        ("Admin", "admin"),
+        ("Program", "program"),
+    ] {
+        let response = command_lines(
+            &mut owner_reader,
+            &mut owner_writer,
+            name,
+            &format!("ACCESS ADD user {name} test-{name}-password {role}"),
+        )
+        .await;
+        assert!(
+            response.last().unwrap().ends_with("200 OK."),
+            "{response:?}"
+        );
+    }
+
+    let (mut monitor_reader, mut monitor_writer) = connect_command_session(address).await;
+    let (mut operate_reader, mut operate_writer) = connect_command_session(address).await;
+    let (mut admin_reader, mut admin_writer) = connect_command_session(address).await;
+    for (reader, writer, role) in [
+        (&mut monitor_reader, &mut monitor_writer, "monitor"),
+        (&mut operate_reader, &mut operate_writer, "operate"),
+        (&mut admin_reader, &mut admin_writer, "admin"),
+    ] {
+        let reply = command_lines(
+            reader,
+            writer,
+            role,
+            &format!("LOGIN {role} test-{role}-password"),
+        )
+        .await;
+        assert_eq!(
+            reply,
+            [format!(
+                "[{role}] 211 Access level set to: {}",
+                role[..1].to_ascii_uppercase() + &role[1..]
+            )]
+        );
+    }
+    let (mut connect_reader, mut connect_writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(
+            &mut connect_reader,
+            &mut connect_writer,
+            "connect",
+            "LOGIN connect test-connect-password",
+        )
+        .await,
+        ["[connect] 211 Access level set to: Connect"]
+    );
+    assert_eq!(
+        command_lines(&mut connect_reader, &mut connect_writer, "noop", "NOOP").await,
+        ["[noop] 200 OK"]
+    );
+    assert_eq!(
+        command_lines(&mut connect_reader, &mut connect_writer, "event", "EVENT").await,
+        ["[event] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(&mut connect_reader, &mut connect_writer, "api", "APIVER").await,
+        ["[api] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut monitor_reader,
+            &mut monitor_writer,
+            "monitor-event",
+            "EVENT"
+        )
+        .await,
+        ["[monitor-event] 306 e0s0c0"]
+    );
+    let help = command_lines(
+        &mut monitor_reader,
+        &mut monitor_writer,
+        "monitor-help",
+        "HELP *",
+    )
+    .await;
+    assert_eq!(help, ["[monitor-help] 404 Help topic not found"]);
+
+    // The denied command cannot mutate global configuration or fan an event.
+    let mut events = service.events.subscribe();
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "cfg-denied",
+            "CONFIG SET clock.master yes",
+        )
+        .await,
+        ["[cfg-denied] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut monitor_reader,
+            &mut monitor_writer,
+            "event-denied",
+            "BROADCAST_EVENT SP blocked",
+        )
+        .await,
+        ["[event-denied] 420 Access denied."]
+    );
+    assert!(events.try_recv().is_err());
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "project-denied",
+            "PROJECT LIST",
+        )
+        .await,
+        ["[project-denied] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut monitor_reader,
+            &mut monitor_writer,
+            "session-denied",
+            "SESSION_ID",
+        )
+        .await,
+        ["[session-denied] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut admin_reader,
+            &mut admin_writer,
+            "cfg-read",
+            "CONFIG GET clock.master",
+        )
+        .await,
+        ["[cfg-read] 303 clock.master=no"]
+    );
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "broadcast",
+            "BROADCAST_EVENT SP accepted",
+        )
+        .await,
+        ["[broadcast] 200 OK."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut admin_reader,
+            &mut admin_writer,
+            "admin-list",
+            "PROJECT LIST",
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[admin-list] 200 OK"
+    );
+    assert_eq!(
+        command_lines(
+            &mut admin_reader,
+            &mut admin_writer,
+            "access-denied",
+            "ACCESS LIST",
+        )
+        .await,
+        ["[access-denied] 420 Access denied."]
+    );
+
+    // A failed native user login retains the current role, while a successful
+    // lower-role login and LOGOUT change only this command connection.
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "wrong",
+            "LOGIN operate wrong",
+        )
+        .await,
+        ["[wrong] 422 Username and Password do not match."]
+    );
+    assert_eq!(
+        command_lines(&mut operate_reader, &mut operate_writer, "still", "LOGIN").await,
+        ["[still] 210 Access level: Operate"]
+    );
+    assert_eq!(
+        command_lines(
+            &mut operate_reader,
+            &mut operate_writer,
+            "lower",
+            "LOGIN none test-none-password",
+        )
+        .await,
+        ["[lower] 211 Access level set to: None"]
+    );
+    assert_eq!(
+        command_lines(&mut operate_reader, &mut operate_writer, "none", "NOOP").await,
+        ["[none] 420 Access denied."]
+    );
+    assert_eq!(
+        command_lines(&mut operate_reader, &mut operate_writer, "out", "LOGOUT").await,
+        ["[out] 211 Access level set to: Clipsal"]
+    );
+    assert_eq!(
+        command_lines(&mut admin_reader, &mut admin_writer, "independent", "LOGIN").await,
+        ["[independent] 210 Access level: Admin"]
+    );
+
+    drop(monitor_reader);
+    drop(monitor_writer);
+    let (mut reconnect_reader, mut reconnect_writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(
+            &mut reconnect_reader,
+            &mut reconnect_writer,
+            "fresh",
+            "LOGIN"
+        )
+        .await,
+        ["[fresh] 210 Access level: Clipsal"]
+    );
+    assert_eq!(
+        command_lines(
+            &mut reconnect_reader,
+            &mut reconnect_writer,
+            "persisted",
+            "LOGIN monitor test-monitor-password",
+        )
+        .await,
+        ["[persisted] 211 Access level set to: Monitor"]
+    );
+
+    server.abort();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn dbsetxml_native_admin_floor_and_recovery_admission_precede_document_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let target = "[doc] DBSETXML //HARNESS/254/p/5/TagName";
+    let before = std::fs::read(&path).unwrap();
+
+    let mut monitor = ClientState {
+        access_level: Some(CgateAccessLevel::Monitor),
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service
+            .handle_document(&mut monitor, target, "DeniedName")
+            .await
+            .final_text,
+        "420 Access denied."
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+
+    let mut recovery = ClientState {
+        access_level: Some(CgateAccessLevel::Admin),
+        recovery_only: true,
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service
+            .handle_document(&mut recovery, target, "DeniedName")
+            .await
+            .final_text,
+        "420 LOGIN required"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+
+    let mut admin = ClientState {
+        access_level: Some(CgateAccessLevel::Admin),
+        ..ClientState::default()
+    };
+    let allowed = service
+        .handle_document(&mut admin, target, "AllowedName")
+        .await;
+    assert_eq!(allowed.status, 200, "{allowed:?}");
+    assert_ne!(std::fs::read(&path).unwrap(), before);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "local DBSETXML must not write to PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn auth_wrong_secret_denied_and_gate_holds() {
     let (service, path) = authed_service();
     let mut client = ClientState::default();

@@ -42,7 +42,10 @@ pub(crate) fn applications_get_catalog(model: &Server, tag: &str, words: &[&str]
         ),
     }
 }
-use crate::access::{credential_digest_for, AccessEntry, CgateAccessLevel};
+use crate::access::{
+    credential_digest_for, native_minimum_for, AccessEntry, CgateAccessLevel,
+    NATIVE_PROBED_COMMANDS,
+};
 use crate::auth;
 use crate::config::{
     parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
@@ -2398,9 +2401,6 @@ impl Service {
         if client.recovery_only {
             return err(tag, 420, "420 LOGIN required");
         }
-        if verb == "SESSION_ID" {
-            return self.session_id(client, tag, &words, &upper).await;
-        }
         if verb == "QUIT" || verb == "EXIT" {
             return Response {
                 tag: tag.to_string(),
@@ -2409,14 +2409,22 @@ impl Service {
                 status: 204,
             };
         }
-        if let Some(response) = family_help::response(tag, &words, &upper) {
-            return response;
-        }
         if self.auth_token_hash.get().is_some()
             && !client.authenticated
             && requires_programming_auth(verb, sub, &upper)
         {
             return err(tag, 420, "420 LOGIN required");
+        }
+        if let Some(minimum) = native_minimum_for(&upper) {
+            if self.ensure_access_level(client).await < minimum {
+                return err(tag, 420, "420 Access denied.");
+            }
+        }
+        if let Some(response) = family_help::response(tag, &words, &upper) {
+            return response;
+        }
+        if verb == "SESSION_ID" {
+            return self.session_id(client, tag, &words, &upper).await;
         }
         if verb == "SHUTDOWN" || verb == "CONFIRM" {
             return self.shutdown_command(client, tag, &words, verb);
@@ -2813,6 +2821,12 @@ impl Service {
                 serde_json::Value::String("compatibility-bootstrap-then-explicit".to_string());
             capabilities["access_token_recovery_admission"] = serde_json::Value::Bool(true);
             capabilities["access_global_command_level_matrix"] = serde_json::Value::Bool(false);
+            capabilities["access_native_handler_probe_levels"] = serde_json::Value::Array(
+                NATIVE_PROBED_COMMANDS
+                    .iter()
+                    .map(|(path, level)| serde_json::json!({"path": path, "minimum": level.name()}))
+                    .collect(),
+            );
             capabilities["cgl_import"] = serde_json::Value::Bool(true);
             capabilities["cgl_export"] = serde_json::Value::Bool(true);
             capabilities["cgl_scope"] = serde_json::Value::String(
@@ -3992,11 +4006,20 @@ impl Service {
         let verb = upper.first().map(String::as_str).unwrap_or("");
         let sub = upper.get(1).map(String::as_str).unwrap_or("");
 
+        if client.recovery_only {
+            return err(tag, 420, "420 LOGIN required");
+        }
+
         if self.auth_token_hash.get().is_some()
             && !client.authenticated
             && requires_programming_auth(verb, sub, &upper)
         {
             return err(tag, 420, "420 LOGIN required");
+        }
+        if let Some(minimum) = native_minimum_for(&upper) {
+            if self.ensure_access_level(client).await < minimum {
+                return err(tag, 420, "420 Access denied.");
+            }
         }
         if verb == "FILE" {
             return self.file(tag, &cmd.body, Some(document)).await;
@@ -13178,6 +13201,9 @@ impl Service {
                                 // EVENT is handled here for connection-local mode state,
                                 // before `handle` applies the restricted-session gate.
                                 err(&c.tag, 420, "420 LOGIN required")
+                            }
+                            else if self.ensure_access_level(&mut client).await < CgateAccessLevel::Monitor {
+                                err(&c.tag, 420, "420 Access denied.")
                             }
                             else if words.len() == 1 { Response {tag:c.tag.clone(), lines:vec![], final_text:format!("306 {}", mode), status:306} }
                             else {
