@@ -9,7 +9,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from cbus_toolkit.pci_inventory import PCIMMICollector
-from tests.test_pci_serial_address_transport import Clock, FakeSocket
+from tests.test_pci_serial_address_transport import Clock, FakeSocket, TimedFakeSocket
 from tests.test_pci_serials import OTHER_UNIT, peer
 from tests.test_simulator_duplicates import fixture
 
@@ -50,12 +50,15 @@ class PCIMMICollectorTests(unittest.TestCase):
         self.assertEqual(document["automatic_retries"],0);self.assertTrue(document["connection_closed"])
 
     def test_fragmented_confirmation_and_blocks_preserve_literal_coverage(self):
-        def send(connection):
-            for chunk in (b"g",b".",FIRST[:9],FIRST[9:],MIDDLE[:20],MIDDLE[20:],LAST[:-3],LAST[-3:]):
-                connection.sendall(chunk);time.sleep(.004)
-        with peer(send) as (endpoint,state):result=collector(endpoint,response_timeout=.1).collect_mmi()
+        clock=Clock();chunks=(b"g",b".",FIRST[:9],FIRST[9:],MIDDLE[:20],MIDDLE[20:],LAST[:-3],LAST[-3:])
+        stream=TimedFakeSocket(clock,tuple((100+(index+1)/1000,chunk) for index,chunk in enumerate(chunks)))
+        subject=collector(("127.0.0.1",10001),response_timeout=.1)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_inventory.time.monotonic",side_effect=clock):
+            result=subject.collect_mmi()
         self.assertTrue(result.complete);self.assertEqual(result.addresses,(16,255))
-        self.assertEqual(state["request"],b"\\05FF00FAFF00g\r")
+        self.assertEqual([call for call in stream.calls if call[0]=="sendall"],
+                         [("sendall",b"\\05FF00FAFF00g\r")])
 
     def test_missing_repeated_overlapping_and_out_of_order_ranges_never_become_zero(self):
         for payload,known,block_count in ((FIRST+LAST,88,2),(FIRST+FIRST+LAST,88,2),
@@ -165,12 +168,13 @@ class PCIMMICollectorTests(unittest.TestCase):
         self.assertAlmostEqual(timeouts[-1],.04)
 
     def test_unrelated_traffic_does_not_extend_response_deadline(self):
-        def send(connection):
-            connection.sendall(b"g."+FIRST);time.sleep(.03);connection.sendall(OTHER_MMI)
-            time.sleep(.03);connection.sendall(OTHER_UNIT)
-        with peer(send) as (endpoint,_):result=collector(endpoint,response_timeout=.05).collect_mmi()
+        clock=Clock();stream=TimedFakeSocket(clock,((100.01,b"g."+FIRST),(100.03,OTHER_MMI)))
+        subject=collector(("127.0.0.1",10001),response_timeout=.05)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_inventory.time.monotonic",side_effect=clock):
+            result=subject.collect_mmi()
         self.assertEqual(result.termination,"response_timeout");self.assertFalse(result.complete)
-        self.assertEqual(len(result.unrelated),1);self.assertLess(result.elapsed,.1)
+        self.assertEqual(len(result.unrelated),1);self.assertAlmostEqual(result.elapsed,.06)
 
     def test_partial_frame_or_confirmation_and_disconnect_remain_incomplete(self):
         for payload in (b"g",b"g."+FIRST+MIDDLE[:10]):

@@ -122,7 +122,9 @@ class NativeGlobalFailureTests(unittest.TestCase):
         responses=[[b'[1] 200 OK.\r\n'],[b'[2] 200 OK.\r\n'],
                    [b'[3] 200 OK.\r\n'],[b'[4] 200 OK.\r\n'],[b'[5] 200 OK.\r\n'],
                    [b'[6] 400 Owned FontStyle rejection\r\n'],[b'[7] 200 OK.\r\n']]
-        with peer(responses) as (address,commands):
+        # Preparing the native plan can be CPU intensive on a loaded host. The
+        # peer timeout is only a fixture watchdog; it is not a product limit.
+        with peer(responses,connection_timeout=10) as (address,commands):
             with CGateClient(*address) as client:
                 self.manager._io.client=client
                 with self.assertRaises(NativeGlobalProgrammingError) as caught:

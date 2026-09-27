@@ -19,13 +19,14 @@ from cbus_toolkit.cgate import CGateClient, CGateError
 
 
 @contextlib.contextmanager
-def peer(responses, *, greeting=(b"201 Service ready: fixture\r\n",), pause=0.0, tls_context=None):
+def peer(responses, *, greeting=(b"201 Service ready: fixture\r\n",), pause=0.0,
+         tls_context=None, connection_timeout=1.0):
     commands = []
     failures = []
 
     class Handler(socketserver.StreamRequestHandler):
         def handle(self):
-            self.connection.settimeout(1)
+            self.connection.settimeout(connection_timeout)
             try:
                 for fragment in greeting:
                     self.connection.sendall(fragment)
@@ -54,7 +55,7 @@ def peer(responses, *, greeting=(b"201 Service ready: fixture\r\n",), pause=0.0,
             connection, address = super().get_request()
             if tls_context is not None:
                 try:
-                    connection.settimeout(1)
+                    connection.settimeout(connection_timeout)
                     connection = tls_context.wrap_socket(connection, server_side=True)
                 except BaseException:
                     connection.close()

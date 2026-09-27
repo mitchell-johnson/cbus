@@ -11,6 +11,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from cbus_toolkit.pci_serials import PCISerialCollector
+from tests.test_pci_serial_address_transport import Clock, TimedFakeSocket
 from tests.test_simulator_duplicates import SERIAL_A, SERIAL_B, fixture
 
 
@@ -81,17 +82,17 @@ class PCISerialCollectorTests(unittest.TestCase):
         self.assertEqual(document["status"], "duplicate_address")
 
     def test_splitting_confirmation_and_frames_and_delaying_second_restarts_quiet(self):
-        def send(connection):
-            for chunk in (b"g", b".", SERIAL_A[:7], SERIAL_A[7:-1], SERIAL_A[-1:]):
-                connection.sendall(chunk); time.sleep(.002)
-            time.sleep(.06)
-            for chunk in (SERIAL_B[:3], SERIAL_B[3:16], SERIAL_B[16:]): connection.sendall(chunk)
-        with peer(send) as (endpoint, state):
-            result = collector(endpoint, quiet_period=.12, overall_timeout=1).collect_serials(255)
+        clock=Clock();stream=TimedFakeSocket(clock,((100.01,b"g"),(100.011,b"."),
+            (100.012,SERIAL_A[:7]),(100.013,SERIAL_A[7:-1]),(100.014,SERIAL_A[-1:]),
+            (100.074,SERIAL_B[:3]),(100.075,SERIAL_B[3:16]),(100.076,SERIAL_B[16:])))
+        subject=collector(("127.0.0.1",10001),quiet_period=.12,overall_timeout=1)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_serials.time.monotonic",side_effect=clock):
+            result=subject.collect_serials(255)
         self.assertTrue(result.complete); self.assertEqual(result.status, "duplicate_address")
-        self.assertGreaterEqual(result.elapsed, .17)
+        self.assertAlmostEqual(result.elapsed, .196)
         self.assertEqual(result.replies[1].raw, SERIAL_B.rstrip(b"\r\n"))
-        self.assertEqual(state["extra"], b"")
+        self.assertEqual(sum(call[0]=="sendall" for call in stream.calls),1)
 
     def test_repeated_identical_serial_is_retained_and_deduplicated(self):
         result, _ = self.observe(b"g." + SERIAL_A + SERIAL_A + SERIAL_B)
@@ -159,33 +160,31 @@ class PCISerialCollectorTests(unittest.TestCase):
         self.assertEqual(len(result.received), 45); self.assertEqual(result.bytes_received, 46)
 
     def test_continuing_matching_replies_hit_overall_limit_without_replay(self):
-        def send(connection):
-            connection.sendall(b"g.")
-            for _ in range(9): connection.sendall(SERIAL_A); time.sleep(.04)
-        with peer(send) as (endpoint, state):
-            result = collector(endpoint, quiet_period=.1, overall_timeout=.24, max_frames=30).collect_serials(255)
-        # A readable socket can wake at the deadline, before the timeout branch.
-        # Both paths reject the unfinished window and must send no further request.
-        self.assertIn(result.termination, ("overall_timeout", "late_data"))
+        clock=Clock();stream=TimedFakeSocket(clock,((100.01,b"g."+SERIAL_A),
+            (100.05,SERIAL_A),(100.09,SERIAL_A),(100.13,SERIAL_A),(100.17,SERIAL_A),(100.21,SERIAL_A)))
+        subject=collector(("127.0.0.1",10001),quiet_period=.1,overall_timeout=.24,max_frames=30)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_serials.time.monotonic",side_effect=clock):
+            result=subject.collect_serials(255)
+        self.assertEqual(result.termination,"overall_timeout")
         self.assertFalse(result.complete)
-        self.assertGreaterEqual(result.elapsed, .24)
+        self.assertAlmostEqual(result.elapsed,.24)
         self.assertGreater(len(result.replies), 1)
-        self.assertEqual(state["request"], b"\\46FF002104g\r")
-        self.assertEqual(state["extra"], b"")
+        self.assertEqual([call for call in stream.calls if call[0]=="sendall"],
+                         [("sendall",b"\\46FF002104g\r")])
         self.assertTrue(result.connection_closed)
 
     def test_fragment_before_deadline_and_late_tail_do_not_extend_quiet(self):
-        def send(connection):
-            connection.sendall(b"g." + SERIAL_A)
-            time.sleep(.025); connection.sendall(SERIAL_B[:12])
-            time.sleep(.1); connection.sendall(SERIAL_B[12:])
-        with peer(send) as (endpoint, state):
-            subject = collector(endpoint, quiet_period=.06)
+        clock=Clock();stream=TimedFakeSocket(clock,((100.01,b"g."+SERIAL_A+SERIAL_B[:12]),
+                                                     (100.13,SERIAL_B[12:])))
+        subject=collector(("127.0.0.1",10001),quiet_period=.06)
+        with patch.object(subject,"_make_socket",return_value=stream), \
+                patch("cbus_toolkit.pci_serials.time.monotonic",side_effect=clock):
             result = subject.collect_serials(255)
             with self.assertRaisesRegex(RuntimeError, "one-shot"): subject.collect_serials(255)
         self.assertEqual(result.termination, "truncated_frame")
         self.assertEqual(result.serials, ("101136.1558",)); self.assertFalse(result.complete)
-        self.assertTrue(state["closed"]); self.assertEqual(state["extra"], b"")
+        self.assertTrue(result.connection_closed);self.assertEqual(len(stream.schedule),1)
 
     def test_reply_after_completed_window_cannot_be_reused_for_another_request(self):
         def send(connection):

@@ -80,6 +80,26 @@ class FakeSocket:
     def close(self):self.calls.append(('close',));self.effect(self.close_effect)
 
 
+class TimedFakeSocket(FakeSocket):
+    """Deliver scheduled bytes only when they precede the active socket deadline."""
+    def __init__(self,clock,schedule,**options):
+        super().__init__(clock,chunks=(),**options);self.schedule=list(schedule)
+    def recv(self,size):
+        self.calls.append(('recv',size))
+        if not self.schedule:
+            self.clock.value+=self.timeout
+            raise socket.timeout('window')
+        arrived,value=self.schedule[0]
+        deadline=self.clock.value+self.timeout
+        if arrived>=deadline:
+            self.clock.value=deadline
+            raise socket.timeout('window')
+        self.schedule.pop(0);self.clock.value=arrived
+        if isinstance(value,BaseException):raise value
+        if len(value)>size:self.schedule.insert(0,(arrived,value[size:]));return value[:size]
+        return value
+
+
 def transport(endpoint=('127.0.0.1',10001),**options):
     return PCISerialAddressTransport(*endpoint,**(dict(local_unit=16,response_timeout=.04,overall_timeout=1)|options))
 
@@ -111,18 +131,22 @@ class SerialAddressTransportTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):client.send_serial_address(A,6)
 
     def test_fragmented_srchk_and_late_conflicting_frame_are_whole_capture(self):
-        with peer([RECEIPT_A[:1],RECEIPT_A[1:5],RECEIPT_A[5:17],RECEIPT_A[17:],(.025,WRONG_SOURCE[2:])]) as (endpoint,state):
-            result=transport(endpoint,command_checksum=True,response_timeout=.08).send_serial_address(A,6)
-        self.assertEqual(state['requests'],[b'\\05FF000F0018B106160615EDg\r'])
+        clock=Clock();sock=TimedFakeSocket(clock,((100.001,RECEIPT_A[:1]),(100.002,RECEIPT_A[1:5]),
+            (100.003,RECEIPT_A[5:17]),(100.004,RECEIPT_A[17:]),(100.025,WRONG_SOURCE[2:])))
+        client=transport(command_checksum=True,response_timeout=.08)
+        result=self.run_fake(clock,sock,client)
+        self.assertEqual([call for call in sock.calls if call[0]=='sendall'],
+                         [('sendall',b'\\05FF000F0018B106160615EDg\r')])
         self.assertTrue(result.capture_complete);self.assertEqual(result.receipt.status,'ambiguous')
         self.assertEqual(len(result.receipt.replies),2);self.assertFalse(result.receipt.matched)
 
     def test_valid_prefix_does_not_hide_trailing_partial_or_malformed_data(self):
         for suffix,status in ((b'86','incomplete'),(b'XX\r\n','invalid')):
-            with self.subTest(suffix=suffix),peer([RECEIPT_A,(.015,suffix)]) as (endpoint,state):
-                result=transport(endpoint).send_serial_address(A,6)
+            clock=Clock();sock=TimedFakeSocket(clock,((100.001,RECEIPT_A),(100.015,suffix)))
+            with self.subTest(suffix=suffix):result=self.run_fake(clock,sock,transport())
             self.assertTrue(result.capture_complete);self.assertEqual(result.receipt.status,status)
-            self.assertEqual(result.received,RECEIPT_A+suffix);self.assertEqual(len(state['requests']),1)
+            self.assertEqual(result.received,RECEIPT_A+suffix)
+            self.assertEqual(sum(call[0]=='sendall' for call in sock.calls),1)
 
     def test_missing_wrong_and_rejected_receipts_wait_full_window_without_followup(self):
         for response,status in ((b'g.','incomplete'),(WRONG_SOURCE,'unverified'),(b'g#','rejected'),(b'','incomplete')):
