@@ -12,6 +12,7 @@ import sys
 import time
 
 import pytest
+from cbus_toolkit.cgate import CGateClient
 from cbus_toolkit.simulator import PCISimulator
 from test_cmqtt import memory
 
@@ -73,6 +74,9 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                     assert process.poll() is None, output
                     time.sleep(.02)
                 assert port is not None, output
+                with CGateClient('127.0.0.1', int(port), timeout=30) as client:
+                    xml_response = client.command('DBGETXML //TEST/254')
+                    assert xml_response.status == 344
                 result = subprocess.run([sys.executable, '-m', 'cbus_toolkit', 'cgate',
                     '--host', '127.0.0.1', '--port', port, '--timeout', '30',
                     'edlt-labels', '//TEST/254/p/5'], capture_output=True, text=True, timeout=120)
@@ -83,6 +87,7 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                 assert len(value['static_strings']) == 64
                 assert value['static_text_crc_verified']
                 assert value['project_group_labels_complete']
+                assert value['project_group_labels']['cmqttd_import_capability_verified'] is True
                 assert value['project_group_labels']['labels'][0]['tag_value'] == 'Synthetic Label'
                 assert value['project_group_labels']['device_readback'] is False
                 assert sim.physical_memory[5] == dict(enumerate(image))

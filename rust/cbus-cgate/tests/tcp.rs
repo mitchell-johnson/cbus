@@ -689,6 +689,28 @@ fn native_dbgetxml_wire_matches_fresh_address_oid_and_pipeline_capture() {
         cases.iter().find(|case| case["tag"] == "912").unwrap()["response_lines"][0],
         "[912] 401 Bad object or device ID: Element 21 not found.\r\n"
     );
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("PROJECT NEW XFRAME").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let missing = session.command("DBGETXML //XFRAME/254/p/21");
+    assert_eq!(missing.status, 401);
+    assert_eq!(
+        missing.lines,
+        [
+            cases.iter().find(|case| case["tag"] == "912").unwrap()["response_lines"][0]
+                .as_str()
+                .unwrap()
+                .trim_end_matches("\r\n")
+                .trim_start_matches("[912] ")
+        ]
+    );
     assert_eq!(
         cases.iter().find(|case| case["tag"] == "914").unwrap()["response_lines"][0],
         "[914] 200 OK.\r\n"

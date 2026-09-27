@@ -2378,8 +2378,9 @@ def _cgate(args):
         from .edlt_label_audit import load_baseline
         edlt_audit_expected = load_baseline(args.baseline)
     from .edlt_control_cli import connection_guard
-    # cmqttd returns network DBGETXML as one 347 line. Allow the parser's
-    # 4 MiB XML bound plus a small status-envelope margin for this read.
+    # Native C-Gate and cmqttd return the network document in one potentially
+    # large 347 row after the short XML declaration. Leave room for the 4 MiB
+    # document bound plus its status envelope.
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" else {}
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:

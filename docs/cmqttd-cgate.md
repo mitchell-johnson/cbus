@@ -551,9 +551,16 @@ Both label-read forms also make one read-only `DBGETXML` request for the saved
 network and return `project_group_labels` at top level. These are the project
 database's Group/TagsDLT rows, including language, flavour, type and value;
 they are not attached to a physical unit or treated as displayed labels. A
-cmqttd status-200 XML reply is accepted only when `CMQTT CAPABILITIES` reports
-`saved_project_group_dlt_labels: true`; native C-Gate status-344 XML needs no
-cmqttd marker bound to the requested project. A malformed or unverified database response is a separate
+The CLI probes `CMQTT CAPABILITIES` independently of the XML completion code,
+because current cmqttd and native C-Gate both end successful `DBGETXML` with
+344. A cmqttd reply is accepted only when that command reports
+`saved_project_group_dlt_labels: true` for the requested project. Native
+Schneider C-Gate is accepted when its service greeting is identified and it
+rejects the cmqttd-only capability command with a 4xx response. An owned
+original 3.4.0.2001 loopback capture returned `400 Syntax Error.` for
+`CMQTT CAPABILITIES`, then `200 OK.` for a pipelined `NOOP` on the same
+connection (`rust/testdata/fixtures/native_cgate_cmqtt_capability_vm.json`).
+A malformed or unverified database response is a separate
 `project_group_labels_error`, leaves physical read evidence in place, and sets
 the CLI's top-level `complete=false`. The nested
 `project_snapshot_complete=true` means only that the returned saved Group

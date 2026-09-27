@@ -14460,6 +14460,16 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
         command_lines(&mut reader, &mut writer, "afterxml", "NOOP").await,
         ["[afterxml] 200 OK"]
     );
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "absent",
+            "DBGETXML //HARNESS/254/p/21",
+        )
+        .await,
+        ["[absent] 401 Bad object or device ID: Element 21 not found."]
+    );
 
     let mut oversized = Vec::with_capacity(MAX_LINE + 64);
     oversized.extend_from_slice(b"[large] DBSETXML //HARNESS/254/p/5/TagName << END\r\n");

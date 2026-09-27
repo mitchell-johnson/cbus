@@ -1,0 +1,24 @@
+{
+  "format": "native-cgate-cmqtt-capability-vm-v1",
+  "scope": "original C-Gate 3.4.0.2001 on owned IPv4 loopback command listener; no project or physical C-Bus network opened",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "capture_script_sha256": "37bca146476c28e4e9fe636f8d42c37ab8a44cf0466c205c41d3a6aa4611306d",
+  "raw_capture_sha256": "8b9b5f7427394eb28db7f30ad1a6e4b26bc2fab350b800ab96a299bfa8920118",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "request": "[1] CMQTT CAPABILITIES\r\n[2] NOOP\r\n",
+  "capability_response_lines": [
+    "[1] 400 Syntax Error.\r\n"
+  ],
+  "noop_response_lines": [
+    "[2] 200 OK.\r\n"
+  ],
+  "ipv4_default_routes_during": 0,
+  "service_listener_count": 6,
+  "service_listeners_loopback_only": true,
+  "cleanup": {
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "original_home_restored": true,
+    "ipv4_default_routes_restored": 1
+  }
+}

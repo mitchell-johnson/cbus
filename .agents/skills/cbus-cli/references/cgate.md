@@ -68,10 +68,14 @@ cmqttd extensions.
 
 `edlt-labels` also reports saved project `Group/TagsDLT/TagDLT` rows from one
 read-only network `DBGETXML` response. `project_group_labels` is network-wide
-project metadata and is never attributed to a display. For cmqttd's status-200
-response, the CLI requires `CMQTT CAPABILITIES` to advertise
-`saved_project_group_dlt_labels: true`; native C-Gate status-344 XML is accepted
-without that extension. Keep this source separate from physical static strings,
+project metadata and is never attributed to a display. For cmqttd, the CLI
+requires `CMQTT CAPABILITIES` to advertise
+`saved_project_group_dlt_labels: true` for the requested project, regardless
+of whether XML ends with 200 or 344. Native C-Gate's 344 XML is accepted only
+after its Schneider service greeting and a 4xx response to that extension.
+The pinned native 3.4.0.2001 capture has `400 Syntax Error.` followed by a
+successful pipelined `NOOP` (`rust/testdata/fixtures/native_cgate_cmqtt_capability_vm.json`).
+Keep this source separate from physical static strings,
 current-connection SAL observations, and unreadable device dynamic caches.
 
 `edlt-label-audit` adds one cached `WidgetGroups` getter per successful unit and

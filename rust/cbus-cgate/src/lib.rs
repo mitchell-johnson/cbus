@@ -4141,7 +4141,11 @@ impl Server {
             }
             let snippet = if let Some((_, _, addr)) = Self::split_unit(path) {
                 let Some(unit) = proj.networks[&(net as u8)].units.get(&addr) else {
-                    return err(tag, status::ABSENT, "401 Unit not found");
+                    return err(
+                        tag,
+                        status::ABSENT,
+                        &format!("401 Bad object or device ID: Element {addr} not found."),
+                    );
                 };
                 self.unit_xml_document(parts[0], unit)
             } else {

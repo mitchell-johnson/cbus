@@ -20,6 +20,7 @@ MAX_TAGS = 8192
 def project_group_labels(client, network):
     """Enumerate network Group/TagsDLT/TagDLT from exactly one DBGETXML read."""
     from .cmqtt import _network
+    from .cgate import CGateError
 
     network = _network(network)
     address = int(network.rsplit('/', 1)[1])
@@ -27,17 +28,27 @@ def project_group_labels(client, network):
     response = client.command(command)
     if response.status not in (200, 344):
         raise ValueError('C-Gate network XML did not complete successfully')
-    # Native C-Gate ends DBGETXML with 344. cmqttd uses 200, and old builds
-    # could emit a parseable but incomplete network tree after dropping the
-    # imported TagsDLT records. Require its explicit preservation capability.
-    if response.status == 200:
-        from .cmqtt import _object
+    # A successful DBGETXML now ends with 344 on both native C-Gate and
+    # current cmqttd. Identify the server through the independent capability
+    # command; older cmqttd builds can return incomplete imported TagsDLT.
+    from .cmqtt import _object
+    try:
         capabilities = _object(client, 'CMQTT CAPABILITIES')
+    except CGateError as error:
+        greeting = getattr(client, 'greeting', None)
+        if (not 400 <= error.response.status < 500
+                or not isinstance(greeting, str)
+                or not greeting.startswith(
+                    '201 Service ready: Schneider Electric C-Gate Version:')):
+            raise ValueError('C-Gate service identity and saved project Group/TagsDLT preservation could not be verified') from error
+        cmqttd_verified = False
+    else:
         requested_project = network[2:].split('/', 1)[0]
         if (capabilities.get('service') != 'cmqttd'
                 or capabilities.get('project') != requested_project
                 or capabilities.get('saved_project_group_dlt_labels') is not True):
             raise ValueError('cmqttd has not confirmed saved project Group/TagsDLT preservation for the requested project')
+        cmqttd_verified = True
     xml = native_xml_reply_text(response, completion_codes=(200, 344))
     size = len(xml.encode('utf-8'))
     if size > MAX_XML_BYTES:
@@ -108,7 +119,7 @@ def project_group_labels(client, network):
         'device_readback': False,
         'physical_device_verified': False,
         'device_label_inventory_complete': False,
-        'cmqttd_import_capability_verified': response.status == 200,
+        'cmqttd_import_capability_verified': cmqttd_verified,
         'application_count': len(applications),
         'group_count': group_count,
         'label_count': len(rows),

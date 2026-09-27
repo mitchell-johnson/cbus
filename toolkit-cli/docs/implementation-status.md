@@ -290,8 +290,11 @@ Physical dynamic-label cache readback remains unimplemented and false. The
 uses one network `DBGETXML` response and remains separate from static physical
 strings and observed traffic. cmqttd advertises
 `saved_project_group_dlt_labels: true` only after its importer preserves these
-records; the CLI rejects an older status-200 cmqttd response without that
-marker. A native status-344 `DBGETXML` response needs no cmqttd marker. The
+records; the CLI rejects a cmqttd response without that marker whether its
+`DBGETXML` ends with 200 or 344. Native C-Gate's 344 XML is accepted only with
+its Schneider greeting and a 4xx response to the cmqttd-only capability
+command. The pinned original 3.4.0.2001 capture records `400 Syntax Error.`
+and a successful same-socket `NOOP` after that probe. The
 [pinned native 1.18/3.4 investigation](edlt-dynamic-cache-boundary.md) found no
 exposed operation to enumerate a device's pre-existing cache; it does not
 claim that undocumented firmware protocols are impossible. See also the

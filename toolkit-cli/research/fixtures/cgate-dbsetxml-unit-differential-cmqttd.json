@@ -12,10 +12,10 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/private/tmp/cbus-native-dbsetxml-unit-target-20260928/debug/cmqttd",
-    "sha256": "bd29ace5a784af22ebbca1f5adbe2cc7b4c4a10613bfaf1c205f51b2ce595829"
+    "path": "/private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cmqttd",
+    "sha256": "1c7526a673a387102bc4a19feee6abf11069b1ad85ead8bc6ba0f740f39e3857"
   },
-  "source_revision": "98ebe4c094ba3ce1403912041f4b5ccd8fdcc11a",
+  "source_revision": "3455db31c6a44258e41c4e33ea8110f117208cad",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "6e52fe12c65d6368168f1309e5d4e42491ab01d03766a89150ed0123864a39ff",
     "rust/Cargo.lock": "b9777fa1ce9e2cc17ce021844acf04ee1d0b949e14dafef02263da3e16d9cddc",
@@ -27,8 +27,8 @@
     "rust/cbus-cgate/src/config.rs": "e682931e7ebe0df0a40f3ac87e1fd4267d7a326ca7de3f425dc8a054b930bdb5",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "c2c740c6faff7e48e3ac8b307860b4bc3f428494df6ae16a2ef535760c622f9c",
-    "rust/cbus-cgate/src/lib.rs": "27face805e313e670d37f9b5b278431f0b3ba871e85121f1cff0a29f2f11c946",
-    "rust/cbus-cgate/src/main.rs": "600a7a39e22db22adfcd62a762bf416b67de39dc69ca7f475d671955a594de61",
+    "rust/cbus-cgate/src/lib.rs": "0e617b5c490be36ee3969aee0d8be81bf85a793d2f839e67e4aec0a8c71a8d9e",
+    "rust/cbus-cgate/src/main.rs": "c283a230ade13eee06839d53f58ab4793c7afc192e9196c3ef595adc083b27b9",
     "rust/cbus-cgate/src/manual.rs": "fdf01acf8dd3eb037c469732e4cbf36cbaef7ca19612fd9ffedebc196248758c",
     "rust/cbus-cgate/src/port.rs": "44c6f3f952e6d2330a29c19616c32d5245454a7cab3327b2d895815d7ad33924",
     "rust/cbus-cgate/src/service/calculator.rs": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411",
@@ -38,12 +38,13 @@
     "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
     "rust/cbus-cgate/src/service/net_lifecycle.rs": "408434ff835df6d5cf5aa1a83133d335696dc83b17e49d618ccada665ec5bb1b",
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
-    "rust/cbus-cgate/src/service/tests.rs": "dc85627ba1081abec0c02da976238e4f285385fc74a8359790473c808a153499",
+    "rust/cbus-cgate/src/service/tests.rs": "3bf2ceddb98df01db26688ace9512d375acaa22bd262cc4b2ea1f4479e6ec08f",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
-    "rust/cbus-cgate/src/service.rs": "5ba42e8403df937880c75bdf890e68fc9df4d3f5c4ccd50edf3160272262f1b2",
+    "rust/cbus-cgate/src/service.rs": "a8707194c86ae62b3c959c6983083e0dd6be33cd9c989787aa12a07361276ed8",
     "rust/cbus-cgate/src/show.rs": "19dc904dbe016c925c9972dc01e6423d9a2b2f0a7083bae9dbc9d12f8b7eeb5d",
     "rust/cbus-cgate/src/unitspec.rs": "d2f64bf3e45e3810530435df72845c69cb173ab235e706a6e96c56daa8153fd9",
     "rust/cbus-cgate/tests/server.rs": "941960a443cd2f53cdb4efd06b317f6de7d184491bb629f7429734243b8d1b47",
+    "rust/cbus-cgate/tests/tcp.rs": "01121815d291fa31dec69f27327fc4843953f3a4633910a8d7d8a20f6af55328",
     "rust/cbus-mqtt/Cargo.toml": "16a45b2f77df915497457f1d7a636829af2dd2dc75bdbb279e3d50ca3de54777",
     "rust/cbus-mqtt/src/cbz.rs": "90a92a29011646ea0370e574779dadd7a9f2e77c491a20e7606d4ae89b9aecaa",
     "rust/cbus-mqtt/src/command.rs": "6f7f371fa6b10e04c6864709d461641f78fb249b3f7b4d1bab7121295b6fa462",
@@ -119,23 +120,26 @@
     "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
     "rust/testdata/fixtures/native_cgate_dali_help.json": "c60df73cb0d62c84b009c8a88fb436b50f9abd0e5d47f79cbde2668443c600e0",
     "rust/testdata/fixtures/native_cgate_dali_specialized.json": "9d947d08a95e1384805155e768940b3ff125c189352a1d7a028bc3fad92d3aff",
+    "rust/testdata/fixtures/native_cgate_dbgetxml_framing_vm.json": "c819303fbe8d38d552fa3aa9b80fbe60ca1161ae731f1aeb830323f0e7e6863a",
     "rust/testdata/fixtures/native_cgate_dbsetxml_combined_vm.json": "7d850980d52a05103796bfcb01ca49a4fda5db23177387c0ad1d72978953abae",
     "rust/testdata/fixtures/native_cgate_dbsetxml_unit_vm.json": "6ae63e7a36de13cdd5af034ba132dcda9b452dc5bc3a5e403a3213423e9ce70d",
     "rust/testdata/fixtures/native_cgate_family_help.json": "6444ffe20d697d3b91c1678899185468865446d8554493b0eb518e4641fcb98c",
     "rust/testdata/fixtures/native_cgate_legacy_database.json": "1c47cce822b828e757c4c6265cd7392a0f959fa605c826590cb9510fa41db3ec",
     "rust/testdata/fixtures/native_cgate_session_selectors.json": "537a0718d94948010d27e2b3aa3e3abce1478d0af08448a4af7199d11766a562",
     "rust/testdata/fixtures/project.xml": "15eb06a6ce7c96b88baa77d240e66b90559bb85f5f594e454b7cd18fd8a1c9c1",
+    "rust/testdata/vectors/cgate_dbgetxml_wire.json": "42b22fe1933392734d33728e224c7fef597fc1d73bd827952316e83526dd1b9e",
     "rust/testdata/vectors/cgate_event_fanout.jsonl": "87ebd9bf116daa378d563fe504b97589931d345a678a4709ad1db37e64efb12b",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "1ce96ee5aa8ea02c788202390bc684c8f5ea102dc6677171d4de349714185342",
-    "toolkit-cli/Makefile": "a3968d7116d9b64ba49e5cccf9cedb46378f7fa8f13197a6579d43e37950c27d",
-    "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "46914a8e208cfbe39d3d883fec18664e116bb690af078fc22f317e060d9ee8fb",
+    "toolkit-cli/Makefile": "26f432624ebbc99c8efbe7e97015a923aa0b545845f34bfa1de9500117103268",
+    "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "33f775580cc75ae312f5fb8dd11471ef0be65f9c862c99a35b02a59b1f5be41a",
     "toolkit-cli/research/cgate_session_differential.py": "d6905ad64fb47c418163500aac472cc7f6f6c1ed94f70ec1d8012a0f9f948be9",
     "toolkit-cli/src/cbus_toolkit/simulator.py": "1626a046f5bd274b185bec1b11236f32a274abe06d41e87012655012dc58fec6",
-    "toolkit-cli/tests/test_cgate_dbsetxml_unit_differential.py": "e54d134aef3e630e69eabd32ab6ed3e1f507151566d318b1640e3b24034a1ae3",
+    "toolkit-cli/tests/test_cgate_dbsetxml_unit_differential.py": "beb9ecd83694cb6386655b3425627a598e1c9aefc2cd306af96f2a1662621e5c",
+    "toolkit-cli/tests/test_native_cgate_dbgetxml_framing_vm.py": "4029cc1f2ac0becc4850157738f44f8377eab25674549a08a4223794b2e296cd",
     "toolkit-cli/tests/test_rust_cgate_interop.py": "f23bcb74459434fd12399ee6baf7f3cf2d041e0162a35dbba9197757e50790f8"
   },
   "normalization": "generated Network and Interface OIDs only; all XML bytes otherwise exact",
-  "xml_wire_boundary": "native 343/347/344; Rust 347/200; raw rows retained",
+  "xml_wire_boundary": "native and Rust 343/347/344 with LF-only declaration; raw rows retained",
   "offline_provision": {
     "loopback_cgate": true,
     "disposable_pci_and_broker": true,
@@ -178,14 +182,16 @@
         "[809] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[809] 343-Begin XML snippet\r\n",
+        "[809] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[809] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
-        "[809] 200 OK\r\n"
+        "[809] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "rust_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "810",
@@ -223,14 +229,16 @@
         "[811] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[811] 343-Begin XML snippet\r\n",
+        "[811] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[811] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
-        "[811] 200 OK\r\n"
+        "[811] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "rust_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "812",
@@ -249,14 +257,16 @@
         "[812] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[812] 343-Begin XML snippet\r\n",
+        "[812] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[812] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[812] 200 OK\r\n"
+        "[812] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "813",
@@ -294,14 +304,16 @@
         "[814] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[814] 343-Begin XML snippet\r\n",
+        "[814] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[814] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
-        "[814] 200 OK\r\n"
+        "[814] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "rust_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "815",
@@ -320,14 +332,16 @@
         "[815] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[815] 343-Begin XML snippet\r\n",
+        "[815] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[815] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[815] 200 OK\r\n"
+        "[815] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "816",
@@ -365,14 +379,16 @@
         "[817] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[817] 343-Begin XML snippet\r\n",
+        "[817] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[817] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
-        "[817] 200 OK\r\n"
+        "[817] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "rust_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     },
     {
       "tag": "818",
@@ -410,14 +426,16 @@
         "[819] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[819] 343-Begin XML snippet\r\n",
+        "[819] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[819] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
-        "[819] 200 OK\r\n"
+        "[819] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "rust_mapper_result": "<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>",
       "mapper_equal": true,
-      "wire_equal": false
+      "wire_equal": true
     }
   ],
   "combined_network_checks": [
@@ -435,19 +453,22 @@
         "[909] 344 End XML snippet\r\n"
       ],
       "mapped_original_wire": [
-        "[909] 343-Begin XML snippet\r\n",
-        "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
-        "[909] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[909] 344 End XML snippet\r\n"
+        "[716] 343-Begin XML snippet\r\n",
+        "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[716] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[716] 343-Begin XML snippet\r\n",
+        "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[716] 200 OK\r\n"
+        "[716] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
-      "mapper_equal": true
+      "mapper_equal": true,
+      "wire_equal": true
     },
     {
       "after_current_tag": "818",
@@ -463,19 +484,22 @@
         "[911] 344 End XML snippet\r\n"
       ],
       "mapped_original_wire": [
-        "[911] 343-Begin XML snippet\r\n",
-        "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
-        "[911] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[911] 344 End XML snippet\r\n"
+        "[718] 343-Begin XML snippet\r\n",
+        "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[718] 344 End XML snippet\r\n"
       ],
       "rust_wire": [
+        "[718] 343-Begin XML snippet\r\n",
+        "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
-        "[718] 200 OK\r\n"
+        "[718] 344 End XML snippet\r\n"
       ],
       "unsolicited_events": [],
       "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
       "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
-      "mapper_equal": true
+      "mapper_equal": true,
+      "wire_equal": true
     }
   ],
   "setup": {
@@ -500,16 +524,18 @@
     },
     "704": {
       "rows": [
+        "[704] 343-Begin XML snippet\r\n",
+        "[704] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
         "[704] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
-        "[704] 200 OK\r\n"
+        "[704] 344 End XML snippet\r\n"
       ],
       "events": []
     }
   },
   "passed": 12,
   "failed": 0,
-  "wire_equal": 5,
+  "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/private/tmp/cbus-native-dbsetxml-unit-mapper-20260928/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-native-dbsetxml-unit-target-20260928/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-native-dbsetxml-unit-target-20260928/debug/cmqttd --output-dir research/runtime"
+  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cmqttd --output-dir research/runtime"
 }
