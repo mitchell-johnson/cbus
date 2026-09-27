@@ -4908,10 +4908,22 @@ async fn capabilities_report_observation_without_device_readback() {
             "SHORTMESSAGE",
             "EREPORT MESSAGE",
             "ACCESS_CONTROL",
+            "LIGHTING|TRIGGER|ENABLE LABEL",
+            "CLOCK",
+            "TEMPERATURE BROADCAST",
+            "SCENE PLAY",
             "NET SET_PROJECT_IDENTIFY",
             "PP SAVE",
             "PP SAVE_TO_SOURCE"
         ])
+    );
+    assert_eq!(document["dynamic_labels_routed"], true);
+    assert_eq!(document["clock_control_routed"], true);
+    assert_eq!(document["temperature_broadcast_routed"], true);
+    assert_eq!(document["named_scene_playback_routed"], true);
+    assert_eq!(
+        document["routed_scene_preflight"],
+        "all-target-routes-before-first-write"
     );
     assert_eq!(document["physical_application_routed_control"], true);
     assert_eq!(
@@ -4930,7 +4942,11 @@ async fn capabilities_report_observation_without_device_readback() {
             "identify",
             "short-message",
             "error-reporting",
-            "access-control"
+            "access-control",
+            "dynamic-label",
+            "clock",
+            "temperature",
+            "named-scene-playback"
         ])
     );
     assert_eq!(document["specialist_application_routed_max_hops"], 6);
@@ -10045,6 +10061,156 @@ async fn bridged_specialist_application_families_use_exact_route_and_one_shot_co
     let response = stale.await.unwrap();
     assert_eq!(response.status, 502, "{response:?}");
     assert!(response.final_text.contains("generation changed"));
+
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn bridged_labels_clocks_temperature_and_named_scenes_are_exact_and_target_scoped() {
+    let path = state_path();
+    let xml = topology_fixture().replace(
+        "</Project>",
+        r#"<Network oid="network-252">
+        <TagName>Unroutable</TagName><Address>252</Address>
+        <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>253/p/252</InterfaceAddress></Interface>
+        </Network></Project>"#,
+    );
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service = Service::new(&xml, None, path.clone(), pci_client, None).unwrap();
+    let cases = [
+        (
+            "label",
+            "LIGHTING LABEL //TOPO/253/56 0 1 - F0 0 41",
+            b"\\03FD0938A401000041D9".as_slice(),
+        ),
+        (
+            "clock-refresh",
+            "CLOCK REQUEST_REFRESH //TOPO/253/223",
+            b"\\03FD09DF110304".as_slice(),
+        ),
+        (
+            "clock-date",
+            "CLOCK DATE //TOPO/253/223 2026-09-27",
+            b"\\03FD09DF0E0207EA091B06ED".as_slice(),
+        ),
+        (
+            "temperature",
+            "TEMPERATURE BROADCAST //TOPO/253/25/3 21.0",
+            b"\\03FD091902035485".as_slice(),
+        ),
+    ];
+    for (index, (tag, command, expected)) in cases.into_iter().enumerate() {
+        let pending = tokio::spawn({
+            let service = service.clone();
+            let command = command.to_string();
+            async move {
+                service
+                    .handle(&mut ClientState::default(), &format!("[{tag}] {command}"))
+                    .await
+            }
+        });
+        let request = match tokio::time::timeout(
+            Duration::from_millis(200),
+            database_pci_line(&mut remote_read),
+        )
+        .await
+        {
+            Ok(request) => request,
+            Err(_) if pending.is_finished() => {
+                panic!(
+                    "{command} returned before PCI I/O: {:?}",
+                    pending.await.unwrap()
+                )
+            }
+            Err(_) => panic!("{command} did not write its routed frame"),
+        };
+        assert_eq!(&request[..request.len() - 2], expected, "{command}");
+        let code = request[request.len() - 2];
+        if index == 0 {
+            let wrong = if code == b'z' { b'y' } else { b'z' };
+            remote_write.write_all(&[wrong, b'.']).await.unwrap();
+            routed_pci_reply(&mut remote_write, &[252], 4, &[0x82, 1, 0]).await;
+            tokio::task::yield_now().await;
+            assert!(
+                !pending.is_finished(),
+                "foreign traffic completed routed {command}"
+            );
+        }
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        let response = pending.await.unwrap();
+        assert!(response.status < 400, "{command}: {response:?}");
+    }
+
+    assert!(
+        service.observed_labels.lock().await.observations.is_empty(),
+        "a routed label must not be attributed to the configured-network observation cache"
+    );
+    let model = service.model.lock().await;
+    assert!(!model.application_state.contains_key("CLOCK DATE"));
+    assert!(!model
+        .application_state
+        .contains_key("TEMPERATURE BROADCAST"));
+    drop(model);
+
+    service.model.lock().await.scene_snapshots.insert(
+        "house/remote".to_string(),
+        vec![("//TOPO/253/56/1".to_string(), 42)],
+    );
+    let scene = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[scene] SCENE PLAY house remote",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert_eq!(
+        &request[..request.len() - 2],
+        b"\\03FD093802012A92",
+        "named-scene routed ramp wire changed"
+    );
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    assert_eq!(scene.await.unwrap().status, 200);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "routed scene playback must not invent a direct-network status readback"
+    );
+
+    service.model.lock().await.scene_snapshots.insert(
+        "house/bad-route".to_string(),
+        vec![("//TOPO/252/56/1".to_string(), 99)],
+    );
+    let response = service
+        .handle(
+            &mut ClientState::default(),
+            "[bad-scene] SCENE PLAY house bad-route",
+        )
+        .await;
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "an unroutable scene must fail in preflight before physical I/O"
+    );
 
     std::fs::remove_file(path).unwrap();
 }

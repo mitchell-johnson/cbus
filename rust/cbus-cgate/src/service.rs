@@ -2796,7 +2796,11 @@ impl Service {
                 "identify",
                 "short-message",
                 "error-reporting",
-                "access-control"
+                "access-control",
+                "dynamic-label",
+                "clock",
+                "temperature",
+                "named-scene-playback"
             ]);
             capabilities["specialist_application_routed_families"] = serde_json::json!([
                 "aircon",
@@ -2840,7 +2844,13 @@ impl Service {
                 "IDENTIFY *",
                 "SHORTMESSAGE *",
                 "EREPORT MESSAGE",
-                "ACCESS_CONTROL CLOSE|LOCK"
+                "ACCESS_CONTROL CLOSE|LOCK",
+                "LIGHTING LABEL|UNICODELABEL",
+                "TRIGGER LABEL|UNICODELABEL",
+                "ENABLE LABEL",
+                "CLOCK DATE|TIME|REQUEST_REFRESH",
+                "TEMPERATURE BROADCAST",
+                "SCENE PLAY"
             ]);
             capabilities["physical_application_routed_delivery_semantics"] =
                 serde_json::Value::String(
@@ -2866,6 +2876,10 @@ impl Service {
                 "SHORTMESSAGE",
                 "EREPORT MESSAGE",
                 "ACCESS_CONTROL",
+                "LIGHTING|TRIGGER|ENABLE LABEL",
+                "CLOCK",
+                "TEMPERATURE BROADCAST",
+                "SCENE PLAY",
                 "NET SET_PROJECT_IDENTIFY",
                 "PP SAVE",
                 "PP SAVE_TO_SOURCE"
@@ -2895,6 +2909,12 @@ impl Service {
             capabilities["network_management_routed_readback"] = serde_json::Value::Bool(false);
             capabilities["network_management_delivery_semantics"] =
                 serde_json::Value::String("pci-confirmed-exactly-once-no-replay".to_string());
+            capabilities["dynamic_labels_routed"] = serde_json::Value::Bool(true);
+            capabilities["clock_control_routed"] = serde_json::Value::Bool(true);
+            capabilities["temperature_broadcast_routed"] = serde_json::Value::Bool(true);
+            capabilities["named_scene_playback_routed"] = serde_json::Value::Bool(true);
+            capabilities["routed_scene_preflight"] =
+                serde_json::Value::String("all-target-routes-before-first-write".to_string());
             capabilities["net_lifecycle_commands"] =
                 serde_json::json!(["close", "open", "unravel", "topology_explore"]);
             capabilities["net_lifecycle_fail_closed"] = serde_json::json!([]);
@@ -8925,7 +8945,7 @@ impl Service {
                 "400 Label command requires application, language, group, action, variant and mode",
             );
         }
-        let Some(application) = self.application_path(words[2]) else {
+        let Some((network, application)) = self.addressed_application(words[2]) else {
             return err(tag, 404, "404 Label application is not on this network");
         };
         let expected = match upper[0].as_str() {
@@ -9081,24 +9101,50 @@ impl Service {
             }
         };
 
+        let route = if network == self.network {
+            Vec::new()
+        } else {
+            match self.route_to_network(network).await {
+                Ok(route) => route,
+                Err(error) => {
+                    return err(
+                        tag,
+                        408,
+                        &format!("408 Physical application route unavailable: {error}"),
+                    )
+                }
+            }
+        };
         let (pci_generation, pci) = self.current_pci_epoch().await;
         for payload in encoded {
-            let packet = Packet::PointToMultipoint {
-                meta: Meta::new(true, 0),
+            let sal = Sal::DynamicLabel {
                 application,
-                sals: vec![Sal::DynamicLabel {
-                    application,
-                    payload: payload.clone(),
-                }],
+                payload: payload.clone(),
             };
-            if let Err(error) = pci.send_confirmed(&packet).await {
+            let delivered = if route.is_empty() {
+                pci.send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application,
+                    sals: vec![sal],
+                })
+                .await
+            } else {
+                pci.send_routed_application_confirmed_once(&route, sal)
+                    .await
+            };
+            if let Err(error) = delivered {
                 return err(tag, 502, &format!("502 Label delivery failed: {error}"));
             }
             let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                 return err(tag, 408, "408 Label delivery invalidated by PCI reconnect");
             };
-            self.record_label("sent-confirmed", None, application, &payload)
-                .await;
+            // CMQTT LABELS is explicitly scoped to the configured direct
+            // network.  A routed send is real delivery, but retaining it in
+            // that cache would misattribute the target network.
+            if route.is_empty() {
+                self.record_label("sent-confirmed", None, application, &payload)
+                    .await;
+            }
         }
         response
     }
@@ -9390,7 +9436,10 @@ impl Service {
     async fn clock(&self, client: &ClientState, line: &str, tag: &str, words: &[&str]) -> Response {
         let _commands = self.commands.lock().await;
         let target = words.get(2).copied().unwrap_or("");
-        if self.application_path(target) != Some(223) {
+        let Some((network, application)) = self.addressed_application(target) else {
+            return err(tag, 404, "404 Clock application is not on this network");
+        };
+        if application != 223 {
             return err(tag, 404, "404 Clock application is not on this network");
         }
         if words[1].eq_ignore_ascii_case("REQUEST_REFRESH") {
@@ -9405,9 +9454,23 @@ impl Service {
             if response.status >= 400 {
                 return response;
             }
-            return self
-                .send_application(tag, Sal::ClockRequest, response, "Clock request")
-                .await;
+            return if network == self.network {
+                self.send_application(tag, Sal::ClockRequest, response, "Clock request")
+                    .await
+            } else {
+                self.send_application_to_network(
+                    network,
+                    tag,
+                    Sal::ClockRequest,
+                    (
+                        response,
+                        err(tag, 404, "404 Clock application is not on this network"),
+                    ),
+                    "Clock request",
+                    false,
+                )
+                .await
+            };
         }
         if words.len() == 3 {
             let mut model = self.model.lock().await;
@@ -9466,11 +9529,14 @@ impl Service {
                 },
             )
         };
-        let (pci_generation, pci) = self.current_pci_epoch().await;
-        let result = self
-            .send_application_on_pci(tag, sal, response, "Clock update", &pci)
-            .await;
-        if result.status < 400 {
+        if network == self.network {
+            let (pci_generation, pci) = self.current_pci_epoch().await;
+            let result = self
+                .send_application_on_pci(tag, sal, response, "Clock update", &pci)
+                .await;
+            if result.status >= 400 {
+                return result;
+            }
             let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                 return err(tag, 408, "408 Clock update invalidated by PCI reconnect");
             };
@@ -9479,8 +9545,20 @@ impl Service {
                 .await
                 .application_state
                 .insert(key.to_string(), resolved);
+            return result;
         }
-        result
+        self.send_application_to_network(
+            network,
+            tag,
+            sal,
+            (
+                response,
+                err(tag, 404, "404 Clock application is not on this network"),
+            ),
+            "Clock update",
+            false,
+        )
+        .await
     }
 
     async fn temperature(
@@ -9515,7 +9593,7 @@ impl Service {
         let Some(address) = address else {
             return err(tag, 400, "400 Invalid temperature group address");
         };
-        let Some((application, group)) = self.bound_group(&address) else {
+        let Some((network, application, group)) = self.addressed_group(&address) else {
             return err(tag, 404, "404 Network is not connected to this service");
         };
         if application != 25 {
@@ -9525,20 +9603,18 @@ impl Service {
             return err(tag, 405, "405 Temperature is out of range");
         };
         let temperature = f64::from((temperature * 4.0) as u8) / 4.0;
-        let (pci_generation, pci) = self.current_pci_epoch().await;
-        let result = self
-            .send_application_on_pci(
-                tag,
-                Sal::TemperatureBroadcast {
-                    group_address: group,
-                    temperature,
-                },
-                response,
-                "Temperature broadcast",
-                &pci,
-            )
-            .await;
-        if result.status < 400 {
+        let sal = Sal::TemperatureBroadcast {
+            group_address: group,
+            temperature,
+        };
+        let result = if network == self.network {
+            let (pci_generation, pci) = self.current_pci_epoch().await;
+            let result = self
+                .send_application_on_pci(tag, sal, response, "Temperature broadcast", &pci)
+                .await;
+            if result.status >= 400 {
+                return result;
+            }
             let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
                 return err(
                     tag,
@@ -9546,12 +9622,30 @@ impl Service {
                     "408 Temperature broadcast invalidated by PCI reconnect",
                 );
             };
-            let address = format!("//{}/{}/25/{group}", self.project, self.network);
+            result
+        } else {
+            self.send_application_to_network(
+                network,
+                tag,
+                sal,
+                (
+                    response,
+                    err(tag, 404, "404 Network is not connected to this service"),
+                ),
+                "Temperature broadcast",
+                false,
+            )
+            .await
+        };
+        if result.status < 400 {
+            let address = format!("//{}/{network}/25/{group}", self.project);
             let value = format_temperature(temperature);
-            self.model.lock().await.application_state.insert(
-                "TEMPERATURE BROADCAST".to_string(),
-                format!("{address} {value}"),
-            );
+            if network == self.network {
+                self.model.lock().await.application_state.insert(
+                    "TEMPERATURE BROADCAST".to_string(),
+                    format!("{address} {value}"),
+                );
+            }
             let _ = self.events.send(format!(
                 "#e# temperature broadcast {address} {value} sourceUnit=0"
             ));
@@ -11969,7 +12063,7 @@ impl Service {
 
         let mut actions = Vec::with_capacity(snapshot.len());
         for (address, level) in snapshot {
-            let Some((application, group)) = self.bound_group(&address) else {
+            let Some((network, application, group)) = self.addressed_group(&address) else {
                 return err(
                     tag,
                     409,
@@ -11979,15 +12073,38 @@ impl Service {
             if !(48..=95).contains(&application) {
                 return err(tag, 409, "409 Scene contains a non-lighting address");
             }
-            actions.push((address, application, group, level));
+            actions.push((address, network, application, group, level));
+        }
+
+        // Resolve every target before the first physical write.  A scene may
+        // contain direct and bridged groups, but an invalid topology must not
+        // leave a partially executed scene merely because it appeared later
+        // in the persisted snapshot.
+        let mut routes = HashMap::<u8, Vec<u8>>::new();
+        for (_, network, _, _, _) in &actions {
+            if *network != self.network && !routes.contains_key(network) {
+                let route = match self.route_to_network(*network).await {
+                    Ok(route) => route,
+                    Err(error) => {
+                        return err(
+                            tag,
+                            408,
+                            &format!("408 Scene route unavailable before delivery: {error}"),
+                        )
+                    }
+                };
+                routes.insert(*network, route);
+            }
         }
 
         let (pci_generation, pci) = self.current_pci_epoch().await;
         let total = actions.len();
         let mut status_blocks = HashSet::new();
-        for (delivered, (address, application, group, level)) in actions.into_iter().enumerate() {
+        for (delivered, (address, network, application, group, level)) in
+            actions.into_iter().enumerate()
+        {
             if self
-                .invalidate_level_for_epoch(pci_generation, &pci, self.network, application, group)
+                .invalidate_level_for_epoch(pci_generation, &pci, network, application, group)
                 .await
                 .is_err()
             {
@@ -11999,17 +12116,29 @@ impl Service {
                     ),
                 );
             }
-            let packet = Packet::PointToMultipoint {
-                meta: Meta::new(true, 0),
+            let sal = Sal::LightingRamp {
                 application,
-                sals: vec![Sal::LightingRamp {
-                    application,
-                    group_address: group,
-                    level,
-                    duration: 0,
-                }],
+                group_address: group,
+                level,
+                duration: 0,
             };
-            if let Err(error) = pci.send_confirmed(&packet).await {
+            let result = if network == self.network {
+                pci.send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application,
+                    sals: vec![sal],
+                })
+                .await
+            } else {
+                pci.send_routed_application_confirmed_once(
+                    routes
+                        .get(&network)
+                        .expect("all routed scene targets were preflighted"),
+                    sal,
+                )
+                .await
+            };
+            if let Err(error) = result {
                 return err(
                     tag,
                     502,
@@ -12028,7 +12157,9 @@ impl Service {
                     ),
                 );
             };
-            status_blocks.insert((application, group & 0xe0));
+            if network == self.network {
+                status_blocks.insert((application, group & 0xe0));
+            }
             let _ = self
                 .events
                 .send(format!("#e# lighting {address} RAMP {level} 0"));

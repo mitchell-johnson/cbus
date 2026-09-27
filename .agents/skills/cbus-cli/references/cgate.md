@@ -742,7 +742,10 @@ Ground the composed protection contract and its physical boundary in
 Standard application control also uses a database-resolved route through one
 to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`
 ON/OFF/RAMP/STOP forms), Trigger application 202 EVENT/INDICATORKILL, and
-Enable application 203 SET. It composes the retained direct SAL with the
+Enable application 203 SET. The same route contract covers Lighting/Trigger/
+Enable dynamic-label frames, Clock DATE/TIME/REQUEST_REFRESH, Temperature
+Broadcast, and each action in a persisted cross-network named scene. It
+composes the retained direct SAL with the
 evidenced point-to-point-to-multipoint route envelope and sends one frame. The
 only completion receipt is the exact PCI confirmation allocated to that frame;
 neighbouring Reply Network traffic and direct observations remain shared-reader
@@ -751,7 +754,10 @@ acceptance. No routed application reply, Lighting status request, device state,
 or persistence is inferred. State invalidation, values, and events apply only
 to the addressed network on the captured PCI generation. Unsupported
 applications and unresolved routes fail before I/O; Enable REMOVE remains a
-local saved-value operation. Ground this scope in
+local saved-value operation. A named scene resolves every target before its
+first write and requests status only for direct-network actions. Routed label,
+clock, and temperature sends never populate the configured-network observation
+or application-state cache. Ground this scope in
 `rust/testdata/fixtures/native_cgate_routed_application_control.json` and the
 `en-cmqttd-routed-application-*` vectors.
 
@@ -856,9 +862,11 @@ They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
 dynamic bitmap forms. Enable Unicode is a native-invalid form. A 200 response
 proves confirmed fragment delivery, not display rendering or persistence.
 `SCENE RECORD set name` atomically persists currently observed lighting levels
-from the configured network. `SCENE PLAY set name` sends confirmed zero-time
-ramps and requests status readback; its success does not by itself prove the
-loads reached those levels. These named server snapshots are separate from
+from the configured network. `SCENE PLAY set name` preflights every direct or
+bridged target, sends confirmed zero-time ramps, and requests status readback
+only for direct actions; its success does not by itself prove the loads reached
+those levels. A routed action is exact-once and is not replayed after
+uncertainty. These named server snapshots are separate from
 device PP scene tables.
 `LABEL CLEAREDLT //PROJECT/NETWORK/p/UNIT` is hardware-backed for KEYGL5. It
 sends one native clear control and requires a correlated unit ACK. Report it as
@@ -1099,10 +1107,12 @@ parameter-35 write,
 `physical_pp_routed_save: true`
 expose the bounded routed programming slice.
 `physical_application_routed_control: true` exposes the
-Lighting/Trigger/Enable-SET, network-management, and specialist application slices; inspect its family,
+Lighting/Trigger/Enable-SET, dynamic-label, Clock, Temperature,
+named-scene-playback, network-management, and specialist application slices; inspect its family,
 command, delivery, state-scope, and readback fields before using it.
 `bridged_mutation_commands` lists `LIGHTING`, `DO lighting`, `TRIGGER`,
-`ENABLE SET`, `NET LEARN`, `NETWORK LOCATE`, the specialist application families, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
+`ENABLE SET`, routed label families, `CLOCK`, `TEMPERATURE BROADCAST`,
+`SCENE PLAY`, `NET LEARN`, `NETWORK LOCATE`, the specialist application families, `NET SET_PROJECT_IDENTIFY`, `PP SAVE`, and `PP SAVE_TO_SOURCE`; the PP-specific
 method/protection/lock/NVM fields preserve its narrower scope rather than
 implying support for other routed writes,
 `pp_reset_to_defaults: true` denotes specification-backed staged

@@ -222,6 +222,12 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         .contains("\"physical_pp_routed_save_protection\":[\"none\",\"checksum\",\"lock\"]"));
     assert!(capabilities.contains("\"physical_pp_routed_lock\":true"));
     assert!(capabilities.contains("\"physical_application_routed_control\":true"));
+    assert!(capabilities.contains("\"dynamic_labels_routed\":true"));
+    assert!(capabilities.contains("\"clock_control_routed\":true"));
+    assert!(capabilities.contains("\"temperature_broadcast_routed\":true"));
+    assert!(capabilities.contains("\"named_scene_playback_routed\":true"));
+    assert!(capabilities
+        .contains("\"routed_scene_preflight\":\"all-target-routes-before-first-write\""));
     assert!(capabilities.contains(
         "\"physical_application_routed_delivery_semantics\":\"pci-confirmed-exactly-once-no-replay-no-device-readback\""
     ));

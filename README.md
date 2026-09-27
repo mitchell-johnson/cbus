@@ -579,10 +579,14 @@ confirmation and is never replayed. Routed page-aware, OEM/GOC, and
 Save-to-NVM methods still refuse before I/O.
 Lighting ON/OFF/RAMP/STOP, their bare and `DO` aliases, Trigger EVENT/
 INDICATORKILL, and Enable SET use topology-resolved one-to-six-bridge standard
-SAL frames. Each routed application command is sent once and waits only for
+SAL frames. Routed dynamic labels, Clock DATE/TIME/REQUEST_REFRESH, Temperature
+Broadcast, and stored cross-network scene actions use the same contract. Scene
+playback resolves every target route before the first write and requests status
+only for direct-network actions. Each routed application command is sent once and waits only for
 its exact PCI confirmation; it is never replayed, does not invent remote
 status readback, and changes or invalidates only the target network's live
-cache on the captured PCI generation. Other routed mutations and some
+cache on the captured PCI generation. Routed label and clock/temperature sends
+do not enter the configured-network observation/application cache. Other routed mutations and some
 selector-specific DALI session plans refuse before I/O; the private Schneider
 `patchset.zip`, repository/archive formats, and SQLite/XML schemas are not
 reconstructed; cmqttd transforms only its versioned portable SQLite container
