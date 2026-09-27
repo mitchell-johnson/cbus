@@ -55,7 +55,10 @@ mismatch fails before observation and does not switch users. Check
 the independently queried primary process token as well as the worker-ready SID.
 Token query uncertainty fails closed; thread impersonation is not attested.
 SID agreement is not proof of an interactive
-desktop session or original Toolkit wrapper parity.
+desktop session or original Toolkit wrapper parity. The native condition-wrapper matrix
+confirms per-name true/false caches and shows that even ASCII `I`/`i` differs
+under `tr-TR`; keep the production `invariant-ascii` restriction. Do not infer
+interactive preferences/settings behavior from this condition-checker evidence.
 
 `update-package-file --catalogue-response raw-catalogue.json --node-id ID
 --file-id ID --package-path local-package.exe` compares one already-local

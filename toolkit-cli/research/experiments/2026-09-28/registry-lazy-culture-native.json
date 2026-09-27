@@ -1,0 +1,170 @@
+{
+  "format": "cbus-original-registry-lazy-culture-v1",
+  "work_item": "P9.02",
+  "source_base_revision": "aa183fd916db22da4454487b4a442504088a472f",
+  "target": "Toolkit 1.18.0.2754 / SESU 3.0.7 original ClientConditionChecker",
+  "runtime": {
+    "mscorlib_sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+    "process_bits": 32,
+    "windows": "Windows 11 ARM64",
+    "host_only_disposable_vm": true,
+    "user_identity_captured": false
+  },
+  "vendor_sha256": {
+    "SE.DAD.SESU.Common": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+    "SE.DAD.Core.Common": "71e582d87734af16ba42eeb6184a329f3cacfcb86b8ad23676cdafc3aaa227f5",
+    "Newtonsoft.Json": "b624949df8b0e3a6153fdfb730a7c6f4990b6592ee0d922e1788433d276610f3",
+    "NCalc": "d6cfaeb501093d1dad90f193eacd896652509f690a591c121949b576746fbff3",
+    "Antlr3.Runtime": "7f1792ff5a0a5e0bd52982f9cea642240a1438909079ae0ca3695434b3b6fb69",
+    "Microsoft.Win32.Registry": "e9a9d281c1a708aaae366f82fd6a1742f65da2918cc4fa5eaaaada0be24277d9"
+  },
+  "method_proof": {
+    "Evaluate": {
+      "token": 100663299,
+      "il_sha256": "fdc617c4ca17062be355e8df7a6e27c5bfd6ae92f4b1ce06599c02bd46000ad0"
+    },
+    "CallbackDuringEvaluation": {
+      "token": 100663301,
+      "il_sha256": "0fd4b3fcc1ea3ca5c8ee2cc9cb5acc495f601b87bbb664b6f015157e04de9314"
+    },
+    "EvaluateRegistryEntryContent": {
+      "token": 100663310,
+      "il_sha256": "592d2f130c5b5a474e1ccf7d4ff861785b7a9656c0a5004649627c62d6e33e91"
+    },
+    "CompareInt": {
+      "token": 100663311,
+      "il_sha256": "83385e5b32925028b64b47c7f505e1a889d471f8d2d0f8e95f5dcd1cc46eb83a"
+    }
+  },
+  "native_rows": [
+    {
+      "id": "public-first-true",
+      "result": true,
+      "error": "",
+      "cache": {
+        "a": true
+      },
+      "culture": ""
+    },
+    {
+      "id": "public-fresh-evaluate-false",
+      "result": false,
+      "error": "",
+      "cache": {
+        "a": false
+      },
+      "culture": ""
+    },
+    {
+      "id": "callback-a-first-true",
+      "result": true,
+      "error": null,
+      "cache": {
+        "a": true
+      },
+      "culture": ""
+    },
+    {
+      "id": "callback-a-cached-true",
+      "result": true,
+      "error": null,
+      "cache": {
+        "a": true
+      },
+      "culture": ""
+    },
+    {
+      "id": "callback-b-fresh-false",
+      "result": false,
+      "error": null,
+      "cache": {
+        "a": true,
+        "b": false
+      },
+      "culture": ""
+    },
+    {
+      "id": "callback-b-cached-false",
+      "result": false,
+      "error": null,
+      "cache": {
+        "a": true,
+        "b": false
+      },
+      "culture": ""
+    },
+    {
+      "id": "callback-failure-no-cache",
+      "result": null,
+      "error": "SE.DAD.SESU.Common.Validation.ClientConditionException: value defined for integer comparison cannot be converted to int: not-an-int",
+      "cache": {},
+      "culture": ""
+    },
+    {
+      "id": "callback-repair-retry-true",
+      "result": true,
+      "error": null,
+      "cache": {
+        "a": true
+      },
+      "culture": ""
+    },
+    {
+      "id": "public-short-circuit-false",
+      "result": false,
+      "error": "",
+      "cache": {
+        "a": false
+      },
+      "culture": ""
+    },
+    {
+      "id": "invariant-I-equals-i",
+      "result": true,
+      "error": "",
+      "cache": {
+        "a": true
+      },
+      "culture": ""
+    },
+    {
+      "id": "turkish-I-not-equal-i",
+      "result": false,
+      "error": "",
+      "cache": {
+        "a": false
+      },
+      "culture": "tr-TR"
+    }
+  ],
+  "scope": {
+    "public_evaluate_called": true,
+    "private_callbacks_invoked_separately": true,
+    "provider_call_count_instrumented": false,
+    "registry_fixture_only": true,
+    "original_preferences_settings_wrapper": false,
+    "interactive_user_parity": false,
+    "general_culture_support": false,
+    "complete_grammar_parity": false,
+    "native_public_evaluate_lifecycle": "Same original checker reused across the first two calls while the owned fixture changes",
+    "python_comparison_lifecycle": "Fresh one-shot wrapper and observer per evaluation; outcome agreement only, not identical object lifecycle"
+  },
+  "cleanup": {
+    "fixture_created_new": true,
+    "fixture_removed": true,
+    "owned_processes_remaining": 0,
+    "vm_stopped": true,
+    "original_network_restored": true
+  },
+  "artifacts": {
+    "CbusLazyRegistryProbe.cs": "e5365ddd145a2563e1fd82f3d233b7fbeea61bafe673ec25b16038b62243e51c",
+    "cbus-lazy-run.ps1": "f020ba4d44c9b888682b704aa4f4a32b38ffc2da8704afebfc1a9e10b2e9cb45",
+    "cbus-lazy-result.json": "9755d6c8cbcf98f47be745cc25dadc43fc93b9eaeb84a8daabf00fbdb03693c0",
+    "cbus-lazy-final.json": "0462c9b6f9bff108ad425636d59f4f722f1608fe159e11c58707e3d8b632a465"
+  },
+  "invalidation": [
+    "Changed original assembly/runtime/method hashes",
+    "Changed source cache or culture boundaries",
+    "Promotion from controlled callback invocation to general provider scheduling or grammar parity"
+  ]
+}
