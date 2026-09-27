@@ -176,7 +176,7 @@ versioned portable container.
 | `NET LEARN`, `NETWORK LOCATE` | Exact retained learn-mode and locate-yourself SAL on the configured direct network or a topology-resolved one-to-six-bridge PPM route. LEARN validates application, grades 1/2/128–131 and group, including its inner checksum. LOCATE supports UNIT, APP, GROUP and manufacturer/native-serial selectors with OFF/ON/byte modes on application 208. Each command enters the shared command lane, transmits once, waits only for its correlated PCI confirmation, checks the active PCI generation, and never replays an uncertain outcome or invents remote readback. A 200 proves interface delivery only. Unbound, foreign and unroutable definitions fail before I/O. Incoming frames fan out to C-Gate event clients and do not create MQTT state. See `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, `rust/testdata/vectors/network_management.jsonl`, `rust/testdata/vectors/encode.jsonl`, and the service/daemon regressions. |
 | `NET STATE_INTERVAL` | Exact unconditional native obsolete 400 directing callers to `set projects NetStateInterval X`; no state or PCI I/O |
 | `NET OPEN/CLOSE`, `PROJECT START/STOP` | Runtime lifecycle over the durable NET catalogue and imported project model. OPEN/START admit the configured bound network and its reachable imported routes; CLOSE/STOP clear volatile physical and level observations and mark the affected runtime networks closed. cmqttd retains its shared PCI/CNI and MQTT ownership throughout, so these commands never manufacture a second connection. An unbound CREATE-only definition returns 408 because it has no cmqttd runtime binding |
-| `NET UNRAVEL`, `NET UNRAVELUNIT`, `DO ... UNRAVEL` | Physical direct-network planner over a complete MMI and known-serial inventory. Healthy singletons stay in place; address 255 is fully split and each other duplicate keeps one deterministic unit. `MATCHDB` prefers one unique empty database address for that serial, then the lowest independently verified empty address. The service proves all targets and local PCI option 66=`05` before the first selected-serial write, sends every move once, verifies each destination, and accepts success only after an exact final whole-network inventory under the same PCI generation. Routed networks, unknown serials, insufficient unique targets, reconnects, and uncertain replies fail safely; no write is replayed or rolled back. `DO` returns native 202 framing over the same backend |
+| `NET UNRAVEL`, `NET UNRAVELUNIT`, `DO ... UNRAVEL` | Physical direct or topology-resolved one-to-six-bridge planner over a complete route-correlated MMI and known-serial inventory. Healthy singletons stay in place; address 255 is fully split and each other duplicate keeps one deterministic unit. `MATCHDB` prefers one unique empty database address for that serial, then the lowest independently verified empty address on the target network. The service resolves the full route, proves all targets and local PCI option 66=`05` before the first selected-serial write, sends every move once, requires the exact direct receipt or Reply Network route/remote-unit/serial receipt, verifies each destination, and accepts success only after an exact final target-network inventory under the same PCI generation. Unknown or ambiguous routes, unknown serials, insufficient unique targets, reconnects, and uncertain replies fail safely; no write is replayed or rolled back. Only the addressed network cache/state commits. `DO` returns native 202 framing over the same backend. Scripted PCI and daemon acceptance do not establish physical bridge delivery or power-cycle persistence |
 | `TOPOLOGY EXPLORE` | Parses CNI/socket/Wiser/serial descriptors, performs physical installation MMI plus parameter-35 project identity discovery, and returns native-shaped 321/323/324 progress. The active endpoint is recognized across socket/CNI aliases and reused through cmqttd's generation guard, preserving MQTT. Other supported endpoints are reset and explored through a temporary transport that is always shut down. Bad descriptors and open/MMI failures retain 470/472/473 evidence |
 | `CONFIG` and `CONFIG GET/INFO/SET/OBGET/OBSET/OBRESET/LOAD/SAVE` | Complete maintained C-Gate 3.4 CONFIG family with its exact parent help, case-sensitive parameter names, 148 registered parameters, 142 queryable INFO records, 122 wildcard GET records, six obsolete registrations, and retained 303/304/error/mixed-status envelopes. Legacy GET/SET use global/project inheritance; object forms model global, selected-project and network inheritance, including project resets that remove descendant network overrides. Values and named global/project snapshots commit atomically inside `cmqttd-json`; caller filenames are bounded snapshot identities and are never opened on the host. CONFIG data does not reconfigure the running listener, PCI, MQTT, logging, or other daemon settings. With LOGIN armed, all five mutating verbs require authentication. Native 3.4 sends no response for an unknown or wrong-scope OBGET; cmqttd deliberately returns deterministic 408 so the connection remains live. See `rust/testdata/fixtures/native_cgate_config.json` and `rust/cmqttd/tests/system_cgate_config.rs` |
 | `FILE DIR/LS/MKDIR/DELETE/SHA256/DOWNLOAD/UPLOAD` | Complete maintained C-Gate 3.4 FILE family over a sandboxed virtual filesystem in `cmqttd-json`: exact nine-line parent help, 304/305 listings, recursive MKDIR, empty-directory/file deletion, multi-file 302 SHA256 rows, native 345/347/346 download framing with 76-character base64 rows, base64 here-document upload, and `.0` replacement backups. Ordinary relative paths reject leading separators, `~`, `..`, and `:`; `%PROJECT%/path` accepts the namespace separator for a known project and stays in a separate virtual root. No FILE path opens an arbitrary host or vendor project file and no FILE command sends PCI traffic. With LOGIN armed, UPLOAD, DELETE and MKDIR require authentication. See `rust/testdata/fixtures/native_cgate_file.json` and `rust/cmqttd/tests/system_cgate_file.rs` |
@@ -193,7 +193,7 @@ versioned portable container.
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds. On a resolved one-to-six-bridge target, LOAD is limited to schema `direct` parameters backed by standard CAL RECALL. Every identity and parameter reply must match the exact Reply Network, unit, parameter and total count, and only the owned target-network session is updated on the captured PCI generation |
 | Physical PP SAVE/SAVE_TO_SOURCE | Direct-network behavior writes dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum`/supported `lock` protection. A resolved one-to-six-bridge target admits only standard-CAL `direct` parameters with `none`, `checksum`, or `lock` protection. Its pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count. Lock protection additionally requires a one-byte challenge from that exact route/unit/parameter plus the allocated PCI confirmation before STORE. No routed programming request is replayed; the owned session commits only on the captured PCI generation. Routed `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, `goc2`, and Save-to-NVM refuse before physical identity or write I/O. Direct page-aware writes, OEM/GOC methods, unlocks, and C-Bus 3 NVM commit retain their existing behavior |
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI for the configured network and for a topology-resolved route through one to six bridges. Routed Lighting composes the retained standard SAL with the evidenced PPM source-route envelope, sends it exactly once, and accepts only its allocated PCI confirmation. It invalidates only the target network's older level on the captured PCI generation and deliberately issues no routed status request; confirmation is distinct from observed physical brightness or controller action |
-| `DO` lighting methods, direct/bridged read-only `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting aliases use the same direct or one-to-six-bridge exact-once physical backend and retain native `202 Done: object` framing. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct-network planner described above. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
+| `DO` lighting methods, direct/bridged `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting aliases use the same direct or one-to-six-bridge exact-once physical backend and retain native `202 Done: object` framing. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct or one-to-six-bridge planner described above, with exact routed receipts and final target inventory. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
 | SCENE RECORD/PLAY | RECORD atomically persists the configured network's observed lighting levels under the named set/scene. PLAY preflights every stored address and route before its first write, then sends a confirmed zero-time ramp for every direct or one-to-six-bridge level. Direct actions schedule physical status readback; routed actions are exact-once and deliberately do not invent one. A failed preflight sends nothing, while a later failure reports the exact completed action count. Unknown scenes retain the native 401 response |
 | TRIGGER EVENT/INDICATORKILL | Actual Trigger Control SAL on application 202 for the configured network or a topology-resolved one-to-six-bridge target. Routed commands are sent once, accept only the exact PCI confirmation, and commit the selector/event to only the target network on the captured generation. No application-level reply or remote device state is claimed |
@@ -385,9 +385,10 @@ ring is cleared because its entries may be stale after reset. Use the guarded
 request to a fresh complete inventory and expected serial.
 
 `NET UNRAVEL //PROJECT/NETWORK [MATCHDB]` and `NET UNRAVELUNIT
-//PROJECT/NETWORK UNITS [MATCHDB]` share one guarded direct-network planner.
+//PROJECT/NETWORK UNITS [MATCHDB]` share one guarded direct or topology-routed planner.
 It first completes installation MMI and known-serial identity inventory for
-every present address. Healthy singletons stay put. All units at address 255
+every present target-network address. Routed observations accept only the exact
+one-to-six-bridge Reply Network. Healthy singletons stay put. All units at address 255
 move, while each ordinary duplicate keeps a deterministic unit; when possible
 the keeper is the serial already matching that database address, and the local
 PCI is never selected for movement. `MATCHDB` prefers a unique serial-matched
@@ -395,15 +396,20 @@ database destination, then assigns the lowest free address.
 
 Before any mutation, the planner proves local PCI parameter 66 equals `05`,
 allocates a unique destination for every move, and independently identifies
-every target as empty. It sends each selected-serial address broadcast exactly
-once, verifies the serial at that destination, then repeats the complete MMI,
+every target as empty on that same route. It sends each direct or routed
+selected-serial address broadcast exactly once, requires one exact route,
+remote-unit and serial-correlated receipt, verifies the serial at that
+destination, then repeats the complete MMI,
 serial inventory, and PCI option check. Cache replacement and move/success
-events commit only while the same PCI generation remains active. Timeout,
+events commit only to the addressed network while the same PCI generation remains active. Timeout,
 transport loss, unknown identities, a responding target, inadequate free
 addresses, conflicting database destinations, or an incomplete final inventory
-returns a bounded 408/409 without replay or rollback. Routed networks fail
-before physical I/O. `DO //PROJECT/NETWORK UNRAVEL` invokes the whole-network
+returns a bounded 408/409 without replay or rollback. Missing, ambiguous or
+over-six-hop topology fails before physical I/O. `DO //PROJECT/NETWORK UNRAVEL` invokes the whole-network
 form and returns native 202 framing after the same physical proof.
+The route envelope and receipt rules are evidence-bound compositions recorded
+in `rust/testdata/fixtures/native_cgate_routed_unravel.json`; there is no live
+physical-bridge or power-cycle persistence acceptance.
 
 `NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` applies the native Java-style
 one-to-eight UTF-16-unit check, uppercase fold, and six-bit range validation.
@@ -729,12 +735,14 @@ non-inventoried service commands. Full replacement still requires:
   plus the bounded quiet window, and retires an incomplete generation without
   replay. No admitted form adds a discovered unit to the persistent project
   database.
-  Direct-network `NET UNRAVEL`, arbitrary `NET UNRAVELUNIT` selections, and
+  Direct and topology-resolved one-to-six-bridge `NET UNRAVEL`, arbitrary `NET UNRAVELUNIT` selections, and
   `DO ... UNRAVEL` use the complete-inventory safe planner described above.
   They split address 255 and larger duplicate sets into unique independently
   empty destinations, prefer unique MATCHDB addresses, and fail before writes
-  when the inventory or target plan is uncertain. Routed unravel remains outside
-  this physical backend.
+  when the inventory, route or target plan is uncertain. Reply Network receipts,
+  per-move verification and the final inventory remain pinned to the target route;
+  only the target cache/state commits after the PCI-generation guard. Acceptance
+  is scripted and does not establish live bridge delivery or device persistence.
   Direct and one-to-six-bridge `NET PINGU`, `NET SYNC` identity population,
   general and targeted `NET SYNCNEW`, `DO ... SYNC`, and duplicate-aware
   `NET CHECKUNIT` are implemented with route-isolated caches. Bridged OEM eDLT
@@ -747,7 +755,7 @@ non-inventoried service commands. Full replacement still requires:
   device acceptance, controller state, or status-readback contract is claimed.
   Guarded direct-network single-unit physical readdressing is implemented.
   `DO` lighting methods use the direct or routed physical lighting backend, and `DO ... UNRAVEL`
-  uses the same generation-bound direct-network planner as NET.
+  uses the same generation-bound direct or topology-routed planner as NET.
   Direct-network clock inspection, target-count changes and gateway recovery are
   implemented for units whose decoded schema exposes a supported direct
   `ClockGenEnable` field; electrical arbitration remains outside software

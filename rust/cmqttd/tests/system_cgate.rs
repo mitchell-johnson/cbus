@@ -1953,6 +1953,158 @@ async fn bounded_matchdb_unravel_runs_through_real_daemon_and_shared_pci() {
 }
 
 #[tokio::test]
+async fn routed_matchdb_unravel_runs_once_through_real_daemon() {
+    let state = cbus_test_support::proc::temp_path("routed-unravel-cgate.json");
+    let project = cbus_test_support::proc::temp_path("routed-unravel-project.xml");
+    std::fs::write(
+        &project,
+        r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
+        <Network oid="network-254"><TagName>Local</TagName><Address>254</Address>
+          <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+          <Unit oid="pci"><Address>16</Address><TagName>Local CNI</TagName><UnitType>PC_CNI2</UnitType><SerialNumber>100966.1187</SerialNumber></Unit>
+          <Unit oid="near"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>
+        </Network>
+        <Network oid="network-253"><TagName>Remote</TagName><Address>253</Address>
+          <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
+          <Unit oid="target"><Address>6</Address><TagName>Target</TagName><UnitType>KEYE1</UnitType><SerialNumber>101136.1558</SerialNumber></Unit>
+          <Unit oid="far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
+        </Network></Project></Installation>"#,
+    )
+    .unwrap();
+    let sys = start_with(Options {
+        project: false,
+        extra: vec![
+            "-P".into(),
+            project.to_string_lossy().into_owned(),
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|row| row.1.trim())
+        })
+        .unwrap()
+        .to_string();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+
+    async fn wait_for_payload(sys: &System, description: &str, prefix: &str, occurrence: usize) {
+        require(COMMAND_DRAIN, description, || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with(prefix))
+                .count()
+                >= occurrence
+        })
+        .await;
+    }
+    async fn inject_mmi(sys: &System, occurrence: usize, present: &[usize]) {
+        wait_for_payload(sys, "routed unravel MMI", "03FD09FFFAFF00FF", occurrence).await;
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            sys.pci.inject(&routed_installation_mmi_block(
+                &[253],
+                start,
+                count,
+                present,
+            ));
+        }
+    }
+    async fn answer_identity(sys: &System, address: u8, occurrence: usize, serials: &[&str]) {
+        let prefix = format!("46FD09{address:02X}2104");
+        wait_for_payload(sys, "routed unravel IDENTIFY4", &prefix, occurrence).await;
+        for serial in serials {
+            let mut cal = vec![0x8d, 4];
+            cal.extend_from_slice(&serial_identity(serial, address));
+            sys.pci.inject(&routed_reply(&[253], address, &cal));
+        }
+    }
+    async fn answer_local_options(sys: &System, occurrence: usize) {
+        wait_for_payload(
+            sys,
+            "routed unravel local option",
+            "4610001A4201",
+            occurrence,
+        )
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 16, 0x10, 0x00, 0x82, 0x42, 5]));
+    }
+    async fn answer_selected(sys: &System) {
+        let expected = cbus_protocol::serial_address::encode_serial_address_routed(
+            "101136.1558",
+            6,
+            &[253],
+            true,
+            b'g',
+        )
+        .unwrap();
+        let expected = std::str::from_utf8(&expected[1..expected.len() - 2]).unwrap();
+        wait_for_payload(sys, "routed selected-serial request", expected, 1).await;
+        let mut cal = vec![0x87, 0];
+        cal.extend_from_slice(
+            &cbus_protocol::serial_address::parse_native_serial("101136.1558")
+                .unwrap()
+                .packed,
+        );
+        cal.extend_from_slice(&[0, 0]);
+        sys.pci.inject(&routed_reply(&[253], 6, &cal));
+    }
+
+    let command = async {
+        writer
+            .write_all(b"[43] NET UNRAVELUNIT //TOPO/253 255 MATCHDB\r\n")
+            .await
+            .unwrap();
+        let mut result = String::new();
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).await.unwrap();
+            result.push_str(&line);
+            if line.starts_with("[43] ") && line.as_bytes().get(8) == Some(&b' ') {
+                break result;
+            }
+        }
+    };
+    let bus = async {
+        inject_mmi(&sys, 1, &[255]).await;
+        answer_identity(&sys, 255, 1, &["101136.1558"]).await;
+        answer_local_options(&sys, 1).await;
+        answer_identity(&sys, 6, 1, &[]).await;
+        answer_selected(&sys).await;
+        answer_identity(&sys, 6, 2, &["101136.1558"]).await;
+        inject_mmi(&sys, 2, &[6]).await;
+        answer_identity(&sys, 6, 3, &["101136.1558"]).await;
+        answer_local_options(&sys, 2).await;
+    };
+    let (response, ()) = tokio::join!(command, bus);
+    assert!(response.contains("[43] 200 OK"), "{response:?}");
+    assert_eq!(sys.pci.count_payload("03FD09FF0F0018B106160615E9"), 1);
+    assert_eq!(sys.pci.connections(), 1);
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+    std::fs::remove_file(project).unwrap();
+}
+
+#[tokio::test]
 async fn physical_readdress_runs_once_through_real_daemon_and_shared_pci() {
     let state = cbus_test_support::proc::temp_path("physical-readdress-cgate.json");
     let sys = start_with(Options {

@@ -3,7 +3,9 @@
 
 use super::*;
 use cbus_protocol::dali::DaliCalMode;
-use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
+use cbus_protocol::serial_address::{
+    encode_serial_address, encode_serial_address_routed, parse_native_serial,
+};
 use cbus_protocol::{kfi, label_clear};
 use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::Ordering;
@@ -666,7 +668,24 @@ impl PciClient {
         serial: &str,
         destination: u8,
     ) -> Result<SelectedSerialAcceptance> {
-        self.address_selected_serial_inner(serial, destination)
+        self.address_selected_serial_inner(serial, destination, &[])
+            .await
+    }
+
+    /// Send one selected-serial address broadcast through an evidenced bridge
+    /// source route. The request is submitted exactly once and success
+    /// requires a positive confirmation followed by one exact Reply Network
+    /// receipt whose complete route, remote address, and serial all match.
+    /// Movement and persistence still require independent target-network
+    /// inventory.
+    pub async fn address_selected_serial_routed(
+        &self,
+        bridges: &[u8],
+        serial: &str,
+        destination: u8,
+    ) -> Result<SelectedSerialAcceptance> {
+        validate_bridge_route(bridges)?;
+        self.address_selected_serial_inner(serial, destination, bridges)
             .await
     }
 
@@ -674,6 +693,7 @@ impl PciClient {
         &self,
         serial: &str,
         destination: u8,
+        bridges: &[u8],
     ) -> Result<SelectedSerialAcceptance> {
         let selected = parse_native_serial(serial)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
@@ -691,7 +711,7 @@ impl PciClient {
             ));
         }
         let local = local as u8;
-        if local == destination {
+        if bridges.is_empty() && local == destination {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
                 "selected-serial destination cannot be the local PCI unit",
@@ -710,8 +730,12 @@ impl PciClient {
         };
         let mut replies = self.packets.subscribe();
         let code = self.get_confirmation_code()?;
-        let request = encode_serial_address(&selected.canonical, destination, true, code)
-            .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
+        let request = if bridges.is_empty() {
+            encode_serial_address(&selected.canonical, destination, true, code)
+        } else {
+            encode_serial_address_routed(&selected.canonical, destination, bridges, true, code)
+        }
+        .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
             self.init_done
@@ -809,12 +833,22 @@ impl PciClient {
                                 "multiple selected-serial receipts are ambiguous",
                             ));
                         }
-                        if meta.source_address != Some(destination)
-                            || unit_address != local
-                            || bridged
-                            || !hops.is_empty()
-                            || cals.len() != 1
-                        {
+                        let exact_route = if bridges.is_empty() {
+                            meta.source_address == Some(destination)
+                                && unit_address == local
+                                && !bridged
+                                && hops.is_empty()
+                        } else {
+                            programming_reply_matches(
+                                &meta,
+                                unit_address,
+                                bridged,
+                                &hops,
+                                bridges,
+                                destination,
+                            )
+                        };
+                        if !exact_route || cals.len() != 1 {
                             return Err(Error::new(
                                 ErrorKind::InvalidData,
                                 "selected-serial receipt route is ambiguous",
@@ -5073,6 +5107,102 @@ mod tests {
         let mut wire = hex::encode_upper(bytes).into_bytes();
         wire.extend_from_slice(b"\r\n");
         remote.get_mut().write_all(&wire).await.unwrap();
+    }
+
+    async fn routed_selected_serial_reply(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        bridges: &[u8],
+        destination: u8,
+        serial: [u8; 4],
+        tail: [u8; 2],
+    ) {
+        let mut bytes = vec![0x86, bridges[0], 0x10, bridges.len() as u8];
+        bytes.extend_from_slice(&bridges[1..]);
+        bytes.extend_from_slice(&[destination, 0x87, 0x00]);
+        bytes.extend_from_slice(&serial);
+        bytes.extend_from_slice(&tail);
+        let sum = bytes.iter().fold(0u8, |acc, byte| acc.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        remote.get_mut().write_all(&wire).await.unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_selected_serial_is_exact_once_and_reply_network_correlated() {
+        for (bridges, expected) in [
+            (vec![0xfd], b"\\03FD09FF0F0018B106160615E9".as_slice()),
+            (
+                vec![0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8],
+                b"\\03FD36FCFBFAF9F8FF0F0018B106160615DA".as_slice(),
+            ),
+        ] {
+            let (pci, mut remote, _) = setup().await;
+            pci.set_local_unit_hint(16).unwrap();
+            let worker = pci.clone();
+            let route = bridges.clone();
+            let selected = tokio::spawn(async move {
+                worker
+                    .address_selected_serial_routed(&route, "101136.1558", 6)
+                    .await
+            });
+            let request = line(&mut remote).await;
+            assert_eq!(&request[..request.len() - 2], expected);
+            let code = request[request.len() - 2];
+            remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+            routed_selected_serial_reply(
+                &mut remote,
+                &bridges,
+                6,
+                [0x18, 0xb1, 0x06, 0x16],
+                [0xfa, 0xce],
+            )
+            .await;
+            let accepted = selected.await.unwrap().unwrap();
+            assert_eq!(accepted.destination, 6);
+            assert_eq!(accepted.serial, "101136.1558");
+            assert_eq!(accepted.opaque_tail, [0xfa, 0xce]);
+            assert_no_replay(
+                &mut remote,
+                Duration::from_secs(5),
+                "selected-serial route must not replay",
+            )
+            .await;
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_selected_serial_rejects_foreign_reply_network_without_replay() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_local_unit_hint(16).unwrap();
+        let worker = pci.clone();
+        let selected = tokio::spawn(async move {
+            worker
+                .address_selected_serial_routed(&[0xfd, 0xfc], "101136.1558", 6)
+                .await
+        });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        routed_selected_serial_reply(
+            &mut remote,
+            &[0xfd, 0xfb],
+            6,
+            [0x18, 0xb1, 0x06, 0x16],
+            [0, 0],
+        )
+        .await;
+        assert_eq!(
+            selected.await.unwrap().unwrap_err().kind(),
+            ErrorKind::InvalidData
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(5),
+            "foreign receipt must not replay selected-serial request",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]

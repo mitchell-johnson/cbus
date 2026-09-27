@@ -4921,6 +4921,9 @@ async fn capabilities_report_observation_without_device_readback() {
             "TEMPERATURE BROADCAST",
             "SCENE PLAY",
             "NET SET_PROJECT_IDENTIFY",
+            "NET UNRAVEL",
+            "NET UNRAVELUNIT",
+            "DO UNRAVEL",
             "PP SAVE",
             "PP SAVE_TO_SOURCE"
         ])
@@ -4991,6 +4994,17 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["net_unravelunit_matchdb_duplicate_255"], true);
     assert_eq!(document["net_unravel"], true);
     assert_eq!(document["net_unravel_direct_safe_planner"], true);
+    assert_eq!(document["net_unravel_routed_safe_planner"], true);
+    assert_eq!(document["net_unravel_routed_max_hops"], 6);
+    assert_eq!(
+        document["net_unravel_routed_state_scope"],
+        "target-network-only"
+    );
+    assert_eq!(
+        document["net_unravel_routed_delivery_semantics"],
+        "reply-network-route-and-serial-correlated-exactly-once-no-replay"
+    );
+    assert_eq!(document["net_unravel_physical_persistence_accepted"], false);
     assert_eq!(document["net_open_close_preserves_mqtt"], true);
     assert_eq!(document["project_runtime_start_stop"], true);
     assert_eq!(document["topology_explore"], true);
@@ -6095,6 +6109,32 @@ async fn general_net_unravel_rejects_invalid_scope_before_io() {
     std::fs::remove_file(path).unwrap();
 }
 
+#[tokio::test]
+async fn routed_unravel_rejects_incomplete_topology_before_io() {
+    let path = state_path();
+    let xml = topology_fixture().replace(
+        "<Unit oid=\"bridge-253-near\"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>",
+        "<Unit oid=\"bridge-253-near\"><Address>252</Address><UnitType>BRIDGE2N</UnitType></Unit>",
+    );
+    let (pci, mut remote) = pci();
+    let service = Service::new(&xml, None, path.clone(), pci, None).unwrap();
+    let response = service
+        .handle(
+            &mut ClientState::default(),
+            "[route] NET UNRAVEL //TOPO/253 MATCHDB",
+        )
+        .await;
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(response.final_text.contains("Physical route unavailable"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), remote.read_u8())
+            .await
+            .is_err(),
+        "unresolved route must refuse before PCI I/O"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
 #[tokio::test(start_paused = true)]
 async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventory() {
     async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
@@ -6390,6 +6430,200 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
         events.try_recv().is_err(),
         "no staged old-generation move or success event may escape"
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn routed_matchdb_unravel_correlates_every_reply_and_commits_only_target() {
+    async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    fn packed(serial: &str) -> [u8; 4] {
+        cbus_protocol::serial_address::parse_native_serial(serial)
+            .unwrap()
+            .packed
+    }
+    fn identity(serial: &str, address: u8) -> Vec<u8> {
+        let mut data = vec![0x38, 0xff, 0xff, 0xff, 0xff];
+        data.extend_from_slice(&packed(serial));
+        data.extend_from_slice(&[0xa2, 0, address]);
+        data
+    }
+    async fn mmi<R, W>(reader: &mut R, writer: &mut W, present: &[usize])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(request.starts_with(b"\\03FD09FFFAFF00FF"), "{request:?}");
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0, 88), (88, 88), (176, 80)] {
+            writer
+                .write_all(&routed_mmi_block(
+                    &[253],
+                    start,
+                    count,
+                    &present
+                        .iter()
+                        .copied()
+                        .map(|address| (address, 1))
+                        .collect::<Vec<_>>(),
+                ))
+                .await
+                .unwrap();
+        }
+        tokio::task::yield_now().await;
+    }
+    async fn identify<R, W>(reader: &mut R, writer: &mut W, address: u8, serials: &[&str])
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(
+            request.starts_with(format!("\\46FD09{address:02X}2104").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for serial in serials {
+            let mut cal = vec![0x8d, 4];
+            cal.extend_from_slice(&identity(serial, address));
+            routed_pci_reply(writer, &[253], address, &cal).await;
+        }
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+    async fn local_options<R, W>(reader: &mut R, writer: &mut W)
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        assert!(request.starts_with(b"\\4610001A4201"), "{request:?}");
+        let mut bytes = vec![0x86, 16, 0x10, 0x00, 0x82, 0x42, 5];
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+    async fn selected<R, W>(reader: &mut R, writer: &mut W, serial: &str, destination: u8)
+    where
+        R: tokio::io::AsyncBufRead + Unpin,
+        W: tokio::io::AsyncWrite + Unpin,
+    {
+        let request = line(reader).await;
+        let expected = cbus_protocol::serial_address::encode_serial_address_routed(
+            serial,
+            destination,
+            &[253],
+            true,
+            b'g',
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x87, 0];
+        cal.extend_from_slice(&packed(serial));
+        cal.extend_from_slice(&[0, 0]);
+        routed_pci_reply(writer, &[253], destination, &cal).await;
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    let xml = topology_fixture()
+        .replace(
+            "<Unit oid=\"pci-16\"><Address>16</Address><UnitType>PC_CNI2</UnitType></Unit>",
+            "<Unit oid=\"pci-16\"><Address>16</Address><UnitType>PC_CNI2</UnitType><SerialNumber>100966.1187</SerialNumber></Unit>",
+        )
+        .replace(
+            "<Unit oid=\"remote-4\"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>",
+            "<Unit oid=\"remote-6\"><Address>6</Address><UnitType>KEYE1</UnitType><SerialNumber>101136.1558</SerialNumber></Unit><Unit oid=\"remote-7\"><Address>7</Address><UnitType>KEYE1</UnitType><SerialNumber>101136.1559</SerialNumber></Unit>",
+        );
+    let path = state_path();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&xml, None, path.clone(), pci, None).unwrap();
+    {
+        let mut model = service.model.lock().await;
+        model
+            .projects
+            .get_mut("TOPO")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .physical
+            .insert(42, Unit::blank(42, "local-cache-sentinel"));
+    }
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[r] NET UNRAVELUNIT //TOPO/253 255 MATCHDB",
+                )
+                .await
+        }
+    });
+
+    mmi(&mut remote_read, &mut remote_write, &[255]).await;
+    identify(
+        &mut remote_read,
+        &mut remote_write,
+        255,
+        &["101136.1558", "101136.1559"],
+    )
+    .await;
+    local_options(&mut remote_read, &mut remote_write).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &[]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    mmi(&mut remote_read, &mut remote_write, &[6, 7]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    local_options(&mut remote_read, &mut remote_write).await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    let model = service.model.lock().await;
+    let mut target_addresses = model.projects["TOPO"].networks[&253]
+        .physical
+        .keys()
+        .copied()
+        .collect::<Vec<_>>();
+    target_addresses.sort_unstable();
+    assert_eq!(target_addresses, [6, 7]);
+    assert_eq!(
+        model.projects["TOPO"].networks[&254].physical[&42].fields["UnitName"],
+        "local-cache-sentinel"
+    );
+    assert_eq!(
+        model.projects["TOPO"].networks[&253].state,
+        NetworkState::Ok
+    );
+    drop(model);
     std::fs::remove_file(path).unwrap();
 }
 

@@ -843,8 +843,14 @@ receipt and `CgateClient` never replays the request. See
 `NET STATE_INTERVAL` always returns the retained obsolete 400. `NET OPEN` and
 `NET CLOSE` update bound runtime state without releasing cmqttd's shared PCI;
 `PROJECT START` and `PROJECT STOP` apply the same lifecycle across that project.
-Direct `NET UNRAVEL`, `NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete
-known-serial safe planner. `TOPOLOGY EXPLORE` reuses the active endpoint or
+Direct and topology-resolved one-to-six-bridge `NET UNRAVEL`, `NET
+UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete route-correlated known-serial
+safe planner. Each routed selected-serial write requires the exact Reply
+Network, remote destination, and serial receipt, is independently read back,
+and is never replayed after uncertainty. Only the target network cache/state
+commits after the final inventory and PCI-generation guard. This has scripted
+wire/daemon acceptance, not live bridge or power-cycle persistence acceptance.
+`TOPOLOGY EXPLORE` reuses the active endpoint or
 opens supported additional descriptors only for the duration of the scan.
 Ground assertions in
 `rust/testdata/fixtures/native_cgate_net_lifecycle.json`, packets in
@@ -855,7 +861,9 @@ Ground assertions in
 `network_management_routed_selectors`, `network_management_routed_max_hops`,
 `network_management_routed_readback`, `network_management_delivery_semantics`,
 `net_open_close_preserves_mqtt`, `project_runtime_start_stop`,
-`net_unravel_direct_safe_planner`, `topology_explore_physical`, and the now-empty
+`net_unravel_direct_safe_planner`, `net_unravel_routed_safe_planner`,
+`net_unravel_routed_max_hops`, `net_unravel_routed_state_scope`,
+`net_unravel_physical_persistence_accepted`, `topology_explore_physical`, and the now-empty
 `net_lifecycle_fail_closed` list.
 `LIGHTING`, `TRIGGER`, and `ENABLE` label commands also use the physical bus.
 They support the Toolkit CLI's raw/text, icon, language, segmented Unicode, and
@@ -943,19 +951,25 @@ destination, uses the native parameter-`0x20` one-use challenge, sends the
 special address STORE once, requires the destination ACK, and deliberately
 leaves the database unit address unchanged for the Toolkit workflow to verify.
 `NET UNRAVEL //PROJECT/NETWORK [MATCHDB]` and `NET UNRAVELUNIT
-//PROJECT/NETWORK UNITS [MATCHDB]` use one direct-network planner. It takes a
-complete MMI and known-serial identity inventory, keeps healthy singletons,
+//PROJECT/NETWORK UNITS [MATCHDB]` use one direct or topology-resolved
+one-to-six-bridge planner. It takes a complete route-correlated MMI and
+known-serial identity inventory, keeps healthy singletons,
 splits every unit at 255, and moves all but one deterministic keeper at other
 duplicate addresses. `MATCHDB` prefers unique empty serial-matched database
 addresses before the lowest free targets. Local PCI parameter 66 must be `05`.
-Every target is independently proved empty before the first mutation; every
-selected-serial write is sent once and verified at its destination; a final
-complete inventory and option check must equal the exact plan before cache and
-events commit. Routed networks, unknown identities, insufficient targets,
-transport uncertainty, and reconnects fail safely without write replay or
-rollback. `DO //PROJECT/NETWORK UNRAVEL` uses the same backend and returns 202.
-Query `CMQTT CAPABILITIES`; `net_unravel_direct_safe_planner: true` denotes
-this scope.
+Every target is independently proved empty on the selected route before the
+first mutation; every selected-serial write is sent once, requires an exact
+direct receipt or Reply Network route/remote-unit/serial receipt, and is
+verified at its destination. A final route-correlated inventory and option
+check must equal the exact plan before only the target network cache/state and
+events commit under the PCI-generation guard. Unknown or ambiguous routes,
+unknown identities, insufficient targets, transport uncertainty, and reconnects
+fail safely without write replay or rollback. `DO //PROJECT/NETWORK UNRAVEL`
+uses the same backend and returns 202. Query `CMQTT CAPABILITIES`;
+`net_unravel_direct_safe_planner: true` and
+`net_unravel_routed_safe_planner: true` denote this scripted scope. No live
+physical bridge or power-cycle persistence acceptance is claimed. See
+`rust/testdata/fixtures/native_cgate_routed_unravel.json`.
 
 `DBNETWORKPATH START END [OID|COMPACT]` resolves the imported Bridge
 `InterfaceAddress` graph with the standard far-side address convention. It

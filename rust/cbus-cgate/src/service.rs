@@ -2523,6 +2523,15 @@ impl Service {
             );
             capabilities["net_unravel"] = serde_json::Value::Bool(true);
             capabilities["net_unravel_direct_safe_planner"] = serde_json::Value::Bool(true);
+            capabilities["net_unravel_routed_safe_planner"] = serde_json::Value::Bool(true);
+            capabilities["net_unravel_routed_max_hops"] = serde_json::json!(6);
+            capabilities["net_unravel_routed_state_scope"] =
+                serde_json::Value::String("target-network-only".to_string());
+            capabilities["net_unravel_routed_delivery_semantics"] = serde_json::Value::String(
+                "reply-network-route-and-serial-correlated-exactly-once-no-replay".to_string(),
+            );
+            capabilities["net_unravel_physical_persistence_accepted"] =
+                serde_json::Value::Bool(false);
             capabilities["network_project_identify"] = serde_json::Value::Bool(true);
             capabilities["label_clear"] = serde_json::Value::Bool(true);
             capabilities["edlt_widget_groups"] = serde_json::Value::Bool(true);
@@ -2890,6 +2899,9 @@ impl Service {
                 "TEMPERATURE BROADCAST",
                 "SCENE PLAY",
                 "NET SET_PROJECT_IDENTIFY",
+                "NET UNRAVEL",
+                "NET UNRAVELUNIT",
+                "DO UNRAVEL",
                 "PP SAVE",
                 "PP SAVE_TO_SOURCE"
             ]);
@@ -6696,7 +6708,7 @@ impl Service {
         self.net_unravel_general(tag, words).await
     }
 
-    /// Safe general direct-network unravelling. The complete physical
+    /// Safe general direct or routed-network unravelling. The complete physical
     /// inventory and every destination are proved before the first write.
     /// Healthy singletons stay put; every unit at 255 and every duplicate
     /// beyond one deterministic keeper receives a unique empty destination.
@@ -6704,13 +6716,9 @@ impl Service {
     /// lowest free address. Selected-serial writes are exact-once and every
     /// move plus the final whole-network inventory is verified.
     async fn net_unravel_general(&self, tag: &str, words: &[&str]) -> Response {
-        if !self.bound_network(words[2]) {
-            return err(
-                tag,
-                408,
-                "408 Physical unravel requires the directly bound shared PCI network",
-            );
-        }
+        let Some(target) = self.addressed_network(words[2]) else {
+            return err(tag, 404, "404 Network is not connected to this service");
+        };
         let unit_form = words[1].eq_ignore_ascii_case("UNRAVELUNIT");
         let (selection, match_database) = if unit_form {
             let Some(units) = words.get(3) else {
@@ -6734,13 +6742,31 @@ impl Service {
             (None, match_database)
         };
 
-        let (generation, pci) = self.current_pci_epoch().await;
+        // Resolve the complete source route before acquiring a PCI generation
+        // or attempting discovery. `network_path` admits only an evidenced
+        // one-to-six bridge topology and rejects incomplete or ambiguous data.
+        let route = match self.route_to_network(target).await {
+            Ok(route) => route,
+            Err(error) => {
+                return err(
+                    tag,
+                    408,
+                    &format!("408 Physical route unavailable: {error}"),
+                )
+            }
+        };
+        let direct = route.is_empty();
         let (database_units, interface_units) = {
             let model = self.model.lock().await;
-            let network = &model.projects[&self.project].networks[&self.network];
-            let units = network.units.values().cloned().collect::<Vec<_>>();
-            let interfaces = units
-                .iter()
+            let project = &model.projects[&self.project];
+            let units = project.networks[&target]
+                .units
+                .values()
+                .cloned()
+                .collect::<Vec<_>>();
+            let interfaces = project.networks[&self.network]
+                .units
+                .values()
                 .filter(|unit| {
                     let kind = unit.unit_type.to_ascii_uppercase();
                     kind.starts_with("PC_CNI") || kind.starts_with("PC_PCI")
@@ -6749,6 +6775,7 @@ impl Service {
                 .collect::<Vec<_>>();
             (units, interfaces)
         };
+        let (generation, pci) = self.current_pci_epoch().await;
         let local = match interface_units.as_slice() {
             [unit] => pci.set_local_unit_hint(unit.address).map(|()| unit.address),
             [] => pci.discover_local_unit().await,
@@ -6768,7 +6795,7 @@ impl Service {
                 )
             }
         };
-        let states = match pci.install_mmi().await {
+        let states = match install_mmi_for_route(&pci, &route).await {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -6778,7 +6805,7 @@ impl Service {
                 )
             }
         };
-        let before = match physical_serial_inventory(&pci, &states).await {
+        let before = match physical_serial_inventory(&pci, &states, &route).await {
             Ok(inventory) => inventory,
             Err(error) => {
                 return err(
@@ -6805,7 +6832,8 @@ impl Service {
             .and_then(|unit| parse_native_serial(&unit.serial).ok())
             .filter(|serial| serial.known)
             .map(|serial| serial.canonical);
-        if before.get(&local).is_some_and(|serials| serials.len() > 1)
+        if direct
+            && before.get(&local).is_some_and(|serials| serials.len() > 1)
             && local_serial
                 .as_ref()
                 .is_none_or(|serial| !before[&local].contains(serial))
@@ -6827,7 +6855,7 @@ impl Service {
                     None
                 } else if serials.len() == 1 {
                     serials.first().cloned()
-                } else if *source == local {
+                } else if direct && *source == local {
                     local_serial.clone()
                 } else if match_database {
                     serials
@@ -6863,7 +6891,7 @@ impl Service {
                     match database_matches.as_slice() {
                         [unit]
                             if (2..=254).contains(&unit.address)
-                                && unit.address != local
+                                && (!direct || unit.address != local)
                                 && !occupied.contains(&unit.address)
                                 && !reserved.contains(&unit.address) =>
                         {
@@ -6876,7 +6904,7 @@ impl Service {
                 };
                 let destination = preferred.or_else(|| {
                     (2u8..=254).find(|candidate| {
-                        *candidate != local
+                        (!direct || *candidate != local)
                             && !occupied.contains(candidate)
                             && !reserved.contains(candidate)
                     })
@@ -6917,7 +6945,7 @@ impl Service {
             }
         }
         for (_, serial, destination) in &plan {
-            match pci.identify_all(*destination, 4).await {
+            match identify_all_for_route(&pci, &route, *destination, 4).await {
                 Ok(replies) if replies.is_empty() => {}
                 Ok(_) => {
                     return err(
@@ -6966,7 +6994,13 @@ impl Service {
         }
         for (source, serial, destination) in &plan {
             let source_state = expected_states[usize::from(*source)];
-            if let Err(error) = pci.address_selected_serial(serial, *destination).await {
+            let sent = if direct {
+                pci.address_selected_serial(serial, *destination).await
+            } else {
+                pci.address_selected_serial_routed(&route, serial, *destination)
+                    .await
+            };
+            if let Err(error) = sent {
                 return err(
                     tag,
                     408,
@@ -6976,8 +7010,7 @@ impl Service {
                     ),
                 );
             }
-            let verified = pci
-                .identify_all(*destination, 4)
+            let verified = identify_all_for_route(&pci, &route, *destination, 4)
                 .await
                 .ok()
                 .is_some_and(|replies| {
@@ -7016,7 +7049,7 @@ impl Service {
             ));
         }
 
-        let final_states = match pci.install_mmi().await {
+        let final_states = match install_mmi_for_route(&pci, &route).await {
             Ok(states) => states,
             Err(error) => {
                 return err(
@@ -7028,7 +7061,7 @@ impl Service {
                 )
             }
         };
-        let final_inventory = match physical_serial_inventory(&pci, &final_states).await {
+        let final_inventory = match physical_serial_inventory(&pci, &final_states, &route).await {
             Ok(inventory) => inventory,
             Err(error) => {
                 return err(
@@ -7067,7 +7100,7 @@ impl Service {
             .await
             .projects
             .get_mut(&self.project)
-            .and_then(|project| project.networks.get_mut(&self.network))
+            .and_then(|project| project.networks.get_mut(&target))
         {
             let previous = std::mem::take(&mut network.physical);
             network.physical = final_inventory
@@ -7103,9 +7136,7 @@ impl Service {
         for event in move_events {
             let _ = self.events.send(event);
         }
-        let _ = self
-            .events
-            .send(format!("#e# net {} unravel ok", self.network));
+        let _ = self.events.send(format!("#e# net {target} unravel ok"));
         progress.push("120-completed MMI 1 of 1.".to_string());
         progress.push("120-Unravel: Complete.".to_string());
         ok(tag, progress, "200 OK.")
@@ -14729,6 +14760,7 @@ fn syncnew_status_text(status: u16, detail: &str) -> String {
 async fn physical_serial_inventory(
     pci: &Arc<PciClient>,
     states: &[u8],
+    route: &[u8],
 ) -> io::Result<BTreeMap<u8, Vec<String>>> {
     if states.len() != 256 {
         return Err(io::Error::new(
@@ -14742,7 +14774,7 @@ async fn physical_serial_inventory(
             continue;
         }
         let address = address as u8;
-        let replies = pci.identify_all(address, 4).await?;
+        let replies = identify_all_for_route(pci, route, address, 4).await?;
         let mut serials = replies
             .iter()
             .map(|reply| {
@@ -14770,6 +14802,27 @@ async fn physical_serial_inventory(
         inventory.insert(address, serials);
     }
     Ok(inventory)
+}
+
+async fn install_mmi_for_route(pci: &Arc<PciClient>, route: &[u8]) -> io::Result<Vec<u8>> {
+    if route.is_empty() {
+        pci.install_mmi().await
+    } else {
+        pci.install_mmi_routed(route).await
+    }
+}
+
+async fn identify_all_for_route(
+    pci: &Arc<PciClient>,
+    route: &[u8],
+    address: u8,
+    attribute: u8,
+) -> io::Result<Vec<Vec<u8>>> {
+    if route.is_empty() {
+        pci.identify_all(address, attribute).await
+    } else {
+        pci.identify_all_routed(route, address, attribute).await
+    }
 }
 
 fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, String, u8)> {

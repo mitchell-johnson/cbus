@@ -1167,12 +1167,16 @@ fn physical_unravel_paths_pin_preflight_and_exact_once_evidence() {
         .expect("NET UNRAVEL row exists");
     assert_eq!(whole_row.class, RoutingClass::Physical);
     assert!(whole_row.evidence.contains("exact-once"));
+    assert!(whole_row.evidence.contains("one-to-six-bridge"));
+    assert!(whole_row.evidence.contains("target-network-only"));
     let unit_row = CAPABILITY_MATRIX
         .iter()
         .find(|entry| entry.path == "NET UNRAVELUNIT")
         .expect("NET UNRAVELUNIT row exists");
     assert_eq!(unit_row.class, RoutingClass::Physical);
     assert!(unit_row.evidence.contains("one preflighted planner"));
+    assert!(unit_row.evidence.contains("Reply Network"));
+    assert!(unit_row.evidence.contains("never replayed"));
 }
 
 #[test]

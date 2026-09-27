@@ -1,0 +1,41 @@
+{
+  "schema": "cmqttd.native-cgate-routed-unravel-evidence/v1",
+  "date": "2026-09-27",
+  "scope": "Evidence-bound composition of native direct UNRAVEL selected-serial semantics with retained C-Gate source routing and Reply Network correlation; no live physical bridge or site data",
+  "grounding": [
+    {
+      "evidence": "testdata/vectors/serial_address.jsonl direct selected-serial vectors and retained pci_serial_address oracle",
+      "finding": "The native direct operation fixes the application 0xFF selected-serial SAL body 0F 00 <four serial bytes> <destination> <inner checksum>, the supported destination range 2..254, and its parameter-0 six-byte serial receipt."
+    },
+    {
+      "evidence": "testdata/vectors/encode.jsonl#en-cgate-routed-pingu-one-bridge-native and native_cgate_routed_application_control.json",
+      "finding": "The retained native C-Gate source-route envelope composes an unchanged application/SAL payload after destination type 0x03, first bridge, route length times nine, remaining bridges, and application. The evidenced route bound is one through six bridges."
+    },
+    {
+      "evidence": "toolkit-cli/research/fixtures/pci-routed-recall-original-vectors.json and pci-routed-identify-original-vectors.json",
+      "finding": "Original Reply Network matching binds the first bridge, every remaining hop, the remote unit, and CAL selector. Direct or neighbouring-route replies cannot satisfy a routed target observation."
+    },
+    {
+      "evidence": "Service::net_unravel_general direct planner and native_cgate_routed_project_identity.json",
+      "finding": "The complete-inventory planner and CBusBaseNetwork topology resolution are independent of the physical route. cmqttd retains the direct allocation rules while routing all target MMI, IDENTIFY, selected-serial receipt, per-move verification, and final inventory operations through one resolved CBusBaseNetwork path."
+    }
+  ],
+  "claimed_behavior": [
+    "NET UNRAVEL, NET UNRAVELUNIT and DO UNRAVEL accept a complete unambiguous topology route of one through six bridges.",
+    "The planner resolves topology and validates selection before PCI I/O, proves complete known-serial inventory and every destination before the first mutation, and sends every selected-serial request exactly once outside replay.",
+    "A routed request completes only with its allocated positive confirmation and exactly one Reply Network receipt matching every bridge, the remote destination, parameter 0, and selected serial; movement then requires independent route-correlated IDENTIFY and final whole-target-network inventory.",
+    "Only the addressed network physical cache/state and staged events commit after an unchanged PCI-generation guard."
+  ],
+  "acceptance": [
+    "Golden serial_address.jsonl vectors pin literal one- and six-bridge requests and invalid zero/seven-hop preflight.",
+    "Transport regressions pin exact Reply Network and serial matching, rejection of a neighbouring route, programming-lane retirement, and zero replay.",
+    "Service regression completes routed MATCHDB movement and proves the root-network cache is unchanged.",
+    "A real cmqttd daemon regression completes the one-bridge mutation through the shared simulated PCI and observes exactly one selected-serial frame."
+  ],
+  "limits": [
+    "There is no retained native wire capture of a routed selected-serial UNRAVEL mutation. The request is a bounded composition of the retained native selected-serial payload with the retained native PPM source-route envelope.",
+    "No physical C-Bus bridge or remote unit completed this mutation in acceptance. Tests use protocol codecs and the simulated shared PCI.",
+    "The parameter-0 receipt is correlation evidence only. Success additionally requires volatile routed inventory; it does not prove nonvolatile address persistence or power-cycle survival.",
+    "Any uncertain write or incomplete correlated observation retires the programming/MMI lane and is never replayed automatically."
+  ]
+}

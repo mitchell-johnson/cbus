@@ -570,9 +570,10 @@ parent help; the physical application, DALI, network, label, scene, and PP
 routes described below; and a verified `PP WRITE_PATCH` path for the explicit
 `cmqttd.pp-patch/v1` manifest. DEPLOY_QUEUE ADD and RETRY run admitted
 PROGRAMMER PP/DALI work asynchronously, stop at the first fault, and never
-replay an uncertain command automatically. Direct-network UNRAVEL handles the
-whole safe inventory plan, including address 255 and larger duplicate sets,
-with exact-once moves and a generation-bound final proof.
+replay an uncertain command automatically. Direct and topology-resolved
+one-to-six-bridge UNRAVEL handle the whole safe inventory plan, including
+address 255 and larger duplicate sets, with exact-once moves, exact Reply
+Network correlation, and a generation-bound target-network final proof.
 
 Compatibility boundaries remain explicit. `NET SET_PROJECT_IDENTIFY` supports
 direct and one-to-six-bridge targets with strict Reply Network correlation, one
@@ -617,10 +618,14 @@ use the configured direct shared PCI or a topology-resolved one-to-six-bridge
 PPM route, send one exact SAL frame, wait only for its correlated confirmation,
 and never replay an uncertain write or invent remote readback. `NET OPEN`/`NET CLOSE` and
 `PROJECT START`/`PROJECT STOP` change runtime state and clear volatile caches
-without disconnecting cmqttd's shared PCI or MQTT. Direct `NET UNRAVEL`,
-`NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a complete known-serial inventory,
-preflight every unique empty destination, send selected-serial writes once, and
-verify the final inventory; routed or uncertain plans fail before mutation.
+without disconnecting cmqttd's shared PCI or MQTT. Direct and topology-resolved
+one-to-six-bridge `NET UNRAVEL`, `NET UNRAVELUNIT`, and `DO ... UNRAVEL` use a
+complete route-correlated known-serial inventory, preflight every unique empty
+destination, send selected-serial writes once, require exact direct or Reply
+Network receipts, and verify the final target inventory before committing only
+that network's cache. Unroutable or uncertain plans fail before mutation, and
+uncertain writes are never replayed. This is scripted protocol acceptance, not
+live bridge delivery or power-cycle persistence acceptance.
 Routed `NET SET_PROJECT_IDENTIFY` is the bounded exception: selection, STORE,
 and RECALL remain on the resolved one-to-six-bridge path, and only the target
 network's volatile `ProjectName` can commit on the captured PCI generation.

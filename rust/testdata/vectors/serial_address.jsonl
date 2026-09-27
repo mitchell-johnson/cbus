@@ -2,6 +2,10 @@
 {"command_checksum": false, "confirmation": "g", "destination": 7, "expect_frame_ascii": "\\05FF000F0018B106170713g\r", "id": "sa-enc-b", "kind": "encode", "serial": "101136.1559"}
 {"command_checksum": true, "confirmation": "g", "destination": 6, "expect_frame_ascii": "\\05FF000F0018B106160615EDg\r", "id": "sa-enc-a-srchk", "kind": "encode", "serial": "101136.1558"}
 {"command_checksum": true, "confirmation": "z", "destination": 7, "expect_frame_ascii": "\\05FF000F0018B106170713EDz\r", "id": "sa-enc-b-srchk-z", "kind": "encode", "serial": "101136.1559"}
+{"bridges":[253],"command_checksum":true,"confirmation":"g","destination":6,"expect_frame_ascii":"\\03FD09FF0F0018B106160615E9g\r","id":"sa-enc-routed-one","kind":"encode_routed","serial":"101136.1558"}
+{"bridges":[253,252,251,250,249,248],"command_checksum":true,"confirmation":"g","destination":6,"expect_frame_ascii":"\\03FD36FCFBFAF9F8FF0F0018B106160615DAg\r","id":"sa-enc-routed-six","kind":"encode_routed","serial":"101136.1558"}
+{"bridges":[],"command_checksum":true,"confirmation":"g","destination":6,"id":"sa-err-routed-empty","kind":"encode_routed_error","serial":"101136.1558"}
+{"bridges":[253,252,251,250,249,248,247],"command_checksum":true,"confirmation":"g","destination":6,"id":"sa-err-routed-seven","kind":"encode_routed_error","serial":"101136.1558"}
 {"command_checksum": false, "confirmation": "g", "destination": 2, "expect_frame_ascii": "\\05FF000F000000000102FDg\r", "id": "sa-enc-min", "kind": "encode", "serial": "0.1"}
 {"command_checksum": false, "confirmation": "g", "destination": 2, "expect_frame_ascii": "\\05FF000F000000100002EEg\r", "id": "sa-enc-one-zero", "kind": "encode", "serial": "1.0"}
 {"command_checksum": false, "confirmation": "g", "destination": 254, "expect_frame_ascii": "\\05FF000F00FFFFFFFEFE07g\r", "id": "sa-enc-max", "kind": "encode", "serial": "1048575.4094"}

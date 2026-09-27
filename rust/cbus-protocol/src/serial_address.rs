@@ -132,6 +132,68 @@ pub fn encode_serial_address(
     Ok(frame)
 }
 
+/// Encode one selected-serial address broadcast through a bridge source route.
+///
+/// `bridges` is the ordered route from the attached network to the target
+/// network and must contain one to six bridge unit addresses. The native
+/// selected-serial body and inner checksum are identical to the direct form;
+/// only the standard point-to-point-to-multipoint envelope changes. The
+/// complete routed packet is protected by SRCHK when `command_checksum` is
+/// true.
+pub fn encode_serial_address_routed(
+    serial: &str,
+    destination: u8,
+    bridges: &[u8],
+    command_checksum: bool,
+    confirmation: u8,
+) -> Result<Vec<u8>, EncodeError> {
+    let selected = parse_native_serial(serial)?;
+    if !selected.known {
+        return Err(EncodeError::new(
+            "Selected serial must be known; zero and FFFFFFFF are unsupported",
+        ));
+    }
+    if !(2..=254).contains(&destination) {
+        return Err(EncodeError::new(
+            "Selected-serial destination must be an integer in the supported range 2..254",
+        ));
+    }
+    if !(1..=6).contains(&bridges.len()) {
+        return Err(EncodeError::new(
+            "Routed selected-serial address requires one to six bridges",
+        ));
+    }
+    if !(b'g'..=b'z').contains(&confirmation) {
+        return Err(EncodeError::new(
+            "Confirmation must be exactly one byte in g..z",
+        ));
+    }
+
+    let mut body = Vec::with_capacity(6);
+    body.push(0x00);
+    body.extend_from_slice(&selected.packed);
+    body.push(destination);
+
+    let mut payload = Vec::with_capacity(bridges.len() + 11);
+    payload.push(0x03);
+    payload.push(bridges[0]);
+    payload.push((bridges.len() as u8) * 9);
+    payload.extend_from_slice(&bridges[1..]);
+    payload.extend_from_slice(&[0xFF, 0x0F]);
+    payload.extend_from_slice(&body);
+    payload.push(cbus_checksum(&body));
+    if command_checksum {
+        payload.push(cbus_checksum(&payload));
+    }
+
+    let mut frame = Vec::with_capacity(2 * payload.len() + 3);
+    frame.push(b'\\');
+    frame.extend_from_slice(hex::encode(&payload).to_ascii_uppercase().as_bytes());
+    frame.push(confirmation);
+    frame.push(b'\r');
+    Ok(frame)
+}
+
 /// Serial identity decoded from one receipt frame's CAL data.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ReceiptSerial {

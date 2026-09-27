@@ -6,7 +6,9 @@
 //! codec only: no I/O, no movement claim. A `matched` receipt establishes
 //! packet correlation only; `movement_verified` is always false.
 
-use cbus_protocol::serial_address::{classify_receipt, encode_serial_address};
+use cbus_protocol::serial_address::{
+    classify_receipt, encode_serial_address, encode_serial_address_routed,
+};
 use serde_json::Value;
 use std::collections::HashSet;
 
@@ -123,6 +125,53 @@ fn serial_address_vectors() {
                     )
                     .is_err(),
                     "{id}: encode accepted invalid input"
+                );
+            }
+            "encode_routed" => {
+                let serial = get_str(item, &id, "serial");
+                let destination = get_u8(item, &id, "destination");
+                let bridges = item["bridges"]
+                    .as_array()
+                    .unwrap_or_else(|| panic!("{id}: bridges must be an array"))
+                    .iter()
+                    .map(|bridge| {
+                        u8::try_from(bridge.as_u64().expect("bridge is an integer"))
+                            .expect("bridge fits u8")
+                    })
+                    .collect::<Vec<_>>();
+                let command_checksum = get_bool(item, &id, "command_checksum");
+                let confirmation = get_str(item, &id, "confirmation");
+                let expected = get_str(item, &id, "expect_frame_ascii");
+                let frame = encode_serial_address_routed(
+                    &serial,
+                    destination,
+                    &bridges,
+                    command_checksum,
+                    confirmation.as_bytes()[0],
+                )
+                .unwrap_or_else(|error| panic!("{id}: routed encode failed: {error}"));
+                assert_eq!(frame, expected.as_bytes(), "{id}: routed wire differs");
+            }
+            "encode_routed_error" => {
+                let bridges = item["bridges"]
+                    .as_array()
+                    .unwrap_or_else(|| panic!("{id}: bridges must be an array"))
+                    .iter()
+                    .map(|bridge| {
+                        u8::try_from(bridge.as_u64().expect("bridge is an integer"))
+                            .expect("bridge fits u8")
+                    })
+                    .collect::<Vec<_>>();
+                assert!(
+                    encode_serial_address_routed(
+                        &get_str(item, &id, "serial"),
+                        get_u8(item, &id, "destination"),
+                        &bridges,
+                        get_bool(item, &id, "command_checksum"),
+                        get_str(item, &id, "confirmation").as_bytes()[0],
+                    )
+                    .is_err(),
+                    "{id}: routed encode accepted invalid route"
                 );
             }
             "receipt" => {
