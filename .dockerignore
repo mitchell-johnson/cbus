@@ -7,7 +7,12 @@
 .opencode
 rust/target
 toolkit-cli
-cmqttd_config/auth
-cmqttd_config/certificates
-cmqttd_config/*.pem
-cmqttd_config/*.key
+# The image may contain only the two explicitly provisioned runtime inputs.
+# This deny-by-default rule keeps local backups, operational notes, broker
+# credentials and certificates out of the build context even when they are
+# ignored by Git.
+cmqttd_config/*
+!cmqttd_config/README.md
+!cmqttd_config/project.cbz
+!cmqttd_config/unitspec/
+!cmqttd_config/unitspec/**
