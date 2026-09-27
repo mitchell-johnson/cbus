@@ -44,7 +44,8 @@ class RegistryUserContextTests(unittest.TestCase):
         fields = ['READY1', instance._nonce, '4321', '4', subject._b64(subject.RUNTIME),
                   subject.RUNTIME_SHA256, subject.RUNTIME_MVID, '060000f3', subject.PROVIDER_IL_SHA256,
                   subject._b64(executable), instance._helper_hash, subject._b64(sid)]
-        return instance._ready('\t'.join(fields), executable)
+        with patch.object(subject, 'process_token_user_sid', return_value=sid):
+            return instance._ready('\t'.join(fields), executable)
 
     def test_expected_sid_is_validated_without_process_or_registry_access(self):
         for invalid in ('', 'user', 's-1-5-18', 'S-01-5-18', 'S-1-05-18',
@@ -64,6 +65,7 @@ class RegistryUserContextTests(unittest.TestCase):
         self.assertEqual(proof['user_sid'], self.SID)
         context = instance._remember().as_dict()['user_context']
         self.assertEqual(context, {'expected_user_sid': self.SID, 'observed_user_sid': self.SID,
+                                  'process_token_user_sid': self.SID, 'process_token_user_verified': True,
                                   'sid_requirement_satisfied': True,
                                   'interactive_user_context_verified': False})
         instance = observer()
@@ -71,6 +73,27 @@ class RegistryUserContextTests(unittest.TestCase):
         context = instance._remember().as_dict()['user_context']
         self.assertIsNone(context['sid_requirement_satisfied'])
         self.assertFalse(context['interactive_user_context_verified'])
+
+    def test_os_token_mismatch_and_access_failure_precede_queries(self):
+        for result in ('S-1-5-18', OSError('Token access denied')):
+            instance = observer(expected_user_sid=self.SID)
+            def start():
+                original = instance._ready
+                def ready(text, executable):
+                    options = ({'side_effect': result} if isinstance(result, Exception)
+                               else {'return_value': result})
+                    with patch.object(subject, 'process_token_user_sid', **options):
+                        return original(text, executable)
+                with patch.object(instance, '_ready', side_effect=ready):
+                    instance._proof = self.ready(instance, self.SID)
+            with patch.object(instance, '_start', side_effect=start), \
+                 patch.object(subject, '_publish') as publish:
+                with self.assertRaises((ValueError, OSError)):
+                    instance.read(QUERY)
+                publish.assert_not_called()
+                self.assertIsNone(instance._proof)
+                self.assertFalse(instance._records[0]['request_published'])
+                self.assertFalse(instance.last_report.as_dict()['user_context']['sid_requirement_satisfied'])
 
     def test_wrong_user_stops_before_any_query_and_retains_cleanup_evidence(self):
         instance = observer(expected_user_sid=self.SID)

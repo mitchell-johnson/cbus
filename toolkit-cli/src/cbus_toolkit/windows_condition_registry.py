@@ -22,6 +22,7 @@ from . import _toolkit_update_registry_conditions as leaves
 from .toolkit_update_conditions import MAX_JSON_BYTES, _Outcome, _ascii, _unsupported
 from .toolkit_update_metadata import _json, _error
 from ._windows_condition_registry_worker import SOURCE
+from ._windows_process_token import process_token_user_sid
 
 SCOPE_FORMAT = 'cbus-toolkit-registry-read-scope-v1'
 QUERY_FORMAT = 'cbus-toolkit-registry-queries-v1'
@@ -256,6 +257,7 @@ class WindowsConditionRegistry:
             raise ValueError('Registry session timeout must be in (0, 60] seconds')
         self._expected_user_sid = None if expected_user_sid is None else validate_user_sid(expected_user_sid)
         self._observed_user_sid = None
+        self._token_user_sid = None
         self._scope = scope._keys()
         self._compiler = os.fspath(compiler_path)
         self._parent = None if workspace_parent is None else os.fspath(workspace_parent)
@@ -274,8 +276,11 @@ class WindowsConditionRegistry:
             'user_context': {
                 'expected_user_sid': self._expected_user_sid,
                 'observed_user_sid': self._observed_user_sid,
+                'process_token_user_sid': self._token_user_sid,
+                'process_token_user_verified': self._token_user_sid is not None,
                 'sid_requirement_satisfied': (None if self._expected_user_sid is None
-                    or self._observed_user_sid is None else self._expected_user_sid == self._observed_user_sid),
+                    or self._observed_user_sid is None else (self._expected_user_sid == self._observed_user_sid
+                        and self._token_user_sid == self._expected_user_sid)),
                 'interactive_user_context_verified': False,
             },
             'cleanup': self._cleanup, 'closed': self._closed,
@@ -369,8 +374,11 @@ class WindowsConditionRegistry:
         sid = _unb64(fields[11], 256)
         validate_user_sid(sid)
         self._observed_user_sid = sid
-        if self._expected_user_sid is not None and sid != self._expected_user_sid:
-            raise ValueError('Registry worker user SID does not match the required HKCU user context')
+        if self._expected_user_sid is not None:
+            self._token_user_sid = process_token_user_sid(self._process)
+            validate_user_sid(self._token_user_sid)
+            if sid != self._token_user_sid or sid != self._expected_user_sid:
+                raise ValueError('Registry worker user SID does not match the required HKCU user context')
         return {'worker_pid': self._process.pid, 'nonce': self._nonce, 'pointer_size': 4,
             'runtime_path': RUNTIME, 'runtime_sha256': RUNTIME_SHA256, 'runtime_mvid': RUNTIME_MVID,
             'method_token': '060000f3', 'method_il_sha256': PROVIDER_IL_SHA256,

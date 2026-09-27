@@ -1,0 +1,68 @@
+{
+  "format": "cbus-registry-primary-token-native-smoke-v1",
+  "work_item": "P9.02",
+  "base_revision": "03f53953be5da45eae05a3f8ca067e754c86718d",
+  "source_sha256": {
+    "_windows_process_token.py": "55a256803c583bba242d54e2509f3faa6603eff9c44d17bfc01f984d101d9931",
+    "windows_condition_registry.py": "539a96657fc2152dbc996bb497f67b4bc9ca2b45b8acf5a1b86fb09360dfe379"
+  },
+  "environment": {
+    "python": "3.13.14 AMD64",
+    "windows": "Windows 11 ARM64",
+    "worker": ".NET Framework x86",
+    "account_class": "LocalSystem",
+    "disposable_vm": true,
+    "host_only_during_execution": true,
+    "default_ipv4_routes": 0
+  },
+  "cases": [
+    {
+      "id": "correct-primary-token-sid",
+      "exit_code": 0,
+      "condition_result": true,
+      "token_user_verified": true,
+      "sid_requirement_satisfied": true,
+      "request_count": 1
+    },
+    {
+      "id": "wrong-required-sid",
+      "exit_code": 1,
+      "condition_result": null,
+      "token_user_verified": true,
+      "sid_requirement_satisfied": false,
+      "request_count": 0
+    },
+    {
+      "id": "terminated-original-process-handle",
+      "rejected": true,
+      "reason": "Owned worker is not live during token verification"
+    }
+  ],
+  "cleanup": {
+    "fixture_unchanged": true,
+    "fixture_removed": true,
+    "owned_processes_remaining": 0,
+    "vm_stopped": true,
+    "original_network_restored": true
+  },
+  "claims": {
+    "primary_token_sid_queried_independently": true,
+    "thread_token_attested": false,
+    "interactive_user_context_verified": false,
+    "provenance_is_host_attestation": false,
+    "original_toolkit_wrapper_parity": false
+  },
+  "private_receipt_sha256": {
+    "cbus-token-native.py": "922238dc5dd9ee4cd13f45ec9cdfe8e9ad83b7d23a7d6251725f7049f6735560",
+    "cbus-token-source.zip": "7acfd3c3eac58497f046bb5a8738d2d195421f0e7153fecb89e0c72a78d5b8bf",
+    "cbus-token-native-result.json": "fbc32f56c08e56f41f7707f8f146dbf9bc0023142765ea3efbb89d003c552200",
+    "cbus-token-exited.py": "ea687a2cd4ed2379b9681b2bfce7d68a538bc8b0622f4b79f9d8492a9d212dd8",
+    "cbus-token-exited.json": "7d7eeb900b1d86f650c525a9068dce2c380c9260beb0a58cacb24b3f9c1b5ae5",
+    "cbus-token-final.json": "6cc2c993e241a87c028d50d56a06f065f24053a822c0941c29f377881e173b2c"
+  },
+  "invalidation": [
+    "Changed source hashes or native runtime profile",
+    "Changed process ownership, token acquisition, buffer parsing or admission ordering",
+    "Claims about interactive session or thread impersonation beyond this smoke"
+  ]
+}
