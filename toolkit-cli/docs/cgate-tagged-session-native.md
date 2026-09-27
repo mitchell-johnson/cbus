@@ -21,7 +21,7 @@ these separators and CRLF exactly. Only external session IDs, loopback client
 ports and timestamps are normalized to stable role placeholders. Timestamp
 equality between roles is not asserted.
 
-The sequence includes each session's own ID, an untagged-session listing,
+The sequence includes each session's own ID, a pre-tagging session listing,
 first `TAG native-a` and `TAG native-b` success, listings from both clients,
 a rejected second tag (`408 Operation failed: tag name has already been set`),
 a subsequent listing retaining both original tags, and missing tag syntax
@@ -40,10 +40,23 @@ child and bound to loopback. The captured cleanup confirms process exit,
 removal of the temporary work directory, reserved-socket closure and log
 closure. The capture did not contact house devices.
 
-The [session differential](cgate-session-differential.md) still uses its
-earlier nine-case payload capture. It now compares the internal Console row
-and CRLF rather than excluding the row. This eleven-case tagged envelope is
-captured but not yet required by that differential; native client-prefix
-equivalence for these exact commands is a separate acceptance gap.
+The [session differential](cgate-session-differential.md) retains its earlier
+nine-case payload capture. A separate, mandatory
+`make check-tagged-session-differential` compares this full eleven-case tagged
+wire capture with fresh `cgate-mock` and offline `cmqttd` TCP sessions.
+Its [runner](../research/cgate_tagged_session_differential.py) sends each
+literal numeric-tag request, requires that tag on every reply line, then
+replaces only the two queried external session IDs, owned loopback peer ports
+and stable Console/a/b connection timestamps. It compares every resulting
+line byte-for-byte with this fixture, including the internal Console row,
+continuation/final separators, statuses, tag reassignment and CRLF. The
+committed [mock](../research/fixtures/cgate-tagged-session-differential-cgate-mock.json)
+and [cmqttd](../research/fixtures/cgate-tagged-session-differential-cmqttd.json)
+receipts bind the native fixture SHA-256, exact Rust binary SHA-256 and the
+transitive Rust source closure. CI executes and retains a fresh receipt for
+both products. This is additional narrowly scoped evidence; it does not
+change the existing functional obligation status or complete the parity census.
+
+The greeting check covers 201/readiness and CRLF, not product-specific text.
 Other tag forms, concurrent commands, TLS and non-loopback peers remain
 outside this capture's scope; issue #17 remains open.

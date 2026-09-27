@@ -34,13 +34,14 @@ interop module and both cmqttd interop modules so CI can execute and report
 the two server selections separately.
 
 `make check-interop` builds both `cgate-mock` and `cmqttd`, verifies that both
-executables exist, runs the nine-case original C-Gate `SESSION_ID` differential
+executables exist, runs the nine-case original C-Gate `SESSION_ID` payload
+differential and the separate eleven-case numeric-tag full-wire differential
 against each fresh server, then runs `test_rust_cgate_interop.py` in one
 invocation and `test_cmqtt_interop.py` plus
 `test_cmqtt_programming_methods_interop.py` in a second invocation. The focused
 `check-cgate-interop` and `check-cmqtt-interop` targets deliberately do not
 build a missing binary: they fail before collection. CI builds the two servers
-and requires both differential runs before the offline and two interop
+and requires all four differential executions before the offline and two interop
 selections; it retains their JSON receipts as well as a JUnit report and a
 checked execution receipt for each pytest selection. The CI pytest
 plugin records the collected and started node IDs plus every call outcome. The

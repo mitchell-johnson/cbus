@@ -61,8 +61,8 @@ requires native CRLF line endings and checks that every Rust reply echoes its su
 capture stores tag-stripped response payloads. The separate
 [full-envelope native capture](cgate-tagged-session-native.md) now preserves
 the original client prefixes, status separators, CRLF and internal Console
-row. That envelope is captured but not yet required by this differential;
-the comparator still uses the earlier payload-only original capture.
+row. This nine-case comparator still uses the earlier payload-only original
+capture; the separate eleven-case gate below requires the tagged envelope.
 
 Both Rust servers now include the native `cmd1` Console row. The runner compares
 it, including its position and `300-` continuation delimiter; any missing or
@@ -104,3 +104,10 @@ Their source fingerprints include the updated comparator and contract pilot.
 The three functional obligations stay `in_progress`. Even a green scoped
 original-differential receipt does not resolve their physical applicability,
 accept broad C-Gate paths, or complete the Toolkit parity census.
+
+The separate [tagged-wire differential](cgate-tagged-session-native.md)
+requires all eleven numeric-tag request and response envelopes on both Rust
+servers. It preserves the `cmd1` Console row, exact echoed tags on every
+continuation and terminal line, CRLF, status and tag-reassignment behavior.
+Its two receipts are additional scope-specific evidence and are not counted
+as new fully accepted functional obligations.

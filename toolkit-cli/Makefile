@@ -17,6 +17,8 @@
 #                       differential, then exercises both server suites)
 #   make check-session-differential
 #                       nine original-vs-Rust SESSION_ID cases on each binary
+#   make check-tagged-session-differential
+#                       eleven exact numeric-tag wire cases on each binary
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
@@ -96,7 +98,13 @@ check-session-differential: build-interop
 		--cmqttd-bin "$(CMQTTD_BIN)" \
 		--output research/runtime/cgate-session-differential-cmqttd.json
 
-check-interop: check-session-differential
+check-tagged-session-differential: build-interop
+	PYTHONPATH=src:. $(PY) research/cgate_tagged_session_differential.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" \
+		--cmqttd-bin "$(CMQTTD_BIN)" \
+		--output-dir research/runtime
+
+check-interop: check-session-differential check-tagged-session-differential
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
 
@@ -121,5 +129,6 @@ compile:
 
 .PHONY: check check-offline check-native check-hardware build-interop \
 	check-session-differential \
+	check-tagged-session-differential \
 	check-cgate-interop check-cmqtt-interop check-interop check-wheel \
 	check-parity-register coverage require-complete compile
