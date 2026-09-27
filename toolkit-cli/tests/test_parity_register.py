@@ -3,9 +3,12 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from cbus_toolkit import parity
+from research import build_parity_register as register_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -136,8 +139,8 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertIsNone(
             report["acceptance_by_dimension"]["original_differential"]["percent"]
         )
-        self.assertEqual(report["obligations"]["total"], 481)
-        self.assertEqual(report["obligations"]["defined"], 0)
+        self.assertEqual(report["obligations"]["total"], 484)
+        self.assertEqual(report["obligations"]["defined"], 3)
         self.assertEqual(report["obligations"]["accepted"], 0)
         self.assertEqual(report["legacy_category_summary"]["implemented"], 18)
         self.assertEqual(report["legacy_category_summary"]["implemented_percent"], 46.15)
@@ -177,6 +180,129 @@ class ParityRegisterTests(unittest.TestCase):
             ],
             {"unresolved": 442},
         )
+
+    def test_session_function_pilot_is_narrow_and_unaccepted(self):
+        register, evidence, _, _, _, _, _ = packaged_documents()
+        self.assertEqual(evidence["records"], [])
+        self.assertFalse(register["census_complete"])
+        functions = {
+            item["source_id"]: item
+            for item in register["obligations"]
+            if item.get("kind") == "cgate_function"
+        }
+        self.assertEqual(set(functions), set(parity.CGATE_SESSION_PILOT_IDS))
+        for path, obligation in functions.items():
+            with self.subTest(path=path):
+                self.assertEqual(obligation["id"], parity.CGATE_SESSION_PILOT_IDS[path])
+                self.assertEqual(obligation["ledger_id"], "cgate-command-transport")
+                self.assertEqual(obligation["definition_status"], "defined")
+                self.assertEqual(obligation["implementation_status"], "in_progress")
+                self.assertEqual(obligation["applicability_status"], "unresolved")
+                self.assertEqual(
+                    obligation["applicability"]["physical_candidate"],
+                    "not_applicable_pending_receipt",
+                )
+                self.assertEqual(
+                    set(obligation["acceptance"].values()), {"unassessed"}
+                )
+                self.assertEqual(obligation["evidence_ids"], [])
+                broad = next(
+                    item for item in register["obligations"]
+                    if item.get("kind") == "cgate_path" and item["source_id"] == path
+                )
+                self.assertEqual(broad["definition_status"], "provisional")
+
+    def test_session_function_pilot_rejects_broken_packaged_anchors(self):
+        def first_function(register):
+            return next(
+                item for item in register["obligations"]
+                if item.get("kind") == "cgate_function"
+            )
+
+        register, *_ = packaged_documents()
+        del first_function(register)["source_anchor"]
+        with self.assertRaisesRegex(ValueError, "requires an exact public-help source anchor"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        first_function(register)["source_anchor"]["syntax_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "differs from its source and broad-ledger anchors"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        function = first_function(register)
+        public_scope = next(
+            item for item in register["scope_items"]
+            if item["id"] == function["source_scope_item_ids"][0]
+        )
+        public_scope["obligation_ids"].remove(function["id"])
+        with self.assertRaisesRegex(ValueError, "differs from its source and broad-ledger anchors"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        first_function(register)["native_oracle"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "native acceptance anchor is stale or missing"):
+            evaluate_packaged_change(register)
+
+        register, *_ = packaged_documents()
+        first_function(register)["acceptance"]["physical"] = "not_applicable"
+        with self.assertRaisesRegex(ValueError, "requires evidence"):
+            evaluate_packaged_change(register)
+
+    def test_session_function_pilot_builder_rejects_stale_or_missing_original_sources(self):
+        surface = json.loads((ROOT / "docs/toolkit-surface.json").read_text())
+        contracts = json.loads((ROOT / "src/cbus_toolkit/cgate-contract-inventory.json").read_text())
+        by_path = {item["path"]: item for item in contracts["contracts"]}
+        self.assertEqual(len(register_builder.functional_pilot(surface, by_path)), 3)
+
+        with TemporaryDirectory() as folder:
+            native = Path(folder, "native.json")
+            native.write_bytes(register_builder.NATIVE_SESSION_PATH.read_bytes() + b" ")
+            with patch.object(register_builder, "NATIVE_SESSION_PATH", native):
+                with self.assertRaisesRegex(ValueError, "native acceptance source is stale"):
+                    register_builder.functional_pilot(surface, by_path)
+            native.unlink()
+            with patch.object(register_builder, "NATIVE_SESSION_PATH", native):
+                with self.assertRaisesRegex(ValueError, "native acceptance source is missing"):
+                    register_builder.functional_pilot(surface, by_path)
+
+        stale_surface = json.loads(json.dumps(surface))
+        next(
+            item for item in stale_surface["public_commands"]
+            if item["id"] == "cgate:SESSION_ID"
+        )["source"]["syntax_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "public-help anchor is missing or stale"):
+            register_builder.functional_pilot(stale_surface, by_path)
+        missing_surface = json.loads(json.dumps(surface))
+        missing_surface["public_commands"] = [
+            item for item in missing_surface["public_commands"]
+            if item["id"] != "cgate:SESSION_ID"
+        ]
+        with self.assertRaisesRegex(ValueError, "public-help anchor is missing or stale"):
+            register_builder.functional_pilot(missing_surface, by_path)
+
+        stale_contracts = json.loads(json.dumps(by_path))
+        stale_contracts["SESSION_ID"]["contract_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "C-Gate contract anchor is missing or stale"):
+            register_builder.functional_pilot(surface, stale_contracts)
+
+        with TemporaryDirectory() as folder:
+            native = json.loads(register_builder.NATIVE_SESSION_PATH.read_text())
+            native["cases"] = [
+                case for case in native["cases"]
+                if case["command"] != "SESSION_ID bogus"
+            ]
+            native_path = Path(folder, "native.json")
+            native_path.write_text(json.dumps(native))
+            manifest = json.loads(register_builder.FUNCTIONAL_PILOT_PATH.read_text())
+            manifest["native_oracle"]["sha256"] = sha256(native_path.read_bytes()).hexdigest()
+            manifest_path = Path(folder, "pilot.json")
+            manifest_path.write_text(json.dumps(manifest))
+            with patch.object(register_builder, "NATIVE_SESSION_PATH", native_path), patch.object(
+                register_builder, "FUNCTIONAL_PILOT_PATH", manifest_path
+            ):
+                with self.assertRaisesRegex(ValueError, "native case anchor is missing or stale"):
+                    register_builder.functional_pilot(surface, by_path)
 
     def test_cgate_paths_have_independent_source_bound_obligations(self):
         register, _, _, _, contracts, _, _ = packaged_documents()

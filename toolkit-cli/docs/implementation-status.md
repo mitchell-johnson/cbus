@@ -1,6 +1,6 @@
 # Implementation status and outstanding work
 
-Updated **27 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Updated **28 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **39 areas: 18 implemented, 19 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
@@ -8,10 +8,13 @@ The [functional parity register](parity-register.md) now owns the completion
 decision. Its current generated revision accounts for 22,156 source records,
 including 412 parsed Toolkit forms, 10,102 controls and 1,892 event bindings,
 and 39 provisional umbrella obligations plus 442 provisional C-Gate path
-obligations, with zero accepted obligations and zero evidence receipts. These
-overlapping records are not a deduplicated functional denominator. Functional
-percentages remain unavailable until P0
-resolves the source records into a complete denominator. Its packaged C-Gate
+obligations. Three narrow `SESSION_ID` functions are defined separately,
+giving 484 registered obligations, zero accepted obligations and zero evidence
+receipts. Implementation remains in progress, and differential and physical
+acceptance are unassessed for all three. These overlapping records are not a
+deduplicated functional denominator.
+Functional percentages remain unavailable until P0 resolves the source records
+into a complete denominator. Its packaged C-Gate
 contract inventory now gives every one of the 431 primary and 11 supplement
 paths seven digest-bound axes and a one-to-one source-bound obligation, while
 retaining unresolved selector, target,

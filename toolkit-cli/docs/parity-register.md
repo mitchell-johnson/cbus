@@ -5,9 +5,10 @@ functional-obligation and evidence records. The 39-row feature ledger remains
 visible as historical planning information, but changing its labels cannot
 make the completion gate pass.
 
-The initial register is intentionally provisional. It accounts for every
-committed source surface currently available without treating unlike records
-as equal functions:
+The register remains provisional. It accounts for every committed source
+surface currently available without treating unlike records as equal functions.
+The first three defined functional obligations are narrow C-Gate session
+identity outcomes; they do not complete the broader command paths:
 
 | Source record | Count |
 | --- | ---: |
@@ -43,9 +44,9 @@ changes no provisional source count, and supplies no physical cache readback.
 ## Files and regeneration
 
 - `src/cbus_toolkit/parity-obligations.json` contains the source inventory,
-  provisional scope mappings and obligation records. It now contains one
-  source-bound provisional obligation for each of the 442 C-Gate paths in
-  addition to the 39 historical umbrella obligations.
+  provisional scope mappings and obligation records. It contains one
+  source-bound provisional obligation for each of the 442 C-Gate paths, the
+  39 historical umbrella obligations, and three scoped `SESSION_ID` functions.
 - `src/cbus_toolkit/parity-evidence.json` contains evidence receipts. It starts
   empty because a historical path or test filename is not acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
@@ -58,7 +59,9 @@ changes no provisional source count, and supplies no physical cache readback.
   fields explicitly instead of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
   deterministically from the committed documentation/executable surface
-  censuses, feature ledger, Rust capability matrix and parity roadmap.
+  censuses, feature ledger, Rust capability matrix, parity roadmap and
+  `research/functional-obligation-pilot.json`. The pilot manifest pins exact
+  public-help syntax, path-contract and owned native-session capture hashes.
 - `docs/toolkit-executable-surface.json` is the sanitized Toolkit 1.18.0
   executable inventory. It records names and hashes for 412 parsed Delphi form
   resources, 10,102 component/control instances and 1,892 event bindings.
@@ -140,6 +143,21 @@ dispatch route is known, but complete selector/state/effect behavior is not
 accepted. Original and physical acceptance remain `unassessed`, applicability
 remains `unresolved`, and no evidence receipt is attributed to them.
 
+The first reviewed functional pilot defines `cgate-function:session-id-query`,
+`cgate-function:session-id-all`, and `cgate-function:session-id-tag`. Each maps
+to the historical `cgate-command-transport` ledger row, one public-help syntax
+anchor and its own C-Gate path contract. The original C-Gate 3.4.0.2001
+loopback capture pins observed nominal and error commands, but it has not been
+converted into a passed current-artifact differential receipt. The three
+implementation statuses are independently `in_progress`; the broad path
+contracts remain provisional. Their physical behavior is a candidate for
+not-applicable because the observed native operations used no physical network,
+but `physical` stays `unassessed` and applicability stays `unresolved` until a
+passed, dimension-specific applicability receipt exists. TLS, non-loopback
+peers, ACCESS/LOGIN variants and broader response/event behavior remain open.
+The pilot raises the register to 484 obligations, with 3 defined and 0 fully
+accepted. `census_complete` and functional percentages remain false/null.
+
 A scope record can use `nonfunctional_with_evidence` only when one of its
 `evidence_ids` names a passed receipt containing
 `scope_disposition_receipts: [{"scope_item_id": "...", "decision":
@@ -213,11 +231,11 @@ evidence.
 
 ## Current result
 
-The current register has 39 provisional umbrella obligations plus 442
-provisional C-Gate path obligations, zero accepted obligations and zero
-evidence receipts. The 481 records overlap and are not a deduplicated
-functional denominator. All 22,156 source records and 15
-source domains remain unresolved. Executable forms, controls and event
+The current register has 39 provisional umbrella obligations, 442 provisional
+C-Gate path obligations and three defined `SESSION_ID` functions, with zero
+accepted obligations and zero evidence receipts. The 484 records overlap and
+are not a deduplicated functional denominator. All 22,156 source records and
+15 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract
 inventory and a one-to-one obligation mapping, while the unresolved subaxes
 above, functional deduplication,

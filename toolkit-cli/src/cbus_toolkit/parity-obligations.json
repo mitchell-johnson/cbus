@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
-  "denominator_version": "provisional-2026-09-27.4",
+  "denominator_version": "provisional-2026-09-28.1",
   "census_complete": false,
   "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
   "source_digests": {
@@ -13,6 +13,8 @@
     "feature_ledger": "79750e146f08911f5350e2a655f86ff0472a73b30e89cf969923ab737ceb85af",
     "cgate_capability_matrix": "f87c6e3575fa34f265f2aec2178c899596a653918a98a7a59f5077e038e11886",
     "cgate_contract_inventory": "e3ba27d8be0bc1543959d1b195c8d51f04dd10ab86ce2b827afc1929124b4533",
+    "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
+    "functional_obligation_pilot": "9620b12e0d64a2548fc1561fbb25cd76d1e4b09ef6e839c0dc75ff3f58c4854a",
     "roadmap": "e216be63829d38e460e81fdb1643ef12db8a7b3188c20f20564ecbd08804a97c"
   },
   "evidence_bundle_sha256": "055dde83ff05aa7056c13761cac120604e1d89fc0c4c27275c28ceded39bde40",
@@ -95451,9 +95453,17 @@
       "source_id": "cgate:SESSION_ID",
       "source_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb",
       "obligation_ids": [
-        "ledger:cgate-command-transport"
+        "ledger:cgate-command-transport",
+        "cgate-function:session-id-query"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2620,
+        "syntax_start_line": 2622,
+        "syntax_end_line": 2622,
+        "syntax_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb"
+      }
     },
     {
       "id": "scope:public-command:cgate:SESSION_ID ALL",
@@ -95461,9 +95471,17 @@
       "source_id": "cgate:SESSION_ID ALL",
       "source_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf",
       "obligation_ids": [
-        "ledger:cgate-command-transport"
+        "ledger:cgate-command-transport",
+        "cgate-function:session-id-all"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2629,
+        "syntax_start_line": 2631,
+        "syntax_end_line": 2631,
+        "syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
+      }
     },
     {
       "id": "scope:public-command:cgate:SESSION_ID TAG",
@@ -95471,9 +95489,17 @@
       "source_id": "cgate:SESSION_ID TAG",
       "source_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5",
       "obligation_ids": [
-        "ledger:cgate-command-transport"
+        "ledger:cgate-command-transport",
+        "cgate-function:session-id-tag"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2635,
+        "syntax_start_line": 2637,
+        "syntax_end_line": 2637,
+        "syntax_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5"
+      }
     },
     {
       "id": "scope:public-command:cgate:SET",
@@ -176756,7 +176782,8 @@
       },
       "obligation_ids": [
         "ledger:cgate-command-transport",
-        "cgate-path:143c54a154393f4e"
+        "cgate-path:143c54a154393f4e",
+        "cgate-function:session-id-query"
       ],
       "disposition": "provisional_obligation"
     },
@@ -176988,7 +177015,8 @@
       },
       "obligation_ids": [
         "ledger:cgate-command-transport",
-        "cgate-path:c11c2667484965c5"
+        "cgate-path:c11c2667484965c5",
+        "cgate-function:session-id-all"
       ],
       "disposition": "provisional_obligation"
     },
@@ -177220,7 +177248,8 @@
       },
       "obligation_ids": [
         "ledger:cgate-command-transport",
-        "cgate-path:79c348f8a682ea25"
+        "cgate-path:79c348f8a682ea25",
+        "cgate-function:session-id-tag"
       ],
       "disposition": "provisional_obligation"
     },
@@ -330741,6 +330770,257 @@
         "capability_matrix.rs#LIGHTING STOP",
         "capabilities.json#cgate-command-transport"
       ],
+      "acceptance": {
+        "nominal": "unassessed",
+        "error": "unassessed",
+        "invalid_input": "unassessed",
+        "profile_variation": "unassessed",
+        "original_differential": "unassessed",
+        "physical": "unassessed",
+        "persistence_recovery": "unassessed"
+      },
+      "evidence_ids": []
+    },
+    {
+      "id": "cgate-function:session-id-query",
+      "kind": "cgate_function",
+      "ledger_id": "cgate-command-transport",
+      "work_item_ids": [
+        "P0.03"
+      ],
+      "source_id": "SESSION_ID",
+      "source_scope_item_ids": [
+        "scope:public-command:cgate:SESSION_ID",
+        "scope:cgate_primary_path:143c54a154393f4e"
+      ],
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2620,
+        "syntax_start_line": 2622,
+        "syntax_end_line": 2622,
+        "syntax_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb"
+      },
+      "contract_id": "cgate-contract:143c54a154393f4e",
+      "contract_sha256": "f2780a572fbe44b853bb162b511ae8be3ec4ee23eb5fbf18f66deecacb2d325f",
+      "native_oracle": {
+        "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+        "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "cases": [
+          {
+            "command": "SESSION_ID",
+            "status": 300
+          },
+          {
+            "command": "SESSION_ID bogus",
+            "status": 400
+          }
+        ]
+      },
+      "definition_status": "defined",
+      "implementation_status": "in_progress",
+      "implementation_basis": "in_progress: the Rust command-session test covers the observed forms, but the path's authorization and response-event contract remains partial",
+      "implementation": {
+        "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
+        "cli_entry_point": "cbus-toolkit cgate run <command-file>",
+        "test_ids": [
+          "rust/cbus-cgate/src/service/tests.rs::native_session_event_alias_and_quit_are_connection_local"
+        ]
+      },
+      "applicability_status": "unresolved",
+      "applicability": {
+        "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
+        "physical_candidate": "not_applicable_pending_receipt",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "unresolved_profiles": [
+          "TLS and non-loopback peers",
+          "ACCESS/LOGIN policy variants"
+        ]
+      },
+      "outcome": "A connected loopback client can query its own cmdN session identity with a 300 reply; an unknown SESSION_ID selector returns 400 without changing that identity.",
+      "preconditions": [
+        "C-Gate 3.4.0.2001 command connection",
+        "owned loopback listener with no project or physical network"
+      ],
+      "preservation": [
+        "query and syntax error leave the session identity and C-Bus state unchanged"
+      ],
+      "source_refs": [
+        "toolkit-surface.json#cgate:SESSION_ID",
+        "cgate-contract-inventory.json#cgate-contract:143c54a154393f4e",
+        "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
+        "rust/cbus-cgate/src/service.rs#Service::handle"
+      ],
+      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
+      "acceptance": {
+        "nominal": "unassessed",
+        "error": "unassessed",
+        "invalid_input": "unassessed",
+        "profile_variation": "unassessed",
+        "original_differential": "unassessed",
+        "physical": "unassessed",
+        "persistence_recovery": "unassessed"
+      },
+      "evidence_ids": []
+    },
+    {
+      "id": "cgate-function:session-id-all",
+      "kind": "cgate_function",
+      "ledger_id": "cgate-command-transport",
+      "work_item_ids": [
+        "P0.03"
+      ],
+      "source_id": "SESSION_ID ALL",
+      "source_scope_item_ids": [
+        "scope:public-command:cgate:SESSION_ID ALL",
+        "scope:cgate_primary_path:c11c2667484965c5"
+      ],
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2629,
+        "syntax_start_line": 2631,
+        "syntax_end_line": 2631,
+        "syntax_sha256": "c11c2667484965c55fe135362c17fe0829b80772e704ba572c8332f0e8b12cdf"
+      },
+      "contract_id": "cgate-contract:c11c2667484965c5",
+      "contract_sha256": "2897a930c6a39b568870b85cac9d5d077ae9f2711c2a9212971790663c29c4c5",
+      "native_oracle": {
+        "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+        "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "cases": [
+          {
+            "command": "SESSION_ID ALL",
+            "status": 300
+          },
+          {
+            "command": "SESSION_ID ALL ignored-by-native",
+            "status": 300
+          }
+        ]
+      },
+      "definition_status": "defined",
+      "implementation_status": "in_progress",
+      "implementation_basis": "in_progress: the Rust command-session test checks listing and disconnect removal, but volatile fields and access-policy variants still need acceptance",
+      "implementation": {
+        "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
+        "cli_entry_point": "cbus-toolkit cgate run <command-file>",
+        "test_ids": [
+          "rust/cbus-cgate/src/service/tests.rs::native_session_event_alias_and_quit_are_connection_local"
+        ]
+      },
+      "applicability_status": "unresolved",
+      "applicability": {
+        "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
+        "physical_candidate": "not_applicable_pending_receipt",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "unresolved_profiles": [
+          "TLS and non-loopback peers",
+          "ACCESS/LOGIN policy variants"
+        ]
+      },
+      "outcome": "A connected loopback client can list live external command sessions in 300 continuation framing with origin, connection time and optional one-shot tag; trailing words are ignored in the observed profile.",
+      "preconditions": [
+        "C-Gate 3.4.0.2001 command connection",
+        "owned loopback listener with no project or physical network"
+      ],
+      "preservation": [
+        "listing does not change another session, any project, or C-Bus state"
+      ],
+      "source_refs": [
+        "toolkit-surface.json#cgate:SESSION_ID ALL",
+        "cgate-contract-inventory.json#cgate-contract:c11c2667484965c5",
+        "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
+        "rust/cbus-cgate/src/service.rs#Service::handle"
+      ],
+      "differential_gap": "The owned native ALL trace also reports an internal Console cmd1 row; the Rust test currently asserts only external sessions. This original difference and the lack of a passed current-artifact receipt keep differential acceptance unassessed.",
+      "acceptance": {
+        "nominal": "unassessed",
+        "error": "unassessed",
+        "invalid_input": "unassessed",
+        "profile_variation": "unassessed",
+        "original_differential": "unassessed",
+        "physical": "unassessed",
+        "persistence_recovery": "unassessed"
+      },
+      "evidence_ids": []
+    },
+    {
+      "id": "cgate-function:session-id-tag",
+      "kind": "cgate_function",
+      "ledger_id": "cgate-command-transport",
+      "work_item_ids": [
+        "P0.03"
+      ],
+      "source_id": "SESSION_ID TAG",
+      "source_scope_item_ids": [
+        "scope:public-command:cgate:SESSION_ID TAG",
+        "scope:cgate_primary_path:79c348f8a682ea25"
+      ],
+      "source_anchor": {
+        "path": "research/vendor/cgate/app/help/cmds.txt",
+        "line": 2635,
+        "syntax_start_line": 2637,
+        "syntax_end_line": 2637,
+        "syntax_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5"
+      },
+      "contract_id": "cgate-contract:79c348f8a682ea25",
+      "contract_sha256": "d4feba9d3cde0161a93e26342ca1ad72b137368c489ddf4d14d79d327fad5592",
+      "native_oracle": {
+        "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+        "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "cases": [
+          {
+            "command": "SESSION_ID TAG C-Bus   Toolkit test",
+            "status": 200
+          },
+          {
+            "command": "SESSION_ID TAG replacement",
+            "status": 408
+          },
+          {
+            "command": "SESSION_ID TAG",
+            "status": 400
+          }
+        ]
+      },
+      "definition_status": "defined",
+      "implementation_status": "in_progress",
+      "implementation_basis": "in_progress: the Rust command-session test covers one-shot assignment and errors, but other authorization and selector variants remain open",
+      "implementation": {
+        "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
+        "cli_entry_point": "cbus-toolkit cgate run <command-file>",
+        "test_ids": [
+          "rust/cbus-cgate/src/service/tests.rs::native_session_event_alias_and_quit_are_connection_local"
+        ]
+      },
+      "applicability_status": "unresolved",
+      "applicability": {
+        "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
+        "physical_candidate": "not_applicable_pending_receipt",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "unresolved_profiles": [
+          "TLS and non-loopback peers",
+          "ACCESS/LOGIN policy variants"
+        ]
+      },
+      "outcome": "A connected loopback client can assign one tag to its own command session, preserving interior spaces; a second assignment returns 408 and a missing tag returns 400 without replacing the first tag.",
+      "preconditions": [
+        "C-Gate 3.4.0.2001 command connection",
+        "owned loopback listener with no project or physical network"
+      ],
+      "preservation": [
+        "failed reassignment leaves the first tag and all other sessions unchanged",
+        "no project or C-Bus state changes"
+      ],
+      "source_refs": [
+        "toolkit-surface.json#cgate:SESSION_ID TAG",
+        "cgate-contract-inventory.json#cgate-contract:79c348f8a682ea25",
+        "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
+        "rust/cbus-cgate/src/service.rs#Service::handle"
+      ],
+      "differential_gap": "The owned native trace is retained, but this scoped obligation has no passed current-artifact differential receipt.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",

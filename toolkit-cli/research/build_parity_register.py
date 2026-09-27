@@ -30,6 +30,10 @@ EVENT_MODE_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "lib.rs"
 NATIVE_SESSION_PATH = (
     ROOT / "research" / "experiments" / "2026-09-25" / "cgate-session-native-acceptance.json"
 )
+NATIVE_SESSION_SOURCE_REF = (
+    "research/experiments/2026-09-25/cgate-session-native-acceptance.json"
+)
+FUNCTIONAL_PILOT_PATH = ROOT / "research" / "functional-obligation-pilot.json"
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
@@ -303,6 +307,158 @@ def executable_surface() -> dict:
     return surface
 
 
+def functional_pilot(surface: dict, contract_by_path: dict[str, dict]) -> list[dict]:
+    """Bind a narrow session-family definition to retained original sources.
+
+    The help extraction and native trace are separate sources. A changed or
+    missing one must stop regeneration rather than silently refresh an anchor.
+    This does not turn the broader C-Gate path contracts into accepted work.
+    """
+    from cbus_toolkit.parity import CGATE_SESSION_PILOT_IDS
+
+    pilot = load_json(FUNCTIONAL_PILOT_PATH)
+    if (
+        set(pilot) != {"schema_version", "target", "family", "native_oracle", "obligations"}
+        or pilot.get("schema_version") != 1
+        or pilot.get("target") != load_json(LEDGER_PATH)["target"]
+        or pilot.get("family") != "C-Gate SESSION_ID on an owned loopback command session"
+    ):
+        raise ValueError("Functional pilot schema or target changed")
+    oracle = pilot.get("native_oracle")
+    if (
+        not isinstance(oracle, dict)
+        or set(oracle) != {"path", "sha256", "vendor_jar_sha256"}
+        or oracle.get("path") != NATIVE_SESSION_SOURCE_REF
+    ):
+        raise ValueError("Functional pilot requires the owned native session source")
+    if not NATIVE_SESSION_PATH.is_file():
+        raise ValueError("Functional pilot native acceptance source is missing")
+    if oracle.get("sha256") != digest(NATIVE_SESSION_PATH):
+        raise ValueError("Functional pilot native acceptance source is stale")
+    native = load_json(NATIVE_SESSION_PATH)
+    environment = native.get("environment")
+    cleanup = native.get("cleanup")
+    if (
+        native.get("format") != "cbus-cgate-session-native-acceptance-v1"
+        or native.get("passed") is not True
+        or native.get("vendor_jar_sha256") != oracle.get("vendor_jar_sha256")
+        or not isinstance(environment, dict)
+        or environment.get("physical_networks_opened") is not False
+        or not isinstance(cleanup, dict)
+        or cleanup.get("cleanup_complete") is not True
+    ):
+        raise ValueError("Functional pilot native acceptance source is not the owned loopback capture")
+    native_cases = {
+        (case.get("command"), case.get("status"))
+        for case in native.get("cases", [])
+        if isinstance(case, dict)
+    }
+    public_by_id = {command["id"]: command for command in surface["public_commands"]}
+    definitions = pilot.get("obligations")
+    if not isinstance(definitions, list) or {
+        row.get("path") for row in definitions if isinstance(row, dict)
+    } != set(CGATE_SESSION_PILOT_IDS) or len(definitions) != len(CGATE_SESSION_PILOT_IDS):
+        raise ValueError("Functional pilot must define the three SESSION_ID variants")
+    obligations = []
+    for row in definitions:
+        if set(row) != {
+            "id", "path", "public_command_id", "source_anchor", "contract_sha256",
+            "native_cases", "outcome", "preconditions", "preservation",
+            "implementation_basis", "differential_gap", "physical_candidate_reason",
+        }:
+            raise ValueError("Functional pilot definition schema changed")
+        path = row["path"]
+        obligation_id = CGATE_SESSION_PILOT_IDS[path]
+        public = public_by_id.get(f"cgate:{path}")
+        contract = contract_by_path.get(path)
+        if row.get("id") != obligation_id or row.get("public_command_id") != f"cgate:{path}":
+            raise ValueError(f"Functional pilot has an unstable ID: {path}")
+        if public is None or row.get("source_anchor") != public["source"]:
+            raise ValueError(f"Functional pilot public-help anchor is missing or stale: {path}")
+        if contract is None or row.get("contract_sha256") != contract["contract_sha256"]:
+            raise ValueError(f"Functional pilot C-Gate contract anchor is missing or stale: {path}")
+        cases = row.get("native_cases")
+        if (
+            not isinstance(cases, list)
+            or not cases
+            or any(
+                not isinstance(case, dict)
+                or set(case) != {"command", "status"}
+                or not isinstance(case["command"], str)
+                or not (
+                    case["command"] == path or case["command"].startswith(path + " ")
+                )
+                or isinstance(case["status"], bool)
+                or not isinstance(case["status"], int)
+                or (case["command"], case["status"]) not in native_cases
+                for case in cases
+            )
+            or len({(case["command"], case["status"]) for case in cases}) != len(cases)
+        ):
+            raise ValueError(f"Functional pilot native case anchor is missing or stale: {path}")
+        for field in ("outcome", "implementation_basis", "differential_gap", "physical_candidate_reason"):
+            if not isinstance(row.get(field), str) or not row[field].strip():
+                raise ValueError(f"Functional pilot {path} requires {field}")
+        for field in ("preconditions", "preservation"):
+            values = row.get(field)
+            if not isinstance(values, list) or not values or not all(
+                isinstance(value, str) and value.strip() for value in values
+            ):
+                raise ValueError(f"Functional pilot {path} requires {field}")
+        public_scope_id = f"scope:public-command:{public['id']}"
+        path_scope_id = f"scope:cgate_primary_path:{sha256(path.encode()).hexdigest()[:16]}"
+        obligations.append(
+            {
+                "id": obligation_id,
+                "kind": "cgate_function",
+                "ledger_id": "cgate-command-transport",
+                "work_item_ids": ["P0.03"],
+                "source_id": path,
+                "source_scope_item_ids": [public_scope_id, path_scope_id],
+                "source_anchor": row["source_anchor"],
+                "contract_id": contract["id"],
+                "contract_sha256": contract["contract_sha256"],
+                "native_oracle": {**oracle, "cases": cases},
+                "definition_status": "defined",
+                "implementation_status": "in_progress",
+                "implementation_basis": row["implementation_basis"],
+                "implementation": {
+                    "owner": "rust/cbus-cgate/src/service.rs#Service::handle",
+                    "cli_entry_point": "cbus-toolkit cgate run <command-file>",
+                    "test_ids": [
+                        "rust/cbus-cgate/src/service/tests.rs::native_session_event_alias_and_quit_are_connection_local",
+                    ],
+                },
+                "applicability_status": "unresolved",
+                "applicability": {
+                    "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
+                    "physical_candidate": "not_applicable_pending_receipt",
+                    "physical_candidate_reason": row["physical_candidate_reason"],
+                    "unresolved_profiles": ["TLS and non-loopback peers", "ACCESS/LOGIN policy variants"],
+                },
+                "outcome": row["outcome"],
+                "preconditions": row["preconditions"],
+                "preservation": row["preservation"],
+                "source_refs": [
+                    f"toolkit-surface.json#{public['id']}",
+                    f"cgate-contract-inventory.json#{contract['id']}",
+                    f"{oracle['path']}#cases",
+                    "rust/cbus-cgate/src/service.rs#Service::handle",
+                ],
+                "differential_gap": row["differential_gap"],
+                "acceptance": {
+                    dimension: "unassessed"
+                    for dimension in (
+                        "nominal", "error", "invalid_input", "profile_variation",
+                        "original_differential", "physical", "persistence_recovery",
+                    )
+                },
+                "evidence_ids": [],
+            }
+        )
+    return obligations
+
+
 def build() -> tuple[dict, dict]:
     surface = load_json(SURFACE_PATH)
     executable = executable_surface()
@@ -311,7 +467,11 @@ def build() -> tuple[dict, dict]:
     ledger_ids = {feature["id"] for feature in ledger["features"]}
     sys.path.insert(0, str(ROOT / "src"))
     from cbus_toolkit.device_dialogs import list_dialogs
-    from cbus_toolkit.parity import WORK_ITEM_IDS, cgate_path_obligation_id
+    from cbus_toolkit.parity import (
+        CGATE_SESSION_PILOT_IDS,
+        WORK_ITEM_IDS,
+        cgate_path_obligation_id,
+    )
 
     roadmap_work_item_ids = {
         work_item_id
@@ -421,16 +581,17 @@ def build() -> tuple[dict, dict]:
             }
         )
     for command in surface["public_commands"]:
-        scope_items.append(
-            {
-                "id": f"scope:public-command:{command['id']}",
-                "kind": "public_command",
-                "source_id": command["id"],
-                "source_sha256": command["source"]["syntax_sha256"],
-                "obligation_ids": obligation_ids(["cgate-command-transport"]),
-                "disposition": "provisional_obligation",
-            }
-        )
+        scope = {
+            "id": f"scope:public-command:{command['id']}",
+            "kind": "public_command",
+            "source_id": command["id"],
+            "source_sha256": command["source"]["syntax_sha256"],
+            "obligation_ids": obligation_ids(["cgate-command-transport"]),
+            "disposition": "provisional_obligation",
+        }
+        if command["command"] in CGATE_SESSION_PILOT_IDS:
+            scope["source_anchor"] = command["source"]
+        scope_items.append(scope)
     for kind, paths in (("cgate_primary_path", primary_paths), ("cgate_supplement_path", supplement_paths)):
         for row in paths:
             path_id = sha256(row["path"].encode("utf-8")).hexdigest()[:16]
@@ -582,6 +743,12 @@ def build() -> tuple[dict, dict]:
             }
         )
 
+    scope_by_id = {item["id"]: item for item in scope_items}
+    for function in functional_pilot(surface, contract_by_path):
+        for scope_id in function["source_scope_item_ids"]:
+            scope_by_id[scope_id]["obligation_ids"].append(function["id"])
+        obligations.append(function)
+
     by_kind: dict[str, int] = {}
     for item in scope_items:
         by_kind[item["kind"]] = by_kind.get(item["kind"], 0) + 1
@@ -618,7 +785,7 @@ def build() -> tuple[dict, dict]:
     register = {
         "schema_version": 1,
         "target": ledger["target"],
-        "denominator_version": "provisional-2026-09-27.4",
+        "denominator_version": "provisional-2026-09-28.1",
         "census_complete": False,
         "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
         "source_digests": {
@@ -632,6 +799,8 @@ def build() -> tuple[dict, dict]:
             "feature_ledger": digest(LEDGER_PATH),
             "cgate_capability_matrix": digest(MATRIX_PATH),
             "cgate_contract_inventory": digest(CGATE_CONTRACT_PATH),
+            "cgate_session_native_acceptance": digest(NATIVE_SESSION_PATH),
+            "functional_obligation_pilot": digest(FUNCTIONAL_PILOT_PATH),
             "roadmap": digest(ROADMAP_PATH),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),

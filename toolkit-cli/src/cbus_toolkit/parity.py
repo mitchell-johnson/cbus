@@ -132,6 +132,11 @@ CGATE_CONTRACT_AXIS_SCHEMA = {
         "functional_acceptance",
     ),
 }
+CGATE_SESSION_PILOT_IDS = {
+    "SESSION_ID": "cgate-function:session-id-query",
+    "SESSION_ID ALL": "cgate-function:session-id-all",
+    "SESSION_ID TAG": "cgate-function:session-id-tag",
+}
 
 
 def cgate_path_obligation_id(path: str) -> str:
@@ -655,6 +660,7 @@ def validate_register(
         raise ValueError("Parity register requires a nonempty obligations array")
     obligations_by_id: dict[str, dict[str, Any]] = {}
     cgate_path_obligations: dict[str, dict[str, Any]] = {}
+    cgate_function_obligations: dict[str, dict[str, Any]] = {}
     ledger_coverage: Counter[str] = Counter()
     for index, obligation in enumerate(obligations):
         context = f"obligation {index}"
@@ -671,6 +677,10 @@ def validate_register(
         is_cgate_path = (
             obligation.get("kind") == "cgate_path"
             or obligation_id.startswith("cgate-path:")
+        )
+        is_cgate_function = (
+            obligation.get("kind") == "cgate_function"
+            or obligation_id.startswith("cgate-function:")
         )
         if is_cgate_path:
             if obligation.get("kind") != "cgate_path":
@@ -695,6 +705,92 @@ def validate_register(
             ].strip():
                 raise ValueError(f"{obligation_id} requires an implementation basis")
             cgate_path_obligations[obligation_id] = obligation
+        if is_cgate_function:
+            path = obligation.get("source_id")
+            if obligation.get("kind") != "cgate_function" or not isinstance(path, str):
+                raise ValueError(f"{obligation_id} requires cgate_function kind and path")
+            if obligation_id != CGATE_SESSION_PILOT_IDS.get(path):
+                raise ValueError(f"{obligation_id} has an unstable functional pilot ID")
+            if ledger_id != "cgate-command-transport":
+                raise ValueError(f"{obligation_id} has an incorrect broad-ledger mapping")
+            source_anchor = obligation.get("source_anchor")
+            if not isinstance(source_anchor, dict) or set(source_anchor) != {
+                "path", "line", "syntax_start_line", "syntax_end_line", "syntax_sha256",
+            }:
+                raise ValueError(f"{obligation_id} requires an exact public-help source anchor")
+            if (
+                source_anchor["path"] != "research/vendor/cgate/app/help/cmds.txt"
+                or not isinstance(source_anchor["line"], int)
+                or not isinstance(source_anchor["syntax_start_line"], int)
+                or not isinstance(source_anchor["syntax_end_line"], int)
+                or not isinstance(source_anchor["syntax_sha256"], str)
+                or not SHA256_RE.fullmatch(source_anchor["syntax_sha256"])
+            ):
+                raise ValueError(f"{obligation_id} has an invalid public-help source anchor")
+            if obligation.get("definition_status") != "defined":
+                raise ValueError(f"{obligation_id} must be an explicitly defined function")
+            if not isinstance(obligation.get("implementation_basis"), str) or not obligation[
+                "implementation_basis"
+            ].strip():
+                raise ValueError(f"{obligation_id} requires an independent implementation basis")
+            implementation = obligation.get("implementation")
+            if not isinstance(implementation, dict) or set(implementation) != {
+                "owner", "cli_entry_point", "test_ids"
+            }:
+                raise ValueError(f"{obligation_id} requires implementation ownership and tests")
+            for key in ("owner", "cli_entry_point"):
+                if not isinstance(implementation[key], str) or not implementation[key].strip():
+                    raise ValueError(f"{obligation_id} requires implementation {key}")
+            _strings(implementation["test_ids"], field=f"{obligation_id}.implementation.test_ids", nonempty=True)
+            oracle = obligation.get("native_oracle")
+            if not isinstance(oracle, dict) or set(oracle) != {
+                "path", "sha256", "vendor_jar_sha256", "cases"
+            }:
+                raise ValueError(f"{obligation_id} requires an exact native oracle anchor")
+            if oracle["path"] != (
+                "research/experiments/2026-09-25/cgate-session-native-acceptance.json"
+            ) or oracle["sha256"] != source_digests.get("cgate_session_native_acceptance"):
+                raise ValueError(f"{obligation_id} native acceptance anchor is stale or missing")
+            if not isinstance(oracle["vendor_jar_sha256"], str) or not SHA256_RE.fullmatch(
+                oracle["vendor_jar_sha256"]
+            ):
+                raise ValueError(f"{obligation_id} requires a native C-Gate artifact digest")
+            cases = oracle["cases"]
+            if not isinstance(cases, list) or not cases or any(
+                not isinstance(case, dict)
+                or set(case) != {"command", "status"}
+                or not isinstance(case["command"], str)
+                or not case["command"]
+                or isinstance(case["status"], bool)
+                or not isinstance(case["status"], int)
+                for case in cases
+            ):
+                raise ValueError(f"{obligation_id} requires native command/status cases")
+            applicability = obligation.get("applicability")
+            if not isinstance(applicability, dict) or set(applicability) != {
+                "profile", "physical_candidate", "physical_candidate_reason",
+                "unresolved_profiles",
+            }:
+                raise ValueError(f"{obligation_id} requires independent applicability fields")
+            if applicability["physical_candidate"] != "not_applicable_pending_receipt":
+                raise ValueError(f"{obligation_id} must not accept physical N/A without evidence")
+            if obligation.get("applicability_status") != "unresolved":
+                raise ValueError(f"{obligation_id} applicability remains unresolved until reviewed")
+            for key in ("profile", "physical_candidate_reason"):
+                if not isinstance(applicability[key], str) or not applicability[key].strip():
+                    raise ValueError(f"{obligation_id} requires applicability {key}")
+            _strings(
+                applicability["unresolved_profiles"],
+                field=f"{obligation_id}.applicability.unresolved_profiles",
+                nonempty=True,
+            )
+            if not isinstance(obligation.get("differential_gap"), str) or not obligation[
+                "differential_gap"
+            ].strip():
+                raise ValueError(f"{obligation_id} requires an original-differential gap")
+            for key in ("preconditions", "preservation"):
+                _strings(obligation.get(key), field=f"{obligation_id}.{key}", nonempty=True)
+            cgate_function_obligations[obligation_id] = obligation
         ledger_coverage[ledger_id] += 1
         work_items = _strings(
             obligation.get("work_item_ids"),
@@ -713,7 +809,7 @@ def validate_register(
             raise ValueError(f"{obligation_id} has an unknown definition_status")
         if obligation.get("implementation_status") not in IMPLEMENTATION_STATES:
             raise ValueError(f"{obligation_id} has an unknown implementation_status")
-        if not is_cgate_path and obligation["implementation_status"] != ledger_by_id[ledger_id]["status"]:
+        if not (is_cgate_path or is_cgate_function) and obligation["implementation_status"] != ledger_by_id[ledger_id]["status"]:
             raise ValueError(f"{obligation_id} implementation status drifts from {ledger_id}")
         if (
             is_cgate_path
@@ -941,6 +1037,35 @@ def validate_register(
                 or scope["contract_id"] != contract["id"]
             ):
                 raise ValueError(f"{obligation_id} differs from its source-bound C-Gate scope")
+
+    if "functional_obligation_pilot" in source_digests:
+        if set(cgate_function_obligations) != set(CGATE_SESSION_PILOT_IDS.values()):
+            raise ValueError("Functional pilot is missing a defined SESSION_ID obligation")
+    elif cgate_function_obligations:
+        raise ValueError("Functional pilot lacks its source manifest digest")
+    for obligation_id, obligation in cgate_function_obligations.items():
+        path = obligation["source_id"]
+        expected_scopes = [
+            f"scope:public-command:cgate:{path}",
+            f"scope:cgate_primary_path:{sha256(path.encode('utf-8')).hexdigest()[:16]}",
+        ]
+        if obligation.get("source_scope_item_ids") != expected_scopes:
+            raise ValueError(f"{obligation_id} has missing source scope anchors")
+        public_scope = scope_by_id.get(expected_scopes[0])
+        path_scope = scope_by_id.get(expected_scopes[1])
+        if (
+            public_scope is None
+            or path_scope is None
+            or obligation_id not in public_scope["obligation_ids"]
+            or obligation_id not in path_scope["obligation_ids"]
+            or public_scope.get("source_anchor") != obligation.get("source_anchor")
+            or public_scope.get("source_sha256") != obligation["source_anchor"].get("syntax_sha256")
+            or path_scope.get("contract_id") != obligation.get("contract_id")
+            or path_scope.get("contract_sha256") != obligation.get("contract_sha256")
+            or "ledger:cgate-command-transport" not in public_scope["obligation_ids"]
+            or "ledger:cgate-command-transport" not in path_scope["obligation_ids"]
+        ):
+            raise ValueError(f"{obligation_id} differs from its source and broad-ledger anchors")
 
     for evidence_id, record in evidence_by_id.items():
         for receipt in record["scope_disposition_receipts"]:
