@@ -1,0 +1,50 @@
+{
+  "format": "cmqttd-native-cgate-routed-nvm-commit-evidence-v1",
+  "date": "2026-09-27",
+  "passed": true,
+  "scope": "Composition of retained native C-Bus 3 Save-to-NVM semantics with the evidenced one-through-six-bridge PTP/Reply Network envelope; scripted cmqttd acceptance only, with no live bridge or power-cycle persistence claim",
+  "retained_native_evidence": [
+    {
+      "path": "rust/testdata/vectors/decode_to_pci.jsonl",
+      "ids": [
+        "tp-cgate-cbus3-save-nvm-execute",
+        "tp-cgate-cbus3-save-nvm-poll"
+      ],
+      "finding": "Literal native C-Gate requests use group 0 operation 4 EXECUTE followed by POLL."
+    },
+    {
+      "path": "rust/testdata/vectors/decode_from_pci.jsonl",
+      "ids": [
+        "fp-cgate-cbus3-save-nvm-running",
+        "fp-cgate-cbus3-save-nvm-nak"
+      ],
+      "finding": "Native extended replies carry the correlated group, operation and status; NAK is definitive."
+    },
+    {
+      "path": "toolkit-cli/research/fixtures/pci-routed-recall-original-vectors.json",
+      "sha256": "0a090870b4ad1738a93c100021de6237168d295250bdc3e7ac3a1389ec2fa9e",
+      "finding": "Original receiver correlation admits Reply Network paths through one to six bridges and rejects route, unit and CAL mismatches."
+    }
+  ],
+  "cmqttd_wire_vectors": [
+    "en-cmqttd-routed-nvm-execute-one-bridge",
+    "en-cmqttd-routed-nvm-poll-one-bridge",
+    "en-cmqttd-routed-nvm-execute-six-bridges",
+    "en-cmqttd-routed-nvm-poll-six-bridges",
+    "fp-cmqttd-routed-nvm-running-one-bridge",
+    "fp-cmqttd-routed-nvm-complete-six-bridges"
+  ],
+  "cmqttd_acceptance": [
+    "Transport tests pin the exact one-hop and six-hop EXECUTE/POLL request bytes.",
+    "Direct, neighbouring-route, wrong-unit, wrong-group and wrong-operation replies cannot complete the transaction.",
+    "Every exchange is sent once; a lost or incomplete result faults the programming lane until reconnect and is never replayed.",
+    "The service test performs a verified routed standard-CAL STORE and readback before the C-Bus 3 EXECUTE/POLL sequence, then commits only the owned programming session on the captured PCI generation.",
+    "The real-daemon fake-PCI/MQTT test exercises the same routed save path while the shared connection remains active."
+  ],
+  "evidence_boundaries": [
+    "No physical bridge or routed C-Bus 3 unit completed this sequence in the acceptance run.",
+    "A successful status proves the retained command exchange, not NVM durability or power-cycle survival.",
+    "Routed parameter transfers remain limited to ProgramMethod=direct with none/checksum/lock protection; page-aware and OEM/GOC parameter methods are outside this slice.",
+    "Multi-range recovery after an earlier confirmed STORE and later failure remains an operator workflow boundary."
+  ]
+}

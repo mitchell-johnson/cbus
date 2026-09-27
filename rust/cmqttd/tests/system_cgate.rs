@@ -103,6 +103,14 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     )
     .unwrap();
     std::fs::write(
+        specs.join("TESTNVM.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>Standard</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>checksum</Protection><Tag>Core</Tag></Param>
+        <Param><Name>Cbus3Marker</Name><Type>int</Type><Address>$120</Address><ProgramMethod>ncc</ProgramMethod><Protection>none</Protection><Tag>Other</Tag></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    std::fs::write(
         &project,
         r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
         <Network oid="network-254"><TagName>Local</TagName><Address>254</Address>
@@ -223,6 +231,7 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
     assert!(capabilities
         .contains("\"physical_pp_routed_save_protection\":[\"none\",\"checksum\",\"lock\"]"));
     assert!(capabilities.contains("\"physical_pp_routed_lock\":true"));
+    assert!(capabilities.contains("\"physical_pp_routed_nvm_commit\":true"));
     assert!(capabilities.contains("\"unit_readdress_routed\":true"));
     assert!(capabilities.contains("\"unit_readdress_routed_max_hops\":6"));
     assert!(capabilities.contains(
@@ -649,6 +658,107 @@ async fn bridged_pingu_keeps_mqtt_live_and_plain_tcp_fault_is_clean() {
         1,
         "routed PP STORE must never replay"
     );
+    assert_eq!(sys.pci.connections(), 1);
+
+    assert!(command(&mut reader, &mut writer, "PP START PPN REMOTE")
+        .await
+        .contains("200 OK"));
+    assert!(
+        command(&mut reader, &mut writer, "PP NEW PPN TESTNVM 1.2.03")
+            .await
+            .contains("200 OK")
+    );
+    assert!(
+        command(&mut reader, &mut writer, "PP SET PPN Standard 0x9A 0xBC")
+            .await
+            .contains("200 OK")
+    );
+    let identify_1_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042101"))
+        .count();
+    let identify_2_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| frame.payload.starts_with("46FD09042102"))
+        .count();
+    let recall_before = sys.pci.count_payload("46FD09041A200274");
+    let execute_before = sys.pci.count_payload("46FD0904E381000448");
+    let poll_before = sys.pci.count_payload("46FD0904E382000447");
+    let nvm_save = command(&mut reader, &mut writer, "PP SAVE PPN //TOPO/253/p/4 Core");
+    let peer = async {
+        require(STARTUP, "routed NVM PP identity type", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042101"))
+                .count()
+                > identify_1_before
+        })
+        .await;
+        let mut reply = vec![0x88, 1];
+        reply.extend_from_slice(b"TESTNVM");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+        require(STARTUP, "routed NVM PP identity firmware", || {
+            sys.pci
+                .frames()
+                .iter()
+                .filter(|frame| frame.payload.starts_with("46FD09042102"))
+                .count()
+                > identify_2_before
+        })
+        .await;
+        let mut reply = vec![0x87, 2];
+        reply.extend_from_slice(b"1.2.03");
+        sys.pci.inject(&routed_reply(&[253], 4, &reply));
+        require(STARTUP, "routed NVM PP pre-read", || {
+            sys.pci.count_payload("46FD09041A200274") > recall_before
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x83, 0x20, 0x56, 0x78]));
+        require(STARTUP, "routed NVM PP exact-once STORE", || {
+            sys.pci.count_payload("46FD0904A420009ABC96") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x32, 0x20, 0x00]));
+        require(STARTUP, "routed NVM PP readback", || {
+            sys.pci.count_payload("46FD09041A200274") > recall_before + 1
+        })
+        .await;
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0x83, 0x20, 0x9a, 0xbc]));
+
+        require(STARTUP, "routed NVM EXECUTE", || {
+            sys.pci.count_payload("46FD0904E381000448") > execute_before
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x86, 4, 0x10, 0, 0xe4, 0x83, 0, 4, 0]));
+        sys.pci
+            .inject(&routed_reply(&[252], 4, &[0xe4, 0x83, 0, 4, 0]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0xe4, 0x83, 0, 4, 1]));
+        require(STARTUP, "routed NVM POLL", || {
+            sys.pci.count_payload("46FD0904E382000447") > poll_before
+        })
+        .await;
+        sys.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        sys.pci
+            .inject(&routed_reply(&[253], 4, &[0xe4, 0x83, 0, 4, 0]));
+    };
+    let (nvm_saved, ()) = tokio::join!(nvm_save, peer);
+    assert!(nvm_saved.contains("200 OK"), "{nvm_saved:?}");
+    assert_eq!(sys.pci.count_payload("46FD0904A420009ABC96"), 1);
+    assert_eq!(
+        sys.pci.count_payload("46FD0904E381000448"),
+        execute_before + 1
+    );
+    assert_eq!(sys.pci.count_payload("46FD0904E382000447"), poll_before + 1);
     assert_eq!(sys.pci.connections(), 1);
 
     assert!(command(&mut reader, &mut writer, "PP START PPL REMOTE")

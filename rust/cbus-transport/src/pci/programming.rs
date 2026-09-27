@@ -2005,13 +2005,21 @@ impl PciClient {
         group: u8,
         operation: u8,
         priority_class: u8,
+        route: ProgrammingRoute<'_>,
     ) -> Result<ExtendedOutcome> {
         let mut replies = self.packets.subscribe();
+        let (checksum, bridged, hops) = match route {
+            ProgrammingRoute::Routed(bridges) => (true, true, bridges.to_vec()),
+            _ => (false, false, Vec::new()),
+        };
         let packet = Packet::PointToPoint {
-            meta: Meta::new(false, priority_class),
+            // Direct extended CALs retain native C-Gate's unchecksummed
+            // device-management form. A source-routed request needs the
+            // normal checksummed outer PTP envelope.
+            meta: Meta::new(checksum, priority_class),
             unit_address: unit,
-            bridged: false,
-            hops: vec![],
+            bridged,
+            hops,
             cals: vec![request],
         };
         let mut bytes = vec![b'\\'];
@@ -2042,16 +2050,37 @@ impl PciClient {
                         bridged,
                         hops,
                         cals,
-                    })) if meta.source_address == Some(unit) => {
-                        let response_wire = Packet::PointToPoint {
-                            meta,
+                    })) if match route {
+                        ProgrammingRoute::Routed(bridges) => programming_reply_matches(
+                            &meta,
                             unit_address,
                             bridged,
-                            hops,
-                            cals: cals.clone(),
-                        }
-                        .encode()
-                        .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))?;
+                            &hops,
+                            bridges,
+                            unit,
+                        ),
+                        _ => !bridged && meta.source_address == Some(unit),
+                    } =>
+                    {
+                        // Reply Network is directional and cannot be emitted
+                        // by the outbound PTP encoder (its decoded `hops`
+                        // exclude the first bridge). Routed NVM does not
+                        // expose a wire receipt, so retain the exact decoded
+                        // CAL bytes. Direct DALI callers keep the complete
+                        // canonical response envelope below.
+                        let response_wire = if matches!(route, ProgrammingRoute::Routed(_)) {
+                            cals.iter().flat_map(Cal::encode).collect()
+                        } else {
+                            Packet::PointToPoint {
+                                meta,
+                                unit_address,
+                                bridged,
+                                hops,
+                                cals: cals.clone(),
+                            }
+                            .encode()
+                            .map_err(|error| Error::new(ErrorKind::InvalidData, error.0))?
+                        };
                         (cals, response_wire)
                     }
                     Ok(Some(Packet::PointToPoint {
@@ -2060,7 +2089,9 @@ impl PciClient {
                         bridged,
                         hops,
                         cals,
-                    })) if meta.source_address.is_none()
+                    })) if !matches!(route, ProgrammingRoute::Routed(_))
+                        && !bridged
+                        && meta.source_address.is_none()
                         && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         let response_wire = Packet::PointToPoint {
@@ -2075,7 +2106,8 @@ impl PciClient {
                         (cals, response_wire)
                     }
                     Ok(Some(Packet::BareCal(cal)))
-                        if self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
+                        if !matches!(route, ProgrammingRoute::Routed(_))
+                            && self.local_unit.load(Ordering::Acquire) == u16::from(unit) =>
                     {
                         let response_wire = cal.encode();
                         (vec![cal], response_wire)
@@ -2168,7 +2200,14 @@ impl PciClient {
         while let Some((sent_mode, request)) = next.take() {
             let request_wire = format!("\\06{unit:02X}00{}", hex::encode_upper(request.encode()));
             let outcome = self
-                .programming_extended_exchange(unit, request, device_type, operation, 0)
+                .programming_extended_exchange(
+                    unit,
+                    request,
+                    device_type,
+                    operation,
+                    0,
+                    ProgrammingRoute::DirectUnchecksummed,
+                )
                 .await?;
             let (status, data, response_wire, nak) = match outcome {
                 ExtendedOutcome::Reply {
@@ -2202,6 +2241,24 @@ impl PciClient {
     /// Commit volatile programming changes in a C-Bus 3 unit to NVM using
     /// native C-Gate's group-0 operation-4 EXECUTE/POLL sequence.
     pub async fn save_to_nvm(&self, unit: u8) -> Result<()> {
+        self.save_to_nvm_with_route(unit, ProgrammingRoute::DirectUnchecksummed)
+            .await
+    }
+
+    /// Commit volatile programming changes in a remote C-Bus 3 unit to NVM
+    /// through a validated one-to-six bridge source route.
+    ///
+    /// Every EXECUTE/POLL request is sent once. Completion accepts only the
+    /// exact Reply Network route, remote unit, group and operation; a lost or
+    /// malformed reply faults the programming lane until reconnect so a late
+    /// result cannot be assigned to another save.
+    pub async fn save_to_nvm_routed(&self, bridges: &[u8], unit: u8) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.save_to_nvm_with_route(unit, ProgrammingRoute::Routed(bridges))
+            .await
+    }
+
+    async fn save_to_nvm_with_route(&self, unit: u8, route: ProgrammingRoute<'_>) -> Result<()> {
         let _lane = self.programming_lane.lock().await;
         if self.programming_fault.load(Ordering::Acquire) {
             return Err(Error::other(
@@ -2223,6 +2280,7 @@ impl PciClient {
                 0,
                 4,
                 1,
+                route,
             )
             .await?;
         match execute {
@@ -2259,6 +2317,7 @@ impl PciClient {
                         0,
                         4,
                         1,
+                        route,
                     )
                     .await?;
                 match outcome {
@@ -7370,6 +7429,54 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn routed_save_to_nvm_has_exact_one_and_six_hop_frames_and_reply_correlation() {
+        async fn run(
+            bridges: Vec<u8>,
+            expected_execute: &'static [u8],
+            expected_poll: &'static [u8],
+        ) {
+            let (pci, mut remote, _) = setup().await;
+            let operation_bridges = bridges.clone();
+            let saving =
+                tokio::spawn(async move { pci.save_to_nvm_routed(&operation_bridges, 6).await });
+
+            assert_eq!(line(&mut remote).await, expected_execute);
+            let mut wrong_route = bridges.clone();
+            wrong_route[0] = wrong_route[0].wrapping_sub(1);
+            direct_reply(&mut remote, 6, &[0xe4, 0x83, 0, 4, 1]).await;
+            routed_reply(&mut remote, &wrong_route, 6, &[0xe4, 0x83, 0, 4, 1]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0xe4, 0x83, 0, 4, 1]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0xe4, 0x83, 0, 5, 1]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0xe4, 0x83, 0, 4, 1]).await;
+
+            assert_eq!(line(&mut remote).await, expected_poll);
+            routed_reply(&mut remote, &wrong_route, 6, &[0xe4, 0x83, 0, 4, 0]).await;
+            routed_reply(&mut remote, &bridges, 5, &[0xe4, 0x83, 0, 4, 0]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0xe4, 0x83, 0, 5, 0]).await;
+            routed_reply(&mut remote, &bridges, 6, &[0xe4, 0x83, 0, 4, 1]).await;
+            tokio::time::advance(NVM_POLL_INTERVAL).await;
+            tokio::task::yield_now().await;
+
+            assert_eq!(line(&mut remote).await, expected_poll);
+            routed_reply(&mut remote, &bridges, 6, &[0xe4, 0x83, 0, 4, 0]).await;
+            saving.await.unwrap().unwrap();
+        }
+
+        run(
+            vec![0xfd],
+            b"\\46FD0906E381000446\r",
+            b"\\46FD0906E382000445\r",
+        )
+        .await;
+        run(
+            vec![0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
+            b"\\46FA36FBFCFDFEF906E381000431\r",
+            b"\\46FA36FBFCFDFEF906E382000430\r",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn dali_auto_uses_native_priority_zero_and_correlates_execute_poll_sequence() {
         let (pci, mut remote, mut events) = setup().await;
         let worker = pci.clone();
@@ -7513,6 +7620,37 @@ mod tests {
             ErrorKind::TimedOut
         );
         assert!(pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_routed_save_to_nvm_reply_faults_without_replay_and_routes_are_bounded() {
+        let (pci, mut remote, _) = setup().await;
+        assert_eq!(
+            pci.save_to_nvm_routed(&[], 6).await.unwrap_err().kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.save_to_nvm_routed(&[1, 2, 3, 4, 5, 6, 7], 6)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+
+        let worker = pci.clone();
+        let saving = tokio::spawn(async move { worker.save_to_nvm_routed(&[0xfd], 6).await });
+        assert_eq!(line(&mut remote).await, b"\\46FD0906E381000446\r");
+        assert_eq!(
+            saving.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(1),
+            "lost routed Save-to-NVM EXECUTE was replayed",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]

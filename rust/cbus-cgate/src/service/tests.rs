@@ -5424,7 +5424,11 @@ async fn capabilities_report_observation_without_device_readback() {
         serde_json::json!([])
     );
     assert_eq!(document["physical_pp_routed_lock"], true);
-    assert_eq!(document["physical_pp_routed_nvm_commit"], false);
+    assert_eq!(document["physical_pp_routed_nvm_commit"], true);
+    assert_eq!(
+        document["physical_pp_routed_nvm_delivery_semantics"],
+        "reply-network-unit-group-operation-correlated-execute-poll-exactly-once-no-replay"
+    );
     assert_eq!(
         document["physical_pp_routed_state_scope"],
         "owned-session-target-network"
@@ -10484,20 +10488,60 @@ async fn bridged_pp_load_save_correlates_route_and_keeps_session_on_target_netwo
         let response = service.handle(&mut client, command).await;
         assert_eq!(response.status, 200, "{command}: {response:?}");
     }
-    let nvm_required = service
-        .handle(&mut client, "[pp-save-nvm] PP SAVE N //TOPO/253/p/4 Core")
-        .await;
-    assert_eq!(nvm_required.status, 502, "{nvm_required:?}");
+    let saving_nvm = tokio::spawn({
+        let service = service.clone();
+        let mut client = client.clone();
+        async move {
+            service
+                .handle(&mut client, "[pp-save-nvm] PP SAVE N //TOPO/253/p/4 Core")
+                .await
+        }
+    });
+    answer_identity(&mut remote_read, &mut remote_write, 1, b"TESTNVM").await;
+    answer_identity(&mut remote_read, &mut remote_write, 2, b"1.2.03").await;
     assert_eq!(
-        nvm_required.final_text,
-        "502 Routed PP SAVE cannot write a specification that requires Save-to-NVM"
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A200274\r"
     );
-    assert!(
-        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
-            .await
-            .is_err(),
-        "routed PP SAVE requiring NVM commit must fail before PCI I/O"
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x20, 0x12, 0x34]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904A4200056781E\r"
     );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x32, 0x20, 0]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD09041A200274\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0x83, 0x20, 0x56, 0x78]).await;
+
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904E381000448\r"
+    );
+    // Direct, neighbouring-route, wrong-unit and wrong-operation replies
+    // cannot complete a routed NVM commit.
+    database_pci_reply(&mut remote_write, 4, &[0xe4, 0x83, 0, 4, 0]).await;
+    routed_pci_reply(&mut remote_write, &[252], 4, &[0xe4, 0x83, 0, 4, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 5, &[0xe4, 0x83, 0, 4, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0xe4, 0x83, 0, 5, 0]).await;
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0xe4, 0x83, 0, 4, 1]).await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904E382000447\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0xe4, 0x83, 0, 4, 1]).await;
+    tokio::time::advance(Duration::from_millis(500)).await;
+    tokio::task::yield_now().await;
+    assert_eq!(
+        database_pci_line(&mut remote_read).await,
+        b"\\46FD0904E382000447\r"
+    );
+    routed_pci_reply(&mut remote_write, &[253], 4, &[0xe4, 0x83, 0, 4, 0]).await;
+
+    let nvm_saved = saving_nvm.await.unwrap();
+    assert_eq!(nvm_saved.status, 200, "{nvm_saved:?}");
+    assert!(service.model.lock().await.sessions["N"].dirty.is_empty());
 
     std::fs::remove_file(path).unwrap();
     std::fs::remove_dir_all(spec_dir).unwrap();

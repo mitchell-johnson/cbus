@@ -734,10 +734,16 @@ lock-protected `direct`, `paged`, or `ncc` range first requires the exact
 one-byte routed Unlock challenge and its allocated PCI confirmation. The
 unlock and each STORE are sent once, the owned session commits only on the
 captured shared PCI generation, and neither network physical cache is changed.
-Routed Save-to-NVM remains capability-gated separately. Ground the composed
-contracts and physical boundary in
-`rust/testdata/fixtures/native_cgate_routed_pp_protection.json` and
-`rust/testdata/fixtures/native_cgate_routed_pp_methods.json`.
+When a decoded C-Bus 3 specification has at least one confirmed change, SAVE
+then sends the native group-0 operation-4 EXECUTE/POLL sequence through the
+same route. Direct, neighbouring-route, wrong-unit, wrong-group and
+wrong-operation responses cannot complete it; an incomplete result faults the
+programming lane without replay. Ground the composed contracts and physical
+boundary in
+`rust/testdata/fixtures/native_cgate_routed_pp_protection.json`,
+`rust/testdata/fixtures/native_cgate_routed_pp_methods.json`, and
+`rust/testdata/fixtures/native_cgate_routed_nvm_commit.json`.
+
 
 Standard application control also uses a database-resolved route through one
 to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`
@@ -1153,6 +1159,9 @@ parameter-35 write,
 `bridged_project_identity_write: true`, `physical_pp_routed_load: true`, and
 `physical_pp_routed_save: true`
 expose the bounded routed programming slice.
+`physical_pp_routed_nvm_commit: true` and its delivery-semantics field denote
+the exact Reply Network/unit/group/operation-correlated C-Bus 3 EXECUTE/POLL
+commit after one or more verified supported routed changes.
 `physical_application_routed_control: true` exposes the
 Lighting/Trigger/Enable-SET, dynamic-label, Clock, Temperature,
 named-scene-playback, network-management, and specialist application slices; inspect its family,

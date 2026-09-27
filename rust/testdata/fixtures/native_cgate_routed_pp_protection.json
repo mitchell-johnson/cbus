@@ -39,7 +39,7 @@
   "evidence_boundaries": [
     "No physical bridge or routed unit completed a lock-protected write in this acceptance run.",
     "The original retained lock capture covers ProgramMethod=direct; cmqttd also composes the same routed challenge for page-aware paged/NCC fields and pins it in transport tests.",
-    "OEM/GOC routed methods are covered separately by native_cgate_routed_pp_methods.json; C-Bus 3 Save-to-NVM remains separately capability-gated.",
+    "OEM/GOC routed methods are covered separately by native_cgate_routed_pp_methods.json; routed C-Bus 3 Save-to-NVM is evidenced separately in native_cgate_routed_nvm_commit.json.",
     "No successful acknowledgement is treated as proof of NVM persistence or power-cycle survival."
   ]
 }

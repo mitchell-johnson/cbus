@@ -2483,7 +2483,11 @@ impl Service {
                 serde_json::json!(["direct", "ncc", "paged"]);
             capabilities["physical_pp_routed_unsupported_methods"] = serde_json::json!([]);
             capabilities["physical_pp_routed_lock"] = serde_json::Value::Bool(true);
-            capabilities["physical_pp_routed_nvm_commit"] = serde_json::Value::Bool(false);
+            capabilities["physical_pp_routed_nvm_commit"] = serde_json::Value::Bool(true);
+            capabilities["physical_pp_routed_nvm_delivery_semantics"] = serde_json::Value::String(
+                "reply-network-unit-group-operation-correlated-execute-poll-exactly-once-no-replay"
+                    .to_string(),
+            );
             capabilities["physical_pp_routed_delivery_semantics"] = serde_json::Value::String(
                 "reply-network-unit-parameter-tag-correlated-exactly-once-no-replay".to_string(),
             );
@@ -11558,7 +11562,6 @@ impl Service {
         };
         let spec_requires_nvm_commit = unitspec::requires_nvm_commit(&spec);
         if !route.is_empty() {
-            let mut selected_write = false;
             for param in spec.iter().filter(|param| dirty.contains(&param.name)) {
                 if !tags.is_empty()
                     && !param
@@ -11612,17 +11615,9 @@ impl Service {
                         "502 Routed PP SAVE does not support this program-method/layout/protection combination",
                     );
                 }
-                selected_write = true;
-            }
-            if selected_write && spec_requires_nvm_commit {
-                return err(
-                    tag,
-                    502,
-                    "502 Routed PP SAVE cannot write a specification that requires Save-to-NVM",
-                );
             }
         }
-        let requires_nvm_commit = route.is_empty() && spec_requires_nvm_commit;
+        let requires_nvm_commit = spec_requires_nvm_commit;
         let (pci_generation, pci) = self.current_pci_epoch().await;
         let live_type = match if route.is_empty() {
             pci.identify_first(unit, 1).await
@@ -12102,7 +12097,12 @@ impl Service {
             confirmed += 1;
         }
         if wrote_any && requires_nvm_commit {
-            if let Err(error) = pci.save_to_nvm(unit).await {
+            let result = if route.is_empty() {
+                pci.save_to_nvm(unit).await
+            } else {
+                pci.save_to_nvm_routed(&route, unit).await
+            };
+            if let Err(error) = result {
                 return err(
                     tag,
                     502,

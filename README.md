@@ -587,8 +587,11 @@ PP SAVE/SAVE_TO_SOURCE support topology-resolved targets for `direct`,
 schema methods. Selector acknowledgements, recalls, tagged writes, and verified
 readback are bound to the exact Reply Network, unit, parameter, tag, and count.
 Routed `direct`, `paged`, and `ncc` lock challenges are also bound to the route
-and allocated PCI confirmation and are never replayed. Routed C-Bus 3
-Save-to-NVM remains separately capability-gated.
+and allocated PCI confirmation and are never replayed. A changed C-Bus 3
+specification follows verified routed STOREs with the native Save-to-NVM
+EXECUTE/POLL sequence; its statuses are bound to the exact Reply Network, unit,
+group, and operation.
+
 Lighting ON/OFF/RAMP/STOP, their bare and `DO` aliases, Trigger EVENT/
 INDICATORKILL, and Enable SET use topology-resolved one-to-six-bridge standard
 SAL frames. Routed dynamic labels, Clock DATE/TIME/REQUEST_REFRESH, Temperature

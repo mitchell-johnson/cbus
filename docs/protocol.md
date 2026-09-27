@@ -185,8 +185,13 @@ full readback. The routed Unlock for `direct`, `paged`, and `ncc` carries the
 required outer checksum and waits for both its allocated PCI confirmation and
 an exact one-byte challenge. It is sent once and is never entered into the
 replay table. The `*-routed-pp-*` vectors pin one- and six-bridge boundaries.
-They do not establish routed Save-to-NVM, device-persistence, power-cycle, or
-every firmware-family behavior.
+For a C-Bus 3 specification with a verified change, the same routed PTP envelope
+carries native group-0 operation-4 Save-to-NVM EXECUTE and POLL CALs. The
+`*-routed-nvm-*` vectors pin both one- and six-bridge requests and Reply Network
+statuses; completion also requires the exact terminal unit, group, and
+operation. These vectors establish the command exchange, not device persistence,
+power-cycle durability, or every firmware-family behavior.
+
 
 ## MQTT convention
 

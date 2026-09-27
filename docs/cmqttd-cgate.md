@@ -191,7 +191,8 @@ versioned portable container.
 | `PP WRITE_PATCH` | Physical execution from a strict operator-supplied `cmqttd.pp-patch/v1` manifest in the controlled FILE namespace. The retained unit/hex-version/optional-SIMULATE grammar selects by exact saved unit type, native case-sensitive lexical firmware range, optional catalogue and target patch version; cmqttd deliberately rejects a catalogue-constrained selector when saved catalogue metadata is absent. Blocks are 1–12 bytes, non-overlapping, wholly inside 114–241 or 247–254, for an effective maximum of 136 bytes. The patch-version parameter is native F2 (`0xF2`); target `FF` is reserved and may only be explicitly admitted as a current version for manual interrupted-write recovery. Before mutation cmqttd requires exactly one live type and firmware reply and checks the current patch-version byte. One programming lane then runs native 0x70 disable (`85:ffff`), temporary F2 version (`86:ff`), ordinary block STOREs with tag `73` and F7 STOREs with the returned unlock challenge, immediate readback, a distinct full verification pass, target F2 version, 0x70 enable (`85:9d40`) and final version readback. Already-target recovery is read-only when blocks/control match or repairs only enable when needed. A 200 reports full-pipeline, repaired-enable-only, or verified-read-only disposition. SIMULATE exposes a SHA-256; optional `EXPECT_SHA256=<64hex>` binds physical execution. Failed writes are never automatically retried and require reconnect. Proprietary Schneider `patchset.zip` ingestion remains unsupported and is reported by capabilities |
 | `PP RESET_TO_DEFAULTS` | Replaces one owned loaded session with exactly the `DefaultValue` fields in its parsed unit specification. The result remains staged until an explicit save; missing or malformed specifications return 408 unchanged, with no PCI access |
 | Physical PP LOAD and subsequent GET/INFO | Identifies the live unit, selects its privately installed decoded schema, recalls standard CAL parameters, explicit pages for `paged`/`ncc`, OEM memory, and GOC parameter-`0xFF` memory through the shared PCI, decodes int/long/bit/string/sixbit arrays and `ArrayMap`, applies tag selection, and commits the session only after every read succeeds. The same methods work on a resolved one-to-six-bridge target. Every selector acknowledgement, identity and parameter reply must match the exact Reply Network, unit, parameter, tag and total count, and only the owned target-network session is updated on the captured PCI generation |
-| Physical PP SAVE/SAVE_TO_SOURCE | Direct and resolved one-to-six-bridge targets write dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum` and supported `lock` protection. Routed page/memory selectors, pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count. Lock protection for `direct`, `paged`, and `ncc` additionally requires a one-byte challenge from that exact route/unit/parameter plus the allocated PCI confirmation before STORE. No routed programming request is replayed; the owned session commits only on the captured PCI generation. Routed C-Bus 3 Save-to-NVM remains separately capability-gated; direct NVM commit retains its existing behavior |
+| Physical PP SAVE/SAVE_TO_SOURCE | Direct and resolved one-to-six-bridge targets write dirty, tag-selected `direct`, `edlt`, `paged`, `ncc`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and `goc2` parameters with `none`/`checksum` and supported `lock` protection. Routed page/memory selectors, pre-read, exact-once tagged STORE acknowledgement, and complete readback must match Reply Network, unit, parameter, tag, and count. Lock protection for `direct`, `paged`, and `ncc` additionally requires a one-byte challenge from that exact route/unit/parameter plus the allocated PCI confirmation before STORE. A changed C-Bus 3 specification then runs route/unit/group/operation-correlated Save-to-NVM EXECUTE/POLL exchanges. No routed programming request is replayed; the owned session commits only on the captured PCI generation |
+
 | ON/OFF/RAMP/TERMINATERAMP and lighting variants | Actual shared PCI for the configured network and for a topology-resolved route through one to six bridges. Routed Lighting composes the retained standard SAL with the evidenced PPM source-route envelope, sends it exactly once, and accepts only its allocated PCI confirmation. It invalidates only the target network's older level on the captured PCI generation and deliberately issues no routed status request; confirmation is distinct from observed physical brightness or controller action |
 | `DO` lighting methods, direct/bridged `SYNC`, `UNRAVEL`, and KEYGL5 `FactoryDefault` | Lighting aliases use the same direct or one-to-six-bridge exact-once physical backend and retain native `202 Done: object` framing. Routed SYNC uses the same strict Reply Network correlation as `NET SYNC`. UNRAVEL uses the guarded direct or one-to-six-bridge planner described above, with exact routed receipts and final target inventory. FactoryDefault sends the captured OEM control once, requires PCI confirmation plus the source-correlated unit ACK, clears stale observed-label traffic, and returns `202 Done: object` |
 | GET group level | Real observed bus levels; unobserved levels return 408, never invented zero |
@@ -334,9 +335,13 @@ also matches its STORE tag. A locked `direct`, `paged`, or `ncc` range sends the
 evidenced Unlock CAL once and requires both its allocated PCI confirmation and
 a one-byte challenge from the exact Reply Network, unit, and parameter. Each
 stateful request is sent once; a missing or malformed challenge, confirmation,
-ACK, or readback faults the programming lane until reconnect. Routed
-Save-to-NVM remains separately capability-gated. `CMQTT CAPABILITIES` publishes
-this exact scope.
+ACK, or readback faults the programming lane until reconnect. A routed save of
+changed ranges in a C-Bus 3 specification follows verified readback with the
+native group-0 operation-4 Save-to-NVM EXECUTE/POLL sequence. Every status must
+match the exact Reply Network, remote unit, group and operation; an incomplete
+exchange faults the programming lane and is never replayed. `CMQTT CAPABILITIES`
+publishes this exact scope.
+
 
 Dynamic-label commands use the same syntax produced by `cbus-toolkit` for
 lighting applications 48–95, Trigger Control 202, and Enable Control 203.
@@ -734,11 +739,11 @@ non-inventoried service commands. Full replacement still requires:
   carry the same confirmed-count evidence. Factory/special parameters clear
   silently without a write while tag-filtered parameters stay dirty for a later
   matching-tags SAVE; a bare 200 covers the tag-selected subset only.
-- Routed C-Bus 3 Save-to-NVM completion and hardware acceptance for the routed
-  `direct`, `paged`/`ncc`, OEM `edlt`/`giu`/`sgiu`/`dali`, and
-  `goc`/`gocbyt`/`goc2` PP implementations; general serial-address
-  commissioning, arbitrary second-interface commissioning; and the remaining
-  commissioning state transitions. The read-only interface-rooted
+- Live routed-device and power-cycle acceptance for the `direct`,
+  `paged`/`ncc`, OEM `edlt`/`giu`/`sgiu`/`dali`, and
+  `goc`/`gocbyt`/`goc2` PP transfers and C-Bus 3 NVM commit; broader
+  serial-address commissioning, arbitrary second-interface commissioning; and
+  the remaining commissioning state transitions. The read-only interface-rooted
   `NET PROJECT_IDENTIFY` workflow
   is implemented for cmqttd's configured shared interface. The distinct physical
   `NET SET_PROJECT_IDENTIFY` parameter-35 write is implemented for direct and
@@ -776,7 +781,8 @@ non-inventoried service commands. Full replacement still requires:
   maintained specialist family. Routed application commands
   use one PPM/SAL frame and exact PCI confirmation only; no Reply Network SAL,
   device acceptance, controller state, or status-readback contract is claimed.
-  Guarded direct-network single-unit physical readdressing is implemented.
+  Guarded single-unit physical readdressing is implemented on the configured
+  network and across topology-resolved one-to-six-bridge routes.
   `DO` lighting methods use the direct or routed physical lighting backend, and `DO ... UNRAVEL`
   uses the same generation-bound direct or topology-routed planner as NET.
   Direct-network clock inspection, target-count changes and gateway recovery are
@@ -1086,8 +1092,9 @@ encoding, acknowledgements, readback, and the exact C-Bus 3 NVM commit sequence,
 and verifies that C-Gate and MQTT retain one PCI connection while lighting events
 continue through the same transport. The routed regression additionally checks
 one-bridge direct LOAD/SAVE, neighbour-route rejection, exact-once STORE,
-readback, target-session scope, and MQTT continuity; transport and golden-vector
-tests pin the one- and six-bridge bounds. The same test pins direct and routed
+readback, routed C-Bus 3 EXECUTE/POLL, target-session scope, and MQTT continuity;
+transport and golden-vector tests pin the one- and six-bridge bounds. The same
+test pins direct and routed
 `DO` lighting methods to their physical SAL packets, the routed Lighting,
 Trigger, and Enable exact-once slice, shared-reader MQTT continuity and
 target-only cache behavior. It exercises `DO ... SYNC` and verifies the guarded
