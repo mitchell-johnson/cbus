@@ -1,0 +1,73 @@
+{
+  "format": "cbus-toolkit-managed-label-api-surface-v1",
+  "date": "2026-09-28",
+  "target": {
+    "toolkit_version": "1.18.0.2754",
+    "cgate_version": "3.4.0.2001",
+    "source": "official Toolkit installer payload; isolated Windows VM version observed, installed DLL hashes not separately captured"
+  },
+  "method_inventory": {
+    "tool": "dnfile 0.18.0 TypeDef.MethodList metadata enumeration",
+    "assemblies": {
+      "SharpCGateCommunicator.dll": {
+        "sha256": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+        "CGateConnection_label_named_methods": [
+          "LightingLabel",
+          "LightingUnicodeLabel",
+          "TriggerLabel",
+          "TriggerUnicodeLabel",
+          "LightingDynamic",
+          "TriggerDynamic",
+          "LabelClearEdlt"
+        ],
+        "label_command_types": [
+          "CommandLabel",
+          "CommandLabelClearEdlt"
+        ]
+      },
+      "LabelEditor.dll": {
+        "sha256": "508fa63db112a3ec07bf3cf834b41a0f26da3b0e7a428bc288bff0ec433a073b",
+        "LabelsMain_relevant_methods": [
+          "SendLabels",
+          "sendLabelThreadMain",
+          "ProgressBarDoLabelSend",
+          "btnSendLabels_Click"
+        ]
+      },
+      "CBusLogicModel.dll": {
+        "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+        "CGateCommunicatorFactory_label_named_methods": [
+          "ClearEdltLabel"
+        ],
+        "CBusBaseUnit_label_named_methods": [
+          "ClearEdltLabel"
+        ]
+      }
+    }
+  },
+  "reproduce": {
+    "metadata_fields": [
+      "TypeDef.TypeName",
+      "TypeDef.MethodList.Name"
+    ],
+    "selection": "For CGateConnection, retain every method name containing label or dynamic (case insensitive). For the editor and model, retain the named entry points shown. Hash each complete DLL before comparison.",
+    "vendor_files_committed": false
+  },
+  "independent_native_command_evidence": {
+    "path": "research/fixtures/edlt-dynamic-cache-native-scope.json",
+    "label_subcommands": [
+      "CLEAR",
+      "CLEAREDLT",
+      "KFIGET",
+      "KFISET"
+    ],
+    "kfiget_result": "Eight key-function-indicator values, not label text/icon/cache contents",
+    "cache_inventory_command_found": false
+  },
+  "conclusion": "No device-cached dynamic-label inventory getter was identified in these release-pinned Toolkit method names or the separately captured native C-Gate LABEL command family.",
+  "limits": [
+    "Method-name enumeration cannot exclude a generic command path or undocumented eDLT firmware protocol.",
+    "The Windows project was offline and its CNI host was blocked. No physical eDLT cache was queried.",
+    "This is no new acceptance receipt for complete device-cache readback; dynamic_label_device_readback remains false."
+  ]
+}
