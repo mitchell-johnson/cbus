@@ -83,6 +83,17 @@ the destination folder, so never substitute that isolated vendor method for
 this CLI's explicit catalogue file binding. Even a matching CLI receipt is
 not source, publisher, revocation or installer trust.
 
+`update-applicability-preflight --catalogue-response raw-catalogue.json
+--node-id ID --platform windows_x86_64 --at-utc ...Z` evaluates only the
+captured SESU empty-condition, 100%-visibility date/file/media branch under
+caller-supplied facts. It selects the first architecture-matching file whose
+ID has a URL-map key, even if that URL is empty; there is no later-file
+fallback. Inspect `status` and `applicability_under_supplied_context`, and
+read `toolkit-cli/docs/toolkit-update-applicability-preflight.md` before use.
+Its `passed` result is not current publisher, machine, rollout, version or
+installer approval. Nonempty conditions, sub-100 rollout and unproved URI
+or media forms are unsupported without a host or registry read.
+
 `pci routed-write` supports either literal bridge/reply bytes or a typed legacy
 XML/CBZ route. The typed form takes `--project-file`, `--source-network`,
 `--target-network`, and the global `--local-unit`; it binds the file digest and
