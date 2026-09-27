@@ -1590,6 +1590,13 @@ def build_parser():
     p.add_argument("--spec", required=True, help="KEYE.xml, KEYM4.xml, KEYA3.xml or KEYB4.xml")
     _key_options(p, extended=True)
 
+    from .physical_programming_cli import options as physical_programming_options
+    physical_pp = cgops.add_parser(
+        "physical-pp",
+        help="Guarded cmqttd physical PP LOAD/edit/SAVE with fresh readback",
+    )
+    physical_programming_options(physical_pp)
+
     p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.3.00 / 5753PEIRL occupancy profile")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _sensor_options(p)
@@ -2298,7 +2305,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
+    elif args.action not in ("project", "database", "unit", "physical-pp", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2408,6 +2415,9 @@ def _cgate(args):
             return result, 0
         if args.action == "unit":
             return _programming(args, client), 0
+        if args.action == "physical-pp":
+            from .physical_programming_cli import run as physical_programming_run
+            return physical_programming_run(args, client)
         if args.action == "address":
             if args.remote_action in ("physical-readdress", "serial-commission"):
                 from .physical_addressing import PhysicalAddressing
@@ -3573,6 +3583,7 @@ def main(argv=None):
     from .pci_routed_identify_cli import error_payload as routed_identify_error_payload
     from .project_repair_cli import error_payload as project_repair_error_payload
     from .thermostat_schedule_cli import error_payload as schedule_error_payload
+    from .physical_programming import physical_programming_error_payload
     try:
         result, status = run(args)
         stream = args.area == "cgate" and args.action == "events"
@@ -3629,6 +3640,7 @@ def main(argv=None):
         result.update(routed_recall_error_payload(exc, args))
         result.update(routed_identify_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
+        result.update(physical_programming_error_payload(exc))
         for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "unit_template_transaction_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):

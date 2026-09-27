@@ -3,6 +3,18 @@
   "date": "2026-09-27",
   "passed": true,
   "scope": "Bounded composition of retained native PP method CALs with the retained one-through-six-bridge point-to-point route and Reply Network correlation; scripted acceptance only",
+  "methods": [
+    "direct",
+    "paged",
+    "ncc",
+    "edlt",
+    "giu",
+    "sgiu",
+    "dali",
+    "goc",
+    "gocbyt",
+    "goc2"
+  ],
   "retained_native_evidence": [
     {
       "path": "rust/testdata/fixtures/native_cgate_pp_programmer.json",

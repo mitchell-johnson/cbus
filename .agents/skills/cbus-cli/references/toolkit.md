@@ -20,6 +20,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | --- | --- | --- |
 | Create, inspect, validate, edit, export XML/CBZ | `project` | Local files |
 | Manage native projects, networks, databases, units | `cgate project`, `network`, `database`, `unit` | C-Gate server |
+| Inspect or edit a physical unit through cmqttd PP | `cgate physical-pp` | Shared C-Gate/PCI service; physical reads and optional writes |
 | Control groups, scenes, labels, triggers, Enable | `cgate on`, `off`, `ramp`, `scene`, `label`, `trigger`, `enable` | C-Gate server; may reach hardware |
 | Invoke a stored KEYGL5 scene Trigger binding | `cgate edlt-scene-trigger` | One Trigger event through C-Gate; may reach every listener for the pair |
 | Inspect or change addressing and serials | `cgate address`, `serials` | C-Gate; profile and identity guards apply |
@@ -56,6 +57,22 @@ cbus-toolkit cgate --host 127.0.0.1 --port 20033 run commands.txt
 These examples target the Rust mock after it is started on port 20033. The native plain TCP default is 20023. Each CLI invocation creates a new connection; `run` keeps all commands in one session and stops at the first error. Project selection is session-local, so use explicit addresses/project arguments or one batch when later commands depend on a selection.
 
 Native connections support TLS and client certificates. A live address such as `//PROJECT/254/p/20` can reach a physical unit; `/db//PROJECT/254/p/20` explicitly selects the database for programming workflows. Confirm which source the task requires and use the documented identity, backup, and verification behavior for writes.
+
+For physical PP work through cmqttd, prefer the typed command:
+
+```sh
+cbus-toolkit cgate physical-pp inspect //PROJECT/NETWORK/p/UNIT --method direct
+cbus-toolkit cgate physical-pp apply //PROJECT/NETWORK/p/UNIT \
+  --method direct --set UnitName GARAGE
+```
+
+It preflights `CMQTT CAPABILITIES`, validates every selected parameter against
+`PP INFO *`, issues one SAVE or SAVE_TO_SOURCE, and uses a distinct physical PP
+LOAD for readback. Current methods are `direct`, `paged`, `ncc`, `edlt`, `giu`,
+`sgiu`, `dali`, `goc`, `gocbyt`, and `goc2`. Never replay an uncertain save.
+Treat fresh readback as in-run device verification, not power-cycle persistence
+or broad hardware acceptance. Routed NCC apply requires the separate NVM
+capability. See `toolkit-cli/docs/physical-programming.md`.
 
 Successful operations emit JSON on stdout, operation errors emit JSON on stderr, and failures return nonzero. Argument usage errors can be plain argparse text. `--compact` is a global option before the command; event monitoring emits JSON lines. Preserve partial-operation evidence and do not replay uncertain writes automatically.
 

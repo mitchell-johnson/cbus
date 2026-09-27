@@ -296,6 +296,17 @@ carry the exact Reply Network, remote unit, parameter, tag and total byte count.
 A successful load records the routed source in the owned session and changes no
 direct- or target-network physical cache.
 
+The maintained Python client wraps this surface with
+`cbus-toolkit cgate physical-pp inspect|apply`. It requires the live cmqttd
+capability document before locking, binds every selected parameter to one
+declared programming method, stages and reads edits in one owned session, sends
+one SAVE/SAVE_TO_SOURCE, and uses a distinct physical PP LOAD session for
+schema-aware verification. It never retries a mutation. Routed NCC apply
+requires the separate routed NVM capability. See
+[`toolkit-cli/docs/physical-programming.md`](../toolkit-cli/docs/physical-programming.md)
+for the JSON evidence and the live-bridge, hardware-matrix, original-Toolkit,
+and power-cycle boundaries.
+
 Physical SAVE uses captured tagged direct STORE for standard parameters, native
 page selection plus tagged STORE for `paged`/`ncc`, and the OEM `0x41` address
 selector plus tagged `0x42` STORE for eDLT/GIU/SGIU/DALI memory. GIU is halted

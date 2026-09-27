@@ -1,0 +1,106 @@
+# Guarded physical PP programming through cmqttd
+
+`cbus-toolkit cgate physical-pp` is the typed physical counterpart to the
+generic `cgate unit` programming API. It uses the production `CGateClient` and
+the native `PROJECT USE`, `PP LOCK`, `PP START`, `PP LOAD`, `PP INFO`, `PP GET`,
+`PP SET`, `PP SAVE`/`PP SAVE_TO_SOURCE`, `PP END`, and `PP UNLOCK` commands. The
+selected cmqttd service owns the CNI connection and resolves a database bridge
+route; the Python process does not open a second PCI connection.
+
+The workflow admits the ten methods currently declared by cmqttd:
+`direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
+`goc2`. A missing `ProgramMethod` in the native schema means `direct`, matching
+the C-Gate specification behavior.
+
+## Inspect one method
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
+  physical-pp inspect //PROJECT/NETWORK/p/UNIT --method edlt
+
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
+  physical-pp inspect //PROJECT/NETWORK/p/UNIT --method direct \
+  --parameter UnitName --parameter Project
+```
+
+The command first reads `CMQTT CAPABILITIES`. It requires the cmqttd service,
+physical and routed PP LOAD support, the requested method, a connected PCI, and
+a `ready` programming lane. It then derives the exact `//PROJECT/NETWORK` lock,
+loads the physical source, parses `PP INFO *`, and reads either every parameter
+using the requested method or the explicitly selected parameters. It rejects a
+method mismatch before any edit or save.
+
+Inspection performs physical reads. It returns no persistence claim and sends
+no PP save.
+
+## Edit and verify
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
+  physical-pp apply //PROJECT/NETWORK/p/UNIT --method direct \
+  --set UnitName GARAGE --set Project GRENACHE
+```
+
+Omitting `--destination` selects native `PP SAVE_TO_SOURCE`. An explicit
+physical destination on the same project and network lock selects `PP SAVE`:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
+  physical-pp apply //PROJECT/NETWORK/p/4 --method goc2 \
+  --set ParameterName '0x12 0x34' --destination //PROJECT/NETWORK/p/5
+```
+
+All `--set` rows are validated for unique names and native quoting before the
+capability command. After physical LOAD, every parameter must exist and use the
+one selected method before the first `PP SET`. The command captures the values
+before editing, stages each edit, and reads every edited parameter back from the
+same PP session. It then issues exactly one save command.
+
+After a confirmed save, the first session is ended and unlocked. A distinct
+session performs another physical `PP LOAD` from the saved destination, repeats
+the schema checks, and compares every edited value. Numeric comparison follows
+the declared native type and array length, so spelling-only differences such as
+`0x00` versus `0x0` do not cause a false failure. The schema itself must remain
+identical. The successful JSON reports `saved=true`,
+`staged_readback_verified=true`, and
+`fresh_physical_readback_verified=true`.
+
+`--dry-run` performs the physical load, schema checks, edits, and same-session
+readback, then releases the PP session without a save or second load. It is a
+hardware-reading and temporary server-session operation, not an offline plan.
+
+## Failure and persistence boundary
+
+The client never retries a `PP SET`, `PP SAVE`, or `PP SAVE_TO_SOURCE`. If a
+save reply is rejected, lost, times out, or is interrupted, the emitted
+`physical_programming_evidence` keeps `save_attempts=1`, `saved=false`, and
+`save_outcome_uncertain=true`. Do not repeat that operation until the device and
+server state have been independently inspected. A confirmed save followed by a
+fresh-read mismatch reports `saved=true` and
+`fresh_physical_readback_verified=false`; it also is not replayed.
+
+Routed NCC writes additionally require
+`physical_pp_routed_nvm_commit=true`. Inspection and dry-run remain available
+when that separate Save-to-NVM capability is absent. The output always keeps
+`power_cycle_persistence_verified=false`,
+`original_toolkit_workflow_executed=false`, and
+`hardware_method_matrix_accepted=false`. A fresh PP reload proves the selected
+service read back the encoded value during that run. It does not prove behavior
+after power loss, every device/firmware combination, a live bridge route, or
+execution of the original Toolkit UI.
+
+## Evidence
+
+`tests/test_physical_programming.py` exercises all ten methods, both save forms,
+dry-run, capability and schema refusal, uncertain save handling, fresh-read
+mismatch, and zero replay. `tests/test_cli_physical_programming.py` pins the
+exact tagged C-Gate command order through the production socket client.
+`tests/test_cmqtt_interop.py` drives a direct-method physical write and fresh
+reload through the production Python CLI, real cmqttd, and an independent
+synthetic PCI.
+
+The other nine method transports and routed correlation are Rust-owned. Their
+machine-readable roster and scripted boundary are in
+`rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
+`native_cgate_routed_pp_protection.json`. Those fixtures explicitly do not
+claim a live bridge, power-cycle persistence, or broad hardware acceptance.

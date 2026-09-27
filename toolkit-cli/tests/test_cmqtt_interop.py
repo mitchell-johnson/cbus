@@ -73,3 +73,82 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                 process.terminate()
                 try: process.wait(timeout=5)
                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=5)
+
+
+@pytest.mark.skipif(not BIN.exists(), reason='Build the Rust cmqttd binary to run cross-language hardware-service tests')
+def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_path):
+    """Exercise the production typed workflow over the real shared PCI path.
+
+    This synthetic direct-method case establishes Python/Rust framing, PP
+    session behavior, one SAVE_TO_SOURCE, device write/readback and the fresh
+    second PP LOAD.  The other nine method transports remain covered by the
+    Rust routed-method fixture and transport/service regressions; this is not
+    live-device or power-cycle acceptance.
+    """
+    specs = tmp_path / 'unitspec'
+    specs.mkdir()
+    (specs / 'KEYGL5.xml').write_text(
+        '<UnitSpecification><Parameters><Param><Name>Value</Name><Type>int</Type>'
+        '<Address>$21</Address><ArraySize>12</ArraySize><ProgramMethod>direct</ProgramMethod>'
+        '<Protection>none</Protection></Param></Parameters></UnitSpecification>'
+    )
+    project = tmp_path / 'project.xml'
+    project.write_text(
+        '<Installation><Project><TagName>TEST</TagName><Network><Address>254</Address>'
+        '<TagName>Fixture</TagName><Interface><InterfaceType>CNI</InterfaceType>'
+        '<InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>'
+        '<Unit><Address>5</Address><TagName>Fixture unit</TagName>'
+        '<UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion></Unit>'
+        '</Network></Project></Installation>'
+    )
+    new_value = bytes.fromhex('00112233445566778899AABB')
+    value_text = ' '.join(f'0x{value:02X}' for value in new_value)
+    initial = bytes.fromhex('FFFF9B192D8229E4FF923AF3')
+    sim = InitializedPCI(
+        profile='captured', command_checksum=True,
+        legacy_memory={5: {0x21 + index: value for index, value in enumerate(initial)}},
+        legacy_writable={5: set(range(0x21, 0x21 + len(initial)))},
+    )
+    with socket.socket() as broker, sim.running() as pci:
+        broker.bind(('127.0.0.1', 0)); broker.listen(1)
+        with (tmp_path / 'physical-pp-daemon.log').open('w+') as log:
+            process = subprocess.Popen([
+                str(BIN), '--tcp', f'{pci[0]}:{pci[1]}',
+                '--broker-address', '127.0.0.1', '--broker-port', str(broker.getsockname()[1]),
+                '--broker-disable-tls', '--timesync', '0', '--status-resync', '0',
+                '--project-file', str(project), '--cgate-bind', '127.0.0.1:0',
+                '--cgate-state', str(tmp_path / 'state.json'),
+                '--cgate-unitspec', str(specs),
+            ], stdout=subprocess.DEVNULL, stderr=log)
+            try:
+                deadline = time.monotonic() + 10
+                port = None
+                while time.monotonic() < deadline:
+                    log.seek(0); output = log.read()
+                    match = re.search(r'C-Gate service listening on 127\.0\.0\.1:(\d+)', output)
+                    if match:
+                        port = match[1]; break
+                    assert process.poll() is None, output
+                    time.sleep(.02)
+                assert port is not None, output
+                result = subprocess.run([
+                    sys.executable, '-m', 'cbus_toolkit', 'cgate',
+                    '--host', '127.0.0.1', '--port', port, '--timeout', '30',
+                    'physical-pp', 'apply', '//TEST/254/p/5', '--method', 'direct',
+                    '--set', 'Value', value_text,
+                ], capture_output=True, text=True, timeout=120)
+                assert result.returncode == 0, result.stderr
+                value = json.loads(result.stdout)
+                assert value['complete']
+                assert value['native_save_operation'] == 'PP SAVE_TO_SOURCE'
+                assert value['save_attempts'] == 1
+                assert value['automatic_write_retries'] == 0
+                assert value['staged_readback_verified']
+                assert value['fresh_physical_readback_verified']
+                assert not value['power_cycle_persistence_verified']
+                assert bytes(sim.legacy_memory[5][address] for address in range(0x21, 0x2D)) == new_value
+                assert len({row['connection'] for row in sim.wire_log}) == 1
+            finally:
+                process.terminate()
+                try: process.wait(timeout=5)
+                except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=5)

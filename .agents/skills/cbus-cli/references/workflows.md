@@ -43,6 +43,24 @@ sequentially. Dynamic-label SAL observations remain diagnostic traffic and do
 not enter the baseline. A passing result does not establish an atomic network
 snapshot, display rendering, power-cycle persistence or dynamic-cache readback.
 
+## Edit one physical PP method through cmqttd
+
+1. Confirm cmqttd owns the intended CNI and its C-Gate endpoint is reachable.
+2. Run `cgate physical-pp inspect SOURCE --method METHOD`; verify the returned
+   service capabilities, physical path, schema parameters, and current values.
+3. For a preview, run `physical-pp apply ... --dry-run --set NAME VALUE`. This
+   still performs physical LOAD and temporary staging but sends no save.
+4. Apply without `--dry-run`. Omit `--destination` for SAVE_TO_SOURCE or name a
+   same-project/network physical destination for SAVE.
+5. Require `saved=true` and `fresh_physical_readback_verified=true`. Preserve
+   failure evidence. Never repeat a command whose save outcome is uncertain.
+6. If persistence matters, perform a separate controlled power-cycle test; the
+   typed workflow deliberately reports that evidence as false.
+
+The admitted methods are direct, paged, ncc, edlt, giu, sgiu, dali, goc,
+gocbyt, and goc2. Routed NCC apply additionally needs cmqttd's routed NVM
+capability. The complete contract is `toolkit-cli/docs/physical-programming.md`.
+
 ## Test a PCI/CNI client locally
 
 Start the simulator in one process:

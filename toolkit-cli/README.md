@@ -305,6 +305,33 @@ syntax and can communicate with hardware. Programming sessions release their
 locks on success and failure. Parameter exports use the CLI's JSON format and
 include database unit identity for compatibility checks.
 
+For guarded physical programming through cmqttd, use the typed `physical-pp`
+family instead of assembling a raw PP batch:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 physical-pp inspect \
+  //TEST/253/p/4 --method paged
+cbus-toolkit cgate --host 127.0.0.1 physical-pp apply \
+  //TEST/253/p/4 --method paged --set ParameterName '0x01 0x02'
+cbus-toolkit cgate --host 127.0.0.1 physical-pp apply \
+  //TEST/253/p/4 --method goc2 --set ParameterName '0x12 0x34' \
+  --destination //TEST/253/p/5
+```
+
+The CLI queries `CMQTT CAPABILITIES`, derives the exact source-network lock,
+and checks the loaded native schema before editing. It supports cmqttd's
+`direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, and
+`goc2` physical methods. Omission of `--destination` uses one
+`PP SAVE_TO_SOURCE`; an explicit same-network destination uses one `PP SAVE`.
+After a confirmed save, a new locked PP session physically reloads the target
+and compares every edited value using its declared schema type. No mutation is
+retried. `--dry-run` stops after temporary staging and same-session readback.
+The JSON leaves power-cycle persistence, the broad hardware matrix, and the
+original Toolkit workflow unverified. Routed NCC apply additionally requires
+cmqttd's separate routed Save-to-NVM capability. See
+[guarded physical programming](docs/physical-programming.md) for failure
+evidence, exact scope, and tests.
+
 `database unit-new` initializes a unit through the native database-loading path.
 This supports large-memory devices that fail C-Gate's `PP NEW` operation. Native
 project archives, restore and rename have acceptance evidence for `.zip`, `.gz`

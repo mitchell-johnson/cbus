@@ -745,6 +745,17 @@ boundary in
 `rust/testdata/fixtures/native_cgate_routed_nvm_commit.json`.
 
 
+The Python client exposes this service boundary as `cgate physical-pp inspect`
+and `cgate physical-pp apply`. It queries `CMQTT CAPABILITIES` before PP LOCK,
+checks the selected `ProgramMethod` from `PP INFO *`, stages and reads back all
+edits, sends one SAVE/SAVE_TO_SOURCE, then opens a distinct PP session and LOADs
+the physical destination again. Schema-aware comparison accepts numeric
+presentation changes such as `0x00` to `0x0`; a schema or value difference is a
+failed verification. No state-changing command is replayed. NCC apply requires
+`physical_pp_routed_nvm_commit=true`; inspect and dry-run do not. See
+`toolkit-cli/docs/physical-programming.md` and keep its live-bridge,
+device-matrix, Toolkit-workflow, and power-cycle exclusions in every report.
+
 Standard application control also uses a database-resolved route through one
 to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`
 ON/OFF/RAMP/STOP forms), Trigger application 202 EVENT/INDICATORKILL, and

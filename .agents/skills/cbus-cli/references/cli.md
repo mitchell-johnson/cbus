@@ -29,6 +29,28 @@ set, and emit `cbus-cni-discovery-v1` JSON. Use a returned `endpoint` only after
 review; discovery does not prove TCP reachability, exclusive ownership,
 identity authenticity, physical C-Bus attachment or absence after zero replies.
 
+### Guarded physical PP programming
+
+Use `cgate physical-pp` against cmqttd when a task needs a physical PP LOAD,
+edit, SAVE/SAVE_TO_SOURCE, and fresh physical verification. Supply exactly one
+schema method and only fully qualified physical units:
+
+```sh
+cbus-toolkit cgate --host HOST physical-pp inspect \
+  //PROJECT/NETWORK/p/UNIT --method edlt
+cbus-toolkit cgate --host HOST physical-pp apply \
+  //PROJECT/NETWORK/p/UNIT --method edlt --set NAME VALUE
+```
+
+The command derives the network lock, refuses method mismatches before PP SET,
+does not retry a mutation, and creates a second PP session after a confirmed
+save. Inspect `physical_programming_evidence` on failure. `saved=false` with
+`save_outcome_uncertain=true` requires independent inspection before any new
+write. Even a successful fresh readback leaves power-cycle persistence and the
+hardware method matrix false. Use `--dry-run` only for a temporary physical
+load/stage/readback; it is not offline. Full syntax and evidence are in
+`toolkit-cli/docs/physical-programming.md`.
+
 ### eDLT Measurement scaling
 
 Use exact signed mantissa/exponent pairs when the stored value is already
