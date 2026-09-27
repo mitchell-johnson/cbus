@@ -7,7 +7,9 @@ The Python implementation and CLI provide the functions listed below within thei
 This page covers every area in [capabilities.json](../src/cbus_toolkit/capabilities.json), including completed functions inside unfinished areas. The [README](../README.md) gives command examples, and each linked feature document describes its accepted inputs and tests. The separate [surface census](toolkit-surface.md) inventories all 3,767 indexed help topics and 209 public C-Gate command blocks. `cgate exec` and `cgate run` can forward the selected service's raw command surface, but forwarding and the 56 mapped typed-wrapper candidates do not establish typed Toolkit workflow, native-server or hardware acceptance; topic and command acceptance in the census remains unassessed.
 
 The [27 September implementation review and path to 100%](../../docs/parity-review-and-roadmap.md)
-maps all 39 rows to concrete remaining work, dependencies and acceptance criteria.
+maps all 39 rows to 59 tracked work items, a first delivery batch, dependencies
+and acceptance gates through 100%. Work item counts are not functionality
+percentages.
 It retains the published ledger baseline and rejects category reclassification
 as evidence of functional completion.
 

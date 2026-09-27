@@ -1,4 +1,4 @@
-# Implementation review and path to full parity
+# Implementation review and execution plan to 100%
 
 Reviewed 27 September 2026 against published commit
 [`84cb7bba48f51236e2efb835fbe01f3eeffa74d8`](https://github.com/mitchell-johnson/cbus/commit/84cb7bba48f51236e2efb835fbe01f3eeffa74d8).
@@ -7,6 +7,18 @@ The review includes an independent GPT-6 Astra review of the published
 implementation and the subsequent unmerged development work.
 It combines source/evidence inspection, issue reconciliation and targeted
 reproductions; it does not claim a new exhaustive execution of every function.
+
+This revision makes **100% functional parity the delivery target**, with 59
+tracked work items in 12 packages, six delivery stages and a concrete first
+batch. These are execution tasks, not a new functionality denominator. Their
+unchecked state means their full exit conditions remain open; it does not
+erase the working subsets described in the implementation status.
+
+Start with the [first delivery batch](#first-delivery-batch), follow the
+[dependency order](#dependency-order-and-delivery-stages), and use the
+[completion contract](#completion-contract-and-progress-accounting) to decide
+when the work is finished. Reaching 90% is an optional progress checkpoint,
+not an exit condition or a reason to stop implementing the remaining scope.
 
 ## Assessment
 
@@ -273,40 +285,109 @@ Likewise, repair deliberate native defects only with documented behavior and
 an explicit compatibility decision. A useful safer alternative is not by
 itself exact parity.
 
+## Completion contract and progress accounting
+
+The target covers **both products together**: Toolkit-owned functions must be
+usable through the Python CLI, and C-Gate-owned functions must run through
+Rust `cmqttd`, alongside working MQTT support. A CLI workflow that still needs
+Schneider C-Gate in production does not close the replacement goal. Original
+Toolkit/C-Gate remain comparison oracles during development. A raw command
+forwarder, mock handler or read-only inspector cannot substitute for an
+unfinished user workflow.
+
+P0 must turn the inventory into a versioned set of functional obligations.
+Do not call the initial map exhaustive until the executable controls, valid
+selectors and native-supported device/firmware domains are reconciled.
+Each newly discovered requirement joins the map before the next progress
+calculation; preserve previous denominators so additions remain visible.
+The target cannot be reduced to the equipment installed in one house.
+
+| Record field | Required content |
+| --- | --- |
+| Identity and origin | Stable obligation ID; Toolkit/C-Gate version; source/control/selector reference; ledger row and work item IDs |
+| User outcome | CLI command or service operation, preconditions, expected successful result, failures and values that must be preserved |
+| Supported domain | Device, firmware, format, locale, state, protection and topology cases; a reasoned partition where native equivalence is established |
+| Implementation | Owning Python module/Rust crate, integrated revision and executable test IDs; incomplete branches stay explicit |
+| Acceptance | Required original, interop, physical, rendering, persistence and recovery cases, each with a status and exact evidence reference |
+| Applicability | Version-specific proof for every not-applicable dimension or native-absent function; hardware unavailable is `blocked`, not not-applicable |
+| Provenance | Source and release artifact hashes, original artifact hashes, exact command, result, skips/failures, and invalidation rules |
+
+These fields are a **schema requirement for P0**, not a claim that a complete
+obligation register or its validator already exists. Preserve the current
+ledger and six-slot matrix as historical evidence when adding this finer map.
+
+Publish three separate ratios after the census is accepted:
+
+- **Implemented:** obligations with complete executable behavior and passing
+  implementation tests / all applicable functional obligations.
+- **Accepted:** obligations whose implementation and every required acceptance
+  dimension pass / all applicable functional obligations. This is the
+  full-functionality completion measure; equal counts are not an effort estimate.
+- **Physical acceptance:** passed required physical cases / all required physical
+  cases. Show the case count, unavailable fixtures and other blockers alongside
+  the ratio. It does not stand in for native or workflow acceptance.
+
+An obligation closes only when its **entire declared case set** passes. A
+pass from one device or one nominal path cannot close the other cases.
+Not-applicable dimensions need reviewed original evidence; an unsupported
+implementation, absent test fixture, skipped test or unknown scope cannot
+satisfy a required dimension. If a code change invalidates an acceptance
+record, reopen that record and the obligations depending on it.
+
+The final completion decision is conjunctive, not an average:
+
+```text
+100% = exhaustive versioned census accepted
+       AND every applicable obligation implemented and accepted
+       AND every required native and physical case passed
+       AND no unresolved replacement-blocking deviation or unknown scope
+       AND final wheel/image acceptance and deployment gates passed
+       AND coverage --require-complete succeeds from the installed artifact
+```
+
+P0/P11 must make the command derive that decision from validated records;
+editing `complete`, `census_complete` or a capability flag is not the mechanism
+for completion. MQTT regression, migration/recovery and package-installation
+gates also remain mandatory even though they are not Toolkit help topics.
+
 ## Execution plan
 
-These are large deliverable packages, not promises that a small patch closes a
-whole product area. Each package must publish code, native vectors where
-applicable, positive and negative tests, current-artifact evidence, remaining
-limits and updated AI operating references.
+Each checkbox has a stable work item ID. Close it only when its complete
+stated scope and the applicable package exit criteria have matching evidence;
+partial implementation remains in its linked obligation records. Each package must
+publish code, native vectors where applicable, positive and negative tests,
+current-artifact evidence, remaining limits and updated AI operating references.
+The 59 boxes organize delivery; checking 53 boxes is not evidence of 90%
+functionality, and the existing 18 implemented ledger rows still need their
+outstanding acceptance work.
 
 ### P0 — Establish the functional denominator and trustworthy progress
 
 **Owns:** Python coverage/census tooling and shared compatibility records.
 **Depends on:** the existing inventories; can start immediately.
 
-- Walk all 3,767 topics and six unindexed HTML files, all 118 dialog candidates,
+- [ ] **P0.01** — Walk all 3,767 topics and six unindexed HTML files, all 118 dialog candidates,
   menus, toolbars and executable controls. Resolve the 179 macro-reference
   leaves and implicit/undocumented branches. Deduplicate documentation while
   keeping genuinely different workflow/profile behavior distinct.
-- Expand 431 C-Gate primary paths into valid selectors, states, target forms,
+- [ ] **P0.02** — Expand 431 C-Gate primary paths into valid selectors, states, target forms,
   authorization levels, response/event envelopes and effects. Reconcile the
   209 documentation blocks with manual/bytecode inventories without adding
   their counts together.
-- Produce an obligation record with independent fields for implementation,
+- [ ] **P0.03** — Produce an obligation record with independent fields for implementation,
   original differential acceptance, physical acceptance and applicability.
   Map every obligation to its broad ledger row; preserve the 39-row history.
-- Define workflow-level completion criteria before changing statuses. Publish
+- [ ] **P0.04** — Define workflow-level completion criteria before changing statuses. Publish
   separate percentages using a fixed, reviewed denominator; report unknown
   scope explicitly and version the denominator when discoveries add work.
-- Derive completion from evidence records and executable tests. Reject missing
+- [ ] **P0.05** — Derive completion from evidence records and executable tests. Reject missing
   IDs, duplicate IDs, unknown states, missing evidence, altered hashes and
   unexplained skips. A file's existence is insufficient acceptance.
 
 **Exit:** every inventoried surface is mapped or has an evidenced disposition;
 all newly discovered executable behavior is recorded; no unassessed surface
-is hidden by a category status. The 90% target becomes measurable only after
-this mapping. Do not set `census_complete=true` merely because all help pages
+is hidden by a category status. Functional progress toward 100% becomes
+measurable only after this mapping. Do not set `census_complete=true` merely because all help pages
 have been counted.
 
 ### P1 — Make original/native and hardware acceptance repeatable
@@ -314,20 +395,20 @@ have been counted.
 **Owns:** research runners, acceptance fixtures and CI/release infrastructure.
 **Depends on:** P0 IDs; infrastructure work runs in parallel with the census.
 
-- Pin Toolkit EXE/DLLs, target C-Gate, JVM, decoded specifications and updater
+- [ ] **P1.01** — Pin Toolkit EXE/DLLs, target C-Gate, JVM, decoded specifications and updater
   artifacts by hash. Use owned disposable native services and isolated Windows
   profiles/projects. Preserve vendor binaries privately.
-- Provision authorized Windows access for new GUI and worker captures. Existing
+- [ ] **P1.02** — Provision authorized Windows access for new GUI and worker captures. Existing
   retained fixtures and host-native acceptance can continue while that
   environment is unavailable.
-- Capture original inputs, raw output, event order, PP bytes and save/close/load
+- [ ] **P1.03** — Capture original inputs, raw output, event order, PP bytes and save/close/load
   outcomes for one complete workflow at a time. Do not join unrelated fragment
   tests into an end-to-end original result.
-- Define hardware fixtures by type, catalogue, firmware, serial hash, topology,
+- [ ] **P1.04** — Define hardware fixtures by type, catalogue, firmware, serial hash, topology,
   protection and instrumented observable effect. Obtain representative relay,
   dimmer, classic/Neo/DLT/eDLT, sensor, thermostat, DALI, wireless and specialist
   application devices, plus USB/bootloader and bridge test setups as required.
-- Build cmqttd in the Python CI job; run both interop suites, isolated-wheel
+- [ ] **P1.05** — Build cmqttd in the Python CI job; run both interop suites, isolated-wheel
   tests, and separate provisioned native/hardware jobs. Record the actual
   executed tests and skips instead of inferring them from a green job.
 
@@ -341,18 +422,18 @@ historical evidence, not acceptance of newer code.
 **Owns:** `cbus-cgate`, project/file adapters, Python native clients.
 **Depends on:** P0 command cases and P1 native oracle.
 
-- Implement Schneider repository/archive/import/export formats and version
+- [ ] **P2.01** — Implement Schneider repository/archive/import/export formats and version
   transitions; prove bidirectional interchange with native C-Gate and Toolkit.
   Preserve unknown metadata, OIDs and references across copy/rename/restore.
-- Capture combined Network/Unit/Application DBSETXML replacement, including
+- [ ] **P2.02** — Capture combined Network/Unit/Application DBSETXML replacement, including
   namespaces, comments, conflicts, omitted fields and lifecycle persistence.
-- Complete CGL metadata/controller semantics and multi-network route behavior;
+- [ ] **P2.03** — Complete CGL metadata/controller semantics and multi-network route behavior;
   distinguish importing a label graph from programming a controller.
-- Implement per-handler access levels and login/logout transitions. Capture
+- [ ] **P2.04** — Implement per-handler access levels and login/logout transitions. Capture
   native certificate admission and its relationship to ACCESS/LOGIN; implement
   identity mapping only if the target native behavior requires it. Cover denied operations before mutation,
   concurrent sessions, reconnect and persisted admission rules.
-- Implement meaningful CONFIG runtime/restart effects and exact native FILE,
+- [ ] **P2.05** — Implement meaningful CONFIG runtime/restart effects and exact native FILE,
   REPOSITORY and server lifecycle behavior within the supported deployment
   model. Document intentional secure deviations explicitly.
 
@@ -367,20 +448,20 @@ physical packages and the final audit also pass.
 **Owns:** `cbus-protocol`, `cbus-transport`, `cbus-cgate`, typed Python PCI/network
 and addressing workflows. **Depends on:** P1; native state contracts from P2.
 
-- Integrate and independently validate routed WRITE alongside RECALL/IDENTIFY.
+- [ ] **P3.01** — Integrate and independently validate routed WRITE alongside RECALL/IDENTIFY.
   Resolve logical topology in typed workflows rather than require operators
   to infer raw Reply Network paths for ordinary commissioning.
-- Cover discovery/setup across interfaces/adapters/subnets and the supported
+- [ ] **P3.02** — Cover discovery/setup across interfaces/adapters/subnets and the supported
   serial, CNI, Wiser, bridge and wireless gateways. Distinguish absence from
   timeout, incomplete scan and unreachable ownership.
-- Complete arbitrary supported duplicate sets, occupied-address displacement
+- [ ] **P3.03** — Complete arbitrary supported duplicate sets, occupied-address displacement
   cycles, selected-serial and database matching, second-interface commissioning,
   and unknown-serial behavior as actually implemented by the native system.
-- Add durable plan/attempt/recovery identities, independent pre/post inventory,
+- [ ] **P3.04** — Add durable plan/attempt/recovery identities, independent pre/post inventory,
   interrupted-process recovery and explicit handling of competing controllers.
   Existing process-local fingerprints must not be presented as global
   cross-process deduplication.
-- Reconcile physical identity/address changes with the database through explicit
+- [ ] **P3.05** — Reconcile physical identity/address changes with the database through explicit
   transactions, preserving serial/OID/reference identity and partial outcomes.
 
 **Exit:** direct and supported one-to-six-bridge workflows pass nominal,
@@ -393,18 +474,18 @@ unchanged. No uncertain move is automatically replayed.
 **Owns:** Rust programming transport/service and Python `physical-pp`.
 **Depends on:** P1 and P3; can build direct-method cases before routed completion.
 
-- Add real CLI → cmqttd → independent PCI integration for all ten methods:
+- [ ] **P4.01** — Add real CLI → cmqttd → independent PCI integration for all ten methods:
   `direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `dali`, `goc`, `gocbyt`, `goc2`.
-- Exercise every applicable `none`/`checksum`/`lock` combination, page and block
+- [ ] **P4.02** — Exercise every applicable `none`/`checksum`/`lock` combination, page and block
   boundary, changed/unchanged range, tags, factory/special field and NVM commit.
   Define supported combinations from original specifications rather than assume
   a full Cartesian product exists.
-- Interrupt each multi-range save before/after send, ACK, readback and NVM
+- [ ] **P4.03** — Interrupt each multi-range save before/after send, ACK, readback and NVM
   commit. Persist sufficient evidence to inspect and recover after a process or
   power failure; verify no stale confirmation completes a new generation.
-- Verify field preservation and real-unit readback, then power-cycle reload.
+- [ ] **P4.04** — Verify field preservation and real-unit readback, then power-cycle reload.
   Compare fresh originals for the same method/profile transaction.
-- Keep MQTT receipt/state fanout and C-Gate events operating throughout long
+- [ ] **P4.05** — Keep MQTT receipt/state fanout and C-Gate events operating throughout long
   programming; verify pacing, queues, reconnect and no fabricated state.
 
 **Exit:** each admitted method/profile/protection/route combination has an
@@ -416,23 +497,23 @@ readback and power-cycle persistence are separate recorded observations.
 **Owns:** Python device modules, schemas and native adapters; Rust transfer from
 P4. **Depends on:** P0 controls, P1 oracle, P4 for physical closure.
 
-- Build a control-to-parameter/action table for all 118 dialog candidates and
+- [ ] **P5.01** — Build a control-to-parameter/action table for all 118 dialog candidates and
   their real firmware variants. Reuse logic only after equivalence is proved.
-- Finish classic/Neo and other key/auxiliary/IR input families: custom macros,
+- [ ] **P5.02** — Finish classic/Neo and other key/auxiliary/IR input families: custom macros,
   timers, indicators, secondary applications, scene bindings and power-up
   behavior beyond the current 18 presets.
-- Finish relay/dimmer/occupancy-controller logic, interlocks and other
+- [ ] **P5.03** — Finish relay/dimmer/occupancy-controller logic, interlocks and other
   controller-owned settings. External logic-code editors remain a separate
   handoff contract where original evidence proves that boundary.
-- Expand the SENPILL subset to the other sensor dialogs: PIR/lux/temperature/
+- [ ] **P5.04** — Expand the SENPILL subset to the other sensor dialogs: PIR/lux/temperature/
   current, calibration/sensitivity, IR, corridor/join, broadcast/maintenance,
   macro and output interactions.
-- Complete thermostat settings, zones, schedules, inherited loading and service
+- [ ] **P5.05** — Complete thermostat settings, zones, schedules, inherited loading and service
   factories, metadata/order behavior and physical timing effects.
-- Complete unit copy/convert/reset and vendor template exchange across every
+- [ ] **P5.06** — Complete unit copy/convert/reset and vendor template exchange across every
   native-supported pair/profile; preserve destination-specific identity and
   unsupported fields. Unicode Description support is file metadata only.
-- Finish wireless learn/join, addressing and gateway mapping.
+- [ ] **P5.07** — Finish wireless learn/join, addressing and gateway mapping.
 
 **Exit:** every admitted dialog control and workflow has positive, invalid,
 boundary, roundtrip and unrelated-value-preservation evidence against the
@@ -444,23 +525,23 @@ not close a device editor.
 **Owns:** Python eDLT/DLT models and cmqttd eDLT backends. **Depends on:** P1,
 P3/P4; runs alongside P5 with separate device ownership.
 
-- Complete original parent initialization, asynchronous loading, control
+- [ ] **P6.01** — Complete original parent initialization, asynchronous loading, control
   bindings, event/validation/save order, interactive Add dialogs, and supported
   Reset/Blank/SceneManager histories. Verify component composition against an
   actual combined original workflow.
-- Resolve registry display/sort preferences and project/DLTP image-dependent
+- [ ] **P6.02** — Resolve registry display/sort preferences and project/DLTP image-dependent
   dynamic-label data. Preserve capacities, reference identities, labels and
   existing per-unit differences during bulk/global programming.
-- Implement the legacy Saturn/Neo/Decorator DLT variants and remaining eDLT
+- [ ] **P6.03** — Implement the legacy Saturn/Neo/Decorator DLT variants and remaining eDLT
   firmware revisions; do not extrapolate KEYGL5 5.5.00 evidence to them.
-- Complete scene learning/capture/broadcast/trigger, timers, MRA/audio, wake,
+- [ ] **P6.04** — Complete scene learning/capture/broadcast/trigger, timers, MRA/audio, wake,
   navigation, buttons, rendering, brightness, reset and recovery on devices.
-- Investigate a native operation for pre-existing dynamic-label cache contents.
+- [ ] **P6.05** — Investigate a native operation for pre-existing dynamic-label cache contents.
   If one exists, implement and physically verify it. If the selected native
   release exposes none, retain version/profile-specific proof of absence and
   document the limitation; observed traffic must never become device-cache
   readback. This determination resolves scope, not a guessed protocol.
-- Validate static/dynamic labels after programming, disconnect, restart and
+- [ ] **P6.06** — Validate static/dynamic labels after programming, disconnect, restart and
   power cycle, with serial-bound before/after identity and external display
   observations where needed.
 
@@ -474,19 +555,19 @@ cannot alone close this package.
 **Owns:** Rust application/DALI transport, C-Gate service, Python typed workflows.
 **Depends on:** P1–P4 and device-specific data from P5/P6.
 
-- Retain the native DALI conditional remediation/allocation contract and typed
+- [ ] **P7.01** — Retain the native DALI conditional remediation/allocation contract and typed
   deployment write order. Implement `COND_QUICK`, `COND_EXTENDED`,
   `RESCAN_FAULT`, and typed `DALI_ONLY`/`FULL` deployment, including combined
   extended/typed state, per-field readback and interrupted reconciliation.
-- Complete remaining resident scene/macro/label functions and their native
+- [ ] **P7.02** — Complete remaining resident scene/macro/label functions and their native
   selector behavior; distinguish native named-scene rejections from supported
   alternative scene-file workflows.
-- Verify controller action and supported readback for AIRCON/HVAC, Audio/MRA,
+- [ ] **P7.03** — Verify controller action and supported readback for AIRCON/HVAC, Audio/MRA,
   Security, Measurement, Media Transport, Telephony, Identify, Short Message,
   Error Reporting and Access Control. Retain wire-only semantics where the
   protocol truly offers no acknowledgement, with independent effect evidence
   for acceptance rather than fabricated online readback.
-- Validate command/event ordering, physical source identity and MQTT coexistence
+- [ ] **P7.04** — Validate command/event ordering, physical source identity and MQTT coexistence
   on direct and bridged routes. Document repaired native encoders explicitly.
 
 **Exit:** every required selector reaches its correct native-equivalent result;
@@ -498,18 +579,18 @@ are demonstrated, not inferred from PCI confirmation.
 **Owns:** Python project/native/CSV/report interfaces and matching Rust database
 behavior. **Depends on:** P0/P1 and P2 where native formats are involved.
 
-- Complete repair behavior across native-supported versions/encodings and
+- [ ] **P8.01** — Complete repair behavior across native-supported versions/encodings and
   failure classes; preserve evidence for native-rejected domains rather than
   invent general corrupt-database recovery.
-- Finish original report-manager enumeration, remaining unit associations,
+- [ ] **P8.02** — Finish original report-manager enumeration, remaining unit associations,
   secondary applications, whole-project export and encoding/column behavior.
   Native XML document order alone does not prove Toolkit manager order.
-- Implement project/database documentation, print/image export and topology
+- [ ] **P8.03** — Implement project/database documentation, print/image export and topology
   navigation with comparable native outputs and reference integrity.
-- Resolve scanner input formats, duplicate/invalid scans and selection/creation
+- [ ] **P8.04** — Resolve scanner input formats, duplicate/invalid scans and selection/creation
   effects. Implement PICED/controller handoff and roundtrip boundaries that
   belong to Toolkit.
-- Finish diagnostics/recovery decisions beyond the calculator and sequential
+- [ ] **P8.05** — Finish diagnostics/recovery decisions beyond the calculator and sequential
   PINGU/CHECKUNIT/CLOCKS draft. Establish actual electrical measurements and
   clock/burden effects where the native workflow depends on them.
 
@@ -522,13 +603,13 @@ exchange remains intact after each workflow.
 **Owns:** Python preferences, Windows workers, metadata/trust/update modules.
 **Depends on:** P1; independent of most physical C-Bus work.
 
-- Fix R2 before integrating the diagnostic bundle.
-- Validate all preference runtime effects and interactive-user registry
+- [ ] **P9.01** — Fix R2 before integrating the diagnostic bundle.
+- [ ] **P9.02** — Validate all preference runtime effects and interactive-user registry
   behavior, including the original lazy wrapper, culture and repeated reads.
-- Bind catalogue, signed metadata, revocation, conditions and package bytes to
+- [ ] **P9.03** — Bind catalogue, signed metadata, revocation, conditions and package bytes to
   one source/version. Implement the actual publisher chain/current trust,
   applicability, version comparison and rollout policy from original evidence.
-- Implement verified download, selection, install/open and restart/result
+- [ ] **P9.04** — Implement verified download, selection, install/open and restart/result
   reporting where those are Toolkit-owned functions. Retain failures and
   recovery; do not infer availability from a valid signature alone.
 
@@ -542,16 +623,16 @@ exact source and policy it depends on.
 **Owns:** Python firmware/USB and Rust WRITE_PATCH/PROGRAMMER/DEPLOY_QUEUE.
 **Depends on:** P1 hardware/artifacts and P4 recovery infrastructure.
 
-- Implement actual vendor container/payload/patch catalogue and authenticity
+- [ ] **P10.01** — Implement actual vendor container/payload/patch catalogue and authenticity
   rules, version compatibility, external-address semantics and NCC paths where
   exposed by the target products. An explicit custom manifest is not native
   `patchset.zip` interoperability.
-- Validate device selection, USB claim/configuration/alternate interfaces,
+- [ ] **P10.02** — Validate device selection, USB claim/configuration/alternate interfaces,
   erase/program/verify, reset/re-enumeration and resulting firmware identity.
-- Exercise wrong image, interrupted erase/write/verify, lost USB, process crash,
+- [ ] **P10.03** — Exercise wrong image, interrupted erase/write/verify, lost USB, process crash,
   power loss, bootloader recovery and explicit resume/retry. Retain failures;
   prove recovery on disposable supported devices before wider use.
-- Verify native programmer/deploy queue lifetime across restart, cancellation,
+- [ ] **P10.04** — Verify native programmer/deploy queue lifetime across restart, cancellation,
   partial outcomes and explicit retry. Preserve native volatility where
   established; retain separate durable recovery evidence for uncertain
   physical operations.
@@ -566,28 +647,29 @@ passes remain development evidence.
 **Owns:** all components; independent reviewer/release verifier.
 **Depends on:** P0–P10; acceptance collection occurs throughout, not only here.
 
-- Close every functional obligation, original differential slot and applicable
+- [ ] **P11.01** — Close every functional obligation, original differential slot and applicable
   hardware case with current-artifact evidence. Resolve every documented
   deviation and every required skip. Re-run affected native evidence after code
   changes instead of carrying old pass flags forward.
-- Run all Rust gates, Python source checks, both interop servers, fresh wheel,
+- [ ] **P11.02** — Run all Rust gates, Python source checks, both interop servers, fresh wheel,
   provisioned native/Windows and hardware matrices. Preserve exact revisions,
   hashes, commands and failure history.
-- Build a clean Docker image; validate project/state migration and rollback,
+- [ ] **P11.03** — Build a clean Docker image; validate project/state migration and rollback,
   MQTT discovery/commands/state, C-Gate interoperability, long PP activity,
   broker/CNI reconnect and event fanout together. Restore test loads to their
   exact original state.
-- Update README, status, per-feature docs, AI skill/reference material and
-  issues #10/#11/#12 from the evidence. Only then set `census_complete=true`,
-  mark all required feature/acceptance rows complete and allow the full-parity
-  predicate and C-Gate capability claim to succeed.
+- [ ] **P11.04** — Update README, status, per-feature docs, AI skill/reference material and
+  issues #10/#11/#12 from validated evidence. Derive `census_complete=true`,
+  completed feature/acceptance rows and the full-parity predicate from those
+  records; expose a full C-Gate capability claim only when its entire scope
+  passes the same release audit.
 
 **Exit:** a reviewer can start from the requirement map and reproduce every
 completion claim from the released wheel/image and retained evidence. No
 required behavior is missing, merely forwarded, simulator-only where hardware
 is required, or hidden behind an exclusion.
 
-## Dependency order and practical milestones
+## Dependency order and delivery stages
 
 ```mermaid
 flowchart TD
@@ -612,28 +694,94 @@ flowchart TD
     P10 --> P11
 ```
 
-| Milestone | Reviewable outcome | Percentage claim allowed |
+Arrows describe closure dependencies, not a requirement to wait before starting
+independent code or evidence collection. P0/P1 are iterative: infrastructure
+and hardware availability inform the case map, while stable obligation IDs
+bind the captured evidence. No stage has an assigned percentage or calendar
+duration; those require the actual requirement map and available test fixtures.
+
+| Stage | Delivery | Gate to close the stage |
 | --- | --- | --- |
-| M0: reviewed baseline | Published main and all drafts accounted for; defects recorded; no status inflation | Existing 18/39 category ratio only |
-| M1: known scope | P0 complete and P1 operational; finite versioned functional map with per-obligation acceptance | Honest implementation/differential/hardware percentages can begin |
-| M2: dependable foundation | P2–P4 complete for every mapped contract; uncertainty and recovery verified | Progress calculated from closed obligations, never command routing alone |
-| M3: functional 90% | At least 90% of the fixed functional obligations fully accepted; residual list names every remaining behavior | 90% only for that declared denominator; critical unfinished release blockers remain explicit |
-| M4: full parity | P5–P10 closed, P11 passes, all acceptance and scope requirements satisfied | 100% for the selected version/profile domain, with evidenced native-absent/external boundaries |
+| S0 — Reliable scope and tests | P0/P1 foundations and the first batch below | Complete versioned requirement map; evidence validator; both Rust interop binaries exercised; installed-wheel gate; each original/hardware fixture available or explicitly blocked |
+| S1 — Replacement foundations | P2–P4: native server/formats, access/runtime configuration, commissioning and programming | Cross-server interchange, exact authorization/state effects, every supported programming method and route, and interrupted-operation recovery accepted |
+| S2 — Complete user workflows | P5/P6/P8: every device editor, DLT/eDLT, projects/reports/navigation and handoffs | All mapped controls, variants and workflows executable through the CLI; independent original and applicable physical acceptance collected as each workflow lands |
+| S3 — Specialist and update closure | P7/P9/P10: DALI/application behavior, preferences/software updates and firmware/USB recovery | All valid selectors, trust/install behavior and vendor firmware paths implemented and accepted, including failure/recovery cases |
+| S4 — Exhaustive release candidate | P11.01/P11.02 on one integrated revision | No open applicable obligation, missing case, required skip, unresolved deviation or stale evidence; every release test passes against the final installed wheel and image |
+| S5 — Deploy and certify 100% | P11.03/P11.04 | Exact image deployed; migration, MQTT/C-Gate coexistence and recovery pass; completion predicate succeeds; documentation, AI references and issue evidence match the release |
 
-Suggested parallel lanes after P0/P1: server/formats/auth; transport and physical
-programming; device editors with eDLT ownership; project/update workflows;
-independent acceptance and hardware operation. Only one lane owns a given
-physical interface or device at a time. Acceptance should follow each completed
-workflow rather than accumulate until the end.
+Useful independent lanes after P0/P1 are server/formats/auth; transport and
+physical programming; device editors with eDLT ownership; project/update
+workflows; and acceptance infrastructure. Only one lane owns a given physical
+interface or device at a time. Within a lane, complete a vertical workflow
+from CLI through service to its outcome and evidence before broadening to the
+next profile. This reduces the accumulation of partially implemented features.
 
-The immediately actionable batch is to harden CI/evidence, fix the update draft,
-split and validate the useful unmerged features, and build the requirement map
-while commissioning the native/hardware harness. Then prioritize access rules,
-all-method programming integration/recovery and native file interoperability:
-these are shared blockers for many later functions. Firmware and hardware
-procurement should start early because their dependencies can outlast coding.
-No credible date for 100% can be set before M1 defines the actual remaining
-work and available hardware.
+A functional 90% reading, once measurable, is a checkpoint inside these stages.
+It does not waive S3–S5 or permit unfinished firmware, device families or native
+interoperability to disappear from the target.
+
+### First delivery batch
+
+This batch produces working code, regression protection and an auditable
+backlog. It should be delivered as independently reviewable changes, with the
+required Python/Rust checks for each affected component. It is planned work;
+this report update does not claim these changes have been implemented.
+
+| Order / tracking | Concrete change and location | Acceptance before merging |
+| --- | --- | --- |
+| B1 — P0.01–P0.04 | Add the obligation register/schema and inventory reconciliation in the Python coverage/census tooling. Map all 39 rows, 431 paths, 118 dialog candidates and the undocumented/crosscutting inventory; identify unresolved source domains explicitly. | No orphaned inventory entry or duplicate obligation; no inferred hardware exclusion; all remaining functions mapped to owners, CLI/service outcomes and required cases. A partial first register must still report the census incomplete. |
+| B2 — P0.05, P11.01 | Make progress validation consume the obligation/evidence records. Extend `tests/test_coverage_require_complete.py` and `tests/test_differential_matrix.py`; keep category counts separately named. | Missing/stale/tampered evidence, required skips, unknown scope and an incomplete child case all prevent completion. Boundary and malformed-input tests cover any retained percentage option; 35/39 must fail a 90% category threshold and 36/39 pass it without implying functional parity. |
+| B3 — P1.05 | Change `.github/workflows/ci.yml` to build `cbus-cgate` **and** `cmqttd` for Python interop, add clean installed-wheel execution, and separate provisioned release gates from offline CI. | `test_rust_cgate_interop.py` and `test_cmqtt_interop.py` demonstrably execute; a missing required binary/provision fails the relevant gate. Wheel tests cannot import `src/`. Release gating preserves the direct completion command's nonzero exit. |
+| B4 — P9.01 | Repair the unmerged `toolkit_update_bundle.py` provenance composer before integrating it. Parse the exact raw inputs and verify all catalogue/metadata/revocation/condition links or retain an explicitly incomplete result. | R2 no longer reproduces; substituted raw bytes, duplicate keys, same-ID/different-version sources, missing links and unrelated reports fail linked completion. Valid linked fixtures still pass; no trust/install claim is added without its own evidence. |
+| B5 — P3.01, P4.01 | Review and integrate routed WRITE from the network draft; expand the real Python → cmqttd → independent PCI interop seam from `direct` to the other nine admitted programming methods. | Exact route/unit/parameter/tag/count correlation, stale/foreign replies, disconnect and ambiguous send tested. All ten methods cross the real service boundary; scripted PCI results remain distinct from physical acceptance. |
+| B6 — P5.04–P5.06, P8.01/P8.02/P8.05 | Split the offline/UI drafts into bounded changes: encoding audit; template Unicode/save; whole-project CSV; thermostat ordering; repair shape validation; SENPILL inspection; network diagnostics. | Each change has its own native scope and negative tests. Add dedicated repair tests, independent project reload after template save and original report/thermostat ordering evidence. Do not include unsupported broad row promotions. |
+| B7 — P1.01–P1.04 | Create a private provision inventory and sanitized receipts for pinned native services, Windows workers, specifications and required devices/routes. Schedule native captures and missing hardware access early. | For every required case, identify the original artifact/fixture, operator prerequisites and runnable harness or explicit blocker. An unavailable fixture stays open; the house's devices do not define the supported product domain. |
+| B8 — P2.01/P2.04/P2.05, P7.01, P10.01 | Start native contract captures for repository exchange, access levels/CONFIG effects, DALI allocation/deployment and vendor firmware formats while B1–B7 land. | Retain valid and invalid original transactions and state transitions sufficient to write independent implementation tests. Unknown packet fields and private formats remain unresolved until observed or source-proven. |
+
+B1 supplies IDs for B2; B7 supplies environments for B8 and native closures.
+B3–B7 can make independent progress while the complete census is reconciled.
+Do not hold useful bounded code until every feature is complete, and do not
+merge incomplete acceptance claims with that code. Finish the batch with an
+integrated test result, the actual closed obligations, remaining case counts
+and blockers; do not predict a completion percentage in advance.
+
+### Blockers to remove early
+
+| Dependency | Work it blocks | Resolution needed for 100% |
+| --- | --- | --- |
+| Incomplete executable requirement map | Any defensible full-functionality percentage | Complete P0, including undocumented selectors, controls and supported profile partitions |
+| Missing original combined-workflow observations | Device editors, eDLT parent forms, ordering, state transitions | Pin artifacts and capture complete native workflows under P1; retained component tests alone do not close them |
+| Proprietary formats and firmware containers | Native replacement and real vendor updates | Implement independently verified adapters/payload handling in P2/P10, with original import/export or device outcomes |
+| Unresolved allocation/deployment contracts | Remaining DALI selectors | Establish native step order, field ownership and receipts before implementing P7 remediation |
+| Unavailable device/firmware/bridge/USB cases | Full physical behavior, rendering, persistence and recovery | Obtain access to the needed fixtures or prove native equivalence that legitimately reduces cases; simulator evidence cannot waive them |
+| Weak evidence linkage or stale results | Every final completion claim | Bind exact inputs, current artifacts and outcomes; rerun affected acceptance after behavior changes |
+
+Software work may proceed while a dependency is unavailable. Record the blocked
+case and continue independent packages; never treat elapsed time, inability to
+obtain a device or a passing offline suite as closure. Date estimates become
+useful after the accepted census and provision inventory establish this path.
+
+### Closure receipt for every work item
+
+Before checking any P0–P11 item, retain one reviewable receipt linking:
+
+1. The exact work item and functional obligation IDs, their native scope, and
+   all required case IDs, including rejected/not-applicable cases with reasons.
+2. Integrated commits, source/module changes, installed artifact hashes and
+   exact test commands/results. Preserve failed attempts and required skips.
+3. Independent expected behavior and the appropriate transport, service,
+   physical effect, persistence and recovery evidence; do not substitute one
+   layer's success for another layer's outcome.
+4. Updated capability/status output, feature documentation, AI references and
+   issue links. No broader claims than the accepted cases permit.
+5. Remaining limitations and evidence invalidation conditions. A work item
+   cannot close with a limitation inside its required native scope; split
+   accepted sub-obligations from the still-open parent instead.
+
+The final P11 receipt must additionally bind the deployed image and installed
+wheel to the accepted revision and show the complete predicate succeeding.
+Keep the house report, credentials, project data and vendor materials private;
+public receipts must still identify the evidence by sanitized IDs and hashes.
 
 ## Complete ledger-to-work-package map
 
@@ -717,6 +865,16 @@ Do not lose these because the 39 category names do not mention them directly.
 The private house operations document, project data, raw labels, credentials
 and vendor specifications remain outside this public report. The dirty
 original checkout and all unmerged development work were preserved.
+
+### Verification of the execution-plan update
+
+This documentation-only update rechecked GitHub main and issues #10/#11/#12,
+validated all 59 unique work item IDs across 12 packages, reconciled the
+39-row map with the unchanged source ledger, and checked local Markdown
+links/anchors and whitespace. It did not implement or close any work item,
+rerun the product acceptance suites, change the running container or operate
+physical devices. The earlier review/test results above retain their stated
+revision and scope.
 
 ## Required release commands and evidence
 

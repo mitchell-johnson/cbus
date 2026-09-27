@@ -148,8 +148,9 @@ cbus-toolkit coverage --require-complete
 This intentionally returns exit status `1` while parity remains unfinished. The [completed functions and outstanding work](toolkit-cli/docs/implementation-status.md) describe supported profiles, test evidence, and remaining work. The [Toolkit CLI guide](toolkit-cli/README.md) contains detailed command examples.
 
 The [implementation review and path to full parity](docs/parity-review-and-roadmap.md)
-audits the current implementation, identifies remaining defects and acceptance
-gaps, and defines the dependency order and exit criteria for reaching 100%.
+audits the current implementation and lays out 59 tracked work items across
+12 packages, a concrete first delivery batch, and the acceptance gates for
+reaching 100% across the Toolkit CLI, cmqttd and MQTT support.
 
 ## MQTT and Home Assistant bridge
 

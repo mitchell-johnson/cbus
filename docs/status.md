@@ -33,8 +33,8 @@ Full Toolkit parity remains unfinished. The ledger records 39 feature areas: 18 
 ## Current limits and outstanding work
 
 The [implementation review and path to full parity](parity-review-and-roadmap.md)
-turns the remaining scope into dependency-ordered work packages with explicit
-acceptance criteria. It also explains why category counts and command routing
+turns the remaining scope into 59 tracked work items across 12 packages, with
+a first delivery batch and explicit acceptance gates through deployment. It also explains why category counts and command routing
 cannot establish a percentage of full Toolkit functionality.
 
 - `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and routes every non-obsolete primary inventory path as listed in [its replacement ledger](cmqttd-cgate.md).

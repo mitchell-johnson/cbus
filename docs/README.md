@@ -4,7 +4,7 @@ The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bri
 
 - [Toolkit CLI guide](../toolkit-cli/README.md): installation, project editing, commissioning, and detailed command examples.
 - [Toolkit feature status](../toolkit-cli/docs/implementation-status.md): completed functions, device profiles, acceptance evidence, and outstanding parity work.
-- [Implementation review and path to 100%](parity-review-and-roadmap.md): independent review, complete ledger map, prioritized work packages and release acceptance criteria.
+- [Implementation review and path to 100%](parity-review-and-roadmap.md): independent review, all 39 ledger areas, 59 tracked work items, the first delivery batch and explicit gates to 100% acceptance.
 
 - [Status](status.md): completed functionality, known limits, and remaining validation.
 - [Architecture](architecture.md): data flow and crate responsibilities.
