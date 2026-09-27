@@ -1,0 +1,160 @@
+{
+  "format": "native-cgate-config-command-show-time-v1",
+  "captured_at": "2026-09-27T23:14:37.571626+00:00",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "2fe1decd61295e8e61e6157447f2cf1e3782eb101cff937e9a8176ef17fe584e",
+    "transport": "fresh owned Java 11 child per startup value; IPv4 loopback command/event listeners; no C-Bus endpoint",
+    "default_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "925dc3468f7a71ab09a90419ea5f63a86b51af621c97c3f49ff26f1a4e9a435f"
+    },
+    "yes_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "7bdfb3c0d43f3098e359d74ca257d5110e98fec4dabe393e07bc9de43de5ac49"
+    },
+    "no_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "64e8a89892870e27e167fdcee6bf6bf35ecb057c506c87a15434c297d0c4fb0e"
+    }
+  },
+  "capture_script_sha256": "cd4b5f279261baadc702eabc7b1188af79c860f25c481fb0ce48d5dcaa460b95",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "method": "The first child changed command.show-time from no to yes, saved global config, and observed timing events before restart. Its saved key was replayed into a fresh owned child. That child changed yes to no without restart. A third fresh child started with no. Event timestamps and owned session numbers are normalized; status lines, event code, command IDs and nonnegative integer millisecond shape are retained.",
+  "cases": {
+    "default_then_set_yes": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[before] 200 OK."
+        ],
+        "time_events": []
+      },
+      {
+        "command": "CONFIG SET command.show-time yes",
+        "response": [
+          "[set-yes] 200 OK."
+        ],
+        "time_events": []
+      },
+      {
+        "command": "CONFIG GET command.show-time",
+        "response": [
+          "[read-yes] 303 command.show-time=yes"
+        ],
+        "time_events": []
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-set] 200 OK."
+        ],
+        "time_events": []
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save] 200 OK."
+        ],
+        "time_events": []
+      }
+    ],
+    "startup_yes_then_set_no": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-restart] 200 OK."
+        ],
+        "time_events": [
+          {
+            "event_code": 767,
+            "command_id": "after-restart",
+            "time_ms": 0,
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "session_id": "cmd<owned-session>"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET no-such-parameter yes",
+        "response": [
+          "[invalid] 408 Operation failed: config parameter not found"
+        ],
+        "time_events": [
+          {
+            "event_code": 767,
+            "command_id": "invalid",
+            "time_ms": 7,
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "session_id": "cmd<owned-session>"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET command.show-time no",
+        "response": [
+          "[set-no] 200 OK."
+        ],
+        "time_events": [
+          {
+            "event_code": 767,
+            "command_id": "set-no",
+            "time_ms": 0,
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "session_id": "cmd<owned-session>"
+          }
+        ]
+      },
+      {
+        "command": "CONFIG GET command.show-time",
+        "response": [
+          "[read-no] 303 command.show-time=no"
+        ],
+        "time_events": [
+          {
+            "event_code": 767,
+            "command_id": "read-no",
+            "time_ms": 0,
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "session_id": "cmd<owned-session>"
+          }
+        ]
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[before-second-restart] 200 OK."
+        ],
+        "time_events": [
+          {
+            "event_code": 767,
+            "command_id": "before-second-restart",
+            "time_ms": 0,
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "session_id": "cmd<owned-session>"
+          }
+        ]
+      }
+    ],
+    "startup_no": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-second-restart] 200 OK."
+        ],
+        "time_events": []
+      }
+    ]
+  }
+}

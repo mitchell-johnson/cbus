@@ -678,6 +678,10 @@ type PendingLightingRamps = HashMap<(u8, u8), (u64, oneshot::Sender<()>)>;
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
 pub struct Service {
     model: Mutex<Server>,
+    /// Native CONFIG marks this global option effective on restart. Capture
+    /// the durable value once, after loading the repository, so CONFIG
+    /// SET/LOAD changes cannot silently reconfigure a running listener.
+    command_show_time: bool,
     pci: RwLock<Arc<PciClient>>,
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
@@ -1757,10 +1761,13 @@ impl Service {
             })?;
         selected.state = NetworkState::Open;
         open_reachable_networks(&mut model, &project, network);
+        let command_show_time = config_parameter("command.show-time")
+            .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
             model: Mutex::new(model),
+            command_show_time,
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
             pci_generation_gate: Mutex::new(()),
@@ -2797,6 +2804,7 @@ impl Service {
             capabilities["config_persistence"] =
                 serde_json::Value::String("cmqttd-json".to_string());
             capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
+            capabilities["config_restart_effects"] = serde_json::json!(["command.show-time"]);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
             capabilities["file_commands"] =
@@ -4159,11 +4167,11 @@ impl Service {
         )
     }
 
-    /// Native-shaped CONFIG catalogue and scoped value workflow backed only
-    /// by cmqttd's atomic JSON repository. Values are durable command data;
-    /// they never reconfigure the running listener, PCI, MQTT, filesystem or
-    /// logger. LOAD/SAVE snapshots therefore stay inside the repository and
-    /// cannot be used as an arbitrary host-file interface.
+    /// Native-shaped CONFIG catalogue and scoped value workflow backed by
+    /// cmqttd's atomic JSON repository. `command.show-time` is sampled when
+    /// the service starts; mutations cannot change the running listener.
+    /// Other values remain command data. LOAD/SAVE snapshots stay inside the
+    /// repository and cannot be used as an arbitrary host-file interface.
     async fn config(
         &self,
         client: &ClientState,
@@ -13135,6 +13143,20 @@ impl Service {
         }
     }
 
+    fn publish_command_time(&self, client: &ClientState, tag: &str, started: Instant) {
+        if !self.command_show_time {
+            return;
+        }
+        let Some(session) = client.command_session else {
+            return;
+        };
+        let timestamp = Local::now().format("%Y%m%d-%H%M%S%.3f");
+        let milliseconds = started.elapsed().as_millis();
+        let _ = self.events.send(format!(
+            "#e# {timestamp} 767 cmd{session} - commandId={tag} time={milliseconds}"
+        ));
+    }
+
     async fn connection(self: &Arc<Self>, stream: TcpStream) -> io::Result<()> {
         let peer = stream.peer_addr()?;
         let local = stream.local_addr()?;
@@ -13221,6 +13243,7 @@ impl Service {
                         if is_cgate_comment(&line) {
                             continue;
                         }
+                        let started = Instant::now();
                         let tagged = line.starts_with('[');
                         if let Some((head, delimiter)) = split_heredoc(&line) {
                             let command = if tagged { head } else { format!("[untagged] {head}") };
@@ -13240,6 +13263,9 @@ impl Service {
                             if !tagged { response.tag.clear(); }
                             tokio::time::timeout(Duration::from_secs(10), writer.write_all(format_response(&response).replace('\n', "\r\n").as_bytes())).await
                                 .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
+                            if !close_after_reply {
+                                self.publish_command_time(&client, &response.tag, started);
+                            }
                             if close_after_reply {
                                 return Ok(());
                             }
@@ -13288,6 +13314,7 @@ impl Service {
                         .unwrap_or_else(|| format_response(&response).replace('\n', "\r\n"));
                         tokio::time::timeout(Duration::from_secs(10), writer.write_all(wire.as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
+                        self.publish_command_time(&client, &response.tag, started);
                         if close && response.status == 204 {
                             // `write_all` only guarantees that the plaintext
                             // was accepted by the AsyncWrite implementation.

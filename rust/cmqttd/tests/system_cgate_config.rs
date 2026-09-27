@@ -208,6 +208,16 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     })
     .await;
     assert!(sys.daemon.is_running());
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "show-time",
+            "CONFIG SET command.show-time yes",
+        )
+        .await,
+        ["200 OK."]
+    );
 
     drop(reader);
     drop(writer);
@@ -236,6 +246,41 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         .await,
         ["303 sync-time=two words"]
     );
+    let (mut event_reader, mut event_writer) = connect(&restarted).await;
+    assert_eq!(
+        command(
+            &mut event_reader,
+            &mut event_writer,
+            "subscribe",
+            "EVENT e7s0c0",
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "timed", "NOOP").await,
+        ["200 OK"]
+    );
+    let timed = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        loop {
+            let mut line = String::new();
+            event_reader.read_line(&mut line).await.unwrap();
+            if line.contains("commandId=timed time=") {
+                break line;
+            }
+        }
+    })
+    .await
+    .expect("restarted listener did not publish CONFIG command timing");
+    let timed = timed.trim_end_matches(['\r', '\n']);
+    let (timestamp, payload) = timed
+        .strip_prefix("#e# ")
+        .unwrap()
+        .split_once(" 767 cmd")
+        .unwrap();
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    let (_, milliseconds) = payload.split_once(" - commandId=timed time=").unwrap();
+    milliseconds.parse::<u128>().unwrap();
     assert!(restarted.daemon.is_running());
     drop(restarted);
     std::fs::remove_file(state).unwrap();

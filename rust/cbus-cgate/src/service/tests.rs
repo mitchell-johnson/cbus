@@ -868,6 +868,19 @@ fn assert_native_broadcast_event(line: &str, session: u64, content: &str) {
     assert_eq!(crate::event_reporting_level(line), Some(3));
 }
 
+fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) {
+    let body = line.strip_prefix("#e# ").expect("event marker");
+    let (timestamp, payload) = body.split_once(" 767 ").expect("native 767 envelope");
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    let millis = payload
+        .strip_prefix(&format!("cmd{session} - commandId={command_id} time="))
+        .expect("native command timing payload");
+    millis
+        .parse::<u128>()
+        .expect("nonnegative millisecond duration");
+    assert_eq!(crate::event_reporting_level(line), Some(7));
+}
+
 #[tokio::test]
 async fn retained_family_help_roots_match_native_fixture_for_all_three_forms() {
     let evidence: serde_json::Value = serde_json::from_str(include_str!(
@@ -15280,6 +15293,10 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
     assert_eq!(document["config_get_parameters"], 122);
     assert_eq!(document["config_persistence"], "cmqttd-json");
     assert_eq!(document["config_runtime_reconfiguration"], false);
+    assert_eq!(
+        document["config_restart_effects"],
+        serde_json::json!(["command.show-time"])
+    );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
 
     let mut byte = [0u8; 1];
@@ -15302,6 +15319,137 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             .final_text,
         "303 sync-time=7"
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_command_show_time_activates_only_after_restart_and_preserves_running_state() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "before", "NOOP").await,
+        ["[before] 200 OK"]
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), events.recv())
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "set",
+            "CONFIG SET command.show-time yes",
+        )
+        .await,
+        ["[set] 200 OK."]
+    );
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "read",
+            "CONFIG GET command.show-time"
+        )
+        .await,
+        ["[read] 303 command.show-time=yes"]
+    );
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "still-off", "NOOP").await,
+        ["[still-off] 200 OK"]
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), events.recv())
+            .await
+            .is_err()
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
+
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "on", "NOOP").await,
+        ["[on] 200 OK"]
+    );
+    let event = tokio::time::timeout(Duration::from_secs(1), events.recv())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_native_command_time_event(&event, 3, "on");
+
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "bad",
+            "CONFIG SET no-such-parameter yes",
+        )
+        .await,
+        ["[bad] 408 Operation failed: config parameter not found"]
+    );
+    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "bad");
+    assert_eq!(
+        command_lines(
+            &mut reader,
+            &mut writer,
+            "unset",
+            "CONFIG SET command.show-time no",
+        )
+        .await,
+        ["[unset] 200 OK."]
+    );
+    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "unset");
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "still-on", "NOOP").await,
+        ["[still-on] 200 OK"]
+    );
+    assert_native_command_time_event(&events.recv().await.unwrap(), 3, "still-on");
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
+
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "off", "NOOP").await,
+        ["[off] 200 OK"]
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), events.recv())
+            .await
+            .is_err()
+    );
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
     std::fs::remove_file(path).unwrap();
 }
 
