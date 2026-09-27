@@ -140,6 +140,44 @@ def test_unproved_conditions_rollout_media_and_url_fail_closed():
     assert inspect(source).status == "unsupported"
 
 
+@pytest.mark.parametrize("url", [
+    "https://bad^host.example/package",
+    "https://host%2f.example/package",
+    "https://host_name.example/package",
+    "https://-host.example/package",
+    "https://host..example/package",
+    "https://999.999.999.999/package",
+    "https://example.com:/package",
+    "https://example.com:abc/package",
+    "https://example.com:00000000000000000000000000/package",
+    "https://example.com:65536/package",
+    "https://example.com/package#",
+])
+def test_ambiguous_https_authority_and_fragment_are_outside_profile(url):
+    source = copy.deepcopy(BASE)
+    node = source["data"][0]
+    node["urls"][node["files"][0]["id"]]["url"] = url
+    result = inspect(source)
+    assert result.status == "unsupported"
+    assert result.selected_uri_present is None
+    assert result.as_dict()["publisher_trust_evaluated"] is False
+    assert result.as_dict()["install_permitted"] is False
+
+
+@pytest.mark.parametrize("url", [
+    "https://download.example.com:443/package",
+    "https://192.0.2.1/package",
+    "https://[2001:db8::1]:443/package",
+])
+def test_explicit_unambiguous_https_authority_remains_admitted(url):
+    source = copy.deepcopy(BASE)
+    node = source["data"][0]
+    node["urls"][node["files"][0]["id"]]["url"] = url
+    result = inspect(source)
+    assert result.status == "passed"
+    assert result.selected_uri_present is True
+
+
 def test_same_id_changed_source_does_not_borrow_a_preflight_result():
     first = inspect()
     source = copy.deepcopy(BASE)

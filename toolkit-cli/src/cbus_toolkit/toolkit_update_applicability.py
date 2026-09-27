@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import ipaddress
+import re
 from urllib.parse import urlsplit
 
 from .toolkit_update_metadata import (
@@ -22,6 +24,7 @@ from .toolkit_update_metadata import (
 
 
 PLATFORMS = ("windows_x86_32", "windows_x86_64")
+_DNS_LABEL = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\Z", re.ASCII)
 
 
 @dataclass(frozen=True)
@@ -85,15 +88,38 @@ class UpdateApplicabilityPreflight:
 def _https_uri_in_profile(value: str) -> bool:
     """Admit only an unambiguous URI subset; never fetch or print it."""
     if (not value or len(value) > 16384
-            or any(ord(char) <= 32 or ord(char) >= 127 or char == "\\" for char in value)):
+            or any(ord(char) <= 32 or ord(char) >= 127 or char == "\\" for char in value)
+            or "#" in value):
         return False
     try:
         parsed = urlsplit(value)
         if (parsed.scheme != "https" or not parsed.hostname
                 or parsed.username is not None or parsed.password is not None
-                or parsed.fragment):
+                or "%" in parsed.netloc):
             return False
-        _ = parsed.port  # Invalid port syntax raises ValueError.
+        authority = parsed.netloc
+        if authority.startswith("["):
+            closing = authority.find("]")
+            if closing < 0:
+                return False
+            ipaddress.IPv6Address(authority[1:closing])
+            port_suffix = authority[closing + 1:]
+            if port_suffix and not port_suffix.startswith(":"):
+                return False
+        else:
+            host, separator, port = authority.partition(":")
+            if (not host or len(host) > 253 or any(not _DNS_LABEL.fullmatch(label)
+                    for label in host.split("."))):
+                return False
+            if all(char in "0123456789." for char in host):
+                ipaddress.IPv4Address(host)
+            port_suffix = separator + port
+        if port_suffix:
+            port = port_suffix[1:]
+            if not port.isascii() or not port.isdecimal() or len(port) > 5 \
+                    or not 1 <= int(port) <= 65535:
+                return False
+        _ = parsed.port  # Keep urllib's independent authority check.
         return True
     except ValueError:
         return False

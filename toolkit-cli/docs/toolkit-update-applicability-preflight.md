@@ -30,7 +30,15 @@ valid file is not a fallback. Within the admitted profile, the supplied UTC
 instant must satisfy `startDate <= at_utc <= expireDate`; selected
 `singleFileExecutable` media and a selected
 nonempty HTTPS URI must pass. An empty selected URL or no selected file is a
-negative result. URL parsing does not open the URL.
+negative result. The URI is admitted only with an ASCII DNS hostname (valid
+labels), a valid dotted IPv4 address, or a bracketed IPv6 address; any explicit
+port must be 1–65535 in at most five decimal digits. Userinfo, percent-encoded
+authority, empty or malformed ports, fragments, controls and backslashes are
+outside this profile. The returned status is `unsupported` for those URI
+forms, even if a different URI parser might accept them. URL parsing does not
+open the URL. The retained native cases use DNS authorities; the IPv4/IPv6 and
+explicit-port syntax cases are local boundary tests, not original-method
+differential acceptance.
 
 The profile requires an empty original condition dictionary and exactly
 `visibilityInPercent=100`. With no conditions, the original applicability
