@@ -1427,7 +1427,7 @@ impl PciClient {
             complete: false,
         };
         let mut replies = self.packets.subscribe();
-        let mut bytes = cbus_protocol::packet::programming_request(
+        let bytes = cbus_protocol::packet::programming_request(
             unit,
             &Cal::Write {
                 parameter: 0xff,
@@ -1435,22 +1435,16 @@ impl PciClient {
             },
         )
         .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
-        let code = self.get_confirmation_code()?;
-        bytes.insert(bytes.len() - 1, code);
 
         let result = tokio::time::timeout(REPLY_TIMEOUT, async {
-            self.init_done
-                .subscribe()
-                .wait_for(|&done| done)
-                .await
-                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI initialization ended"))?;
-            if !self.is_connected() {
-                return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
-            }
-            self.flow
-                .submit(bytes, Priority::Command, ResponseKind::Confirmation(code))
-                .await
-                .map_err(|_| Error::new(ErrorKind::BrokenPipe, "PCI writer ended"))??;
+            let confirmation = self
+                .programming_send_encoded_once(move |code| {
+                    let mut bytes = bytes;
+                    bytes.insert(bytes.len() - 1, code);
+                    Ok(bytes)
+                })
+                .await?;
+            let code = confirmation.code;
             let mut confirmed = None;
             let mut accepted = None;
             loop {
@@ -1505,9 +1499,6 @@ impl PciClient {
             ))
         });
 
-        {
-            self.release_legacy_confirmation(code);
-        }
         let pci_rejected = format!("PCI rejected {operation}");
         let unit_rejected = format!("unit rejected {operation}");
         if result.is_ok()
@@ -6164,6 +6155,34 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("needs reconnect"));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn lost_edlt_label_clear_confirmation_is_quarantined() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let clear = tokio::spawn(async move { worker.clear_edlt_dynamic_labels(5).await });
+        let request = line(&mut remote).await;
+        let code = request[request.len() - 2];
+        reply(&mut remote, 5, &[0x32, 0xff, 0x43]).await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(5),
+            "uncertain eDLT label-clear control was replayed",
+        )
+        .await;
+        tokio::time::advance(Duration::from_secs(6)).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            clear.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert!(pci.programming_fault.load(Ordering::Acquire));
+        let state = pci.state.lock().unwrap();
+        assert!(state.pending.is_empty());
+        assert!(state.codes_in_use.contains_key(&code));
+        assert!(state.quarantined_codes.contains(&code));
+        assert!(!state.active_allocations.contains_key(&code));
     }
 
     #[tokio::test(start_paused = true)]

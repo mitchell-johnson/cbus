@@ -786,18 +786,10 @@ impl PciClient {
         })
     }
 
-    // Legacy one-shot programming has no send-generation receipt. Its old
-    // epilogue must never erase a later generated send's active/quarantined code.
-    fn release_legacy_confirmation(&self, code: u8) {
-        let mut state = self.state.lock().unwrap();
-        if !state.allocation_ids.contains_key(&code) {
-            Self::retire_confirmation(&mut state, code);
-        }
-    }
-
     // --------------------------------------------- confirmation allocator
 
     /// `PCIProtocol._get_confirmation_code`
+    #[cfg(test)]
     fn get_confirmation_code(&self) -> std::io::Result<u8> {
         let mut state = self.state.lock().unwrap();
         let code = Self::confirmation_code_inner(&mut state)?;
