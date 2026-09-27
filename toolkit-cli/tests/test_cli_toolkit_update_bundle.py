@@ -56,6 +56,18 @@ class UpdateDiagnosticBundleCLITests(unittest.TestCase):
         self.assertIsNone(result["updates_available"])
         self.assertFalse(result["install_permitted"])
 
+    def test_mismatched_canonical_digest_receipt_is_public_nonzero_evidence(self):
+        for report, link in (("metadata", "catalogue_metadata"),
+                             ("revocation", "metadata_revocation")):
+            with self.subTest(report=report):
+                values = reports()
+                values[report]["stages"][0]["sha256_hex"] = "0" * 64
+                result = self.run_bundle(values, status=1)
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(result["links"][link]["canonical_digest_receipt_matches"])
+                self.assertIn("digest receipts", result["links"][link]["reason"])
+                self.assertFalse(result["install_permitted"])
+
     def test_report_only_public_bundle_retains_unverified_provenance(self):
         result = self.run_bundle(reports(), status=1, include_sources=False)
         self.assertFalse(result["diagnostics_complete"])

@@ -37,7 +37,10 @@ The v3 bundle reports three links independently:
 - `catalogue_metadata` requires a complete catalogue HTTP body receipt, one
   unambiguous candidate ID, a metadata source receipt for that exact response,
   exact candidate summaries derived from its raw nodes, the selected-node input
-  digest, and canonical metadata reconstructed from the selected raw node. The
+  digest, and canonical metadata reconstructed from the selected raw node. Both
+  canonicalization digest receipts (`sha256_hex` and `sha256_base64`) must match
+  those canonical UTF-8 bytes; missing or contradictory receipts leave the link
+  incomplete. The
   report's fixed catalogue endpoint and request digest must agree with the
   deterministic request for its declared installed version. This checks the
   report's internal request context; it does not attest to an actual network
@@ -52,7 +55,8 @@ The v3 bundle reports three links independently:
   node. Decoded JSON comparisons preserve types: a reported `1` cannot stand
   in for source `true`, even though Python normally compares those values equal.
 - `metadata_revocation` requires the exact revocation source file to match its
-  receipt, the selected revocation data and its reconstructed canonical list.
+  receipt, the selected revocation data and its reconstructed canonical list,
+  including both canonicalization digest receipts.
   The list subject ID must equal the metadata certificate thumbprint. This
   associates the standalone list report with the *reported* metadata
   certificate; the bundle does not re-read the certificate or prove complete or
@@ -105,6 +109,7 @@ condition receipts,
 contradictory HTTP error/count/cleanup receipts, invalid response messages,
 raw revocation response selection, Boolean/number substitutions in candidate
 and context reports, unrelated revocation and condition reports,
-failed stages, and forged trust/availability flags. These are portable offline
+missing or substituted canonicalization digests (including a same-ID other
+version), failed stages, and forged trust/availability flags. These are portable offline
 tests; they do not add native Windows, publisher-trust, network, or installer
 evidence.

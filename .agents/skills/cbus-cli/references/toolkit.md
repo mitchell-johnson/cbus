@@ -41,6 +41,9 @@ establish linked completion. Candidate, condition and context models must match
 their decoded sources with JSON types preserved, including Boolean fields.
 The catalogue report's fixed endpoint and request digest must also agree with
 its declared installed version; this is report consistency, not network attestation.
+Metadata and revocation canonicalization rows must include hexadecimal and base64
+SHA-256 receipts matching their canonical UTF-8 bytes; missing or mismatched
+receipts keep the corresponding link and completion false.
 With report files alone it retains independent
 hashes but exits nonzero and marks the links unverified. Its successful result
 is a source-linkage diagnostic, not publisher trust or update availability.

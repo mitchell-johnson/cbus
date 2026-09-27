@@ -1,5 +1,6 @@
 """Exact-byte provenance and cross-report linkage for update diagnostics."""
 import copy
+import base64
 import hashlib
 import json
 import unittest
@@ -77,6 +78,10 @@ def reports(*, condition=True):
         separators=(",", ":"),
         sort_keys=True,
     )
+    for rows in (metadata_stages, revocation_stages):
+        digest = hashlib.sha256(rows[0]["canonical_utf8"].encode()).digest()
+        rows[0]["sha256_hex"] = digest.hex()
+        rows[0]["sha256_base64"] = base64.b64encode(digest).decode()
     return {
         "catalogue": {
             "complete": True,
@@ -204,6 +209,8 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
             result["source_sha256"],
             {name: hashlib.sha256(value).hexdigest() for name, value in source_documents().items()},
         )
+        self.assertTrue(result["links"]["catalogue_metadata"]["canonical_digest_receipt_matches"])
+        self.assertTrue(result["links"]["metadata_revocation"]["canonical_digest_receipt_matches"])
         self.assertEqual(result["format"], "cbus-toolkit-update-diagnostic-bundle-v3")
         self.assertIsNone(result["updates_available"])
         for field in (
@@ -220,6 +227,40 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
             "certificate_store_accessed",
         ):
             self.assertFalse(result[field])
+
+    def test_canonical_receipts_bind_both_digest_representations(self):
+        for report, link in (("metadata", "catalogue_metadata"),
+                             ("revocation", "metadata_revocation")):
+            for field, value in (("sha256_hex", "0" * 64),
+                                 ("sha256_base64", "unrelated-digest"),
+                                 ("sha256_hex", None),
+                                 ("sha256_base64", None),
+                                 ("sha256_hex", True)):
+                with self.subTest(report=report, field=field, value=value):
+                    values = reports()
+                    row = values[report]["stages"][0]
+                    if value is None:
+                        row.pop(field)
+                    else:
+                        row[field] = value
+                    result = compose(encoded_reports(values)).as_dict()
+                    self.assertFalse(result["diagnostics_complete"])
+                    self.assertFalse(result["links"][link]["linked"])
+                    self.assertFalse(result["links"][link]["canonical_digest_receipt_matches"])
+                    self.assertIn("digest receipts", result["links"][link]["reason"])
+                    self.assertFalse(result["install_permitted"])
+
+    def test_canonical_digest_from_another_same_id_version_does_not_link(self):
+        values = reports()
+        other = copy.deepcopy(CATALOGUE_NODE)
+        other["nodeName"] = "Toolkit other version"
+        digest = hashlib.sha256(canonical_metadata_node(other)).digest()
+        values["metadata"]["stages"][0].update(
+            sha256_hex=digest.hex(), sha256_base64=base64.b64encode(digest).decode())
+        result = compose(encoded_reports(values)).as_dict()
+        self.assertFalse(result["diagnostics_complete"])
+        self.assertTrue(result["links"]["catalogue_metadata"]["canonical_node_matches_source"])
+        self.assertFalse(result["links"]["catalogue_metadata"]["canonical_digest_receipt_matches"])
 
     def test_false_condition_is_a_complete_calculation_not_applicability(self):
         values = reports(condition=False)

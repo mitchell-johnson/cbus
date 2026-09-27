@@ -8,6 +8,7 @@ explicitly unevaluated.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import base64
 import hashlib
 import json
 import re
@@ -149,6 +150,19 @@ def _canonical_object(stage_rows: dict):
     except (UnicodeError, ValueError, json.JSONDecodeError):
         return None
     return value if type(value) is dict else None
+
+
+def _canonical_receipt_matches(stage_rows: dict) -> bool:
+    """Bind both producer digest representations to the retained canonical bytes."""
+    row = stage_rows["canonicalization"]
+    text = row.get("canonical_utf8")
+    if row.get("status") != "passed" or type(text) is not str:
+        return False
+    digest = hashlib.sha256(text.encode("utf-8")).digest()
+    return (
+        row.get("sha256_hex") == digest.hex()
+        and row.get("sha256_base64") == base64.b64encode(digest).decode("ascii")
+    )
 
 
 def _complete_http_receipt(http: dict, source_body: bytes | None) -> bool:
@@ -340,6 +354,7 @@ def compose_update_diagnostic_bundle(
         "metadata.certificate_thumbprint_sha1",
     )
     canonical_node = _canonical_object(metadata_rows)
+    metadata_canonical_receipt_matches = _canonical_receipt_matches(metadata_rows)
     metadata_source = metadata.get("source")
     metadata_source_receipt = False
     metadata_source_sha256 = None
@@ -415,6 +430,7 @@ def compose_update_diagnostic_bundle(
         and catalogue_source_matches
         and selected_node_matches_source
         and canonical_node_matches_source
+        and metadata_canonical_receipt_matches
     )
     catalogue_metadata_reason = (
         "raw catalogue response was not supplied"
@@ -433,6 +449,8 @@ def compose_update_diagnostic_bundle(
         if not selected_node_matches_source
         else "metadata canonical node does not match the selected catalogue source"
         if not canonical_node_matches_source
+        else "metadata canonical digest receipts do not match the retained canonical bytes"
+        if not metadata_canonical_receipt_matches
         else "metadata canonical node identity does not match the selected candidate"
     )
 
@@ -549,6 +567,7 @@ def compose_update_diagnostic_bundle(
     subject_matches = False
     claimed_lists_match_canonical = False
     canonical_revocation = _canonical_object(revocation_rows)
+    revocation_canonical_receipt_matches = _canonical_receipt_matches(revocation_rows)
     if type(claimed_lists) is dict:
         try:
             revocation_subject = _thumbprint(
@@ -592,6 +611,7 @@ def compose_update_diagnostic_bundle(
         revocation_receipt
         and revocation_source_matches
         and canonical_revocation_matches_source
+        and revocation_canonical_receipt_matches
         and claimed_lists_match_canonical
         and subject_matches
     )
@@ -602,6 +622,8 @@ def compose_update_diagnostic_bundle(
         if not revocation_receipt
         else "revocation report does not match its exact source bytes"
         if not revocation_source_matches or not canonical_revocation_matches_source
+        else "revocation canonical digest receipts do not match the retained canonical bytes"
+        if not revocation_canonical_receipt_matches
         else "revocation claimed lists do not match the evaluated canonical input"
         if not claimed_lists_match_canonical
         else "revocation subject does not match the metadata certificate"
@@ -618,6 +640,7 @@ def compose_update_diagnostic_bundle(
             catalogue_source_matches=catalogue_source_matches,
             selected_node_matches_source=selected_node_matches_source,
             canonical_node_matches_source=canonical_node_matches_source,
+            canonical_digest_receipt_matches=metadata_canonical_receipt_matches,
         ),
         "metadata_conditions": _link(
             metadata_conditions_linked,
@@ -635,6 +658,7 @@ def compose_update_diagnostic_bundle(
             subject_identifier_matches=subject_matches,
             revocation_source_matches=revocation_source_matches,
             canonical_revocation_matches_source=canonical_revocation_matches_source,
+            canonical_digest_receipt_matches=revocation_canonical_receipt_matches,
             complete_revocation_status_evaluated=False,
         ),
     }
