@@ -28,8 +28,8 @@ verified static configuration from transient network-wide label observations
 and unread device caches; see [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
 
 The 27 September 2026 source-tree and isolated installed-wheel gates each
-passed **2,445 tests**, skipped **265 provisioning-gated tests**, and passed
-**18,584 subtests**. The interoperability gate passed **16 tests** and skipped
+passed **2,477 tests**, skipped **265 provisioning-gated tests**, and passed
+**19,488 subtests**. The interoperability gate passed **17 tests** and skipped
 one test requiring external vendor unit specifications. These results have no
 failures, but the skips and unfinished ledger still prevent a completion claim.
 
@@ -1954,8 +1954,8 @@ make check-wheel
 ```
 
 On 27 September 2026, `make check` and the isolated `make check-wheel` each
-completed with **2,445 passed, 265 skipped and 18,584 passing subtests**.
-`make check-interop` completed with **16 passed and one skipped** because the
+completed with **2,477 passed, 265 skipped and 19,488 passing subtests**.
+`make check-interop` completed with **17 passed and one skipped** because the
 external vendor unit-specification tree was not provisioned. The skipped tests
 cover explicit vendor, Windows, native-service or hardware provisions; an
 offline wheel pass is not zero-skip native or hardware acceptance.

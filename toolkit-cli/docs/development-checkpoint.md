@@ -21,11 +21,11 @@ make check-wheel
 ```
 
 `make check` and a clean, isolated `make check-wheel` each completed with
-**2,445 passed, 265 skipped and 18,584 passing subtests**, with no failures or
+**2,477 passed, 265 skipped and 19,488 passing subtests**, with no failures or
 errors. The wheel gate installed all supported extras from the built artifact
 without importing the source package. The skips are explicit provisioning
 gates for vendor software or specifications, Windows, native services and
-hardware. `make check-interop` completed with **16 passed and one skipped**
+hardware. `make check-interop` completed with **17 passed and one skipped**
 because the external vendor unit-specification tree was not provisioned.
 
 This is the current source-tree and offline installed-wheel checkpoint. It is

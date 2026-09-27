@@ -8,15 +8,14 @@ This page covers every area in [capabilities.json](../src/cbus_toolkit/capabilit
 
 ## Test checkpoints
 
-The 27 September 2026 Python 3.13 source-tree `make check` for the current tree
-passed **2,437 tests**, skipped **281 provisioning-gated tests** and passed
-**18,594 subtests**, with no failures or errors. `make check-interop` passed
-**16 tests** and skipped one test because the external vendor unit-specification
-tree was not provisioned. The latest isolated installed-wheel gate predates the
-typed network-learning/locate addition; it passed **2,445 tests**, skipped
-**265 provisioning-gated tests** and passed **18,584 subtests** after installing
-every supported extra without importing the source package. These results do
-not replace zero-skip native C-Gate or physical-hardware acceptance.
+The 27 September 2026 Python 3.13 source-tree `make check` and clean, isolated
+installed-wheel gate for the current tree each passed **2,477 tests**, skipped
+**265 provisioning-gated tests** and passed **19,488 subtests**, with no
+failures or errors. The wheel installed every supported extra without
+importing the source package. `make check-interop` passed **17 tests** and
+skipped one test because the external vendor unit-specification tree was not
+provisioned. These results do not replace zero-skip native C-Gate or
+physical-hardware acceptance.
 
 The last complete audited installed wheel is the 15 September 2026 snapshot: **1,725 tests on Python 3.13.14 and 1,725 on Python 3.10.20**, with no failures, errors or skips and all 14 required native gates enabled. Its exact sources, wheel and reports are recorded in [test-acceptance.json](test-acceptance.json). It predates later changes; Python 3.13 is now the only supported runtime.
 
@@ -180,8 +179,8 @@ Disposable-server access: the owned C-Gate configuration defaults to `Program`, 
 Reproducible-verification recipe for the current source tree: install the
 `test,research,serial,usb` extras into `toolkit-cli/.venv`, then run `make check`,
 `make check-interop` and `make check-wheel` from `toolkit-cli/`. The source and
-isolated-wheel results are each **2,445 passed, 265 provisioning-gated skips and
-18,584 passing subtests**, followed by **16 interoperability tests passed and
+isolated-wheel results are each **2,477 passed, 265 provisioning-gated skips and
+19,488 passing subtests**, followed by **17 interoperability tests passed and
 one external vendor-unit-specification test skipped**. Provision the vendor
 software, Windows workers, native service
 and physical endpoints called out by each gate before interpreting a skip as
