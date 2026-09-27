@@ -1,0 +1,72 @@
+{
+  "format": "cbus-toolkit-csv-project-export-followup-v1",
+  "work_item": "P8.02",
+  "date": "2026-09-28",
+  "source_revision": "f73b1a55b4c74d9638a471365742c7b677e5fbec",
+  "change_revision": "44d1201",
+  "prior_receipt": "csv-project-export-review.json",
+  "prior_receipt_status": "Historical P8 checkpoint with the pre-fix 121-test selection, earlier source hashes, wheel and Rust binary hashes; this follow-up does not rewrite that result.",
+  "scope": "Read-only live CSV accepts a single bounded whole-project DBGETXML wire line larger than the ordinary 1 MiB C-Gate client line ceiling. The Area mutation path retains its previous client limit.",
+  "limits_in_bytes": {
+    "xml_capture": 8388608,
+    "read_only_csv_cgate_line": 8389632
+  },
+  "source_sha256": {
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_cli.py": "69c589ec5349b2ec3e642e876d5126324ee0b81513f91d760fc68b820bcecef1",
+    "toolkit-cli/src/cbus_toolkit/toolkit_database_csv_native.py": "e206c472d02acbe37e3fbfc3afaf69df85125d67f2a240978304f2e83bcc12d9",
+    "toolkit-cli/tests/test_toolkit_database_csv_project_export.py": "e3ee63fb28b6e67e3203b3a5455907965c23ad05e0c0faa54f1928a59a05c641",
+    "toolkit-cli/tests/test_toolkit_database_csv_project_interop.py": "412a1a46ac948ec83cee97ed1859a7a7bb8815a5b7cedcc247eef93cce3797d8",
+    "toolkit-cli/docs/toolkit-database-csv.md": "d34e95c02954c2b40644fa55546a688e2e20e67b0abe40aa8fc52cff430901b9"
+  },
+  "wheel": {
+    "filename": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "sha256": "02e836b0c6e0b9e24c9a29e893f1cf1ea54c3bc20f382d3742eeabf0d910ec6c",
+    "python": "3.13.14",
+    "installation": "Fresh isolated virtual environment with test,research,serial,usb extras; cbus_toolkit import resolved under its site-packages, outside the source tree.",
+    "packaged_production_source_entries_compared": 212,
+    "packaged_production_source_entries_byte_equal": 212
+  },
+  "binary_snapshots_used_for_focused_tests": {
+    "cgate-mock_sha256": "18b2770211d1111df8ed4670715777f1290341a610331fa6f90c392588722722",
+    "cmqttd_sha256": "addba11494a9ac40ad35e5fd197c015929a8c43fa143f29d15e5856346d5bf23",
+    "provenance_limit": "Copied from the existing shared debug target before the focused tests. These hashes identify only the captured test executables; they do not attest a final integrated Rust build or native C-Gate parity. The prior receipt records its earlier P8 build separately."
+  },
+  "focused_selection": [
+    "test_toolkit_database_csv_project_export.py",
+    "test_toolkit_database_csv_project_interop.py",
+    "test_toolkit_database_csv_selection_export.py",
+    "test_toolkit_database_csv_native.py",
+    "test_cli_toolkit_database_csv.py",
+    "test_toolkit_database_csv_projection.py",
+    "test_toolkit_database_csv_selection.py",
+    "test_toolkit_database_csv.py",
+    "test_toolkit_database_csv_area.py",
+    "test_windows_csv_selection.py",
+    "test_windows_csv_encoding.py"
+  ],
+  "checks": {
+    "source": {
+      "command": "PYTHONPATH=src:research:. python -m pytest <focused_selection> -q -p no:cacheprovider -ra, with the captured Rust binary paths configured",
+      "exit_code": 0,
+      "tests_passed": 122,
+      "subtests_passed": 194,
+      "tests_skipped": 3
+    },
+    "installed_wheel": {
+      "command": "From outside the source tree, PYTHONPATH=<project>:<project>/tests venv/bin/python -m pytest <focused_selection> -q -p no:cacheprovider -ra, with the captured Rust binary paths configured",
+      "exit_code": 0,
+      "tests_passed": 122,
+      "subtests_passed": 194,
+      "tests_skipped": 3
+    },
+    "large_line_case": "test_live_project_accepts_one_large_bounded_xml_wire_line passed in both selections; its scripted peer sends one valid project XML response larger than 1 MiB and below the 8 MiB capture bound.",
+    "windows_skips": "One CSV selection and two native-encoding tests require explicit Windows host provisioning."
+  },
+  "limits": [
+    "This is a focused source and installed-wheel check, not a full source, wheel, workspace or release suite.",
+    "The large-line regression uses a scripted loopback peer; the Rust interop cases use smaller synthetic project snapshots.",
+    "No fresh original Toolkit report manager, original C-Gate process, Windows native acceptance or physical network was exercised in this follow-up.",
+    "Issue #56 remains open for original manager enumeration, remaining profiles and full native report acceptance."
+  ],
+  "invalidation": "The hashes bind this follow-up to the tested source, wheel and transient binary snapshots only. Later Rust changes require separate focused interoperability validation; no final integrated-build or full parity claim follows from this receipt."
+}
