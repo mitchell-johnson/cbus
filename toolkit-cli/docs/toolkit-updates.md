@@ -95,6 +95,14 @@ installation permission.
 selected node and file. It remains offline and does not add publisher or
 installation trust.
 
+`update-applicability-preflight` reads one selected raw-catalogue node under
+an explicit UTC instant and Windows x86/x64 platform. Its
+[finite offline profile](toolkit-update-applicability-preflight.md) covers the
+original empty-condition, 100%-visibility date/file/media branch, including
+first matching file selection without fallback. A passing supplied-context
+preflight does not establish original metadata validation, current publisher
+trust, machine applicability, rollout, version ordering or install permission.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

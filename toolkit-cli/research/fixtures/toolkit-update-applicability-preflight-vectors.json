@@ -1,0 +1,199 @@
+{
+  "format": "cbus-sesu-3.0.7-applicability-preflight-original-v1",
+  "scope": "20 original method cases matching under Mono and native Windows 11; no full updater workflow, trust, registry, rollout, or Windows policy acceptance",
+  "sesubrick_dad_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+  "original_method_rva": "0x4f74",
+  "file_selection_method_rva": "0x3fc8",
+  "original_probe_stdout_sha256": "93d2c2aba80302e557c7aa73b4442b30e67a31736b5a478b7a787998617bf010",
+  "native_windows_probe_x86_sha256": "892395fbb2d311827acaa39f7c6aa7c1c02b63d88657a2fda1289e8ac32c876d",
+  "native_windows_probe_stdout_utf16_sha256": "91f4f9a7438f5959c1e7f1204b0ebb77be49d9e435e97840c8a4983bd2baf950",
+  "native_windows_outcomes_match_mono": true,
+  "native_windows_context": "Windows 11 disposable UTM VM; Host Only with zero IPv4 default routes; original installed x86 assembly SHA-256 matched; probe used injected captured response and no live updater HTTP request; VM stopped and original Shared Network/MAC restored",
+  "captured_catalogue_sha256": "4444edb826360c2909b740c6152bc2d9f76f6ce471400cda1bbaf49dfbe97ad9",
+  "platform_values": {
+    "0": "windows_x86_32",
+    "1": "windows_x86_64"
+  },
+  "cases": [
+    {
+      "node_index": 0,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 1,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 1,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 2,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 2,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 3,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 3,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 4,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 4,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 5,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 5,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 6,
+      "platform_value": 0,
+      "variant": "captured",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 6,
+      "platform_value": 1,
+      "variant": "captured",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "future-start",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "expired",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "missing-url",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "unsupported-media",
+      "accepted": false,
+      "error": null,
+      "native_windows_accepted": false,
+      "native_windows_error": null
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "null-conditions",
+      "accepted": null,
+      "error": "System.NullReferenceException",
+      "native_windows_accepted": null,
+      "native_windows_error": "System.NullReferenceException"
+    },
+    {
+      "node_index": 0,
+      "platform_value": 1,
+      "variant": "empty-map-false-expression",
+      "accepted": true,
+      "error": null,
+      "native_windows_accepted": true,
+      "native_windows_error": null
+    }
+  ]
+}
