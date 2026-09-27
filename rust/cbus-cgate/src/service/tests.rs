@@ -14438,6 +14438,29 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
     .await;
     assert!(readback.iter().any(|line| line.contains("TCP eDLT")));
 
+    writer
+        .write_all(b"[xml] DBGETXML //HARNESS/254/p/5\r\n")
+        .await
+        .unwrap();
+    let mut xml_rows = Vec::new();
+    for _ in 0..4 {
+        let mut row = Vec::new();
+        assert_ne!(reader.read_until(b'\n', &mut row).await.unwrap(), 0);
+        xml_rows.push(row);
+    }
+    assert_eq!(xml_rows[0], b"[xml] 343-Begin XML snippet\r\n");
+    assert_eq!(
+        xml_rows[1],
+        b"[xml] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+    );
+    assert!(xml_rows[2].starts_with(b"[xml] 347-<Unit>"));
+    assert!(xml_rows[2].ends_with(b"</Unit>\r\n"));
+    assert_eq!(xml_rows[3], b"[xml] 344 End XML snippet\r\n");
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "afterxml", "NOOP").await,
+        ["[afterxml] 200 OK"]
+    );
+
     let mut oversized = Vec::with_capacity(MAX_LINE + 64);
     oversized.extend_from_slice(b"[large] DBSETXML //HARNESS/254/p/5/TagName << END\r\n");
     oversized.extend(std::iter::repeat_n(b'x', MAX_LINE + 1));

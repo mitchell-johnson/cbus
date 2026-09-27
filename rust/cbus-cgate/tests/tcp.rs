@@ -120,7 +120,12 @@ impl Session {
         let status = loop {
             let mut line = String::new();
             self.reader.read_line(&mut line).unwrap();
-            assert!(line.ends_with("\r\n"), "native C-Gate reply delimiter");
+            let xml_declaration = line.contains(" 347-<?xml version=");
+            assert_eq!(
+                line.ends_with("\r\n"),
+                !xml_declaration,
+                "native C-Gate reply delimiter: {line:?}"
+            );
             let line = line.trim_end_matches(['\r', '\n']).to_string();
             // Event shape, never tag: reuse the library matcher so the
             // timestamped and overflow forms stay covered here too.
@@ -583,7 +588,7 @@ fn tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback() {
         ["301 OID=50000000-0000-4000-8000-000000000001"]
     );
     let readback = session.command("DBGETXML //XMLT/254/58");
-    assert_eq!(readback.status, 200);
+    assert_eq!(readback.status, 344);
     assert!(readback
         .lines
         .iter()
@@ -592,6 +597,158 @@ fn tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback() {
         session.command(&format!("DBGET !{old_oid}/OID")).status,
         401
     );
+}
+
+#[test]
+fn native_dbgetxml_wire_matches_original_unit_and_network_capture() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        fixture["jar_sha256"],
+        "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+    );
+    for tag in ["807", "809"] {
+        let case = fixture["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["tag"] == tag)
+            .unwrap();
+        let rows = case["response_lines"].as_array().unwrap();
+        assert_eq!(rows.len(), 4);
+        let document = rows[2]
+            .as_str()
+            .unwrap()
+            .trim_end_matches("\r\n")
+            .strip_prefix(&format!("[{tag}] 347-"))
+            .unwrap();
+        let response = cbus_cgate::Response {
+            tag: tag.to_string(),
+            status: 200,
+            lines: vec![format!("347-{document}")],
+            final_text: "200 OK".to_string(),
+        };
+        let expected = rows
+            .iter()
+            .map(|row| row.as_str().unwrap())
+            .collect::<String>();
+        assert_eq!(
+            cbus_cgate::format_native_dbgetxml_wire_response(&response).as_deref(),
+            Some(expected.as_str()),
+            "native {tag} XML envelope"
+        );
+    }
+}
+
+#[test]
+fn native_dbgetxml_wire_matches_fresh_address_oid_and_pipeline_capture() {
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbgetxml_wire.json"
+    ))
+    .unwrap();
+    assert_eq!(fixture["format"], "cgate-dbgetxml-native-wire-v1");
+    assert_eq!(
+        fixture["native_fixture_sha256"],
+        "c819303fbe8d38d552fa3aa9b80fbe60ca1161ae731f1aeb830323f0e7e6863a"
+    );
+    for tag in ["906", "908", "909", "910", "911", "913"] {
+        let case = fixture["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["tag"] == tag)
+            .unwrap();
+        let rows = case["response_lines"].as_array().unwrap();
+        assert_eq!(rows.len(), 4, "{tag}");
+        let document = rows[2]
+            .as_str()
+            .unwrap()
+            .trim_end_matches("\r\n")
+            .strip_prefix(&format!("[{tag}] 347-"))
+            .unwrap();
+        let response = cbus_cgate::Response {
+            tag: tag.to_string(),
+            status: 200,
+            lines: vec![format!("347-{document}")],
+            final_text: "200 OK".to_string(),
+        };
+        let expected = rows
+            .iter()
+            .map(|row| row.as_str().unwrap())
+            .collect::<String>();
+        assert_eq!(
+            cbus_cgate::format_native_dbgetxml_wire_response(&response).as_deref(),
+            Some(expected.as_str()),
+            "native {tag} XML envelope"
+        );
+    }
+    let cases = fixture["cases"].as_array().unwrap();
+    assert_eq!(
+        cases.iter().find(|case| case["tag"] == "912").unwrap()["response_lines"][0],
+        "[912] 401 Bad object or device ID: Element 21 not found.\r\n"
+    );
+    assert_eq!(
+        cases.iter().find(|case| case["tag"] == "914").unwrap()["response_lines"][0],
+        "[914] 200 OK.\r\n"
+    );
+}
+
+#[test]
+fn tcp_dbgetxml_uses_native_mixed_delimiters_and_closing_status() {
+    let mock = Mock::spawn();
+    let mut session = mock.connect();
+    assert!(session.greeting().starts_with("201 "));
+    assert_eq!(session.command("PROJECT NEW XUNIT").status, 200);
+    assert_eq!(
+        session
+            .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let before = session.command("DBGETXML //XUNIT/254");
+    assert_eq!(before.status, 344);
+    let network = before
+        .lines
+        .iter()
+        .find_map(|row| row.strip_prefix("347-<Network>"))
+        .map(|row| format!("<Network>{row}"))
+        .expect("network document");
+    let unit = concat!(
+        "<Unit><OID>11111111-1111-4111-8111-111111111111</OID>",
+        "<TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType>",
+        "<UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+    );
+    let document = network.replace("</Network>", &format!("{unit}</Network>\n"));
+    let replaced = session.document("DBSETXML //XUNIT/254", "ENDUNIT", &document);
+    assert_eq!(replaced.status, 301, "{:?}", replaced.lines);
+
+    session
+        .writer
+        .write_all(b"[809] DBGETXML //XUNIT/254/p/20\r\n")
+        .unwrap();
+    let mut wire = Vec::new();
+    for _ in 0..4 {
+        session.reader.read_until(b'\n', &mut wire).unwrap();
+    }
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"
+    ))
+    .unwrap();
+    let expected = fixture["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["tag"] == "809")
+        .unwrap()["response_lines"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| row.as_str().unwrap())
+        .collect::<String>();
+    assert_eq!(wire, expected.as_bytes());
+    assert_eq!(session.command("NOOP").lines, ["200 OK"]);
 }
 
 #[test]

@@ -1,0 +1,159 @@
+{
+  "format": "native-cgate-dbgetxml-framing-vm-v1",
+  "captured_utc": "2026-09-27T19:18:41.7911125Z",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "37048fe85e763554aa104d6711531b185271905a81ff7fb055978acf8eaea5f7",
+  "service_pid": 2488,
+  "service_listeners": [
+    "127.0.0.1:24100",
+    "127.0.0.1:24101",
+    "127.0.0.1:24102",
+    "127.0.0.1:24103",
+    "127.0.0.1:24110",
+    "127.0.0.1:24111"
+  ],
+  "default_route_count": 0,
+  "project_oid": "2c07bb90-9cd6-103f-b815-81a07bae9f0e",
+  "network_oid": "2c5602a0-9cd6-103f-b816-81a07bae9f0e",
+  "interface_oid": "33333333-3333-4333-8333-333333333333",
+  "capture_script_sha256": "0b746a87e54be363f771d31a38b94e0ac05e794c3dce4415a63c469dd6b87c7a",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "private_project_readback_sha256": "f99d9f9d67289abb22d5e09db5a44ca0155687dfa4de82a6ea64131400eef981",
+  "cases": [
+    {
+      "tag": "900",
+      "command": "PROJECT NEW XFRAME",
+      "request": "[900] PROJECT NEW XFRAME\r\n",
+      "response_lines": [
+        "[900] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": "901",
+      "command": "PROJECT USE XFRAME",
+      "request": "[901] PROJECT USE XFRAME\r\n",
+      "response_lines": [
+        "[901] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": "903",
+      "command": "NET CREATE 254 cni 127.0.0.1:1",
+      "request": "[903] NET CREATE 254 cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[903] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": "904",
+      "command": "DBADD !2c07bb90-9cd6-103f-b815-81a07bae9f0e Network",
+      "request": "[904] DBADD !2c07bb90-9cd6-103f-b815-81a07bae9f0e Network\r\n",
+      "response_lines": [
+        "[904] 301 OID=2c5602a0-9cd6-103f-b816-81a07bae9f0e\r\n"
+      ]
+    },
+    {
+      "tag": "905",
+      "command": "DBSETXML !2c5602a0-9cd6-103f-b816-81a07bae9f0e << END905",
+      "request": "[905] DBSETXML !2c5602a0-9cd6-103f-b816-81a07bae9f0e << END905\r\n<Network><OID>2c5602a0-9cd6-103f-b816-81a07bae9f0e</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\nEND905\r\n",
+      "response_lines": [
+        "[905] 301 OID=2c5602a0-9cd6-103f-b816-81a07bae9f0e\r\n"
+      ]
+    },
+    {
+      "tag": "906",
+      "command": "DBGETXML //XFRAME/254",
+      "request": "[906] DBGETXML //XFRAME/254\r\n",
+      "response_lines": [
+        "[906] 343-Begin XML snippet\r\n",
+        "[906] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[906] 347-<Network><OID>2c5602a0-9cd6-103f-b816-81a07bae9f0e</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[906] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "907",
+      "command": "DBSETXML //XFRAME/254 << END907",
+      "request": "[907] DBSETXML //XFRAME/254 << END907\r\n<Network><OID>2c5602a0-9cd6-103f-b816-81a07bae9f0e</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND907\r\n",
+      "response_lines": [
+        "[907] 301 OID=2c5602a0-9cd6-103f-b816-81a07bae9f0e\r\n"
+      ]
+    },
+    {
+      "tag": "908",
+      "command": "DBGETXML //XFRAME/254",
+      "request": "[908] DBGETXML //XFRAME/254\r\n",
+      "response_lines": [
+        "[908] 343-Begin XML snippet\r\n",
+        "[908] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[908] 347-<Network><OID>2c5602a0-9cd6-103f-b816-81a07bae9f0e</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[908] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "909",
+      "command": "DBGETXML //XFRAME/254/p/20",
+      "request": "[909] DBGETXML //XFRAME/254/p/20\r\n",
+      "response_lines": [
+        "[909] 343-Begin XML snippet\r\n",
+        "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[909] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[909] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "910",
+      "command": "DBGETXML //XFRAME/254/56",
+      "request": "[910] DBGETXML //XFRAME/254/56\r\n",
+      "response_lines": [
+        "[910] 343-Begin XML snippet\r\n",
+        "[910] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[910] 347-<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[910] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "911",
+      "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+      "request": "[911] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+      "response_lines": [
+        "[911] 343-Begin XML snippet\r\n",
+        "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[911] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[911] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "912",
+      "command": "DBGETXML //XFRAME/254/p/21",
+      "request": "[912] DBGETXML //XFRAME/254/p/21\r\n",
+      "response_lines": [
+        "[912] 401 Bad object or device ID: Element 21 not found.\r\n"
+      ]
+    },
+    {
+      "tag": "913",
+      "command": "DBGETXML //XFRAME/254/p/20",
+      "request": "[913] DBGETXML //XFRAME/254/p/20\r\n",
+      "response_lines": [
+        "[913] 343-Begin XML snippet\r\n",
+        "[913] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[913] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[913] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": "914",
+      "command": "NOOP",
+      "request": "[914] NOOP\r\n",
+      "response_lines": [
+        "[914] 200 OK.\r\n"
+      ]
+    }
+  ],
+  "raw_capture_sha256": "b7e9cd47f6a05db377ff3a9ea1c2c2bcedc52eb8d18722f9bf084b1e64c8ab43",
+  "route_raw_sha256": "a4b2d58d268aec8e7c03b07679bf5877d5126092a306e1da4af05603529ea1c8",
+  "cleanup_raw_sha256": "b0c0c1aeaa2a9c5020587496a9def2d0e95f4eef4a73ee1672c619373e2f5c50",
+  "route_script_sha256": "a56c3f9ed1e1f94ebd6d94b7884178e6116a0b06415bae1d1d4a7fa9bd958641",
+  "service_script_sha256": "37b9515a1ab7d0fe1e66b43390f7d12d5ad9cd4cb9b78abb809566f2fd15525d"
+}

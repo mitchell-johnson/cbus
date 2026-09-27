@@ -49,10 +49,7 @@ submitted XML bodies are byte-identical after Network OID substitution. The comm
 receipts retain original and Rust wire rows, binary digests and a transitive
 Rust/source fingerprint. Both pass **12/12 direct/combined Unit mapper cases plus 2/2 full combined
 Network readbacks**, including the four changed Unit readbacks. Five `301`
-reply rows are byte-identical. The nine XML reads are **not wire-identical**:
-original C-Gate uses `343/347/344` XML framing with an LF-only declaration
-row, while the Rust TCP servers use `347` payload plus `200 OK`. The receipt
-keeps this boundary explicit rather than calling it full wire parity.
+reply rows are byte-identical. A later [framing implementation and fresh original VM capture](native-cgate-dbgetxml-framing-vm.md) changed the Rust TCP boundary: the seven XML reads now also match the original `343/347/344` envelope, including its LF-only declaration row. The updated source-bound differential requires **12/12 exact wire matches** plus **2/2 full Network readbacks** on each server. The original mapper conclusions remain bounded to these cases.
 
 Rust also retains comments, processing instructions, ordinary PP fields and
 nested namespaced markup inside an unnamespaced Unit child in existing mock

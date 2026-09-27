@@ -20,8 +20,9 @@
 #   make check-tagged-session-differential
 #                       eleven exact numeric-tag wire cases on each binary
 #   make check-dbsetxml-unit-differential
-#                       twelve Unit mapper cases plus two full Network reads;
-#                       exact original/Rust wire rows retained separately
+#                       twelve exact-wire Unit mapper cases plus two full Network reads
+#   make check-dbgetxml-wire-interop
+#                       Python client and pipelined XML reads on both Rust servers
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
@@ -113,7 +114,12 @@ check-dbsetxml-unit-differential: build-interop
 		--cmqttd-bin "$(CMQTTD_BIN)" \
 		--output-dir research/runtime
 
-check-interop: check-session-differential check-tagged-session-differential check-dbsetxml-unit-differential
+check-dbgetxml-wire-interop: build-interop
+	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" \
+		PYTHONPATH=src:. $(PY) -m pytest \
+		tests/test_cgate_dbgetxml_framing_interop.py -q -p no:cacheprovider
+
+check-interop: check-session-differential check-tagged-session-differential check-dbsetxml-unit-differential check-dbgetxml-wire-interop
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
 

@@ -169,6 +169,34 @@ pub fn format_response(resp: &Response) -> String {
     out
 }
 
+/// Format the bounded, observed native `DBGETXML` TCP envelope.
+///
+/// The original C-Gate 3.4 server emits one XML declaration row terminated by
+/// LF alone, while its opening, document and closing rows use CRLF. Keep this
+/// transport detail out of the in-memory response model: only callers that
+/// know the successful command was `DBGETXML` should use this formatter.
+/// Other response shapes fall back to the ordinary wire formatter.
+pub fn format_native_dbgetxml_wire_response(resp: &Response) -> Option<String> {
+    if resp.status != status::OK || resp.final_text != "200 OK" {
+        return None;
+    }
+    let [row] = resp.lines.as_slice() else {
+        return None;
+    };
+    let document = row.strip_prefix("347-")?;
+    if document.contains(['\r', '\n']) {
+        return None;
+    }
+    let prefix = if resp.tag.is_empty() {
+        String::new()
+    } else {
+        format!("[{}] ", resp.tag)
+    };
+    Some(format!(
+        "{prefix}343-Begin XML snippet\r\n{prefix}347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n{prefix}347-{document}\r\n{prefix}344 End XML snippet\r\n"
+    ))
+}
+
 /// C-Gate event subscription mode (`EVENT ON|OFF|e[+0-9]s[0-9]c[0-9]`,
 /// manual 4.5.83).
 ///

@@ -28,7 +28,10 @@
 //! cgate-mock --bind 127.0.0.1:0   # ephemeral port, prints the address
 //! ```
 
-use cbus_cgate::{format_response, parse_command, EventMode, Response, Server};
+use cbus_cgate::{
+    format_native_dbgetxml_wire_response, format_response, parse_command, EventMode, Response,
+    Server,
+};
 use chrono::Local;
 use std::collections::HashMap;
 use std::net::SocketAddr;
@@ -62,7 +65,12 @@ struct HubSub {
     connected_at: String,
     session_tag: Option<String>,
     /// Outbound lines (events and replies alike, in order).
-    tx: mpsc::UnboundedSender<String>,
+    tx: mpsc::UnboundedSender<Outbound>,
+}
+
+enum Outbound {
+    Line(String),
+    Wire(String),
 }
 
 /// Shared model plus per-connection subscriptions.
@@ -92,22 +100,29 @@ impl Hub {
     /// ahead of the reply; every other *subscribed* connection gets the
     /// events asynchronously (native broadcast shape). Both paths honor
     /// the connection's event mode.
-    fn emit(&mut self, origin: u64, resp: &Response, events: &[String]) {
+    fn emit(&mut self, origin: u64, resp: &Response, events: &[String], native_xml: bool) {
         if let Some(sub) = self.subs.get(&origin) {
             for event in events {
                 if sub.mode.delivers_line(event) {
-                    let _ = sub.tx.send(event.clone());
+                    let _ = sub.tx.send(Outbound::Line(event.clone()));
                 }
             }
-            for line in format_response(resp).lines() {
-                let _ = sub.tx.send(line.to_string());
+            if let Some(wire) = native_xml
+                .then(|| format_native_dbgetxml_wire_response(resp))
+                .flatten()
+            {
+                let _ = sub.tx.send(Outbound::Wire(wire));
+            } else {
+                for line in format_response(resp).lines() {
+                    let _ = sub.tx.send(Outbound::Line(line.to_string()));
+                }
             }
         }
         for (id, sub) in self.subs.iter() {
             if *id != origin && sub.subscribed {
                 for event in events {
                     if sub.mode.delivers_line(event) {
-                        let _ = sub.tx.send(event.clone());
+                        let _ = sub.tx.send(Outbound::Line(event.clone()));
                     }
                 }
             }
@@ -118,7 +133,12 @@ impl Hub {
     /// swap this connection's project selection in, handle, drain, save
     /// the selection back, and emit. The hub lock is held throughout, so
     /// sessions never observe each other's selection.
-    fn dispatch(&mut self, origin: u64, op: impl FnOnce(&mut Server) -> Response) -> Response {
+    fn dispatch(
+        &mut self,
+        origin: u64,
+        native_xml: bool,
+        op: impl FnOnce(&mut Server) -> Response,
+    ) -> Response {
         let current = self.subs.get(&origin).and_then(|s| s.current.clone());
         self.server.set_current_project(current);
         self.server
@@ -130,7 +150,7 @@ impl Hub {
         if let Some(sub) = self.subs.get_mut(&origin) {
             sub.current = back;
         }
-        self.emit(origin, &resp, &events);
+        self.emit(origin, &resp, &events, native_xml);
         resp
     }
 
@@ -200,7 +220,7 @@ impl Hub {
             }
             _ => reply(400, "400 Syntax Error."),
         };
-        self.emit(origin, &response, &[]);
+        self.emit(origin, &response, &[], false);
         Some(response)
     }
 }
@@ -236,7 +256,7 @@ async fn main() {
 }
 
 async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
-    let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+    let (tx, mut rx) = mpsc::unbounded_channel::<Outbound>();
     let peer = stream
         .peer_addr()
         .expect("accepted TCP connection has a peer");
@@ -262,11 +282,15 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
     // Single ordered writer: everything the session sends, replies and
     // broadcast events alike, flows through this task.
     let mut pump = tokio::spawn(async move {
-        while let Some(line) = rx.recv().await {
-            if writer.write_all(line.as_bytes()).await.is_err() {
+        while let Some(outbound) = rx.recv().await {
+            let (text, terminator) = match outbound {
+                Outbound::Line(line) => (line, true),
+                Outbound::Wire(wire) => (wire, false),
+            };
+            if writer.write_all(text.as_bytes()).await.is_err() {
                 break;
             }
-            if writer.write_all(b"\r\n").await.is_err() {
+            if terminator && writer.write_all(b"\r\n").await.is_err() {
                 break;
             }
         }
@@ -274,7 +298,7 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
     {
         let hub = hub.lock().await;
         if let Some(sub) = hub.subs.get(&id) {
-            let _ = sub.tx.send("201 Service ready".to_string());
+            let _ = sub.tx.send(Outbound::Line("201 Service ready".to_string()));
         }
     }
     let mut lines = BufReader::new(reader).lines();
@@ -364,7 +388,7 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             }
             let resp = {
                 let mut hub = hub.lock().await;
-                hub.dispatch(id, |server| server.handle_document(&head, &document))
+                hub.dispatch(id, false, |server| server.handle_document(&head, &document))
             };
             track_subscription(&hub, id, &head, &resp).await;
             continue;
@@ -379,10 +403,17 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             }
             continue;
         }
+        let native_xml = parse_command(&raw).ok().is_some_and(|command| {
+            command
+                .body
+                .split_whitespace()
+                .next()
+                .is_some_and(|word| word.eq_ignore_ascii_case("DBGETXML"))
+        });
         let resp = {
             let mut hub = hub.lock().await;
             hub.session_identity(id, &raw)
-                .unwrap_or_else(|| hub.dispatch(id, |server| server.handle(&raw)))
+                .unwrap_or_else(|| hub.dispatch(id, native_xml, |server| server.handle(&raw)))
         };
         track_subscription(&hub, id, &head, &resp).await;
         if resp.status == 204 {
@@ -461,10 +492,11 @@ async fn event_mode_query(hub: &Arc<Mutex<Hub>>, id: u64, head: &str) -> Option<
 
 async fn send_raw(hub: &Arc<Mutex<Hub>>, id: u64, line: &str) -> Result<(), ()> {
     let hub = hub.lock().await;
-    hub.subs
-        .get(&id)
-        .ok_or(())
-        .and_then(|sub| sub.tx.send(line.to_string()).map_err(|_| ()))
+    hub.subs.get(&id).ok_or(()).and_then(|sub| {
+        sub.tx
+            .send(Outbound::Line(line.to_string()))
+            .map_err(|_| ())
+    })
 }
 
 /// Split a `[tag] COMMAND << DELIMITER` line; `None` for ordinary commands.

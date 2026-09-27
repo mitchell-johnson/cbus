@@ -1407,8 +1407,7 @@ fields and sibling identities before one durable database replacement, returns
 captured unknown namespaced Unit root attribute and direct child are accepted
 then omitted on readback in both direct and combined original cases. Nested
 markup under an unnamespaced Unit child remains a separately tested mock
-preservation contract. Broader XML variants and private Schneider repository
-formats remain unverified.
+preservation contract. Successful single-row `DBGETXML` replies use the original `343/347/344` TCP envelope, including an LF-only XML declaration row; errors remain ordinary status replies. The [fresh original framing capture](../../../../toolkit-cli/docs/native-cgate-dbgetxml-framing-vm.md) and scoped two-server differential pin address/OID reads and pipelined transport. This does not establish multiline XML payloads, broader XML variants, or private Schneider repository formats.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection

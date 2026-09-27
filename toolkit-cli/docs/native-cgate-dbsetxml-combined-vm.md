@@ -60,5 +60,4 @@ These cases do not establish broad namespace, comment or processing-instruction
 handling, all Unit fields, all combined-tree forms or physical-device behavior.
 A later [direct-Unit original capture and scoped Rust differential](native-cgate-dbsetxml-unit-mapper-vm.md)
 establish the same two unknown namespaced additions are omitted on direct
-Unit readback and pins 12/12 Unit mapper results plus 2/2 full combined Network readbacks for each Rust server. The XML TCP
-envelopes still differ; neither capture establishes broad wire or XML parity.
+Unit readback and pins 12/12 Unit mapper results plus 2/2 full combined Network readbacks for each Rust server. A later [framing capture](native-cgate-dbgetxml-framing-vm.md) pins the `343/347/344` TCP envelope and its LF-only declaration row; the scoped Rust replay now requires exact wire equality. These captures do not establish broad XML parity.

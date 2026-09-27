@@ -13161,6 +13161,9 @@ impl Service {
                         }
                         let command = if tagged {line} else {format!("[untagged] {line}")};
                         let parsed = parse_command(&command).ok();
+                        let native_xml = parsed.as_ref().is_some_and(|command| {
+                            command.body.split_whitespace().next().is_some_and(|word| word.eq_ignore_ascii_case("DBGETXML"))
+                        });
                         let tagged_hash_comment = tagged
                             && parsed
                                 .as_ref()
@@ -13188,7 +13191,13 @@ impl Service {
                         // marker is rejected with an untagged syntax error,
                         // while a tagged double-slash marker echoes its tag.
                         if !tagged || tagged_hash_comment { response.tag.clear(); }
-                        tokio::time::timeout(Duration::from_secs(10), writer.write_all(format_response(&response).replace('\n', "\r\n").as_bytes())).await
+                        let wire = if native_xml {
+                            format_native_dbgetxml_wire_response(&response)
+                        } else {
+                            None
+                        }
+                        .unwrap_or_else(|| format_response(&response).replace('\n', "\r\n"));
+                        tokio::time::timeout(Duration::from_secs(10), writer.write_all(wire.as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                         if close && response.status == 204 {
                             // `write_all` only guarantees that the plaintext

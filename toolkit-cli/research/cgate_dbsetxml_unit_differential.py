@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Run the native direct/combined Unit XML mapper cases against offline Rust TCP servers.
+"""Run native direct/combined Unit XML mapper and TCP framing cases offline.
 
-The receipt retains exact original and Rust wire rows. Mapper acceptance checks
-the XML payload or 301 OID, while separately reporting the known XML response
-framing difference (native 343/347/344 versus Rust 347/200).
+The receipt retains exact original and Rust wire rows. Both XML payload and
+343/347/344 framing must match; DBSETXML writes retain their separate 301
+receipt and mapper checks.
 """
 from __future__ import annotations
 
@@ -34,7 +34,8 @@ TAGS = tuple(str(tag) for tag in range(808, 820))
 COMBINED_CHECKS = {"816": ("908", "909", "716"), "818": ("910", "911", "718")}
 SOURCE_FILES = (
     "rust/Cargo.toml", "rust/Cargo.lock",
-    "rust/cbus-cgate/tests/server.rs", "rust/cmqttd/tests/system_cgate_admin.rs",
+    "rust/cbus-cgate/tests/server.rs", "rust/cbus-cgate/tests/tcp.rs",
+    "rust/cmqttd/tests/system_cgate_admin.rs",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py",
     "toolkit-cli/research/cgate_session_differential.py",
     "toolkit-cli/tests/test_cgate_dbsetxml_unit_differential.py",
@@ -42,6 +43,9 @@ SOURCE_FILES = (
     "toolkit-cli/Makefile", ".github/workflows/ci.yml",
     "rust/testdata/fixtures/native_cgate_dbsetxml_unit_vm.json",
     "rust/testdata/fixtures/native_cgate_dbsetxml_combined_vm.json",
+    "rust/testdata/fixtures/native_cgate_dbgetxml_framing_vm.json",
+    "rust/testdata/vectors/cgate_dbgetxml_wire.json",
+    "toolkit-cli/tests/test_native_cgate_dbgetxml_framing_vm.py",
     "toolkit-cli/src/cbus_toolkit/simulator.py",
 )
 STATUS = re.compile(r"^[1-6][0-9]{2}[- ][^\r\n]+\r\n$")
@@ -100,16 +104,13 @@ def prior_network_oid(prior: dict[str, dict]) -> str:
 def xml_payload(lines: list[str], tag: str, *, original: bool) -> str:
     prefix = f"[{tag}] 347-"
     rows = [line for line in lines if line.startswith(prefix)]
-    if original:
-        if (len(lines) != 4 or lines[0] != f"[{tag}] 343-Begin XML snippet\r\n"
-                or lines[1] != f'[{tag}] 347-<?xml version="1.0" encoding="utf-8"?>\n'
-                or lines[3] != f"[{tag}] 344 End XML snippet\r\n"):
-            raise ValueError(f"native XML envelope changed for {tag}")
-        result = rows[1][len(prefix):-2]
-    else:
-        if len(lines) != 2 or lines[1] != f"[{tag}] 200 OK\r\n" or len(rows) != 1:
-            raise ValueError(f"Rust XML response changed for {tag}")
-        result = rows[0][len(prefix):-2]
+    if (len(lines) != 4 or len(rows) != 2
+            or lines[0] != f"[{tag}] 343-Begin XML snippet\r\n"
+            or lines[1] != f'[{tag}] 347-<?xml version="1.0" encoding="utf-8"?>\n'
+            or lines[3] != f"[{tag}] 344 End XML snippet\r\n"
+            or not rows[1].endswith("\r\n")):
+        raise ValueError(f"{'native' if original else 'Rust'} XML envelope changed for {tag}")
+    result = rows[1][len(prefix):-2]
     ET.fromstring(result)
     return result
 
@@ -126,6 +127,9 @@ def read_reply(stream, tag: str) -> tuple[list[str], list[str]]:
             events.append(line)
             continue
         prefix = f"[{tag}] "
+        if line == f'[{tag}] 347-<?xml version="1.0" encoding="utf-8"?>\n':
+            rows.append(line)
+            continue
         if not line.startswith(prefix) or not STATUS.fullmatch(line[len(prefix):]):
             raise ValueError(f"unexpected tagged row for {tag}: {line!r}")
         rows.append(line)
@@ -229,7 +233,7 @@ def probe(product: str, binary: Path) -> dict:
         "source_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "source_fingerprint": fingerprint(product == "cmqttd"),
         "normalization": "generated Network and Interface OIDs only; all XML bytes otherwise exact",
-        "xml_wire_boundary": "native 343/347/344; Rust 347/200; raw rows retained",
+        "xml_wire_boundary": "native and Rust 343/347/344 with LF-only declaration; raw rows retained",
         "offline_provision": {"loopback_cgate": True, "disposable_pci_and_broker": product == "cmqttd", "physical_networks_opened": False},
         "cases": [], "combined_network_checks": [], "setup": {},
         "passed": 0, "failed": 0, "wire_equal": 0, "combined_network_passed": 0,
@@ -291,17 +295,20 @@ def probe(product: str, binary: Path) -> dict:
                     for old, new in prior_substitutions.items():
                         mapped_rows = [row.replace(old, new) for row in mapped_rows]
                     expected_network = xml_payload(mapped_rows, prior_get, original=True)
+                    mapped_wire = [row.replace(f"[{prior_get}]", f"[{rust_tag}]", 1)
+                                   for row in mapped_rows]
                     actual_network = xml_payload(rust_rows, rust_tag, original=False)
                     receipt["combined_network_checks"].append({
                         "after_current_tag": tag, "original_set_tag": prior_set,
                         "original_tag": prior_get, "rust_tag": rust_tag,
                         "original_request": prior[prior_get]["request"],
                         "rust_request": rust_request, "original_wire": original_rows,
-                        "mapped_original_wire": mapped_rows, "rust_wire": rust_rows,
+                        "mapped_original_wire": mapped_wire, "rust_wire": rust_rows,
                         "unsolicited_events": rust_events,
                         "expected_mapper_result": expected_network,
                         "rust_mapper_result": actual_network,
                         "mapper_equal": expected_network == actual_network,
+                        "wire_equal": mapped_wire == rust_rows,
                     })
             receipt["passed"] = sum(case["mapper_equal"] for case in receipt["cases"])
             receipt["failed"] = len(TAGS) - receipt["passed"]
@@ -310,7 +317,9 @@ def probe(product: str, binary: Path) -> dict:
                 case["mapper_equal"] for case in receipt["combined_network_checks"]
             )
             receipt["result"] = "passed" if (receipt["failed"] == 0
-                and receipt["combined_network_passed"] == 2) else "failed"
+                and receipt["wire_equal"] == len(TAGS)
+                and receipt["combined_network_passed"] == 2
+                and all(check["wire_equal"] for check in receipt["combined_network_checks"])) else "failed"
         finally:
             stream.close()
     return receipt
@@ -331,8 +340,9 @@ def validate_receipt(receipt: dict) -> None:
     if receipt.get("source_fingerprint") != fingerprint(product == "cmqttd"):
         raise ValueError("Unit mapper Rust/source closure changed")
     if (receipt.get("passed") != 12 or receipt.get("failed") != 0
-            or receipt.get("combined_network_passed") != 2 or receipt.get("result") != "passed"):
-        raise ValueError("Unit mapper result is not 12/12 plus 2/2 combined Network")
+            or receipt.get("wire_equal") != 12 or receipt.get("combined_network_passed") != 2
+            or receipt.get("result") != "passed"):
+        raise ValueError("Unit mapper result is not 12/12 exact wire plus 2/2 combined Network")
     if receipt.get("offline_provision", {}).get("physical_networks_opened") is not False:
         raise ValueError("Unit mapper receipt is not offline")
     observed = receipt.get("cases")
@@ -384,17 +394,20 @@ def validate_receipt(receipt: dict) -> None:
         mapped = original["response_lines"]
         for old, new in prior_substitutions.items():
             mapped = [row.replace(old, new) for row in mapped]
+        expected_wire = [row.replace(f"[{prior_get}]", f"[{rust_tag}]", 1)
+                         for row in mapped]
         if (check.get("after_current_tag") != current_tag or check.get("original_set_tag") != prior_set
                 or check.get("original_tag") != prior_get or check.get("rust_tag") != rust_tag
                 or check.get("original_request") != original["request"]
                 or check.get("rust_request") != f"[{rust_tag}] DBGETXML //XUNIT/254\r\n"
                 or check.get("original_wire") != original["response_lines"]
-                or check.get("mapped_original_wire") != mapped):
+                or check.get("mapped_original_wire") != expected_wire):
             raise ValueError(f"combined Network provenance changed at {prior_get}")
         expected = xml_payload(mapped, prior_get, original=True)
         actual = xml_payload(check["rust_wire"], rust_tag, original=False)
         if (expected != actual or check.get("expected_mapper_result") != expected
-                or check.get("rust_mapper_result") != actual or check.get("mapper_equal") is not True):
+                or check.get("rust_mapper_result") != actual or check.get("mapper_equal") is not True
+                or check.get("wire_equal") is not True or check["rust_wire"] != expected_wire):
             raise ValueError(f"combined Network mapper changed at {prior_get}")
 
 
@@ -417,7 +430,9 @@ def main() -> int:
                           "passed": receipt["passed"], "failed": receipt["failed"],
                           "combined_network_passed": receipt["combined_network_passed"],
                           "wire_equal": receipt["wire_equal"]}))
-        failures += receipt["failed"] + (2 - receipt["combined_network_passed"])
+        failures += (receipt["failed"] + len(TAGS) - receipt["wire_equal"]
+                     + 2 - receipt["combined_network_passed"]
+                     + sum(not check["wire_equal"] for check in receipt["combined_network_checks"]))
     return 1 if failures else 0
 
 

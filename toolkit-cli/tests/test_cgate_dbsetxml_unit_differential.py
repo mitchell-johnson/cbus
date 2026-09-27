@@ -24,9 +24,10 @@ def test_committed_original_vs_rust_mapper_receipt(product):
     assert len(receipt["cases"]) == 12
     assert len(receipt["combined_network_checks"]) == 2
     assert receipt["combined_network_passed"] == 2
-    assert receipt["wire_equal"] == 5  # five 301 rows; XML envelope differs
+    assert receipt["wire_equal"] == 12  # five 301 writes and seven exact XML reads
     assert all(not case["unsolicited_events"] for case in receipt["cases"])
     assert all(not case["unsolicited_events"] for case in receipt["combined_network_checks"])
+    assert all(case["wire_equal"] for case in receipt["combined_network_checks"])
 
 
 def test_mapper_receipt_rejects_mutated_original_and_rust_wire():
@@ -38,7 +39,7 @@ def test_mapper_receipt_rejects_mutated_original_and_rust_wire():
     with pytest.raises(ValueError, match="original wire changed"):
         validate_receipt(changed)
     changed = copy.deepcopy(receipt)
-    changed["cases"][1]["rust_wire"][0] = changed["cases"][1]["rust_wire"][0].replace(
+    changed["cases"][1]["rust_wire"][2] = changed["cases"][1]["rust_wire"][2].replace(
         "<Unit>", "<Unit altered=\"1\">"
     )
     with pytest.raises(ValueError, match="XML reply changed"):
@@ -50,8 +51,8 @@ def test_mapper_receipt_rejects_mutated_original_and_rust_wire():
     with pytest.raises(ValueError, match="OID substitution changed"):
         validate_receipt(changed)
     changed = copy.deepcopy(receipt)
-    changed["combined_network_checks"][0]["rust_wire"][0] = (
-        changed["combined_network_checks"][0]["rust_wire"][0].replace(
+    changed["combined_network_checks"][0]["rust_wire"][2] = (
+        changed["combined_network_checks"][0]["rust_wire"][2].replace(
             "<Application>", "<Application changed=\"1\">"
         )
     )
