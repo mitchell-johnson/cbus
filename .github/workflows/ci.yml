@@ -37,7 +37,9 @@ jobs:
           workspaces: rust
 
       - name: Install Toolkit CLI and test dependencies
-        run: python -m pip install -e './toolkit-cli[test,research,serial,usb]'
+        run: |
+          python -m venv toolkit-cli/.venv
+          toolkit-cli/.venv/bin/python -m pip install -e './toolkit-cli[test,research,serial,usb]'
 
       - name: Build both Rust interoperability servers
         working-directory: toolkit-cli

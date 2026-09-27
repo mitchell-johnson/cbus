@@ -68,6 +68,49 @@ class AcceptanceRunnerTests(unittest.TestCase):
                 'traceback': 'Selected nonempty test module collected zero tests',
             }])
 
+    def test_inherited_collect_only_and_deselection_options_are_ignored(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            marker = root / 'executed'
+            module = tests / 'test_environment_options.py'
+            module.write_text(
+                'from pathlib import Path\n\n'
+                'def test_must_execute():\n'
+                f'    Path({str(marker)!r}).write_text("executed\\n")\n'
+            )
+            original = '--collect-only -k never_selected'
+            with patch.object(acceptance, 'ROOT', root), patch.dict(
+                os.environ,
+                {'PYTEST_ADDOPTS': original, 'PYTEST_PLUGINS': 'missing_plugin'},
+                clear=False,
+            ):
+                outcome = acceptance.run_pytest([module], verbose=False)
+                self.assertEqual(os.environ['PYTEST_ADDOPTS'], original)
+                self.assertEqual(os.environ['PYTEST_PLUGINS'], 'missing_plugin')
+            self.assertTrue(outcome.was_successful())
+            self.assertEqual(outcome.tests_run, 1)
+            self.assertEqual(marker.read_text(), 'executed\n')
+
+    def test_collected_without_execution_cannot_succeed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / 'tests'
+            tests.mkdir()
+            module = tests / 'test_collect_only.py'
+            module.write_text('def test_would_fail():\n    assert False\n')
+
+            # Exercise the outcome invariant directly because run_pytest blocks
+            # external plugins and environment/config options by design.
+            plugin = acceptance._AcceptancePlugin([module])
+            plugin.nodeids = ['tests/test_collect_only.py::test_would_fail']
+            plugin.collected_by_path[module.resolve()] = 1
+            outcome = plugin.outcome([module], 0)
+            self.assertFalse(outcome.was_successful())
+            self.assertEqual(outcome.tests_run, 0)
+            self.assertIn('no execution result', outcome.errors[0]['traceback'])
+
     def test_acceptance_receipt_rejects_selected_zero_collection_module(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -125,6 +168,44 @@ class AcceptanceRunnerTests(unittest.TestCase):
             self.assertEqual(acceptance.test_binary_inputs(selected)['CBUS_CGATE_MOCK_BIN']['error'], 'ValueError')
             binary.unlink()
             self.assertEqual(acceptance.test_binary_inputs(selected)['CBUS_CGATE_MOCK_BIN']['error'], 'FileNotFoundError')
+
+    def test_each_selected_rust_server_binary_is_hash_bound(self):
+        selected = [
+            Path('tests/test_rust_cgate_interop.py'),
+            Path('tests/test_cmqtt_programming_methods_interop.py'),
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            cgate = Path(folder) / 'cgate-mock'
+            cmqttd = Path(folder) / 'cmqttd'
+            cgate.write_bytes(b'cgate fixture')
+            cmqttd.write_bytes(b'cmqttd fixture')
+            cgate.chmod(0o700)
+            cmqttd.chmod(0o700)
+            with patch.dict(os.environ, {
+                'CBUS_CGATE_MOCK_BIN': str(cgate),
+                'CBUS_CMQTTD_BIN': str(cmqttd),
+            }, clear=True):
+                evidence = acceptance.test_binary_inputs(selected)
+            self.assertEqual(set(evidence), {
+                'CBUS_CGATE_MOCK_BIN', 'CBUS_CMQTTD_BIN'
+            })
+            self.assertEqual(evidence['CBUS_CGATE_MOCK_BIN']['size_bytes'], 13)
+            self.assertEqual(evidence['CBUS_CMQTTD_BIN']['size_bytes'], 14)
+            self.assertNotEqual(
+                evidence['CBUS_CGATE_MOCK_BIN']['sha256'],
+                evidence['CBUS_CMQTTD_BIN']['sha256'],
+            )
+
+    def test_unselected_rust_server_binary_is_not_recorded(self):
+        with tempfile.TemporaryDirectory() as folder:
+            cmqttd = Path(folder) / 'cmqttd'
+            cmqttd.write_bytes(b'cmqttd fixture')
+            cmqttd.chmod(0o700)
+            with patch.dict(os.environ, {'CBUS_CMQTTD_BIN': str(cmqttd)}, clear=True):
+                evidence = acceptance.test_binary_inputs([
+                    Path('tests/test_fixture.py')
+                ])
+            self.assertEqual(evidence, {})
 
     def test_changed_mock_binary_fails_otherwise_successful_acceptance(self):
         with tempfile.TemporaryDirectory() as folder:

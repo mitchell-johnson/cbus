@@ -236,6 +236,8 @@ class ParityRegisterTests(unittest.TestCase):
             parity.parse_json_document('{"schema_version":1,"schema_version":1}', context="fixture")
         with self.assertRaisesRegex(ValueError, "Non-finite JSON number"):
             parity.parse_json_document('{"value":NaN}', context="fixture")
+        with self.assertRaisesRegex(ValueError, "Non-finite JSON number"):
+            parity.parse_json_document('{"value":1e400}', context="fixture")
 
     def test_missing_duplicate_and_unknown_ids_are_rejected(self):
         register, evidence, ledger, evidence_raw = fixture_documents()

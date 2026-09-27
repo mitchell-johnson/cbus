@@ -102,9 +102,13 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
         gates.add('CBUS_WINDOWS_BRIDGE')
     if {'tests/test_local_cgate.py', 'tests/test_native_network_oracle.py'} & set(expected_tests):
         gates.update(('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR'))
-    mock_required = 'tests/test_rust_cgate_interop.py' in expected_tests
-    if mock_required:
-        gates.add('CBUS_CGATE_MOCK_BIN')
+    required_test_binaries = set()
+    if 'tests/test_rust_cgate_interop.py' in expected_tests:
+        required_test_binaries.add('CBUS_CGATE_MOCK_BIN')
+    if {'tests/test_cmqtt_interop.py',
+        'tests/test_cmqtt_programming_methods_interop.py'} & set(expected_tests):
+        required_test_binaries.add('CBUS_CMQTTD_BIN')
+    gates.update(required_test_binaries)
     firmware_backend = 'research/firmware_oracle.py' in inputs
     selectors_required = firmware_backend or bool({'research/original_oracle.py', 'research/local_cgate.py'} & set(inputs))
     reports, recorded_versions = [], []
@@ -120,6 +124,17 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
                      'inputs_removed_during_run', 'test_files_added_during_run', 'source_files_added_during_run'):
             require(report.get(name) == [], 'Nonempty or missing report field: ' + name)
         require(type(report.get('tests_run')) is int and report['tests_run'] > 0, 'No tests ran')
+        require(type(report.get('pytest_exit_code')) is int and report['pytest_exit_code'] == 0,
+                'Missing or nonzero pytest exit code')
+        collected = report.get('collected_tests_by_file')
+        require(isinstance(collected, dict) and set(collected) == set(expected_tests),
+                'Collected test-module coverage differs from the snapshot')
+        require(all(type(count) is int and count > 0 for count in collected.values()),
+                'Every selected test module must collect at least one test')
+        require(sum(collected.values()) == report['tests_run'],
+                'Collected test counts differ from tests_run')
+        require(report.get('uncollected_test_files') == [],
+                'Report contains missing or uncollected test modules')
         require(report.get('toolkit_parity_complete') is parity, 'Report parity differs from the wheel capability ledger')
         if parity_progress is not None and 'toolkit_parity_progress' in report:
             require(
@@ -130,19 +145,20 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
         require(report.get('input_sha256') == expected_inputs, 'Report input hashes differ from the snapshot')
         require(all(report.get('enabled_native_gates', {}).get(name) is True for name in gates),
                 'Report did not enable every required native gate')
-        if mock_required:
+        if required_test_binaries:
             binaries = report.get('external_test_binaries_before')
-            require(isinstance(binaries, dict) and set(binaries) == {'CBUS_CGATE_MOCK_BIN'},
-                    'Report lacks explicit mock binary evidence')
-            binary = binaries['CBUS_CGATE_MOCK_BIN']
-            require(isinstance(binary, dict) and set(binary) == {'path', 'sha256', 'size_bytes'}
-                    and isinstance(binary['path'], str) and Path(binary['path']).is_absolute()
-                    and isinstance(binary['sha256'], str) and re.fullmatch(r'[0-9a-f]{64}', binary['sha256'])
-                    and type(binary['size_bytes']) is int and binary['size_bytes'] > 0,
-                    'Invalid explicit mock binary evidence')
+            require(isinstance(binaries, dict) and set(binaries) == required_test_binaries,
+                    'Report lacks exact explicit test binary evidence')
+            for variable, binary in binaries.items():
+                require(isinstance(binary, dict) and set(binary) == {'path', 'sha256', 'size_bytes'}
+                        and isinstance(binary['path'], str) and Path(binary['path']).is_absolute()
+                        and isinstance(binary['sha256'], str)
+                        and re.fullmatch(r'[0-9a-f]{64}', binary['sha256'])
+                        and type(binary['size_bytes']) is int and binary['size_bytes'] > 0,
+                        'Invalid explicit test binary evidence: ' + variable)
             require(report.get('external_test_binaries_after') == binaries
                     and report.get('external_test_binary_errors') == [],
-                    'Mock binary changed or could not be observed')
+                    'Test binary changed or could not be observed')
         selectors = report.get('backend_selectors')
         if selectors_required or selectors is not None:
             allowed = {'CBUS_ORIGINAL_MODEL_BACKEND': ('docker', 'windows'),
@@ -177,17 +193,21 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
     require(set(recorded_versions) == set(python_versions), 'Reports do not cover the requested Python versions')
     primary = reports[0][0]
     for report, _ in reports[1:]:
-        if mock_required:
+        if required_test_binaries:
             require(report['external_test_binaries_before'] == primary['external_test_binaries_before'],
                     'Reports disagree: external_test_binaries_before')
         require(report.get('backend_selectors') == primary.get('backend_selectors'),
                 'Reports disagree: backend_selectors')
-        for name in ('tests_run', 'test_files', 'input_sha256', 'imported_package_module_sha256',
-                     'package_version', 'toolkit_parity_complete'):
+        for name in ('tests_run', 'pytest_exit_code', 'collected_tests_by_file',
+                     'uncollected_test_files', 'test_files', 'input_sha256',
+                     'imported_package_module_sha256', 'package_version',
+                     'toolkit_parity_complete'):
             require(report[name] == primary[name], 'Reports disagree: ' + name)
     retained = ('format', 'started_at', 'duration_seconds', 'python', 'openssl', 'package_version',
-                'tests_run', 'failures', 'errors', 'skipped', 'passed', 'toolkit_parity_complete', 'scope',
-                'enabled_native_gates', 'test_files', 'input_sha256', 'imported_package_module_sha256')
+                'tests_run', 'pytest_exit_code', 'collected_tests_by_file',
+                'uncollected_test_files', 'failures', 'errors', 'skipped', 'passed',
+                'toolkit_parity_complete', 'scope', 'enabled_native_gates', 'test_files',
+                'input_sha256', 'imported_package_module_sha256')
     summary = {name: primary[name] for name in retained}
     if 'backend_selectors' in primary: summary['backend_selectors'] = primary['backend_selectors']
     for name in ('external_test_binaries_before', 'external_test_binaries_after', 'external_test_binary_errors'):
@@ -201,12 +221,15 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
                                    'Subsequent development changes require separate validation.',
                    additional_python_validation=[])
     for report, report_hash in reports[1:]:
-        row = {name: report[name] for name in ('started_at', 'duration_seconds', 'python', 'openssl', 'tests_run',
-                                              'failures', 'errors', 'skipped', 'passed', 'enabled_native_gates')}
+        row = {name: report[name] for name in ('started_at', 'duration_seconds', 'python', 'openssl',
+                                              'tests_run', 'pytest_exit_code',
+                                              'collected_tests_by_file', 'uncollected_test_files',
+                                              'failures', 'errors', 'skipped', 'passed',
+                                              'enabled_native_gates')}
         row.update(source_report_sha256=report_hash, same_input_hashes=True,
                    same_imported_package_hashes=True, installed_wheel=True)
         if 'backend_selectors' in report: row['backend_selectors'] = report['backend_selectors']
-        if mock_required:
+        if required_test_binaries:
             row['external_test_binaries_before'] = report['external_test_binaries_before']
             row['same_external_test_binary_hashes'] = True
         summary['additional_python_validation'].append(row)

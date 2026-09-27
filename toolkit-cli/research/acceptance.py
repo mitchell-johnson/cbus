@@ -75,6 +75,7 @@ class _AcceptancePlugin:
         self.collected_by_path = {path: 0 for path in self.selected}
         self.nonempty = {path.resolve() for path in selected if path.stat().st_size}
         self.nodeids: list[str] = []
+        self.executed_nodeids: set[str] = set()
         self.failures: list[dict[str, str]] = []
         self.errors: list[dict[str, str]] = []
         self.skipped: list[dict[str, str]] = []
@@ -107,6 +108,10 @@ class _AcceptancePlugin:
 
     def pytest_runtest_logreport(self, report):
         nodeid = _sanitized_nodeid(report.nodeid)
+        if report.when == "call" or (
+            report.when == "setup" and (report.failed or report.skipped)
+        ):
+            self.executed_nodeids.add(nodeid)
         was_xfail = getattr(report, "wasxfail", None)
         if was_xfail is not None and report.skipped:
             if nodeid not in self._expected_failure_nodeids:
@@ -140,9 +145,20 @@ class _AcceptancePlugin:
                     "test": relative,
                     "traceback": "Selected nonempty test module collected zero tests",
                 })
+        unexecuted = sorted(set(self.nodeids) - self.executed_nodeids)
+        if unexecuted:
+            preview = ", ".join(unexecuted[:10])
+            suffix = "" if len(unexecuted) <= 10 else f" (+{len(unexecuted) - 10} more)"
+            self.errors.append({
+                "test": "pytest-execution",
+                "traceback": (
+                    f"{len(unexecuted)} collected tests produced no execution result: "
+                    f"{preview}{suffix}"
+                ),
+            })
         return PytestOutcome(
             exit_code=exit_code,
-            tests_run=len(self.nodeids),
+            tests_run=len(self.executed_nodeids),
             failures=self.failures,
             errors=self.errors,
             skipped=self.skipped,
@@ -163,20 +179,28 @@ def run_pytest(selected: list[Path], *, verbose: bool) -> PytestOutcome:
     """
     plugin = _AcceptancePlugin(selected)
     arguments = [str(path.resolve()) for path in selected]
-    arguments.extend(("-p", "no:cacheprovider", "--color=no", "--tb=short",
+    arguments.extend(("-p", "no:cacheprovider", "-o", "addopts=", "--color=no", "--tb=short",
                       "-vv" if verbose else "-q"))
-    previous_autoload = os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD")
+    controlled_environment = (
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
+        "PYTEST_ADDOPTS",
+        "PYTEST_PLUGINS",
+    )
+    previous_environment = {name: os.environ.get(name) for name in controlled_environment}
     os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    os.environ.pop("PYTEST_ADDOPTS", None)
+    os.environ.pop("PYTEST_PLUGINS", None)
     try:
         # The historical runner wrote test progress to stderr and reserved stdout
         # for its machine-readable one-line summary.
         with redirect_stdout(sys.stderr):
             exit_code = int(pytest.main(arguments, plugins=[plugin]))
     finally:
-        if previous_autoload is None:
-            os.environ.pop("PYTEST_DISABLE_PLUGIN_AUTOLOAD", None)
-        else:
-            os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = previous_autoload
+        for name, previous in previous_environment.items():
+            if previous is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = previous
     return plugin.outcome(selected, exit_code)
 
 
@@ -200,14 +224,20 @@ def input_files(pattern):
     return paths
 
 
-def test_binary_inputs(selected):
-    """Record explicit test binaries; this is byte identity, not build provenance."""
-    if not any(path.name == "test_rust_cgate_interop.py" for path in selected):
-        return {}
-    name = "CBUS_CGATE_MOCK_BIN"
+TEST_BINARY_SELECTIONS = {
+    "CBUS_CGATE_MOCK_BIN": {"test_rust_cgate_interop.py"},
+    "CBUS_CMQTTD_BIN": {
+        "test_cmqtt_interop.py",
+        "test_cmqtt_programming_methods_interop.py",
+    },
+}
+
+
+def _test_binary_input(name):
+    """Observe one configured binary without executing or rebuilding it."""
     configured = os.environ.get(name)
     if not configured:
-        return {}
+        return None
     row = {"path": str(Path(configured).absolute())}
     try:
         path = Path(configured).resolve(strict=True)
@@ -231,7 +261,20 @@ def test_binary_inputs(selected):
             os.close(descriptor)
     except (OSError, ValueError) as error:
         row["error"] = type(error).__name__
-    return {name: row}
+    return row
+
+
+def test_binary_inputs(selected):
+    """Record selected explicit test binaries; this is byte identity, not build provenance."""
+    selected_names = {path.name for path in selected}
+    result = {}
+    for name, modules in TEST_BINARY_SELECTIONS.items():
+        if selected_names.isdisjoint(modules):
+            continue
+        row = _test_binary_input(name)
+        if row is not None:
+            result[name] = row
+    return result
 
 
 def main():
@@ -323,7 +366,8 @@ def main():
             ("CBUS_CGATE_TEST_HOST", "CBUS_UNITSPEC_DIR", "CBUS_TOOLKIT_HELP_DIR", "CBUS_TOOLKIT_EXE",
              "CBUS_SCENE_NATIVE", "CBUS_NATIVE_TLS_TEST", "CBUS_FIRMWARE_UPDATER", "CBUS_DFU_DLL",
              "CBUS_WINDOWS_BRIDGE", "CBUS_CGATE_JAVA", "CBUS_LOCAL_CGATE_VENDOR", "CBUS_MONO_MACOS_ROOT",
-             "CBUS_WINDOWS_PROVENANCE_ROOT", "CBUS_CATALOG_PATH", "CBUS_CGATE_MOCK_BIN")},
+             "CBUS_WINDOWS_PROVENANCE_ROOT", "CBUS_CATALOG_PATH", "CBUS_CGATE_MOCK_BIN",
+             "CBUS_CMQTTD_BIN")},
         "external_test_binaries_before": binaries_before,
         "external_test_binaries_after": binaries_after,
         "external_test_binary_errors": binary_errors,

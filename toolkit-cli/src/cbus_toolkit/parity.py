@@ -12,6 +12,7 @@ from collections import Counter
 from hashlib import sha256
 from importlib.resources import files
 import json
+import math
 from pathlib import Path
 import re
 from typing import Any
@@ -128,6 +129,13 @@ def _reject_nonfinite_constant(value: str) -> Any:
     raise ValueError(f"Non-finite JSON number is forbidden: {value}")
 
 
+def _parse_finite_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError(f"Non-finite JSON number is forbidden: {value}")
+    return parsed
+
+
 def parse_json_document(raw: str | bytes, *, context: str) -> dict[str, Any]:
     """Parse one bounded JSON object and reject duplicate keys."""
     if isinstance(raw, bytes):
@@ -148,6 +156,7 @@ def parse_json_document(raw: str | bytes, *, context: str) -> dict[str, Any]:
             text,
             object_pairs_hook=_reject_duplicate_keys,
             parse_constant=_reject_nonfinite_constant,
+            parse_float=_parse_finite_float,
         )
     except json.JSONDecodeError as exc:
         raise ValueError(f"{context} is not valid JSON: {exc.msg}") from exc

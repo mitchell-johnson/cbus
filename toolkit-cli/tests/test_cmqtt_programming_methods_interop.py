@@ -8,6 +8,7 @@ acceptance.
 """
 from contextlib import contextmanager
 import json
+import os
 from pathlib import Path
 import re
 import socket
@@ -21,7 +22,17 @@ from cbus_toolkit.simulator import PCISimulator
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / "rust/target/debug/cmqttd"
+
+
+def find_cmqttd():
+    override = os.environ.get("CBUS_CMQTTD_BIN")
+    candidate = Path(override) if override else ROOT / "rust/target/debug/cmqttd"
+    if candidate.is_file() and os.access(candidate, os.X_OK):
+        return candidate.resolve()
+    return None
+
+
+BIN = find_cmqttd()
 METHODS = (
     "direct",
     "paged",
@@ -428,7 +439,7 @@ def _fixture(tmp_path, *, all_methods=True):
     return project, specs
 
 
-@pytest.mark.skipif(not BIN.exists(), reason="Build cmqttd before cross-language interop")
+@pytest.mark.skipif(BIN is None, reason="Build cmqttd before cross-language interop")
 def test_real_cli_programs_all_ten_methods_through_routed_scripted_pci(tmp_path):
     """Prove the full software boundary without claiming physical acceptance."""
     project, specs = _fixture(tmp_path)
@@ -485,7 +496,7 @@ def test_real_cli_programs_all_ten_methods_through_routed_scripted_pci(tmp_path)
     assert set(results) == set(METHODS)
 
 
-@pytest.mark.skipif(not BIN.exists(), reason="Build cmqttd before cross-language interop")
+@pytest.mark.skipif(BIN is None, reason="Build cmqttd before cross-language interop")
 def test_routed_programming_rejects_excess_correlated_readback_before_any_save(tmp_path):
     project, specs = _fixture(tmp_path, all_methods=False)
     peer = RoutedProgrammingPCI(overflow_on_first_recall=True)
@@ -500,7 +511,7 @@ def test_routed_programming_rejects_excess_correlated_readback_before_any_save(t
     assert peer.overflow_sent
 
 
-@pytest.mark.skipif(not BIN.exists(), reason="Build cmqttd before cross-language interop")
+@pytest.mark.skipif(BIN is None, reason="Build cmqttd before cross-language interop")
 def test_routed_programming_disconnect_after_store_is_uncertain_and_never_replayed(tmp_path):
     project, specs = _fixture(tmp_path, all_methods=False)
     peer = RoutedProgrammingPCI(drop_on_method="direct")

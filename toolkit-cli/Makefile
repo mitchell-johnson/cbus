@@ -42,7 +42,7 @@ export PYTHONPATH = src:tests
 check: compile check-parity-register
 	$(PY) -m pytest tests/ -q -p no:cacheprovider $(PYTEST_EXTRA)
 
-check-offline: compile
+check-offline: compile check-parity-register
 	$(PY) -m pytest tests/ -q -p no:cacheprovider \
 		--ignore=tests/test_rust_cgate_interop.py \
 		--ignore=tests/test_cmqtt_interop.py \

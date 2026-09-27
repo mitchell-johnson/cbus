@@ -29,12 +29,14 @@ make check-wheel
 `make check` runs the complete source-tree suite. Tests requiring vendor
 binaries, unit specifications, native C-Gate, Windows workers, or physical
 devices skip unless their explicit environment gates are configured. The
-pytest summary reports those skips. `make check-offline` omits the two Rust
-interop modules so CI can execute and report each one separately.
+pytest summary reports those skips. `make check-offline` omits the C-Gate
+interop module and both cmqttd interop modules so CI can execute and report
+the two server selections separately.
 
 `make check-interop` builds both `cgate-mock` and `cmqttd`, verifies that both
-executables exist, and runs `test_rust_cgate_interop.py` and
-`test_cmqtt_interop.py` in separate pytest invocations. The focused
+executables exist, and runs `test_rust_cgate_interop.py` in one invocation and
+`test_cmqtt_interop.py` plus `test_cmqtt_programming_methods_interop.py` in a
+second invocation. The focused
 `check-cgate-interop` and `check-cmqtt-interop` targets deliberately do not
 build a missing binary: they fail before collection. CI builds the two servers
 once, runs the offline and two interop selections separately, and retains a

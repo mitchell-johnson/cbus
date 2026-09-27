@@ -43,6 +43,9 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         (self.root / 'snapshot.json').write_text(json.dumps(manifest))
         self.report = {'format': 'cbus-test-acceptance-v1', 'passed': True, 'test_success': True,
                        'require_no_skips': True, 'tests_run': 1, 'test_files': ['tests/test_fixture.py'],
+                       'pytest_exit_code': 0,
+                       'collected_tests_by_file': {'tests/test_fixture.py': 1},
+                       'uncollected_test_files': [],
                        'input_sha256': {k: v for k, v in self.hashes.items() if k != 'README.md'},
                        'package_location': '/owned/venv/lib/python3.13/site-packages/cbus_toolkit/__init__.py',
                        'python': '3.13.1', 'started_at': '2026-01-01T00:00:00+00:00', 'duration_seconds': 1,
@@ -77,12 +80,19 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         self.assertTrue(result['passed'])
         self.assertFalse(result['toolkit_parity_complete'])
         self.assertEqual(result['validated_python_versions'], ['3.13.1'])
+        self.assertEqual(result['pytest_exit_code'], 0)
+        self.assertEqual(result['collected_tests_by_file'], {'tests/test_fixture.py': 1})
+        self.assertEqual(result['uncollected_test_files'], [])
         self.assertEqual(result['additional_python_validation'], [])
 
     def test_historical_dual_reports_remain_auditable_with_explicit_versions(self):
         result = self.run_audit(historical=True)
         self.assertEqual(result['validated_python_versions'], ['3.13.1', '3.10.9'])
         self.assertTrue(result['additional_python_validation'][0]['same_input_hashes'])
+        self.assertEqual(result['additional_python_validation'][0]['pytest_exit_code'], 0)
+        self.assertEqual(result['additional_python_validation'][0]['collected_tests_by_file'],
+                         {'tests/test_fixture.py': 1})
+        self.assertEqual(result['additional_python_validation'][0]['uncollected_test_files'], [])
         paths = [self.root / 'first.json', self.root / 'second.json']
         with self.assertRaisesRegex(ValueError, 'requested Python versions'):
             audit(self.root, paths)
@@ -149,6 +159,75 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
                 report[name] = value
                 with self.assertRaises(ValueError):
                     self.run_audit(report)
+
+    def test_report_requires_exact_pytest_collection_binding(self):
+        for name in ('pytest_exit_code', 'collected_tests_by_file', 'uncollected_test_files'):
+            with self.subTest(omitted=name):
+                report = copy.deepcopy(self.report)
+                del report[name]
+                with self.assertRaises(ValueError):
+                    self.run_audit(report)
+
+        mutations = [
+            ('pytest_exit_code', 1, 'pytest exit code'),
+            ('pytest_exit_code', False, 'pytest exit code'),
+            ('collected_tests_by_file', {}, 'test-module coverage'),
+            ('collected_tests_by_file', {'tests/test_fixture.py': True}, 'at least one test'),
+            ('uncollected_test_files', ['tests/test_fixture.py'], 'uncollected test modules'),
+        ]
+        for name, value, message in mutations:
+            with self.subTest(field=name, value=value):
+                report = copy.deepcopy(self.report)
+                report[name] = value
+                with self.assertRaisesRegex(ValueError, message):
+                    self.run_audit(report)
+
+    def test_zero_count_or_aggregate_only_module_cannot_pass(self):
+        name = 'tests/test_second_fixture.py'
+        value = self.add_snapshot_input(name, b'# selected second synthetic fixture\n')
+        base = copy.deepcopy(self.report)
+        base['input_sha256'][name] = value
+        base['test_files'] = sorted([*base['test_files'], name])
+
+        zero = copy.deepcopy(base)
+        zero['collected_tests_by_file'][name] = 0
+        # The aggregate remains internally plausible, as in an old report that
+        # only proved some test in the selection ran.
+        zero['tests_run'] = 1
+        with self.assertRaisesRegex(ValueError, 'at least one test'):
+            self.run_audit(zero)
+
+        mismatch = copy.deepcopy(base)
+        mismatch['collected_tests_by_file'][name] = 1
+        mismatch['tests_run'] = 1
+        with self.assertRaisesRegex(ValueError, 'counts differ from tests_run'):
+            self.run_audit(mismatch)
+
+        complete = copy.deepcopy(mismatch)
+        complete['tests_run'] = 2
+        self.assertTrue(self.run_audit(complete)['passed'])
+
+    def test_dual_reports_bind_collection_evidence(self):
+        name = 'tests/test_second_fixture.py'
+        value = self.add_snapshot_input(name, b'# second synthetic fixture\n')
+        primary = copy.deepcopy(self.report)
+        primary['input_sha256'][name] = value
+        primary['test_files'] = sorted([*primary['test_files'], name])
+        primary['tests_run'] = 3
+        primary['collected_tests_by_file'][name] = 2
+        first = self.root / 'first.json'
+        second = self.root / 'second.json'
+        first.write_text(json.dumps(primary))
+        secondary = copy.deepcopy(primary)
+        secondary['python'] = '3.10.9'
+        secondary['collected_tests_by_file'] = {
+            'tests/test_fixture.py': 2,
+            name: 1,
+        }
+        second.write_text(json.dumps(secondary))
+        with self.assertRaisesRegex(ValueError,
+                                    'Reports disagree: collected_tests_by_file'):
+            audit(self.root, [first, second], python_versions=('3.13', '3.10'))
 
     def test_modified_snapshot_source_or_wheel_is_rejected(self):
         for name in ('src/cbus_toolkit/cli.py', 'research/fixtures/original-vectors.txt'):
@@ -240,10 +319,11 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         self.report['input_sha256'][name] = value
         self.report['test_files'] = sorted([*self.report['test_files'], name])
         self.report['tests_run'] = 2
+        self.report['collected_tests_by_file'][name] = 1
         with self.assertRaisesRegex(ValueError, 'every required native gate'):
             self.run_audit()
         self.report['enabled_native_gates']['CBUS_CGATE_MOCK_BIN'] = True
-        with self.assertRaisesRegex(ValueError, 'explicit mock binary evidence'):
+        with self.assertRaisesRegex(ValueError, 'explicit test binary evidence'):
             self.run_audit()
         binary = {'path': '/owned/bin/cgate-mock', 'sha256': 'a' * 64, 'size_bytes': 1234}
         self.report['external_test_binaries_before'] = {'CBUS_CGATE_MOCK_BIN': binary}
@@ -255,16 +335,54 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
             with self.subTest(field=field, value=value):
                 report = copy.deepcopy(self.report)
                 report['external_test_binaries_before']['CBUS_CGATE_MOCK_BIN'][field] = value
-                with self.assertRaisesRegex(ValueError, 'Invalid explicit mock binary evidence'):
+                with self.assertRaisesRegex(ValueError, 'Invalid explicit test binary evidence'):
                     self.run_audit(report)
         report = copy.deepcopy(self.report)
         report['external_test_binaries_after']['CBUS_CGATE_MOCK_BIN']['sha256'] = 'b' * 64
-        with self.assertRaisesRegex(ValueError, 'Mock binary changed'):
+        with self.assertRaisesRegex(ValueError, 'Test binary changed'):
             self.run_audit(report)
         report = copy.deepcopy(self.report)
         report['external_test_binary_errors'] = ['CBUS_CGATE_MOCK_BIN']
-        with self.assertRaisesRegex(ValueError, 'Mock binary changed'):
+        with self.assertRaisesRegex(ValueError, 'Test binary changed'):
             self.run_audit(report)
+
+    def test_cmqtt_tests_require_explicit_unchanged_binary_evidence(self):
+        base_manifest = json.loads((self.root / 'snapshot.json').read_text())
+        base_report = copy.deepcopy(self.report)
+        for name in ('tests/test_cmqtt_interop.py',
+                     'tests/test_cmqtt_programming_methods_interop.py'):
+            with self.subTest(test_module=name):
+                contents = b'# Explicit cmqttd integration fixture\n'
+                path = self.root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(contents)
+                value = hashlib.sha256(contents).hexdigest()
+                manifest = copy.deepcopy(base_manifest)
+                manifest['input_sha256'][name] = value
+                (self.root / 'snapshot.json').write_text(json.dumps(manifest))
+                report = copy.deepcopy(base_report)
+                report['input_sha256'][name] = value
+                report['test_files'] = sorted([*report['test_files'], name])
+                report['tests_run'] = 2
+                report['collected_tests_by_file'][name] = 1
+                with self.assertRaisesRegex(ValueError, 'every required native gate'):
+                    self.run_audit(report)
+                report['enabled_native_gates']['CBUS_CMQTTD_BIN'] = True
+                with self.assertRaisesRegex(ValueError, 'explicit test binary evidence'):
+                    self.run_audit(report)
+                binary = {'path': '/owned/bin/cmqttd', 'sha256': 'b' * 64,
+                          'size_bytes': 5678}
+                report['external_test_binaries_before'] = {'CBUS_CMQTTD_BIN': binary}
+                report['external_test_binaries_after'] = copy.deepcopy(
+                    report['external_test_binaries_before'])
+                report['external_test_binary_errors'] = []
+                result = self.run_audit(report)
+                self.assertEqual(result['external_test_binaries_before'],
+                                 report['external_test_binaries_before'])
+                changed = copy.deepcopy(report)
+                changed['external_test_binaries_after']['CBUS_CMQTTD_BIN']['sha256'] = 'c' * 64
+                with self.assertRaisesRegex(ValueError, 'Test binary changed'):
+                    self.run_audit(changed)
 
     def add_snapshot_input(self, name, contents):
         path = self.root / name
