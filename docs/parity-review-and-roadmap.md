@@ -555,6 +555,11 @@ P3/P4; runs alongside P5 with separate device ownership.
   [recorded with bytecode and native loopback evidence](../toolkit-cli/docs/edlt-dynamic-cache-boundary.md):
   no exposed native getter was found. This does not establish firmware-wide
   impossibility or close the package's rendering/persistence requirements.
+  A separate offline original-GUI observation now binds the Dynamic Label
+  Editor controls and a project-level `TagDLT` record to private screenshots
+  and XML hashes. The project's dynamic label is separate from unit static
+  strings; the selected group value was not displayed in the GUI, and no
+  device-cache readback occurred. P0 census and P6 acceptance remain open.
 - [ ] **P6.06** ([#50](https://github.com/mitchell-johnson/cbus/issues/50)) — Validate static/dynamic labels after programming, disconnect, restart and
   power cycle, with serial-bound before/after identity and external display
   observations where needed.

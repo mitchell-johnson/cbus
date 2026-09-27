@@ -6,6 +6,21 @@ stored in a physical eDLT's dynamic-label cache. This is a bounded conclusion
 about these installed releases. It does not prove that every eDLT firmware
 has no undocumented diagnostic or programming protocol.
 
+An additional offline observation in the original Toolkit 1.18 GUI confirms
+that its network **Dynamic Label Editor** exposes Applications, Groups,
+Dynamic Labels, four displayed variants, Edit Languages, Set Network Language
+and Send Labels. The selected network was closed, its house CNI host was
+blocked, and Send Labels was disabled. The local project XML contains one
+nonempty `TagDLT` under a network/application/group, with a text flavour and
+language; the KEYGL5 unit has no `TagDLT` descendants and instead carries 64
+separate `StaticTextString` programmable parameters. Project dynamic-label
+definitions and physical unit static strings are different stores. The
+site-specific text and project XML remain private. The particular group's
+value was confirmed in XML but **was not displayed in the GUI**. This did not
+read the device, validate rendering, or prove that Toolkit/C-Gate can retrieve
+its pre-existing dynamic-label cache. The GUI's Variant 1–4 captions are
+recorded as displayed, without inferring protocol index equivalence.
+
 The [source-bound P6.05 fixture](../research/fixtures/edlt-dynamic-cache-native-scope.json)
 records the exact Toolkit executable, C-Gate JAR, eDLT/LabelEditor assemblies,
 Java runtime and relevant class/IL hashes. The pinned native C-Gate
@@ -54,6 +69,15 @@ python3.13 research/verify_edlt_dynamic_cache_scope.py \
   --raw-help /path/to/private/owned-help-capture.json \
   --raw-commands /path/to/private/owned-command-capture.json
 ```
+
+To recheck the retained GUI screenshots and private project XML hashes and
+their structural separation, add `--private-gui-staging` with the ignored VM
+evidence directory. This check verifies the original XML fields without
+printing the private label text. The sanitized fixture binds the retained
+GUI evidence report (`a00bfa095d64938824d54928c69bd5dd5be496390f1d423a21814202c581a5e8`),
+project contract (`9a85f210e996f5e0772ef3d0c77310af41cc5412c7440cef205b95c3e615d204`),
+project XML and three screenshots by SHA-256. Their absence from a public
+checkout does not turn the observation into an accepted P0/P6 parity receipt.
 
 The vendor and raw-capture flag pairs can be omitted independently. Without
 those private files, the same script validates the committed fixture and its

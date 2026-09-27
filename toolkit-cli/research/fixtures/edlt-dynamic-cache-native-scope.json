@@ -59,6 +59,59 @@
     "raw_help_capture_sha256": "60e80107817495039004006a0249272eda53edd03cf610aaafdc641733cda15f",
     "read_only": true
   },
+  "original_gui_project_observation": {
+    "artifact_sha256": {
+      "about_screenshot": "9203028c872d6c131ad56296bfa78a2dec3747ffd6cec3d296a376c27b5c4e54",
+      "dynamic_label_editor_screenshot": "0780cafb92c5671fb983b5d924641ac5311ff4d248aa5e0e23c2ba6ba7865ee5",
+      "network_closed_screenshot": "3cd2978f581278727dd1e40dab766e9610746a3429799fe68388e90ecd3359ca",
+      "private_install_evidence": "a00bfa095d64938824d54928c69bd5dd5be496390f1d423a21814202c581a5e8",
+      "private_project_contract": "9a85f210e996f5e0772ef3d0c77310af41cc5412c7440cef205b95c3e615d204",
+      "private_project_xml": "8850d846aa0fc1c948420726e7ec27aa9401336945b6fe7612992c3a21c89469"
+    },
+    "editor_controls_observed": [
+      "Applications",
+      "Groups",
+      "Dynamic Labels",
+      "Variant 1",
+      "Variant 2",
+      "Variant 3",
+      "Variant 4",
+      "Edit Languages",
+      "Set Network Language",
+      "Send Labels"
+    ],
+    "offline_gui": {
+      "cni_host_blocked": true,
+      "network_open": false,
+      "send_labels_enabled": false,
+      "save_or_send_invoked": false,
+      "units_in_database": 29,
+      "units_on_network": 0
+    },
+    "private_project_structure": {
+      "application_address": 56,
+      "flavour_id": 1,
+      "group_address": 27,
+      "group_value_displayed_in_gui": false,
+      "language_id": 1,
+      "network_address": 254,
+      "nonempty_group_tag_dlt_count": 1,
+      "tag_type": "TEXT",
+      "tag_value_committed": false,
+      "unit_address": 5,
+      "unit_static_text_string_count": 64,
+      "unit_tag_dlt_descendant_count": 0,
+      "unit_type": "KEYGL5",
+      "xml_scope": "Installation/Project/Network/Application/Group/TagsDLT/TagDLT"
+    },
+    "scope": {
+      "device_cache_readback": false,
+      "physical_display_observed": false,
+      "project_record_is_unit_static_text": false,
+      "project_record_is_wire_receipt": false
+    },
+    "status": "bounded_offline_original_toolkit_gui_and_project_xml_observed"
+  },
   "retained_full_help_census": {
     "help_star_response_lines": 211,
     "maintained_path_count": 431,

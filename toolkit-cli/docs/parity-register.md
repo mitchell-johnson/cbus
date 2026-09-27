@@ -34,6 +34,12 @@ firmware domains. Until that finishes, `denominator_ready` and
 `functional_percent_available` are false and functional percentages are
 `null`.
 
+The [original Toolkit Dynamic Label Editor observation](edlt-dynamic-cache-boundary.md)
+adds a hash-bound offline GUI and project-XML cross-check to the existing
+provisional eDLT scope. It distinguishes application/group `TagDLT` data from
+unit `StaticTextString` parameters. It adds no accepted obligation receipt,
+changes no provisional source count, and supplies no physical cache readback.
+
 ## Files and regeneration
 
 - `src/cbus_toolkit/parity-obligations.json` contains the source inventory,

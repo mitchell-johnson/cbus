@@ -26,6 +26,14 @@ def test_native_scope_evidence_is_explicit_and_consistent(evidence: dict) -> Non
     lambda row: row["supported_boundary"].update(physical_firmware_protocol_absence_proven=True),
     lambda row: row["supported_boundary"].update(cmqtt_observed_traffic_is_device_readback=True),
     lambda row: row["owned_loopback_oracle"].update(cleanup_complete=False),
+    lambda row: row["original_gui_project_observation"]["offline_gui"].update(
+        send_labels_enabled=True),
+    lambda row: row["original_gui_project_observation"]["private_project_structure"].update(
+        group_value_displayed_in_gui=True),
+    lambda row: row["original_gui_project_observation"]["scope"].update(
+        device_cache_readback=True),
+    lambda row: row["original_gui_project_observation"]["artifact_sha256"].update(
+        private_project_xml="0" * 64),
 ])
 def test_evidence_guard_rejects_overclaims_and_changed_oracle(evidence: dict, change) -> None:
     altered = deepcopy(evidence)

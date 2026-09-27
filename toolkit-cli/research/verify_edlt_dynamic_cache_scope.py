@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import re
 import struct
+from xml.etree import ElementTree
 import zipfile
 
 
@@ -35,6 +36,19 @@ COMMAND_CAPTURE_SHA256 = "4c29ec800aef3c289fb272da87ffe20f45fca282d248654002445d
 FULL_HELP_CENSUS_SHA256 = "c8645c25686c43ee86360334694bcc3efbbaf83490aadb48afc25ac7457e1c4f"
 REGISTRATIONS = {"clear": "kx", "clearedlt": "ky", "kfiget": "kz", "kfiset": "kA"}
 CLASS_PATH = "com/clipsal/cgate/cbus/label/LabelPrimaryCommand.class"
+GUI_ARTIFACT_SHA256 = {
+    "about_screenshot": "9203028c872d6c131ad56296bfa78a2dec3747ffd6cec3d296a376c27b5c4e54",
+    "dynamic_label_editor_screenshot": "0780cafb92c5671fb983b5d924641ac5311ff4d248aa5e0e23c2ba6ba7865ee5",
+    "network_closed_screenshot": "3cd2978f581278727dd1e40dab766e9610746a3429799fe68388e90ecd3359ca",
+    "private_install_evidence": "a00bfa095d64938824d54928c69bd5dd5be496390f1d423a21814202c581a5e8",
+    "private_project_contract": "9a85f210e996f5e0772ef3d0c77310af41cc5412c7440cef205b95c3e615d204",
+    "private_project_xml": "8850d846aa0fc1c948420726e7ec27aa9401336945b6fe7612992c3a21c89469",
+}
+GUI_CONTROLS = [
+    "Applications", "Groups", "Dynamic Labels", "Variant 1", "Variant 2",
+    "Variant 3", "Variant 4", "Edit Languages", "Set Network Language",
+    "Send Labels",
+]
 
 
 def sha256(data: bytes) -> str:
@@ -124,6 +138,130 @@ def check_evidence(evidence: dict) -> None:
              len(profile["rows"]) == 431 and
              len(profile["help_star"]["response"]) == 211,
              "full native help census target changed")
+    gui = evidence["original_gui_project_observation"]
+    _require(gui["status"] == "bounded_offline_original_toolkit_gui_and_project_xml_observed",
+             "original GUI scope changed")
+    _require(gui["artifact_sha256"] == GUI_ARTIFACT_SHA256,
+             "original GUI/project artifact digests changed")
+    _require(gui["editor_controls_observed"] == GUI_CONTROLS,
+             "original Dynamic Label Editor controls changed")
+    _require(gui["offline_gui"] == {
+        "cni_host_blocked": True,
+        "network_open": False,
+        "send_labels_enabled": False,
+        "save_or_send_invoked": False,
+        "units_in_database": 29,
+        "units_on_network": 0,
+    }, "original GUI offline boundary changed")
+    _require(gui["private_project_structure"] == {
+        "application_address": 56,
+        "flavour_id": 1,
+        "group_address": 27,
+        "group_value_displayed_in_gui": False,
+        "language_id": 1,
+        "network_address": 254,
+        "nonempty_group_tag_dlt_count": 1,
+        "tag_type": "TEXT",
+        "tag_value_committed": False,
+        "unit_address": 5,
+        "unit_static_text_string_count": 64,
+        "unit_tag_dlt_descendant_count": 0,
+        "unit_type": "KEYGL5",
+        "xml_scope": "Installation/Project/Network/Application/Group/TagsDLT/TagDLT",
+    }, "project dynamic/static label distinction changed")
+    _require(gui["scope"] == {
+        "device_cache_readback": False,
+        "physical_display_observed": False,
+        "project_record_is_unit_static_text": False,
+        "project_record_is_wire_receipt": False,
+    }, "original GUI/project observation overclaims physical evidence")
+
+
+def check_private_gui_sources(evidence: dict, staging_dir: Path) -> None:
+    """Bind the sanitized GUI observation to retained private VM files.
+
+    The project XML, screenshots and label text stay outside Git. This optional
+    check reads them only from the explicitly provided local staging directory.
+    """
+    gui = evidence["original_gui_project_observation"]
+    expected = gui["artifact_sha256"]
+    install_path = staging_dir / "private-install-evidence.json"
+    contract_path = staging_dir / "project-dynamic-label-contract.json"
+    _require(sha256(install_path.read_bytes()) == expected["private_install_evidence"],
+             "private GUI evidence hash differs")
+    _require(sha256(contract_path.read_bytes()) == expected["private_project_contract"],
+             "private project contract hash differs")
+    install = json.loads(install_path.read_text())
+    contract = json.loads(contract_path.read_text())
+    native = install["native_gui_acceptance"]
+    _require(install["installed_target_toolkit"]["exe_sha256"] == TOOLKIT_EXE_SHA256 and
+             "1.18.0 build 2754" in native["original_toolkit"] and
+             "3.4.0 build 2001" in native["original_toolkit"] and
+             native["status"] == gui["status"], "private GUI release or status differs")
+    _require(native["isolation"]["configured_cni_host_matches_in_final_netstat"] == 0 and
+             native["isolation"]["final_firewall_rule"]["enabled"] is True and
+             native["isolation"]["final_firewall_rule"]["action"] == "Block" and
+             any("group was below visible list" in limit for limit in native["limits"]),
+             "private GUI offline or visual limit differs")
+
+    def bound_file(path_string: str, digest: str) -> Path:
+        path = Path(path_string)
+        _require(path.parent.resolve() == staging_dir.resolve(),
+                 "private evidence path is outside staging directory")
+        _require(sha256(path.read_bytes()) == digest,
+                 "private GUI/project artifact hash differs")
+        return path
+
+    for name, key in (("about", "about_screenshot"),
+                      ("dynamic_label_editor_lighting", "dynamic_label_editor_screenshot"),
+                      ("network_closed", "network_closed_screenshot")):
+        screenshot = native["screenshots"][name]
+        _require(screenshot["sha256"] == expected[key],
+                 "private screenshot reference differs")
+        bound_file(screenshot["private_path"], expected[key])
+
+    project_ref = native["source_contract"]
+    _require(project_ref["query_result"]["sha256"] == expected["private_project_contract"] and
+             project_ref["project_xml"]["sha256"] == expected["private_project_xml"],
+             "private source-contract reference differs")
+    xml_path = bound_file(project_ref["project_xml"]["private_path"],
+                          expected["private_project_xml"])
+    _require(contract["source_sha256"] == expected["private_project_xml"] and
+             contract["nonempty_tag_dlt_count_in_network"] == 1 and
+             contract["unit_5"]["tag_dlt_descendant_count"] == 0 and
+             contract["unit_5"]["static_text_string_count"] == 64,
+             "private project contract differs")
+    root = ElementTree.fromstring(xml_path.read_bytes())
+    networks = [node for node in root.findall("./Project/Network")
+                if node.findtext("Address") == "254"]
+    _require(len(networks) == 1, "private network identity differs")
+    network = networks[0]
+    applications = [node for node in network.findall("Application")
+                    if node.findtext("Address") == "56"]
+    _require(len(applications) == 1, "private application identity differs")
+    groups = [node for node in applications[0].findall("Group")
+              if node.findtext("Address") == "27"]
+    _require(len(groups) == 1, "private group identity differs")
+    all_labels = network.findall("./Application/Group/TagsDLT/TagDLT")
+    _require(len([node for node in all_labels if node.findtext("TagValue")]) == 1,
+             "private project dynamic-label count differs")
+    labels = groups[0].findall("./TagsDLT/TagDLT")
+    _require(len(labels) == 1 and
+             {key: labels[0].findtext(key) for key in
+              ("LanguageID", "FlavourID", "TagType")} == {
+                  "LanguageID": "1", "FlavourID": "1", "TagType": "TEXT"} and
+             labels[0].findtext("TagValue") ==
+             contract["group_27"]["tag_dlt"][0]["TagValue"],
+             "private project TagDLT differs")
+    units = [node for node in network.findall("Unit")
+             if node.findtext("Address") == "5"]
+    _require(len(units) == 1 and units[0].findtext("UnitType") == "KEYGL5" and
+             len(units[0].findall(".//TagDLT")) == 0,
+             "private unit identity or dynamic-label descendants differ")
+    names = {node.attrib.get("Name") for node in units[0].findall("PP")
+             if node.attrib.get("Name", "").startswith("StaticTextString")}
+    _require(names == {f"StaticTextString{index}" for index in range(64)},
+             "private unit static-label slots differ")
 
 
 def _class_registration(class_bytes: bytes) -> tuple[dict[str, str], bytes]:
@@ -285,6 +423,8 @@ def main() -> int:
     parser.add_argument("--toolkit-app", type=Path, help="Ignored pinned Toolkit app directory")
     parser.add_argument("--raw-help", type=Path, help="Private owned-loopback HELP capture")
     parser.add_argument("--raw-commands", type=Path, help="Private owned-loopback command capture")
+    parser.add_argument("--private-gui-staging", type=Path,
+                        help="Ignored directory containing the VM GUI/project evidence")
     args = parser.parse_args()
     if bool(args.cgate_app) != bool(args.toolkit_app):
         parser.error("pass both --cgate-app and --toolkit-app for source verification")
@@ -296,9 +436,12 @@ def main() -> int:
         check_sources(evidence, args.cgate_app, args.toolkit_app)
     if args.raw_help:
         check_raw_captures(evidence, args.raw_help, args.raw_commands)
+    if args.private_gui_staging:
+        check_private_gui_sources(evidence, args.private_gui_staging)
     print(json.dumps({"scope_id": evidence["scope_id"], "fixture_valid": True,
                       "vendor_source_verified": bool(args.cgate_app),
                       "native_capture_verified": bool(args.raw_help),
+                      "private_gui_project_verified": bool(args.private_gui_staging),
                       "device_cache_inventory": False}, sort_keys=True))
     return 0
 
