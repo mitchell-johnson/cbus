@@ -33,11 +33,17 @@ conversion alone cannot verify a different project's loadability. The command
 accepts the UTF-8, XML 1.0 `Installation` envelope produced by the portable
 repair, one literal direct DBVersion 2, 2.1 or 2.2, one direct `Project`, a
 final LF, and an optional project address matching `[A-Z][A-Z0-9_]{0,7}`.
-For version 2 or 2.1 it also requires no `Unit` or `PP` elements anywhere in
-the document. The earlier original stylesheets remove/add unit parameters and
-change selected firmware versions; a direct version replacement would be wrong
-for those files. They require original C-Gate's native transform or a future
-fully tested stylesheet implementation. The portable command rejects DTDs,
+For version 2 or 2.1, it now also admits unnamespaced `KEYGL5` units at
+firmware `5.5.00`, with canonical direct `PP Name="..." Value="..."` tokens. It
+preserves the unit's other programming bytes and applies the original
+stylesheets' simple obsolete-parameter removals: `Remote3` through `Remote8`
+identity/key-map fields in the 2.1→2.2 stage, plus the 2→2.1 stage's specified
+mask, offset, feature, key 9–16 and remote 1–2 fields. The portable result
+lists removed PP names in `removed_programming_parameters`. The earlier
+original stylesheets also add parameters and change selected firmware versions;
+other Unit types, firmware versions, noncanonical PP tokens and the PP
+expansion/rename triggers still require original C-Gate's native transform.
+The portable command rejects DTDs,
 alternate version spelling, other encodings and malformed or oversized XML.
 
 For an explicitly selected original XML repository, the typed native client
@@ -88,8 +94,17 @@ more surprisingly, for rejected versions 1 and 2.4: native `--test` returned
 the `.xml.0` backup. It is therefore a native file-mutating preview, unlike
 the portable `--dry-run` which creates no output.
 
-These observations cover ten generated conversions, two rejected versions and
+An additional [owned KEYGL5 receipt](../research/fixtures/project-legacy-transform-units-native-receipt.json)
+generates a full KEYGL5 5.5.00 PP snapshot inside original C-Gate, stages
+version 2 and 2.1 copies, and compares four portable outputs byte-for-byte
+with original `TRANSFORM PROJECT`. Two copies retain all PP values; one removes
+an obsolete `Remote3Identity` at version 2.1, and one removes `FeatureSet` at
+version 2. Each transformed file subsequently passes original `PROJECT LOAD`
+and `DBGETXML`, with the removed fields absent on readback. The service uses
+an owned XML repository and loopback listener and does not open a network.
+
+These observations cover fourteen generated conversions, two rejected versions and
 two explicit built-in-stylesheet variants (server output and in-place) in the original XML
-repository. Arbitrary repaired databases, migration of units/PP data, other
+repository. Arbitrary repaired databases, other unit/PP migrations, other
 custom stylesheets and output paths, SQLite repository behavior, Windows
 conversion and complete Toolkit workflow parity remain unverified.

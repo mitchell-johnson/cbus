@@ -1,0 +1,88 @@
+{
+  "format": "cbus-project-legacy-transform-units-native-v1",
+  "target": "original C-Gate 3.4.0 build 2001, owned XML repository and loopback only",
+  "sources": {
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transform_sha256": {
+      "v2tov21.xslt": "8346eab4259b957d53fc2b5c14ee1e058196124eabe4a7e3fb45b145f74735a8",
+      "v21tov22.xslt": "e2090621171b5febf4903eaa964dd7a855b3d3cea827678da3758376dceab875",
+      "v22tov23.xslt": "5674534824826a2db5e3b762c207ce0e566298e54703f628d16f9b3d2d47dab2",
+      "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
+    },
+    "native_test_sha256": "18b7d2534764eec6c00561f41fffdcde3605d3e21bfe40da4a0902f99306b97e",
+    "portable_module_sha256": "9cec274ed5a0bc9529103a067cd307823006c1f5fc41dd74f44b02f56195c580",
+    "portable_test_sha256": "c396a4baddb8ef82492f27e1ff0aad772efd675943be447a799c8eec9038c3a6",
+    "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "cases": [
+    {
+      "case": "UGEN",
+      "source_db_version": "2.1",
+      "source_sha256": "980a8fd5db2e430385401bf4cfbe47fd197b5b0f2b07964761d93bb79cc16058",
+      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
+      "backup_sha256": "980a8fd5db2e430385401bf4cfbe47fd197b5b0f2b07964761d93bb79cc16058",
+      "readback_sha256": "0e1371dbd1ba3aea8ae8191336efc06986212337e993086e9c618e9a293f87ff",
+      "removed_pp": [],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "UGEN2",
+      "source_db_version": "2",
+      "source_sha256": "39f298558c832376aa864e0fc8d73ebd158339f247fa51cf3e90ee791e14b060",
+      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
+      "backup_sha256": "39f298558c832376aa864e0fc8d73ebd158339f247fa51cf3e90ee791e14b060",
+      "readback_sha256": "7b91d890d3fd4c61798e5b7ef802ae7b086b77b1c48aa1cf1a26177f4285c3d1",
+      "removed_pp": [],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "UREM",
+      "source_db_version": "2.1",
+      "source_sha256": "ef0c2422055cc2f314e9a844c46bfe49e244ec214b022a1695e0a7a978c41f01",
+      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
+      "backup_sha256": "ef0c2422055cc2f314e9a844c46bfe49e244ec214b022a1695e0a7a978c41f01",
+      "readback_sha256": "96f15797933206d77e6a78a02038ea8094cf9ce90563eb6a9d14b23f9f35e4fc",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "UFEATURE",
+      "source_db_version": "2",
+      "source_sha256": "55f69bb6ce43fa95df145bc9d5c34ecb68b1af74e966d173d9ccbd81cf0f2969",
+      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
+      "backup_sha256": "55f69bb6ce43fa95df145bc9d5c34ecb68b1af74e966d173d9ccbd81cf0f2969",
+      "readback_sha256": "1948ed873ba4d0a247625db4761cb58abe6262f9dc8d4cc4ca627d1aeeaae35d",
+      "removed_pp": [
+        "FeatureSet"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    }
+  ],
+  "service": {
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "cleanup_complete": true
+  },
+  "physical_networks_opened": false,
+  "scope": "KEYGL5 5.5.00 PP-preserving and obsolete-parameter-removal migration, versions 2/2.1"
+}

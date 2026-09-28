@@ -11,10 +11,10 @@
       "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
     },
     "native_test_sha256": "336fcf08ad3cb3909998aa574a7dcb0358479c2052ea0cdeff05cd7bb4fc5c09",
-    "portable_module_sha256": "0922360ae69d0358570a14ed9d8603e2ebf5fb1b2bca81790e44717aceeb4308",
+    "portable_module_sha256": "9cec274ed5a0bc9529103a067cd307823006c1f5fc41dd74f44b02f56195c580",
     "native_module_sha256": "81b1e60f2c751aa6de6f8414a1b9a01df7f8c2a671a2f9d3467f4f7ebf379ca7",
     "cli_dispatch_sha256": "3b8e26c055ef69345d0b2992212f594df91612f3e4c066e302162625388f365c",
-    "portable_test_sha256": "4e9556ed3f2c994c01122c832a18afd14bd75a5d7bdbbce821215fd6b501eb40",
+    "portable_test_sha256": "c396a4baddb8ef82492f27e1ff0aad772efd675943be447a799c8eec9038c3a6",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
   "cases": [

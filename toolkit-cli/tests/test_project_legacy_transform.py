@@ -140,8 +140,46 @@ class LegacyTransformTests(unittest.TestCase):
                            b'<cis:Unit xmlns:cis="urn:example"/>'):
                 with self.subTest(version=version, insert=insert):
                     candidate = source.replace(b"<Project>", b"<Project>" + insert, 1)
-                    with self.assertRaisesRegex(LegacyProjectTransformError, "native XSLT conversion"):
+                    with self.assertRaises(LegacyProjectTransformError):
                         transform_repaired_legacy_project(candidate)
+
+    def test_earlier_keygl5_unit_pp_removals_preserve_other_bytes(self):
+        unit = (b'<Unit><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion>'
+                b'<PP Name="Remote3Identity" Value="0xff"/>'
+                b'<PP Name="FeatureSet" Value="0x1"/>'
+                b'<PP Name="Keep" Value="a&amp;b"/></Unit>')
+        for version, removed in (("2", ("Remote3Identity", "FeatureSet")),
+                                 ("2.1", ("Remote3Identity",))):
+            with self.subTest(version=version):
+                source = (b'<?xml version="1.0" encoding="utf-8"?><Installation><DBVersion>'
+                          + version.encode() + b'</DBVersion><Project><Network>' + unit
+                          + b'</Network></Project></Installation>\n')
+                result = transform_repaired_legacy_project(source)
+                expected = source.replace(b'<DBVersion>' + version.encode() + b'</DBVersion>',
+                                          b'<DBVersion>2.3</DBVersion>')[:-1]
+                for name in removed:
+                    expected = expected.replace(b'<PP Name="' + name.encode() + b'" Value="' +
+                                                (b'0x1' if name == 'FeatureSet' else b'0xff') + b'"/>', b'')
+                self.assertEqual(result.transformed_xml, expected)
+                self.assertEqual(result.as_dict()['removed_programming_parameters'], list(removed))
+                self.assertIn(b'<PP Name="Keep" Value="a&amp;b"/>', result.transformed_xml)
+
+    def test_earlier_keygl5_unit_special_or_noncanonical_shapes_are_rejected(self):
+        base = (b'<?xml version="1.0" encoding="utf-8"?><Installation><DBVersion>2</DBVersion>'
+                b'<Project><Network><Unit><UnitType>KEYGL5</UnitType>'
+                b'<FirmwareVersion>5.5.00</FirmwareVersion><PP Name="Keep" Value="1"/>'
+                b'</Unit></Network></Project></Installation>\n')
+        for source in (base.replace(b'KEYGL5', b'KEYBL5'),
+                       base.replace(b'5.5.00', b'5.4.00'),
+                       base.replace(b'Name="Keep"', b'Name="KeyExtraLongPressDuration"'),
+                       base.replace(b'Name="Keep"', b'Name="EnableNightlightPCx"'),
+                       base.replace(b'<PP Name="Keep"', b'<Empty></Empty><PP Name="Keep"'),
+                       base.replace(b' Value="1"', b' extra="x" Value="1"'),
+                       base.replace(b'<PP Name="Keep" Value="1"/>',
+                                    b'<PP Value="1" Name="Keep"/>')):
+            with self.subTest(source=source):
+                with self.assertRaises(LegacyProjectTransformError):
+                    transform_repaired_legacy_project(source)
 
     def test_earlier_version_cli_is_exclusive_and_preserves_source(self):
         _, _, repaired = next(candidates())
