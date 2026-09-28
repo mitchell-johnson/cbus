@@ -243,7 +243,11 @@ reused-observer rejection. Those tests use deterministic observers. The
 [source receipt](../research/experiments/2026-09-28/live-registry-cli-repeat.json)
 records that earlier admission. The later [interactive Windows receipt](../research/experiments/2026-09-28/live-registry-cli-interactive-repeat.json)
 and [redacted raw CLI result](../research/experiments/2026-09-28/live-registry-cli-interactive-repeat-redacted.json)
-pin one installed-wheel command under the active desktop user: an owned HKCU
+pin one installed-wheel command under the active desktop user.
+The [evidence integrity test](../tests/test_windows_live_registry_interactive_repeat_evidence.py)
+binds the receipt to the redacted result and checks both pass values, distinct
+workers, SID guards, operational cleanup, and the explicitly indeterminate VM
+attempt. The command used an owned HKCU
 Registry32 DWORD changed from 0 to 1 after the first worker's response; the
 same wrapper returned true then false, with fresh `a` caches, separate checked
 x86 workers, two matching SID guards and completed worker cleanup. The CLI
