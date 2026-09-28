@@ -242,6 +242,27 @@ def test_native_programming_role_probe_weakening_cannot_rebuild(
         contract_builder.build()
 
 
+def test_native_media_role_probe_weakening_cannot_rebuild(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_MEDIA_ROLE_PATH.read_text())
+    changed["roles"]["Operate"]["responses"][
+        "SECURITY ARM //MISSING/254/203 1"
+    ] = "420 Access denied."
+    fixture = tmp_path / "weakened-media-roles.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_MEDIA_ROLE_PATH", fixture)
+    with pytest.raises(ValueError, match="media role source changed"):
+        contract_builder.build()
+    monkeypatch.setattr(
+        contract_builder,
+        "NATIVE_MEDIA_ROLE_EVIDENCE_SHA256",
+        sha256(fixture.read_bytes()).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="role threshold changed"):
+        contract_builder.build()
+
+
 def test_native_role_observation_cannot_be_reclassified_as_resolved() -> None:
     document = contract_builder.build()
     row = contract_by_path(document, "CGL IMPORT")
