@@ -173,12 +173,12 @@ while cmqttd returns 408 so clients do not hang.
 CONFIG state is command compatibility data in cmqttd's atomic JSON repository.
 `LOAD` and `SAVE` retain native response ordering but use bounded internal
 snapshots; a supplied filename is only an identity and is never opened on the
-host. Six source-captured global restart effects are implemented. The listener emits native
-level-1 `761 cmdN - Command: ...` entries and, when its startup
-`command.show-responses` value is `yes` (the native default), a level-6 `766`
+host. Seven source-captured global restart effects are implemented. The listener emits native
+`761 cmdN - Command: ...` entries and, when its startup
+`command.show-responses` value is `yes` (the native default), a `766`
 entry for each reply line, including multiline replies and errors. Setting it
 to `no` suppresses only the `766` entries after the next restart. A startup
-`command.show-time=yes` also emits level-7
+`command.show-time=yes` also emits
 `767 cmdN - commandId=<tag> time=<milliseconds>` after completed replies.
 Startup `event-millis` controls whether event timestamps include `.mmm`;
 `heartbeat-time` starts native-shaped `700` events at the saved whole-second
@@ -204,7 +204,21 @@ view before opening the listener. See
 [`native_cgate_config_project_start.json`](../../../../rust/testdata/fixtures/native_cgate_config_project_start.json)
 and [`cgate_config_project_start.jsonl`](../../../../rust/testdata/vectors/cgate_config_project_start.jsonl).
 GET reflects SET/LOAD immediately, while the current listener retains the
-startup settings. C-Gate event entries redact credential-bearing commands and
+startup settings. Native `CONFIG INFO global-event-level` says `immediate`,
+but owned Java 11 captures show the valid 0–9 delivery level is sampled at
+startup. For C-Gate `EVENT e+`, 0–2 admit none of the captured event families,
+3–4 admit `703` broadcast events, 5–8 also admit `700` heartbeats, and 9
+also admits `761/766/767` command traces. Explicit `EVENT e0`–`e9`
+subscriptions use their own level independently of the startup global value.
+Same-process SET changes GET but not delivery. `-1` and `10` are also stored;
+at startup their observed delivery matches levels 0 and 9 respectively.
+Text and blank values are stored and read back, but native startup throws a
+main-thread `NumberFormatException` before opening command listeners. cmqttd
+leaves its optional C-Gate listener disabled with a diagnostic while MQTT and
+PCI continue. Filtering applies only to those source-captured C-Gate event families;
+it does not change MQTT, PCI or live C-Bus observations. See
+[`native_cgate_config_global_event_level.json`](../../../../rust/testdata/fixtures/native_cgate_config_global_event_level.json).
+C-Gate event entries redact credential-bearing commands and
 their response payloads; native C-Gate may expose those bytes. Other
 catalogue values remain stored data and do not reconfigure the listener, PCI,
 MQTT, loggers, or filesystem. With the optional LOGIN gate armed, SET,
@@ -215,7 +229,7 @@ physical C-Bus state.
 `CMQTT CAPABILITIES` publishes the exact command list, catalogue/wildcard
 counts, `config_persistence="cmqttd-json"`,
 `config_runtime_reconfiguration=false`,
-`config_restart_effects=["command.show-responses","command.show-time","event-millis","heartbeat-time","project.default","project.start"]`,
+`config_restart_effects=["command.show-responses","command.show-time","event-millis","global-event-level","heartbeat-time","project.default","project.start"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
 and the separate owned restart captures

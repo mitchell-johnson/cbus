@@ -688,6 +688,13 @@ pub struct Service {
     command_show_responses: bool,
     command_show_time: bool,
     event_millis: bool,
+    /// The native e+ selector samples this global value at startup, despite
+    /// CONFIG INFO describing the parameter as effective immediately.
+    global_event_level: u8,
+    /// Native 3.4 fails during startup on a nonnumeric value and never opens
+    /// its command listener. cmqttd keeps MQTT/PCI running and skips its
+    /// optional C-Gate listener for this one bounded configuration failure.
+    global_event_level_invalid: bool,
     heartbeat_interval: Option<Duration>,
     heartbeat_started: OnceLock<()>,
     /// Native C-Gate snapshots this global key at startup.  Project presence
@@ -1784,6 +1791,16 @@ impl Service {
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let event_millis = config_parameter("event-millis")
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
+        // The owned startup sweep covers 0..9 and the numeric boundaries -1
+        // and 10. Native startup with text or blank throws NumberFormatException
+        // before opening its command listeners. Keep Service construction
+        // available to cmqttd so the bridge can continue without C-Gate.
+        let parsed_global_event_level = config_parameter("global-event-level")
+            .and_then(|parameter| config_global_value(&model, parameter).parse::<i32>().ok());
+        let global_event_level_invalid = parsed_global_event_level.is_none();
+        let global_event_level = parsed_global_event_level
+            .map(|level| level.clamp(0, 9) as u8)
+            .unwrap_or(5);
         // Native heartbeat-time takes effect at startup. Bound the timer to
         // one day so a malformed or extreme stored value cannot panic a
         // listener or create a high-frequency event loop.
@@ -1820,6 +1837,8 @@ impl Service {
             command_show_responses,
             command_show_time,
             event_millis,
+            global_event_level,
+            global_event_level_invalid,
             heartbeat_interval,
             heartbeat_started: OnceLock::new(),
             startup_project_default,
@@ -1846,6 +1865,12 @@ impl Service {
             spam_sessions: Arc::new(Mutex::new(SpamSessions::default())),
             audit_log: Mutex::new(VecDeque::new()),
         }))
+    }
+
+    /// Native C-Gate leaves its command listeners unopened when the saved
+    /// global event level is nonnumeric. The bridge may still run MQTT/PCI.
+    pub fn global_event_listener_invalid(&self) -> bool {
+        self.global_event_level_invalid
     }
 
     async fn startup_default_for_loaded_project(&self) -> Option<String> {
@@ -2935,6 +2960,7 @@ impl Service {
                 "command.show-responses",
                 "command.show-time",
                 "event-millis",
+                "global-event-level",
                 "heartbeat-time",
                 "project.default",
                 "project.start"
@@ -13538,7 +13564,7 @@ impl Service {
                             continue;
                         }
                         if let Some(event) = self.publish_command_entry(&client, &line) {
-                            write_own_command_event(&mut writer, mode, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
                         }
                         let started = Instant::now();
                         let tagged = line.starts_with('[');
@@ -13563,10 +13589,10 @@ impl Service {
                                 .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                             if !close_after_reply {
                                 for event in self.publish_command_responses(&client, &wire, &line) {
-                                    write_own_command_event(&mut writer, mode, &event).await?;
+                                    write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
                                 }
                                 if let Some(event) = self.publish_command_time(&client, &response.tag, started) {
-                                    write_own_command_event(&mut writer, mode, &event).await?;
+                                    write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
                                 }
                             }
                             if close_after_reply {
@@ -13618,10 +13644,10 @@ impl Service {
                         tokio::time::timeout(Duration::from_secs(10), writer.write_all(wire.as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                         for event in self.publish_command_responses(&client, &wire, &command) {
-                            write_own_command_event(&mut writer, mode, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
                         }
                         if let Some(event) = self.publish_command_time(&client, &response.tag, started) {
-                            write_own_command_event(&mut writer, mode, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
                         }
                         if close && response.status == 204 {
                             // `write_all` only guarantees that the plaintext
@@ -13641,12 +13667,12 @@ impl Service {
                                 continue;
                             }
                             let deploy_channel = deploy_queue_event_channel(&event);
-                            let deliver = deploy_channel.map_or_else(
-                                || mode.delivers_line(&event),
-                                |channel| client.event_channels.contains(channel),
+                            let delivery = deploy_channel.map_or_else(
+                                || cgate_event_delivery(mode, self.global_event_level, &event),
+                                |channel| client.event_channels.contains(channel).then_some(event.as_str()),
                             );
-                            if deliver {
-                                tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{event}\r\n").as_bytes())).await
+                            if let Some(delivery) = delivery {
+                                tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{delivery}\r\n").as_bytes())).await
                                     .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate event client is not reading"))??;
                             }
                         }
@@ -13684,14 +13710,19 @@ impl Service {
     }
 }
 
-async fn write_own_command_event<W>(writer: &mut W, mode: EventMode, event: &str) -> io::Result<()>
+async fn write_own_command_event<W>(
+    writer: &mut W,
+    mode: EventMode,
+    default: u8,
+    event: &str,
+) -> io::Result<()>
 where
     W: tokio::io::AsyncWrite + Unpin,
 {
-    if mode.delivers_line(event) {
+    if let Some(delivery) = cgate_event_delivery(mode, default, event) {
         tokio::time::timeout(
             Duration::from_secs(10),
-            writer.write_all(format!("{event}\r\n").as_bytes()),
+            writer.write_all(format!("{delivery}\r\n").as_bytes()),
         )
         .await
         .map_err(|_| {
@@ -13702,6 +13733,22 @@ where
         })??;
     }
     Ok(())
+}
+
+/// Apply only the native levels established for timestamped event families.
+/// e+ also removes their #e# prefix, as captured on the owned command port.
+/// Other model events keep their existing wire shape and delivery behavior.
+fn cgate_event_delivery(mode: EventMode, default: u8, event: &str) -> Option<&str> {
+    if !mode.delivers_line_with_default(event, default) {
+        return None;
+    }
+    if matches!(mode.events, crate::EventLevel::Plus)
+        && crate::captured_global_event_level(event).is_some()
+    {
+        Some(event.strip_prefix("#e# ").unwrap_or(event))
+    } else {
+        Some(event)
+    }
 }
 
 fn is_own_command_trace(event: &str, session: u64) -> bool {

@@ -6,3 +6,13 @@
 {"id":"cgate-fanout-config-one","mode":"e0s0c1","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
 {"id":"cgate-fanout-config-two","mode":"e0s0c2","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
 {"id":"cgate-fanout-config-nine","mode":"e0s0c9","line":"#c# model-change","deliver":true,"basis":"pinned-bytecode"}
+{"id":"cgate-global-level-two-broadcast","mode":"e2s0c0","line":"#e# 20260928-000000.000 703 cmd3 - broadcast_event XX class payload","deliver":false,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-three-broadcast","mode":"e3s0c0","line":"#e# 20260928-000000.000 703 cmd3 - broadcast_event XX class payload","deliver":true,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-four-heartbeat","mode":"e4s0c0","line":"#e# 20260928-000000.000 700 cgate - Heartbeat.","deliver":false,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-five-heartbeat","mode":"e5s0c0","line":"#e# 20260928-000000.000 700 cgate - Heartbeat.","deliver":true,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-eight-command","mode":"e8s0c0","line":"#e# 20260928-000000.000 761 cmd3 - Command: [x] NOOP","deliver":false,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-nine-command","mode":"e9s0c0","line":"#e# 20260928-000000.000 761 cmd3 - Command: [x] NOOP","deliver":true,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-eight-response","mode":"e8s0c0","line":"#e# 20260928-000000.000 766 cmd3 - Response: [x] 200 OK.","deliver":false,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-nine-response","mode":"e9s0c0","line":"#e# 20260928-000000.000 766 cmd3 - Response: [x] 200 OK.","deliver":true,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-eight-time","mode":"e8s0c0","line":"#e# 20260928-000000.000 767 cmd3 - commandId=x time=0","deliver":false,"basis":"native_cgate_config_global_event_level.json"}
+{"id":"cgate-global-level-nine-time","mode":"e9s0c0","line":"#e# 20260928-000000.000 767 cmd3 - commandId=x time=0","deliver":true,"basis":"native_cgate_config_global_event_level.json"}

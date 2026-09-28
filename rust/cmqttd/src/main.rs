@@ -153,6 +153,12 @@ async fn main() {
             // listener bind and before state-file creation.
             let (service, tls) = setup::prepare_cgate_service(&opts, &xml, pci.clone())
                 .map_err(std::io::Error::other)?;
+            if service.global_event_listener_invalid() {
+                tracing::error!(
+                    "C-Gate listener disabled: saved CONFIG global-event-level is not a valid integer"
+                );
+                return Ok::<_, std::io::Error>(None);
+            }
             service
                 .set_port_endpoint(spec.endpoint.clone())
                 .map_err(|_| {
@@ -171,13 +177,13 @@ async fn main() {
                     std::process::exit(1);
                 }
             });
-            Ok::<_, std::io::Error>(service)
+            Ok::<_, std::io::Error>(Some(service))
         }
         .await;
-        Some(result.unwrap_or_else(|e| {
+        result.unwrap_or_else(|e| {
             tracing::error!("cannot start C-Gate service: {e}");
             std::process::exit(1);
-        }))
+        })
     } else {
         None
     };

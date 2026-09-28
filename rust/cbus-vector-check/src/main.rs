@@ -289,9 +289,9 @@ fn expect_xml(name: &str, step: &str, response: Response) -> Result<String, Stri
 }
 
 fn check_cgate_event_fanout(v: &Value) -> Result<(), String> {
-    // These rows encode two different evidence levels. Status was observed
-    // through native loopback; config is inferred from the pinned BA/BG
-    // bytecode and must never be reported as a native trigger capture.
+    // Status and timestamped event levels were observed through separate
+    // owned native loopback captures. Config remains inferred from pinned
+    // BA/BG bytecode, not a native trigger capture.
     let id = need_str(v, "id")?;
     let mode_text = need_str(v, "mode")?;
     let line = need_str(v, "line")?;
@@ -300,8 +300,10 @@ fn check_cgate_event_fanout(v: &Value) -> Result<(), String> {
         "native-loopback"
     } else if line.starts_with("#c# ") {
         "pinned-bytecode"
+    } else if line.starts_with("#e# ") {
+        "native_cgate_config_global_event_level.json"
     } else {
-        return Err(format!("{id}: expected a status or config event line"));
+        return Err(format!("{id}: expected an event, status, or config line"));
     };
     if basis != expected_basis {
         return Err(format!(
@@ -797,20 +799,22 @@ mod tests {
     }
 
     #[test]
-    fn cgate_event_fanout_vectors_check_status_and_config_with_distinct_evidence() {
+    fn cgate_event_fanout_vectors_check_source_distinctions() {
         let rows = include_str!("../../testdata/vectors/cgate_event_fanout.jsonl");
         let mut seen_status = 0;
         let mut seen_config = 0;
+        let mut seen_event = 0;
         for row in rows.lines() {
             let value: serde_json::Value = serde_json::from_str(row).unwrap();
             check_vector("cgate_event_fanout.jsonl", &value).unwrap();
             match value["basis"].as_str().unwrap() {
                 "native-loopback" => seen_status += 1,
                 "pinned-bytecode" => seen_config += 1,
+                "native_cgate_config_global_event_level.json" => seen_event += 1,
                 other => panic!("unexpected evidence basis {other}"),
             }
         }
-        assert_eq!((seen_status, seen_config), (4, 4));
+        assert_eq!((seen_status, seen_config, seen_event), (4, 4, 10));
     }
 
     #[test]

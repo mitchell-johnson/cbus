@@ -3,8 +3,11 @@
 //! The metadata below is retained from the pinned 3.4.0.2001 daemon. It does
 //! not by itself establish runtime effects. The implemented restart effects,
 //! `command.show-responses`, `command.show-time`, `event-millis`,
-//! `heartbeat-time`, `project.default`, and `project.start` have separate loopback oracle
-//! evidence.
+//! `heartbeat-time`, `global-event-level`, `project.default`, and
+//! `project.start` have separate loopback oracle evidence. The native
+//! `global-event-level` catalogue says immediate, but its observed event
+//! delivery effect is sampled at startup. A nonnumeric saved value prevents
+//! the native command listeners from opening.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConfigScope {

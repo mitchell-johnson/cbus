@@ -544,6 +544,7 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
             "command.show-responses",
             "command.show-time",
             "event-millis",
+            "global-event-level",
             "heartbeat-time",
             "project.default",
             "project.start"
@@ -719,7 +720,7 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
             &mut event_reader,
             &mut event_writer,
             "subscribe",
-            "EVENT e7s0c0",
+            "EVENT e9s0c0",
         )
         .await,
         ["200 OK."]
@@ -1106,6 +1107,376 @@ async fn assert_broadcast_event_precision(sys: &System, tag: &str, milliseconds:
         chrono::NaiveDateTime::parse_from_str(timestamp, format).unwrap();
         assert!(payload.starts_with(&format!("{code} cmd")), "{line}");
         assert!(payload.ends_with(&format!(" - {text}")), "{line}");
+    }
+}
+
+async fn event_containing(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    needle: &str,
+    limit: Duration,
+) -> Option<String> {
+    tokio::time::timeout(limit, async {
+        loop {
+            let mut line = String::new();
+            assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+            if line.contains(needle) {
+                return line.trim_end_matches(['\r', '\n']).to_string();
+            }
+        }
+    })
+    .await
+    .ok()
+}
+
+#[tokio::test]
+async fn config_global_event_level_filters_only_cgate_delivery_after_restart() {
+    let state = cbus_test_support::proc::temp_path("cgate-global-event-level.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+    let first = start_with(options()).await;
+    wait_started(&first).await;
+    let (mut producer, mut writer) = connect(&first).await;
+    let (mut plus, mut plus_writer) = connect(&first).await;
+    assert_eq!(
+        command(&mut plus, &mut plus_writer, "plus", "EVENT e+s0c0").await,
+        ["200 OK."]
+    );
+    let before_pci = first
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "before",
+            "BROADCAST_EVENT XX class before-change"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let event = event_containing(&mut plus, "broadcast_event XX class before-change", STARTUP)
+        .await
+        .expect("startup level 5 admits 703");
+    assert!(!event.starts_with("#e# ") && event.contains(" 703 "));
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "set-zero",
+            "CONFIG SET global-event-level 0"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "read-zero",
+            "CONFIG GET global-event-level"
+        )
+        .await,
+        ["303 global-event-level=0"]
+    );
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "still-five",
+            "BROADCAST_EVENT XX class still-startup-five"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert!(event_containing(
+        &mut plus,
+        "broadcast_event XX class still-startup-five",
+        STARTUP
+    )
+    .await
+    .is_some());
+    assert_eq!(
+        first
+            .pci
+            .frames()
+            .iter()
+            .filter(|frame| !is_status_request(&frame.payload))
+            .count(),
+        before_pci
+    );
+    drop((producer, writer, plus, plus_writer, first));
+
+    let mut second = start_with(options()).await;
+    wait_started(&second).await;
+    let (mut producer, mut writer) = connect(&second).await;
+    let (mut plus, mut plus_writer) = connect(&second).await;
+    let (mut explicit, mut explicit_writer) = connect(&second).await;
+    assert_eq!(
+        command(&mut plus, &mut plus_writer, "plus", "EVENT e+s0c0").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut explicit, &mut explicit_writer, "nine", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    let before_pci = second
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "zero",
+            "BROADCAST_EVENT XX class startup-zero"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let explicit_event = event_containing(
+        &mut explicit,
+        "broadcast_event XX class startup-zero",
+        STARTUP,
+    )
+    .await
+    .expect("explicit e9 overrides startup global level 0");
+    assert!(explicit_event.starts_with("#e# ") && explicit_event.contains(" 703 "));
+    assert!(event_containing(
+        &mut plus,
+        "broadcast_event XX class startup-zero",
+        Duration::from_millis(250)
+    )
+    .await
+    .is_none());
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "set-nine",
+            "CONFIG SET global-event-level 9"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "read-nine",
+            "CONFIG GET global-event-level"
+        )
+        .await,
+        ["303 global-event-level=9"]
+    );
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "still-zero",
+            "BROADCAST_EVENT XX class still-startup-zero"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert!(event_containing(
+        &mut explicit,
+        "broadcast_event XX class still-startup-zero",
+        STARTUP
+    )
+    .await
+    .is_some());
+    assert!(event_containing(
+        &mut plus,
+        "broadcast_event XX class still-startup-zero",
+        Duration::from_millis(250)
+    )
+    .await
+    .is_none());
+    assert_eq!(
+        second
+            .pci
+            .frames()
+            .iter()
+            .filter(|frame| !is_status_request(&frame.payload))
+            .count(),
+        before_pci
+    );
+
+    // C-Gate event suppression must not affect physical observations, MQTT
+    // state, command delivery, or the C-Gate live-level cache.
+    second.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+    require(
+        STARTUP,
+        "physical state through MQTT at C-Gate level zero",
+        || {
+            second
+                .broker
+                .retained("homeassistant/light/cbus_1/state")
+                .is_some_and(|payload| {
+                    let payload = parse_json(&payload);
+                    payload["state"] == "ON" && payload["cbus_source_addr"] == 4
+                })
+        },
+    )
+    .await;
+    assert!(command(
+        &mut producer,
+        &mut writer,
+        "level",
+        "GET //HARNESS/254/56/1 level"
+    )
+    .await
+    .iter()
+    .any(|line| line.contains("level=255")));
+    let outbound = second.pci.count_payload("0538000101C1");
+    second
+        .broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"OFF"}"#);
+    require(COMMAND_DRAIN, "MQTT command at C-Gate level zero", || {
+        second.pci.count_payload("0538000101C1") > outbound
+    })
+    .await;
+    assert!(second.daemon.is_running());
+    drop((
+        producer,
+        writer,
+        plus,
+        plus_writer,
+        explicit,
+        explicit_writer,
+        second,
+    ));
+
+    let third = start_with(options()).await;
+    wait_started(&third).await;
+    let (mut producer, mut writer) = connect(&third).await;
+    let (mut plus, mut plus_writer) = connect(&third).await;
+    assert_eq!(
+        command(&mut plus, &mut plus_writer, "plus", "EVENT e+s0c0").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            "final",
+            "BROADCAST_EVENT XX class startup-nine"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let trace = event_containing(&mut plus, "Command: [final] BROADCAST_EVENT", STARTUP)
+        .await
+        .expect("startup level 9 admits command traces");
+    assert!(!trace.starts_with("#e# ") && trace.contains(" 761 "));
+    assert!(
+        event_containing(&mut plus, "broadcast_event XX class startup-nine", STARTUP)
+            .await
+            .is_some()
+    );
+    drop((producer, writer, plus, plus_writer, third));
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
+async fn malformed_global_event_level_disables_only_optional_cgate_listener() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_global_event_level.json"
+    ))
+    .unwrap();
+    for (index, value) in ["abc", ""].iter().enumerate() {
+        let evidence = &native["malformed_startups"][index];
+        assert_eq!(evidence["startup_value"], *value);
+        assert_eq!(evidence["number_format_exception"], true);
+        assert_eq!(evidence["command_listeners_opened"], false);
+        assert_eq!(evidence["owned_child_cleanup_complete"], true);
+        let state = cbus_test_support::proc::temp_path("cgate-global-invalid.json");
+        let options = || Options {
+            extra: vec![
+                "--cgate-bind".into(),
+                "127.0.0.1:0".into(),
+                "--cgate-state".into(),
+                state.to_string_lossy().into_owned(),
+            ],
+            ..Default::default()
+        };
+        let first = start_with(options()).await;
+        wait_started(&first).await;
+        let (mut reader, mut writer) = connect(&first).await;
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                "set",
+                &format!("CONFIG SET global-event-level {value}")
+            )
+            .await,
+            ["200 OK."]
+        );
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                "get",
+                "CONFIG GET global-event-level"
+            )
+            .await,
+            [format!("303 global-event-level={value}")]
+        );
+        drop((reader, writer, first));
+
+        let mut second = start_with(options()).await;
+        wait_started(&second).await;
+        require(STARTUP, "invalid C-Gate setting diagnostic", || {
+            second.daemon.stderr().contains(
+                "C-Gate listener disabled: saved CONFIG global-event-level is not a valid integer",
+            )
+        })
+        .await;
+        assert!(!second
+            .daemon
+            .stderr()
+            .contains("C-Gate service listening on"));
+        let outbound = second.pci.count_payload("053800790149");
+        second
+            .broker
+            .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+        require(
+            COMMAND_DRAIN,
+            "MQTT command with disabled C-Gate listener",
+            || second.pci.count_payload("053800790149") > outbound,
+        )
+        .await;
+        second.pci.inject(&pci_wire(&[5, 4, 56, 0, 121, 1]));
+        require(
+            STARTUP,
+            "physical MQTT state with disabled C-Gate listener",
+            || {
+                second
+                    .broker
+                    .retained("homeassistant/light/cbus_1/state")
+                    .is_some_and(|payload| {
+                        let payload = parse_json(&payload);
+                        payload["state"] == "ON" && payload["cbus_source_addr"] == 4
+                    })
+            },
+        )
+        .await;
+        assert!(second.daemon.is_running());
+        drop(second);
+        std::fs::remove_file(state).unwrap();
     }
 }
 

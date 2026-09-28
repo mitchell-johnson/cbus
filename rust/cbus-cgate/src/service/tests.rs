@@ -873,7 +873,161 @@ fn assert_native_command_entry_event(line: &str, session: u64, command: &str) {
     let (timestamp, payload) = body.split_once(" 761 ").expect("native 761 envelope");
     chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
     assert_eq!(payload, format!("cmd{session} - Command: {command}"));
-    assert_eq!(crate::event_reporting_level(line), Some(1));
+    assert_eq!(crate::event_reporting_level(line), Some(9));
+}
+
+#[tokio::test]
+async fn config_global_event_level_samples_native_boundaries_only_at_startup() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_global_event_level.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["format"],
+        "native-cgate-config-global-event-level-v1"
+    );
+    assert_eq!(native["oracle"]["listener_ownership_verified"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let events = [
+        (
+            761,
+            "#e# 20260928-000000.000 761 cmd3 - Command: [x] BROADCAST_EVENT XX class payload",
+        ),
+        (
+            703,
+            "#e# 20260928-000000.000 703 cmd3 - broadcast_event XX class payload",
+        ),
+        (
+            766,
+            "#e# 20260928-000000.000 766 cmd3 - Response: [x] 200 OK.",
+        ),
+        (767, "#e# 20260928-000000.000 767 cmd3 - commandId=x time=0"),
+    ];
+    let heartbeat = "#e# 20260928-000000.000 700 cgate - Heartbeat.";
+    let plus = EventMode::parse("e+s0c0").unwrap();
+    let unrelated = "#e# 20260928-000000.000 703 cmd3 - unrelated event";
+    assert!(cgate_event_delivery(plus, 0, unrelated).is_some());
+    for row in native["startup_levels"].as_array().unwrap() {
+        assert_eq!(row["owned_child_cleanup_complete"], true);
+        let level: i64 = row["startup_value"].as_str().unwrap().parse().unwrap();
+        let level = level.clamp(0, 9) as u8;
+        let actual = events
+            .iter()
+            .filter_map(|(code, event)| {
+                cgate_event_delivery(plus, level, event).map(|line| (*code, line))
+            })
+            .collect::<Vec<_>>();
+        let expected = row["e_plus_codes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|code| code.as_u64().unwrap() as u16)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            actual.iter().map(|(code, _)| *code).collect::<Vec<_>>(),
+            expected
+        );
+        assert!(actual.iter().all(|(_, line)| !line.starts_with("#e# ")));
+        assert_eq!(
+            cgate_event_delivery(plus, level, heartbeat).is_some(),
+            row["e_plus_heartbeats"].as_u64().unwrap() > 0
+        );
+    }
+    for (level, row) in native["explicit_modes"]["modes"].as_object().unwrap() {
+        let mode = EventMode::parse(&format!("e{level}s0c0")).unwrap();
+        let actual = events
+            .iter()
+            .filter_map(|(code, event)| {
+                cgate_event_delivery(mode, 0, event).map(|line| (*code, line))
+            })
+            .collect::<Vec<_>>();
+        let expected = row["codes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|code| code.as_u64().unwrap() as u16)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            actual.iter().map(|(code, _)| *code).collect::<Vec<_>>(),
+            expected
+        );
+        assert!(actual.iter().all(|(_, line)| line.starts_with("#e# ")));
+        assert_eq!(
+            cgate_event_delivery(mode, 0, heartbeat).is_some(),
+            row["heartbeat_count"].as_u64().unwrap() > 0
+        );
+    }
+
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let first = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(first.global_event_level, 5);
+    assert!(!first.global_event_listener_invalid());
+    let mut client = ClientState::default();
+    for (index, value) in ["0", "9", "-1", "10", "abc", ""].iter().enumerate() {
+        let command = format!("[{index}] CONFIG SET global-event-level {value}");
+        assert_eq!(first.handle(&mut client, &command).await.status, 200);
+        assert_eq!(first.global_event_level, 5, "SET must be deferred");
+        let readback = first
+            .handle(&mut client, "[get] CONFIG GET global-event-level")
+            .await;
+        assert_eq!(
+            readback.final_text,
+            format!("303 global-event-level={value}")
+        );
+    }
+    assert!(cgate_event_delivery(plus, first.global_event_level, events[1].1).is_some());
+    drop(first);
+
+    let (pci_client, _remote) = pci();
+    let second = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(
+        second.global_event_level, 5,
+        "malformed stored value uses bounded default"
+    );
+    assert!(second.global_event_listener_invalid());
+    assert_eq!(
+        second
+            .handle(&mut client, "[set] CONFIG SET global-event-level 0")
+            .await
+            .status,
+        200
+    );
+    drop(second);
+    let (pci_client, _remote) = pci();
+    let third = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(third.global_event_level, 0);
+    assert!(!third.global_event_listener_invalid());
+    assert!(cgate_event_delivery(plus, third.global_event_level, events[1].1).is_none());
+    assert!(cgate_event_delivery(
+        EventMode::parse("e3s0c0").unwrap(),
+        third.global_event_level,
+        events[1].1
+    )
+    .is_some());
+    assert_eq!(
+        third
+            .handle(&mut client, "[set] CONFIG SET global-event-level 10")
+            .await
+            .status,
+        200
+    );
+    drop(third);
+    let (pci_client, _remote) = pci();
+    let fourth = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(fourth.global_event_level, 9);
+    assert_eq!(
+        fourth
+            .handle(&mut client, "[set] CONFIG SET global-event-level -1")
+            .await
+            .status,
+        200
+    );
+    drop(fourth);
+    let (pci_client, _remote) = pci();
+    let fifth = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(fifth.global_event_level, 0);
+    std::fs::remove_file(path).unwrap();
 }
 
 fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) {
@@ -886,7 +1040,7 @@ fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) 
     millis
         .parse::<u128>()
         .expect("nonnegative millisecond duration");
-    assert_eq!(crate::event_reporting_level(line), Some(7));
+    assert_eq!(crate::event_reporting_level(line), Some(9));
 }
 
 async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<String>) -> String {
@@ -911,7 +1065,7 @@ async fn assert_native_command_trace(
         let (timestamp, payload) = body.split_once(" 766 ").expect("native 766 envelope");
         chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
         assert_eq!(payload, format!("cmd{session} - Response: {expected}"));
-        assert_eq!(crate::event_reporting_level(&event), Some(6));
+        assert_eq!(crate::event_reporting_level(&event), Some(9));
     }
     if let Some(tag) = timed_tag {
         assert_native_command_time_event(&next_command_trace_event(events).await, session, tag);

@@ -1,0 +1,857 @@
+{
+  "format": "native-cgate-config-global-event-level-v1",
+  "captured_at": "2026-09-28T10:27:58.451147+00:00",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "transport": "fresh owned Java 11 child, six verified IPv4 loopback listeners, no C-Bus endpoint",
+    "listener_ownership_verified": true,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "server_log_sha256": "086d00b63faa46960d4a34164fa7b062add4be4866d8256d3101c9b673aa2144"
+  },
+  "capture_script_sha256": "a27502b472fa474a78ef02af468bfc223d586803939f03b87a2a09fa17e83a7a",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "method": "Owned Java 11 loopback children with command.show-time=yes and no C-Bus endpoint. One child tests same-process SET across 0..9 and malformed values. Twelve fresh children sample startup -1, 0..9, and 10 with e+ and e9 subscribers, BROADCAST_EVENT and heartbeat-time=1. Two malformed startup children prove main-thread NumberFormatException before command listeners. Timestamps and owned session IDs are normalized.",
+  "runtime_updates": [
+    {
+      "input": null,
+      "set_reply": null,
+      "readback": [
+        "[get0] 303 global-event-level=5"
+      ],
+      "broadcast_reply": [
+        "[broadcast0] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-0"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast0] BROADCAST_EVENT XX class gel-phase-0"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-0"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast0] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast0 time=8"
+        }
+      ]
+    },
+    {
+      "input": "0",
+      "set_reply": [
+        "[set1] 200 OK."
+      ],
+      "readback": [
+        "[get1] 303 global-event-level=0"
+      ],
+      "broadcast_reply": [
+        "[broadcast1] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-1"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast1] BROADCAST_EVENT XX class gel-phase-1"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-1"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast1] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast1 time=1"
+        }
+      ]
+    },
+    {
+      "input": "1",
+      "set_reply": [
+        "[set2] 200 OK."
+      ],
+      "readback": [
+        "[get2] 303 global-event-level=1"
+      ],
+      "broadcast_reply": [
+        "[broadcast2] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-2"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast2] BROADCAST_EVENT XX class gel-phase-2"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-2"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast2] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast2 time=0"
+        }
+      ]
+    },
+    {
+      "input": "2",
+      "set_reply": [
+        "[set3] 200 OK."
+      ],
+      "readback": [
+        "[get3] 303 global-event-level=2"
+      ],
+      "broadcast_reply": [
+        "[broadcast3] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-3"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast3] BROADCAST_EVENT XX class gel-phase-3"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-3"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast3] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast3 time=0"
+        }
+      ]
+    },
+    {
+      "input": "3",
+      "set_reply": [
+        "[set4] 200 OK."
+      ],
+      "readback": [
+        "[get4] 303 global-event-level=3"
+      ],
+      "broadcast_reply": [
+        "[broadcast4] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-4"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast4] BROADCAST_EVENT XX class gel-phase-4"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-4"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast4] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast4 time=0"
+        }
+      ]
+    },
+    {
+      "input": "4",
+      "set_reply": [
+        "[set5] 200 OK."
+      ],
+      "readback": [
+        "[get5] 303 global-event-level=4"
+      ],
+      "broadcast_reply": [
+        "[broadcast5] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-5"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast5] BROADCAST_EVENT XX class gel-phase-5"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-5"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast5] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast5 time=0"
+        }
+      ]
+    },
+    {
+      "input": "5",
+      "set_reply": [
+        "[set6] 200 OK."
+      ],
+      "readback": [
+        "[get6] 303 global-event-level=5"
+      ],
+      "broadcast_reply": [
+        "[broadcast6] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-6"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast6] BROADCAST_EVENT XX class gel-phase-6"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-6"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast6] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast6 time=0"
+        }
+      ]
+    },
+    {
+      "input": "6",
+      "set_reply": [
+        "[set7] 200 OK."
+      ],
+      "readback": [
+        "[get7] 303 global-event-level=6"
+      ],
+      "broadcast_reply": [
+        "[broadcast7] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-7"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast7] BROADCAST_EVENT XX class gel-phase-7"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-7"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast7] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast7 time=0"
+        }
+      ]
+    },
+    {
+      "input": "7",
+      "set_reply": [
+        "[set8] 200 OK."
+      ],
+      "readback": [
+        "[get8] 303 global-event-level=7"
+      ],
+      "broadcast_reply": [
+        "[broadcast8] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-8"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast8] BROADCAST_EVENT XX class gel-phase-8"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-8"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast8] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast8 time=0"
+        }
+      ]
+    },
+    {
+      "input": "8",
+      "set_reply": [
+        "[set9] 200 OK."
+      ],
+      "readback": [
+        "[get9] 303 global-event-level=8"
+      ],
+      "broadcast_reply": [
+        "[broadcast9] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-9"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast9] BROADCAST_EVENT XX class gel-phase-9"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-9"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast9] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast9 time=3"
+        }
+      ]
+    },
+    {
+      "input": "9",
+      "set_reply": [
+        "[set10] 200 OK."
+      ],
+      "readback": [
+        "[get10] 303 global-event-level=9"
+      ],
+      "broadcast_reply": [
+        "[broadcast10] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-10"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast10] BROADCAST_EVENT XX class gel-phase-10"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-10"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast10] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast10 time=0"
+        }
+      ]
+    },
+    {
+      "input": "-1",
+      "set_reply": [
+        "[set11] 200 OK."
+      ],
+      "readback": [
+        "[get11] 303 global-event-level=-1"
+      ],
+      "broadcast_reply": [
+        "[broadcast11] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-11"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast11] BROADCAST_EVENT XX class gel-phase-11"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-11"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast11] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast11 time=0"
+        }
+      ]
+    },
+    {
+      "input": "10",
+      "set_reply": [
+        "[set12] 200 OK."
+      ],
+      "readback": [
+        "[get12] 303 global-event-level=10"
+      ],
+      "broadcast_reply": [
+        "[broadcast12] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-12"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast12] BROADCAST_EVENT XX class gel-phase-12"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-12"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast12] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast12 time=0"
+        }
+      ]
+    },
+    {
+      "input": "abc",
+      "set_reply": [
+        "[set13] 200 OK."
+      ],
+      "readback": [
+        "[get13] 303 global-event-level=abc"
+      ],
+      "broadcast_reply": [
+        "[broadcast13] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-13"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast13] BROADCAST_EVENT XX class gel-phase-13"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-13"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast13] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast13 time=0"
+        }
+      ]
+    },
+    {
+      "input": "",
+      "set_reply": [
+        "[set14] 200 OK."
+      ],
+      "readback": [
+        "[get14] 303 global-event-level="
+      ],
+      "broadcast_reply": [
+        "[broadcast14] 200 OK."
+      ],
+      "e_plus_events": [
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-14"
+        }
+      ],
+      "e9_events": [
+        {
+          "code": 761,
+          "text": "cmd<owned-session> - Command: [broadcast14] BROADCAST_EVENT XX class gel-phase-14"
+        },
+        {
+          "code": 703,
+          "text": "cmd<owned-session> - broadcast_event XX class gel-phase-14"
+        },
+        {
+          "code": 766,
+          "text": "cmd<owned-session> - Response: [broadcast14] 200 OK."
+        },
+        {
+          "code": 767,
+          "text": "cmd<owned-session> - commandId=broadcast14 time=0"
+        }
+      ]
+    }
+  ],
+  "startup_levels": [
+    {
+      "startup_value": "-1",
+      "e_plus_codes": [],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "0",
+      "e_plus_codes": [],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "1",
+      "e_plus_codes": [],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "2",
+      "e_plus_codes": [],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "3",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "4",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 0,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+    },
+    {
+      "startup_value": "5",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "b84d607bcc74f81377f81fcfb4135e451c71619701d355eb1c4afb30d37fd1cc"
+    },
+    {
+      "startup_value": "6",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "0be8dd82f7f7737db8ffbebbc6fcc96807b2da1c7a2ab8bba46a4d6c76bf408a"
+    },
+    {
+      "startup_value": "7",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "78e2779a093269200c825a3d6169aa2c76e10048c183f1371401bea0846f3238"
+    },
+    {
+      "startup_value": "8",
+      "e_plus_codes": [
+        703
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "a7b93d3c65948c96bce685f96139a951747150395c62b4987b8d1249279726cd"
+    },
+    {
+      "startup_value": "9",
+      "e_plus_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "12258a64a2a9bb34bf5372b9635fff07c516f45b35c69e81fb309e1cccced416"
+    },
+    {
+      "startup_value": "10",
+      "e_plus_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e9_codes": [
+        761,
+        703,
+        766,
+        767
+      ],
+      "e_plus_heartbeats": 2,
+      "e9_heartbeats": 2,
+      "owned_child_cleanup_complete": true,
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "server_log_sha256": "b344dd5de3854123b1c1d534bce49ceb883675cafb80d58679ce4326f6f7ac95"
+    }
+  ],
+  "explicit_modes": {
+    "startup_global_event_level": "0",
+    "modes": {
+      "0": {
+        "codes": [],
+        "heartbeat_count": 0
+      },
+      "1": {
+        "codes": [],
+        "heartbeat_count": 0
+      },
+      "2": {
+        "codes": [],
+        "heartbeat_count": 0
+      },
+      "3": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 0
+      },
+      "4": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 0
+      },
+      "5": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 3
+      },
+      "6": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 3
+      },
+      "7": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 3
+      },
+      "8": {
+        "codes": [
+          703
+        ],
+        "heartbeat_count": 2
+      },
+      "9": {
+        "codes": [
+          761,
+          703,
+          766,
+          767
+        ],
+        "heartbeat_count": 2
+      }
+    },
+    "owned_child_cleanup_complete": true,
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "server_log_sha256": "35c2a70d0c79a729d570986d3b4a6cf97e10471bef0bf92be5570df21ca8abc7"
+  },
+  "malformed_startups": [
+    {
+      "startup_value": "abc",
+      "number_format_exception": true,
+      "command_listeners_opened": false,
+      "process_exit_confirmed": true,
+      "owned_child_cleanup_complete": true,
+      "server_log_sha256": "9c7b07481ba93225238875ad979c5fba2ce2be3ed00c5a26660abedbcd511fe6"
+    },
+    {
+      "startup_value": "",
+      "number_format_exception": true,
+      "command_listeners_opened": false,
+      "process_exit_confirmed": true,
+      "owned_child_cleanup_complete": true,
+      "server_log_sha256": "8695b06e0a1e9beffe19047aba27424bd29f8fdcbcbdbd43d6714c5fba81413a"
+    }
+  ]
+}

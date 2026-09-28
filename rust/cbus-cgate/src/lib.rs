@@ -201,8 +201,8 @@ pub fn format_native_dbgetxml_wire_response(resp: &Response) -> Option<String> {
 /// manual 4.5.83).
 ///
 /// `ON` is `e+s0c0` and `OFF` is `e0s0c0`. The `e` level caps delivery
-/// by event level; this model emits unlevelled `#e#` lines, so any `e`
-/// but `e0` delivers them while `e0` silences them (documented). `s`/`c`
+/// by event level; this model also emits unlevelled `#e#` lines, so any `e`
+/// but `e0` delivers those. `s`/`c`
 /// gate `#s#` status and `#c#` configuration lines. A bare `EVENT`
 /// query reports the connection's mode as `306 <mode>`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -218,7 +218,7 @@ pub struct EventMode {
 /// Event-level selector of an `EVENT` mode.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EventLevel {
-    /// `e+`: default levels, no prefix stripping.
+    /// `e+`: the listener's startup global event level.
     Plus,
     /// `e0`–`e9`: maximum delivered event level.
     Capped(u8),
@@ -323,16 +323,23 @@ impl EventMode {
     }
 
     /// True when a complete event line reaches a connection holding this
-    /// mode. Native timestamped `7xx` lines encode their reporting level in
-    /// the final digit (`703` is level 3); unlevelled model events retain the
-    /// historical category-only behavior.
+    /// mode. Without a listener setting, `e+` admits every modeled event.
     pub fn delivers_line(&self, line: &str) -> bool {
+        self.delivers_line_with_default(line, 9)
+    }
+
+    /// The native `e+` selector samples the global reporting level at
+    /// listener startup. Explicit `e0`–`e9` selectors use their own level.
+    /// Unlevelled model events retain category-only delivery.
+    pub(crate) fn delivers_line_with_default(&self, line: &str, default: u8) -> bool {
         match (event_category(line), self.events) {
             (EventCategory::Event, EventLevel::Capped(0)) => false,
             (EventCategory::Event, EventLevel::Capped(maximum)) => {
                 event_reporting_level(line).is_none_or(|level| level <= maximum)
             }
-            (EventCategory::Event, EventLevel::Plus) => true,
+            (EventCategory::Event, EventLevel::Plus) => {
+                captured_global_event_level(line).is_none_or(|level| level <= default)
+            }
             (EventCategory::Status, _) => self.status != 0,
             (EventCategory::Config, _) => self.config != 0,
         }
@@ -372,14 +379,17 @@ pub fn event_category(line: &str) -> EventCategory {
 
 /// Reporting level encoded by a native timestamped event envelope.
 ///
-/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...`; the final
-/// status-code digit is the event level used by `EVENT eNs..`. Other event
-/// forms in the compatibility model are deliberately unlevelled.
+/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...`. The native
+/// levels of the locally captured event forms are not always the last
+/// status-code digit: heartbeat 700 is level 5, while command traces 761,
+/// 766, and 767 are level 9. Other 7xx codes retain the existing code-digit
+/// fallback until their levels are separately established.
 pub fn event_reporting_level(line: &str) -> Option<u8> {
     let body = line.strip_prefix("#e# ").unwrap_or(line);
-    let mut fields = body.split_whitespace();
+    let mut fields = body.splitn(3, ' ');
     let timestamp = fields.next()?;
     let code = fields.next()?;
+    let payload = fields.next()?;
     let bytes = timestamp.as_bytes();
     let valid_timestamp = (bytes.len() == 15 || bytes.len() == 19)
         && bytes.get(8) == Some(&b'-')
@@ -387,12 +397,44 @@ pub fn event_reporting_level(line: &str) -> Option<u8> {
         && bytes[9..15].iter().all(u8::is_ascii_digit)
         && (bytes.len() == 15
             || (bytes.get(15) == Some(&b'.') && bytes[16..19].iter().all(u8::is_ascii_digit)));
-    let code = code.as_bytes();
-    (valid_timestamp
-        && code.len() == 3
-        && code[0] == b'7'
-        && code[1..].iter().all(u8::is_ascii_digit))
-    .then_some(code[2] - b'0')
+    let code_bytes = code.as_bytes();
+    if !(valid_timestamp
+        && code_bytes.len() == 3
+        && code_bytes[0] == b'7'
+        && code_bytes[1..].iter().all(u8::is_ascii_digit))
+    {
+        return None;
+    }
+    Some(source_captured_event_level(code, payload).unwrap_or(code_bytes[2] - b'0'))
+}
+
+/// The startup global-level claim is intentionally limited to source-captured
+/// C-Gate event families. Do not apply it to other model or physical events
+/// solely because their status code has a decimal suffix.
+fn captured_global_event_level(line: &str) -> Option<u8> {
+    event_reporting_level(line)?;
+    let body = line.strip_prefix("#e# ").unwrap_or(line);
+    let mut fields = body.splitn(3, ' ');
+    fields.next()?;
+    source_captured_event_level(fields.next()?, fields.next()?)
+}
+
+fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
+    let (source, text) = payload.split_once(" - ")?;
+    if code == "700" && source == "cgate" && text == "Heartbeat." {
+        return Some(5);
+    }
+    let session = source.strip_prefix("cmd")?;
+    if session.is_empty() || !session.bytes().all(|byte| byte.is_ascii_digit()) {
+        return None;
+    }
+    match code {
+        "703" if text.starts_with("broadcast_event ") => Some(3),
+        "761" if text.starts_with("Command: ") => Some(9),
+        "766" if text.starts_with("Response: ") => Some(9),
+        "767" if text.starts_with("commandId=") => Some(9),
+        _ => None,
+    }
 }
 
 /// True for accepted C-Gate event subscription modes.
