@@ -1096,8 +1096,12 @@ replayed. `WidgetGroups` is static mapping, not dynamic-label cache readback.
 
 The [pinned Toolkit 1.18 / C-Gate 3.4 investigation](../../../../toolkit-cli/docs/edlt-dynamic-cache-boundary.md)
 records the four native `LABEL` subcommands, bytecode hashes and owned
-loopback rejections of candidate cache getters. Keep this conclusion scoped
-to those exact releases; observed SAL remains incomplete and recipient-unverified.
+loopback rejections of candidate cache getters. Its pinned eight-class
+eDLT inheritance audit also finds no constructor-registered generic `GET`
+property for label/cache contents; the earlier unopened synthetic-unit `GET`
+probe did not reach a live property inventory. Keep this conclusion scoped
+to those exact releases and registration path; observed SAL remains incomplete
+and recipient-unverified.
 
 State three and addresses with zero or multiple raw IDENTIFY4 replies receive no
 metadata traffic and expose no stale metadata. Multiple raw

@@ -1,0 +1,152 @@
+{
+  "decision": {
+    "declared_inherited_get_cache_property": false,
+    "firmware_protocol_absence_proven": false,
+    "generic_get_open_unit_oracle_completed": false,
+    "physical_device_cache_readback": false
+  },
+  "format": "cbus-edlt-get-inheritance-v1",
+  "invalidation": [
+    "Changed pinned C-Gate jar or class hash",
+    "Runtime property registration outside the audited constructor chain",
+    "Original open-unit GET exposes an additional cache getter",
+    "An independently captured physical eDLT cache request/response contract"
+  ],
+  "limitation": "This enumerates only constructor-registered generic GET properties and methods in CBusEdlt and its seven superclasses. It does not replace an original open-unit GET capture, establish actual cached values, rule out a hidden firmware command, or prove physical rendering/persistence.",
+  "source": {
+    "class_chain": [
+      {
+        "class": "Bo",
+        "class_sha256": "ada2ef2a98992e7a357bfe0a4b43dafb7e0bcee58fe7eff482086c05529f4724",
+        "declaration": "public class Bo extends BN {",
+        "method_insertions": 1,
+        "methods": [
+          "gc"
+        ],
+        "properties": [
+          "EventLevel",
+          "State"
+        ],
+        "property_insertions": 2
+      },
+      {
+        "class": "Bw",
+        "class_sha256": "160a7c65406255b52d6d5088d272a326c1d280d68b48abfa37bfe00d38b6c477",
+        "declaration": "public class Bw extends Bo {",
+        "method_insertions": 0,
+        "methods": [],
+        "properties": [],
+        "property_insertions": 0
+      },
+      {
+        "class": "be",
+        "class_sha256": "6c51c48f9e74553c5c12e6f045b14c41b93c7a56c14ea42845ff086dd1540fbf",
+        "declaration": "public class be extends Bw {",
+        "method_insertions": 0,
+        "methods": [],
+        "properties": [
+          "Address",
+          "ClassName",
+          "Name",
+          "ShortName"
+        ],
+        "property_insertions": 8
+      },
+      {
+        "class": "com.clipsal.cgate.cbus.core.CBusUnit",
+        "class_sha256": "4c2276834c3f72fc4f905276e6bc01582cce69e53c865fd6c49398ce74a4ebb9",
+        "declaration": "public class com.clipsal.cgate.cbus.core.CBusUnit extends be {",
+        "method_insertions": 8,
+        "methods": [
+          "PSync",
+          "QSync",
+          "ResetErrorFlags",
+          "Sync"
+        ],
+        "properties": [
+          "Address",
+          "Application",
+          "Application2",
+          "CatalogNumber",
+          "ErrorFlags",
+          "LearnEnable",
+          "PSyncTime",
+          "PartName",
+          "PatchVersion",
+          "ProjectName",
+          "SlotGroups",
+          "Type",
+          "UnitBlock",
+          "Version",
+          "Version2"
+        ],
+        "property_insertions": 30
+      },
+      {
+        "class": "com.clipsal.cgate.cbus.dev.CBusBaseUnit",
+        "class_sha256": "d4292e70bddd34d249779a03a8019254aeb1aaba8cf72f376f25c25f2384b225",
+        "declaration": "public class com.clipsal.cgate.cbus.dev.CBusBaseUnit extends com.clipsal.cgate.cbus.core.CBusUnit {",
+        "method_insertions": 0,
+        "methods": [],
+        "properties": [],
+        "property_insertions": 0
+      },
+      {
+        "class": "com.clipsal.cgate.cbus.dev.CBus2Unit",
+        "class_sha256": "77cb2d63650179f5fc39ab17f309608ded1368da9ac03ce28f9fea9d7e76e9de",
+        "declaration": "public class com.clipsal.cgate.cbus.dev.CBus2Unit extends com.clipsal.cgate.cbus.dev.CBusBaseUnit {",
+        "method_insertions": 0,
+        "methods": [],
+        "properties": [
+          "BurdenActive",
+          "ClockGenActive",
+          "GeneratingClock",
+          "LearnActive",
+          "NetVoltage",
+          "Serial",
+          "SerialNumber",
+          "SummaryFlags"
+        ],
+        "property_insertions": 16
+      },
+      {
+        "class": "com.clipsal.cgate.cbus.dev.CBusOEMUnit",
+        "class_sha256": "5959edc26695c1f09d9641808aa1bd9a1f6494008b66357de605e89b681badb8",
+        "declaration": "public class com.clipsal.cgate.cbus.dev.CBusOEMUnit extends com.clipsal.cgate.cbus.dev.CBus2Unit implements dl {",
+        "method_insertions": 0,
+        "methods": [],
+        "properties": [
+          "FirmwareVersion"
+        ],
+        "property_insertions": 2
+      },
+      {
+        "class": "com.clipsal.cgate.cbus.dev.CBusEdlt",
+        "class_sha256": "6d9733794c5228700d00525f6c173ce4af6e4f11ed9ddc1c3a0673e73a492094",
+        "declaration": "public class com.clipsal.cgate.cbus.dev.CBusEdlt extends com.clipsal.cgate.cbus.dev.CBusOEMUnit implements dl,lX {",
+        "method_insertions": 1,
+        "methods": [
+          "FactoryDefault"
+        ],
+        "properties": [
+          "WidgetGroups"
+        ],
+        "property_insertions": 1
+      }
+    ],
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "property_map": {
+      "class": "Cl",
+      "class_sha256": "a44d99c45adb2621403fc0d6626efb4e7e2fdf48480a7b9ddd7bf5f1489f125e",
+      "enumeration": "Cl map values",
+      "named_get": "Bo delegates to Cl.a(String,int)",
+      "unknown_name": "ParameterNotFoundException"
+    }
+  },
+  "target": {
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "cgate_version": "3.4.0.2001",
+    "unit_profile": "KEYGL5 / CBusEdlt in pinned release"
+  },
+  "work_item": "P6.05"
+}

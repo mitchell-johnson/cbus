@@ -314,8 +314,11 @@ its Schneider greeting and a 4xx response to the cmqttd-only capability
 command. The pinned original 3.4.0.2001 capture records `400 Syntax Error.`
 and a successful same-socket `NOOP` after that probe. The
 [pinned native 1.18/3.4 investigation](edlt-dynamic-cache-boundary.md) found no
-exposed operation to enumerate a device's pre-existing cache; it does not
-claim that undocumented firmware protocols are impossible. See also the
+exposed operation to enumerate a device's pre-existing cache. A hash-bound
+audit of all eight inherited eDLT property-registration classes also found
+no generic `GET` label/cache property, while a previous unopened-unit oracle
+probe remains inconclusive. This does not claim that undocumented firmware
+protocols are impossible. See also the
 [service implementation and remaining work](../../docs/cmqttd-cgate.md).
 
 The typed `cgate edlt-widget-groups //PROJECT/NETWORK/p/UNIT` command consumes

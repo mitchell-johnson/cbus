@@ -197,10 +197,47 @@ SHA-256 without including the vendor binary or site project.
 
 Disassembly of the pinned `CBusEdlt` constructor registers `WidgetGroups` as
 a declared property and `FactoryDefault` as a method; it does not register a
-declared dynamic-label getter. Inherited or runtime properties have not been
-exhausted by that inspection. **Issue #49 stays open.** A decisive generic
+declared dynamic-label getter. That constructor alone did not account for
+inherited or runtime properties. **Issue #49 stays open.** A decisive generic
 `GET` check requires an isolated, open, serial-identified KEYGL5 unit and the
 original server's `?`, `*`, and `??` property replies, followed by any candidate
 request on a known pre-existing label after the observer restarts. Physical
 display and bus capture must establish that the value came from the unit,
 rather than saved `TagsDLT` or fresh label SAL.
+
+### Inherited generic-GET registration audit
+
+The [pinned class-chain receipt](../research/fixtures/edlt-dynamic-cache-get-inheritance.json)
+extends the constructor check to `CBusEdlt` and all seven superclasses back
+to `Bo` in the same C-Gate 3.4.0.2001 JAR. The source verifier disassembles
+each hash-bound class and accounts for every insertion into its generic
+property and method registries. All 59 property insertion call sites occur
+in constructors; overloaded constructors repeat the same declarations. The
+chain declares 31 class-scoped property names (30 distinct names because
+`Address` appears twice) and six method names. Its eDLT-specific property is
+`WidgetGroups`, which reads 44 group bytes; the inherited `SlotGroups` also
+reports group assignments. None is a dynamic-label or cache-content getter.
+
+The pinned `Bo` getter delegates a named read to the `Cl` property map; the
+map throws `ParameterNotFoundException` for a name it does not contain and
+uses the same map for its property-name enumeration. This strengthens the
+exact-release finding for **constructor-registered generic `GET` properties**.
+It does not turn the earlier synthetic-unit 401 responses into an open-unit
+capture, exclude an external runtime registration, or prove firmware-level
+impossibility. The capability remains false and P6.05 remains open for the
+original open-unit/property response and independent physical proof.
+
+The fixture-only check needs no proprietary files. To repeat its source
+comparison against the retained vendor JAR, run:
+
+```sh
+cd toolkit-cli
+python3.13 research/verify_edlt_get_inheritance.py \
+  --cgate-app /path/to/ignored/pinned/cgate/app \
+  --javap /path/to/java11/bin/javap
+```
+
+The verifier fails if the JAR or any of the eight class hashes, inheritance
+declarations, property names, method names, or constructor-only registration
+counts change. Focused `tests/test_edlt_get_inheritance.py` guards the
+fixture against accidental promotion to device-readback or open-unit proof.
