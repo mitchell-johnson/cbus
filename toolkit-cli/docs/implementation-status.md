@@ -220,13 +220,14 @@ The next acceptance work is the unfinished work itself:
 `cbus-toolkit coverage --require-complete` intentionally returns nonzero while this work remains. The **46.15%** implemented-row ratio is simple ledger arithmetic, not an estimated completion percentage; the executable-level functionality census and its acceptance mapping are still incomplete.
 
 Completion-gate note: `coverage` validates the packaged parity register and
-evidence bundle; `--evidence-root` additionally reopens and hashes every
-attached input and report. Full completion requires that verified root, a
+evidence bundle; `--evidence-root` additionally reopens, hashes and checks
+the executed cases in every attached passed report. Full completion requires that verified root, a
 complete census, defined and applicable
 functional obligations, implementation, and passed evidence for every required
 acceptance dimension. Historical ledger labels are reported separately and
-cannot make the gate pass. The census remains incomplete, all 39 obligations
-are provisional and none is accepted, so `--require-complete` returns nonzero.
+cannot make the gate pass. The census remains incomplete: the 39 broad and 442
+C-Gate path obligations are provisional, three `SESSION_ID` functions are
+defined, and none is fully accepted, so `--require-complete` returns nonzero.
 The parity-register and coverage tests guard this behavior.
 
 Disposable-server access: the owned C-Gate configuration defaults to `Program`, which denies the internal `PP LOCK`/`PP NEW` operations. The isolated thermostat unit probe successfully used an explicit `interface 127.0.0.1 Clipsal` grant in its own temporary `access.txt` before starting its own server. It completed seven saved/reloaded parameter cases with all listeners verified as loopback, no CNI connections, and process/storage cleanup confirmed ([retained evidence](../research/experiments/2026-09-24/thermostat-native-access.json)). This removes the earlier claim that an operator login is required for those disposable programming fixtures. Fixture topology and `CBUS_CGATE_SIMULATOR_HOST=127.0.0.1` still need correct provisioning for host-based native tests. The serials discovery timing issue remains open; no test was weakened.

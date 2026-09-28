@@ -504,6 +504,10 @@ def session_differential_evidence() -> dict:
         "source_revision": receipt["source_revision"],
         "command": command,
         "exit_code": 0,
+        "report_verification": {
+            "format": "cgate-session-differential-v2",
+            "path": SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
+        },
         "artifacts": [
             {
                 "role": "input",

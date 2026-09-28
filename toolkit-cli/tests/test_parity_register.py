@@ -12,6 +12,19 @@ from research import build_parity_register as register_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
+FIXTURE_REPORT = (json.dumps({
+    "format": "cbus-parity-test-report-v1",
+    "result": "passed",
+    "source_revision": "1" * 40,
+    "command": "python -m pytest tests/test_one.py",
+    "exit_code": 0,
+    "cases": [{
+        "id": "tests/test_one.py::test_one",
+        "result": "passed",
+        "obligation_ids": ["obligation:one"],
+        "dimensions": list(parity.REQUIRED_DIMENSIONS),
+    }],
+}, sort_keys=True) + "\n").encode()
 
 
 def record_digest(record: dict) -> str:
@@ -22,7 +35,7 @@ def record_digest(record: dict) -> str:
 
 
 def fixture_documents() -> tuple[dict, dict, dict, bytes]:
-    artifact = b"accepted result\n"
+    artifact = FIXTURE_REPORT
     evidence_record = {
         "id": "evidence:one",
         "obligation_ids": ["obligation:one"],
@@ -42,6 +55,10 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
         "source_revision": "1" * 40,
         "command": "python -m pytest tests/test_one.py",
         "exit_code": 0,
+        "report_verification": {
+            "format": "cbus-parity-test-report-v1",
+            "path": "result.txt",
+        },
         "artifacts": [
             {
                 "role": "input",
@@ -138,7 +155,7 @@ class ParityRegisterTests(unittest.TestCase):
         self.addCleanup(self.artifact_folder.cleanup)
         self.artifact_root = Path(self.artifact_folder.name)
         (self.artifact_root / "oracle.txt").write_bytes(b"fixture original")
-        (self.artifact_root / "result.txt").write_bytes(b"accepted result\n")
+        (self.artifact_root / "result.txt").write_bytes(FIXTURE_REPORT)
 
     def test_packaged_register_accounts_for_all_committed_source_surfaces(self):
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
@@ -560,7 +577,7 @@ class ParityRegisterTests(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as folder:
                 Path(folder, "oracle.txt").write_bytes(b"fixture original")
-                Path(folder, "result.txt").write_bytes(b"accepted result\n")
+                Path(folder, "result.txt").write_bytes(FIXTURE_REPORT)
                 report = parity.evaluate(
                     register,
                     evidence,
@@ -759,6 +776,71 @@ class ParityRegisterTests(unittest.TestCase):
                     evidence_raw=evidence_raw,
                     artifact_root=Path(folder),
                 )
+
+    def test_rehashed_report_cannot_relabel_failed_or_uncovered_cases(self):
+        alterations = {
+            "failed case": lambda report: report["cases"][0].update(result="failed"),
+            "uncovered dimension": lambda report: report["cases"][0]["dimensions"].remove("physical"),
+            "different test": lambda report: report["cases"][0].update(id="tests/other.py::test_other"),
+            "different revision": lambda report: report.update(source_revision="2" * 40),
+        }
+        for label, alter in alterations.items():
+            with self.subTest(label=label), TemporaryDirectory() as folder:
+                register, evidence, ledger, _ = fixture_documents()
+                report = json.loads(FIXTURE_REPORT)
+                alter(report)
+                report_raw = (json.dumps(report, sort_keys=True) + "\n").encode()
+                root = Path(folder)
+                (root / "oracle.txt").write_bytes(b"fixture original")
+                (root / "result.txt").write_bytes(report_raw)
+                record = evidence["records"][0]
+                record["artifacts"][1]["sha256"] = sha256(report_raw).hexdigest()
+                record["record_sha256"] = record_digest(record)
+                evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+                register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+                with self.assertRaisesRegex(ValueError, "report .*|report cases"):
+                    parity.evaluate(
+                        register, evidence, ledger,
+                        evidence_raw=evidence_raw, artifact_root=root,
+                    )
+
+    def test_rehashed_session_differential_cannot_claim_mismatched_payload(self):
+        _, evidence, _, _, _, _, _ = packaged_documents()
+        record = evidence["records"][0]
+        report_source = ROOT / "research/fixtures/cgate-session-differential-cmqttd.json"
+        report_relative = "research/fixtures/cgate-session-differential-cmqttd.json"
+        record["report_verification"] = {
+            "format": "cgate-session-differential-v2",
+            "path": report_relative,
+        }
+        record["record_sha256"] = record_digest(record)
+        parity.validate_evidence_bundle(evidence, artifact_root=ROOT)
+
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            for artifact in record["artifacts"]:
+                destination = root / artifact["path"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((ROOT / artifact["path"]).read_bytes())
+            report = json.loads(report_source.read_bytes())
+            report["cases"][0]["rust_normalized"] = ["300 sessionID=substituted"]
+            report_raw = (json.dumps(report, indent=2) + "\n").encode()
+            (root / report_relative).write_bytes(report_raw)
+            next(artifact for artifact in record["artifacts"]
+                 if artifact["path"] == report_relative)["sha256"] = sha256(report_raw).hexdigest()
+            record["record_sha256"] = record_digest(record)
+            with self.assertRaisesRegex(ValueError, "differential case evidence changed"):
+                parity.validate_evidence_bundle(evidence, artifact_root=root)
+
+    def test_passed_evidence_requires_a_recognized_report_artifact(self):
+        register, evidence, ledger, _ = fixture_documents()
+        record = evidence["records"][0]
+        record.pop("report_verification")
+        record["record_sha256"] = record_digest(record)
+        evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, "requires a recognized report artifact"):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
 
     def test_passed_evidence_requires_result_and_bound_oracle_artifacts(self):
         def changed_case(mutate, expected):

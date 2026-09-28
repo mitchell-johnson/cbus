@@ -36,6 +36,7 @@ EVIDENCE_ENVIRONMENTS = {
     "physical",
 }
 ARTIFACT_ROLES = {"input", "output", "executable", "report"}
+REPORT_FORMATS = {"cbus-parity-test-report-v1", "cgate-session-differential-v2"}
 SCOPE_DISPOSITIONS = {
     "pending_analysis",
     "provisional_obligation",
@@ -191,6 +192,90 @@ def parse_json_document(raw: str | bytes, *, context: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{context} must be a JSON object")
     return value
+
+
+def _validate_execution_report(record: dict[str, Any], report: dict[str, Any]) -> None:
+    """Bind a passed evidence claim to the cases in its verified report bytes.
+
+    The producer-side generator validates the full native differential and its
+    current source closure. This independent packaged check prevents a wheel
+    audit from accepting a changed report merely because its declaration and
+    SHA-256 were changed together.
+    """
+    evidence_id = record["id"]
+    verification = record["report_verification"]
+    report_format = verification["format"]
+    if report.get("format") != report_format:
+        raise ValueError(f"{evidence_id} report format changed")
+    if report.get("result") != record["result"]:
+        raise ValueError(f"{evidence_id} report result differs from evidence")
+    if report.get("source_revision") != record["source_revision"]:
+        raise ValueError(f"{evidence_id} report source revision differs from evidence")
+    if report.get("command") != record["command"]:
+        raise ValueError(f"{evidence_id} report command differs from evidence")
+    cases = report.get("cases")
+    if not isinstance(cases, list) or not cases:
+        raise ValueError(f"{evidence_id} report requires executed cases")
+    if report_format == "cbus-parity-test-report-v1":
+        if report.get("exit_code") != record["exit_code"]:
+            raise ValueError(f"{evidence_id} report exit code differs from evidence")
+        report_ids: set[str] = set()
+        covered: set[tuple[str, str]] = set()
+        for case in cases:
+            if not isinstance(case, dict) or case.get("result") != "passed":
+                raise ValueError(f"{evidence_id} report has a nonpassing case")
+            test_id = case.get("id")
+            if not isinstance(test_id, str) or not test_id or test_id in report_ids:
+                raise ValueError(f"{evidence_id} report has an invalid case id")
+            report_ids.add(test_id)
+            obligation_ids = _strings(case.get("obligation_ids"), field=f"{evidence_id}.{test_id}.obligation_ids", nonempty=True)
+            dimensions = _strings(case.get("dimensions"), field=f"{evidence_id}.{test_id}.dimensions", nonempty=True)
+            if set(obligation_ids) - set(record["obligation_ids"]) or set(dimensions) - set(record["dimensions"]):
+                raise ValueError(f"{evidence_id} report case exceeds its evidence scope")
+            covered.update((obligation_id, dimension) for obligation_id in obligation_ids for dimension in dimensions)
+        required = {(obligation_id, dimension) for obligation_id in record["obligation_ids"] for dimension in record["dimensions"]}
+        if report_ids != set(record["test_ids"]) or not required.issubset(covered):
+            raise ValueError(f"{evidence_id} report cases do not cover declared tests and dimensions")
+    elif report_format == "cgate-session-differential-v2":
+        native_capture = report.get("native_capture")
+        if (
+            report.get("product") != "cmqttd"
+            or report.get("failed") != 0
+            or report.get("skipped") != 0
+            or report.get("errors") != []
+            or report.get("normalization_errors") != []
+            or report.get("executed") != len(cases)
+            or report.get("passed") != len(cases)
+            or report.get("obligation_ids") != sorted(record["obligation_ids"])
+            or not isinstance(native_capture, dict)
+            or native_capture.get("sha256") != record["oracle"]["artifact_sha256"]
+        ):
+            raise ValueError(f"{evidence_id} differential report is incomplete or mismatched")
+        prefix = "research/cgate_session_differential.py::"
+        report_ids: set[str] = set()
+        covered_ids: set[str] = set()
+        for case in cases:
+            if not isinstance(case, dict):
+                raise ValueError(f"{evidence_id} differential report has an invalid case")
+            case_id = case.get("id")
+            obligation_id = case.get("obligation_id")
+            if (
+                not isinstance(case_id, str) or not case_id
+                or case_id in report_ids
+                or obligation_id not in record["obligation_ids"]
+                or case.get("result") != "passed"
+                or case.get("client_tag_echoed") is not True
+                or case.get("native_status") != case.get("rust_status")
+                or case.get("native_normalized") != case.get("rust_normalized")
+            ):
+                raise ValueError(f"{evidence_id} differential case evidence changed")
+            report_ids.add(case_id)
+            covered_ids.add(obligation_id)
+        if (
+            {prefix + case_id for case_id in report_ids} != set(record["test_ids"])
+            or covered_ids != set(record["obligation_ids"])
+        ):
+            raise ValueError(f"{evidence_id} differential cases do not cover declared tests")
 
 
 def _strings(value: Any, *, field: str, nonempty: bool = False) -> list[str]:
@@ -597,6 +682,26 @@ def validate_evidence_bundle(
                     raise ValueError(f"{evidence_id} artifact digest changed: {path}")
         if record["result"] == "passed" and not artifact_roles.intersection({"output", "report"}):
             raise ValueError(f"{evidence_id} passed evidence requires an output or report artifact")
+        if record["result"] == "passed":
+            verification = record.get("report_verification")
+            if (
+                not isinstance(verification, dict)
+                or set(verification) != {"format", "path"}
+                or verification.get("format") not in REPORT_FORMATS
+                or not isinstance(verification.get("path"), str)
+                or verification["path"] not in artifact_paths
+                or not any(
+                    artifact["role"] == "report" and artifact["path"] == verification["path"]
+                    for artifact in artifacts
+                )
+            ):
+                raise ValueError(f"{evidence_id} requires a recognized report artifact")
+            if artifact_root is not None:
+                report_path = (artifact_root / verification["path"]).resolve()
+                report = parse_json_document(
+                    report_path.read_bytes(), context=f"{evidence_id} execution report"
+                )
+                _validate_execution_report(record, report)
         if "original_differential" in dimensions and oracle_digest not in input_digests:
             raise ValueError(f"{evidence_id} oracle digest requires a matching input artifact")
         skips = record.get("skips")

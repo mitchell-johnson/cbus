@@ -130,13 +130,19 @@ Work-item references are checked against the packaged 59-ID authoritative roster
 so a syntactically valid but unplanned ID is rejected. The exact parsed evidence
 object must equal the duplicate-key- and non-finite-safe parse of the digest-bound
 evidence bytes.
-Receipts also require explicit
-test IDs, environment identity, artifact roles and an exit code consistent
-with the result. A passed record must attach an output or report artifact, not
-just its inputs. An original-differential oracle hash must match an attached
-input artifact. Skipped case IDs must be unique and cannot also appear among
-the executed test IDs. The source-checkout validator reopens and hashes every
-attached artifact. Without `--evidence-root`, an installed wheel validates the
+Receipts also require explicit test IDs, environment identity, artifact roles
+and an exit code consistent with the result. A passed record must name a
+recognized machine-readable report artifact. With an evidence root, the
+validator reads that report and checks its executed case IDs, per-obligation
+and per-dimension coverage, result, source revision and command against the
+evidence declaration. The current C-Gate SESSION_ID differential additionally
+checks its cmqttd endpoint, native input digest, zero failures/skips and every
+reported native/Rust normalized payload pair. Rehashing a report and its
+declarations cannot turn a failed or unrelated case into accepted evidence.
+An original-differential oracle hash must match an attached input artifact.
+Skipped case IDs must be unique and cannot also appear among the executed test
+IDs. The source-checkout validator reopens and hashes every attached artifact.
+Without `--evidence-root`, an installed wheel validates the
 packaged receipt structure and declared digests but cannot reopen research
 artifacts that are not shipped in the wheel. It therefore reports
 `evidence_artifacts_verified: false`, withholds functional percentages and
