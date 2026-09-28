@@ -1,0 +1,102 @@
+{
+  "schema": "native-cgate-event-socket-recovery-v2",
+  "captured_utc": "2026-09-28T11:55:56.381356+00:00",
+  "scope": "Two owned original C-Gate children, outbound to owned loopback sinks only; no site project or C-Bus endpoint",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "transport_probe_sha256": "6134ce15c2d8276a2abaea16f43f07c007c7fa8d636bc48c7aaa4e2837a3d149",
+    "capture_script_sha256": "139dbf541cde1b8b6dee206291284dea3c9e70887a73fe2e90bf65cecd2c6263",
+    "physical_endpoint": false,
+    "children": {
+      "initial_sink_absent": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      },
+      "initial_sink_present": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      }
+    }
+  },
+  "initial_sink_absent": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "absent": {
+      "sink_bound_not_listening": true,
+      "broadcast_response": [
+        "[absent] 200 OK."
+      ],
+      "wait_before_listen_seconds": 1.25
+    },
+    "first_connection": {
+      "accepted": false,
+      "accept_delay_seconds": 60.002,
+      "sink_peer_ip": null,
+      "rows": [],
+      "codes": [],
+      "contains_absent_marker": false,
+      "broadcast_response": [],
+      "online_rows": [],
+      "online_codes": [],
+      "first_stream_closed_before_local_close": false
+    },
+    "reconnection": {
+      "broadcast_while_disconnected": [],
+      "accepted": false,
+      "accept_timeout": null,
+      "accept_delay_seconds": null,
+      "rows": [],
+      "codes": [],
+      "contains_lost_marker": false,
+      "broadcast_response": [],
+      "resumed_rows": [],
+      "resumed_codes": []
+    },
+    "quit_response": [
+      "[quit] 204 Closing connection."
+    ]
+  },
+  "initial_sink_present": {
+    "sink_listening_before_start": true,
+    "sink_peer_ip": "127.0.0.1",
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "startup_rows": [
+      "20260929-005454.413 800 cgate - C-Gate started."
+    ],
+    "startup_codes": [
+      800
+    ],
+    "connected_broadcast_response": [
+      "[online] 200 OK."
+    ],
+    "connected_rows": [
+      "20260929-005455.177 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 55575",
+      "20260929-005455.179 703 cmd3 - broadcast_event SP class connected-marker"
+    ],
+    "connected_codes": [
+      803,
+      703
+    ],
+    "rst_after_connected_broadcast": true,
+    "disconnected_broadcast_response": [
+      "[lost] 200 OK."
+    ],
+    "reconnected": false,
+    "reconnect_delay_seconds": 60.002,
+    "reconnect_rows": [],
+    "reconnect_codes": [],
+    "replayed_disconnected_marker": false,
+    "restored_broadcast_response": [],
+    "restored_rows": [],
+    "restored_codes": [],
+    "quit_response": [
+      "[quit] 204 Closing connection."
+    ]
+  }
+}
