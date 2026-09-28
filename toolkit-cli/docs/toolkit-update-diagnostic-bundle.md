@@ -56,6 +56,8 @@ The v4 bundle reports three links independently:
   shape accepted by the catalogue reader.
 - `metadata_conditions` requires the condition and context exact-file receipts
   to agree with the evaluator's input digests and the supplied source bytes.
+  The source receipt must retain the producer's exact-file representation label;
+  a report that substitutes an observed-host provenance claim cannot link.
   The report's decoded condition and context models must match those sources;
   the condition model must equal `clientConditionData` in the selected metadata
   node. Decoded JSON comparisons preserve types: a reported `1` cannot stand
@@ -68,7 +70,9 @@ The v4 bundle reports three links independently:
   match its supplied DER bytes. The list subject ID must equal the now
   source-bound metadata certificate thumbprint. The two signer certificates
   need not be the same: the revocation stage uses a historical signer. This
-  binds certificate identity to the report inputs, but does not replay X.509
+  binds certificate identity to the report inputs. The revocation report must
+  retain `request_subject_association_verified=false`, since the standalone
+  source does not establish an API request association. It does not replay X.509
   parsing, signature verification, or complete/current revocation status.
 
 `diagnostics_complete` is true only when all three links hold, all retained
@@ -127,7 +131,11 @@ raw revocation response selection, Boolean/number substitutions in candidate
 and context reports, unrelated revocation and condition reports,
 missing or substituted canonicalization digests (including a same-ID other
 version), missing/substituted certificate sources and contradictory DER digests
-or thumbprints, malformed/oversize DER envelopes, failed stages, and forged
+or thumbprints, malformed/oversize DER envelopes, forged source representation
+or request-subject association, failed stages, and forged
 trust/availability flags. These are portable offline
 tests; they do not add native Windows, publisher-trust, network, or installer
 evidence.
+The [P9.01 focused review](../research/experiments/2026-09-28/update-diagnostic-bundle-review.json)
+maps the source-link obligations to stable case IDs, input hashes and the
+current offline result. Integrated and installed-artifact gates remain separate.

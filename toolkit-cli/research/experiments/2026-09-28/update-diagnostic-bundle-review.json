@@ -1,0 +1,103 @@
+{
+  "format": "cbus-toolkit-p9-01-diagnostic-provenance-review-v1",
+  "work_item": "P9.01",
+  "source_base_revision": "02c0953bf838a920c275ce0567ea38f802f181e8",
+  "target": "Toolkit 1.18.0.2754 / SESU 3.0.7 diagnostic report composition",
+  "status": "focused implementation review; integration and full gates pending",
+  "obligations": [
+    {
+      "id": "P9.01.RAW",
+      "contract": "Parse bounded exact report and source bytes with unique JSON keys and unambiguous selected identity",
+      "cases": [
+        "test_valid_exact_reports_link_all_three_relationships",
+        "test_substituted_report_bytes_are_parsed_instead_of_a_separate_object",
+        "test_substituted_source_bytes_and_duplicate_source_keys_fail_closed",
+        "test_duplicate_json_keys_are_rejected_before_schema_validation",
+        "test_same_identity_with_different_versions_is_ambiguous"
+      ]
+    },
+    {
+      "id": "P9.01.CAT-META",
+      "contract": "Bind catalogue response, request receipt, selected node, metadata canonical bytes and both digest receipts",
+      "cases": [
+        "test_captured_stage_reports_bind_their_actual_der_sources",
+        "test_same_id_different_source_node_cannot_borrow_metadata_receipt",
+        "test_catalogue_request_and_endpoint_receipt_bind_installed_version",
+        "test_canonical_digest_from_another_same_id_version_does_not_link",
+        "test_missing_metadata_receipt_keeps_linked_completion_false"
+      ]
+    },
+    {
+      "id": "P9.01.META-COND",
+      "contract": "Bind condition and context source bytes and producer representation to the selected metadata condition model",
+      "cases": [
+        "test_condition_and_context_reports_are_bound_to_source_contents",
+        "test_context_boolean_cannot_be_replaced_by_equal_json_number",
+        "test_unrelated_condition_model_keeps_linked_completion_false",
+        "test_missing_condition_receipt_keeps_linked_completion_false",
+        "test_condition_source_representation_claim_must_match_producer"
+      ]
+    },
+    {
+      "id": "P9.01.META-REV",
+      "contract": "Bind revocation source, canonical lists, subject and both exact signer DER receipts while retaining unverified request association",
+      "cases": [
+        "test_revocation_response_selection_is_bound_to_exact_source",
+        "test_unrelated_revocation_subject_keeps_linked_completion_false",
+        "test_certificate_digest_and_thumbprint_receipts_both_match_exact_bytes",
+        "test_revocation_cannot_forge_request_subject_association"
+      ]
+    },
+    {
+      "id": "P9.01.CLAIMS",
+      "contract": "Incomplete linkage stays false and no publisher trust, availability, or installation claim is made",
+      "cases": [
+        "test_report_only_provenance_cannot_claim_linked_completion",
+        "test_failed_stage_is_retained_as_incomplete",
+        "test_forged_trust_or_availability_claim_is_rejected",
+        "test_complete_public_bundle",
+        "test_substituted_catalogue_source_is_public_nonzero_evidence"
+      ]
+    }
+  ],
+  "fixture_source_sha256": {
+    "catalogue_response": "f237f99dfee282088b8d76b78a9c3fe96320744f42320031f13b4ea601cef381",
+    "revocation_input": "fda98767b41f55253cb914fbe7d01045e61b8d3e7cfcae91183610417782d83d",
+    "conditions_input": "499cc7613cf2c45b0a7d4ad84067201f907d40ed7f89da424e8ec02e3b252af5",
+    "context_input": "8ed2550aa5723b8a2309ef687a52b33393b83b5799092c0814d663fc295dd543",
+    "metadata_certificate": "586319ba8f9c3d1cd83bc21646e503993c5b244d35be487a1b4823523ddd1511",
+    "revocation_signer_certificate": "58c5de1ae26ef7f47c96eabbc9c878dadd4d4e55ddc3aa1dd3e7f974aa34b405"
+  },
+  "fixture_report_sha256": {
+    "catalogue": "ee5db961fcd53b724ad3436a64a32b71b0c912838931adc3f613841f739eebcb",
+    "metadata": "d586f2a75ae282cd379f1c89ef52c91c29b28b9a4c01f04758f8b02aab36a483",
+    "revocation": "f23ed26402f98e88eb14af3bac59315b625355c8c38d33132872b46a55c0df49",
+    "conditions": "11b9ab3c8404e580dc779da9ca7f7a16e548048c080a39f692060297dbf781d6"
+  },
+  "reviewed_file_sha256": {
+    "src/cbus_toolkit/toolkit_update_bundle.py": "df82c64c0fbe46416243549a592593c7f4377448bf0e556c40ede99842e3f172",
+    "tests/test_toolkit_update_bundle.py": "9a95e18114aef428c7c87025d8d935108b3b27e8213907f19bfcf41596e8ae0d",
+    "tests/test_cli_toolkit_update_bundle.py": "fb544e3d8fbc0775635515529f6594a965e293fc2d32aec8ef2bb8ca587d4893"
+  },
+  "validation": {
+    "working_directory": "toolkit-cli",
+    "command": "PYTHONPATH=src /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
+    "python": "3.13.14",
+    "tests": 62,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "exit_status": 0
+  },
+  "applicability": {
+    "original_composer_comparison": "not applicable: this is a bounded diagnostic composer, not an original Toolkit operation; underlying metadata, revocation and condition cases retain separate native evidence",
+    "hardware_or_physical_effect": "not applicable: no physical I/O",
+    "persistence_recovery": "not applicable: read-only local composition"
+  },
+  "pending_gates": [
+    "integrated revision and installed-wheel hash",
+    "make check and make check-interop were deferred by the focused-test instruction",
+    "final issue-level closure decision"
+  ],
+  "invalidation": "Re-run and refresh this review after changes to the composer, its producer receipt schemas, source selectors, tests or synthetic fixture input bytes. Integrated or installed-artifact results require a new receipt."
+}

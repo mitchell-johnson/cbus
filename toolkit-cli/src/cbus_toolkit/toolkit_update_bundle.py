@@ -524,7 +524,9 @@ def compose_update_diagnostic_bundle(
     if type(condition_source) is dict:
         try:
             condition_receipts_match = (
-                _sha256(
+                condition_source.get("representation")
+                == "Exact supplied file bytes; normalized model reported separately"
+                and _sha256(
                     conditions.get("conditions_sha256"),
                     "conditions.conditions_sha256",
                 )
@@ -634,6 +636,7 @@ def compose_update_diagnostic_bundle(
     revocation_subject = None
     subject_matches = False
     claimed_lists_match_canonical = False
+    request_subject_association_unverified = False
     canonical_revocation = _canonical_object(revocation_rows)
     revocation_canonical_receipt_matches = _canonical_receipt_matches(revocation_rows)
     if type(claimed_lists) is dict:
@@ -642,6 +645,9 @@ def compose_update_diagnostic_bundle(
                 claimed_lists.get("id"), "revocation.claimed_lists.id"
             )
             subject_matches = revocation_subject == metadata_thumbprint
+            request_subject_association_unverified = (
+                claimed_lists.get("request_subject_association_verified") is False
+            )
             claimed_lists_match_canonical = (
                 canonical_revocation is not None
                 and canonical_revocation.get("id") == claimed_lists.get("id")
@@ -684,6 +690,7 @@ def compose_update_diagnostic_bundle(
         and revocation_canonical_receipt_matches
         and claimed_lists_match_canonical
         and subject_matches
+        and request_subject_association_unverified
     )
     metadata_revocation_reason = (
         "metadata certificate source bytes were not supplied"
@@ -705,6 +712,8 @@ def compose_update_diagnostic_bundle(
         else "revocation claimed lists do not match the evaluated canonical input"
         if not claimed_lists_match_canonical
         else "revocation subject does not match the metadata certificate"
+        if not subject_matches
+        else "revocation request-subject association boundary is absent or contradicted"
     )
 
     links = {
@@ -734,6 +743,7 @@ def compose_update_diagnostic_bundle(
             revocation_subject_id=revocation_subject,
             claimed_lists_match_canonical=claimed_lists_match_canonical,
             subject_identifier_matches=subject_matches,
+            request_subject_association_unverified=request_subject_association_unverified,
             revocation_source_matches=revocation_source_matches,
             canonical_revocation_matches_source=canonical_revocation_matches_source,
             canonical_digest_receipt_matches=revocation_canonical_receipt_matches,

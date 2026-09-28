@@ -709,6 +709,36 @@ class UpdateDiagnosticBundleTests(unittest.TestCase):
         self.assertFalse(result["diagnostics_complete"])
         self.assertFalse(result["links"]["metadata_conditions"]["linked"])
 
+    def test_condition_source_representation_claim_must_match_producer(self):
+        for representation in (None, "Observed current-user registry values"):
+            with self.subTest(representation=representation):
+                values = reports()
+                if representation is None:
+                    del values["conditions"]["source"]["representation"]
+                else:
+                    values["conditions"]["source"]["representation"] = representation
+                result = compose(encoded_reports(values)).as_dict()
+                link = result["links"]["metadata_conditions"]
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(link["source_receipts_match"])
+                self.assertTrue(link["condition_sources_match"])
+
+    def test_revocation_cannot_forge_request_subject_association(self):
+        for claim in (None, True, 0):
+            with self.subTest(claim=claim):
+                values = reports()
+                if claim is None:
+                    del values["revocation"]["claimed_lists"]["request_subject_association_verified"]
+                else:
+                    values["revocation"]["claimed_lists"]["request_subject_association_verified"] = claim
+                result = compose(encoded_reports(values)).as_dict()
+                link = result["links"]["metadata_revocation"]
+                self.assertFalse(result["diagnostics_complete"])
+                self.assertFalse(link["linked"])
+                self.assertTrue(link["subject_identifier_matches"])
+                self.assertFalse(link["request_subject_association_unverified"])
+                self.assertIn("request-subject association", link["reason"])
+
     def test_failed_stage_is_retained_as_incomplete(self):
         values = reports()
         for row in values["metadata"]["stages"]:
