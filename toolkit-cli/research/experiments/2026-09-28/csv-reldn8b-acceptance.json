@@ -40,7 +40,7 @@
     "tests/test_toolkit_database_csv_reldn8b.py": "2bae625c061564cb837ff95b169b6edca31c429259c95346ba590febf1fa8562",
     "tests/test_toolkit_database_csv_din4_rel4_rel8.py": "2e0d6f2763595626f043a1bb189e4154d2640127edb9cc20ef50533c6ee69df8",
     "docs/toolkit-database-csv.md": "6f341826e5981942659c7c5bd115b9414904a93184861d8ec0b6218fde6b6b17",
-    "docs/implementation-status.md": "ec7e42473ea60e1bb2ead00ac6f3865e5e99d5908b75766793de39c0dbd8e6bc",
+    "docs/implementation-status.md": "2227b7f6d54a849393e83a5486560ae9bbcbb2baae8e0d879f40e42d46b7f976",
     "../.agents/skills/cbus-cli/references/toolkit.md": "4698e8f309231738bf3d93d73a7fa8bb8b1f1a1ad3d4981fcee91632e822607f"
   },
   "effects": {

@@ -65,7 +65,7 @@
         "syntax_end_line": 2637,
         "syntax_sha256": "4ffeaa49997c60fb303a8745304294c19c073da8013c6ba3ef95a1fe42659aa5"
       },
-      "contract_sha256": "d4feba9d3cde0161a93e26342ca1ad72b137368c489ddf4d14d79d327fad5592",
+      "contract_sha256": "a204da8c6bfd0f0e6f0ae3e5563cd8aa02488018b05eea340c9beffadb5e326d",
       "native_cases": [
         {"command": "SESSION_ID TAG C-Bus   Toolkit test", "status": 200},
         {"command": "SESSION_ID TAG replacement", "status": 408},

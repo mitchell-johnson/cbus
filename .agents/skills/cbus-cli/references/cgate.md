@@ -1355,19 +1355,20 @@ restart. A [nonempty Level capture](../../../../toolkit-cli/docs/native-cgate-db
 pins a generated TagDLT OID, an explicit-OID text edit, save/load and
 whole-Network XML roundtrip. Other label shapes remain unverified.
 Descendant OID collisions are not admitted by this evidence. An
-[owned 89-request mutation capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#oid-targeted-mutations-of-two-units)
-and [229-request three-/four-Unit extension](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#three--and-four-unit-oid-targeted-mutations)
+[owned 89-request mutation capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#oid-targeted-mutations-of-two-units),
+[229-request three-/four-Unit extension](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#three--and-four-unit-oid-targeted-mutations),
+and [289-request five-/six-Unit capture](../../../../toolkit-cli/docs/native-cgate-five-plus-unit-oid-mutations.md)
 establish that `DBSETSAFE`, `DBSET`, `DBSETXML`, `DBCOPYSAFE` and `DBDELETE`
 through a shared OID select the final submitted Unit in one Network, even
 when that Unit has a lower address than an earlier sibling. The copy receives
 a new OID and retains the source `UnitName` and PP `UnitAddress`; OID-targeted
 deletion invalidates the shared OID lookup until `PROJECT LOAD`, while the
-surviving addressed Units remain readable. Rust admits these two-, three-,
-and four-Unit one-Network shapes. The
+surviving addressed Units remain readable. Rust admits these two- through
+six-Unit one-Network shapes. The
 [184-request cross-kind capture](../../../../toolkit-cli/docs/native-cgate-cross-kind-oid-mutations.md)
 also establishes that one Application and one Unit with a shared OID select
 the Unit for all five mutations in either submission order; after OID
-deletion, reload selects the surviving Application. Five-or-more Unit
+deletion, reload selects the surviving Application. Seven-or-more Unit
 collisions, duplicate-Application fields/deletes,
 repeated-Application-plus-Unit shapes, and cross-network Unit-OID collisions
 remain refused until native semantics and lossless representation are known.

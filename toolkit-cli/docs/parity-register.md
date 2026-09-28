@@ -56,7 +56,7 @@ changes no provisional source count, and supplies no physical cache readback.
   C-Gate paths.
 - `research/build_cgate_contract_inventory.py` derives that inventory from the
   Rust routing matrix, declarative application arities, endpoint authorization
-  policy, public-help syntax hashes and nine sanitized native handler-role
+  policy, public-help syntax hashes and ten sanitized native handler-role
   probes. It records unknown selector/state fields explicitly instead
   of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
