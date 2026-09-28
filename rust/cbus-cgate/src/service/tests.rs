@@ -15539,7 +15539,31 @@ async fn nested_same_oid_levels_materialize_on_load_and_survive_repository_resta
             .await;
         assert_eq!(by_oid.status, 200);
         assert!(by_oid.lines[0].contains("<TagsDLT/>"));
-        loaded.push((project, after_load.lines[0].clone()));
+        if kind == "Group" {
+            let tagged = by_oid.lines[0]
+                .strip_prefix("347-")
+                .unwrap()
+                .replace(
+                    "<TagsDLT/>",
+                    "<TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Owned label</TagValue></TagDLT></TagsDLT>",
+                );
+            assert_eq!(
+                service
+                    .handle_document(
+                        &mut client,
+                        "[label] DBSETXML !55555555-5555-4555-8555-000000000056",
+                        &tagged,
+                    )
+                    .await
+                    .status,
+                301
+            );
+            let labeled = service.handle(&mut client, &read("labeled")).await;
+            assert!(labeled.lines[0].contains("<TagValue>Owned label</TagValue>"));
+            loaded.push((project, labeled.lines[0].clone()));
+        } else {
+            loaded.push((project, after_load.lines[0].clone()));
+        }
     }
     assert!(
         tokio::time::timeout(Duration::from_millis(20), remote.read_u8())

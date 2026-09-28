@@ -452,6 +452,9 @@ historical evidence, not acceptance of newer code.
   A 108-request follow-up proves that original C-Gate accepts the post-load
   empty Level TagsDLT in Network, Group, NetVar and Level replacements and
   retains it through another lifecycle; Rust replays those exact outcomes.
+  A 24-request owned capture adds one nonempty Level TagDLT, native generated
+  OID, explicit-OID edit and whole-Network roundtrip through another lifecycle;
+  Rust replays the identity and XML after generated-OID substitution.
   Descendant OID collisions and broader combined forms remain open.
 - [ ] **P2.03** ([#25](https://github.com/mitchell-johnson/cbus/issues/25)) — Complete CGL metadata/controller semantics and multi-network route behavior;
   distinguish importing a label graph from programming a controller.

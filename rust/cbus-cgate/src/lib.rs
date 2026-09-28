@@ -926,6 +926,98 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
     })
 }
 
+/// Normalize the bounded native Level label collection. C-Gate issues an OID
+/// for a newly submitted TagDLT without one, then returns that identity in
+/// its XML. Keeping the normalized XML with the Level also makes a subsequent
+/// whole-Network replacement and project reload preserve that label.
+fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
+    if node.attributes().len() != 0 {
+        return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+    }
+    let tags = node
+        .children()
+        .filter(roxmltree::Node::is_element)
+        .collect::<Vec<_>>();
+    if node
+        .children()
+        .filter(roxmltree::Node::is_text)
+        .any(|text| !text.text().unwrap_or_default().trim().is_empty())
+        || tags.len() > 64
+    {
+        return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+    }
+    if tags.is_empty() {
+        return Ok("<TagsDLT/>".to_string());
+    }
+    let mut output = "<TagsDLT>".to_string();
+    let mut identities = HashSet::new();
+    let mut variants = HashSet::new();
+    for tag in tags {
+        if !tag.has_tag_name("TagDLT") || tag.attributes().len() != 0 {
+            return Err("DBSETXML Level has an unsupported TagDLT".to_string());
+        }
+        let mut fields = HashMap::new();
+        for child in tag.children().filter(roxmltree::Node::is_element) {
+            if child.tag_name().namespace().is_some()
+                || child.attributes().len() != 0
+                || child.children().any(|descendant| descendant.is_element())
+                || !matches!(
+                    child.tag_name().name(),
+                    "OID" | "LanguageID" | "FlavourID" | "TagType" | "TagValue"
+                )
+            {
+                return Err("DBSETXML Level has an unsupported TagDLT field".to_string());
+            }
+            let value = child.text().unwrap_or_default().to_string();
+            if fields.insert(child.tag_name().name(), value).is_some() {
+                return Err("DBSETXML Level has duplicate TagDLT fields".to_string());
+            }
+        }
+        let oid = match fields.remove("OID") {
+            Some(oid) if valid_uuid(&oid) => oid,
+            Some(_) => return Err("DBSETXML TagDLT has an invalid OID".to_string()),
+            None => fresh_oid(),
+        };
+        let language = fields
+            .remove("LanguageID")
+            .ok_or_else(|| "DBSETXML TagDLT is missing LanguageID".to_string())?
+            .parse::<u8>()
+            .map_err(|_| "DBSETXML TagDLT has an invalid LanguageID".to_string())?;
+        let flavour = fields
+            .remove("FlavourID")
+            .ok_or_else(|| "DBSETXML TagDLT is missing FlavourID".to_string())?
+            .parse::<u8>()
+            .map_err(|_| "DBSETXML TagDLT has an invalid FlavourID".to_string())?;
+        if !(1..=4).contains(&flavour)
+            || !identities.insert(oid.clone())
+            || !variants.insert((language, flavour))
+        {
+            return Err("DBSETXML Level has duplicate or invalid TagDLT".to_string());
+        }
+        let kind = fields
+            .remove("TagType")
+            .ok_or_else(|| "DBSETXML TagDLT is missing TagType".to_string())?;
+        let value = fields
+            .remove("TagValue")
+            .ok_or_else(|| "DBSETXML TagDLT is missing TagValue".to_string())?;
+        if kind.is_empty()
+            || kind.len() > 64
+            || kind.chars().any(char::is_control)
+            || value.len() > 1024
+            || value.chars().any(char::is_control)
+        {
+            return Err("DBSETXML TagDLT has an invalid type or value".to_string());
+        }
+        output.push_str(&format!(
+            "<TagDLT><OID>{oid}</OID><LanguageID>{language}</LanguageID><FlavourID>{flavour}</FlavourID><TagType>{}</TagType><TagValue>{}</TagValue></TagDLT>",
+            xml_escape(&kind),
+            xml_escape(&value),
+        ));
+    }
+    output.push_str("</TagsDLT>");
+    Ok(output)
+}
+
 fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObject, String> {
     if node.tag_name().namespace().is_some() {
         return Err("DBSETXML complete object root must be unnamespaced".to_string());
@@ -992,16 +1084,10 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         }
         match (kind, name) {
             (DbXmlKind::Level, "TagsDLT") => {
-                // Owned build-2001 DBGETXML adds exactly this empty child
-                // after load and accepts it in a subsequent DBSETXML at
-                // Network, Group, NetVar, or Level scope.
-                if !extras.children.is_empty()
-                    || child.attributes().len() != 0
-                    || child.children().next().is_some()
-                {
+                if !extras.children.is_empty() {
                     return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
                 }
-                extras.children.push("<TagsDLT/>".to_string());
+                extras.children.push(parse_level_tags_dlt(child)?);
             }
             (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
             | (DbXmlKind::Application, "Group" | "NetVar") => {
@@ -1070,7 +1156,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         units,
         children,
         // The original mapper omits unmodeled namespace/comment/PI markup;
-        // the one captured empty Level TagsDLT survives exact replacement.
+        // the captured Level TagsDLT survives exact replacement.
         extras,
     })
 }
@@ -2356,9 +2442,9 @@ impl Server {
     fn project_load(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() <= 3 {
             let response = self.project_use(tag, words);
-            // The owned build-2001 capture adds empty Level TagsDLT nodes
-            // when a saved same-OID Application tree is loaded, not when it
-            // is saved. Keep this projection to that captured nested shape.
+            // Owned build-2001 captures add empty Level TagsDLT nodes when a
+            // saved nested Level is loaded, not when it is saved. This occurs
+            // with both single and repeated Application OIDs.
             if response.status == status::OK && words.len() == 3 {
                 self.materialize_loaded_nested_level_tags(words[2]);
             }
@@ -2382,48 +2468,18 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
-    fn nested_repeated_application_level_oids(&self, project: &str) -> Vec<String> {
-        let mut application_oid_counts = HashMap::<(&str, &str), usize>::new();
-        for object in self.db_pending.values().filter(|object| {
-            object.project == project && object.element == "Application" && object.path.is_some()
-        }) {
-            *application_oid_counts
-                .entry((object.parent.as_str(), object.oid.as_str()))
-                .or_default() += 1;
-        }
-        let repeated_application_paths = self
-            .db_pending
-            .values()
-            .filter(|object| {
-                object.project == project
-                    && object.element == "Application"
-                    && application_oid_counts
-                        .get(&(object.parent.as_str(), object.oid.as_str()))
-                        .copied()
-                        .unwrap_or(0)
-                        > 1
-            })
-            .filter_map(|object| object.path.as_deref())
-            .collect::<HashSet<_>>();
+    fn nested_level_oids(&self, project: &str) -> Vec<String> {
         self.db_pending
             .values()
             .filter(|object| {
-                object.project == project
-                    && object.element == "Level"
-                    && object.path.is_some()
-                    && object
-                        .parent
-                        .rsplit_once('/')
-                        .is_some_and(|(application, _)| {
-                            repeated_application_paths.contains(application)
-                        })
+                object.project == project && object.element == "Level" && object.path.is_some()
             })
             .map(|object| object.oid.clone())
             .collect()
     }
 
     fn save_nested_level_tags(&mut self, project: &str) {
-        for oid in self.nested_repeated_application_level_oids(project) {
+        for oid in self.nested_level_oids(project) {
             self.db_xml_extras
                 .entry(Self::unit_document_key(project, &oid))
                 .or_default()
@@ -2432,14 +2488,18 @@ impl Server {
     }
 
     fn materialize_loaded_nested_level_tags(&mut self, project: &str) {
-        for oid in self.nested_repeated_application_level_oids(project) {
+        for oid in self.nested_level_oids(project) {
             if let Some(extras) = self
                 .db_xml_extras
                 .get_mut(&Self::unit_document_key(project, &oid))
             {
                 if extras.saved_level_tags_pending {
                     extras.saved_level_tags_pending = false;
-                    if !extras.children.iter().any(|child| child == "<TagsDLT/>") {
+                    if !extras
+                        .children
+                        .iter()
+                        .any(|child| child.starts_with("<TagsDLT"))
+                    {
                         extras.children.push("<TagsDLT/>".to_string());
                     }
                 }

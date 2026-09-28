@@ -4028,8 +4028,7 @@ fn dbsetxml_post_load_level_tags_roundtrip_matches_owned_native_vectors() {
         }
     }
 
-    // The accepted element is the captured empty form. A different Level
-    // TagsDLT payload stays outside this parity slice and fails atomically.
+    // Malformed or unmodeled Level label collections fail atomically.
     let before = server.handle("[guard-before] DBGETXML //XRVL/254").lines[0].clone();
     let level = server.handle("[guard-level] DBGETXML !55555555-5555-4555-8555-000000000056");
     let source = level.lines[0].strip_prefix("347-").unwrap();
@@ -4054,6 +4053,118 @@ fn dbsetxml_post_load_level_tags_roundtrip_matches_owned_native_vectors() {
         server.handle("[guard-after] DBGETXML //XRVL/254").lines[0],
         before
     );
+}
+
+#[test]
+fn dbsetxml_level_dlt_label_matches_owned_native_lifecycle() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_level_dlt.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-dbsetxml-level-dlt-v1");
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 24);
+    let mut server = Server::new(AccessLevel::Program);
+    let mut oids = HashMap::<String, String>::new();
+    for row in cases {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let substitute = |value: &str, oids: &HashMap<String, String>| {
+            oids.iter().fold(value.to_string(), |value, (from, to)| {
+                value.replace(from, to)
+            })
+        };
+        let observed = if command.starts_with("DBSETXML ") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = row["request"]
+                .as_str()
+                .unwrap()
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document, &oids))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        if tag == 1003 {
+            let document =
+                roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                    .unwrap();
+            let root = document.root_element();
+            let interface = root
+                .children()
+                .find(|child| child.has_tag_name("Interface"))
+                .unwrap();
+            let oid = |node: roxmltree::Node<'_, '_>| {
+                node.children()
+                    .find(|child| child.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap()
+                    .to_string()
+            };
+            oids.insert(native["network_oid"].as_str().unwrap().into(), oid(root));
+            oids.insert(
+                native["interface_oid"].as_str().unwrap().into(),
+                oid(interface),
+            );
+        }
+        if tag == 1011 {
+            let document =
+                roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                    .unwrap();
+            let tag_dlt = document
+                .descendants()
+                .find(|node| node.has_tag_name("TagDLT"))
+                .unwrap();
+            let oid = tag_dlt
+                .children()
+                .find(|node| node.has_tag_name("OID"))
+                .unwrap()
+                .text()
+                .unwrap();
+            oids.insert(
+                native["generated_tag_oid"].as_str().unwrap().into(),
+                oid.into(),
+            );
+        }
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status = if command.starts_with("DBGETXML ") {
+            200
+        } else if command.starts_with("DBCREATENET ") {
+            // Native setup uses 301; the mock's established setup uses 200.
+            200
+        } else {
+            expected_final[..3].parse().unwrap()
+        };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML ") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(
+                observed.lines[0],
+                substitute(expected_xml, &oids),
+                "tag {tag}"
+            );
+        } else if command.starts_with("DBSETXML ") {
+            assert_eq!(
+                observed.final_text,
+                substitute(expected_final, &oids),
+                "tag {tag}"
+            );
+        }
+    }
 }
 
 #[test]

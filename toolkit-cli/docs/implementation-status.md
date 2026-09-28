@@ -107,6 +107,10 @@ The [108-request post-load roundtrip](native-cgate-dbsetxml-nested-levels.md#pos
 adds native `301` and exact readback for XML containing generated empty Level
 `TagsDLT` at Network, Group, NetVar and Level scope; Rust replays every request
 and keeps those tags through a second save/load and repository restart.
+The [24-request nonempty Level label capture](native-cgate-dbsetxml-nested-levels.md#nonempty-level-labels)
+adds native-generated TagDLT identity, an explicit-OID text edit and Network
+roundtrip through another save/load; Rust replays the exact XML after generated
+OID substitution. Broader label variants and combined XML forms remain open.
 
 Other feature-specific acceptance, including Windows, native C-Gate, transport cleanup and file handling, is linked from the feature documents. Passing simulator tests alone is not evidence of physical-device equivalence.
 

@@ -59,11 +59,28 @@ and exact replay cover all 108 requests. A service test also roundtrips the
 post-load Network on both child kinds, verifies the second lifecycle and JSON
 repository restart, and observes no PCI traffic.
 
-Rust admits only a single empty, unnamespaced `TagsDLT` child on a Level in
-the evidenced complete-object XML forms. A nonempty Level `TagsDLT` remains a
-bounded unsupported input and is rejected without changing the tree. Native
-acceptance of nonempty labels, attributes, duplicate collections, and broader
-XML variants has not been established.
+## Nonempty Level labels
+
+The [24-request owned C-Gate capture](../../rust/testdata/fixtures/native_cgate_dbsetxml_level_dlt.json)
+extends the same synthetic Group/Level shape to one nonempty `TagsDLT`. Its
+[reproducible script](../research/cgate_dbsetxml_level_dlt.py) submits a
+`TagDLT` with language 1, flavour 1, type `TEXT` and a text value but no OID.
+Native C-Gate returns `301`, issues a TagDLT OID, and shows the label in direct
+Level and whole-Network XML. A later direct Level replacement with that explicit
+OID changes the text while retaining the identity. The label and identity
+survive `PROJECT SAVE`, `CLOSE`, `LOAD`, `USE`, and a complete Network XML
+roundtrip. The [source-bound test](../tests/test_native_cgate_dbsetxml_level_dlt.py)
+pins the exact requests, replies, input hashes, owned loopback listeners and
+cleanup. The Rust replay substitutes only the generated Network, Interface and
+TagDLT OIDs. The Rust parser accepts bounded unnamespaced Level label rows,
+normalizes the native child order, and retains them in its durable database;
+malformed rows fail before tree mutation. The capture also shows that a single
+Application Level gains an empty `TagsDLT` on load, expanding the prior
+repeated-Application-only materialization rule.
+
+This does not establish every language/type, collection cardinality, invalid
+field response, namespaced attribute, Group label, or cross-object TagDLT OID
+case. Those remain outside the admitted native comparison.
 
 This is a bounded Level-grandchild extension to the earlier
 [nested-Application capture](native-cgate-dbsetxml-nested-applications.md).

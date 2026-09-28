@@ -1294,13 +1294,15 @@ The [Level-grandchild capture](../../../../toolkit-cli/docs/native-cgate-dbsetxm
 adds distinct Levels under those children. A saved tree gains `<TagsDLT/>` on
 `PROJECT LOAD`, while immediate post-save XML does not. Direct Group/Level
 `DBGETXML` succeeds; direct NetVar/Level returns native 500 even though Level
-OID lookup succeeds. Rust's materialization is limited to saved Levels beneath
-the captured repeated-OID Application shape.
+OID lookup succeeds. A later single-Application capture shows the same
+load-time materialization, so Rust covers saved nested Levels in both shapes.
 The [post-load roundtrip capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-levels.md#post-load-xml-roundtrip)
 pins `301` replacement and exact readback for Network, Group, direct
 Group/Level, NetVar, and NetVar/Level-by-OID XML containing generated empty
 Level `<TagsDLT/>`. Rust preserves that child across another save/load and JSON
-restart; nonempty Level tags remain outside this bounded parser contract.
+restart. A [nonempty Level capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-levels.md#nonempty-level-labels)
+pins a generated TagDLT OID, an explicit-OID text edit, save/load and
+whole-Network XML roundtrip. Other label shapes remain unverified.
 Descendant OID collisions are not admitted by this evidence. Ambiguous
 Unit-OID mutations and unprobed duplicate-Application fields/deletes return
 409. Other duplicate shapes and cross-network Unit-OID collisions remain

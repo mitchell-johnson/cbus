@@ -1,0 +1,18 @@
+{
+  "schema": "cgate-dbsetxml-level-dlt-v1",
+  "native_fixture": "native_cgate_dbsetxml_level_dlt.json",
+  "basis": "native-owned-loopback",
+  "initial_set_tag": 1004,
+  "generated_label_set_tag": 1010,
+  "explicit_oid_edit_tag": 1013,
+  "network_roundtrip_tag": 1022,
+  "read_tags": [1003, 1009, 1011, 1012, 1014, 1015, 1020, 1021, 1023],
+  "normalized_generated_oids": ["Network", "Interface", "TagDLT"],
+  "expected_tag_fields": {
+    "LanguageID": "1",
+    "FlavourID": "1",
+    "TagType": "TEXT",
+    "initial_TagValue": "Owned label",
+    "edited_TagValue": "Owned edited label"
+  }
+}
