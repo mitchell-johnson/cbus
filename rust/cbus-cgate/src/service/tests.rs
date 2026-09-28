@@ -3,6 +3,44 @@ use base64::Engine as _;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
 #[test]
+fn native_command_trace_requires_a_recognized_top_level_family() {
+    for entry in crate::capability_matrix::CAPABILITY_MATRIX
+        .iter()
+        .chain(crate::capability_matrix::SUPPLEMENT_ROUTING)
+    {
+        if !matches!(entry.path, "#" | "//") {
+            assert!(
+                Service::native_logs_command_entry(&format!("[catalog] {}", entry.path)),
+                "catalogued command root rejected: {}",
+                entry.path
+            );
+        }
+    }
+    for command in [
+        "[known] CONFIG BOGUS",
+        "[failed] CONFIG GET nonexistent",
+        "[set] CONFIG SET heartbeat-time 7",
+        "[noop] NOOP",
+        "[quit] QUIT",
+        "[exit] EXIT",
+        "[extension] CMQTT CAPABILITIES",
+        "[extension] UNIT READMEM //TEST/254/p/1 0 1",
+    ] {
+        assert!(Service::native_logs_command_entry(command), "{command}");
+    }
+    for command in [
+        "[unknown] UNKNOWN_CMD",
+        "[unknown] foobar",
+        "[malformed] [bad",
+        "[hash] # comment",
+        "[slash] // comment",
+        "[empty] ",
+    ] {
+        assert!(!Service::native_logs_command_entry(command), "{command}");
+    }
+}
+
+#[test]
 fn imported_project_dlt_metadata_and_spaced_pp_names_survive_dbgetxml_and_upgrade() {
     let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
       <Network><TagName>Local</TagName><Address>254</Address>
@@ -1051,12 +1089,16 @@ async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<
             .await
             .expect("command event timed out")
             .expect("command event channel closed");
-        // Command-session lifecycle rows are independently checked by the
-        // event-transport system test; this helper reads 761/766/767 traces.
+        // Command-session lifecycle and the greeting's 766 row are checked
+        // by the event-transport system test; this helper reads command
+        // 761/766/767 traces only.
         let code = event
             .strip_prefix("#e# ")
             .and_then(|body| body.split_whitespace().nth(1));
-        if !matches!(code, Some("803" | "804")) {
+        let greeting_response = event
+            .split_once(" - Response: ")
+            .is_some_and(|(_, text)| text == "201 cmqttd C-Gate service ready");
+        if !matches!(code, Some("803" | "804")) && !greeting_response {
             return event;
         }
     }

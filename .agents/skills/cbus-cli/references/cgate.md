@@ -210,6 +210,13 @@ startup. For C-Gate `EVENT e+`, 0–2 admit none of the captured event families,
 3–4 admit `703` broadcast events, 5–8 also admit `700` heartbeats, and 9
 also admits `761/766/767` command traces. Explicit `EVENT e0`–`e9`
 subscriptions use their own level independently of the startup global value.
+An owned level-7/8/9 event-port receipt adds 938 startup config warnings at
+level 8, and 899 debug plus 999 socket-accept diagnostics at level 9. cmqttd
+classifies those exact native rows but does not yet generate them. It emits a
+766 command-greeting event at level 9, returns 400 and omits 761 for unknown
+top-level verbs while retaining their 766 error response, and retains 761/766 for known
+families with bad syntax. See
+[`native_cgate_event_catalogue.json`](../../../../rust/testdata/fixtures/native_cgate_event_catalogue.json).
 Same-process SET changes GET but not delivery. `-1` and `10` are also stored;
 at startup their observed delivery matches levels 0 and 9 respectively.
 Text and blank values are stored and read back, but native startup throws a

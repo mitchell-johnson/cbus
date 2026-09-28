@@ -1,0 +1,161 @@
+{
+  "schema": "native-cgate-event-catalogue-v1",
+  "captured_utc": "2026-09-28T11:54:43.727974+00:00",
+  "scope": "Owned loopback global levels 7/8/9, CONFIG read/write/failure, unknown command, NOOP, QUIT; no physical endpoint",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "source_hashes": {
+      "rust/cbus-cgate/research/native_event_catalogue_probe.py": "e25e7ada469657c405eacec3e9fb24b179870461dcb64870a4232ebd9bae27a7",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "physical_endpoint": false
+  },
+  "cases": {
+    "7": {
+      "level": 7,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "early_event_rows": [],
+      "accepted_event_rows": [
+        "20260929-005438.375 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 55536"
+      ],
+      "exchanges": [],
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    "8": {
+      "level": 8,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "early_event_rows": [
+        "20260929-005439.467 938 sys config warning: deprecated option has non-default value: accept-connections-from=127.0.0.1",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.client-auth",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.enable",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.key-password",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.keystore-dir",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.keystore-file",
+        "20260929-005439.468 938 sys config warning: obsolete option will be ignored: secure.keystore-password"
+      ],
+      "accepted_event_rows": [
+        "20260929-005439.950 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 55544"
+      ],
+      "exchanges": [],
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    "9": {
+      "level": 9,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "early_event_rows": [
+        "20260929-005441.038 899 sys Debug: New Command Context: cc001 = AccessContext Session console#2",
+        "20260929-005441.040 899 XmlToSqlTransformJob - Debug: Waiting to start.",
+        "20260929-005441.050 938 sys config warning: deprecated option has non-default value: accept-connections-from=127.0.0.1",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.client-auth",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.enable",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.key-password",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.keystore-dir",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.keystore-file",
+        "20260929-005441.051 938 sys config warning: obsolete option will be ignored: secure.keystore-password"
+      ],
+      "accepted_event_rows": [
+        "20260929-005441.523 999 sys Socket accepted.",
+        "20260929-005441.523 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 55552",
+        "20260929-005441.525 899 sys Debug: New Command Context: cc002 = AccessContext Session /127.0.0.1#4",
+        "20260929-005441.527 766 cmd3 - Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+      ],
+      "exchanges": [
+        {
+          "tag": "set",
+          "command": "CONFIG SET heartbeat-time 7",
+          "reply": [
+            "[set] 200 OK."
+          ],
+          "events": [
+            "20260929-005441.839 761 cmd3 - Command: [set] CONFIG SET heartbeat-time 7",
+            "20260929-005441.839 766 cmd3 - Response: [set] 200 OK."
+          ]
+        },
+        {
+          "tag": "get",
+          "command": "CONFIG GET heartbeat-time",
+          "reply": [
+            "[get] 303 heartbeat-time=7"
+          ],
+          "events": [
+            "20260929-005442.050 761 cmd3 - Command: [get] CONFIG GET heartbeat-time",
+            "20260929-005442.050 766 cmd3 - Response: [get] 303 heartbeat-time=7"
+          ]
+        },
+        {
+          "tag": "known",
+          "command": "CONFIG BOGUS",
+          "reply": [
+            "[known] 400 Syntax Error."
+          ],
+          "events": [
+            "20260929-005442.259 761 cmd3 - Command: [known] CONFIG BOGUS",
+            "20260929-005442.260 766 cmd3 - Response: [known] 400 Syntax Error."
+          ]
+        },
+        {
+          "tag": "failed",
+          "command": "CONFIG GET nonexistent",
+          "reply": [
+            "[failed] 408 Operation failed: config parameter not found"
+          ],
+          "events": [
+            "20260929-005442.461 761 cmd3 - Command: [failed] CONFIG GET nonexistent",
+            "20260929-005442.461 766 cmd3 - Response: [failed] 408 Operation failed: config parameter not found"
+          ]
+        },
+        {
+          "tag": "unknown",
+          "command": "UNKNOWN_CMD",
+          "reply": [
+            "[unknown] 400 Syntax Error."
+          ],
+          "events": [
+            "20260929-005442.661 766 cmd3 - Response: [unknown] 400 Syntax Error."
+          ]
+        },
+        {
+          "tag": "noop",
+          "command": "NOOP",
+          "reply": [
+            "[noop] 200 OK."
+          ],
+          "events": [
+            "20260929-005442.857 761 cmd3 - Command: [noop] NOOP",
+            "20260929-005442.857 766 cmd3 - Response: [noop] 200 OK."
+          ]
+        },
+        {
+          "tag": "quit",
+          "command": "QUIT",
+          "reply": [
+            "[quit] 204 Closing connection."
+          ],
+          "events": [
+            "20260929-005443.059 761 cmd3 - Command: [quit] QUIT",
+            "20260929-005443.059 766 cmd3 - Response: [quit] 204 Closing connection.",
+            "20260929-005443.059 804 cmd3 - Host:/127.0.0.1 closed command interface from port: 55552"
+          ]
+        }
+      ],
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    }
+  }
+}

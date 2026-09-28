@@ -82,6 +82,113 @@ fn options(state: &std::path::Path) -> Options {
 }
 
 #[tokio::test]
+async fn level_nine_event_server_omits_unknown_command_entry_but_keeps_response() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_event_catalogue.json"
+    ))
+    .unwrap();
+    let exchanges = native["cases"]["9"]["exchanges"].as_array().unwrap();
+    let known = exchanges.iter().find(|row| row["tag"] == "known").unwrap();
+    let unknown = exchanges
+        .iter()
+        .find(|row| row["tag"] == "unknown")
+        .unwrap();
+    assert_eq!(known["reply"][0], "[known] 400 Syntax Error.");
+    assert_eq!(unknown["reply"][0], "[unknown] 400 Syntax Error.");
+    assert!(known["events"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|row| row.as_str().unwrap().contains(" 761 ")));
+    assert!(!unknown["events"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|row| row.as_str().unwrap().contains(" 761 ")));
+
+    let state = cbus_test_support::proc::temp_path("cgate-event-catalogue.json");
+    let first = start_with(options(&state)).await;
+    wait_started(&first).await;
+    let (mut reader, mut writer) = command_session(&first).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "level",
+            "CONFIG SET global-event-level 9"
+        )
+        .await,
+        "[level] 200 OK.\r\n"
+    );
+    drop((reader, writer, first));
+
+    let second = start_with(options(&state)).await;
+    wait_started(&second).await;
+    require(STARTUP, "C-Gate event listener", || {
+        second
+            .daemon
+            .stderr()
+            .contains("C-Gate event service listening on ")
+    })
+    .await;
+    let event_address = second
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| line.split_once("C-Gate event service listening on "))
+        .map(|(_, address)| address.trim().to_string())
+        .unwrap();
+    let event = TcpStream::connect(&event_address).await.unwrap();
+    let (event_reader, event_writer) = event.into_split();
+    let mut event_reader = BufReader::new(event_reader);
+    let (mut reader, mut writer) = command_session(&second).await;
+    assert!(next_event(&mut event_reader)
+        .await
+        .contains(" 803 cmd3 - Host:/127.0.0.1 opened command interface from port: "));
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 766 cmd3 - Response: 201 cmqttd C-Gate service ready\r\n"));
+
+    assert_eq!(
+        command(&mut reader, &mut writer, "known", "CONFIG BOGUS").await,
+        "[known] 400 Syntax Error.\r\n"
+    );
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 761 cmd3 - Command: [known] CONFIG BOGUS\r\n"));
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 766 cmd3 - Response: [known] 400 Syntax Error.\r\n"));
+
+    assert_eq!(
+        command(&mut reader, &mut writer, "unknown", "UNKNOWN_CMD").await,
+        "[unknown] 400 Syntax Error.\r\n"
+    );
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 766 cmd3 - Response: [unknown] 400 Syntax Error.\r\n"));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read",
+            "CONFIG GET global-event-level"
+        )
+        .await,
+        "[read] 303 global-event-level=9\r\n"
+    );
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 761 cmd3 - Command: [read] CONFIG GET global-event-level\r\n"));
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 766 cmd3 - Response: [read] 303 global-event-level=9\r\n"));
+    assert!(second.broker.has_subscription("homeassistant/light/+/set"));
+    drop((event_reader, event_writer, reader, writer, second));
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn tls_command_listener_keeps_plaintext_event_server_on_loopback() {
     let state = cbus_test_support::proc::temp_path("cgate-event-tls-boundary.json");
     let cert = testdata_dir().join("fixtures/cgate-tls-test-cert.pem");

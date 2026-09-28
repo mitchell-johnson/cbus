@@ -2576,6 +2576,12 @@ impl Service {
         if cmd.body.trim_start().starts_with('#') || cmd.body.trim_start().starts_with("//") {
             return err(tag, 400, "400 Syntax Error.");
         }
+        // An unregistered root never reaches native command dispatch. It is
+        // a syntax error, not an unavailable physical operation. The same
+        // recognition boundary controls whether a 761 entry was published.
+        if !Self::native_logs_command_entry(&cmd.body) {
+            return err(tag, 400, "400 Syntax Error.");
+        }
         // LOGIN/LOGOUT expose the native ACCESS session view. When the
         // optional cmqttd high-entropy token is configured, its historical
         // one-argument LOGIN form remains available as an operator recovery
@@ -13594,7 +13600,41 @@ impl Service {
         event
     }
 
+    /// Native C-Gate emits a 761 entry only after it recognizes the command
+    /// family. An unknown top-level verb and malformed command-id text still
+    /// receive a 766 response entry, but have no 761 Command entry. Known
+    /// families keep 761 even when their arguments later fail validation.
+    fn native_logs_command_entry(raw: &str) -> bool {
+        let body = if raw.starts_with('[') {
+            let Ok(command) = parse_command(raw) else {
+                return false;
+            };
+            command.body
+        } else {
+            raw.to_string()
+        };
+        let Some(root) = body.split_whitespace().next() else {
+            return false;
+        };
+        if root.starts_with('#') || root.starts_with("//") {
+            return false;
+        }
+        let root = root.to_ascii_uppercase();
+        matches!(root.as_str(), "CMQTT" | "UNIT" | "EVENTS" | "EXIT" | "MOCK")
+            || crate::manual::DOCUMENTED_COMMANDS.iter().any(|path| {
+                path.split_whitespace()
+                    .next()
+                    .is_some_and(|known| known.eq_ignore_ascii_case(&root))
+            })
+            || crate::manual::DECOMPILED_COMMAND_GROUPS
+                .iter()
+                .any(|(known, _)| known.eq_ignore_ascii_case(&root))
+    }
+
     fn publish_command_entry(&self, client: &ClientState, raw: &str) -> Option<String> {
+        if !Self::native_logs_command_entry(raw) {
+            return None;
+        }
         let session = client.command_session?;
         // Native command events include credential text. This service keeps
         // its existing digest-only credential contract on the event stream.
@@ -13733,7 +13773,14 @@ impl Service {
         let mut pending_line = Vec::new();
         let mut graceful_close = false;
         let result = async {
-            writer.write_all(b"201 cmqttd C-Gate service ready\r\n").await?;
+            const GREETING: &str = "201 cmqttd C-Gate service ready";
+            writer.write_all(format!("{GREETING}\r\n").as_bytes()).await?;
+            if self.command_show_responses {
+                let _ = self.events.send(format!(
+                    "#e# {} 766 cmd{command_session} - Response: {GREETING}",
+                    self.event_timestamp()
+                ));
+            }
             loop {
                 tokio::select! {
                     result = bounded_line(&mut reader, &mut pending_line) => {

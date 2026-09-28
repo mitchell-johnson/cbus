@@ -87,6 +87,65 @@ fn event_lines_never_complete_commands() {
 }
 
 #[test]
+fn native_diagnostic_event_levels_are_source_captured_and_bounded() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_event_catalogue.json"
+    ))
+    .unwrap();
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    for level in ["7", "8", "9"] {
+        let case = &native["cases"][level];
+        for key in [
+            "listener_ownership_verified",
+            "process_exit_confirmed",
+            "cleanup_complete",
+            "work_removed",
+        ] {
+            assert_eq!(case["cleanup"][key], true, "{level} {key}");
+        }
+        let all_rows = case["early_event_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .chain(case["accepted_event_rows"].as_array().unwrap())
+            .chain(
+                case["exchanges"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .flat_map(|exchange| exchange["events"].as_array().unwrap().iter()),
+            );
+        for row in all_rows {
+            let row = row.as_str().unwrap();
+            let code = row.split_whitespace().nth(1).unwrap();
+            let expected = match code {
+                "803" | "804" => 5,
+                "938" => 8,
+                "761" | "766" | "899" | "999" => 9,
+                _ => panic!("unexpected native event code: {row}"),
+            };
+            assert_eq!(
+                cbus_cgate::event_reporting_level(row),
+                Some(expected),
+                "{row}"
+            );
+            for selector in 0..=9 {
+                let mode = cbus_cgate::EventMode::parse(&format!("e{selector}s0c0")).unwrap();
+                assert_eq!(
+                    mode.delivers_line(row),
+                    expected <= selector,
+                    "{selector}: {row}"
+                );
+            }
+        }
+    }
+    assert_eq!(
+        cbus_cgate::event_reporting_level("20260929-005101.100 999 sys something else."),
+        None
+    );
+}
+
+#[test]
 fn broadcast_event_matches_native_reply_help_payload_and_level() {
     let mut server = Server::new(AccessLevel::Program);
     server.set_command_session(Some(3));

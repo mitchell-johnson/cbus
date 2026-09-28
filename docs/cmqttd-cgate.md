@@ -77,10 +77,17 @@ until restart. An ephemeral command bind
 (`:0`) also chooses an ephemeral event port when the default 20024 is retained;
 the actual address is logged. Socket mode emits the captured startup 800 row;
 both transports reproduce owned 803/804, 703 and captured 700/761/766/767 families at their
-startup global levels. Native level-9 debug/configuration rows and the full
-event catalogue remain incomplete. See
+startup global levels. At level 9, the command greeting also generates a 766
+response event. An unknown top-level command returns native `400 Syntax Error.`
+and generates its 766 error response without a 761 command entry; a known
+family with bad syntax retains both.
+The event classifier recognizes source-captured startup diagnostics: 938
+configuration warnings at level 8, and 899 debug plus 999 socket-accept rows
+at level 9. cmqttd does not yet generate those startup diagnostics or claim a
+complete event catalogue. See
 [`native_cgate_config_event_transport.json`](../rust/testdata/fixtures/native_cgate_config_event_transport.json)
-and the real-daemon event-transport test, which also verifies cmqttd reconnect
+and [`native_cgate_event_catalogue.json`](../rust/testdata/fixtures/native_cgate_event_catalogue.json),
+with the real-daemon event-transport test, which also verifies cmqttd reconnect
 without replay.
 
 Docker Compose publishes the default command and event ports, 20023 and 20024,

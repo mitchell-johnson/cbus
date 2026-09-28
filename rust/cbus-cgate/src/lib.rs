@@ -379,11 +379,12 @@ pub fn event_category(line: &str) -> EventCategory {
 
 /// Reporting level encoded by a native timestamped event envelope.
 ///
-/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...` or a captured
-/// 8xx lifecycle row. The native levels of the locally captured event forms
-/// are not always the last status-code digit: heartbeat 700 and startup 800
-/// are level 5, while command traces 761, 766, and 767 are level 9. Other 7xx
-/// codes retain the existing code-digit fallback until separately established.
+/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm CODE ...` or the
+/// corresponding bare event-port row. The native levels of locally captured
+/// forms are not always the last status-code digit: heartbeat 700 and startup
+/// 800 are level 5; command traces 761, 766 and 767 are level 9; diagnostic
+/// 938 is level 8. Other 7xx codes retain the existing code-digit fallback;
+/// unrecognized 8xx/9xx rows have no inferred level.
 pub fn event_reporting_level(line: &str) -> Option<u8> {
     let body = line.strip_prefix("#e# ").unwrap_or(line);
     let mut fields = body.splitn(3, ' ');
@@ -400,7 +401,7 @@ pub fn event_reporting_level(line: &str) -> Option<u8> {
     let code_bytes = code.as_bytes();
     if !(valid_timestamp
         && code_bytes.len() == 3
-        && matches!(code_bytes[0], b'7' | b'8')
+        && matches!(code_bytes[0], b'7' | b'8' | b'9')
         && code_bytes[1..].iter().all(u8::is_ascii_digit))
     {
         return None;
@@ -421,6 +422,36 @@ fn captured_global_event_level(line: &str) -> Option<u8> {
 }
 
 fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
+    // System diagnostics use different payload grammar from cmdN/cgate rows.
+    // Pin only the shapes observed in owned build-2001 loopback captures.
+    if code == "938"
+        && (payload
+            == "sys config warning: deprecated option has non-default value: accept-connections-from=127.0.0.1"
+            || [
+                "secure.client-auth",
+                "secure.enable",
+                "secure.key-password",
+                "secure.keystore-dir",
+                "secure.keystore-file",
+                "secure.keystore-password",
+            ]
+            .iter()
+            .any(|name| {
+                payload
+                    == format!("sys config warning: obsolete option will be ignored: {name}")
+            }))
+    {
+        return Some(8);
+    }
+    if code == "899"
+        && (payload.starts_with("sys Debug: New Command Context: cc")
+            || payload == "XmlToSqlTransformJob - Debug: Waiting to start.")
+    {
+        return Some(9);
+    }
+    if code == "999" && payload == "sys Socket accepted." {
+        return Some(9);
+    }
     let (source, text) = payload.split_once(" - ")?;
     if code == "800" && source == "cgate" && text == "C-Gate started." {
         return Some(5);
@@ -11655,6 +11686,30 @@ mod tests {
             event_category("20260914-100043 702 //X"),
             EventCategory::Event
         );
+    }
+
+    #[test]
+    fn native_diagnostic_rows_follow_captured_global_levels() {
+        let native: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_event_catalogue.json"
+        ))
+        .unwrap();
+        let warning = native["cases"]["8"]["early_event_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find_map(|row| row.as_str().filter(|line| line.contains(" 938 ")))
+            .unwrap();
+        assert!(!EventMode::DEFAULT.delivers_line_with_default(warning, 7));
+        assert!(EventMode::DEFAULT.delivers_line_with_default(warning, 8));
+        let debug = native["cases"]["9"]["early_event_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find_map(|row| row.as_str().filter(|line| line.contains(" 899 ")))
+            .unwrap();
+        assert!(!EventMode::DEFAULT.delivers_line_with_default(debug, 8));
+        assert!(EventMode::DEFAULT.delivers_line_with_default(debug, 9));
     }
 
     #[test]
