@@ -110,3 +110,8 @@ direct-stage output, and three rejected legacy fragments. Arbitrary repaired
 project documents still report
 `native_load_verified: false`; DBVersion 2.2 conversion and broader Toolkit
 workflow acceptance remain separate work.
+
+A review rerun after protecting the pre-start setup with owned-service cleanup
+again passed all three focused tests with no skips. The receipt keeps the initial
+run's source hash and records the reviewed source hash, command statuses and
+cleanup result separately.

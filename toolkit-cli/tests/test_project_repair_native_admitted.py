@@ -196,10 +196,14 @@ class NativeAdmittedRepairIntegrationTests(unittest.TestCase):
 
         service = LocalCGate(vendor, java=java)
         projects = service.work / 'admitted-projects'
-        projects.mkdir()
-        config = service.work / 'config/C-GateConfig.txt'
-        config.write_text(config.read_text() + f'project.default.dir={projects}\n')
-        (service.work / 'config/access.txt').write_text('interface 127.0.0.1 Clipsal\n')
+        try:
+            projects.mkdir()
+            config = service.work / 'config/C-GateConfig.txt'
+            config.write_text(config.read_text() + f'project.default.dir={projects}\n')
+            (service.work / 'config/access.txt').write_text('interface 127.0.0.1 Clipsal\n')
+        except BaseException as error:
+            service._cleanup_preserving(error)
+            raise
         results = []
         with service:
             outputs = {case['name']: case['output'] for case in cases}

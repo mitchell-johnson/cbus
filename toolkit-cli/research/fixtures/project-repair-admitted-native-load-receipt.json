@@ -199,5 +199,45 @@
     "project_load_code": 408,
     "project_load_response": "408 Operation failed: Project load failed: Unmarshaling exception: org.xml.sax.SAXParseException; lineNumber: 21; columnNumber: 16; Character reference \"&#31\" is an invalid XML character.",
     "project_list_after_load": "124 no projects found"
+  },
+  "review_revalidation": {
+    "observed_at_utc": "2026-09-28T05:44:26.417805+00:00",
+    "test_source_sha256": "406ebdc6732e886454827546227e45e22431b80f2284655fa044fabb86aeb380",
+    "change": "Setup before entering LocalCGate context now closes the owned child on failure; the original receipt remains pinned to its initial test source.",
+    "focused_result": "3 passed, 10 subtests passed, zero skips",
+    "original_java_exit_code": 0,
+    "native_command_codes": [
+      123,
+      124,
+      200,
+      200,
+      344,
+      200,
+      124,
+      200,
+      344,
+      200,
+      124,
+      200,
+      344,
+      200,
+      124,
+      408,
+      124,
+      408,
+      124,
+      408,
+      124,
+      408,
+      124
+    ],
+    "composite_output_sha256": {
+      "RPENC": "6037350ada2d01e98a8317ffa54b9b65738436162a0d60d780f74c4ddcd51f08",
+      "RPDTD": "97d13570126e44416f31d7ad38206d5bd4809b559543f251860ccf32ffdfbd1d",
+      "RPXML11": "23a9ff065e90b11f4beb9629d97f89f58c8e479d7452f0d4851e4c2d1939a040"
+    },
+    "owned_child_cleanup_complete": true,
+    "owned_child_process_exit_confirmed": true,
+    "physical_networks_opened": false
   }
 }

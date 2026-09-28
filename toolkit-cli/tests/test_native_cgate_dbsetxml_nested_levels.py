@@ -15,10 +15,13 @@ SCRIPT = ROOT / "toolkit-cli/research/cgate_dbsetxml_nested_levels.py"
 EXCHANGE = ROOT / "toolkit-cli/research/cgate_dbsetxml_duplicate_applications.py"
 HARNESS = ROOT / "toolkit-cli/research/local_cgate.py"
 SHARED = "33333333-3333-4333-8333-333333333333"
+CAPTURE_SHA256 = "b5259cc61051182ca8275c961db4238f6e552aee59b4e16bc77e715462516fbe"
 
 
 def evidence():
-    return json.loads(CAPTURE.read_text(encoding="utf-8"))
+    data = CAPTURE.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == CAPTURE_SHA256
+    return json.loads(data)
 
 
 def xml(row):
