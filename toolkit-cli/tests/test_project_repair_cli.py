@@ -269,6 +269,22 @@ class ProjectRepairFileTests(unittest.TestCase):
         self.assertEqual(self.source.read_bytes(), source)
         self.assertFalse(result['native_load_verified'])
 
+    def test_integrated_cli_xml11_and_windows1252_match_original_full_output(self):
+        fixture = Path(__file__).resolve().parents[1] / 'research/fixtures/project-repair-encoding-vectors.json'
+        rows = {row['id']: row for row in json.loads(fixture.read_text())['rows']}
+        for case_id in ('xml11-nel-full', 'windows1252-utf8-full'):
+            row = rows[case_id]
+            source, expected = bytes.fromhex(row['input_hex']), bytes.fromhex(row['output_hex'])
+            self.source.write_bytes(source)
+            target = self.root / (case_id + '.xml')
+            with self.subTest(case=case_id):
+                preview = self.invoke_cli(self.source, '--dry-run')
+                self.assertEqual(preview['repair']['output_sha256'], sha256(expected).hexdigest())
+                result = self.invoke_cli(self.source, '--output', target)
+                self.assertTrue(result['complete'] and result['output_fsync_succeeded'])
+                self.assertEqual(target.read_bytes(), expected)
+                self.assertEqual(self.source.read_bytes(), source)
+
     def test_integrated_cli_interruption_retains_exact_partial_write_evidence(self):
         class First(KeyboardInterrupt):
             def __setattr__(self, name, value):

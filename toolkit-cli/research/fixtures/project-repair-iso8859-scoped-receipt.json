@@ -150,5 +150,10 @@
     "failures": 0,
     "errors": 0,
     "status": "passed; this is a focused installed-artifact gate, not the full offline suite"
+  },
+  "later_correction_2026_09_28": {
+    "superseded_by": "research/fixtures/project-repair-encoding-scoped-receipt.json",
+    "inferred_standard_case": "The earlier inferred direct ISO-8859-1 literal E9 output was incorrect: the pinned original direct repair/tidy methods first read UTF-8 with replacement and then decode the UTF-8 bytes under ISO-8859-1, yielding U+00EF U+00BF U+00BD. The new direct native cases and corrected Python implementation replace that inference.",
+    "negative_cases_and_remaining_scope": "Historical at this receipt date; XML1.1, US-ASCII and Windows-1252 bounded cases were admitted in the later encoding receipt."
   }
 }

@@ -42,9 +42,11 @@ namespace declarations. Python3.10 and3.13 produce equivalent XML semantics.
 Declaration spelling, namespace placement, empty-element spelling and bytes
 need not match the vendor serializer. CDATA becomes ordinary text.
 
-The XML stages admit XML1.0 with UTF-8 or an explicit ISO-8859-1 declaration.
-The full pipeline always performs its first, manual read as UTF-8, even when the
-source declares ISO-8859-1. The committed original C-Gate cases
+The XML stages now admit the captured XML 1.0 and 1.1 cases with UTF-8,
+ISO-8859-1, ISO-8859-15, US-ASCII or Windows-1252 declarations. Each original
+transform first reads the file as UTF-8 with Java replacement, then the XML
+parser interprets those bytes under the declaration. The full pipeline adds
+its separate lexical UTF-8 read before either transform. The committed original C-Gate cases
 `iso-declaration-repair`, `iso-declaration-tidy` and `iso-declaration-full`
 establish this distinction: source bytes `C3 A9` under the ISO declaration
 become UTF-8 `C3 83 C2 A9` (`Ã©`) in the output. The Python stages and the
@@ -52,10 +54,25 @@ integrated `project repair` command now match all three literal native outputs;
 the command also preserves the source file and verifies the new output bytes in
 its focused test. The [scoped receipt](../research/fixtures/project-repair-iso8859-scoped-receipt.json)
 binds those stable case IDs, source hashes, focused command, skips and remaining
-scope. This is a captured encoding case, not proof that every
-ISO-8859-1 project loads into a native repository. Other declared encodings,
-XML1.1, DTD/entity declarations and UTF-16 remain outside the admitted XML
-stages. The byte limit defaults to8MiB, with100,000 nodes and128 element levels.
+scope. The new [72-case original encoding and version capture](../research/fixtures/project-repair-encoding-vectors.json)
+has 51 admitted positive and 12 admitted negative results for direct repair,
+direct tidy and full repair. Literal XML 1.1 NEL and line separators become LF
+after declared decoding; numeric character references remain distinct. A literal
+high byte under an ISO or Windows declaration undergoes UTF-8 replacement
+before the declared decode. Undefined Windows-1252 bytes become U+FFFD, as in
+the original Java parser. A UTF-8 BOM is consumed before the declared decode.
+The public file command has exact XML 1.1 and Windows-1252 full-output
+tests. [The scoped receipt](../research/fixtures/project-repair-encoding-scoped-receipt.json)
+binds the fixture, original source hashes, focused test outcome and limits.
+These captured cases do not prove that every document using those encodings
+loads into a native repository. Nine native cases remain unadmitted: internal
+DTD/entity declarations, XML 1.1 restricted character references and XML 1.1
+namespace-prefix undeclaration. The original direct transforms accept some
+of them, so this is a remaining compatibility gap. External entities,
+UTF-16 and unsupported XML versions remain rejected. Intermediate UTF-8 read
+and declared-decode growth are checked against the same byte limit before DOM
+allocation.
+The byte limit defaults to8MiB, with100,000 nodes and128 element levels.
 API limits can be selected explicitly up to64MiB/1,000,000/256. The node limit
 counts attributes and parser text/comment/PI events before DOM allocation;
 adjacent text events are counted conservatively even if the DOM merges them.
@@ -67,8 +84,8 @@ passes13 tests on each of Python3.13.14 and3.10.20 with zero skips. Each run
 executes3,036 lexical and159 transform cases against unchanged original
 C-Gate3.4.0.2001 Java methods and exact vendor stylesheets. Of the transform
 cases,144 compare then-supported outcomes and15 record then-excluded XML-version
-or encoding inputs. The three ISO-8859-1 rows are newly admitted from those
-unchanged native captures; the earlier receipt's counts and hashes remain
+or encoding inputs. The three ISO-8859-1 and three XML 1.1 rows are now admitted
+from those unchanged native captures; the earlier receipt's counts and hashes remain
 historical. The Windows newline cases set the original Java process's
 line separator to CRLF on the Mac; they do not claim a Windows Java run.
 Exact accepted sources, fixtures and tests are archived. CLI filesystem and

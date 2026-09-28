@@ -35,6 +35,13 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
+`project repair SOURCE.xml --dry-run` previews the bounded local repair and
+`--output NEW.xml` writes a new file exclusively. Captured XML 1.0/1.1,
+ISO-8859-1/15, US-ASCII and Windows-1252 cases have literal original C-Gate
+comparisons; see `toolkit-cli/docs/project-repair.md` for the exact encoding
+behavior. The returned `native_load_verified=false` is intentional: a successful
+portable repair does not establish native project loadability.
+
 For `serial-address apply`, the Toolkit CLI uses a nonblocking host-local advisory
 lease for the canonical numeric-IP endpoint during fresh preconditions, the
 single selected-serial request and journal finalization. Contending cooperating

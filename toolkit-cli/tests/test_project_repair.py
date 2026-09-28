@@ -20,6 +20,7 @@ def vectors():
 ISO_8859_1_NATIVE_IDS = {
     'iso-declaration-repair', 'iso-declaration-tidy', 'iso-declaration-full',
 }
+XML_11_NATIVE_IDS = {'xml-11-repair', 'xml-11-tidy', 'xml-11-full'}
 
 
 def semantic_xml(data):
@@ -81,11 +82,12 @@ class ProjectRepairTests(unittest.TestCase):
                     else:
                         self.assertEqual(semantic_xml(actual), semantic_xml(expected))
 
-    def test_observed_xml11_and_other_encodings_are_explicitly_excluded(self):
+    def test_historical_xml11_and_iso_cases_are_admitted_but_utf16_stays_rejected(self):
         for row in vectors()['transform_rows']:
-            # These three were excluded by the historical UTF-8-only checkpoint.
-            # Their unchanged native outcomes are admitted below.
-            if not row['supported'] and row['id'] not in ISO_8859_1_NATIVE_IDS:
+            if row['id'] in XML_11_NATIVE_IDS | ISO_8859_1_NATIVE_IDS:
+                with self.subTest(case=row['id']):
+                    self.assertEqual(candidate(row), bytes.fromhex(row['output_hex']))
+            elif not row['supported']:
                 with self.subTest(case=row['id']), self.assertRaises(ProjectRepairError):
                     candidate(row)
         for encoding in ('utf-16', 'utf-16-le', 'utf-16-be'):
@@ -107,20 +109,59 @@ class ProjectRepairTests(unittest.TestCase):
         self.assertEqual(preprocess_project_xml(bytes.fromhex(full['input_hex'])).count(b'\xc3\xa9'), 1)
         self.assertIn(b'<TagName>\xc3\x83\xc2\xa9</TagName>', candidate(full))
 
-    def test_direct_iso_8859_1_stage_decodes_literal_high_byte(self):
+    def test_direct_iso_8859_1_stage_matches_original_utf8_replacement_then_declared_decode(self):
         source = b'<?xml version="1.0" encoding="ISO-8859-1"?><Project><TagName>\xe9</TagName></Project>'
         for stage in ('repair', 'tidy'):
             with self.subTest(stage=stage):
                 output = transform_project_repair_xml(source, stage=stage)
-                self.assertIn(b'<TagName>\xc3\xa9</TagName>', output)
+                self.assertIn(b'<TagName>\xc3\xaf\xc2\xbf\xc2\xbd</TagName>', output)
                 self.assertIn(b'encoding="utf-8"', output)
 
-    def test_other_declared_encodings_fail_before_dom_creation(self):
-        for encoding in ('US-ASCII', 'windows-1252', 'UTF-16'):
+    def test_native_encoding_and_xml11_literal_stage_outputs(self):
+        fixture = ROOT / 'research/fixtures/project-repair-encoding-vectors.json'
+        rows = json.loads(fixture.read_text())['rows']
+        self.assertEqual(len(rows), 72)
+        self.assertEqual(sum(row['admitted'] for row in rows), 63)
+        for row in rows:
+            if not row['admitted']:
+                continue  # Native direct internal-entity success needs separate bounded admission.
+            with self.subTest(case=row['id']):
+                data = bytes.fromhex(row['input_hex'])
+                call = (lambda: repair_project_xml(data).repaired_xml) if row['operation'] == 'full' else (
+                    lambda: transform_project_repair_xml(data, stage=row['operation']))
+                if row['status'] == 'ERROR':
+                    with self.assertRaises(ProjectRepairError):
+                        call()
+                else:
+                    self.assertEqual(call(), bytes.fromhex(row['output_hex']))
+
+    def test_utf16_declaration_fails_before_dom_creation(self):
+        for encoding in ('UTF-16', 'UTF-16LE', 'UTF-16BE'):
             data = f'<?xml version="1.0" encoding="{encoding}"?><Project/>'.encode()
             with self.subTest(encoding=encoding), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
                 with self.assertRaises(ProjectRepairError):
                     transform_project_repair_xml(data, stage='repair')
+                dom.assert_not_called()
+
+    def test_unadmitted_xml11_restricted_references_fail_before_dom(self):
+        for reference in ('&#x1f;', '&#127;'):
+            data = f'<?xml version="1.1"?><Project><TagName>{reference}</TagName></Project>'.encode()
+            with self.subTest(reference=reference), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
+                with self.assertRaises(ProjectRepairError):
+                    transform_project_repair_xml(data, stage='tidy')
+                dom.assert_not_called()
+
+    def test_both_declared_decoding_expansion_bounds_precede_dom_creation(self):
+        # The Java UTF-8 replacement can triple a malformed source before
+        # XML parsing; legacy decoding can grow it again.
+        for label, data in (
+            ('first_utf8_read', b'<?xml version="1.0" encoding="ISO-8859-1"?><Project><TagName>' + b'\xe9' * 900 + b'</TagName></Project>'),
+            ('declared_decode', b'<?xml version="1.0" encoding="windows-1252"?><Project><TagName>' + b'\xc2\x81' * 450 + b'</TagName></Project>'),
+        ):
+            with self.subTest(case=label), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
+                with self.assertRaises(ProjectRepairError) as caught:
+                    transform_project_repair_xml(data, stage='tidy', max_bytes=len(data))
+                self.assertEqual(caught.exception.stage, 'tidy')
                 dom.assert_not_called()
 
     def test_character_references_remain_distinct_group_addresses(self):
@@ -240,6 +281,16 @@ class OriginalProjectRepairTests(unittest.TestCase):
             with self.subTest(case=expected['id']):
                 self.assertEqual(actual['status'], expected['status'])
                 self.assertEqual(actual['output_hex'], expected['output_hex'])
+
+    def test_fresh_original_encoding_and_version_vectors(self):
+        fixture = ROOT / 'research/fixtures/project-repair-encoding-vectors.json'
+        rows = json.loads(fixture.read_text())['rows']
+        self.assertEqual(len(rows), 72)
+        for expected, actual in zip(rows, self.original(rows)):
+            with self.subTest(case=expected['id']):
+                self.assertEqual(actual['status'], expected['status'])
+                self.assertEqual(actual['output_hex'], expected['output_hex'])
+                self.assertEqual(actual['error'], expected['error'])
 
 
 if __name__ == '__main__':

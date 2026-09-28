@@ -1,7 +1,7 @@
 """Portable equivalents of C-Gate's lexical repair and two repair stylesheets.
 
 This operates on bytes, without changing a file or C-Gate repository. The XML
-stages support bounded XML 1.0/UTF-8 and declared ISO-8859-1 without DTDs. Output preserves XML semantics,
+stages support bounded XML 1.0/1.1 with captured encodings and no DTDs. Output preserves XML semantics,
 not vendor serialization bytes; a repaired document has not been load-tested.
 """
 from __future__ import annotations
@@ -45,6 +45,14 @@ def _lines(text: str, ending: str) -> str:
     return text.replace("\n", ending)
 
 
+def _java_utf8_text(data: bytes) -> str:
+    """Match the original stages' initial UTF-8 FileReader replacement."""
+    # Java treats a malformed encoded surrogate (including its valid truncated
+    # prefix) as one replacement; Python's default decoder replaces each byte.
+    data = re.sub(b"\xed[\xa0-\xbf][\x80-\xbf]?", b"\xef\xbf\xbd", data)
+    return data.decode("utf-8", "replace")
+
+
 def preprocess_project_xml(data: bytes, *, line_ending: str = "lf",
                            max_bytes: int = DEFAULT_MAX_BYTES) -> bytes:
     """Run the original angle-bracket state machine and Java UTF-8 replacement.
@@ -55,10 +63,7 @@ def preprocess_project_xml(data: bytes, *, line_ending: str = "lf",
     _input(data, max_bytes)
     if line_ending not in ("lf", "crlf"):
         raise ValueError("line_ending must be 'lf' or 'crlf'")
-    # Java treats a malformed encoded surrogate (including its valid truncated
-    # prefix) as one replacement; Python's default decoder replaces each byte.
-    data = re.sub(b"\xed[\xa0-\xbf][\x80-\xbf]?", b"\xef\xbf\xbd", data)
-    text = data.decode("utf-8", "replace")
+    text = _java_utf8_text(data)
     inside = False
     result = []
     for char in text:
@@ -79,18 +84,72 @@ def preprocess_project_xml(data: bytes, *, line_ending: str = "lf",
     return output
 
 
-def _parse(data: bytes, stage: str, max_nodes: int, max_depth: int) -> minidom.Document:
-    # Expat decodes the declared XML encoding, including ISO-8859-1. The full
-    # pipeline's preceding manual step still reads source bytes as Java UTF-8;
-    # retaining that order reproduces its observed double-decoding case.
+def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
+           max_depth: int) -> minidom.Document:
+    # Both original transform methods read the file as UTF-8 text *before*
+    # giving XML bytes to the parser. A declared legacy encoding then decodes
+    # that UTF-8 byte sequence a second time. This also applies to direct
+    # repair/tidy calls, not only to the full pipeline's manual stage.
     if b"\x00" in data:
         raise ProjectRepairError("NUL and UTF-16 XML are unsupported", stage=stage)
+    data = _java_utf8_text(data).encode("utf-8")
+    if len(data) > max_bytes:
+        raise ProjectRepairError("XML exceeds max_bytes after UTF-8 read", stage=stage)
+    # The XML parser consumes a UTF-8 BOM as a signature before applying a
+    # declared legacy encoding to the remaining bytes.
+    if data.startswith(b"\xef\xbb\xbf"):
+        data = data[3:]
+    # The XML declaration takes effect only after that UTF-8 read. Decode its
+    # result under the declared charset, then hand Expat UTF-8. In particular,
+    # Java Windows-1252 maps undefined bytes to U+FFFD, unlike Expat's native
+    # Windows-1252 decoder, which rejects them.
+    declaration = re.match(rb'^(?:\xef\xbb\xbf)?<\?xml\s+version\s*=\s*(["\'])([^"\']+)\1[^?]*\?>', data)
+    version = declaration.group(2).decode("ascii", "replace") if declaration else "1.0"
+    header = declaration.group(0) if declaration else b""
+    encoding_match = re.search(rb'\bencoding\s*=\s*(["\'])([^"\']+)\1', header)
+    encoding = encoding_match.group(2).decode("ascii", "replace").lower() if encoding_match else "utf-8"
+    codecs = {"utf-8": "utf-8", "utf8": "utf-8", "iso-8859-1": "iso-8859-1",
+              "iso-8859-15": "iso-8859-15", "us-ascii": "ascii", "windows-1252": "cp1252"}
+    if version not in ("1.0", "1.1") or encoding not in codecs:
+        raise ProjectRepairError("Unsupported XML version or declared encoding", stage=stage)
+    try:
+        decoded = data.decode(codecs[encoding], "replace" if encoding == "windows-1252" else "strict")
+    except UnicodeError as error:
+        raise ProjectRepairError(f"XML declared encoding failed: {error}", stage=stage) from error
+    if encoding_match:
+        decoded = decoded.replace(encoding_match.group(0).decode("ascii"), 'encoding="utf-8"', 1)
+    # Python's Expat accepts XML 1.1 but does not implement its additional
+    # newline normalization. Apply it after declared decoding: C2 85 under
+    # ISO-8859-1 becomes U+00C2 followed by NEL, while under Windows-1252 it
+    # becomes U+00C2 followed by an ellipsis and no newline.
+    if version == "1.1":
+        # XML 1.1 permits these restricted code points only through character
+        # references. Expat otherwise accepts some of them as literal text.
+        # The original direct transform admits some references, but our XML
+        # 1.0 serializer cannot represent those outcomes yet; reject them
+        # explicitly rather than emit invalid raw control characters.
+        if re.search(r"[\x01-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f]", decoded):
+            raise ProjectRepairError("Restricted XML 1.1 literal character", stage=stage)
+        for reference in re.finditer(r"&#(?:x([0-9a-fA-F]+)|([0-9]+));", decoded):
+            digits = reference.group(1) or reference.group(2)
+            if len(digits) > 8:
+                raise ProjectRepairError("Oversized XML 1.1 character reference", stage=stage)
+            value = int(digits, 16 if reference.group(1) else 10)
+            if (1 <= value <= 8 or value in (11, 12) or 14 <= value <= 31
+                    or 127 <= value <= 132 or 134 <= value <= 159):
+                raise ProjectRepairError("XML 1.1 restricted character reference is unsupported", stage=stage)
+        decoded = decoded.replace("\u0085", "\n").replace("\u2028", "\n")
+    data = decoded.encode("utf-8")
+    if len(data) > max_bytes:
+        raise ProjectRepairError("XML exceeds max_bytes after declared decode", stage=stage)
     parser = expat.ParserCreate()
     depth, nodes = 0, 1  # Include the document itself.
 
     def declaration(version, encoding, standalone):
-        if version != "1.0" or encoding is not None and encoding.lower() not in ("utf-8", "utf8", "iso-8859-1"):
-            raise ProjectRepairError("XML stages require XML 1.0 with UTF-8 or ISO-8859-1 encoding", stage=stage)
+        if version not in ("1.0", "1.1") or encoding is not None and encoding.lower() not in (
+            "utf-8", "utf8", "iso-8859-1", "iso-8859-15", "us-ascii", "windows-1252"
+        ):
+            raise ProjectRepairError("Unsupported XML version or declared encoding", stage=stage)
 
     def doctype(*_):
         raise ProjectRepairError("DTD and entity declarations are unsupported", stage=stage)
@@ -263,7 +322,7 @@ def transform_project_repair_xml(data: bytes, *, stage: str, line_ending: str = 
         raise ValueError("stage must be 'repair' or 'tidy'")
     if line_ending not in ("lf", "crlf"):
         raise ValueError("line_ending must be 'lf' or 'crlf'")
-    document = _parse(data, stage, max_nodes, max_depth)
+    document = _parse(data, stage, max_bytes, max_nodes, max_depth)
     result = None
     try:
         result = _transform(document, stage)
@@ -311,7 +370,7 @@ def repair_project_xml(data: bytes, *, line_ending: str = "lf",
     preprocessed = preprocess_project_xml(data, line_ending=line_ending, max_bytes=max_bytes)
     repaired = transform_project_repair_xml(preprocessed, stage="repair", **options)
     output = transform_project_repair_xml(repaired, stage="tidy", **options)
-    document = _parse(output, "verify", max_nodes, max_depth)
+    document = _parse(output, "verify", max_bytes, max_nodes, max_depth)
     try:
         versions = [_string(child) for child in document.documentElement.childNodes if _named(child, "DBVersion")]
         version = versions[0] if _named(document.documentElement, "Installation") and len(versions) == 1 else None
