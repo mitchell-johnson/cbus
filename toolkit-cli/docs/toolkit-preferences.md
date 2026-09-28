@@ -42,6 +42,29 @@ cbus-toolkit preferences registry-save updated-preferences.json
 
 `registry-save` writes the five display DWORDs, unnamed key values, and 35 named preference values in original order. Five preferences excluded from save remain untouched. A machine-hive write failure permits the original single user-hive fallback. The save preview shows the primary path assuming machine writes succeed and describes that conditional fallback. It accesses no registry and is available on other platforms.
 
+For an intended Windows account whose complete SID is known, add
+`--expected-user-sid S-1-5-21-...` to `registry-load`, `registry-save`, or
+`reset-dont-ask-again`. Supply the actual canonical SID in place of the example.
+The command validates it before opening the input state, then reads the current
+process primary-token SID before constructing the registry backend. A mismatch,
+token-query failure, or token-handle close failure stops before any preference
+registry call. Successful and failed admissions report the expected and observed
+SIDs in `user_context` or `toolkit_preferences_user_context`. With this option
+omitted, the established current-process behavior remains. Dry runs validate
+the SID syntax but make no token or registry request; their result says
+`sid_admission_performed=false`.
+
+This is an admission-time process-token check. It does not prove a logged-in
+interactive desktop session, thread impersonation state, or the user of a
+separate Toolkit GUI process. It also does not change the original manager's
+HKCU/HKLM precedence, the initial unnamed/default writes on load, or the
+32-bit registry view. The focused portable tests exercise rejection before
+backend construction, successful reset and save, and a second load after a
+stored value changes. The shared bounded token decoder has mocked Win32 ABI
+tests; equivalent process-token checks have separate native evidence in update
+commands. This new preference-command wiring has not yet been accepted in an
+interactive Windows session. See the [P9.02 admission receipt](../research/experiments/2026-09-28/preference-user-admission.json).
+
 The adapter explicitly requests the 32-bit registry view. Reads retain the bytes returned by `RegQueryValueExW`. String writes require valid terminated UTF-16 before any key is opened, including two terminators for `REG_MULTI_SZ`. This follows the [Microsoft write contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw); existing malformed strings can still be observed through the raw adapter, as allowed by the [query contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryvalueexw).
 
 Stored preference decoding accepts terminated Unicode strings, ASCII boolean spellings, and canonical signed decimal integers by default. `controls`, `plan`, and `registry-load` also accept `--numeric-locale dot` or `--numeric-locale comma` to select the bounded original JCL conversion. This does not infer the machine locale. For example, heap text `"64.5"` converts to 64 with `dot` and 645 with `comma`. Plans preserve the entered text and report the conversion, including any original signed 32-bit wrap.

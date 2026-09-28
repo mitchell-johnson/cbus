@@ -46,6 +46,32 @@ def call(kernel, security, process=None):
         return token.process_token_user_sid(process or SimpleNamespace(pid=1234, _handle=123))
 
 
+def call_current(kernel, security):
+    kernel.GetCurrentProcess.return_value = 123
+    with patch.object(token.os, 'name', 'nt'), \
+         patch.object(token, '_apis', return_value=(kernel, security)):
+        return token.current_process_user_sid()
+
+
+def test_current_process_token_sid_uses_same_bounded_decoder_and_closes_token():
+    kernel, security = setup_api()
+    assert call_current(kernel, security) == 'S-1-5-18'
+    kernel.GetCurrentProcess.assert_called_once_with()
+    kernel.CloseHandle.assert_called_once()
+    security.GetTokenInformation.assert_called_once()
+
+
+def test_current_process_token_query_and_close_fail_closed():
+    kernel, security = setup_api('short_sid')
+    with pytest.raises(ValueError, match='SID layout'):
+        call_current(kernel, security)
+    kernel.CloseHandle.assert_called_once()
+    kernel, security = setup_api()
+    kernel.CloseHandle.return_value = 0
+    with pytest.raises(OSError, match='close failed'):
+        call_current(kernel, security)
+
+
 def test_uses_owned_handle_query_only_and_closes_only_token():
     kernel, security = setup_api()
     assert call(kernel, security) == 'S-1-5-18'

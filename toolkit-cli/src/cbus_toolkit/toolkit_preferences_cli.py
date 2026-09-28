@@ -32,6 +32,9 @@ def options(commands):
     save = operations.add_parser('registry-save', help='Save explicit retained values to the Windows registry in original order')
     save.add_argument('file', type=Path)
     save.add_argument('--dry-run', action='store_true', help='Show planned writes assuming machine-hive writes succeed, without registry access')
+    for operation in (load, save, reset):
+        operation.add_argument('--expected-user-sid',
+            help='Require the current Windows process token to match this SID before registry access')
     for operation in (show, plan, load):
         operation.add_argument('--numeric-locale', choices=('dot', 'comma'),
             help='Use bounded original numeric conversion with an explicit decimal separator; default is canonical integers')
@@ -76,6 +79,34 @@ def _locale(args):
     return {None: None, 'dot': ('.', ','), 'comma': (',', '.')}[selected]
 
 
+def _validate_expected_user(args):
+    expected = getattr(args, 'expected_user_sid', None)
+    if expected is not None:
+        from .windows_condition_registry import validate_user_sid
+        validate_user_sid(expected)
+    return expected
+
+
+def _admit_expected_user(args):
+    """Check an explicit primary-token requirement before any registry call."""
+    expected = _validate_expected_user(args)
+    if expected is None:
+        return None
+    from ._windows_process_token import current_process_user_sid
+    context = {'expected_user_sid': expected, 'process_token_user_sid': None,
+               'primary_process_token_verified': False,
+               'sid_requirement_satisfied': False,
+               'interactive_user_context_verified': False}
+    args._preferences_user_context = context
+    observed = current_process_user_sid()
+    context['process_token_user_sid'] = observed
+    context['primary_process_token_verified'] = True
+    context['sid_requirement_satisfied'] = observed == expected
+    if observed != expected:
+        raise ValueError('Current process user SID differs from the explicitly expected user')
+    return context
+
+
 def run(args):
     if args.action=='initial-state':
         from .toolkit_preferences_initial_state import constructor_state
@@ -87,6 +118,8 @@ def run(args):
             'skip_save':d.skip_save,'alternate_key':d.alternate_key,'key':d.key} for d in PREFERENCE_DEFINITIONS],
             'display_preferences':[{'name':name,'registry_name':registry} for name,registry in DISPLAY_DEFINITIONS],
             'state_format':STATE_FORMAT,'startup_defaults_inferred':False,'registry_accessed':False},0
+    if args.action in ('registry-load','registry-save'):
+        _validate_expected_user(args)
     values,display=read_state(args.file)
     if args.action in ('registry-load','registry-save'):
         return registry_operation(args,values,display)
@@ -124,10 +157,15 @@ def registry_operation(args,values,display):
         if not planned.complete: raise RuntimeError('Could not construct the preference save preview')
         operations=[{k:v for k,v in operation.items() if k not in ('completed','return_code','write_succeeded')}
                     for operation in planned.operations]
-        return {'format':'cbus-toolkit-preferences-registry-plan-v1','dry_run':True,
+        result = {'format':'cbus-toolkit-preferences-registry-plan-v1','dry_run':True,
             'registry_accessed':False,'writes_applied':False,'operations':operations,
             'assumptions':['Machine-hive writes succeed; FeedbackLogSize falls back to HKCU after an OS write error'],
-            'transactional':False,'runtime_effects_applied':False},0
+            'transactional':False,'runtime_effects_applied':False}
+        if args.expected_user_sid is not None:
+            result['expected_user_sid'] = args.expected_user_sid
+            result['sid_admission_performed'] = False
+        return result,0
+    user_context = _admit_expected_user(args)
     store=ToolkitPreferencesStore(registry_backend(), numeric_locale=_locale(args))
     args._preferences_store=store
     outcome=store.load(values) if args.action=='registry-load' else store.save(values,display)
@@ -135,6 +173,8 @@ def registry_operation(args,values,display):
     result['registry_accessed']=True
     result['backend']='windows-32bit-view'
     result['state']={'format':STATE_FORMAT,'values':dict(outcome.values),'display_values':dict(outcome.display_values)}
+    if user_context is not None:
+        result['user_context'] = dict(user_context)
     return result,0 if outcome.complete else 1
 
 
@@ -149,17 +189,21 @@ def _attached_evidence(error,name):
 
 def error_payload(error,args):
     if getattr(args,'area',None)!='preferences': return {}
+    context = getattr(args, '_preferences_user_context', None)
+    payload = {'toolkit_preferences_user_context':dict(context)} if isinstance(context,dict) else {}
     if getattr(args,'action',None)=='reset-dont-ask-again':
         evidence=_attached_evidence(error,'toolkit_preferences_reset_evidence')
         reset=getattr(args,'_preferences_reset',None)
         if not isinstance(evidence,dict) and reset is not None and reset.last_error is error:
             evidence=reset.last_evidence
-        return {'toolkit_preferences_reset_evidence':evidence} if isinstance(evidence,dict) else {}
+        if isinstance(evidence,dict): payload['toolkit_preferences_reset_evidence'] = evidence
+        return payload
     evidence=_attached_evidence(error,'toolkit_preferences_evidence')
     if not isinstance(evidence,dict):
         store=getattr(args,'_preferences_store',None)
         if store is not None and store.last_error is error: evidence=store.last_evidence
-    return {'toolkit_preferences_evidence':evidence} if isinstance(evidence,dict) else {}
+    if isinstance(evidence,dict): payload['toolkit_preferences_evidence'] = evidence
+    return payload
 
 
 def reset_registry_backend():
@@ -174,13 +218,21 @@ def reset_operation(args):
     for name,value in limits.items():
         if type(value) is not int or not 1<=value<=1000000:
             raise ValueError(f'{name} must be an integer from 1 to 1000000')
+    _validate_expected_user(args)
     if args.dry_run:
-        return {'operation':'reset-dont-ask-again','dry_run':True,'hive':HKCU,
+        result = {'operation':'reset-dont-ask-again','dry_run':True,'hive':HKCU,
             'key':DONT_ASK_AGAIN_KEY,'recursive':True,'limits':limits,
-            'registry_accessed':False,'writes_applied':False,'transactional':False},0
+            'registry_accessed':False,'writes_applied':False,'transactional':False}
+        if args.expected_user_sid is not None:
+            result['expected_user_sid'] = args.expected_user_sid
+            result['sid_admission_performed'] = False
+        return result,0
+    user_context = _admit_expected_user(args)
     reset=ToolkitDontAskAgainReset(reset_registry_backend(),**limits)
     args._preferences_reset=reset
     outcome=reset.run()
     result=outcome.as_dict()
     result.update(registry_accessed=True,backend='windows-32bit-view')
+    if user_context is not None:
+        result['user_context'] = dict(user_context)
     return result,0 if outcome.complete else 1

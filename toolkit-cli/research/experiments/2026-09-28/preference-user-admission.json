@@ -1,0 +1,76 @@
+{
+  "format": "cbus-toolkit-p9-02-preference-user-admission-v1",
+  "work_item": "P9.02",
+  "related_obligation_ids": ["ledger:preferences-and-update-workflow"],
+  "base_revision": "02c0953",
+  "status": "partial",
+  "scope": {
+    "commands": [
+      "preferences registry-load",
+      "preferences registry-save",
+      "preferences reset-dont-ask-again"
+    ],
+    "added_behavior": "Optional canonical expected SID is compared with the current process primary-token SID before registry backend construction and before any key access. Dry runs validate syntax without token or registry access.",
+    "changed_original_preference_storage_algorithm": false,
+    "interactive_desktop_session_attested": false,
+    "thread_impersonation_attested": false,
+    "native_preference_command_executed_for_this_change": false
+  },
+  "original_evidence": {
+    "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "preference_storage_fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
+    "preference_reset_fixture": "research/fixtures/toolkit-preferences-reset-vectors.json",
+    "note": "Original x86 fixtures support the retained preference HKCU/HKLM storage and reset paths; they do not establish an original SID guard or interactive-user preference behavior. The separate pinned-original SESU lazy/culture matrix does not establish preference-wrapper parity."
+  },
+  "portable_acceptance": {
+    "python": "3.13.14",
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_cli_toolkit_preferences.py tests/test_cli_toolkit_preferences_actions.py tests/test_cli_toolkit_preferences_user_guard.py tests/test_toolkit_preferences_store.py tests/test_toolkit_preferences_controls.py tests/test_toolkit_preferences_numeric.py tests/test_toolkit_preferences_reset.py tests/test_windows_preferences.py tests/test_windows_process_token.py tests/test_windows_sesu_current_user_cohort.py",
+    "exit_code": 0,
+    "passed": 115,
+    "skipped": 2,
+    "subtests_passed": 186,
+    "new_test_ids": [
+      "test_invalid_sid_rejects_before_state_file_and_registry_backend",
+      "test_wrong_process_user_prevents_load_save_and_reset_before_backend",
+      "test_token_query_failure_prevents_any_registry_backend",
+      "test_matching_process_user_admits_repeated_registry_reads",
+      "test_matching_user_reset_and_dry_runs",
+      "test_current_process_token_sid_uses_same_bounded_decoder_and_closes_token",
+      "test_current_process_token_query_and_close_fail_closed"
+    ],
+    "skips": [
+      "Native Windows preferences adapter requires CBUS_WINDOWS_PROVENANCE_ROOT",
+      "Original Toolkit reset fixture requires CBUS_TOOLKIT_EXE"
+    ]
+  },
+  "register_consistency": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_parity_register.py",
+    "exit_code": 0,
+    "passed": 35,
+    "subtests_passed": 471
+  },
+  "validation_not_run": [
+    "make check and make check-interop: full Toolkit gates deferred under the task's no-full-suite instruction",
+    "New interactive Windows preference-command native acceptance: no disposable interactive endpoint was used for this change"
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/_windows_process_token.py": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae",
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "a986dd78bef12c1a691655171882c88e40f9f535adbad7ce0715966e3b41844e",
+    "tests/test_cli_toolkit_preferences_user_guard.py": "5d2b94979131aced095319d85684e583fa2b016c300ab095d48f0f9d208c31f1",
+    "tests/test_windows_process_token.py": "a9c5556aa3bee49ee9051929ada015bfc63fe01f6f932e42b64d16a71150e03c",
+    "docs/toolkit-preferences.md": "1091c6a9af505028d1d77aa53bfe0f086b889e8c62078a18a872b334c55b9078",
+    "src/cbus_toolkit/capabilities.json": "9b21680c80a31111a66e1593cefd9a59f2498855f95ddf4e4af930c7ee236b9b"
+  },
+  "remaining": [
+    "Run the exact new preference commands in a disposable interactive Windows user context with independent before/after registry reads and cleanup.",
+    "Compare the original preference/settings lazy wrapper, repeated reads and culture behavior directly; the SESU condition-checker matrix is a separate scope.",
+    "Implement and verify logging, C-Gate and GUI runtime effects with corresponding original evidence.",
+    "Complete the issue's original Windows update trust, availability, download, install and recovery acceptance."
+  ],
+  "invalidation": [
+    "Any listed source hash changes",
+    "Changed original Toolkit executable or registry methods",
+    "Promotion from process-primary-token admission to thread, desktop-session or original Toolkit interactive-user parity",
+    "Native acceptance of the new preference wiring supersedes the portable-only status"
+  ]
+}

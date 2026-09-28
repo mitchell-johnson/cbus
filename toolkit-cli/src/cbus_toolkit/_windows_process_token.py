@@ -100,3 +100,32 @@ def process_token_user_sid(process):
             if failure is None:
                 raise OSError('Owned worker token handle close failed')
             failure.add_note('Owned worker token handle close also failed')
+
+
+def current_process_user_sid():
+    """Read the current process primary-token SID without opening a registry key.
+
+    A primary token does not attest a thread's impersonation state or an
+    interactive desktop session. Callers must state those limits separately.
+    """
+    if os.name != 'nt':
+        raise OSError('Current-process token verification requires Windows')
+    kernel, security = _apis()
+    kernel.GetCurrentProcess.argtypes, kernel.GetCurrentProcess.restype = [], HANDLE
+    token = HANDLE()
+    if not security.OpenProcessToken(kernel.GetCurrentProcess(), 0x0008, ctypes.byref(token)):
+        raise OSError('OpenProcessToken failed for the current process')
+    if not token.value:
+        raise OSError('OpenProcessToken returned an invalid handle')
+    try:
+        buffer = ctypes.create_string_buffer(256)
+        length = DWORD()
+        if not security.GetTokenInformation(token, 1, buffer, len(buffer), ctypes.byref(length)):
+            raise OSError('GetTokenInformation(TokenUser) failed for the current process')
+        return _sid(buffer, length.value)
+    finally:
+        failure = sys.exc_info()[1]
+        if not kernel.CloseHandle(token):
+            if failure is None:
+                raise OSError('Current-process token handle close failed')
+            failure.add_note('Current-process token handle close also failed')

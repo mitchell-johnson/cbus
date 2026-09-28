@@ -106,6 +106,12 @@ desktop session or original Toolkit wrapper parity. The native condition-wrapper
 confirms per-name true/false caches and shows that even ASCII `I`/`i` differs
 under `tr-TR`; keep the production `invariant-ascii` restriction. Do not infer
 interactive preferences/settings behavior from this condition-checker evidence.
+For effectful `preferences registry-load`, `registry-save`, and
+`reset-dont-ask-again`, `--expected-user-sid` optionally checks this CLI
+process's primary-token SID before the registry backend is constructed.
+`registry-load` can itself write defaults. The guard has portable tests, but
+interactive Windows preference-command acceptance and original GUI user-context
+parity remain open; it does not attest thread impersonation or a desktop session.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
 once after a clean Boolean result. Keep the previous report, use a distinct fresh
