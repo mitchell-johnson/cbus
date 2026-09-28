@@ -104,6 +104,7 @@ class RoutedProgrammingPCI(PCISimulator):
         self.stores = []
         self.noise_frames = 0
         self.nvm_executes = 0
+        self.unlocks = []
         self.overflow_on_first_recall = overflow_on_first_recall
         self.overflow_sent = False
         self.drop_on_method = drop_on_method
@@ -158,6 +159,7 @@ class RoutedProgrammingPCI(PCISimulator):
                 "route": [BRIDGE],
                 "unit": UNIT,
                 "cal_hex": cal.hex().upper(),
+                "wire_hex": raw.hex().upper(),
                 "checksum": raw[-1],
                 "confirmation": code.decode("ascii") if code else None,
             })
@@ -254,6 +256,25 @@ class RoutedProgrammingPCI(PCISimulator):
             with self._peer_lock:
                 self.requests[-1].update(kind="set-page", page=cal[1], count=0)
             return self._response(code, answer, stale)
+
+        if opcode == 0x11:
+            if len(cal) != 2:
+                raise AssertionError(f"unexpected UNLOCK {cal.hex()}")
+            parameter = cal[1]
+            if self.selected_page in (1, 2) and parameter in (0xFF, 0):
+                method = "paged"
+            elif self.selected_page == 3 and parameter == 0:
+                method = "ncc"
+            elif parameter == 0x20:
+                method = "direct"
+            else:
+                raise AssertionError(f"unexpected UNLOCK parameter {parameter:02X}")
+            with self._peer_lock:
+                self.unlocks.append((method, self.selected_page, parameter))
+                self.requests[-1].update(kind="unlock", method=method,
+                                         parameter=parameter, count=1)
+            return self._response(code, _reply(parameter, b"\x5A"),
+                                  _reply((parameter + 1) & 0xFF, b"\x5A"))
 
         if opcode == 0xE3 and len(cal) == 4 and cal[1:] == bytes((0x81, 0, 4)):
             self.nvm_executes += 1
@@ -353,27 +374,20 @@ def _write_project(path):
     return unit_type
 
 
-def _write_spec(directory, unit_type, *, all_methods=True):
-    if all_methods:
-        rows = (
-            ("direct", "$20"),
-            ("paged", "$1FF"),
-            ("ncc", "$300"),
-            ("edlt", "$110"),
-            ("giu", "$120"),
-            ("sgiu", "$130"),
-            ("dali", "$140"),
-            ("goc", "$150"),
-            ("gocbyt", "$160"),
-            ("goc2", "$170"),
-        )
-    else:
-        rows = (("direct", "$20"),)
+def _write_spec(directory, unit_type, *, all_methods=True, methods=None, protections=None):
+    addresses = {
+        "direct": "$20", "paged": "$1FF", "ncc": "$300",
+        "edlt": "$110", "giu": "$120", "sgiu": "$130", "dali": "$140",
+        "goc": "$150", "gocbyt": "$160", "goc2": "$170",
+    }
+    methods = (METHODS if all_methods else ("direct",)) if methods is None else methods
+    protections = {} if protections is None else protections
     parameters = "".join(
-        '<Param><Name>' + method + '</Name><Type>int</Type><Address>' + address
+        '<Param><Name>' + method + '</Name><Type>int</Type><Address>' + addresses[method]
         + '</Address><ArraySize>2</ArraySize><ProgramMethod>' + method
-        + '</ProgramMethod><Protection>none</Protection></Param>'
-        for method, address in rows
+        + '</ProgramMethod><Protection>' + protections.get(method, "none")
+        + '</Protection></Param>'
+        for method in methods
     )
     (directory / f"{unit_type}.xml").write_text(
         f"<UnitSpecification><Parameters>{parameters}</Parameters></UnitSpecification>",
@@ -430,13 +444,97 @@ def _invoke(port, method, value, *, timeout=180):
     ], capture_output=True, text=True, timeout=timeout)
 
 
-def _fixture(tmp_path, *, all_methods=True):
+def _fixture(tmp_path, *, all_methods=True, methods=None, protections=None):
     specs = tmp_path / "unitspec"
     specs.mkdir()
     project = tmp_path / "project.xml"
     unit_type = _write_project(project)
-    _write_spec(specs, unit_type, all_methods=all_methods)
+    _write_spec(specs, unit_type, all_methods=all_methods,
+                methods=methods, protections=protections)
     return project, specs
+
+
+_IDENTIFY_WIRES = ("46FD090521018D", "46FD090521028C")
+_SINGLE_METHOD_TRANSCRIPTS = {
+    # Literal checksummed frames from the real daemon, without its ephemeral
+    # PCI confirmation letter.  Equality below also excludes extra writes.
+    "direct": (
+        *_IDENTIFY_WIRES, "46FD09051A200273",
+        *_IDENTIFY_WIRES, "46FD09051A200273",
+        "46FD0905A42000B0C07B", "46FD09051A200273",
+        *_IDENTIFY_WIRES, "46FD09051A200273",
+    ),
+    "paged": (
+        *_IDENTIFY_WIRES, "46FD09051B01FF0193", "46FD09051B02000191",
+        *_IDENTIFY_WIRES, "46FD09051B01FF0193", "46FD09051B02000191",
+        "46FD0905390175", "46FD090511FF9F", "46FD0905A3FF00B15C",
+        "46FD0905390274", "46FD090511009E", "46FD0905A30001C14A",
+        "46FD09051B01FF0193", "46FD09051B02000191",
+        *_IDENTIFY_WIRES, "46FD09051B01FF0193", "46FD09051B02000191",
+    ),
+    "edlt": (
+        *_IDENTIFY_WIRES, "46FD0905A400411000BA", "46FD09051A010292",
+        *_IDENTIFY_WIRES, "46FD0905A400411000BA", "46FD09051A010292",
+        "46FD0905A400411000BA", "46FD0905A40142B3C352",
+        "46FD0905A400411000BA", "46FD09051A010292",
+        *_IDENTIFY_WIRES, "46FD0905A400411000BA", "46FD09051A010292",
+    ),
+    "goc2": (
+        *_IDENTIFY_WIRES, "46FD0905A4FF4200705A", "46FD09051AFF0294",
+        *_IDENTIFY_WIRES, "46FD0905A4FF4200705A", "46FD09051AFF0294",
+        "46FD0905A6FF000070B9C918",
+        "46FD0905A4FF4200705A", "46FD09051AFF0294",
+        *_IDENTIFY_WIRES, "46FD0905A4FF4200705A", "46FD09051AFF0294",
+    ),
+    "ncc": (
+        *_IDENTIFY_WIRES, "46FD09051B0300028F",
+        *_IDENTIFY_WIRES, "46FD09051B0300028F",
+        "46FD0905390373", "46FD0905A40000B2C297",
+        "46FD09051B0300028F", "46FD0905E381000447",
+        *_IDENTIFY_WIRES, "46FD09051B0300028F",
+    ),
+}
+
+
+@pytest.mark.skipif(BIN is None, reason="Build cmqttd before cross-language interop")
+@pytest.mark.parametrize("method,protection,requested", (
+    ("direct", "checksum", b"\xB0\xC0"),
+    ("paged", "lock", b"\xB1\xC1"),
+    ("edlt", "none", b"\xB3\xC3"),
+    ("goc2", "none", b"\xB9\xC9"),
+    ("ncc", "checksum", b"\xB2\xC2"),
+))
+def test_single_method_exact_routed_transcript_and_fresh_readback(
+        tmp_path, method, protection, requested):
+    project, specs = _fixture(tmp_path, methods=(method,),
+                              protections={method: protection})
+    peer = RoutedProgrammingPCI()
+    with peer.running() as pci, _running_daemon(tmp_path, pci, project, specs) as port:
+        result = _invoke(port, method, requested)
+
+    assert result.returncode == 0, result.stderr
+    value = json.loads(result.stdout)
+    assert value["complete"]
+    assert value["method"] == method
+    assert value["parameters"][0]["protection"] == protection
+    assert value["save_attempts"] == 1
+    assert value["automatic_write_retries"] == 0
+    assert value["staged_readback_verified"]
+    assert value["fresh_physical_readback_verified"]
+    assert value["verified"] == value["staged"]
+    assert not value["power_cycle_persistence_verified"]
+    assert not value["hardware_method_matrix_accepted"]
+    assert tuple(row["wire_hex"] for row in peer.requests) == _SINGLE_METHOD_TRANSCRIPTS[method]
+    assert all(row["confirmation"] is not None for row in peer.requests
+               if row["cal_hex"].startswith(("21", "11")))
+    assert all(row["route"] == [BRIDGE] and row["unit"] == UNIT
+               for row in peer.requests)
+    assert peer.unlocks == (
+        [("paged", 1, 0xFF), ("paged", 2, 0)] if method == "paged" else []
+    )
+    assert peer.nvm_executes == (1 if method == "ncc" else 0)
+    assert b"".join(bytes.fromhex(row["data_hex"]) for row in peer.stores) == requested
+    assert len({row["connection"] for row in peer.wire_log}) == 1
 
 
 @pytest.mark.skipif(BIN is None, reason="Build cmqttd before cross-language interop")

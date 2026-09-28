@@ -105,8 +105,8 @@ def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_
 
     This synthetic direct-method case establishes Python/Rust framing, PP
     session behavior, one SAVE_TO_SOURCE, device write/readback and the fresh
-    second PP LOAD.  The other nine method transports remain covered by the
-    Rust routed-method fixture and transport/service regressions; this is not
+    second PP LOAD.  The companion routed Python/daemon interop test covers
+    the ten declared methods through one scripted bridge. Neither test is
     live-device or power-cycle acceptance.
     """
     specs = tmp_path / 'unitspec'

@@ -111,6 +111,16 @@ CLI's fresh reload. Separate cases reject an over-count correlated read before
 any save and drop the PCI connection after one STORE to prove the mutation is
 reported uncertain and never replayed.
 
+Five focused one-bridge cases pin the complete outgoing checksummed PCI
+transcript, including physical LOAD, one save, verified STORE readback and a
+distinct fresh LOAD. They cover standard `direct` with `checksum` protection,
+`paged` with `lock` across the page-one/page-two boundary and both unlock
+challenges, OEM `edlt` memory, `goc2` memory, and `ncc` with the routed
+Save-to-NVM EXECUTE. The existing direct-network CLI/daemon test supplies the
+other route class. These cases establish only their synthetic schema and
+scripted response combinations; other method/protection combinations and
+hardware behavior still need acceptance.
+
 The machine-readable method roster and lower Rust scripted boundary are in
 `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
 `native_cgate_routed_pp_protection.json`, and the exact C-Bus 3 nonvolatile
