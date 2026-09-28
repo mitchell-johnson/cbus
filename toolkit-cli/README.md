@@ -517,8 +517,9 @@ and `.db`. [Portable XML repair](docs/project-repair.md) is available as
 The source remains unchanged. The original XML repository supports
 `cgate project repair NAME`; the SQLite repository rejects that native command.
 `cgate repositories` lists observed repositories without changing the server's
-selection. Repaired legacy DBVersion2.2 files still require a separate format
-conversion before C-Gate3.4 can load them.
+selection. Repaired legacy DBVersion2.2 XML can use the bounded offline
+`project transform-legacy repaired.xml --output converted/PROJECT.xml` step;
+see its [native conversion and readback evidence](docs/project-legacy-transform.md).
 The combined repair checkpoint passes 31 tests on both supported Python versions,
 including fresh original-code comparisons, native loading and CLI file handling.
 A separate Windows checkpoint passes 16 file and CLI cases on x86 and AMD64

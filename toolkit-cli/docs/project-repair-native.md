@@ -108,10 +108,20 @@ method pins, native command codes and readback checks. They establish three
 specific loadable current-format compositions, one rejected current-format
 direct-stage output, and three rejected legacy fragments. Arbitrary repaired
 project documents still report
-`native_load_verified: false`; DBVersion 2.2 conversion and broader Toolkit
-workflow acceptance remain separate work.
+`native_load_verified: false`; broader Toolkit workflow acceptance remains
+separate work.
 
 A review rerun after protecting the pre-start setup with owned-service cleanup
 again passed all three focused tests with no skips. The receipt keeps the initial
 run's source hash and records the reviewed source hash, command statuses and
 cleanup result separately.
+
+## Subsequent DBVersion 2.2 conversion
+
+The [bounded conversion checkpoint](project-legacy-transform.md) subsequently
+ran `TRANSFORM PROJECT` on the generated `RPMAL` repaired output and the three
+captured bare fragments above. All four transformed files loaded and returned
+`DBGETXML` 344 in an owned original XML repository. The separate portable
+`project transform-legacy` command produced exactly the native transformed
+bytes for those four files. The earlier rejection observations remain the
+pre-transform results; they do not imply that conversion fails.

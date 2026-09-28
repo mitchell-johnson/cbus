@@ -1296,6 +1296,8 @@ def build_parser():
     ops = project.add_subparsers(dest="action", required=True)
     from .project_repair_cli import options as project_repair_options
     project_repair_options(ops)
+    from .project_legacy_transform_cli import options as project_legacy_transform_options
+    project_legacy_transform_options(ops)
     create = ops.add_parser("new")
     create.add_argument("file", type=Path)
     create.add_argument("--name", required=True)
@@ -1570,10 +1572,12 @@ def build_parser():
 
     projects = cgops.add_parser("project", help="Manage native C-Gate 3 projects through the vendor server")
     prop = projects.add_subparsers(dest="remote_action", required=True)
-    for action in ("list", "directory", "new", "use", "load", "save", "close", "delete", "repair", "copy", "rename", "archive", "restore"):
+    for action in ("list", "directory", "new", "use", "load", "save", "close", "delete", "repair", "transform", "copy", "rename", "archive", "restore"):
         p = prop.add_parser(action)
         if action not in ("list", "directory"):
             p.add_argument("name")
+        if action == "transform":
+            p.add_argument("--test", action="store_true", help="Show native plan (original C-Gate may create a .xml.0 backup)")
         if action in ("copy", "rename", "archive", "restore"):
             p.add_argument("other", help="New project name, or server-side archive path")
     database = cgops.add_parser("database", help="Edit the native project tree using C-Gate business rules")
@@ -2268,6 +2272,9 @@ def _project(args):
     if args.action == "repair":
         from .project_repair_cli import run as project_repair_run
         return project_repair_run(args)
+    if args.action == "transform-legacy":
+        from .project_legacy_transform_cli import run as project_legacy_transform_run
+        return project_legacy_transform_run(args)
     from .project import ProjectDocument
     if args.action == "new":
         if args.file.exists():
@@ -2462,7 +2469,8 @@ def _cgate(args):
             manager = NativeProjects(client)
             if args.remote_action in ("list", "directory"):
                 return getattr(manager, args.remote_action)(), 0
-            return manager.operation(args.remote_action, args.name, getattr(args, "other", None)), 0
+            return manager.operation(args.remote_action, args.name, getattr(args, "other", None),
+                                     test=getattr(args, "test", False)), 0
         if args.action == "database":
             from .native import NativeDatabase
             db = NativeDatabase(client)
@@ -3706,6 +3714,7 @@ def main(argv=None):
     from .pci_routed_identify_cli import error_payload as routed_identify_error_payload
     from .pci_routed_write_cli import error_payload as routed_write_error_payload
     from .project_repair_cli import error_payload as project_repair_error_payload
+    from .project_legacy_transform_cli import error_payload as project_legacy_transform_error_payload
     from .thermostat_schedule_cli import error_payload as schedule_error_payload
     from .physical_programming import physical_programming_error_payload
     try:
@@ -3736,7 +3745,7 @@ def main(argv=None):
             return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
                           **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc),
-                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_parent_transaction_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **routed_write_error_payload(exc, args), **project_repair_error_payload(exc, args)},
+                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_parent_transaction_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **routed_write_error_payload(exc, args), **project_repair_error_payload(exc, args), **project_legacy_transform_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
     except KeyboardInterrupt as exc:
@@ -3765,6 +3774,7 @@ def main(argv=None):
         result.update(routed_identify_error_payload(exc, args))
         result.update(routed_write_error_payload(exc, args))
         result.update(project_repair_error_payload(exc, args))
+        result.update(project_legacy_transform_error_payload(exc, args))
         result.update(physical_programming_error_payload(exc))
         for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "unit_template_transaction_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)

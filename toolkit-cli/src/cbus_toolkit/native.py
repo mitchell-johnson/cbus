@@ -56,12 +56,18 @@ class NativeProjects:
     def directory(self):
         return _command(self.client, "PROJECT DIR")
 
-    def operation(self, action, name, other=None):
+    def operation(self, action, name, other=None, *, test=False):
         action = action.lower()
+        if type(test) is not bool or test and action != "transform":
+            raise ValueError("--test is supported only for TRANSFORM PROJECT")
         if action in ("new", "use", "load", "save", "close", "delete", "repair"):
             if other is not None:
                 raise ValueError(f"PROJECT {action.upper()} takes one project name")
             command = f"PROJECT {action.upper()} {_project(name)}"
+        elif action == "transform":
+            if other is not None:
+                raise ValueError("TRANSFORM PROJECT accepts one project name in this workflow")
+            command = f"TRANSFORM PROJECT {'--test ' if test else ''}{_project(name)}"
         elif action in ("copy", "rename"):
             command = f"PROJECT {action.upper()} {_project(name)} {_project(other)}"
         elif action in ("archive", "restore"):

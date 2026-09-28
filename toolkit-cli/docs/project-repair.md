@@ -146,9 +146,10 @@ and [native readback](project-repair-native.md) for their exact evidence limits.
 Repair and native loading are separate outcomes. The original XML repository
 accepts `PROJECT REPAIR`; its SQLite repository returns408. A repaired bare
 Project has DBVersion2.2 and needs a separate format transform before C-Gate3.4
-can load it. The Python result therefore does not infer loadability from
-well-formed XML or a database-version string. It does not perform that format
-transform automatically.
+can load it. The bounded offline `project transform-legacy` command now performs
+the verified 2.2-to-2.3 conversion into a new file; see its [scope and native
+readback](project-legacy-transform.md). Repair itself does not transform the
+format or infer loadability from well-formed XML or a database-version string.
 
 `cgate repositories` lists the observed repository types, paths and current
 flags; see [repository inventory](repositories.md). Native repository selection
