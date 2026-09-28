@@ -1,0 +1,698 @@
+{
+  "schema": "native-cgate-dbsetxml-nested-applications-v1",
+  "captured_utc": "2026-09-28T05:03:30.576069+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:55620",
+      "127.0.0.1:55621",
+      "127.0.0.1:55622",
+      "127.0.0.1:55623",
+      "127.0.0.1:55624",
+      "127.0.0.1:55625"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "ea075e9f5b10ef5ddd7b69d04266e8405b7158498c203360e7547bc7eaf6090c",
+  "exchange_helper_sha256": "22580ef1eb861b029df4154efa267872ea4864115ee0949ac40f25403f24e2a4",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "shared_oid": "33333333-3333-4333-8333-333333333333",
+  "shapes": [
+    {
+      "project": "XNG1",
+      "kind": "Group",
+      "addresses": [
+        56
+      ],
+      "network_oid": "de893270-9d27-103f-a3ec-80bdf9d5d0d9",
+      "interface_oid": "de895980-9d27-103f-a3ed-80bdf9d5d0d9",
+      "submit_tag": 704
+    },
+    {
+      "project": "XNG2",
+      "kind": "Group",
+      "addresses": [
+        56,
+        57
+      ],
+      "network_oid": "deb7bc80-9d27-103f-a426-80bdf9d5d0d9",
+      "interface_oid": "deb7e390-9d27-103f-a427-80bdf9d5d0d9",
+      "submit_tag": 719
+    },
+    {
+      "project": "XNN2",
+      "kind": "NetVar",
+      "addresses": [
+        56,
+        57
+      ],
+      "network_oid": "decdb580-9d27-103f-a494-80bdf9d5d0d9",
+      "interface_oid": "decddc90-9d27-103f-a495-80bdf9d5d0d9",
+      "submit_tag": 745
+    }
+  ],
+  "cases": [
+    {
+      "tag": 700,
+      "command": "PROJECT NEW XNG1",
+      "request": "[700] PROJECT NEW XNG1\r\n",
+      "response_lines": [
+        "[700] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 701,
+      "command": "PROJECT USE XNG1",
+      "request": "[701] PROJECT USE XNG1\r\n",
+      "response_lines": [
+        "[701] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 702,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[702] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[702] 301 OID=de893270-9d27-103f-a3ec-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 703,
+      "command": "DBGETXML //XNG1/254",
+      "request": "[703] DBGETXML //XNG1/254\r\n",
+      "response_lines": [
+        "[703] 343-Begin XML snippet\r\n",
+        "[703] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[703] 347-<Network><OID>de893270-9d27-103f-a3ec-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>de895980-9d27-103f-a3ed-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[703] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 704,
+      "command": "DBSETXML //XNG1/254",
+      "request": "[704] DBSETXML //XNG1/254 << END704\r\n<Network><OID>de893270-9d27-103f-a3ec-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>de895980-9d27-103f-a3ed-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application></Network>\r\nEND704\r\n",
+      "response_lines": [
+        "[704] 301 OID=de893270-9d27-103f-a3ec-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 705,
+      "command": "DBGETXML //XNG1/254",
+      "request": "[705] DBGETXML //XNG1/254\r\n",
+      "response_lines": [
+        "[705] 343-Begin XML snippet\r\n",
+        "[705] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[705] 347-<Network><OID>de893270-9d27-103f-a3ec-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>de895980-9d27-103f-a3ed-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[705] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 706,
+      "command": "DBGETXML //XNG1/254/56",
+      "request": "[706] DBGETXML //XNG1/254/56\r\n",
+      "response_lines": [
+        "[706] 343-Begin XML snippet\r\n",
+        "[706] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[706] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>\r\n",
+        "[706] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 707,
+      "command": "DBGETXML //XNG1/254/56/1",
+      "request": "[707] DBGETXML //XNG1/254/56/1\r\n",
+      "response_lines": [
+        "[707] 343-Begin XML snippet\r\n",
+        "[707] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[707] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group>\r\n",
+        "[707] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 708,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[708] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[708] 343-Begin XML snippet\r\n",
+        "[708] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[708] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>\r\n",
+        "[708] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 709,
+      "command": "PROJECT SAVE XNG1",
+      "request": "[709] PROJECT SAVE XNG1\r\n",
+      "response_lines": [
+        "[709] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 710,
+      "command": "PROJECT CLOSE XNG1",
+      "request": "[710] PROJECT CLOSE XNG1\r\n",
+      "response_lines": [
+        "[710] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 711,
+      "command": "PROJECT LOAD XNG1",
+      "request": "[711] PROJECT LOAD XNG1\r\n",
+      "response_lines": [
+        "[711] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 712,
+      "command": "PROJECT USE XNG1",
+      "request": "[712] PROJECT USE XNG1\r\n",
+      "response_lines": [
+        "[712] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 713,
+      "command": "DBGETXML //XNG1/254",
+      "request": "[713] DBGETXML //XNG1/254\r\n",
+      "response_lines": [
+        "[713] 343-Begin XML snippet\r\n",
+        "[713] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[713] 347-<Network><OID>de893270-9d27-103f-a3ec-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>de895980-9d27-103f-a3ed-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[713] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 714,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[714] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[714] 343-Begin XML snippet\r\n",
+        "[714] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[714] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>\r\n",
+        "[714] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 715,
+      "command": "PROJECT NEW XNG2",
+      "request": "[715] PROJECT NEW XNG2\r\n",
+      "response_lines": [
+        "[715] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 716,
+      "command": "PROJECT USE XNG2",
+      "request": "[716] PROJECT USE XNG2\r\n",
+      "response_lines": [
+        "[716] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 717,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[717] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[717] 301 OID=deb7bc80-9d27-103f-a426-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 718,
+      "command": "DBGETXML //XNG2/254",
+      "request": "[718] DBGETXML //XNG2/254\r\n",
+      "response_lines": [
+        "[718] 343-Begin XML snippet\r\n",
+        "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[718] 347-<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[718] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 719,
+      "command": "DBSETXML //XNG2/254",
+      "request": "[719] DBSETXML //XNG2/254 << END719\r\n<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application></Network>\r\nEND719\r\n",
+      "response_lines": [
+        "[719] 301 OID=deb7bc80-9d27-103f-a426-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 720,
+      "command": "DBGETXML //XNG2/254",
+      "request": "[720] DBGETXML //XNG2/254\r\n",
+      "response_lines": [
+        "[720] 343-Begin XML snippet\r\n",
+        "[720] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[720] 347-<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[720] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 721,
+      "command": "DBGETXML //XNG2/254/56",
+      "request": "[721] DBGETXML //XNG2/254/56\r\n",
+      "response_lines": [
+        "[721] 343-Begin XML snippet\r\n",
+        "[721] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[721] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>\r\n",
+        "[721] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 722,
+      "command": "DBGETXML //XNG2/254/56/1",
+      "request": "[722] DBGETXML //XNG2/254/56/1\r\n",
+      "response_lines": [
+        "[722] 343-Begin XML snippet\r\n",
+        "[722] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[722] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group>\r\n",
+        "[722] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 723,
+      "command": "DBGETXML //XNG2/254/57",
+      "request": "[723] DBGETXML //XNG2/254/57\r\n",
+      "response_lines": [
+        "[723] 343-Begin XML snippet\r\n",
+        "[723] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[723] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application>\r\n",
+        "[723] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 724,
+      "command": "DBGETXML //XNG2/254/57/1",
+      "request": "[724] DBGETXML //XNG2/254/57/1\r\n",
+      "response_lines": [
+        "[724] 343-Begin XML snippet\r\n",
+        "[724] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[724] 347-<Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group>\r\n",
+        "[724] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 725,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[725] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[725] 343-Begin XML snippet\r\n",
+        "[725] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[725] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application>\r\n",
+        "[725] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 726,
+      "command": "PROJECT SAVE XNG2",
+      "request": "[726] PROJECT SAVE XNG2\r\n",
+      "response_lines": [
+        "[726] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 727,
+      "command": "PROJECT CLOSE XNG2",
+      "request": "[727] PROJECT CLOSE XNG2\r\n",
+      "response_lines": [
+        "[727] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 728,
+      "command": "PROJECT LOAD XNG2",
+      "request": "[728] PROJECT LOAD XNG2\r\n",
+      "response_lines": [
+        "[728] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 729,
+      "command": "PROJECT USE XNG2",
+      "request": "[729] PROJECT USE XNG2\r\n",
+      "response_lines": [
+        "[729] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 730,
+      "command": "DBGETXML //XNG2/254",
+      "request": "[730] DBGETXML //XNG2/254\r\n",
+      "response_lines": [
+        "[730] 343-Begin XML snippet\r\n",
+        "[730] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[730] 347-<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[730] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 731,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[731] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[731] 343-Begin XML snippet\r\n",
+        "[731] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[731] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application>\r\n",
+        "[731] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 732,
+      "command": "DBSETXML //XNG2/254/56",
+      "request": "[732] DBSETXML //XNG2/254/56 << END732\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>\r\nEND732\r\n",
+      "response_lines": [
+        "[732] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 733,
+      "command": "DBGETXML //XNG2/254",
+      "request": "[733] DBGETXML //XNG2/254\r\n",
+      "response_lines": [
+        "[733] 343-Begin XML snippet\r\n",
+        "[733] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[733] 347-<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[733] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 734,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[734] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[734] 343-Begin XML snippet\r\n",
+        "[734] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[734] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application>\r\n",
+        "[734] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 735,
+      "command": "DBGETXML //XNG2/254/57/1",
+      "request": "[735] DBGETXML //XNG2/254/57/1\r\n",
+      "response_lines": [
+        "[735] 343-Begin XML snippet\r\n",
+        "[735] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[735] 347-<Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group>\r\n",
+        "[735] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 736,
+      "command": "PROJECT SAVE XNG2",
+      "request": "[736] PROJECT SAVE XNG2\r\n",
+      "response_lines": [
+        "[736] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 737,
+      "command": "PROJECT CLOSE XNG2",
+      "request": "[737] PROJECT CLOSE XNG2\r\n",
+      "response_lines": [
+        "[737] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 738,
+      "command": "PROJECT LOAD XNG2",
+      "request": "[738] PROJECT LOAD XNG2\r\n",
+      "response_lines": [
+        "[738] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 739,
+      "command": "PROJECT USE XNG2",
+      "request": "[739] PROJECT USE XNG2\r\n",
+      "response_lines": [
+        "[739] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 740,
+      "command": "DBGETXML //XNG2/254",
+      "request": "[740] DBGETXML //XNG2/254\r\n",
+      "response_lines": [
+        "[740] 343-Begin XML snippet\r\n",
+        "[740] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[740] 347-<Network><OID>deb7bc80-9d27-103f-a426-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>deb7e390-9d27-103f-a427-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address></Group></Application></Network>\r\n",
+        "[740] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 741,
+      "command": "PROJECT NEW XNN2",
+      "request": "[741] PROJECT NEW XNN2\r\n",
+      "response_lines": [
+        "[741] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 742,
+      "command": "PROJECT USE XNN2",
+      "request": "[742] PROJECT USE XNN2\r\n",
+      "response_lines": [
+        "[742] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 743,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[743] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[743] 301 OID=decdb580-9d27-103f-a494-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 744,
+      "command": "DBGETXML //XNN2/254",
+      "request": "[744] DBGETXML //XNN2/254\r\n",
+      "response_lines": [
+        "[744] 343-Begin XML snippet\r\n",
+        "[744] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[744] 347-<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[744] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 745,
+      "command": "DBSETXML //XNN2/254",
+      "request": "[745] DBSETXML //XNN2/254 << END745\r\n<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application></Network>\r\nEND745\r\n",
+      "response_lines": [
+        "[745] 301 OID=decdb580-9d27-103f-a494-80bdf9d5d0d9\r\n"
+      ]
+    },
+    {
+      "tag": 746,
+      "command": "DBGETXML //XNN2/254",
+      "request": "[746] DBGETXML //XNN2/254\r\n",
+      "response_lines": [
+        "[746] 343-Begin XML snippet\r\n",
+        "[746] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[746] 347-<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application></Network>\r\n",
+        "[746] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 747,
+      "command": "DBGETXML //XNN2/254/56",
+      "request": "[747] DBGETXML //XNN2/254/56\r\n",
+      "response_lines": [
+        "[747] 343-Begin XML snippet\r\n",
+        "[747] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[747] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application>\r\n",
+        "[747] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 748,
+      "command": "DBGETXML //XNN2/254/56/1",
+      "request": "[748] DBGETXML //XNN2/254/56/1\r\n",
+      "response_lines": [
+        "[748] 343-Begin XML snippet\r\n",
+        "[748] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[748] 347-<NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar>\r\n",
+        "[748] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 749,
+      "command": "DBGETXML //XNN2/254/57",
+      "request": "[749] DBGETXML //XNN2/254/57\r\n",
+      "response_lines": [
+        "[749] 343-Begin XML snippet\r\n",
+        "[749] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[749] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application>\r\n",
+        "[749] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 750,
+      "command": "DBGETXML //XNN2/254/57/1",
+      "request": "[750] DBGETXML //XNN2/254/57/1\r\n",
+      "response_lines": [
+        "[750] 343-Begin XML snippet\r\n",
+        "[750] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[750] 347-<NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar>\r\n",
+        "[750] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 751,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[751] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[751] 343-Begin XML snippet\r\n",
+        "[751] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[751] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application>\r\n",
+        "[751] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 752,
+      "command": "PROJECT SAVE XNN2",
+      "request": "[752] PROJECT SAVE XNN2\r\n",
+      "response_lines": [
+        "[752] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 753,
+      "command": "PROJECT CLOSE XNN2",
+      "request": "[753] PROJECT CLOSE XNN2\r\n",
+      "response_lines": [
+        "[753] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 754,
+      "command": "PROJECT LOAD XNN2",
+      "request": "[754] PROJECT LOAD XNN2\r\n",
+      "response_lines": [
+        "[754] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 755,
+      "command": "PROJECT USE XNN2",
+      "request": "[755] PROJECT USE XNN2\r\n",
+      "response_lines": [
+        "[755] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 756,
+      "command": "DBGETXML //XNN2/254",
+      "request": "[756] DBGETXML //XNN2/254\r\n",
+      "response_lines": [
+        "[756] 343-Begin XML snippet\r\n",
+        "[756] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[756] 347-<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application></Network>\r\n",
+        "[756] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 757,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[757] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[757] 343-Begin XML snippet\r\n",
+        "[757] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[757] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application>\r\n",
+        "[757] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 758,
+      "command": "DBSETXML //XNN2/254/56",
+      "request": "[758] DBSETXML //XNN2/254/56 << END758\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application>\r\nEND758\r\n",
+      "response_lines": [
+        "[758] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 759,
+      "command": "DBGETXML //XNN2/254",
+      "request": "[759] DBGETXML //XNN2/254\r\n",
+      "response_lines": [
+        "[759] 343-Begin XML snippet\r\n",
+        "[759] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[759] 347-<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application></Network>\r\n",
+        "[759] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 760,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[760] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[760] 343-Begin XML snippet\r\n",
+        "[760] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[760] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application>\r\n",
+        "[760] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 761,
+      "command": "DBGETXML //XNN2/254/57/1",
+      "request": "[761] DBGETXML //XNN2/254/57/1\r\n",
+      "response_lines": [
+        "[761] 343-Begin XML snippet\r\n",
+        "[761] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[761] 347-<NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar>\r\n",
+        "[761] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 762,
+      "command": "PROJECT SAVE XNN2",
+      "request": "[762] PROJECT SAVE XNN2\r\n",
+      "response_lines": [
+        "[762] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 763,
+      "command": "PROJECT CLOSE XNN2",
+      "request": "[763] PROJECT CLOSE XNN2\r\n",
+      "response_lines": [
+        "[763] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 764,
+      "command": "PROJECT LOAD XNN2",
+      "request": "[764] PROJECT LOAD XNN2\r\n",
+      "response_lines": [
+        "[764] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 765,
+      "command": "PROJECT USE XNN2",
+      "request": "[765] PROJECT USE XNN2\r\n",
+      "response_lines": [
+        "[765] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 766,
+      "command": "DBGETXML //XNN2/254",
+      "request": "[766] DBGETXML //XNN2/254\r\n",
+      "response_lines": [
+        "[766] 343-Begin XML snippet\r\n",
+        "[766] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[766] 347-<Network><OID>decdb580-9d27-103f-a494-80bdf9d5d0d9</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>decddc90-9d27-103f-a495-80bdf9d5d0d9</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Changed56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application></Network>\r\n",
+        "[766] 344 End XML snippet\r\n"
+      ]
+    }
+  ]
+}

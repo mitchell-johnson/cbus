@@ -1278,14 +1278,19 @@ the bounded DBSETXML surface. Complete forms validate the selected path/OID,
 whole submitted tree, Unit scalar/PP ownership and modeled identity/address
 conflicts before an atomic durable replacement and `301 OID=...` root receipt.
 Owned build-2001 captures establish that an Application and Unit, two Units,
-or two to four leaf Applications at different addresses may share an OID and
+two to four leaf Applications, or two Applications with independent Group or
+NetVar children at different addresses may share an OID and
 retain separate addressed readback through save/reload. cmqttd keeps
 address-keyed Unit metadata and path-distinct pending Application records for
 these shapes. The [order/count extension](../../../../toolkit-cli/docs/native-cgate-dbsetxml-application-shapes.md)
 pins reversed pairs, triples and quadruples: Network XML preserves submission
 order, while OID reads, TagName mutations and OID-targeted XML replacement
 select the final submitted Application. Direct-path replacement preserves
-its siblings and that selection across repository restart. Ambiguous
+its siblings and that selection across repository restart.
+The [nested-Application capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-applications.md)
+pins independent Group and NetVar children beneath repeated-OID Applications,
+their exact XML readback, same-address direct replacement, and save/reload.
+Descendant OID collisions are not admitted by this evidence. Ambiguous
 Unit-OID mutations and unprobed duplicate-Application fields/deletes return
 409. Other duplicate shapes and cross-network Unit-OID collisions remain
 refused until their native semantics and lossless representation are known.

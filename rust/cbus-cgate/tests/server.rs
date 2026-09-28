@@ -3393,36 +3393,6 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
             .status,
         409
     );
-    let before_unsupported = server.handle("[before] DBGETXML //XAPP/254").lines[0].clone();
-    let submitted_pair = substitute(
-        cases[4]["request"]
-            .as_str()
-            .unwrap()
-            .split_once(" << END304\r\n")
-            .unwrap()
-            .1
-            .strip_suffix("\r\nEND304\r\n")
-            .unwrap(),
-    );
-    let second_app = format!(
-        "<Application><OID>{shared}</OID><TagName>Second</TagName><Address>57</Address></Application>"
-    );
-    let nested_second = second_app.replace(
-        "</Application>",
-        "<Group><OID>44444444-4444-4444-8444-444444444444</OID><TagName>Nested</TagName><Address>1</Address></Group></Application>",
-    );
-    let nested = submitted_pair.replace(&second_app, &nested_second);
-    assert_ne!(nested, submitted_pair);
-    assert_eq!(
-        server
-            .handle_document("[closed] DBSETXML //XAPP/254", &nested)
-            .status,
-        409
-    );
-    assert_eq!(
-        server.handle("[after] DBGETXML //XAPP/254").lines[0],
-        before_unsupported
-    );
     assert_eq!(server.handle("[copy] PROJECT COPY XAPP XAPPC").status, 200);
     assert_eq!(server.handle("[use] PROJECT USE XAPPC").status, 200);
     for address in [56, 57] {
@@ -3691,6 +3661,128 @@ fn dbsetxml_reversed_and_multiple_leaf_applications_match_owned_native_vectors()
         .handle("[selected] DBGET !33333333-3333-4333-8333-333333333333/Address")
         .final_text
         .ends_with("/Address=58"));
+}
+
+#[test]
+fn dbsetxml_nested_same_oid_applications_match_owned_native_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_nested_applications.json"
+    ))
+    .unwrap();
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbsetxml_nested_applications.jsonl"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-nested-applications-v1"
+    );
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    assert_eq!(native["cases"].as_array().unwrap().len(), 67);
+    assert_eq!(native["shapes"].as_array().unwrap().len(), 3);
+    assert_eq!(
+        vector["set_tags"],
+        serde_json::json!([704, 719, 732, 745, 758])
+    );
+
+    let mut server = Server::new(AccessLevel::Program);
+    let mut oids = HashMap::<String, String>::new();
+    for row in native["cases"].as_array().unwrap() {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let request = row["request"].as_str().unwrap();
+        let substitute = |value: &str, oids: &HashMap<String, String>| {
+            oids.iter().fold(value.to_string(), |value, (from, to)| {
+                value.replace(from, to)
+            })
+        };
+        let observed = if command.starts_with("DBSETXML ") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = request
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document, &oids))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        if command.starts_with("DBCREATENET ") {
+            // The synthetic setup has a known older DBCREATENET reply difference.
+            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            continue;
+        }
+        if command.starts_with("DBGETXML //")
+            && native["shapes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|shape| shape["submit_tag"].as_u64() == Some(tag + 1))
+        {
+            let parsed =
+                roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                    .unwrap();
+            let find_oid = |element: roxmltree::Node<'_, '_>| {
+                element
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap()
+                    .to_string()
+            };
+            let shape = native["shapes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|shape| shape["submit_tag"].as_u64() == Some(tag + 1))
+                .unwrap();
+            let interface = parsed
+                .descendants()
+                .find(|node| node.has_tag_name("Interface"))
+                .unwrap();
+            oids.insert(
+                shape["network_oid"].as_str().unwrap().to_string(),
+                find_oid(parsed.root_element()),
+            );
+            oids.insert(
+                shape["interface_oid"].as_str().unwrap().to_string(),
+                find_oid(interface),
+            );
+        }
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status = if command.starts_with("DBGETXML ") {
+            200
+        } else {
+            expected_final[..3].parse::<u16>().unwrap()
+        };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML ") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(
+                observed.lines[0],
+                substitute(expected_xml, &oids),
+                "tag {tag}"
+            );
+        } else if command.starts_with("DBSETXML ") {
+            assert_eq!(
+                observed.final_text,
+                substitute(expected_final, &oids),
+                "tag {tag}"
+            );
+        }
+    }
 }
 
 #[test]

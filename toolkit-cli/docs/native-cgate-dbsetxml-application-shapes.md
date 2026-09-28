@@ -50,8 +50,10 @@ save/reload, repository restart, project copy/rename and direct replacement do
 not turn OID selection into highest-Address selection. Older JSON repositories
 without this field keep their prior address-based ordering. The accepted
 complete-Network shape remains leaf Applications with distinct addressed
-paths; nested same-OID descendants, cross-network identity collisions and
-unprobed duplicate-Application Address/deletion operations remain guarded.
+paths. The [nested-Application capture](native-cgate-dbsetxml-nested-applications.md)
+now admits independent Group and NetVar children under repeated-OID
+Applications. Colliding descendant OIDs, cross-network identity collisions
+and unprobed duplicate-Application Address/deletion operations remain guarded.
 The native capture proves two, three and four records; larger lists use the
 same bounded model but have not been separately accepted against the original.
 Native project file serialization and physical effects are outside this

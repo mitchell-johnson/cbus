@@ -223,7 +223,10 @@ formats remain unverified.
 An owned follow-up capture pins Application/Unit and two-Unit shared OIDs,
 distinct Unit scalar/PP readback, last-Unit OID lookup, save/reload identity,
 and path-targeted replacement of one duplicate Unit. Address-keyed Unit
-metadata retains those cases in cmqttd; other duplicate forms still return
+metadata retains those cases in cmqttd. A later owned
+[67-request nested-Application capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-applications.md)
+adds independent Group and NetVar children beneath repeated-OID Applications,
+with direct replacement and save/reload. Other duplicate forms still return
 409 pending native and model evidence.
 `REPOSITORY USE 1` is an idempotent
 selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic

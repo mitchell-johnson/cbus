@@ -41,7 +41,8 @@ The [later 114-request owned capture](native-cgate-dbsetxml-application-shapes.m
 extends this pair to reversed submission order, three and four same-OID leaf
 Applications. It proves submission-order Network XML, final-submitted
 Application OID selection, direct-path and OID replacement, and two
-save/reload cycles. Nested same-OID Application descendants, mixed
+save/reload cycles. [Later nested-Application evidence](native-cgate-dbsetxml-nested-applications.md)
+admits independent Group and NetVar children. Other mixed
 Application/Unit/typed-container collisions beyond the [earlier captured
 shapes](native-cgate-dbsetxml-duplicate-oids.md), and cross-network identity
 collisions still need native evidence and/or a broader identity model.

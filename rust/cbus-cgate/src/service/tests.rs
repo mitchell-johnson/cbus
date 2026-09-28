@@ -15254,6 +15254,151 @@ async fn duplicate_application_oid_keeps_both_paths_through_service_restart() {
 }
 
 #[tokio::test]
+async fn nested_same_oid_application_children_survive_repository_restart() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] PROJECT NEW XNEST",
+        "[2] PROJECT USE XNEST",
+        "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(service.handle(&mut client, command).await.status, 200);
+    }
+    let initial = service
+        .handle(&mut client, "[4] DBGETXML //XNEST/254")
+        .await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let shared = "33333333-3333-4333-8333-333333333333";
+    let first = format!("<Application><OID>{shared}</OID><TagName>First</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address></Group></Application>");
+    let second = format!("<Application><OID>{shared}</OID><TagName>Second</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address></NetVar></Application>");
+    let document = format!(
+        "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>{first}{second}</Network>"
+    );
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[5] DBSETXML //XNEST/254", &document)
+            .await
+            .status,
+        301
+    );
+    let expected = service
+        .handle(&mut client, "[6] DBGETXML //XNEST/254")
+        .await
+        .lines[0]
+        .clone();
+    assert!(expected.contains(&first));
+    assert!(expected.contains(&second));
+    assert_eq!(
+        service
+            .handle(&mut client, "[7] PROJECT SAVE XNEST")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PROJECT CLOSE XNEST")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[9] PROJECT LOAD XNEST")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[10] PROJECT USE XNEST")
+            .await
+            .status,
+        200
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[11] PROJECT USE XNEST")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[12] DBGETXML //XNEST/254")
+            .await
+            .lines[0],
+        expected
+    );
+    let selected = restarted
+        .handle(&mut client, &format!("[13] DBGETXML !{shared}"))
+        .await;
+    assert!(selected.lines[0].contains(&second));
+    let changed = first.replace("<TagName>First</TagName>", "<TagName>Changed</TagName>");
+    assert_eq!(
+        restarted
+            .handle_document(&mut client, "[14] DBSETXML //XNEST/254/56", &changed)
+            .await
+            .status,
+        301
+    );
+    let after = restarted
+        .handle(&mut client, "[15] DBGETXML //XNEST/254")
+        .await
+        .lines[0]
+        .clone();
+    assert!(after.contains(&changed));
+    assert!(after.contains(&second));
+    drop(restarted);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[16] PROJECT USE XNEST")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[17] DBGETXML //XNEST/254")
+            .await
+            .lines[0],
+        after
+    );
+    drop(restarted);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn reversed_four_application_oid_order_survives_repository_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

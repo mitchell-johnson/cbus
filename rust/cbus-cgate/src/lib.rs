@@ -7628,7 +7628,8 @@ impl Server {
             kinds_by_oid.entry(oid).or_default().push(kind);
         }
         // The owned captures admit Application+Unit, repeated Units, and
-        // repeated leaf Applications in a complete Network. Other collisions
+        // repeated Applications with independently addressed descendants in a
+        // complete Network. Other collisions
         // still need a wider identity migration or their own native evidence.
         let unsupported_duplicate = kinds_by_oid.iter().any(|(oid, kinds)| {
             if kinds.len() < 2 {
@@ -7645,9 +7646,9 @@ impl Server {
                     .collect::<Vec<_>>();
                 list.len() == applications
                     && list.len() <= u16::MAX as usize
-                    && list.iter().all(|child| {
-                        child.children.is_empty() && child.extras == DbXmlExtras::default()
-                    })
+                    && list
+                        .iter()
+                        .all(|child| child.extras == DbXmlExtras::default())
             } else {
                 false
             };
@@ -7676,12 +7677,11 @@ impl Server {
         };
         if target.kind == DbXmlKind::Application
             && self.duplicated_application_oid(&target.project, &target.oid)
-            && (destination != target.path || !object.children.is_empty())
+            && destination != target.path
         {
             return Err((
                 status::CONFLICT_EXISTS,
-                "DBSETXML duplicate Application replacement requires the same leaf Address"
-                    .to_string(),
+                "DBSETXML duplicate Application replacement requires the same Address".to_string(),
             ));
         }
         if destination != target.path && self.database_address_exists(&destination) {

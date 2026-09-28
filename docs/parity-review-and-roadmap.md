@@ -443,6 +443,10 @@ historical evidence, not acceptance of newer code.
   Preserve unknown metadata, OIDs and references across copy/rename/restore.
 - [ ] **P2.02** ([#24](https://github.com/mitchell-johnson/cbus/issues/24)) — Capture combined Network/Unit/Application DBSETXML replacement, including
   namespaces, comments, conflicts, omitted fields and lifecycle persistence.
+  A 67-request owned original capture now covers independent Group/NetVar
+  children under repeated-OID Applications, same-address direct replacement,
+  exact XML readback and save/reload; Rust repository restart is covered.
+  Descendant OID collisions and broader combined forms remain open.
 - [ ] **P2.03** ([#25](https://github.com/mitchell-johnson/cbus/issues/25)) — Complete CGL metadata/controller semantics and multi-network route behavior;
   distinguish importing a label graph from programming a controller.
 - [ ] **P2.04** ([#26](https://github.com/mitchell-johnson/cbus/issues/26)) — Implement per-handler access levels and login/logout transitions. Capture
