@@ -1,0 +1,132 @@
+{
+  "format": "cbus-toolkit-database-csv-din4-rel4-rel8-profile-review-v1",
+  "original_execution": false,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_method_spans": {
+    "CIS_TDIMDN4.CIS_TDIMDN4": {
+      "start": "0x1397f6c",
+      "end": "0x1398060",
+      "bytes_sha256": "3eff462fa13000c09c795760d2adcdd1e93bc40782f84f633e83793429af893b"
+    },
+    "CIS_TRELDN4.CIS_TRELDN4": {
+      "start": "0x1398438",
+      "end": "0x13984cc",
+      "bytes_sha256": "8e6b3ebeec4ca1e360c8ec0780d19e799fb3efdbe88f66c22a5f7dfd90670123"
+    },
+    "CIS_TRELDN8.CIS_TRELDN8": {
+      "start": "0x13984cc",
+      "end": "0x1398624",
+      "bytes_sha256": "732c21383cac4eccd8f1b437e0f2846f6eb5ff87a07baf7b36a3ae1f6aab3b95"
+    },
+    "CIS_TDIMDN4.TDIMDN4.GetMaxChannels": {
+      "start": "0x1229290",
+      "end": "0x12292a8",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TRELDN4.TRELDN4.GetMaxChannels": {
+      "start": "0x122ae88",
+      "end": "0x122aea0",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TRELDN8.TRELDN8.GetMaxChannels": {
+      "start": "0x122b71c",
+      "end": "0x122b734",
+      "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusDINRailOutputUnit.TCBusDINRailOutputUnit.GetAreaIfAvailable": {
+      "start": "0xd1ef60",
+      "end": "0xd1f040",
+      "bytes_sha256": "d387a175ea35c17b2bdb57067d0e90f0b48121b62d26fd6769a3a089b3035b8c"
+    },
+    "CIS_TCBusDimmerUnit.TCBusDimmerUnit.IsInteractionGroup": {
+      "start": "0xd2bf94",
+      "end": "0xd2bfbc",
+      "bytes_sha256": "59d5bd7d35468ddd474cebf5d144554805e38ad9beb9265a7f512fbf57deabbb"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadGroups": {
+      "start": "0x122dd40",
+      "end": "0x122df04",
+      "bytes_sha256": "455b0f618d59746d1c8ca3b66311f121eb1c325dbccad3f802f5342d41e60370"
+    }
+  },
+  "registrations": [
+    {
+      "unit_type": "DIMDN4",
+      "selected_class": "TDIMDN4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x1228e0c",
+      "unit_registration": "0x1397f94",
+      "agent_registration": "0x1397fd6",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0xd2bf94",
+      "max_channels_getter": "0x1229290",
+      "max_channels": 4
+    },
+    {
+      "unit_type": "DIMDN4F",
+      "selected_class": "TDIMDN4F",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x122904c",
+      "unit_registration": "0x1397fb5",
+      "agent_registration": "0x1397ff7",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0xd2bf94",
+      "max_channels_getter": "0x1229290",
+      "max_channels": 4
+    },
+    {
+      "unit_type": "RELDN4",
+      "selected_class": "TRELDN4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x122a8ac",
+      "unit_registration": "0x139845c",
+      "agent_registration": "0x139847d",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0xd2bf94",
+      "max_channels_getter": "0x122ae88",
+      "max_channels": 4
+    },
+    {
+      "unit_type": "RELDN8",
+      "selected_class": "TRELDN8",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x122b054",
+      "unit_registration": "0x13984f4",
+      "agent_registration": "0x1398557",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0xd2bf94",
+      "max_channels_getter": "0x122b71c",
+      "max_channels": 8
+    }
+  ],
+  "unit_vmt": {
+    "dimdn4f_report_slots_match_dimdn4": true,
+    "shared_agent_class": "TDinRailOutputCGateAgent",
+    "shared_group_loader": "0x122dd40"
+  },
+  "static_facts": {
+    "groups": "The shared DIN output agent loads and appends all 16 stored primary-application group associations in order.",
+    "area": "The inherited DIN output Area getter resolves AreaGroupAddress in the primary application.",
+    "interaction": "The inherited dimmer predicate compares the zero-based slot to GetMaxChannels: four for DIMDN4/DIMDN4F/RELDN4 and eight for RELDN8."
+  },
+  "synthetic_fixture": {
+    "path": "research/fixtures/toolkit-database-csv-din4-rel4-rel8-synthetic.xml",
+    "sha256": "9c18c3dd1f1c62390176fa9d2e2697ad7b55cdadd3e5d5ca87d6d69a0c321eb1",
+    "site_data": false
+  },
+  "limits": [
+    "Original EXE/MAP static review and synthetic projection only; the original GUI CSV report was not run on this fixture.",
+    "Cold native database loading of these exact 2.7.00 records was not executed.",
+    "Only existing Area255, resolved primary application, unused secondary application and 16 stored group slots are admitted.",
+    "The read-only adapter rejects missing groups that the original create=true path may create.",
+    "RELDN8B and RELDN8SP have separate classes and are not included.",
+    "No native C-Gate, CNI, database mutation or physical device was used."
+  ]
+}

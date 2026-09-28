@@ -432,6 +432,8 @@ For development, install `./toolkit-cli[test,research,serial,usb]`, then run `ma
 
 For database CSV, `toolkit-database-csv --native-xml-unit` and `cgate database-csv` also accept complete KEYE4 and KEYEIR1–4 firmware 2.5.00 snapshots with nine stored groups and existing application/group metadata. `--native-xml-network` and `--network` include them in whole-network exports. The shared TKEYEx class registration is source-pinned, while original GUI and cold native load acceptance for these five variants remains open; consult [the CSV profile document](../../../../toolkit-cli/docs/toolkit-database-csv.md) before exporting a whole network with other profiles.
 
+The bounded DIN CSV projector also admits `DIMDN4`, `DIMDN4F`, `RELDN4` and `RELDN8` firmware 2.7.00 with a complete 16-slot `GroupAddress`, existing Area255 and selected primary groups, and an unused secondary application. The first three types expose four interaction groups; RELDN8 exposes eight. A pinned Toolkit EXE/MAP review supports the class, shared agent and report method routing, and a no-site fixture tests exact offline and one-request live whole-project export. Original GUI and cold native load acceptance remain open; reject `RELDN8B` and `RELDN8SP` as separate, unadmitted classes. See [the CSV profile document](../../../../toolkit-cli/docs/toolkit-database-csv.md).
+
 For a complete snapshot CSV selection, use `toolkit-database-csv project.xml
 --native-xml-project //PROJECT --output new.csv`, or `cgate database-csv
 --project //PROJECT --output new.csv` for one live DBGETXML snapshot. These
