@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 89);
+        assert_eq!(floors.len(), 129);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),
@@ -276,6 +276,10 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
             ("EVENT_CHANNEL LIST", "Program"),
             ("EVENT_CHANNEL SUB", "Program"),
             ("CGL IMPORT", "Program"),
+            ("PP GET", "Clipsal"),
+            ("PP RESET_TO_DEFAULTS", "Clipsal"),
+            ("PROGRAMMER CREATE", "Program"),
+            ("DEPLOY_QUEUE RETRY", "Program"),
         ] {
             assert!(
                 floors

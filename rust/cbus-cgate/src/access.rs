@@ -169,11 +169,58 @@ pub(crate) const NATIVE_PROBED_ADDITIONAL_COMMANDS: &[(&str, CgateAccessLevel)] 
     ("EVENT_CHANNEL UNSUB", CgateAccessLevel::Program),
 ];
 
+/// Programming/session/queue entry floors captured independently on the pinned
+/// native service. Missing session/unit probes never attach a physical network.
+/// These floors do not establish successful device programming at that role.
+pub(crate) const NATIVE_PROBED_PROGRAMMING_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("PP UNLOCK", CgateAccessLevel::Clipsal),
+    ("PP CANCEL_LOCK", CgateAccessLevel::Clipsal),
+    ("PP START", CgateAccessLevel::Clipsal),
+    ("PP END", CgateAccessLevel::Clipsal),
+    ("PP UNITS", CgateAccessLevel::Clipsal),
+    ("PP NEW", CgateAccessLevel::Clipsal),
+    ("PP DEBUG", CgateAccessLevel::Clipsal),
+    ("PP LOAD", CgateAccessLevel::Clipsal),
+    ("PP SAVE", CgateAccessLevel::Clipsal),
+    ("PP SAVE_TO_SOURCE", CgateAccessLevel::Clipsal),
+    ("PP SET", CgateAccessLevel::Clipsal),
+    ("PP GET", CgateAccessLevel::Clipsal),
+    ("PP INFO", CgateAccessLevel::Clipsal),
+    ("PP LIST_LOCK", CgateAccessLevel::Clipsal),
+    ("PP LOAD_FROM_FILE", CgateAccessLevel::Clipsal),
+    ("PP GET_UNIT_SPEC", CgateAccessLevel::Clipsal),
+    ("PP GET_UNIT_CATALOG", CgateAccessLevel::Clipsal),
+    ("PP RELOAD_CATALOG", CgateAccessLevel::Clipsal),
+    ("PP CATALOG_INFO", CgateAccessLevel::Clipsal),
+    ("PP LIST_CATALOG_NUMBERS", CgateAccessLevel::Clipsal),
+    ("PP GET_RAW_DATA", CgateAccessLevel::Clipsal),
+    ("PP SET_RAW_DATA", CgateAccessLevel::Clipsal),
+    ("PP COPY", CgateAccessLevel::Clipsal),
+    ("PP QUICKGET", CgateAccessLevel::Clipsal),
+    ("PP RESET_TO_DEFAULTS", CgateAccessLevel::Clipsal),
+    ("PP PATCH_VERSION", CgateAccessLevel::Clipsal),
+    ("PP WRITE_PATCH", CgateAccessLevel::Clipsal),
+    ("PROGRAMMER CREATE", CgateAccessLevel::Program),
+    ("PROGRAMMER LIST", CgateAccessLevel::Program),
+    ("PROGRAMMER STATUS", CgateAccessLevel::Program),
+    ("PROGRAMMER DELETE", CgateAccessLevel::Program),
+    ("PROGRAMMER TRIGGER", CgateAccessLevel::Program),
+    ("PROGRAMMER TEST", CgateAccessLevel::Program),
+    ("PROGRAMMER ADD_INSTRUCTION", CgateAccessLevel::Program),
+    ("PROGRAMMER CANCEL_INSTRUCTION", CgateAccessLevel::Program),
+    ("DEPLOY_QUEUE ADD", CgateAccessLevel::Program),
+    ("DEPLOY_QUEUE LIST", CgateAccessLevel::Program),
+    ("DEPLOY_QUEUE DELETE", CgateAccessLevel::Program),
+    ("DEPLOY_QUEUE DELETE_ALL", CgateAccessLevel::Program),
+    ("DEPLOY_QUEUE RETRY", CgateAccessLevel::Program),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
         .iter()
         .chain(NATIVE_PROBED_ADDITIONAL_COMMANDS.iter())
+        .chain(NATIVE_PROBED_PROGRAMMING_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -418,6 +465,65 @@ mod tests {
         let roles = evidence["roles"].as_object().unwrap();
         assert_eq!(roles.len(), 9);
         for (path, minimum) in NATIVE_PROBED_ADDITIONAL_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| *command == *path || command.starts_with(&format!("{path} ")))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+    #[test]
+    fn programming_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_programming_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            evidence["format"],
+            "native-cgate-programming-authorization-v1"
+        );
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        assert_eq!(evidence["oracle"]["listener_ownership_verified"], true);
+        assert_eq!(evidence["oracle"]["cleanup_complete"], true);
+        assert_eq!(evidence["oracle"]["process_exit_confirmed"], true);
+        assert_eq!(evidence["oracle"]["work_removed"], true);
+        assert_eq!(
+            evidence["capture_script_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_programming_authorization_probe.py"
+            )))
+        );
+        assert_eq!(
+            evidence["local_cgate_harness_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../../../toolkit-cli/research/local_cgate.py"
+            )))
+        );
+        let commands = evidence["commands"].as_array().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_PROGRAMMING_COMMANDS.len());
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_PROGRAMMING_COMMANDS {
             let matches = commands
                 .iter()
                 .filter_map(serde_json::Value::as_str)

@@ -443,6 +443,13 @@ historical evidence, not acceptance of newer code.
   native certificate admission and its relationship to ACCESS/LOGIN; implement
   identity mapping only if the target native behavior requires it. Cover denied operations before mutation,
   concurrent sessions, reconnect and persisted admission rules.
+  The 2026-09-28 programming slice adds 40 independently probed handler entry
+  floors (360 native role/invocation observations), bringing the maintained
+  total to 129. All PP leaves require Clipsal; PROGRAMMER and DEPLOY_QUEUE
+  require Program. Rust denial, owner-session preservation on LOGIN downgrade,
+  and LOGOUT restoration are covered. Object-specific authorization and the
+  remaining command matrix still prevent closing this issue. See the
+  [focused validation record](../rust/cbus-cgate/research/programming-authorization-review-20260928.md).
 - [ ] **P2.05** ([#27](https://github.com/mitchell-johnson/cbus/issues/27)) — Implement meaningful CONFIG runtime/restart effects and exact native FILE,
   REPOSITORY and server lifecycle behavior within the supported deployment
   model. Document intentional secure deviations explicitly.

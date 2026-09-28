@@ -17033,3 +17033,154 @@ async fn test_spam_runs_lists_stops_and_removes_background_sessions() {
     .unwrap();
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn programming_native_handler_floors_deny_before_dispatch_or_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_programming_authorization_probe.json"
+    ))
+    .unwrap();
+
+    for (path_name, minimum) in crate::access::NATIVE_PROBED_PROGRAMMING_COMMANDS {
+        let command = evidence["commands"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(serde_json::Value::as_str)
+            .find(|command| *command == *path_name || command.starts_with(&format!("{path_name} ")))
+            .unwrap();
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+            CgateAccessLevel::Program,
+            CgateAccessLevel::Debug,
+            CgateAccessLevel::Clipsal,
+        ] {
+            if level >= *minimum {
+                continue;
+            }
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}: {reply:?}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    let model = service.model.lock().await;
+    assert!(model.sessions.is_empty());
+    assert!(model.locks.is_empty());
+    assert!(model.programmers.is_empty());
+    assert!(model.deploy_queue.is_empty());
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn programming_login_downgrade_and_logout_preserve_owned_session() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut owner = ClientState::default();
+    for command in [
+        "[1] ACCESS ADD user programmer owned-test-password Program",
+        "[2] PP LOCK Owned //HARNESS/254",
+        "[3] PP START Session Owned",
+    ] {
+        assert_eq!(
+            service.handle(&mut owner, command).await.status,
+            200,
+            "{command}"
+        );
+    }
+    assert_eq!(
+        service
+            .handle(&mut owner, "[4] LOGIN programmer owned-test-password")
+            .await
+            .status,
+        211
+    );
+    let before = std::fs::read(&path).unwrap();
+    assert_eq!(
+        service
+            .handle(&mut owner, "[5] PP END Session")
+            .await
+            .final_text,
+        "420 Access denied."
+    );
+    assert!(service.model.lock().await.sessions.contains_key("Session"));
+    assert!(owner.sessions.contains("Session"));
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    // A fresh Clipsal connection has the role but not the PP ownership.
+    let mut other = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut other, "[6] PP END Session")
+            .await
+            .status,
+        420
+    );
+    assert!(service.model.lock().await.sessions.contains_key("Session"));
+    // The Program role can manage its own empty programmer queue.
+    assert_eq!(
+        service
+            .handle(&mut owner, "[7] PROGRAMMER CREATE Queue Owned local")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[8] PROGRAMMER DELETE Queue")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(service.handle(&mut owner, "[9] LOGOUT").await.status, 211);
+    assert_eq!(
+        service
+            .handle(&mut owner, "[10] PP END Session")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut owner, "[11] PP UNLOCK Owned")
+            .await
+            .status,
+        200
+    );
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(10), remote.read(&mut byte))
+            .await
+            .is_err()
+    );
+    std::fs::remove_file(path).unwrap();
+}
