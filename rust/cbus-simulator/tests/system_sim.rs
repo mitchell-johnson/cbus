@@ -16,18 +16,28 @@ const BIN: &str = env!("CARGO_BIN_EXE_cbus-simulator");
 /// die, so verify our daemon survived the bind and that the simulator's
 /// "++" greeting is actually arriving before handing the stream out.
 async fn spawn_sim() -> (Daemon, TcpStream) {
+    spawn_sim_with_options(&[]).await
+}
+
+async fn spawn_sim_with_options(extra: &[&str]) -> (Daemon, TcpStream) {
     'retry: for _ in 0..10 {
         let port = {
             let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
             l.local_addr().unwrap().port()
         };
-        let mut daemon = Daemon::spawn(BIN, &["127.0.0.1", &port.to_string()]);
+        let port_text = port.to_string();
+        let mut arguments = vec!["127.0.0.1", port_text.as_str()];
+        arguments.extend_from_slice(extra);
+        let mut daemon = Daemon::spawn(BIN, &arguments);
         for _ in 0..150 {
             if let Ok(stream) = TcpStream::connect(("127.0.0.1", port)).await {
                 // a daemon that lost the bind race exits promptly
                 tokio::time::sleep(Duration::from_millis(100)).await;
                 if !daemon.is_running() {
                     continue 'retry;
+                }
+                if extra.contains(&"--cal-unit") {
+                    return (daemon, stream);
                 }
                 let mut peek = [0u8; 1];
                 match tokio::time::timeout(Duration::from_secs(3), stream.peek(&mut peek)).await {
@@ -42,6 +52,49 @@ async fn spawn_sim() -> (Daemon, TcpStream) {
         }
     }
     panic!("could not start cbus-simulator on any port");
+}
+
+#[tokio::test]
+async fn opt_in_routed_cal_fixture_rejects_wrong_route_then_stores_and_recalls() {
+    let (_daemon, mut stream) = spawn_sim_with_options(&[
+        "--cal-unit",
+        "4",
+        "--cal-local-unit",
+        "16",
+        "--cal-bridge",
+        "253",
+        "--cal-bridge",
+        "252",
+    ])
+    .await;
+
+    // The strict raw-client fixture starts without a greeting or local echo.
+    assert!(read_for(&mut stream, Duration::from_millis(50))
+        .await
+        .is_empty());
+    stream
+        .write_all(b"\\46FD12FB04A40755AABBh\r")
+        .await
+        .unwrap();
+    assert!(read_for(&mut stream, Duration::from_millis(50))
+        .await
+        .is_empty());
+
+    stream
+        .write_all(b"\\46FD12FC04A40755AABBg\r")
+        .await
+        .unwrap();
+    let ack = read_until(&mut stream, b"g.", WAIT).await;
+    assert_eq!(ack, b"86FD1002FC04320755DD\r\ng.");
+
+    // Device parameters, unlike PCI session options, survive a new TCP
+    // connection to the same simulator process.
+    let address = stream.peer_addr().unwrap();
+    drop(stream);
+    let mut second = TcpStream::connect(address).await.unwrap();
+    second.write_all(b"\\46FD12FC041A0702i\r").await.unwrap();
+    let reply = read_until(&mut second, b"i.", WAIT).await;
+    assert_eq!(reply, b"86FD1002FC048307AABB7C\r\ni.");
 }
 
 /// Read whatever arrives until `idle` passes with no data.

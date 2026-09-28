@@ -418,6 +418,14 @@ fn decode_pp(
             bridge_length(b1)
         }
         .ok_or_else(|| DecodeError::new(format!("bad bridge length code {:#x}", b1)))?;
+        // The first bridge is the source address only on a PCI-to-client
+        // Reply Network packet. An outgoing Network-PCI request has no
+        // source address: its first bridge belongs to the complete outbound
+        // route. Dropping it made a decoded routed WRITE target the wrong
+        // path when a PCI emulator or command inspector consumed the packet.
+        if !from_pci {
+            hops.push(bridge_address);
+        }
         rest = &data[2..];
         for _ in 0..bl {
             let h = *rest

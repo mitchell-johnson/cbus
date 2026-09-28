@@ -100,5 +100,36 @@ by the one- and six-bridge vectors in
 See
 [`pci-routed-write-acceptance.json`](../research/fixtures/pci-routed-write-acceptance.json).
 The retained acceptance fixture covers the earlier raw checkpoint. No physical
-bridge or device acceptance, readback, commit, reboot or power-cycle
+bridge or device acceptance, physical readback, commit, reboot or power-cycle
 persistence is claimed by the typed addition.
+
+## Rust simulator composition gate
+
+The Rust protocol decoder now retains all outbound Network-PCI bridge bytes,
+including the first bridge, when it receives a client-to-PCI routed CAL frame.
+Six exact decode/re-encode vectors cover one through six bridges. The
+`cbus-simulator` binary has an opt-in tagged CAL fixture: `--cal-unit 4
+--cal-local-unit 16` selects one simulated unit and each repeated
+`--cal-bridge ADDRESS` selects the exact source route. `--cal-srchk` enables
+checksummed incoming commands. In this fixture mode the
+simulator starts each TCP session in smart mode without a power-on greeting or
+local echo, accepts a tagged standard WRITE, sends a checksummed Reply Network
+ACK and PCI confirmation, and retains the parameter bytes for a later RECALL
+on a new connection. Wrong routes receive neither an ACK nor a write side
+effect. The normal simulator mode is unchanged.
+
+Run the focused Python-to-Rust gate after building the simulator:
+
+```sh
+cd rust && cargo build -p cbus-simulator
+cd ../toolkit-cli
+CBUS_SIMULATOR_BIN=../rust/target/debug/cbus-simulator \
+  PYTHONPATH=src:tests:. .venv/bin/python -m pytest -q \
+  tests/test_rust_simulator_routed_cal.py
+```
+
+That gate exercises project-bound WRITE and independent RECALL for direct
+through six-bridge routes, SRCHK at representative depths, and wrong-route
+preservation. Its parameter memory
+is process-scoped and synthetic. It does not establish real bridge delivery,
+hardware readback, NVM persistence, or the original C-Gate's routing state.

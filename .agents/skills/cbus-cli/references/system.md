@@ -36,7 +36,7 @@ exact-once selected-serial writes, per-target verification, and a final full
 inventory. TOPOLOGY EXPLORE reuses the active endpoint (including socket/CNI
 aliases) and confines any other supported descriptor to a temporary connection.
 
-`cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
+`cbus-tools` calls the same protocol and project readers for one-shot work. `cbus-simulator` supplies a development PCI/CNI endpoint. Its opt-in `--cal-unit`/`--cal-local-unit`/repeated `--cal-bridge` fixture accepts direct or routed tagged CAL WRITE and later RECALL for Python CLI interoperability, with optional `--cal-srchk`; this is process-scoped synthetic parameter memory, not physical bridge or NVM evidence. `cbus-cgate` is an independent in-memory C-Gate protocol model exposed over TCP by `cgate-mock`.
 
 The embedded service's executable matrix has 431 primary paths: 230 physical,
 199 local/session, zero blanket fail-closed 502, and two native-obsolete. All
