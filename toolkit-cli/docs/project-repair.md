@@ -87,7 +87,10 @@ The public file command has exact XML 1.1 and Windows-1252 full-output
 tests. [The scoped receipt](../research/fixtures/project-repair-encoding-scoped-receipt.json)
 binds the fixture, original source hashes, focused test outcome and limits.
 These captured cases do not prove that every document using those encodings
-loads into a native repository. The three internal-entity cases in that matrix
+loads into a native repository. A later [focused native-load check](project-repair-native.md)
+loads three generated current-format compositions, while exact captured bare-
+`Project` outputs reject with DBVersion 2.2; the outcome stays document-specific.
+The three internal-entity cases in that matrix
 are now admitted by the separate DTD checkpoint: two direct successes and one
 full-pipeline failure. A [separate 57-case original XML 1.1 capture](../research/fixtures/project-repair-xml11-vectors.json)
 now covers restricted numeric character references and namespace-prefix

@@ -1,0 +1,203 @@
+{
+  "format": "cbus-project-repair-admitted-native-load-receipt-v1",
+  "observed_at_utc": "2026-09-28T05:36:32.986662+00:00",
+  "work_item_id": "P8.01",
+  "obligation_ids": [
+    "ledger:native-project-repair"
+  ],
+  "scope_status": "bounded_native_load_accepted_issue_open",
+  "base_revision": "1d59990444474d45df0ebccfc3162ae9041e2c11",
+  "native_target": "original C-Gate 3.4.0 build 2001 XML repository; pinned Java 11; one owned loopback child",
+  "source_fixture_sha256": {
+    "modern": "4249fba21a15c4018b3c3c4d8b4c126697a9c990382c3bf23cec0cc51b3c98da",
+    "encoding": "d9512bfdf248f203f7b2e5558eb736eeedd00b1ec208ec2c6230f29b3d533d3c",
+    "dtd": "35e2c58d4f08ec2306b914210fa3603407f971daa76d1edbe000f21e0f48c4c7",
+    "xml11": "ac0ce71275e85dec2b6f14a075d1e25b3b4142971e91239ad261f1918bcfe75f"
+  },
+  "source_sha256": {
+    "research/RepairStageProbe.java": "178ef74faf32dfc424b9cb5a349a60f2fd58a21daf27aea8c17a7090592d2981",
+    "research/project_repair_original.py": "ae9fe24aeda28c907f859fa630e29b975a957f8946164c68126cd8751814b363",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "src/cbus_toolkit/project_repair.py": "6ad258ba051f3e9fdeee6909168153e2b01f6293fe19f5bb794ce08e40fd0d66",
+    "tests/test_project_repair_native_admitted.py": "6b45db06ce7ea8c45380533672a882dedfd6f6aafa093d0014532621ecf4ad05"
+  },
+  "native_pins": {
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "javac_sha256": "98359a0227aa21aa777b5e12214a8224df9f193fd46540b6413613e7213883f5",
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "repair_xslt_sha256": "f61c3dbb75fca6f9487ec73e25ccc6aece817104dfb66a17071e38bf40ca52aa",
+    "tidy_xslt_sha256": "02f0f7f4ccb9130a78bd46e1fd0b0908b96ed6c5e15b3392087c55583bd36969",
+    "original_probe_class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db"
+  },
+  "original_transform_run": {
+    "class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+    "line_ending": "lf",
+    "stdout_sha256": "eb494d1fcbd636baf21c9fd063a3ac82ca95e78891da4110ab615d60a14f3dfb",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "java_exit_code": 0,
+    "temporary_directory_removed": true
+  },
+  "accepted_compositions": [
+    {
+      "name": "RPENC",
+      "source_case": "windows1252-utf8-full",
+      "stage": "full",
+      "expected_group": "\u00c3\u00a9",
+      "readback_sha256": "0ac0692fab975b47c5f4d071a03794ff78e0fbf2f88e6e881ff35306e9bcc5ce",
+      "native_oid_count": 61,
+      "source_sha256": "5c35637e4653aa192056623f7a84cc0f4c6f8df9a699b7ab7da3d64e5b42c577",
+      "output_sha256": "6037350ada2d01e98a8317ffa54b9b65738436162a0d60d780f74c4ddcd51f08",
+      "original_transform_status": "OK",
+      "original_output_equals_python_bytes": true,
+      "project_load_code": 200,
+      "database_xml_readback_code": 344,
+      "full_tree_matches_after_known_group255_order_normalization_and_oid_omission": true,
+      "project_close_code": 200
+    },
+    {
+      "name": "RPDTD",
+      "source_case": "one-text-repair",
+      "stage": "repair",
+      "expected_group": "safe",
+      "readback_sha256": "536e3073ea6bd4cf290d4364172a7a8fb439e783bc04eaa304780e1e225a6f8c",
+      "native_oid_count": 61,
+      "source_sha256": "0f1f16431d47beffbfefee4f4fde9c1acca39fb3b8a4dd4a33a5141812f21680",
+      "output_sha256": "97d13570126e44416f31d7ad38206d5bd4809b559543f251860ccf32ffdfbd1d",
+      "original_transform_status": "OK",
+      "original_output_equals_python_bytes": true,
+      "project_load_code": 200,
+      "database_xml_readback_code": 344,
+      "full_tree_matches_after_known_group255_order_normalization_and_oid_omission": true,
+      "project_close_code": 200
+    },
+    {
+      "name": "RPXML11",
+      "source_case": "c1-text-full",
+      "stage": "full",
+      "expected_group": "A\u007fB",
+      "readback_sha256": "b2fb605b8e5d416722dd68aee63a8663c3e9f8501517274fd32ea9b8d60e1901",
+      "native_oid_count": 61,
+      "source_sha256": "9b118d14900725d63389b7c73053df9793962fc0ccdb622419060882e225ef49",
+      "output_sha256": "23a9ff065e90b11f4beb9629d97f89f58c8e479d7452f0d4851e4c2d1939a040",
+      "original_transform_status": "OK",
+      "original_output_equals_python_bytes": true,
+      "project_load_code": 200,
+      "database_xml_readback_code": 344,
+      "full_tree_matches_after_known_group255_order_normalization_and_oid_omission": true,
+      "project_close_code": 200
+    }
+  ],
+  "rejected_exact_captured_fragments": [
+    {
+      "name": "FRENC",
+      "source_case": "windows1252-utf8-full",
+      "source_sha256": "ebcbf8735ab67e025ecd371a1753a2ecb39a5a65f3978173fe618b3b32f2c95d",
+      "output_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "db_version": "2.2",
+      "project_address": null,
+      "project_load_code": 408,
+      "project_load_response": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "project_list_after_load": "124 no projects found"
+    },
+    {
+      "name": "FRDTD",
+      "source_case": "one-text-repair",
+      "source_sha256": "23c0828701f6bee0786b80a6ef938ff5a70bb1e25fac1e09708d2fa0aacff925",
+      "output_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+      "db_version": "2.2",
+      "project_address": null,
+      "project_load_code": 408,
+      "project_load_response": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "project_list_after_load": "124 no projects found"
+    },
+    {
+      "name": "FRXML11",
+      "source_case": "c1-text-full",
+      "source_sha256": "41bbd00a0d74aae77dd604d9ab413a2e8a17cbbe7bc1ce7562ee478ebe3df876",
+      "output_sha256": "8ee3552b48c3588510e1790de8437dd4a210b2d9921941ea219ef0c197b7a0fb",
+      "db_version": "2.2",
+      "project_address": null,
+      "project_load_code": 408,
+      "project_load_response": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "project_list_after_load": "124 no projects found"
+    }
+  ],
+  "interpretation": {
+    "captured_fragments": "These generated bare-Project rows repair to Installation DBVersion 2.2 without Project/Address. C-Gate 3.4 rejects their exact bytes and requests TRANSFORM PROJECT; conversion and subsequent loading were not tested.",
+    "current_format": "Three generated DBVersion 2.3 compositions place the captured feature in a known loadable project shape. Their Python bytes exactly match fresh original transform bytes; native load and readback prove only these documents.",
+    "dtd_full_pipeline": "The captured one-text-full nonempty-DTD case fails at repair after lexical preprocessing; direct one-text-repair is the staged successful output.",
+    "readback_hashes": "Run-specific because the native loader creates new OIDs; structural and named-field assertions are the stable verifier.",
+    "xml11_c0_direct_stage": "The XML 1.1 C0 direct repair emits XML 1.0 with &#31;. Native LOAD rejects that current-format output as an invalid XML character, and the full Python repair fails at tidy; no completed repair result is claimed."
+  },
+  "owned_service": {
+    "backend": "local",
+    "configured_ports": [
+      58008,
+      58009,
+      58010,
+      58011,
+      58012,
+      58013
+    ],
+    "listener_ownership_verified": true,
+    "listeners": [
+      "127.0.0.1:58008",
+      "127.0.0.1:58009",
+      "127.0.0.1:58010",
+      "127.0.0.1:58011",
+      "127.0.0.1:58012",
+      "127.0.0.1:58013"
+    ],
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "server_log_tail": [
+      "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+      "C-Gate is running."
+    ]
+  },
+  "safety": {
+    "staged_bytes_unchanged": true,
+    "physical_networks_opened": false,
+    "native_repair_requested": false,
+    "native_transform_requested": false,
+    "shared_native_server_used": false,
+    "site_project_used": false
+  },
+  "focused_validation": {
+    "command": "PYTHONPATH=src:. CBUS_CGATE_JAVA=<pinned Java11> CBUS_CGATE_JAVAC=<pinned javac11> CBUS_LOCAL_CGATE_VENDOR=<pinned original app> python3.13 -m unittest tests.test_project_repair_native_admitted -v",
+    "result": "3 tests passed, zero skips; 4 fresh original transform cases, 3 native LOAD/DBGETXML/CLOSE successes, 1 current-format direct-stage LOAD rejection, 3 exact-fragment LOAD rejections; one owned service cleaned up",
+    "git_diff_check": "passed"
+  },
+  "gates_not_run": [
+    "make check",
+    "make check-interop",
+    "wheel release gate",
+    "Windows native file replay"
+  ],
+  "remaining_scope": [
+    "DBVersion 2.2 TRANSFORM PROJECT conversion and readback",
+    "additional encoding/DTD/XML 1.1 document shapes and invalid cases",
+    "arbitrary damaged projects and Toolkit dialog workflow"
+  ],
+  "invalidation": [
+    "change to pinned fixtures or original vendor/runtime methods",
+    "change to Python repair parser, lexical step, transform or serializer",
+    "different C-Gate version or host behavior",
+    "claim of general native loadability from these generated compositions"
+  ],
+  "rejected_current_format": {
+    "name": "RPC0",
+    "source_case": "c0-text-hex-repair",
+    "stage": "repair",
+    "source_sha256": "03b89f5a0b3bd7a91541f64bda9b061ae66e1e4ddeee35a40055c41e592dac88",
+    "output_sha256": "46a609a9eddb712662e03da6147d5d5e72636ccd876c6f30af84f6071d9fb156",
+    "db_version": "2.3",
+    "direct_original_output_equals_python_bytes": true,
+    "full_pipeline_python_failure_stage": "tidy",
+    "project_load_code": 408,
+    "project_load_response": "408 Operation failed: Project load failed: Unmarshaling exception: org.xml.sax.SAXParseException; lineNumber: 21; columnNumber: 16; Character reference \"&#31\" is an invalid XML character.",
+    "project_list_after_load": "124 no projects found"
+  }
+}

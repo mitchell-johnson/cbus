@@ -64,3 +64,49 @@ each Python version, combining 13 portable/original tests, these four native-loa
 tests and 14 file/CLI tests. Each run replayed 3,195 original Java cases and used
 four fresh C-Gate children. All 122 captured input files and the 35 loaded package
 sources stayed unchanged; the exact snapshot was archived before execution.
+
+## Newly admitted encoding, internal-DTD and XML 1.1 cases
+
+The newer transform fixtures are intentionally small bare-`Project` inputs. Three
+representative outputs were staged **unchanged** in a fresh original C-Gate
+3.4.0 build-2001 XML repository: `windows1252-utf8-full`, `one-text-repair`,
+and `c1-text-full`. Each output is well-formed XML but wraps the fragment as an
+Installation with DBVersion 2.2 and no `Project/Address`. Each `PROJECT LOAD`
+returned 408, specifically requiring DBVersion 2.3 and `TRANSFORM PROJECT`.
+No transform was requested. That is the native load result for those exact
+captured bytes; it is not a verdict on the admitted parser feature in a valid
+current-format project. A nonempty internal DTD also has no successful **full**
+repair output in the captured cases: the lexical step damages its declaration.
+Only its direct `repair` stage output can be staged.
+
+A separate generated composition places each captured feature in the group-1
+TagName of the already accepted, generated DBVersion-2.3 `RPDUP` project shape.
+The Windows-1252 case uses the captured UTF-8 source bytes for `é` under a
+Windows-1252 declaration, resulting in `Ã©`; the direct DTD repair expands the
+captured `safe` entity and removes the DOCTYPE; the XML 1.1 full repair turns
+`&#x7f;` into `&#127;`. For all three compositions, the Python output bytes
+matched a fresh call to the pinned original Java transform method exactly.
+Unchanged Python bytes then loaded with 200 in one new owned C-Gate child;
+`DBGETXML` returned 344 and preserved each group name. After omitting
+formatting whitespace and generated OIDs, its ordered tree matched the input
+apart from the previously observed group-255 field order; it generated 61
+unique OIDs. Each project closed with no project left open. The child exposed
+only six verified loopback listeners and cleaned its temporary directory; no
+network was opened.
+
+A fourth current-format composition uses the captured XML 1.1 restricted C0
+reference. Direct `repair` matches the original method exactly but serializes
+`&#x1f;` as `&#31;` under an XML 1.0 declaration. Native `PROJECT LOAD`
+rejects it with 408 and a SAX invalid-character message; `PROJECT LIST`
+remains empty. The full Python pipeline rejects the same source at `tidy`, so
+it never claims a complete repaired project for this case.
+
+The focused [test](../tests/test_project_repair_native_admitted.py) and
+[P8.01 receipt](../research/fixtures/project-repair-admitted-native-load-receipt.json)
+bind the captured fixture hashes, generated source/output hashes, original
+method pins, native command codes and readback checks. They establish three
+specific loadable current-format compositions, one rejected current-format
+direct-stage output, and three rejected legacy fragments. Arbitrary repaired
+project documents still report
+`native_load_verified: false`; DBVersion 2.2 conversion and broader Toolkit
+workflow acceptance remain separate work.
