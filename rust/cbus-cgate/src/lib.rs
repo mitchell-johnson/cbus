@@ -1658,9 +1658,9 @@ pub struct DbLevel {
     pub netvar: bool,
 }
 
-/// Legacy unmodeled XML extensions in an older cmqttd repository snapshot.
-/// Fresh DBSETXML replacements now follow the observed original mapper and
-/// discard namespace, comment and processing-instruction additions.
+/// Auxiliary XML data in a cmqttd repository snapshot. Fresh DBSETXML
+/// replacements discard unmodeled namespace, comment and processing-instruction
+/// additions; a captured save/load path also stages empty Level TagsDLT nodes.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, Default)]
 pub struct DbXmlExtras {
     /// Prefix-to-URI declarations needed by retained extension markup.
@@ -1669,6 +1669,10 @@ pub struct DbXmlExtras {
     pub attributes: BTreeMap<String, String>,
     /// Direct comments, processing instructions and namespaced child elements.
     pub children: Vec<String>,
+    /// A captured same-OID Application Level whose saved XML gains an empty
+    /// TagsDLT node only when the project is next loaded.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub saved_level_tags_pending: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2335,7 +2339,14 @@ impl Server {
 
     fn project_load(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() <= 3 {
-            return self.project_use(tag, words);
+            let response = self.project_use(tag, words);
+            // The owned build-2001 capture adds empty Level TagsDLT nodes
+            // when a saved same-OID Application tree is loaded, not when it
+            // is saved. Keep this projection to that captured nested shape.
+            if response.status == status::OK && words.len() == 3 {
+                self.materialize_loaded_nested_level_tags(words[2]);
+            }
+            return response;
         }
         if words.len() != 4 || !valid_name(words[2]) || !valid_target(words[3]) {
             return err(
@@ -2353,6 +2364,71 @@ impl Server {
         self.restore_unit_document_archive(words[3], words[2]);
         self.current = Some(words[2].to_string());
         ok(tag, vec![], "200 OK")
+    }
+
+    fn nested_repeated_application_level_oids(&self, project: &str) -> Vec<String> {
+        let mut application_oid_counts = HashMap::<(&str, &str), usize>::new();
+        for object in self.db_pending.values().filter(|object| {
+            object.project == project && object.element == "Application" && object.path.is_some()
+        }) {
+            *application_oid_counts
+                .entry((object.parent.as_str(), object.oid.as_str()))
+                .or_default() += 1;
+        }
+        let repeated_application_paths = self
+            .db_pending
+            .values()
+            .filter(|object| {
+                object.project == project
+                    && object.element == "Application"
+                    && application_oid_counts
+                        .get(&(object.parent.as_str(), object.oid.as_str()))
+                        .copied()
+                        .unwrap_or(0)
+                        > 1
+            })
+            .filter_map(|object| object.path.as_deref())
+            .collect::<HashSet<_>>();
+        self.db_pending
+            .values()
+            .filter(|object| {
+                object.project == project
+                    && object.element == "Level"
+                    && object.path.is_some()
+                    && object
+                        .parent
+                        .rsplit_once('/')
+                        .is_some_and(|(application, _)| {
+                            repeated_application_paths.contains(application)
+                        })
+            })
+            .map(|object| object.oid.clone())
+            .collect()
+    }
+
+    fn save_nested_level_tags(&mut self, project: &str) {
+        for oid in self.nested_repeated_application_level_oids(project) {
+            self.db_xml_extras
+                .entry(Self::unit_document_key(project, &oid))
+                .or_default()
+                .saved_level_tags_pending = true;
+        }
+    }
+
+    fn materialize_loaded_nested_level_tags(&mut self, project: &str) {
+        for oid in self.nested_repeated_application_level_oids(project) {
+            if let Some(extras) = self
+                .db_xml_extras
+                .get_mut(&Self::unit_document_key(project, &oid))
+            {
+                if extras.saved_level_tags_pending {
+                    extras.saved_level_tags_pending = false;
+                    if !extras.children.iter().any(|child| child == "<TagsDLT/>") {
+                        extras.children.push("<TagsDLT/>".to_string());
+                    }
+                }
+            }
+        }
     }
 
     fn project_close(&mut self, tag: &str) -> Response {
@@ -2375,6 +2451,13 @@ impl Server {
         } else if self.current.is_none() {
             return err(tag, status::NOT_FOUND, "404 No project selected");
         }
+        let project = words
+            .get(2)
+            .copied()
+            .or(self.current.as_deref())
+            .expect("validated project")
+            .to_string();
+        self.save_nested_level_tags(&project);
         ok(tag, vec![], "200 OK")
     }
 
@@ -4026,8 +4109,9 @@ impl Server {
             // from model state (address, interface, per-unit identity);
             // unit paths report their kind; group paths report the
             // `<Group>`/`<NetVar>` document of recorded levels (tag
-            // resolution parses exactly this shape); anything else a
-            // generic object.
+            // resolution parses exactly this shape). A direct Level under a
+            // Group returns its document; the captured NetVar/Level path
+            // answers 500. Other paths remain generic objects.
             if parts.len() == 2 && Self::split_unit(path).is_none() {
                 return self.network_xml(tag, parts[0], net as u8);
             }
@@ -4036,6 +4120,32 @@ impl Server {
             }
             if parts.len() == 4 && Self::split_unit(path).is_none() {
                 return self.group_xml(tag, parts[0], path);
+            }
+            if parts.len() == 5 {
+                if let Some(level) = self.db_pending.values().find(|object| {
+                    object.project == parts[0]
+                        && object.element == "Level"
+                        && object.path.as_deref() == Some(path)
+                }) {
+                    let parent_kind = self.db_pending.values().find(|object| {
+                        object.project == parts[0]
+                            && object.path.as_deref() == Some(level.parent.as_str())
+                    });
+                    match parent_kind.map(|object| object.element.as_str()) {
+                        Some("Group") => {
+                            return Self::db_xml_response(
+                                tag,
+                                self.pending_db_xml_document(parts[0], level),
+                            );
+                        }
+                        Some("NetVar") => {
+                            // Original build 2001 fails this direct selector
+                            // even though !LevelOID readback succeeds.
+                            return err(tag, 500, "500 Internal error.");
+                        }
+                        _ => {}
+                    }
+                }
             }
             let snippet = if let Some((_, _, addr)) = Self::split_unit(path) {
                 let Some(unit) = proj.networks[&(net as u8)].units.get(&addr) else {

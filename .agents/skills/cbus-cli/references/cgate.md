@@ -1290,6 +1290,12 @@ its siblings and that selection across repository restart.
 The [nested-Application capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-applications.md)
 pins independent Group and NetVar children beneath repeated-OID Applications,
 their exact XML readback, same-address direct replacement, and save/reload.
+The [Level-grandchild capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-levels.md)
+adds distinct Levels under those children. A saved tree gains `<TagsDLT/>` on
+`PROJECT LOAD`, while immediate post-save XML does not. Direct Group/Level
+`DBGETXML` succeeds; direct NetVar/Level returns native 500 even though Level
+OID lookup succeeds. Rust's materialization is limited to saved Levels beneath
+the captured repeated-OID Application shape.
 Descendant OID collisions are not admitted by this evidence. Ambiguous
 Unit-OID mutations and unprobed duplicate-Application fields/deletes return
 409. Other duplicate shapes and cross-network Unit-OID collisions remain

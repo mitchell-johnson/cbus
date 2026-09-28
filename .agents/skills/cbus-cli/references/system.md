@@ -308,6 +308,7 @@ Supported project inputs are a one-file `.cbz` zip archive or bare project XML. 
 - `cbus-golden-tests` generates a named test per committed vector.
 - `cmqttd` system tests run the real daemon against an in-process MQTT broker and scripted PCI, including ACCESS, CONFIG and FILE durability/no-PCI coverage, the maintained specialist application families' command/event correlation, authentication and MQTT continuity, plus dedicated continuity checks after project administration.
 - `cgate-mock` integration tests cover framing, state, sessions, event fanout, here-documents, inventory reachability, and programming access.
+- The owned nested-Level C-Gate fixture and exact Rust replay cover Levels under same-OID Applications, load-time empty `TagsDLT`, and the direct NetVar/Level 500 boundary; the service test checks JSON restart with no PCI traffic.
 - `toolkit-cli/tests/test_rust_cgate_interop.py` drives the Rust mock using the production Python C-Gate client and typed workflows.
 
 Use exact vector evidence for byte and JSON claims. Use system tests for claims involving sockets, MQTT, child processes, concurrency, or reconnect behavior.

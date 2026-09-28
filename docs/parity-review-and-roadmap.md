@@ -446,6 +446,9 @@ historical evidence, not acceptance of newer code.
   A 67-request owned original capture now covers independent Group/NetVar
   children under repeated-OID Applications, same-address direct replacement,
   exact XML readback and save/reload; Rust repository restart is covered.
+  A further 62-request owned capture adds unique-OID Levels under both child
+  kinds, load-time empty TagsDLT, and the direct NetVar/Level 500 response;
+  Rust replays these exact outcomes and persists the bounded tree after restart.
   Descendant OID collisions and broader combined forms remain open.
 - [ ] **P2.03** ([#25](https://github.com/mitchell-johnson/cbus/issues/25)) — Complete CGL metadata/controller semantics and multi-network route behavior;
   distinguish importing a label graph from programming a controller.

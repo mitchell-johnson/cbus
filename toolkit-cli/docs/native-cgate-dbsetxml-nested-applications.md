@@ -45,3 +45,7 @@ cross-network OID collisions, other duplicated container types, delete or
 Address mutation semantics, private vendor project-file interchange, or
 physical behavior. Those cases retain their existing guards or remain open
 under [P2.02](https://github.com/mitchell-johnson/cbus/issues/24).
+
+The [Level-grandchild extension](native-cgate-dbsetxml-nested-levels.md)
+captures unique Levels beneath the independent Group and NetVar children,
+their load-time `TagsDLT` materialization, and the direct NetVar/Level error.

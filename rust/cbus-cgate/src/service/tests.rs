@@ -15399,6 +15399,135 @@ async fn nested_same_oid_application_children_survive_repository_restart() {
 }
 
 #[tokio::test]
+async fn nested_same_oid_levels_materialize_on_load_and_survive_repository_restart() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let shared = "33333333-3333-4333-8333-333333333333";
+    let mut loaded = Vec::new();
+    for (project, kind) in [("XLGR", "Group"), ("XLNV", "NetVar")] {
+        for command in [
+            format!("[new] PROJECT NEW {project}"),
+            format!("[use] PROJECT USE {project}"),
+            "[net] DBCREATENET 254 Local Cni 127.0.0.1:1".to_string(),
+        ] {
+            assert_eq!(service.handle(&mut client, &command).await.status, 200);
+        }
+        let initial = service
+            .handle(&mut client, &format!("[base] DBGETXML //{project}/254"))
+            .await;
+        let parsed =
+            roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+        let oid = |node: roxmltree::Node<'_, '_>| {
+            node.children()
+                .find(|child| child.has_tag_name("OID"))
+                .unwrap()
+                .text()
+                .unwrap()
+                .to_string()
+        };
+        let network_oid = oid(parsed.root_element());
+        let interface_oid = oid(parsed
+            .descendants()
+            .find(|node| node.has_tag_name("Interface"))
+            .unwrap());
+        let applications = (56..=57)
+            .map(|address| {
+                format!(
+                    "<Application><OID>{shared}</OID><TagName>App{address}</TagName><Address>{address}</Address><{kind}><OID>44444444-4444-4444-8444-0000000000{address}</OID><TagName>{kind}{address}</TagName><Address>1</Address><Level Value=\"{address}\"><OID>55555555-5555-4555-8555-0000000000{address}</OID><TagName>Level{address}</TagName><Address>2</Address></Level></{kind}></Application>"
+                )
+            })
+            .collect::<String>();
+        let document = format!(
+            "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>{applications}</Network>"
+        );
+        assert_eq!(
+            service
+                .handle_document(
+                    &mut client,
+                    &format!("[set] DBSETXML //{project}/254"),
+                    &document
+                )
+                .await
+                .status,
+            301
+        );
+        let read = |tag: &str| format!("[{tag}] DBGETXML //{project}/254");
+        let before = service.handle(&mut client, &read("before")).await;
+        assert_eq!(before.lines[0].matches("<Level Value=").count(), 2);
+        assert_eq!(before.lines[0].matches("<TagsDLT/>").count(), 0);
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[save] PROJECT SAVE {project}"))
+                .await
+                .status,
+            200
+        );
+        let after_save = service.handle(&mut client, &read("saved")).await;
+        assert_eq!(after_save.lines[0], before.lines[0]);
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[close] PROJECT CLOSE {project}"))
+                .await
+                .status,
+            200
+        );
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[load] PROJECT LOAD {project}"))
+                .await
+                .status,
+            200
+        );
+        let after_load = service.handle(&mut client, &read("loaded")).await;
+        assert_eq!(after_load.lines[0].matches("<TagsDLT/>").count(), 2);
+        let level = format!("//{project}/254/56/1/2");
+        let direct = service
+            .handle(&mut client, &format!("[direct] DBGETXML {level}"))
+            .await;
+        assert_eq!(direct.status, if kind == "Group" { 200 } else { 500 });
+        let by_oid = service
+            .handle(
+                &mut client,
+                "[oid] DBGETXML !55555555-5555-4555-8555-000000000056",
+            )
+            .await;
+        assert_eq!(by_oid.status, 200);
+        assert!(by_oid.lines[0].contains("<TagsDLT/>"));
+        loaded.push((project, after_load.lines[0].clone()));
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    for (project, expected) in loaded {
+        assert_eq!(
+            restarted
+                .handle(&mut client, &format!("[use] PROJECT USE {project}"))
+                .await
+                .status,
+            200
+        );
+        assert_eq!(
+            restarted
+                .handle(&mut client, &format!("[read] DBGETXML //{project}/254"))
+                .await
+                .lines[0],
+            expected
+        );
+    }
+    drop(restarted);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn reversed_four_application_oid_order_survives_repository_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();
