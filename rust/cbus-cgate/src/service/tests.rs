@@ -15413,7 +15413,11 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
     assert_eq!(document["config_runtime_reconfiguration"], false);
     assert_eq!(
         document["config_restart_effects"],
-        serde_json::json!(["command.show-responses", "command.show-time"])
+        serde_json::json!([
+            "command.show-responses",
+            "command.show-time",
+            "event-millis"
+        ])
     );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
 
@@ -15437,6 +15441,180 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             .final_text,
         "303 sync-time=7"
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+async fn assert_native_event_millis_case(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    events: &mut tokio::sync::broadcast::Receiver<String>,
+    case: &serde_json::Value,
+) {
+    let expected_response = case["response"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|line| line.as_str().unwrap())
+        .collect::<Vec<_>>();
+    let tag = expected_response[0]
+        .strip_prefix('[')
+        .unwrap()
+        .split_once(']')
+        .unwrap()
+        .0;
+    let body = case["command"].as_str().unwrap();
+    assert_eq!(
+        command_lines(reader, writer, tag, body).await,
+        expected_response,
+        "{body}"
+    );
+    for expected in case["events"].as_array().unwrap() {
+        let line = loop {
+            let line = next_command_trace_event(events).await;
+            if line == "#s# broadcast_event XX class payload" {
+                continue;
+            }
+            break line;
+        };
+        let (timestamp, payload) = line
+            .strip_prefix("#e# ")
+            .and_then(|body| body.split_once(' '))
+            .unwrap_or_else(|| panic!("native event envelope: {line:?}"));
+        let format = match expected["timestamp_shape"].as_str().unwrap() {
+            "YYYYMMDD-HHMMSS.mmm" => {
+                assert_eq!(timestamp.len(), 19, "{line}");
+                "%Y%m%d-%H%M%S%.3f"
+            }
+            "YYYYMMDD-HHMMSS" => {
+                assert_eq!(timestamp.len(), 15, "{line}");
+                "%Y%m%d-%H%M%S"
+            }
+            other => panic!("unexpected retained timestamp shape: {other}"),
+        };
+        chrono::NaiveDateTime::parse_from_str(timestamp, format).unwrap();
+        let (code, message) = payload.split_once(" - ").unwrap();
+        let (code, session) = code.split_once(' ').unwrap();
+        assert_eq!(
+            code.parse::<u16>().unwrap(),
+            expected["code"].as_u64().unwrap() as u16
+        );
+        assert!(session.starts_with("cmd"), "{line}");
+        session[3..].parse::<u64>().unwrap();
+        assert_eq!(message, expected["text"].as_str().unwrap());
+    }
+}
+
+#[tokio::test]
+async fn config_event_millis_follows_native_restart_precision_for_traces_and_broadcast() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_event_millis.json"
+    ))
+    .unwrap();
+    let cases = &evidence["cases"];
+    let path = state_path();
+
+    for (phase, selected) in [
+        ("default_then_set_no", &[1, 2, 3, 4][..]),
+        ("startup_no_then_set_yes", &[1, 2, 3, 5][..]),
+        ("startup_yes", &[0][..]),
+    ] {
+        let (pci_client, mut remote) = pci();
+        let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+        let mut events = service.events.subscribe();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(service.clone().serve(listener));
+        let (mut reader, mut writer) = connect_command_session(address).await;
+        for &index in selected {
+            assert_native_event_millis_case(
+                &mut reader,
+                &mut writer,
+                &mut events,
+                &cases[phase][index],
+            )
+            .await;
+        }
+        assert!(events.try_recv().is_err(), "extra event in {phase}");
+        assert!(
+            tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+                .await
+                .is_err(),
+            "CONFIG or BROADCAST_EVENT wrote to PCI"
+        );
+        drop(reader);
+        drop(writer);
+        server.abort();
+        drop(service);
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_event_millis_formats_767_without_fraction_after_restart() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_event_millis.json"
+    ))
+    .unwrap();
+    let native = &evidence["cases"]["startup_no_with_timing"][0]["events"];
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let first = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        first
+            .handle(&mut client, "[no] CONFIG SET event-millis no")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        first
+            .handle(&mut client, "[yes] CONFIG SET command.show-time yes")
+            .await
+            .status,
+        200
+    );
+    drop(first);
+
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut events = service.events.subscribe();
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(service.clone().serve(listener));
+    let (mut reader, mut writer) = connect_command_session(address).await;
+    assert_eq!(
+        command_lines(&mut reader, &mut writer, "timed", "NOOP").await,
+        ["[timed] 200 OK"]
+    );
+    for expected in native.as_array().unwrap() {
+        let line = next_command_trace_event(&mut events).await;
+        let (timestamp, payload) = line
+            .strip_prefix("#e# ")
+            .and_then(|body| body.split_once(' '))
+            .unwrap();
+        assert_eq!(timestamp.len(), 15, "{line}");
+        chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S").unwrap();
+        assert_eq!(expected["timestamp_shape"], "YYYYMMDD-HHMMSS");
+        let (code, message) = payload.split_once(" - ").unwrap();
+        let (code, session) = code.split_once(' ').unwrap();
+        assert_eq!(code.parse::<u64>().unwrap(), expected["code"]);
+        assert!(session.starts_with("cmd"), "{line}");
+        match code {
+            "761" => assert_eq!(message, "Command: [timed] NOOP"),
+            "766" => assert_eq!(message, "Response: [timed] 200 OK"),
+            "767" => {
+                let duration = message.strip_prefix("commandId=timed time=").unwrap();
+                duration.parse::<u128>().unwrap();
+                assert_eq!(expected["text"], "commandId=timed time=<nonnegative-ms>");
+            }
+            other => panic!("unexpected native timing event: {other}"),
+        }
+    }
+    drop(reader);
+    drop(writer);
+    server.abort();
+    drop(service);
     std::fs::remove_file(path).unwrap();
 }
 

@@ -1,0 +1,336 @@
+{
+  "format": "native-cgate-config-event-millis-v1",
+  "captured_at": "2026-09-28T01:02:29.784571+00:00",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "2fe1decd61295e8e61e6157447f2cf1e3782eb101cff937e9a8176ef17fe584e",
+    "transport": "fresh owned Java 11 child per startup value; IPv4 loopback command/event listeners; no C-Bus endpoint",
+    "default_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "ed300a6bdabb02b45100f4611b4d54792a2a7debfdb39a2a10d2d4996e89b403"
+    },
+    "no_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "1405f3a064ee0fb1004345d3f76498c0fe1e706fecf38bb097d11fade29a5317"
+    },
+    "yes_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "6f1bb6407f5ae35529af73c9a39b66d256b3a0a60d985b5ee58090b5e0847dc0"
+    },
+    "timed_no_cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "3cf538e453a77cbf48480e0f0b7bb6681ff481c15a28e0907905d80f8257b960"
+    }
+  },
+  "capture_script_sha256": "84173e0234a414e3f6ce7fe3e0cfed8a68d27690ba49bf2853ae9ba88db3c36d",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "method": "Default yes was changed and saved to no without restarting. The saved key was replayed into a fresh owned child. That child changed and saved no to yes without restarting. A third owned child started with yes. A fourth child started with event-millis=no and command.show-time=yes to check 767 precision. Timestamps, timing durations and owned session numbers are normalized, while event codes, other content, order, command replies and timestamp precision are retained.",
+  "cases": {
+    "default_then_set_no": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[before] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [before] NOOP"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [before] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET event-millis no",
+        "response": [
+          "[set-no] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [set-no] CONFIG SET event-millis no"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [set-no] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG GET event-millis",
+        "response": [
+          "[read-no] 303 event-millis=no"
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [read-no] CONFIG GET event-millis"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [read-no] 303 event-millis=no"
+          }
+        ]
+      },
+      {
+        "command": "BROADCAST_EVENT XX class payload",
+        "response": [
+          "[still-yes] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [still-yes] BROADCAST_EVENT XX class payload"
+          },
+          {
+            "code": 703,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "broadcast_event XX class payload"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [still-yes] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save-no] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [save-no] CONFIG SAVE global"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [save-no] 200 OK."
+          }
+        ]
+      }
+    ],
+    "startup_no_then_set_yes": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[after-restart] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [after-restart] NOOP"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [after-restart] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "BROADCAST_EVENT XX class payload",
+        "response": [
+          "[broadcast-no] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [broadcast-no] BROADCAST_EVENT XX class payload"
+          },
+          {
+            "code": 703,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "broadcast_event XX class payload"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [broadcast-no] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SET event-millis yes",
+        "response": [
+          "[set-yes] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [set-yes] CONFIG SET event-millis yes"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [set-yes] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG GET event-millis",
+        "response": [
+          "[read-yes] 303 event-millis=yes"
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [read-yes] CONFIG GET event-millis"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [read-yes] 303 event-millis=yes"
+          }
+        ]
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[still-no] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [still-no] NOOP"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [still-no] 200 OK."
+          }
+        ]
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save-yes] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [save-yes] CONFIG SAVE global"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [save-yes] 200 OK."
+          }
+        ]
+      }
+    ],
+    "startup_yes": [
+      {
+        "command": "BROADCAST_EVENT XX class payload",
+        "response": [
+          "[second-restart] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Command: [second-restart] BROADCAST_EVENT XX class payload"
+          },
+          {
+            "code": 703,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "broadcast_event XX class payload"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS.mmm",
+            "text": "Response: [second-restart] 200 OK."
+          }
+        ]
+      }
+    ],
+    "startup_no_with_timing": [
+      {
+        "command": "NOOP",
+        "response": [
+          "[timed] 200 OK."
+        ],
+        "events": [
+          {
+            "code": 761,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Command: [timed] NOOP"
+          },
+          {
+            "code": 766,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "Response: [timed] 200 OK."
+          },
+          {
+            "code": 767,
+            "session": "cmd<owned-session>",
+            "timestamp_shape": "YYYYMMDD-HHMMSS",
+            "text": "commandId=timed time=<nonnegative-ms>"
+          }
+        ]
+      }
+    ]
+  }
+}

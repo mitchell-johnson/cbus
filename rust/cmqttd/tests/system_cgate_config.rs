@@ -97,7 +97,11 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         serde_json::from_str(capabilities[0].strip_prefix("200-").unwrap()).unwrap();
     assert_eq!(
         capabilities["config_restart_effects"],
-        serde_json::json!(["command.show-responses", "command.show-time"])
+        serde_json::json!([
+            "command.show-responses",
+            "command.show-time",
+            "event-millis"
+        ])
     );
 
     assert_eq!(
@@ -437,4 +441,152 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     drop(enabled);
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
+}
+
+async fn assert_broadcast_event_precision(sys: &System, tag: &str, milliseconds: bool) {
+    let (mut subscriber, mut subscription) = connect(sys).await;
+    assert_eq!(
+        command(&mut subscriber, &mut subscription, "events", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    let (mut producer, mut writer) = connect(sys).await;
+    assert_eq!(
+        command(
+            &mut producer,
+            &mut writer,
+            tag,
+            "BROADCAST_EVENT XX class payload"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let expected = [
+        (
+            "761",
+            format!("Command: [{tag}] BROADCAST_EVENT XX class payload"),
+        ),
+        ("703", "broadcast_event XX class payload".to_string()),
+        ("766", format!("Response: [{tag}] 200 OK.")),
+    ];
+    let seen = tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        let mut seen = Vec::new();
+        while seen.len() < expected.len() {
+            let mut line = String::new();
+            assert_ne!(subscriber.read_line(&mut line).await.unwrap(), 0);
+            let line = line.trim_end_matches(['\r', '\n']);
+            if expected.iter().any(|(_, text)| line.ends_with(text)) {
+                seen.push(line.to_string());
+            }
+        }
+        seen
+    })
+    .await
+    .expect("broadcast event trace did not arrive");
+    for (line, (code, text)) in seen.iter().zip(expected) {
+        let (timestamp, payload) = line
+            .strip_prefix("#e# ")
+            .and_then(|body| body.split_once(' '))
+            .unwrap();
+        let format = if milliseconds {
+            assert_eq!(timestamp.len(), 19, "{line}");
+            "%Y%m%d-%H%M%S%.3f"
+        } else {
+            assert_eq!(timestamp.len(), 15, "{line}");
+            "%Y%m%d-%H%M%S"
+        };
+        chrono::NaiveDateTime::parse_from_str(timestamp, format).unwrap();
+        assert!(payload.starts_with(&format!("{code} cmd")), "{line}");
+        assert!(payload.ends_with(&format!(" - {text}")), "{line}");
+    }
+}
+
+#[tokio::test]
+async fn event_millis_changes_only_after_daemon_restart() {
+    let state = cbus_test_support::proc::temp_path("cgate-event-millis.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+
+    let first = start_with(options()).await;
+    wait_started(&first).await;
+    let (mut reader, mut writer) = connect(&first).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "set-no",
+            "CONFIG SET event-millis no"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read-no",
+            "CONFIG GET event-millis"
+        )
+        .await,
+        ["303 event-millis=no"]
+    );
+    assert_broadcast_event_precision(&first, "still-yes", true).await;
+    drop(reader);
+    drop(writer);
+    drop(first);
+
+    let second = start_with(options()).await;
+    wait_started(&second).await;
+    let (mut reader, mut writer) = connect(&second).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read-no",
+            "CONFIG GET event-millis"
+        )
+        .await,
+        ["303 event-millis=no"]
+    );
+    assert_broadcast_event_precision(&second, "startup-no", false).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "set-yes",
+            "CONFIG SET event-millis yes"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_broadcast_event_precision(&second, "still-no", false).await;
+    drop(reader);
+    drop(writer);
+    drop(second);
+
+    let mut third = start_with(options()).await;
+    wait_started(&third).await;
+    let (mut reader, mut writer) = connect(&third).await;
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read-yes",
+            "CONFIG GET event-millis"
+        )
+        .await,
+        ["303 event-millis=yes"]
+    );
+    assert_broadcast_event_precision(&third, "startup-yes", true).await;
+    assert!(third.daemon.is_running());
+    drop(reader);
+    drop(writer);
+    drop(third);
+    std::fs::remove_file(state).unwrap();
 }

@@ -683,6 +683,7 @@ pub struct Service {
     /// cannot silently reconfigure a running listener.
     command_show_responses: bool,
     command_show_time: bool,
+    event_millis: bool,
     pci: RwLock<Arc<PciClient>>,
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
@@ -1766,12 +1767,15 @@ impl Service {
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let command_show_time = config_parameter("command.show-time")
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
+        let event_millis = config_parameter("event-millis")
+            .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
             model: Mutex::new(model),
             command_show_responses,
             command_show_time,
+            event_millis,
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
             pci_generation_gate: Mutex::new(()),
@@ -2808,8 +2812,11 @@ impl Service {
             capabilities["config_persistence"] =
                 serde_json::Value::String("cmqttd-json".to_string());
             capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
-            capabilities["config_restart_effects"] =
-                serde_json::json!(["command.show-responses", "command.show-time"]);
+            capabilities["config_restart_effects"] = serde_json::json!([
+                "command.show-responses",
+                "command.show-time",
+                "event-millis"
+            ]);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
             capabilities["file_commands"] =
@@ -4010,7 +4017,7 @@ impl Service {
         }
         client.current = model.current.clone();
         for event in model.drain_events() {
-            let _ = self.events.send(event);
+            let _ = self.events.send(self.event_with_startup_precision(event));
         }
         response
     }
@@ -4161,7 +4168,7 @@ impl Service {
                 }
             }
             for event in model.drain_events() {
-                let _ = self.events.send(event);
+                let _ = self.events.send(self.event_with_startup_precision(event));
             }
             return response;
         }
@@ -13149,12 +13156,40 @@ impl Service {
         }
     }
 
+    fn event_timestamp(&self) -> String {
+        let now = Local::now();
+        if self.event_millis {
+            now.format("%Y%m%d-%H%M%S%.3f").to_string()
+        } else {
+            now.format("%Y%m%d-%H%M%S").to_string()
+        }
+    }
+
+    fn event_with_startup_precision(&self, event: String) -> String {
+        // BROADCAST_EVENT's native 703 line is created by the shared model.
+        // Format it at the embedded-service boundary using the same startup
+        // setting as command and response trace events.
+        if !self.event_millis {
+            if let Some((timestamp, payload)) = event
+                .strip_prefix("#e# ")
+                .and_then(|body| body.split_once(" 703 "))
+            {
+                if let Some((seconds, millis)) = timestamp.split_once('.') {
+                    if millis.len() == 3 && millis.bytes().all(|byte| byte.is_ascii_digit()) {
+                        return format!("#e# {seconds} 703 {payload}");
+                    }
+                }
+            }
+        }
+        event
+    }
+
     fn publish_command_entry(&self, client: &ClientState, raw: &str) -> Option<String> {
         let session = client.command_session?;
         // Native command events include credential text. This service keeps
         // its existing digest-only credential contract on the event stream.
         let safe = redact_command_event(raw).replace('\r', "\\r");
-        let timestamp = Local::now().format("%Y%m%d-%H%M%S%.3f");
+        let timestamp = self.event_timestamp();
         let event = format!("#e# {timestamp} 761 cmd{session} - Command: {safe}");
         let _ = self.events.send(event.clone());
         Some(event)
@@ -13175,7 +13210,7 @@ impl Service {
         let sensitive = command_has_credential(raw);
         let mut events = Vec::new();
         for line in wire.lines() {
-            let timestamp = Local::now().format("%Y%m%d-%H%M%S%.3f");
+            let timestamp = self.event_timestamp();
             let safe = if sensitive {
                 "<redacted>"
             } else {
@@ -13198,7 +13233,7 @@ impl Service {
             return None;
         }
         let session = client.command_session?;
-        let timestamp = Local::now().format("%Y%m%d-%H%M%S%.3f");
+        let timestamp = self.event_timestamp();
         let milliseconds = started.elapsed().as_millis();
         let event =
             format!("#e# {timestamp} 767 cmd{session} - commandId={tag} time={milliseconds}");
