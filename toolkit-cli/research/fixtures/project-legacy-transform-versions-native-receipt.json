@@ -12,8 +12,8 @@
     },
     "native_test_sha256": "336fcf08ad3cb3909998aa574a7dcb0358479c2052ea0cdeff05cd7bb4fc5c09",
     "portable_module_sha256": "ec1fdb82139a30ca6c474a789ad70531712243a4280b8415b92329dc65911f9d",
-    "native_module_sha256": "81b1e60f2c751aa6de6f8414a1b9a01df7f8c2a671a2f9d3467f4f7ebf379ca7",
-    "cli_dispatch_sha256": "3b8e26c055ef69345d0b2992212f594df91612f3e4c066e302162625388f365c",
+    "native_module_sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+    "cli_dispatch_sha256": "0d1a52cdcf611b60738a58ab83a5725ae3df0d2ccbab6c487f05a0c257271930",
     "portable_test_sha256": "133b9268508771688ff26d063f8873b09ac74774e78da204fa58ea65cf593f0b",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
