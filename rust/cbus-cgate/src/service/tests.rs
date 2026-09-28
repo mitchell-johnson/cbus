@@ -1046,10 +1046,20 @@ fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) 
 }
 
 async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<String>) -> String {
-    tokio::time::timeout(Duration::from_secs(1), events.recv())
-        .await
-        .expect("command event timed out")
-        .expect("command event channel closed")
+    loop {
+        let event = tokio::time::timeout(Duration::from_secs(1), events.recv())
+            .await
+            .expect("command event timed out")
+            .expect("command event channel closed");
+        // Command-session lifecycle rows are independently checked by the
+        // event-transport system test; this helper reads 761/766/767 traces.
+        let code = event
+            .strip_prefix("#e# ")
+            .and_then(|body| body.split_whitespace().nth(1));
+        if !matches!(code, Some("803" | "804")) {
+            return event;
+        }
+    }
 }
 
 async fn assert_native_command_trace(

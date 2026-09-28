@@ -27,9 +27,10 @@ pub const STARTUP: Duration = Duration::from_secs(20);
 /// normally sub-second (condition-polled: tests only pay it on failure).
 pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
 
-/// The CONFIG restart effects add native 761/766/767 command trace events to
-/// an enabled EVENT stream. Application tests read past those independently
-/// covered traces so their next assertion still targets the injected SAL.
+/// The CONFIG restart effects add native 761/766/767 command trace events,
+/// and command sessions add 803/804 lifecycle rows, to an enabled EVENT
+/// stream. Application tests read past those independently covered rows so
+/// their next assertion still targets the injected SAL.
 pub async fn read_cgate_nontrace_into<R: AsyncBufRead + Unpin>(
     reader: &mut R,
     line: &mut String,
@@ -47,7 +48,7 @@ fn is_cgate_command_trace(line: &str) -> bool {
     let mut words = line.split_whitespace();
     words.next() == Some("#e#")
         && words.next().is_some()
-        && matches!(words.next(), Some("761" | "766" | "767"))
+        && matches!(words.next(), Some("761" | "766" | "767" | "803" | "804"))
         && words.next().is_some_and(|session| {
             session.strip_prefix("cmd").is_some_and(|number| {
                 !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit())
