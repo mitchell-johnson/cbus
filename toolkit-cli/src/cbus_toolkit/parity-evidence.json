@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "f77a4ee00bee7babe4e2bb84bbb6638f2126e161",
+      "source_revision": "ce9003a18594649129c909da53d42b135907c508",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin ../rust/target/release/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "report_verification": {
@@ -49,11 +49,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "5e3f385d9af0f03f23a653adbb38bacc0ea5281d31d7fd581156cf27e24a7351"
+          "sha256": "779cda3007c03cf8eefad26ec4a0117ce63cd9eb45e4b96d6ec1494cf89b8fa5"
         }
       ],
       "skips": [],
-      "record_sha256": "01b977077fab84e3be8cc75cd3490391fe777b1747e11305adc564d3c36df2ce"
+      "record_sha256": "84569aeb6de54b223df0b9deb83954a45a371cb644ceb423e109899fd61fdc75"
     }
   ]
 }

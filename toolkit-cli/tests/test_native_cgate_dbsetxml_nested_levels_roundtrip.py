@@ -15,10 +15,13 @@ SCRIPT = ROOT / "toolkit-cli/research/cgate_dbsetxml_nested_levels_roundtrip.py"
 SOURCE_SHAPE = ROOT / "toolkit-cli/research/cgate_dbsetxml_nested_levels.py"
 EXCHANGE = ROOT / "toolkit-cli/research/cgate_dbsetxml_duplicate_applications.py"
 HARNESS = ROOT / "toolkit-cli/research/local_cgate.py"
+CAPTURE_SHA256 = "33f7ac5fb6dd6937138382de8b7bec0ca56598a18c0c05a9a48f348dcce48c52"
 
 
 def evidence():
-    return json.loads(CAPTURE.read_text(encoding="utf-8"))
+    data = CAPTURE.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == CAPTURE_SHA256
+    return json.loads(data)
 
 
 def xml(row):
