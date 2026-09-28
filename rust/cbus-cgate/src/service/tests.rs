@@ -15672,6 +15672,115 @@ async fn nested_same_oid_levels_materialize_on_load_and_survive_repository_resta
 }
 
 #[tokio::test]
+async fn complete_group_dlt_replacement_survives_service_restart_without_pci_io() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[new] PROJECT NEW XGSVC",
+        "[use] PROJECT USE XGSVC",
+        "[net] DBCREATENET 254 Local Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(service.handle(&mut client, command).await.status, 200);
+    }
+    let network = service
+        .handle(&mut client, "[base] DBGETXML //XGSVC/254")
+        .await
+        .lines[0]
+        .strip_prefix("347-")
+        .unwrap()
+        .to_string();
+    let application = "<Application><OID>33333333-3333-4333-8333-333333333333</OID>\
+        <TagName>Lighting</TagName><Address>56</Address>\
+        <Group><OID>44444444-4444-4444-8444-444444444444</OID>\
+        <TagName>Garage</TagName><Address>1</Address>\
+        <Level Value=\"56\"><OID>55555555-5555-4555-8555-555555555555</OID>\
+        <TagName>Half</TagName><Address>2</Address></Level></Group></Application>";
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[tree] DBSETXML //XGSVC/254",
+                &network.replace("</Network>", &format!("{application}</Network>")),
+            )
+            .await
+            .status,
+        301
+    );
+    for command in [
+        "[save] PROJECT SAVE XGSVC",
+        "[close] PROJECT CLOSE XGSVC",
+        "[load] PROJECT LOAD XGSVC",
+        "[use2] PROJECT USE XGSVC",
+    ] {
+        assert_eq!(service.handle(&mut client, command).await.status, 200);
+    }
+    let group = service
+        .handle(&mut client, "[group] DBGETXML //XGSVC/254/56/1")
+        .await
+        .lines[0]
+        .strip_prefix("347-")
+        .unwrap()
+        .to_string();
+    assert!(group.contains("<TagsDLT/>"));
+    let label = "<TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID>\
+        <TagType>TEXT</TagType><TagValue>Garage scene</TagValue></TagDLT></TagsDLT>";
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                "[label] DBSETXML //XGSVC/254/56/1",
+                &group.replace("</Group>", &format!("{label}</Group>")),
+            )
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save2] PROJECT SAVE XGSVC")
+            .await
+            .status,
+        200
+    );
+    let expected = service
+        .handle(&mut client, "[read] DBGETXML //XGSVC/254")
+        .await
+        .lines[0]
+        .clone();
+    assert!(expected.contains("<TagValue>Garage scene</TagValue>"));
+    assert!(expected.contains("<TagsDLT/>"));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "database-only label replacement must not reach PCI"
+    );
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[use3] PROJECT USE XGSVC")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[durable] DBGETXML //XGSVC/254")
+            .await
+            .lines[0],
+        expected
+    );
+    drop(restarted);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn reversed_four_application_oid_order_survives_repository_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

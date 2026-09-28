@@ -4168,6 +4168,148 @@ fn dbsetxml_level_dlt_label_matches_owned_native_lifecycle() {
 }
 
 #[test]
+fn dbsetxml_group_dlt_labels_match_owned_native_lifecycle() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_group_dlt.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-dbsetxml-group-dlt-v1");
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 34);
+    let mut server = Server::new(AccessLevel::Program);
+    let mut oids = HashMap::<String, String>::new();
+    for row in cases {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let substitute = |value: &str, oids: &HashMap<String, String>| {
+            oids.iter().fold(value.to_string(), |value, (from, to)| {
+                value.replace(from, to)
+            })
+        };
+        let observed = if command.starts_with("DBSETXML ") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = row["request"]
+                .as_str()
+                .unwrap()
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document, &oids))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        if tag == 1103 {
+            let document =
+                roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                    .unwrap();
+            let root = document.root_element();
+            let interface = root
+                .children()
+                .find(|child| child.has_tag_name("Interface"))
+                .unwrap();
+            let oid = |node: roxmltree::Node<'_, '_>| {
+                node.children()
+                    .find(|child| child.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap()
+                    .to_string()
+            };
+            oids.insert(native["network_oid"].as_str().unwrap().into(), oid(root));
+            oids.insert(
+                native["interface_oid"].as_str().unwrap().into(),
+                oid(interface),
+            );
+        }
+        for (created_tag, source_key) in [(1111, "first_tag_oid"), (1124, "second_tag_oid")] {
+            if tag == created_tag {
+                let document =
+                    roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                        .unwrap();
+                let labels = document
+                    .descendants()
+                    .filter(|node| node.has_tag_name("TagDLT"))
+                    .collect::<Vec<_>>();
+                let label = if created_tag == 1111 {
+                    labels[0]
+                } else {
+                    labels[1]
+                };
+                let oid = label
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap();
+                oids.insert(native[source_key].as_str().unwrap().into(), oid.into());
+            }
+        }
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status =
+            if command.starts_with("DBGETXML ") || command.starts_with("DBCREATENET ") {
+                200
+            } else {
+                expected_final[..3].parse().unwrap()
+            };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML ") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(
+                observed.lines[0],
+                substitute(expected_xml, &oids),
+                "tag {tag}"
+            );
+        } else if command.starts_with("DBSETXML ") {
+            assert_eq!(
+                observed.final_text,
+                substitute(expected_final, &oids),
+                "tag {tag}"
+            );
+        }
+    }
+
+    // A malformed complete Group label collection must fail without changing
+    // either its direct XML or the enclosing Network document.
+    let before = server.handle("[before] DBGETXML //XGDLT/254").lines[0].clone();
+    let group = server.handle("[group] DBGETXML //XGDLT/254/56/1");
+    let source = group.lines[0].strip_prefix("347-").unwrap();
+    let (prefix, suffix) = source.rsplit_once("<TagsDLT/>").unwrap();
+    for tags in [
+        "<TagsDLT><TagDLT/></TagsDLT>",
+        "<TagsDLT xmlns=\"urn:unprobed\"/>",
+        "<TagsDLT unknown=\"1\"/>",
+        "<TagsDLT/><TagsDLT/>",
+    ] {
+        assert_eq!(
+            server
+                .handle_document(
+                    "[guard] DBSETXML //XGDLT/254/56/1",
+                    &format!("{prefix}{tags}{suffix}"),
+                )
+                .status,
+            400,
+            "{tags}"
+        );
+    }
+    assert_eq!(
+        server.handle("[after] DBGETXML //XGDLT/254").lines[0],
+        before
+    );
+}
+
+#[test]
 fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"

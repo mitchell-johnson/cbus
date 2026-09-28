@@ -78,9 +78,37 @@ malformed rows fail before tree mutation. The capture also shows that a single
 Application Level gains an empty `TagsDLT` on load, expanding the prior
 repeated-Application-only materialization rule.
 
+## Nonempty Group labels
+
+The [34-request owned C-Gate capture](../../rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt.json)
+extends the same Group/Level tree to its parent Group's `TagsDLT`. Its
+[reproducible script](../research/cgate_dbsetxml_group_dlt.py) is pinned by
+the fixture SHA-256
+`d078ce2d67b0819abb4a3f86c1e6492bd96fed56e3472b2e44848475effcb357`;
+the script SHA-256 is
+`1f0a398e274b47e4a9b2548f5f5d0ee35d89991b684f9d811760becb16686992`.
+It creates a Group text label without a TagDLT OID; native C-Gate issues one and returns it in
+direct Group and whole-Network XML. Direct Group replacement with that OID
+changes the text without changing the identity. A complete Network replacement
+retains it. Adding a second flavour without an OID generates a distinct OID;
+both variants survive save/close/load/use. A final direct Group replacement
+with an empty `TagsDLT` removes both variants and preserves the empty
+collection in direct and Network readback. The temporary service owned six
+loopback listeners, confirmed process exit and cleanup, and never opened its
+synthetic CNI at `127.0.0.1:1`.
+
+The [source-bound test](../tests/test_native_cgate_dbsetxml_group_dlt.py)
+pins the fixture SHA-256, all input scripts, Java 11 and C-Gate JAR hashes,
+exact tagged framing and label lifecycle. The
+[vector](../../rust/testdata/vectors/cgate_dbsetxml_group_dlt.jsonl) and Rust
+replay compare every request and scoped XML response after substituting only
+the four generated Network, Interface and label OIDs. A service test keeps the
+label and nested Level through durable JSON restart without PCI traffic.
+Malformed or duplicate Group collections fail before tree mutation.
+
 This does not establish every language/type, collection cardinality, invalid
-field response, namespaced attribute, Group label, or cross-object TagDLT OID
-case. Those remain outside the admitted native comparison.
+field response, namespaced attribute, or cross-object TagDLT OID case. Those
+remain outside the admitted native comparison.
 
 This is a bounded Level-grandchild extension to the earlier
 [nested-Application capture](native-cgate-dbsetxml-nested-applications.md).

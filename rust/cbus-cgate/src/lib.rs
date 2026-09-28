@@ -926,13 +926,14 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
     })
 }
 
-/// Normalize the bounded native Level label collection. C-Gate issues an OID
+/// Normalize a bounded native Level or Group label collection. C-Gate issues an OID
 /// for a newly submitted TagDLT without one, then returns that identity in
-/// its XML. Keeping the normalized XML with the Level also makes a subsequent
+/// its XML. Keeping the normalized XML with its parent also makes a subsequent
 /// whole-Network replacement and project reload preserve that label.
-fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
+fn parse_tags_dlt(node: roxmltree::Node<'_, '_>, kind: DbXmlKind) -> Result<String, String> {
+    let parent = kind.element();
     if node.attributes().len() != 0 {
-        return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+        return Err(format!("DBSETXML {parent} has an unsupported TagsDLT"));
     }
     let tags = node
         .children()
@@ -944,7 +945,7 @@ fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String>
         .any(|text| !text.text().unwrap_or_default().trim().is_empty())
         || tags.len() > 64
     {
-        return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+        return Err(format!("DBSETXML {parent} has an unsupported TagsDLT"));
     }
     if tags.is_empty() {
         return Ok("<TagsDLT/>".to_string());
@@ -954,7 +955,7 @@ fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String>
     let mut variants = HashSet::new();
     for tag in tags {
         if !tag.has_tag_name("TagDLT") || tag.attributes().len() != 0 {
-            return Err("DBSETXML Level has an unsupported TagDLT".to_string());
+            return Err(format!("DBSETXML {parent} has an unsupported TagDLT"));
         }
         let mut fields = HashMap::new();
         for child in tag.children().filter(roxmltree::Node::is_element) {
@@ -966,11 +967,11 @@ fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String>
                     "OID" | "LanguageID" | "FlavourID" | "TagType" | "TagValue"
                 )
             {
-                return Err("DBSETXML Level has an unsupported TagDLT field".to_string());
+                return Err(format!("DBSETXML {parent} has an unsupported TagDLT field"));
             }
             let value = child.text().unwrap_or_default().to_string();
             if fields.insert(child.tag_name().name(), value).is_some() {
-                return Err("DBSETXML Level has duplicate TagDLT fields".to_string());
+                return Err(format!("DBSETXML {parent} has duplicate TagDLT fields"));
             }
         }
         let oid = match fields.remove("OID") {
@@ -992,7 +993,7 @@ fn parse_level_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String>
             || !identities.insert(oid.clone())
             || !variants.insert((language, flavour))
         {
-            return Err("DBSETXML Level has duplicate or invalid TagDLT".to_string());
+            return Err(format!("DBSETXML {parent} has duplicate or invalid TagDLT"));
         }
         let kind = fields
             .remove("TagType")
@@ -1060,8 +1061,13 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     let mut extras = DbXmlExtras::default();
     for child in node.children().filter(roxmltree::Node::is_element) {
         if child.tag_name().namespace().is_some() {
-            if kind == DbXmlKind::Level && child.tag_name().name() == "TagsDLT" {
-                return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+            if matches!(kind, DbXmlKind::Level | DbXmlKind::Group)
+                && child.tag_name().name() == "TagsDLT"
+            {
+                return Err(format!(
+                    "DBSETXML {} has an unsupported TagsDLT",
+                    kind.element()
+                ));
             }
             continue;
         }
@@ -1083,11 +1089,14 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
             continue;
         }
         match (kind, name) {
-            (DbXmlKind::Level, "TagsDLT") => {
+            (DbXmlKind::Level | DbXmlKind::Group, "TagsDLT") => {
                 if !extras.children.is_empty() {
-                    return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+                    return Err(format!(
+                        "DBSETXML {} has an unsupported TagsDLT",
+                        kind.element()
+                    ));
                 }
-                extras.children.push(parse_level_tags_dlt(child)?);
+                extras.children.push(parse_tags_dlt(child, kind)?);
             }
             (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
             | (DbXmlKind::Application, "Group" | "NetVar") => {
@@ -1156,7 +1165,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         units,
         children,
         // The original mapper omits unmodeled namespace/comment/PI markup;
-        // the captured Level TagsDLT survives exact replacement.
+        // captured Level and Group TagsDLT collections survive exact replacement.
         extras,
     })
 }

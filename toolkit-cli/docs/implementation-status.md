@@ -111,6 +111,11 @@ The [24-request nonempty Level label capture](native-cgate-dbsetxml-nested-level
 adds native-generated TagDLT identity, an explicit-OID text edit and Network
 roundtrip through another save/load; Rust replays the exact XML after generated
 OID substitution. Broader label variants and combined XML forms remain open.
+The [34-request nonempty Group label capture](native-cgate-dbsetxml-nested-levels.md#nonempty-group-labels)
+adds a native-generated parent Group label, explicit-OID edit, second flavour,
+empty-collection removal, whole-Network replacement and two save/load cycles.
+Rust replays every scoped XML response and checks durable service restart with
+no PCI I/O. Broader label variants and combined XML forms remain open.
 
 Other feature-specific acceptance, including Windows, native C-Gate, transport cleanup and file handling, is linked from the feature documents. Passing simulator tests alone is not evidence of physical-device equivalence.
 

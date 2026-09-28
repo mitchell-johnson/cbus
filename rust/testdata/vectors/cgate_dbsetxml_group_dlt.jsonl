@@ -1,0 +1,14 @@
+{
+  "schema": "cgate-dbsetxml-group-dlt-v1",
+  "native_fixture": "native_cgate_dbsetxml_group_dlt.json",
+  "basis": "native-owned-loopback",
+  "initial_set_tag": 1104,
+  "generated_label_set_tag": 1110,
+  "explicit_oid_edit_tag": 1113,
+  "network_roundtrip_tag": 1121,
+  "second_flavour_set_tag": 1123,
+  "clear_collection_tag": 1131,
+  "read_tags": [1103, 1109, 1111, 1112, 1114, 1119, 1120, 1122, 1124, 1129, 1130, 1132, 1133],
+  "normalized_generated_oids": ["Network", "Interface", "TagDLT-1", "TagDLT-2"],
+  "expected_label_values": ["Owned group label", "Owned edited group label", "Second flavour"]
+}

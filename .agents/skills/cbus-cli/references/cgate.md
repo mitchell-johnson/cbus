@@ -77,6 +77,13 @@ The pinned native 3.4.0.2001 capture has `400 Syntax Error.` followed by a
 successful pipelined `NOOP` (`rust/testdata/fixtures/native_cgate_cmqtt_capability_vm.json`).
 Keep this source separate from physical static strings,
 current-connection SAL observations, and unreadable device dynamic caches.
+Complete `DBSETXML` replacement also accepts a bounded unnamespaced Group
+`TagsDLT` collection: omit a new TagDLT OID to have C-Gate/cmqttd issue one,
+then retain that OID for edits; replace with an empty collection to remove
+the labels. Original build-2001 evidence covers two language-1 text flavours,
+save/load, and whole-Network replacement in
+`toolkit-cli/docs/native-cgate-dbsetxml-nested-levels.md#nonempty-group-labels`.
+This is saved project metadata, not a physical eDLT display-cache write.
 
 `edlt-label-audit` adds one cached `WidgetGroups` getter per successful unit and
 creates or compares a deterministic baseline. It reuses the inventory's initial

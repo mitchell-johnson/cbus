@@ -644,6 +644,46 @@ class RustInteropTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.client.command(f"DBGET !{old_oid}/OID")
 
+    def test_group_dlt_document_roundtrip(self):
+        from xml.etree import ElementTree as ET
+
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import xml_text
+
+        self.client.command("PROJECT NEW XMLD")
+        self.client.command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+        database = NativeDatabase(self.client)
+        network = xml_text(database.get("//XMLD/254", xml=True))
+        tree = (
+            "<Application><OID>33333333-3333-4333-8333-333333333333</OID>"
+            "<TagName>Lighting</TagName><Address>56</Address>"
+            "<Group><OID>44444444-4444-4444-8444-444444444444</OID>"
+            "<TagName>Garage</TagName><Address>1</Address></Group></Application>")
+        self.assertEqual(self.client.command_document(
+            "DBSETXML //XMLD/254",
+            network.replace("</Network>", tree + "</Network>")).code, 301)
+        group_path = "//XMLD/254/56/1"
+        group = xml_text(database.get(group_path, xml=True))
+        label = ("<TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID>"
+                 "<TagType>TEXT</TagType><TagValue>Garage scene</TagValue>"
+                 "</TagDLT></TagsDLT>")
+        self.assertEqual(self.client.command_document(
+            "DBSETXML " + group_path,
+            group.replace("</Group>", label + "</Group>")).code, 301)
+        read = ET.fromstring(xml_text(database.get(group_path, xml=True)))
+        tag = read.find("TagsDLT/TagDLT")
+        self.assertEqual(tag.findtext("TagValue"), "Garage scene")
+        issued_oid = tag.findtext("OID")
+        self.assertIsNotNone(issued_oid)
+        self.client.command("PROJECT SAVE XMLD")
+        self.client.command("PROJECT CLOSE XMLD")
+        self.client.command("PROJECT LOAD XMLD")
+        self.client.command("PROJECT USE XMLD")
+        network_after = ET.fromstring(xml_text(database.get("//XMLD/254", xml=True)))
+        retained = network_after.find(".//Group/TagsDLT/TagDLT")
+        self.assertEqual(retained.findtext("OID"), issued_oid)
+        self.assertEqual(retained.findtext("TagValue"), "Garage scene")
+
     def test_named_trigger_event_resolves_through_level_xml(self):
         # End-to-end tag resolution with production wrappers only: create
         # and initialize a level (the wrapper performs the native 301 +
