@@ -4,6 +4,7 @@ use cbus_protocol::cal::Cal;
 use cbus_protocol::decode::decode_packet;
 use cbus_protocol::json::packet_to_json;
 use cbus_protocol::packet::Packet;
+use cbus_tools::commissioning_lease;
 use cbus_transport::apply::{
     attempt_identity_path, attempt_identity_path_in_store, load_recovery, ApplyError, ApplyOnce,
     ApplyOptions,
@@ -1074,6 +1075,11 @@ async fn serial_verify_cmd(
             return Err("either --plan or --journal is required (mutually exclusive)".to_string());
         }
     };
+    // Match Python's advisory endpoint namespace before the first PCI byte.
+    // Hold the lease through the closing observation, including when this is
+    // a read-only recovery from a journal or durable attempt marker.
+    let _lease = commissioning_lease::EndpointLease::acquire(&plan.host, plan.port)
+        .map_err(|error| format!("commissioning lease: {error}"))?;
     let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
     // Local PCI IDENTIFY replies are bare CAL frames, so correlation needs the
     // validated plan address even though this hint does not establish physical
@@ -1137,6 +1143,10 @@ async fn serial_apply_cmd(
             ));
         }
     }
+    // Cooperating Python and Rust selected-serial processes now share one
+    // nonblocking host-local endpoint lease for the entire transaction.
+    let _lease = commissioning_lease::EndpointLease::acquire(&plan.host, plan.port)
+        .map_err(|error| format!("commissioning lease: {error}"))?;
     let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
     // Bind the plan's local address hint for correlated receipt parsing. The
     // inventory still checks the pinned serial independently; this hint alone

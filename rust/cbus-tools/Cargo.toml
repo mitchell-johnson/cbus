@@ -13,6 +13,10 @@ serde_json = { workspace = true }
 hex = { workspace = true }
 tokio = { workspace = true }
 if-addrs = { workspace = true }
+ring = "0.17"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 [dependencies.roxmltree]
 workspace = true
 

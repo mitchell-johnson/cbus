@@ -246,6 +246,13 @@ raw-plan admission, lane exclusion, deadline cleanup, and incomplete or
 inconsistent observations; lower-level unit tests cover the flow-queue and
 confirmation-allocation cancellation paths.
 
+The Rust `cbus-tools serial-apply` and `serial-verify` commands now take the
+same host-local advisory endpoint lease as the Python coordinator. A competing
+cooperating process on that host is refused before its PCI connection or
+journal creation, and a crash releases the OS lock. The durable attempt marker
+still controls no-replay recovery; the lease does not exclude `cmqttd`, remote
+hosts, or controllers that do not cooperate.
+
 The plan and journal components do not authorize a bus mutation. The Rust
 verifier also does not enforce the plan's endpoint, local PCI serial or
 transport settings and emits no Python-equivalent raw-frame proof: the caller

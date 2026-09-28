@@ -222,6 +222,8 @@ dependencies = [
  "clap",
  "hex",
  "if-addrs",
+ "libc",
+ "ring",
  "roxmltree",
  "serde",
  "serde_json",

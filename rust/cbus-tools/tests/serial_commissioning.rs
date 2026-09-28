@@ -16,6 +16,7 @@
 //! 30` bounds the observation so a regression fails instead of hanging.
 
 use cbus_test_support::proc::{run, temp_path};
+use cbus_tools::commissioning_lease::EndpointLease;
 use serde_json::Value;
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
@@ -414,6 +415,75 @@ fn closed_port() -> u16 {
     let port = listener.local_addr().unwrap().port();
     drop(listener);
     port
+}
+
+#[test]
+fn serial_commands_refuse_a_cooperating_endpoint_lease_before_connect_or_journal() {
+    let port = closed_port();
+    let plan = plan_file_for_port(port, "lease-conflict-plan.json");
+    let journal = temp_path("lease-conflict-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+
+    let (verify_status, verify_out, verify_err) = run(
+        BIN,
+        &[
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--timeout",
+            "1",
+        ],
+    );
+    assert_eq!(verify_status.code(), Some(1), "{verify_err}");
+    assert!(verify_out.is_empty());
+    assert!(
+        verify_err.contains("commissioning lease: another process is commissioning this endpoint"),
+        "{verify_err}"
+    );
+
+    let (apply_status, apply_out, apply_err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+            "--timeout",
+            "1",
+        ],
+    );
+    assert_eq!(apply_status.code(), Some(1), "{apply_err}");
+    assert!(apply_out.is_empty());
+    assert!(
+        apply_err.contains("commissioning lease: another process is commissioning this endpoint"),
+        "{apply_err}"
+    );
+    assert!(
+        !journal.exists(),
+        "a denied apply must not create a journal"
+    );
+
+    drop(held);
+    let (_status, _out, after_release) = run(
+        BIN,
+        &[
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--timeout",
+            "1",
+        ],
+    );
+    assert!(after_release.contains("connect:"), "{after_release}");
+    std::fs::remove_file(&plan).ok();
 }
 
 // ------------------------------------------------------------------ verify
