@@ -33,8 +33,8 @@ reads after save, close, load and use. The
 pin both orders, selected object types and receipts. Source-bound Python tests
 check the capture's sequential wire and provenance. A Rust integration test
 replays all ten transactions and compares the native semantic readbacks. A
-focused running-`cmqttd` TCP test covers both scalar verbs, copy, deletion and
-the reload fallback through its durable service.
+focused running-`cmqttd` TCP test covers all five verbs and the reload
+fallback through its durable service.
 
 Rust now admits this one-Application, one-Unit, one-Network shape for those
 five OID mutations. Repeated Applications with a Unit, Unit collisions across

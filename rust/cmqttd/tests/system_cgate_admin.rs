@@ -280,6 +280,29 @@ async fn application_and_unit_shared_oid_mutations_preserve_application_over_dae
             .any(|line| line.contains("<UnitName>Changed</UnitName>")),
         "{selected:?}"
     );
+    let replacement = format!(
+        "<Unit><OID>{shared}</OID><TagName>XML</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>XML room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>"
+    );
+    writer
+        .write_all(format!("[7a] DBSETXML !{shared} << END\r\n{replacement}\r\nEND\r\n").as_bytes())
+        .await
+        .unwrap();
+    let mut receipt = String::new();
+    reader.read_line(&mut receipt).await.unwrap();
+    assert_eq!(receipt, format!("[7a] 301 OID={shared}\r\n"));
+    let selected = command(
+        &mut reader,
+        &mut writer,
+        "7b",
+        &format!("DBGETXML !{shared}"),
+    )
+    .await;
+    assert!(
+        selected
+            .iter()
+            .any(|line| line.contains("<UnitName>XML room</UnitName>")),
+        "{selected:?}"
+    );
     let copied = command(
         &mut reader,
         &mut writer,
@@ -298,7 +321,7 @@ async fn application_and_unit_shared_oid_mutations_preserve_application_over_dae
     assert!(
         copied
             .iter()
-            .any(|line| line.contains("<UnitName>Changed</UnitName>")),
+            .any(|line| line.contains("<UnitName>XML room</UnitName>")),
         "{copied:?}"
     );
     let deleted = command(
