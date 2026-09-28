@@ -1,0 +1,60 @@
+{
+  "format": "cbus-toolkit-database-csv-keye-family-static-v1",
+  "original_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_code_executed": false,
+  "initializer_va": "0x138b62c",
+  "initializer_bytes_sha256": "9ed37986c37b80f17984116549404eed795fd7da89f1572397792c32d46bb889",
+  "registrations": [
+    {
+      "unit_type": "KEYE1",
+      "type_string_va": "0x138b880",
+      "registration_call_va": "0x138b65f",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYE2",
+      "type_string_va": "0x138b898",
+      "registration_call_va": "0x138b680",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYE3",
+      "type_string_va": "0x138b8b0",
+      "registration_call_va": "0x138b6a1",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYE4",
+      "type_string_va": "0x138b8c8",
+      "registration_call_va": "0x138b6c2",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYEIR1",
+      "type_string_va": "0x138b8e0",
+      "registration_call_va": "0x138b6e3",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYEIR2",
+      "type_string_va": "0x138b8fc",
+      "registration_call_va": "0x138b704",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYEIR3",
+      "type_string_va": "0x138b918",
+      "registration_call_va": "0x138b725",
+      "selected_class": "TKEYEx"
+    },
+    {
+      "unit_type": "KEYEIR4",
+      "type_string_va": "0x138b934",
+      "registration_call_va": "0x138b746",
+      "selected_class": "TKEYEx"
+    }
+  ],
+  "basis": "Each pinned initializer call passes the same TKEYEx class pointer and one of eight exact unit-type strings to RegisterUnitType. The inherited group/Area behavior is separately pinned in csv-keye-profile-review.json and csv-keye-secondary-application-review.json.",
+  "limits": "This verifies static factory registration, not a cold native load or original GUI report for KEYE4/KEYEIR1-4. The CLI admits only complete firmware 2.5.00 nine-slot snapshots with existing groups."
+}

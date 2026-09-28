@@ -24,7 +24,8 @@ def native_xml(*, unit_type='RELAY4', area=12, missing=(), extra_unit=False,
                din_groups=None,
                sensor_groups=(1, 0, 4, 2, 255, 255, 255, 255), with_oids=True,
                secondary_address=255, secondary_blocks=0):
-    keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3')
+    keye = unit_type in ('KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
+                         'KEYEIR1', 'KEYEIR2', 'KEYEIR3', 'KEYEIR4')
     din = unit_type in ('DIMDN8', 'RELDN12')
     sensor = unit_type == 'SENPIROA'
     if din and din_groups is None:

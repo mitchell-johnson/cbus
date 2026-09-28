@@ -11,6 +11,7 @@ from .addressing import _container
 from .toolkit_database_csv import (DatabaseCSV, MAX_CAPTURE_BYTES, MAX_UNITS,
                                    document_database_csv, validate_columns)
 from .toolkit_database_csv_projection import (
+    _KEYE_TYPES,
     CSVAreaObservation,
     CachedCSVGroup,
     CachedCSVProjection,
@@ -196,7 +197,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_addresses = group_values
         group_applications = (primary,) * len(group_addresses)
         area_address = area_values[0]
-    elif unit_type in ('KEYE1', 'KEYE2', 'KEYE3') and firmware == '2.5.00':
+    elif unit_type in _KEYE_TYPES and firmware == '2.5.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=9)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
@@ -313,7 +314,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1/2/3 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 2.5.00, DIMDN8/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     application_groups = {}

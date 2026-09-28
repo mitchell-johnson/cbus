@@ -24,7 +24,10 @@ from .toolkit_database_csv import (
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
-_KEYE_TYPES = frozenset(('KEYE1', 'KEYE2', 'KEYE3'))
+_KEYE_TYPES = frozenset((
+    'KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
+    'KEYEIR1', 'KEYEIR2', 'KEYEIR3', 'KEYEIR4',
+))
 _DIN_TYPES = {'DIMDN8': 'TDIMDN8', 'RELDN12': 'TRELDN12'}
 _SENSOR_TYPES = {'SENPIROA': 'TST7SENPIROA', 'SENPIRIA': 'TST7SENPIRSS'}
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
@@ -176,12 +179,14 @@ def _class(unit):
     if kind == 'RELAY4' and unit.firmware in _RELAY_FIRMWARE:
         return 'TRELAY4' if unit.firmware in ('0', '4.4', '9') else 'TCBusUnitGeneric'
     if kind in _KEYE_TYPES and unit.firmware == '2.5.00':
+        if len(unit.group_identities) != 9:
+            raise ValueError('Cached KEYE profile requires exactly nine stored groups')
         return 'TKEYEx'
     if kind in _DIN_TYPES and unit.firmware == '2.7.00':
         return _DIN_TYPES[kind]
     if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
-        if kind == 'SENPIRIA' and len(unit.group_identities) != 8:
-            raise ValueError('Cached SENPIRIA profile requires exactly eight stored groups')
+        if len(unit.group_identities) != 8:
+            raise ValueError('Cached sensor profile requires exactly eight stored groups')
         return _SENSOR_TYPES[kind]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'

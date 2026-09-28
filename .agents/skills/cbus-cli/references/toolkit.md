@@ -361,6 +361,8 @@ applicability. See
 
 For development, install `./toolkit-cli[test,research,serial,usb]`, then run `make check` and `make check-interop` from `toolkit-cli/`. Native/vendor/hardware tests require explicit environment gates; report skips separately from passes.
 
+For database CSV, `toolkit-database-csv --native-xml-unit` and `cgate database-csv` also accept complete KEYE4 and KEYEIR1–4 firmware 2.5.00 snapshots with nine stored groups and existing application/group metadata. `--native-xml-network` and `--network` include them in whole-network exports. The shared TKEYEx class registration is source-pinned, while original GUI and cold native load acceptance for these five variants remains open; consult [the CSV profile document](../../../../toolkit-cli/docs/toolkit-database-csv.md) before exporting a whole network with other profiles.
+
 For a complete snapshot CSV selection, use `toolkit-database-csv project.xml
 --native-xml-project //PROJECT --output new.csv`, or `cgate database-csv
 --project //PROJECT --output new.csv` for one live DBGETXML snapshot. These

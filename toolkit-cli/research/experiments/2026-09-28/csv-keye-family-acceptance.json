@@ -1,0 +1,49 @@
+{
+  "format": "cbus-toolkit-database-csv-keye-family-acceptance-v1",
+  "date": "2026-09-28",
+  "scope": "KEYE4 and KEYEIR1-4 firmware 2.5.00 read-only cached/native XML CSV projection and offline/one-request live export",
+  "inputs_sha256": {
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "a799e9fb5e4828d0035d542fc434c7fbdfce1b0950893e29d53d3b5d5daa1111",
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "91a7df6d059f2ec62886fd762a6ac2bef832030a6411cc2192c9a1f536e29edc",
+    "tests/test_toolkit_database_csv_native.py": "ec76c8a965c01b343de61bda1a5cee671bbf170a4a4d32aafab04f2dccd7c183",
+    "tests/test_toolkit_database_csv_keye_family.py": "6a29d84376411b1a7d57ad4a643b61e669ad6ee0e531de6cdcdd3530409ce814",
+    "research/csv_keye_family_static.py": "493b0399427a0189f88cbdee159323b06f022a625daa75bb093059404eb626d1",
+    "research/experiments/2026-09-28/csv-keye-family-static.json": "7c2dc1947601f5acb8ea4dcfc33d6a0ee9799bfb3c4ddc8d55dfdd2fcf2347ef"
+  },
+  "python": "3.13.14",
+  "focused_test": {
+    "runner": "pytest",
+    "test_modules": [
+      "tests/test_toolkit_database_csv.py",
+      "tests/test_cli_toolkit_database_csv.py",
+      "tests/test_toolkit_database_csv_projection.py",
+      "tests/test_toolkit_database_csv_native.py",
+      "tests/test_toolkit_database_csv_area.py",
+      "tests/test_toolkit_database_csv_area_native.py",
+      "tests/test_toolkit_database_csv_selection.py",
+      "tests/test_toolkit_database_csv_selection_export.py",
+      "tests/test_toolkit_database_csv_project_export.py",
+      "tests/test_toolkit_database_csv_keygl5.py",
+      "tests/test_toolkit_database_csv_senpiria.py",
+      "tests/test_toolkit_database_csv_keye_family.py"
+    ],
+    "passed": 131,
+    "subtests_passed": 219,
+    "skipped": 1,
+    "skip_reason": "CBUS_CGATE_JAVA was not set to an explicit Java 11 runtime",
+    "failed": 0,
+    "exit_code": 0
+  },
+  "checks": [
+    "all five newly admitted types select TKEYEx and preserve nine stored associations",
+    "mask-selected primary/secondary groups with equal addresses keep distinct identities",
+    "whole-network offline and live CLI rows match exactly from one snapshot and one DBGETXML request",
+    "late unsupported firmware, missing selected group, and incomplete cached associations reject before output creation",
+    "source file and output bytes remain unchanged or exclusive as applicable"
+  ],
+  "limits": [
+    "No original GUI report or cold native load was executed for KEYE4/KEYEIR1-4.",
+    "Live mode used an ephemeral loopback C-Gate peer; no vendor service, CNI, MQTT broker or physical device was accessed.",
+    "The full local test suite was not run."
+  ]
+}
