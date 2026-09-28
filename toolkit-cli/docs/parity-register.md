@@ -231,7 +231,7 @@ targets and successful physical delivery remains unresolved.
 `RECALL_LAST_NUMBER_REQUEST` remains outside the optional operation-based
 LOGIN gate. Their authorization axes remain partial.
 
-The inventory also records 398 exact native handler-entry role probes, each
+The inventory also records 431 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
 sessions. Their pinned fixtures are
 `rust/testdata/fixtures/native_cgate_authorization_probe.json` (31),
@@ -249,11 +249,17 @@ paths, including 66 repeated `poll` selector invocations),
 `rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json` (31
 PORT, ACCESS, database, identification and utility paths), and
 `rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json` (22
-additional database, utility, transform and session paths).
+additional database, utility, transform and session paths), and
+`rust/testdata/fixtures/native_cgate_final_authorization_probe.json` (33
+safe family/help, session and absent-target entries from the final 44-path
+sweep). The other eleven paths showed native parser, comment, session or
+cmqttd-only extension behavior without a role gradient. `ACCESS LOAD` used
+one separate owned child for each role because loading even a missing file can
+replace the native credential table.
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks each fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 398 `handler_roles` subaxes remain
+emitting these known facts. All 431 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.

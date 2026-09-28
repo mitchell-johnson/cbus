@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 398);
+        assert_eq!(floors.len(), 431);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),
@@ -305,6 +305,12 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
             ("REPORT", "Monitor"),
             ("TRANSFORM XML_TO_SQL", "Admin"),
             ("TEST_SPAM LIST", "Program"),
+            ("ACCESS LOAD", "Clipsal"),
+            ("AIRCON", "Operate"),
+            ("FILE UPLOAD", "Program"),
+            ("QUIT", "Connect"),
+            ("SHUTDOWN", "Admin"),
+            ("TEST_SPAM EREPORT", "Program"),
         ] {
             assert!(
                 floors

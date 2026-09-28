@@ -14236,6 +14236,97 @@ async fn unprobed_native_handler_floors_deny_before_dispatch_or_mutation() {
 }
 
 #[tokio::test]
+async fn final_native_handler_floors_deny_before_state_events_or_pci() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let vectors = include_str!("../../../testdata/vectors/cgate_final_authorization.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(
+        vectors.len(),
+        crate::access::NATIVE_PROBED_FINAL_COMMANDS.len()
+    );
+
+    for vector in &vectors {
+        let command = vector["command"].as_str().unwrap();
+        let minimum =
+            crate::access::CgateAccessLevel::parse(vector["admitted_role"].as_str().unwrap());
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+            CgateAccessLevel::Program,
+            CgateAccessLevel::Debug,
+        ] {
+            if level >= minimum {
+                continue;
+            }
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    let mut none = ClientState {
+        access_level: Some(CgateAccessLevel::None),
+        ..ClientState::default()
+    };
+    assert_eq!(
+        service.handle(&mut none, "[quit] QUIT").await.final_text,
+        "420 Access denied."
+    );
+    assert_eq!(
+        service.handle(&mut none, "[exit] EXIT").await.final_text,
+        "420 Access denied."
+    );
+    assert_eq!(
+        service
+            .handle_document(
+                &mut none,
+                "[upload] FILE UPLOAD authorization-probe.bin",
+                "YWJj\n"
+            )
+            .await
+            .final_text,
+        "420 Access denied."
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert!(events.try_recv().is_err());
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+            .await
+            .is_err()
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn expanded_native_cgl_import_floor_denies_document_before_mutation() {
     let path = state_path();
     let (pci, mut remote) = pci();

@@ -2458,6 +2458,11 @@ impl Service {
             return err(tag, 420, "420 LOGIN required");
         }
         if verb == "QUIT" || verb == "EXIT" {
+            // Native C-Gate admits connection closure from Connect upward.
+            // EXIT is the documented QUIT alias and must not bypass that gate.
+            if self.ensure_access_level(client).await < CgateAccessLevel::Connect {
+                return err(tag, 420, "420 Access denied.");
+            }
             return Response {
                 tag: tag.to_string(),
                 lines: Vec::new(),

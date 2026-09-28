@@ -642,6 +642,47 @@ pub(crate) const NATIVE_PROBED_UNPROBED_COMMANDS: &[(&str, CgateAccessLevel)] = 
     ("TRANSFORM XML_TO_SQL", CgateAccessLevel::Admin),
 ];
 
+/// The final owned native role sweep covers family-help entries and the
+/// remaining safe command forms. Family entries establish only bare-command
+/// help access, while absent targets establish the exact leaf entry gate.
+/// ACCESS LOAD was run in a separate disposable child for every role because
+/// even a missing-file load can replace the native credential table.
+pub(crate) const NATIVE_PROBED_FINAL_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("ACCESS LOAD", CgateAccessLevel::Clipsal),
+    ("AIRCON", CgateAccessLevel::Operate),
+    ("AUDIO", CgateAccessLevel::Operate),
+    ("CGL", CgateAccessLevel::Program),
+    ("CLOCK", CgateAccessLevel::Operate),
+    ("CONFIG", CgateAccessLevel::Admin),
+    ("ENABLE", CgateAccessLevel::Operate),
+    ("EREPORT", CgateAccessLevel::Operate),
+    ("FILE UPLOAD", CgateAccessLevel::Program),
+    ("LIGHTING", CgateAccessLevel::Operate),
+    ("MEASUREMENT", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT", CgateAccessLevel::Operate),
+    ("NET", CgateAccessLevel::Program),
+    ("NETWORK", CgateAccessLevel::Program),
+    ("PORT", CgateAccessLevel::Program),
+    ("PROJECT", CgateAccessLevel::Admin),
+    ("QUIT", CgateAccessLevel::Connect),
+    ("SECURITY", CgateAccessLevel::Operate),
+    ("SESSION_ID TAG", CgateAccessLevel::Operate),
+    ("SHORTMESSAGE", CgateAccessLevel::Operate),
+    ("SHUTDOWN", CgateAccessLevel::Admin),
+    ("TELEPHONY", CgateAccessLevel::Operate),
+    ("TEMPERATURE", CgateAccessLevel::Operate),
+    ("TEST_SPAM", CgateAccessLevel::Program),
+    ("TEST_SPAM EREPORT", CgateAccessLevel::Program),
+    ("TEST_SPAM LIGHTING", CgateAccessLevel::Program),
+    ("TOPOLOGY", CgateAccessLevel::Program),
+    ("TRIGGER", CgateAccessLevel::Program),
+    ("APPLICATIONS", CgateAccessLevel::Program),
+    ("CALCULATOR", CgateAccessLevel::Admin),
+    ("IDENTIFY", CgateAccessLevel::Operate),
+    ("REPOSITORY", CgateAccessLevel::Admin),
+    ("TRANSFORM", CgateAccessLevel::Admin),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -654,6 +695,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_DALI_COMMANDS.iter())
         .chain(NATIVE_PROBED_REMAINING_COMMANDS.iter())
         .chain(NATIVE_PROBED_UNPROBED_COMMANDS.iter())
+        .chain(NATIVE_PROBED_FINAL_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -1454,6 +1496,132 @@ mod tests {
                 .map(str::to_ascii_uppercase)
                 .collect::<Vec<_>>();
             assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn final_handler_floors_match_owned_native_role_responses_and_vectors() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_final_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(evidence["format"], "native-cgate-final-authorization-v1");
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for child in std::iter::once(&evidence["oracle"]["regular_child"]).chain(
+            evidence["access_load_children"]
+                .as_object()
+                .unwrap()
+                .values()
+                .map(|row| &row["oracle"]),
+        ) {
+            for field in [
+                "listener_ownership_verified",
+                "cleanup_complete",
+                "process_exit_confirmed",
+                "work_removed",
+            ] {
+                assert_eq!(child[field], true, "{field}");
+            }
+        }
+        for (field, source) in [
+            (
+                "capture_script_sha256",
+                include_bytes!("../research/native_final_authorization_probe.py").as_slice(),
+            ),
+            (
+                "capture_engine_sha256",
+                include_bytes!("../research/native_admin_authorization_probe.py").as_slice(),
+            ),
+            (
+                "local_cgate_harness_sha256",
+                include_bytes!("../../../toolkit-cli/research/local_cgate.py").as_slice(),
+            ),
+        ] {
+            assert_eq!(
+                evidence[field],
+                hex::encode(auth::sha256(source)),
+                "{field}"
+            );
+        }
+        let commands = evidence["commands"].as_array().unwrap();
+        let roles = evidence["roles"].as_object().unwrap();
+        let children = evidence["access_load_children"].as_object().unwrap();
+        let vectors = include_str!("../../testdata/vectors/cgate_final_authorization.jsonl")
+            .lines()
+            .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(commands.len(), 33);
+        assert_eq!(evidence["nonfloor_commands"].as_object().unwrap().len(), 11);
+        assert_eq!(roles.len(), 9);
+        assert_eq!(children.len(), 9);
+        assert_eq!(vectors.len(), NATIVE_PROBED_FINAL_COMMANDS.len());
+        for (path, minimum) in NATIVE_PROBED_FINAL_COMMANDS {
+            let command = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .find(|command| *command == *path)
+                .or_else(|| {
+                    commands
+                        .iter()
+                        .filter_map(serde_json::Value::as_str)
+                        .find(|command| command.starts_with(&format!("{path} ")))
+                })
+                .unwrap();
+            let vector = vectors.iter().find(|row| row["path"] == *path).unwrap();
+            assert_eq!(vector["command"], command);
+            let mut previous_role = "";
+            for role in [
+                "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal",
+                "Max",
+            ] {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(roles[role]["query"], format!("210 Access level: {role}"));
+                let reply = roles[role]["responses"][command].as_str().unwrap();
+                if *path == "ACCESS LOAD" {
+                    assert_eq!(children[role]["reply"], reply);
+                    assert_eq!(children[role]["query"], format!("210 Access level: {role}"));
+                }
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+                if level == *minimum {
+                    assert_eq!(vector["admitted_role"], role);
+                    assert_eq!(vector["native_at_floor"], reply);
+                    assert_eq!(vector["denied_role"], previous_role);
+                    assert_eq!(vector["denied_reply"], "420 Access denied.");
+                }
+                previous_role = role;
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+        // Native parses these before a role gate (or uses dedicated session
+        // semantics), so the retained capture must not promote their 400/210/
+        // 211 responses into a guessed ACCESS floor.
+        for path in [
+            "#",
+            "//",
+            "ACCESS_CONTROL CLOSE",
+            "ACCESS_CONTROL LOCK",
+            "CONFIRM",
+            "LOGIN",
+            "LOGOUT",
+            "CMQTT CAPABILITIES",
+            "CMQTT LABELS",
+            "UNIT READMEM",
+            "UNIT IDENTIFY",
+        ] {
+            assert!(!NATIVE_PROBED_FINAL_COMMANDS
+                .iter()
+                .any(|(candidate, _)| *candidate == path));
         }
     }
 }

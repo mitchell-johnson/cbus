@@ -454,6 +454,7 @@ def validate_cgate_contract_inventory(
             "native_dali_handler_selector_roles",
             "native_remaining_handler_roles",
             "native_unprobed_handler_roles",
+            "native_final_handler_roles",
     } <= set(sources):
         raise ValueError("C-Gate contract native handler role sources are missing")
     contracts = inventory.get("contracts")
@@ -521,6 +522,7 @@ def validate_cgate_contract_inventory(
                     ("native_dali_handler_selector_roles", "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json"),
                     ("native_remaining_handler_roles", "rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json"),
                     ("native_unprobed_handler_roles", "rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json"),
+                    ("native_final_handler_roles", "rust/testdata/fixtures/native_cgate_final_authorization_probe.json"),
                 )
                 if isinstance(observation, dict)
                 and observation.get("fixture_sha256") == sources[source_name]["sha256"]
@@ -557,7 +559,7 @@ def validate_cgate_contract_inventory(
                 }
                 or observation["lower_access_status"] != 420
                 or type(observation["at_floor_status"]) is not int
-                or not 100 <= observation["at_floor_status"] <= 599
+                or not 100 <= observation["at_floor_status"] <= 699
                 or observation["at_floor_status"] == 420
                 or observation["observed_roles"] != 9
                 or observation["scope"]
@@ -603,8 +605,8 @@ def validate_cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
-        "native_handler_role_observations": 398,
-        "native_handler_role_unresolved": 398,
+        "native_handler_role_observations": 431,
+        "native_handler_role_unresolved": 431,
     }
     if not isinstance(counts, dict) or any(
         counts.get(key) != value for key, value in expected_fixed.items()

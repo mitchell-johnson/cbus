@@ -470,8 +470,11 @@ historical evidence, not acceptance of newer code.
   Clipsal; PROGRAMMER and DEPLOY_QUEUE require Program. Rust denial,
   owner-session preservation on LOGIN downgrade,
   and LOGOUT restoration are covered. Object-specific authorization and the
-  remaining command matrix still prevent closing this issue. See the
-  [focused validation record](../rust/cbus-cgate/research/programming-authorization-review-20260928.md).
+  remaining command matrix still prevent closing this issue. A final safe
+  owned-native sweep raises exact handler-entry observations to 431 of 442;
+  eleven parser, comment, session and cmqttd-only paths retain no native floor.
+  See the [programming validation record](../rust/cbus-cgate/research/programming-authorization-review-20260928.md)
+  and [final role review](../rust/cbus-cgate/research/final-authorization-review-20260928.md).
 - [ ] **P2.05** ([#27](https://github.com/mitchell-johnson/cbus/issues/27)) — Implement meaningful CONFIG runtime/restart effects and exact native FILE,
   REPOSITORY and server lifecycle behavior within the supported deployment
   model. Document intentional secure deviations explicitly.
@@ -840,12 +843,14 @@ state, routing/I/O class and implementation-route status for all 442 paths,
 plus 398 path-level programming-gate decisions. The separate handler-role
 subaxis records a bounded native Operate entry observation for all five
 TELEPHONY leaves, while their successful-delivery role remains unresolved.
-Six sanitized original C-Gate probes add 219 exact handler-entry floor
+Ten sanitized original C-Gate probes add 431 exact handler-entry floor
 observations across all nine ACCESS levels (31 initial, 58 expansion, 40
-programming/session/queue, 44 media/security, 22 administrative and 24
-application). Each fixture,
+programming/session/queue, 44 media/security, 22 administrative, 24
+application, 126 DALI, 31 remaining, 22 further and 33 final safe paths).
+Eleven of the 44 paths in the final sweep did not expose a native role
+gradient. Each fixture,
 capture script, local harness and Rust registry is checked during generation.
-Those 219 rows retain unresolved
+Those 431 rows retain unresolved
 handler-role subaxes and partial authorization axes: lower-role `420` denial
 and reaching a later stage at the floor do not prove other selectors,
 object-level authorization or physical success. The inventory retains 70
@@ -857,7 +862,7 @@ variants, `EVENT` and `QUIT`. `EVENT` mode value domains and incomplete
 response/event cases remain open.
 Target forms for the other 437 paths, value domains for the other
 439, 44 argument-dependent programming-gate decisions, complete handler roles
-on all 442 paths (including the 219 with scoped entry observations), most
+on all 442 paths (including the 431 with scoped entry observations), most
 exact response/event envelopes and 433 command-specific
 effect contracts remain open, and no path has functional acceptance evidence.
 P0.02 and issue #14 therefore remain open.

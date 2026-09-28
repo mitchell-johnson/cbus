@@ -1,0 +1,1369 @@
+{
+  "format": "native-cgate-final-authorization-v1",
+  "captured_at": "2026-09-28T09:06:39.145261+00:00",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "help_sha256": "8e2ee745875de77b1aef24bfeefc669761500ff493ec3d7e7b7c57318af492d3",
+    "transport": "owned Java 11 children; six IPv4 loopback listeners each; no C-Bus endpoint",
+    "regular_child": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "server_log_sha256": "912c97bf676abd6774542eb916a420c88a29c90d98bc122a9f4a5f06eb4d4ed9"
+    },
+    "listener_ownership_verified": true,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "server_log_sha256": "912c97bf676abd6774542eb916a420c88a29c90d98bc122a9f4a5f06eb4d4ed9"
+  },
+  "capture_script_sha256": "179d3343c2fafb08b4389a34a9113523eb557195648b9480a7d5e8d795c4d7ae",
+  "capture_engine_sha256": "83a8082602a9da5a3cbd0ff62d2bfd1677aa35dc4c5097ca584d95b12742cd18",
+  "local_cgate_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "method": "Each exact invocation uses a fresh role socket. ACCESS LOAD uses one separate owned child per role. SHUTDOWN is never followed by CONFIRM. MISSING has no project or physical endpoint. A 420/non-420 gradient establishes only the invoked entry floor, not later object or PCI policy.",
+  "access_load_children": {
+    "None": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: None",
+      "query": "210 Access level: None",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "493d5f4e6092796a7b7e99128d31132c31a30cdb4a175a118fae4103ef8c1b41"
+      }
+    },
+    "Connect": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Connect",
+      "query": "210 Access level: Connect",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "d0c0c41f7dc3e5db16ee5e86508ff43927873c85d00c4c3411e4099d7c09996e"
+      }
+    },
+    "Monitor": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Monitor",
+      "query": "210 Access level: Monitor",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "7d48b247dc751eb26d2abd2bb9e41a602bbd07f6694da930a84287a34cfcceaf"
+      }
+    },
+    "Operate": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Operate",
+      "query": "210 Access level: Operate",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "cffaeee72e89f128517f666b85d96c1335e8add23f5e8ec9e4bcfc38ede34598"
+      }
+    },
+    "Admin": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Admin",
+      "query": "210 Access level: Admin",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "644a979873d2deee40b3e5db3a2aff965cddfe11f21203d4d01b297bfb5f6191"
+      }
+    },
+    "Program": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Program",
+      "query": "210 Access level: Program",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "f90596984b35d6437feca147c10efa2ebc5ae9894098d4b473da399f286f76cb"
+      }
+    },
+    "Debug": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Debug",
+      "query": "210 Access level: Debug",
+      "reply": "420 Access denied.",
+      "line_count": 1,
+      "response_sha256": "86804350afb6339ff614854f2bde932cf5381ab16782aeaf67d337cb87076d2c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "5e523e88e0883105edd91a9211036e6f2e6703372e9747cdff66f4ecaa4b66c7"
+      }
+    },
+    "Clipsal": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Clipsal",
+      "query": "210 Access level: Clipsal",
+      "reply": "200 OK.",
+      "line_count": 1,
+      "response_sha256": "8a110e92fe210be7fa84f649021025bff50bba770999d25ddb9a0593f64a911c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "8a72fdba9db183ebb3326fdfa650066235833d740f1f423ee7f18f0dcc37dfff"
+      }
+    },
+    "Max": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Max",
+      "query": "210 Access level: Max",
+      "reply": "200 OK.",
+      "line_count": 1,
+      "response_sha256": "8a110e92fe210be7fa84f649021025bff50bba770999d25ddb9a0593f64a911c",
+      "oracle": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "server_log_sha256": "db7aa588a04c18accda87022f9199e9ba9793578d0b36930cacc2ebe6c2e1d98"
+      }
+    }
+  },
+  "commands": [
+    "AIRCON",
+    "AUDIO",
+    "CGL",
+    "CLOCK",
+    "CONFIG",
+    "ENABLE",
+    "EREPORT",
+    "FILE UPLOAD authorization-probe.bin",
+    "LIGHTING",
+    "MEASUREMENT",
+    "MEDIATRANSPORT",
+    "NET",
+    "NETWORK",
+    "PORT",
+    "PROJECT",
+    "QUIT",
+    "SECURITY",
+    "SESSION_ID TAG authorization-probe",
+    "SHORTMESSAGE",
+    "SHUTDOWN",
+    "TELEPHONY",
+    "TEMPERATURE",
+    "TEST_SPAM",
+    "TEST_SPAM EREPORT //MISSING/254 60000 1",
+    "TEST_SPAM LIGHTING //MISSING/254 60000 1",
+    "TOPOLOGY",
+    "TRIGGER",
+    "APPLICATIONS",
+    "CALCULATOR",
+    "IDENTIFY",
+    "REPOSITORY",
+    "TRANSFORM",
+    "ACCESS LOAD authorization-probe-missing"
+  ],
+  "nonfloor_commands": {
+    "#": "# role-probe",
+    "//": "// role-probe",
+    "ACCESS_CONTROL CLOSE": "ACCESS_CONTROL CLOSE //MISSING/254/213 1 2",
+    "ACCESS_CONTROL LOCK": "ACCESS_CONTROL LOCK //MISSING/254/213 1 2",
+    "CONFIRM": "CONFIRM",
+    "LOGIN": "LOGIN",
+    "LOGOUT": "LOGOUT",
+    "CMQTT CAPABILITIES": "CMQTT CAPABILITIES",
+    "CMQTT LABELS": "CMQTT LABELS //MISSING/254/p/1",
+    "UNIT READMEM": "UNIT READMEM //MISSING/254/p/1 0 1",
+    "UNIT IDENTIFY": "UNIT IDENTIFY //MISSING/254/p/1"
+  },
+  "nonfloor_roles": {
+    "None": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "210 Access level: None",
+        "line_count": 1,
+        "response_sha256": "b923cc1ac48f353575ab665c250823f08ae5f1dfdd05e2546f7ee159a7a0d019"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: None",
+        "query": "210 Access level: None",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Connect": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "210 Access level: Connect",
+        "line_count": 1,
+        "response_sha256": "ec02f4fa6a8a7f60368fae8315d877abe3cb82e471f568fd43bb7dc687296d1e"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Connect",
+        "query": "210 Access level: Connect",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Monitor": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "210 Access level: Monitor",
+        "line_count": 1,
+        "response_sha256": "fce70273fb6de92ceb840b2f1aca1ec9f6707aa3669a31dfc35c0c89fdcca26b"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Monitor",
+        "query": "210 Access level: Monitor",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Operate": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "210 Access level: Operate",
+        "line_count": 1,
+        "response_sha256": "3d8a19f9a929f8dafd770a11e53f6c42327b856559ed325522376b4a50fec026"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Operate",
+        "query": "210 Access level: Operate",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Admin": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "210 Access level: Admin",
+        "line_count": 1,
+        "response_sha256": "d819d54438c6e3b8d6c7a8ae0d8db9f767208005a47344286df1ee3e63c90195"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Admin",
+        "query": "210 Access level: Admin",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Program": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "210 Access level: Program",
+        "line_count": 1,
+        "response_sha256": "48b0031704e1b172543349f28e584f5c5732341551eec493f85001f6884f63b4"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Program",
+        "query": "210 Access level: Program",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Debug": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "210 Access level: Debug",
+        "line_count": 1,
+        "response_sha256": "fd6fe7f491f4e4091a65d9731a8caadee52eead2554b7370b20bf0bbb107051a"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Debug",
+        "query": "210 Access level: Debug",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Clipsal": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "210 Access level: Clipsal",
+        "line_count": 1,
+        "response_sha256": "d92eb4a68def3911da66af7ea6509974c9483813375c76996cc718f996eb9a30"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Clipsal",
+        "query": "210 Access level: Clipsal",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    },
+    "Max": {
+      "#": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "unmatched_reply": "400 Syntax Error."
+      },
+      "//": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL CLOSE": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "ACCESS_CONTROL LOCK": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CONFIRM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "LOGIN": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "210 Access level: Max",
+        "line_count": 1,
+        "response_sha256": "cc163ebb3996bc958321444c13ace4c2e3bcfb481d52e8e12a2fe6843721272a"
+      },
+      "LOGOUT": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "211 Access level set to: Clipsal",
+        "line_count": 1,
+        "response_sha256": "a917c50ab86bf040fae1e5c72a0ddc62e90b472026c71624ef9abf12af2928e2"
+      },
+      "CMQTT CAPABILITIES": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "CMQTT LABELS": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT READMEM": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      },
+      "UNIT IDENTIFY": {
+        "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "login": "211 Access level set to: Max",
+        "query": "210 Access level: Max",
+        "reply": "400 Syntax Error.",
+        "line_count": 1,
+        "response_sha256": "7acd702a4fd2c2b428e86a672701964cdcf3b44d1c853e2a331ce9cf5453ef72"
+      }
+    }
+  },
+  "roles": {
+    "None": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: None",
+      "query": "210 Access level: None",
+      "responses": {
+        "AIRCON": "420 Access denied.",
+        "AUDIO": "420 Access denied.",
+        "CGL": "420 Access denied.",
+        "CLOCK": "420 Access denied.",
+        "CONFIG": "420 Access denied.",
+        "ENABLE": "420 Access denied.",
+        "EREPORT": "420 Access denied.",
+        "FILE UPLOAD authorization-probe.bin": "420 Access denied.",
+        "LIGHTING": "420 Access denied.",
+        "MEASUREMENT": "420 Access denied.",
+        "MEDIATRANSPORT": "420 Access denied.",
+        "NET": "420 Access denied.",
+        "NETWORK": "420 Access denied.",
+        "PORT": "420 Access denied.",
+        "PROJECT": "420 Access denied.",
+        "QUIT": "420 Access denied.",
+        "SECURITY": "420 Access denied.",
+        "SESSION_ID TAG authorization-probe": "420 Access denied.",
+        "SHORTMESSAGE": "420 Access denied.",
+        "SHUTDOWN": "420 Access denied.",
+        "TELEPHONY": "420 Access denied.",
+        "TEMPERATURE": "420 Access denied.",
+        "TEST_SPAM": "420 Access denied.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "420 Access denied.",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "420 Access denied.",
+        "TOPOLOGY": "420 Access denied.",
+        "TRIGGER": "420 Access denied.",
+        "APPLICATIONS": "420 Access denied.",
+        "CALCULATOR": "420 Access denied.",
+        "IDENTIFY": "420 Access denied.",
+        "REPOSITORY": "420 Access denied.",
+        "TRANSFORM": "420 Access denied.",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Connect": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Connect",
+      "query": "210 Access level: Connect",
+      "responses": {
+        "AIRCON": "420 Access denied.",
+        "AUDIO": "420 Access denied.",
+        "CGL": "420 Access denied.",
+        "CLOCK": "420 Access denied.",
+        "CONFIG": "420 Access denied.",
+        "ENABLE": "420 Access denied.",
+        "EREPORT": "420 Access denied.",
+        "FILE UPLOAD authorization-probe.bin": "420 Access denied.",
+        "LIGHTING": "420 Access denied.",
+        "MEASUREMENT": "420 Access denied.",
+        "MEDIATRANSPORT": "420 Access denied.",
+        "NET": "420 Access denied.",
+        "NETWORK": "420 Access denied.",
+        "PORT": "420 Access denied.",
+        "PROJECT": "420 Access denied.",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "420 Access denied.",
+        "SESSION_ID TAG authorization-probe": "420 Access denied.",
+        "SHORTMESSAGE": "420 Access denied.",
+        "SHUTDOWN": "420 Access denied.",
+        "TELEPHONY": "420 Access denied.",
+        "TEMPERATURE": "420 Access denied.",
+        "TEST_SPAM": "420 Access denied.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "420 Access denied.",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "420 Access denied.",
+        "TOPOLOGY": "420 Access denied.",
+        "TRIGGER": "420 Access denied.",
+        "APPLICATIONS": "420 Access denied.",
+        "CALCULATOR": "420 Access denied.",
+        "IDENTIFY": "420 Access denied.",
+        "REPOSITORY": "420 Access denied.",
+        "TRANSFORM": "420 Access denied.",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Monitor": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Monitor",
+      "query": "210 Access level: Monitor",
+      "responses": {
+        "AIRCON": "420 Access denied.",
+        "AUDIO": "420 Access denied.",
+        "CGL": "420 Access denied.",
+        "CLOCK": "420 Access denied.",
+        "CONFIG": "420 Access denied.",
+        "ENABLE": "420 Access denied.",
+        "EREPORT": "420 Access denied.",
+        "FILE UPLOAD authorization-probe.bin": "420 Access denied.",
+        "LIGHTING": "420 Access denied.",
+        "MEASUREMENT": "420 Access denied.",
+        "MEDIATRANSPORT": "420 Access denied.",
+        "NET": "420 Access denied.",
+        "NETWORK": "420 Access denied.",
+        "PORT": "420 Access denied.",
+        "PROJECT": "420 Access denied.",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "420 Access denied.",
+        "SESSION_ID TAG authorization-probe": "420 Access denied.",
+        "SHORTMESSAGE": "420 Access denied.",
+        "SHUTDOWN": "420 Access denied.",
+        "TELEPHONY": "420 Access denied.",
+        "TEMPERATURE": "420 Access denied.",
+        "TEST_SPAM": "420 Access denied.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "420 Access denied.",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "420 Access denied.",
+        "TOPOLOGY": "420 Access denied.",
+        "TRIGGER": "420 Access denied.",
+        "APPLICATIONS": "420 Access denied.",
+        "CALCULATOR": "420 Access denied.",
+        "IDENTIFY": "420 Access denied.",
+        "REPOSITORY": "420 Access denied.",
+        "TRANSFORM": "420 Access denied.",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Operate": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Operate",
+      "query": "210 Access level: Operate",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "420 Access denied.",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "420 Access denied.",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "420 Access denied.",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "420 Access denied.",
+        "NETWORK": "420 Access denied.",
+        "PORT": "420 Access denied.",
+        "PROJECT": "420 Access denied.",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "420 Access denied.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "420 Access denied.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "420 Access denied.",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "420 Access denied.",
+        "TOPOLOGY": "420 Access denied.",
+        "TRIGGER": "420 Access denied.",
+        "APPLICATIONS": "420 Access denied.",
+        "CALCULATOR": "420 Access denied.",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "420 Access denied.",
+        "TRANSFORM": "420 Access denied.",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Admin": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Admin",
+      "query": "210 Access level: Admin",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "420 Access denied.",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "101 Help:  CONFIG SET - ",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "420 Access denied.",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "420 Access denied.",
+        "NETWORK": "420 Access denied.",
+        "PORT": "420 Access denied.",
+        "PROJECT": "101 Help:  PROJECT USE - Set the current project to be used by this command session",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "600 Critical operation. Type CONFIRM to continue.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "420 Access denied.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "420 Access denied.",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "420 Access denied.",
+        "TOPOLOGY": "420 Access denied.",
+        "TRIGGER": "420 Access denied.",
+        "APPLICATIONS": "420 Access denied.",
+        "CALCULATOR": "101 Help:  CALCULATOR TEST - Run the calculator for this network",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "101 Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
+        "TRANSFORM": "101 Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Program": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Program",
+      "query": "210 Access level: Program",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "101 Help:  CGL IMPORT - Import to a project from CGL",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "101 Help:  CONFIG SET - ",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "408 Operation failed: no data to upload",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "101 Help:  NET UNRAVELUNIT - Unravel a unit address.",
+        "NETWORK": "101 Help:  NETWORK LOCATE - Send a locate message on the network application",
+        "PORT": "101 Help:  PORT REFRESH - Refresh the known local serial ports",
+        "PROJECT": "101 Help:  PROJECT USE - Set the current project to be used by this command session",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "600 Critical operation. Type CONFIRM to continue.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "101 Help:  TEST_SPAM STOP - Stop an active generation session.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TOPOLOGY": "101 Help:  TOPOLOGY EXPLORE - Explore the topology of a set of network connections",
+        "TRIGGER": "101 Help:  TRIGGER UNICODELABEL - ",
+        "APPLICATIONS": "101 Help:  APPLICATIONS GET_CATALOG - Get the Application Catalog file as XML",
+        "CALCULATOR": "101 Help:  CALCULATOR TEST - Run the calculator for this network",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "101 Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
+        "TRANSFORM": "101 Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Debug": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Debug",
+      "query": "210 Access level: Debug",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "101 Help:  CGL IMPORT - Import to a project from CGL",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "101 Help:  CONFIG SET - ",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "408 Operation failed: no data to upload",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "101 Help:  NET UNRAVELUNIT - Unravel a unit address.",
+        "NETWORK": "101 Help:  NETWORK LOCATE - Send a locate message on the network application",
+        "PORT": "101 Help:  PORT REFRESH - Refresh the known local serial ports",
+        "PROJECT": "101 Help:  PROJECT USE - Set the current project to be used by this command session",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "600 Critical operation. Type CONFIRM to continue.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "101 Help:  TEST_SPAM STOP - Stop an active generation session.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TOPOLOGY": "101 Help:  TOPOLOGY EXPLORE - Explore the topology of a set of network connections",
+        "TRIGGER": "101 Help:  TRIGGER UNICODELABEL - ",
+        "APPLICATIONS": "101 Help:  APPLICATIONS GET_CATALOG - Get the Application Catalog file as XML",
+        "CALCULATOR": "101 Help:  CALCULATOR TEST - Run the calculator for this network",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "101 Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
+        "TRANSFORM": "101 Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file",
+        "ACCESS LOAD authorization-probe-missing": "420 Access denied."
+      }
+    },
+    "Clipsal": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Clipsal",
+      "query": "210 Access level: Clipsal",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "101 Help:  CGL IMPORT - Import to a project from CGL",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "101 Help:  CONFIG SET - ",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "408 Operation failed: no data to upload",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "101 Help:  NET UNRAVELUNIT - Unravel a unit address.",
+        "NETWORK": "101 Help:  NETWORK LOCATE - Send a locate message on the network application",
+        "PORT": "101 Help:  PORT REFRESH - Refresh the known local serial ports",
+        "PROJECT": "101 Help:  PROJECT USE - Set the current project to be used by this command session",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "600 Critical operation. Type CONFIRM to continue.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "101 Help:  TEST_SPAM STOP - Stop an active generation session.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TOPOLOGY": "101 Help:  TOPOLOGY EXPLORE - Explore the topology of a set of network connections",
+        "TRIGGER": "101 Help:  TRIGGER UNICODELABEL - ",
+        "APPLICATIONS": "101 Help:  APPLICATIONS GET_CATALOG - Get the Application Catalog file as XML",
+        "CALCULATOR": "101 Help:  CALCULATOR TEST - Run the calculator for this network",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "101 Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
+        "TRANSFORM": "101 Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file",
+        "ACCESS LOAD authorization-probe-missing": "200 OK."
+      }
+    },
+    "Max": {
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "login": "211 Access level set to: Max",
+      "query": "210 Access level: Max",
+      "responses": {
+        "AIRCON": "101 Help:  AIRCON SET_ZONE_HVAC_MODE - Broadcast of HVAC mode and level required for a Zone or Zones.",
+        "AUDIO": "101 Help:  AUDIO ZONE_FEED_LABEL_REQUEST - Send a Zone Feed Label Request command",
+        "CGL": "101 Help:  CGL IMPORT - Import to a project from CGL",
+        "CLOCK": "101 Help:  CLOCK TIME - Set or get the time for this network",
+        "CONFIG": "101 Help:  CONFIG SET - ",
+        "ENABLE": "101 Help:  ENABLE SET - Set an enable variable to the given value",
+        "EREPORT": "101 Help:  EREPORT MESSAGE - Send an error reporting event",
+        "FILE UPLOAD authorization-probe.bin": "408 Operation failed: no data to upload",
+        "LIGHTING": "101 Help:  LIGHTING UNICODELABEL - ",
+        "MEASUREMENT": "101 Help:  MEASUREMENT DATA - Channel Measurement Data produced by a Measurement Device",
+        "MEDIATRANSPORT": "101 Help:  MEDIATRANSPORT TRACK_NAME - The name, in characters, of the track being played (or to be played) by the output device in <Media Link Group>",
+        "NET": "101 Help:  NET UNRAVELUNIT - Unravel a unit address.",
+        "NETWORK": "101 Help:  NETWORK LOCATE - Send a locate message on the network application",
+        "PORT": "101 Help:  PORT REFRESH - Refresh the known local serial ports",
+        "PROJECT": "101 Help:  PROJECT USE - Set the current project to be used by this command session",
+        "QUIT": "204 Closing connection.",
+        "SECURITY": "101 Help:  SECURITY TAMPER - Raise or drop tamper status for the security device",
+        "SESSION_ID TAG authorization-probe": "408 Operation failed: tag name has already been set",
+        "SHORTMESSAGE": "101 Help:  SHORTMESSAGE SEND - Send a short message",
+        "SHUTDOWN": "600 Critical operation. Type CONFIRM to continue.",
+        "TELEPHONY": "101 Help:  TELEPHONY REJECT_INCOMING_CALL - Command the telephony device to reject the incoming call",
+        "TEMPERATURE": "101 Help:  TEMPERATURE BROADCAST - Broadcast a temperature value to the given temperature group",
+        "TEST_SPAM": "101 Help:  TEST_SPAM STOP - Stop an active generation session.",
+        "TEST_SPAM EREPORT //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TEST_SPAM LIGHTING //MISSING/254 60000 1": "401 Bad object or device ID: //MISSING/254 (Object not found)",
+        "TOPOLOGY": "101 Help:  TOPOLOGY EXPLORE - Explore the topology of a set of network connections",
+        "TRIGGER": "101 Help:  TRIGGER UNICODELABEL - ",
+        "APPLICATIONS": "101 Help:  APPLICATIONS GET_CATALOG - Get the Application Catalog file as XML",
+        "CALCULATOR": "101 Help:  CALCULATOR TEST - Run the calculator for this network",
+        "IDENTIFY": "101 Help:  IDENTIFY TERMINATERAMP - ",
+        "REPOSITORY": "101 Help:  REPOSITORY USE - Set the current project repository to be used by this command session",
+        "TRANSFORM": "101 Help:  TRANSFORM XML_TO_SQL - Transform an XML Project file to a SQLite (DB) Project file",
+        "ACCESS LOAD authorization-probe-missing": "200 OK."
+      }
+    }
+  }
+}
