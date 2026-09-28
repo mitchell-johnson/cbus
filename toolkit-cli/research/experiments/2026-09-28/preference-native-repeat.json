@@ -1,0 +1,139 @@
+{
+  "format": "cbus-p9-02-preference-native-repeat-acceptance-v1",
+  "work_item": "P9.02 / GitHub issue #61",
+  "base_revision": "16c1ec54eba36b02c23ae15bdabe984a1ef5afcf",
+  "scope": "One corrected wheel-backed Python CLI invocation on owned Windows 11 ARM64 UTM guest, x86 Python, guest-agent LocalSystem session 0; original Toolkit GUI was not run.",
+  "status": "passed_bounded_native_system_context",
+  "wheel": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "sha256": "e3438fdf248d0c94783fdd9a9aabf9bf4285ff8a64cae69cdf4b6acc999929a9",
+    "build_command": "python3.13 -m pip wheel --no-deps -w <outside-repo-dir> .",
+    "guest_hash_unchanged_after_run": true,
+    "import_path_suffix": "\\cbus_toolkit\\cli.py"
+  },
+  "guest_runtime": {
+    "vm_uuid": "1107696A-3DD0-4531-9C3A-DCF798C5ACAD",
+    "windows_build": 26100,
+    "windows_platform": 2,
+    "python_version": [
+      3,
+      13,
+      14
+    ],
+    "python_bits": 32,
+    "python_manifest": "research/fixtures/windows-python-runtime.json",
+    "python_manifest_sha256": "42997bb7775dfa74a8e3e10887e26c131f8d980718298f42a7fd79d84c88619c",
+    "guest_python_executable_sha256": "5b69fe4bf27bbfda7be6438a690ce8633d81c854f38c8d6aa8679d6c32f13735",
+    "process_user_is_system": true,
+    "process_user_sid_sha256": "593347bdfcc9bfa79cc97429b11427482b25806b63f83535f56bafe845dd4229",
+    "session_id": 0,
+    "interactive_desktop_verified": false,
+    "transport": "UTM guest-agent file push/pull and exec; no active hash-verified bridge runner"
+  },
+  "original_comparison": {
+    "source": "frozen original x86 manager bytecode fixture; not a new original process run",
+    "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
+    "fixture_sha256": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+    "same_interactive_user_original_executed": false,
+    "first_and_second_expected_value_count": 40
+  },
+  "admitted_inputs": {
+    "harness": "research/windows_preferences_cli_repeat_native.py",
+    "harness_sha256": "a8a8fc6d8c45fd8111fdcae29c7d996eecc2ca7e020fd77f4d0547928e02edd6",
+    "harness_guest_hash_unchanged_after_run": true,
+    "constructed_fixture_sha256": "0bebdf5cf5b6113b1f6b0440623bce52f7b68039ebe1a0a09ea433627509dca3",
+    "fixture_guest_hash_unchanged_after_run": true,
+    "fixture_construction": "original store fixture initial_values, first_load_values, second_load_values; five display inputs set to zero",
+    "fresh_test_namespace": "native-p9cli-ac4b68598ed3"
+  },
+  "native_result": {
+    "checks": {
+      "cli_exit_zero": true,
+      "first_40_match_original_fixture": true,
+      "first_default_written": true,
+      "first_retains_false": true,
+      "fixed_toolkit_keys_unchanged": true,
+      "second_40_match_original_fixture": true,
+      "second_direct_read": true,
+      "second_reads_true": true,
+      "state_file_unchanged": true,
+      "stored_true": true,
+      "token_guard_satisfied": true,
+      "top_level_final_state": true,
+      "two_complete_passes": true
+    },
+    "cli_status": 0,
+    "first_receipt": {
+      "complete": true,
+      "default_write_count": 37,
+      "operation_count": 122,
+      "show_project_manager": false,
+      "show_project_manager_actions": [
+        "read",
+        "read",
+        "write-preference-default"
+      ]
+    },
+    "fixture_sha256": "0bebdf5cf5b6113b1f6b0440623bce52f7b68039ebe1a0a09ea433627509dca3",
+    "format": "cbus-p9-preference-cli-native-repeat-v1",
+    "interactive_desktop_verified": false,
+    "namespace": "native-p9cli-ac4b68598ed3",
+    "original_same_user_executed": false,
+    "os_build": 26100,
+    "os_platform": 2,
+    "owned_namespace_absent_after_cleanup": true,
+    "passed": true,
+    "process_user_is_system": true,
+    "process_user_sid_sha256": "593347bdfcc9bfa79cc97429b11427482b25806b63f83535f56bafe845dd4229",
+    "python_bits": 32,
+    "python_version": [
+      3,
+      13,
+      14
+    ],
+    "second_receipt": {
+      "complete": true,
+      "default_write_count": 2,
+      "operation_count": 52,
+      "show_project_manager": true,
+      "show_project_manager_actions": [
+        "read"
+      ]
+    },
+    "session_id": 0,
+    "wheel_import_path_suffix": "\\cbus_toolkit\\cli.py",
+    "wheel_sha256": "e3438fdf248d0c94783fdd9a9aabf9bf4285ff8a64cae69cdf4b6acc999929a9"
+  },
+  "durable_guest_artifacts": {
+    "command_sha256": "faeac76ec9eea5088ac173e0aba8c4db0656e8e4da84708808b8f1fdc640ae4d",
+    "exit_file_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "result_json_raw_crlf_sha256": "a03d8d4243b5c9849425c5400c187b9ee1b32b460e7d1bd89f2028326dc8b0d2",
+    "result_json_bytes": 1732
+  },
+  "preflight": {
+    "status": "failed_fixture_input_only",
+    "reason": "The first local fixture construction used controls.initial_values_fixture, whose SynchroniseFilters value is False, instead of the original store initial_values where it is True. The first 40-value equality check correctly failed; all other runtime checks passed. The scratch namespace was removed before the corrected run.",
+    "result_sha256": "a04c5635e46169d1d66912d56aee9c33a802f69d6ed9e59d6046772b7ba7d803",
+    "first_40_match_original_fixture": false,
+    "other_checks_all_passed": true,
+    "scratch_cleanup_verified": true,
+    "first_constructed_fixture_sha256": "8f909209cdbe1d2c7afe0f881e8ec2785306a9d7a3d658fae78e3edf80fefa9e"
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/cli.py": "30aacdb19cd7314b1609a0391821f5a476bc57f2d165879702f8e16e2bc67fb0",
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
+    "src/cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "src/cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+    "src/cbus_toolkit/_windows_process_token.py": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae"
+  },
+  "limits": [
+    "LocalSystem session 0 is not the logged-in Toolkit GUI user; no same-user original comparison was made.",
+    "The original GUI executable was not launched and no logging, C-Gate, desktop, or broad runtime preference effect was accepted.",
+    "Only the adapter-mapped owned HKCU test subtree was written; HKLM writes and real user preferences remain outside this run.",
+    "No full local make check or make check-interop suite was run per the task instruction."
+  ]
+}

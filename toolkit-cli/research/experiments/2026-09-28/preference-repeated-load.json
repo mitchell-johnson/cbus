@@ -21,7 +21,7 @@
     "observed_case": "The isolated original manager first load retained ShowProjectManager=False while writing the missing True default; its second load yielded ShowProjectManager=True.",
     "first_load_show_project_manager": false,
     "second_load_show_project_manager": true,
-    "source_provenance": "The frozen original x86 Unicorn fixture and its acceptance summary; no new original or Windows process was executed for this change.",
+    "source_provenance": "Initial implementation used the frozen original x86 Unicorn fixture. The later Windows wheel run compared against that fixture; it did not execute the original GUI in the same user context.",
     "original_interactive_gui_executed": false,
     "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857"
   },
@@ -53,7 +53,7 @@
   "source_sha256": {
     "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
     "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
-    "docs/toolkit-preferences.md": "ff04aed4a2f41a0cb0af5dd8ba6b57630a58c5810dd83a78baedc33e9a8252a5",
+    "docs/toolkit-preferences.md": "99c1c39dead33bde867c2e58c3115f290f9d458c13d494e513315fd644787213",
     "docs/toolkit-preferences-store.md": "0448cbd01f1d1ca01ee2bf13259a714b1b9a3ed062273a3cab2686671b602fba",
     "docs/implementation-status.md": "6b57e3887b0c3c706ccf1b469191cd5b20b1a8b03d437dcdd2fa1da2c8288764",
     "src/cbus_toolkit/capabilities.json": "412f4d942c375adfc5780112aa351ca06ef51bb05abc6ecaf54cea110d5121f1"
@@ -89,5 +89,10 @@
     "failures": 0,
     "errors": 0,
     "status": "passed; this is a focused installed-artifact gate, not the full offline suite"
+  },
+  "native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-native-repeat.json",
+    "sha256": "48ca937f156dabbaf396a14775fc4f97a9d595c4b74b24d816d9177ae2dca7b2",
+    "status": "passed under Windows guest-agent LocalSystem session 0; original same-user GUI comparison remains unverified"
   }
 }

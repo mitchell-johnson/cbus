@@ -80,6 +80,15 @@ tests; equivalent process-token checks have separate native evidence in update
 commands. This new preference-command wiring has not yet been accepted in an
 interactive Windows session. See the [P9.02 admission receipt](../research/experiments/2026-09-28/preference-user-admission.json).
 
+A later [owned Windows wheel run](../research/experiments/2026-09-28/preference-native-repeat.json)
+exercised `registry-load --repeat-once` under the UTM guest agent's LocalSystem
+token in session 0. It compared both 40-value results with the frozen original
+manager bytecode fixture, verified the second read observed the first load's
+written `ShowProjectManager=True`, and removed its disposable Registry32 HKCU
+test subtree. Independent before/after reads found the fixed Toolkit keys
+unchanged. This is native command and adapter evidence for that process
+context; it does not establish interactive-user or original GUI parity.
+
 The adapter explicitly requests the 32-bit registry view. Reads retain the bytes returned by `RegQueryValueExW`. String writes require valid terminated UTF-16 before any key is opened, including two terminators for `REG_MULTI_SZ`. This follows the [Microsoft write contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw); existing malformed strings can still be observed through the raw adapter, as allowed by the [query contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryvalueexw).
 
 Stored preference decoding accepts terminated Unicode strings, ASCII boolean spellings, and canonical signed decimal integers by default. `controls`, `plan`, and `registry-load` also accept `--numeric-locale dot` or `--numeric-locale comma` to select the bounded original JCL conversion. This does not infer the machine locale. For example, heap text `"64.5"` converts to 64 with `dot` and 645 with `comma`. Plans preserve the entered text and report the conversion, including any original signed 32-bit wrap.
