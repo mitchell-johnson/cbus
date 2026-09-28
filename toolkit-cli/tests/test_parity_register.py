@@ -382,6 +382,35 @@ class ParityRegisterTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "tagged case 2 lost wire framing"):
                 parity._validate_execution_report(tagged, raw, artifact_root=root)
 
+    def test_packaged_tagged_wire_rejects_rehashed_dynamic_payload_tampering(self):
+        _, evidence, _, _, _, _, _ = packaged_documents()
+        tagged = json.loads(json.dumps(evidence["records"][1]))
+        report = json.loads(register_builder.TAGGED_SESSION_DIFFERENTIAL_PATH.read_text())
+        owned_port = report["peer_ports"]["a"]
+        replacement = 1 if owned_port == 65535 else owned_port + 1
+        wire = report["cases"][2]["rust_wire_reply"][1]
+        expected_port = f"origin=/127.0.0.1:{owned_port} "
+        self.assertIn(expected_port, wire)
+        report["cases"][2]["rust_wire_reply"][1] = wire.replace(
+            expected_port, f"origin=/127.0.0.1:{replacement} "
+        )
+        # Preserve the copied native-normalized claim, then rehash both the
+        # forged report artifact and its enclosing evidence record.
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            for artifact in tagged["artifacts"]:
+                destination = root / artifact["path"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((ROOT / artifact["path"]).read_bytes())
+            report_path = root / tagged["report_verification"]["path"]
+            report_path.write_text(json.dumps(report))
+            next(item for item in tagged["artifacts"] if item["role"] == "report")[
+                "sha256"
+            ] = sha256(report_path.read_bytes()).hexdigest()
+            tagged["record_sha256"] = record_digest(tagged)
+            with self.assertRaisesRegex(ValueError, "tagged raw wire changed:.*port"):
+                parity._validate_execution_report(tagged, report, artifact_root=root)
+
     def test_session_physical_applicability_rejects_stale_or_missing_receipt(self):
         with TemporaryDirectory() as folder:
             missing = Path(folder, "missing.json")

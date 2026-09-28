@@ -9,6 +9,7 @@ rather than inferred from unlike categories or documentation counts.
 from __future__ import annotations
 
 from collections import Counter
+from datetime import datetime
 from hashlib import sha256
 from importlib.resources import files
 import json
@@ -153,6 +154,14 @@ CGATE_SESSION_CASES = (
     ("session-query-invalid", "a", "SESSION_ID bogus", "cgate-function:session-id-query"),
     ("session-all-trailing", "a", "SESSION_ID ALL ignored-by-native", "cgate-function:session-id-all"),
 )
+TAGGED_QUERY_RE = re.compile(r"300 sessionID=(cmd[0-9]+)\Z")
+TAGGED_CONSOLE_RE = re.compile(
+    r"(300-sessionID=cmd1 origin=internal from=)([0-9]{8}-[0-9]{6})( tag=Console)\Z"
+)
+TAGGED_EXTERNAL_RE = re.compile(
+    r"(300[- ]sessionID=)(cmd[0-9]+)( origin=/127\.0\.0\.1:)([0-9]+)"
+    r"( from=)([0-9]{8}-[0-9]{6})( tag=[^\r\n]*)?\Z"
+)
 
 
 def cgate_path_obligation_id(path: str) -> str:
@@ -207,6 +216,84 @@ def parse_json_document(raw: str | bytes, *, context: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{context} must be a JSON object")
     return value
+
+
+def _normalize_tagged_session_wire(cases: list[dict], ports: dict[str, int]) -> list[list[str]]:
+    """Independently derive native-normalized rows from packaged raw replies.
+
+    The research runner performs this check when it creates a receipt. Repeat
+    it here so changing report bytes and their declared hashes together
+    cannot grant acceptance to different session IDs, ports or timestamps.
+    """
+    identities: dict[str, str] = {}
+    for index, role in ((0, "a"), (1, "b")):
+        case = cases[index]
+        wire = case["rust_wire_reply"]
+        prefix = f"[{case['client_tag']}] "
+        if len(wire) != 1 or not wire[0].startswith(prefix) or not wire[0].endswith("\r\n"):
+            raise ValueError("tagged query did not return one framed line")
+        match = TAGGED_QUERY_RE.fullmatch(wire[0][len(prefix):-2])
+        if match is None:
+            raise ValueError("tagged query did not identify a session")
+        identities[match[1]] = role
+    if len(identities) != 2 or "cmd1" in identities:
+        raise ValueError("tagged queries did not identify two external sessions")
+
+    times: dict[str, str] = {}
+    normalized: list[list[str]] = []
+    for index, case in enumerate(cases):
+        connection = case["connection"]
+        command = case["command"]
+        prefix = f"[{case['client_tag']}] "
+        lines = case["rust_wire_reply"]
+        rows: list[str] = []
+        for row_index, line in enumerate(lines):
+            if not line.startswith(prefix) or not line.endswith("\r\n"):
+                raise ValueError(f"tagged case {index} lost its prefix or CRLF")
+            body = line[len(prefix):-2]
+            separator = " " if row_index == len(lines) - 1 else "-"
+            if not re.fullmatch(rf"[1-6][0-9]{{2}}{separator}[^\r\n]+", body):
+                raise ValueError(f"tagged case {index} lost status framing")
+            if command == "SESSION_ID":
+                match = TAGGED_QUERY_RE.fullmatch(body)
+                if match is None or identities.get(match[1]) != connection:
+                    raise ValueError(f"tagged case {index} changed queried identity")
+                body = f"300 sessionID=<session:{connection}>"
+            elif command == "SESSION_ID ALL":
+                if row_index == 0:
+                    match = TAGGED_CONSOLE_RE.fullmatch(body)
+                    if match is None:
+                        raise ValueError(f"tagged case {index} changed Console row")
+                    role, stamp = "console", match[2]
+                    body = f"{match[1]}<timestamp:console>{match[3]}"
+                else:
+                    match = TAGGED_EXTERNAL_RE.fullmatch(body)
+                    role = "a" if row_index == 1 else "b"
+                    if (
+                        match is None
+                        or identities.get(match[2]) != role
+                        or int(match[4]) != ports[role]
+                    ):
+                        raise ValueError(f"tagged case {index} changed external session or port")
+                    stamp = match[6]
+                    body = (
+                        f"{match[1]}<session:{role}>{match[3]}<port:{role}>"
+                        f"{match[5]}<timestamp:{role}>{match[7] or ''}"
+                    )
+                try:
+                    datetime.strptime(stamp, "%Y%m%d-%H%M%S")
+                except ValueError as exc:
+                    raise ValueError(f"tagged case {index} has invalid timestamp") from exc
+                if role in times and times[role] != stamp:
+                    raise ValueError(f"tagged case {index} changed {role} timestamp")
+                times[role] = stamp
+            rows.append(f"{prefix}{body}\r\n")
+        if command == "SESSION_ID ALL" and len(rows) != 3:
+            raise ValueError(f"tagged case {index} changed ALL row count")
+        normalized.append(rows)
+    if set(times) != {"console", "a", "b"}:
+        raise ValueError("tagged wire omitted stable session timestamps")
+    return normalized
 
 
 def _validate_execution_report(
@@ -422,6 +509,12 @@ def _validate_execution_report(
                 ):
                     raise ValueError(f"{evidence_id} tagged case {index} lost wire framing")
             covered_ids.add(obligation_id)
+        try:
+            normalized_wire = _normalize_tagged_session_wire(cases, ports)
+        except ValueError as exc:
+            raise ValueError(f"{evidence_id} tagged raw wire changed: {exc}") from exc
+        if normalized_wire != [case["response_lines"] for case in native_cases]:
+            raise ValueError(f"{evidence_id} tagged raw wire differs from native oracle")
         if (
             covered_ids != set(record["obligation_ids"])
             or record["test_ids"] != [
