@@ -1,0 +1,60 @@
+{
+  "format": "cbus-project-repair-dtd-scoped-receipt-v1",
+  "observed_at_utc": "2026-09-28T05:07:12Z",
+  "work_item_id": "P8.01",
+  "obligation_ids": ["ledger:native-project-repair"],
+  "scope_status": "partial_accepted_case_issue_open",
+  "base_revision": "36a1e20a674ea90bd489ad11d41178bf437da0b6",
+  "integrated_revision": "the commit enclosing this receipt; later agent integration is separate",
+  "native_target": "original C-Gate 3.4.0.2001 dD repair/tidy/full methods",
+  "original_capture": {
+    "path": "research/fixtures/project-repair-dtd-vectors.json",
+    "sha256": "35e2c58d4f08ec2306b914210fa3603407f971daa76d1edbe000f21e0f48c4c7",
+    "oracle_stdout_sha256": "9313134bbc4c038c1bae43e5e54cd9d1c55170f834343bc3ecc325c5c713ab44",
+    "probe_class_sha256": "27ad39b4faf7df3eb359bb6f7b7fbf4cc161707477e8ce6cb11a769b25c6d0db",
+    "source_pins": {
+      "RepairStageProbe.java": "178ef74faf32dfc424b9cb5a349a60f2fd58a21daf27aea8c17a7090592d2981",
+      "project_repair_original.py": "ae9fe24aeda28c907f859fa630e29b975a957f8946164c68126cd8751814b363",
+      "java": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "javac": "98359a0227aa21aa777b5e12214a8224df9f193fd46540b6413613e7213883f5",
+      "cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "transform/repair.xslt": "f61c3dbb75fca6f9487ec73e25ccc6aece817104dfb66a17071e38bf40ca52aa",
+      "transform/tidyduplicategroups.xslt": "02f0f7f4ccb9130a78bd46e1fd0b0908b96ed6c5e15b3392087c55583bd36969"
+    },
+    "cases": 36,
+    "native_successes": 26,
+    "native_full_pipeline_failures": 10,
+    "fresh_replay": "36/36 exact rows, including status, output bytes, native error text and response; Java exit 0; original temporary directory removed"
+  },
+  "admission": {
+    "direct_repair_tidy": "24/24 captured successes match full original output bytes",
+    "full": "2/2 no-subset or empty-subset successes match full original output bytes; all ten declaration-bearing native failures raise at the Python repair stage after the same lexical output",
+    "prior_encoding_matrix": "internal-entity-repair and internal-entity-tidy now match exact captured output; internal-entity-full matches native rejection status",
+    "safety": "external DTDs/entities, notations, unparsed and parameter entities are rejected before DOM construction; at most 256 internal general entity declarations; max_bytes bounds expanded text, names and attributes; max_nodes and max_depth remain in force"
+  },
+  "focused_validation": {
+    "command": "PYTHONPATH=toolkit-cli/src:toolkit-cli python3.13 -m unittest toolkit-cli/tests/test_project_repair.py toolkit-cli/tests/test_project_repair_dtd.py toolkit-cli/tests/test_project_repair_cli.py (repeated with python3.10)",
+    "python_3_13": "41 tests, OK, four skips",
+    "python_3_10": "41 tests, OK, four skips",
+    "skips": "four tests require explicit original C-Gate or native-load environment; the new 36-case original helper was replayed separately with pinned Java and vendor inputs",
+    "source_hashes": {
+      "src/cbus_toolkit/project_repair.py": "fae5acb5848b8117dbde96ba44543ca734a9b5f92981063f42e72f8e8e39df50",
+      "tests/test_project_repair.py": "26e56f5c111d115b26b77a550a121fbb8a39e0d6ece52d141e99e196a0c7bb51",
+      "tests/test_project_repair_dtd.py": "eca4d10f2583dc453058d32b927e0e2fd6a073e55a5a259d7e213f1d6821e1a1",
+      "tests/test_project_repair_cli.py": "463cb75f8f21cd102d86857b7839bf94b949cd3d2e127824f67a69294b3bb2fe",
+      "research/capture_project_repair_dtd.py": "3e375dd6fc88f621150f8b69362ce782c5534ef590da8aad58b06a2b2ea438b6"
+    }
+  },
+  "native_load": "not run for newly admitted DTD outputs; no loadability claim",
+  "windows_replay": "not run for this change",
+  "hardware_io": "none",
+  "required_gates_not_run": ["full make check", "full make check-interop", "isolated wheel", "Windows x86/AMD64 file command", "fresh native LOAD for new outputs"],
+  "reason": "this bounded P8.01 chunk used focused validation only; broader gates and issue closure are delegated to integration",
+  "remaining_scope": [
+    "XML 1.1 restricted character references and namespace-prefix undeclarations remain in a separate P8.01 chunk",
+    "external, parameter, notation and unparsed entities remain outside the safe admission",
+    "additional declared encodings and failure classes",
+    "fresh native LOAD and format-version transition for new outputs",
+    "arbitrary corruption/recovery and Toolkit dialog behavior"
+  ]
+}

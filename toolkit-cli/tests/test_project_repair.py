@@ -123,8 +123,8 @@ class ProjectRepairTests(unittest.TestCase):
         self.assertEqual(len(rows), 72)
         self.assertEqual(sum(row['admitted'] for row in rows), 63)
         for row in rows:
-            if not row['admitted']:
-                continue  # Native direct internal-entity success needs separate bounded admission.
+            if not row['admitted'] and not row['id'].startswith('internal-entity-'):
+                continue  # The remaining XML 1.1 cases have separate bounded admission.
             with self.subTest(case=row['id']):
                 data = bytes.fromhex(row['input_hex'])
                 call = (lambda: repair_project_xml(data).repaired_xml) if row['operation'] == 'full' else (
@@ -194,12 +194,13 @@ class ProjectRepairTests(unittest.TestCase):
                 repair_project_xml(data)
         self.assertEqual(preprocess_project_xml(b'<'), b'<\n')
 
-    def test_dtd_and_entity_expansion_are_rejected_before_dom_creation(self):
-        for data in (b'<!DOCTYPE Project [<!ENTITY x "expanded">]><Project>&x;</Project>',
-                     b'<!DOCTYPE Project SYSTEM "file:///nonexistent-cbus-repair-fixture"><Project/>',
+    def test_external_dtds_are_rejected_before_dom_creation(self):
+        for data in (b'<!DOCTYPE Project SYSTEM "file:///nonexistent-cbus-repair-fixture"><Project/>',
                      b'<!DOCTYPE Project SYSTEM "https://invalid.example/cbus"><Project/>'):
-            with self.subTest(data=data), self.assertRaises(ProjectRepairError):
-                transform_project_repair_xml(data, stage='repair')
+            with self.subTest(data=data), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
+                with self.assertRaises(ProjectRepairError):
+                    transform_project_repair_xml(data, stage='repair')
+                dom.assert_not_called()
 
     def test_byte_depth_node_and_option_limits_fail_closed(self):
         for name in ('max_bytes', 'max_nodes', 'max_depth'):

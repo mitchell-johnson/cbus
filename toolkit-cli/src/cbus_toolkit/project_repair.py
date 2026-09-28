@@ -1,7 +1,7 @@
 """Portable equivalents of C-Gate's lexical repair and two repair stylesheets.
 
 This operates on bytes, without changing a file or C-Gate repository. The XML
-stages support bounded XML 1.0/1.1 with captured encodings and no DTDs. Output preserves XML semantics,
+stages support bounded XML 1.0/1.1 with captured encodings and internal DTDs. Output preserves XML semantics,
 not vendor serialization bytes; a repaired document has not been load-tested.
 """
 from __future__ import annotations
@@ -9,11 +9,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 import re
-from xml.dom import Node, minidom
+from xml.dom import Node, expatbuilder, minidom
 from xml.parsers import expat
 
 DEFAULT_MAX_BYTES = 8 * 1024 * 1024
 XMLNS = "http://www.w3.org/2000/xmlns/"
+MAX_INTERNAL_ENTITIES = 256
 
 
 class ProjectRepairError(ValueError):
@@ -144,6 +145,9 @@ def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
         raise ProjectRepairError("XML exceeds max_bytes after declared decode", stage=stage)
     parser = expat.ParserCreate()
     depth, nodes = 0, 1  # Include the document itself.
+    expanded_bytes = 0
+    internal_entities = 0
+    has_default_attributes = False
 
     def declaration(version, encoding, standalone):
         if version not in ("1.0", "1.1") or encoding is not None and encoding.lower() not in (
@@ -151,8 +155,37 @@ def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
         ):
             raise ProjectRepairError("Unsupported XML version or declared encoding", stage=stage)
 
-    def doctype(*_):
-        raise ProjectRepairError("DTD and entity declarations are unsupported", stage=stage)
+    def doctype(_name, system_id, public_id, _internal_subset):
+        if system_id is not None or public_id is not None:
+            raise ProjectRepairError("External DTDs are unsupported", stage=stage)
+
+    def entity(_name, is_parameter, value, _base, system_id, public_id, notation):
+        nonlocal internal_entities
+        # A second DOM parse is safe only after this first pass has ruled out
+        # every external and parameter-entity route and bounded expansion.
+        if is_parameter or value is None or system_id is not None or public_id is not None or notation is not None:
+            raise ProjectRepairError("External and parameter entities are unsupported", stage=stage)
+        internal_entities += 1
+        if internal_entities > MAX_INTERNAL_ENTITIES:
+            raise ProjectRepairError("Too many internal entities", stage=stage)
+        count()
+
+    def external_entity(*_):
+        raise ProjectRepairError("External entities are unsupported", stage=stage)
+
+    def external_notation(*_):
+        raise ProjectRepairError("Notation and unparsed entity declarations are unsupported", stage=stage)
+
+    def attlist(_element, _attribute, _type, default, _required):
+        nonlocal has_default_attributes
+        has_default_attributes |= default is not None
+        count()
+
+    def expanded(value):
+        nonlocal expanded_bytes
+        expanded_bytes += len(value.encode("utf-8"))
+        if expanded_bytes > max_bytes:
+            raise ProjectRepairError("XML expansion exceeds max_bytes", stage=stage)
 
     def count(amount=1):
         nonlocal nodes
@@ -165,24 +198,57 @@ def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
         depth += 1
         # Include attribute nodes and their text before constructing the DOM.
         count(1 + 2 * len(attributes))
+        expanded(name)
+        for attribute, value in attributes.items():
+            expanded(attribute)
+            expanded(value)
         if depth > max_depth:
             raise ProjectRepairError("XML exceeds max_depth", stage=stage)
 
-    def end(*_):
+    def end(name):
         nonlocal depth
+        expanded(name)
         depth -= 1
+
+    def comment(value):
+        expanded(value)
+        count()
+
+    def processing_instruction(target, value):
+        expanded(target)
+        expanded(value)
+        count()
 
     parser.XmlDeclHandler = declaration
     parser.StartDoctypeDeclHandler = doctype
+    parser.EntityDeclHandler = entity
+    parser.ExternalEntityRefHandler = external_entity
+    parser.SetParamEntityParsing(expat.XML_PARAM_ENTITY_PARSING_NEVER)
     parser.StartElementHandler = start
     parser.EndElementHandler = end
-    parser.CommentHandler = lambda *_: count()
-    parser.ProcessingInstructionHandler = lambda *_: count()
+    parser.ElementDeclHandler = lambda *_: count()
+    parser.AttlistDeclHandler = attlist
+    parser.NotationDeclHandler = external_notation
+    parser.UnparsedEntityDeclHandler = external_notation
+    parser.CommentHandler = comment
+    parser.ProcessingInstructionHandler = processing_instruction
     # Conservative: adjacent parser text events may become one DOM text node.
-    parser.CharacterDataHandler = lambda data: count() if data else None
+    def characters(value):
+        if value:
+            expanded(value)
+            count()
+
+    parser.CharacterDataHandler = characters
     try:
         parser.Parse(data, True)
-        document = minidom.parseString(data)
+        if has_default_attributes:
+            # minidom.parseString requests only explicitly specified attributes.
+            # The original transform parser also exposes DTD defaults to XSLT.
+            builder = expatbuilder.ExpatBuilderNS()
+            builder.getParser().specified_attributes = False
+            document = builder.parseString(data)
+        else:
+            document = minidom.parseString(data)
     except (expat.ExpatError, UnicodeError) as error:
         raise ProjectRepairError(f"XML is not well formed: {error}", stage=stage) from error
     pending = [document]

@@ -42,6 +42,28 @@ namespace declarations. Python3.10 and3.13 produce equivalent XML semantics.
 Declaration spelling, namespace placement, empty-element spelling and bytes
 need not match the vendor serializer. CDATA becomes ordinary text.
 
+Direct `repair` and `tidy` now accept bounded internal DTDs. The original
+transforms expand internal general entities in text, attributes and markup,
+apply DTD default attributes, and omit the DOCTYPE from their result. The
+[36-case original capture](../research/fixtures/project-repair-dtd-vectors.json)
+compares exact bytes for 26 direct/full successes and records ten full-pipeline
+failures. These include nested and duplicate entity declarations, a character
+reference in an entity, a declaration-only DTD and an attribute default. The
+full pipeline succeeds for a DOCTYPE with no or an empty internal subset. Its
+lexical step inserts an extra `>` before nested declarations in the captured
+nonempty subsets, so those ten native full calls fail after changing the
+temporary source. Python reports the repair-stage failure without writing an
+output file. This is a bounded original observation, not a rule for every DTD.
+
+The first XML parse rejects external DTDs and entities, parameter entities,
+notations and unparsed entities before DOM construction. It permits at most
+256 internal general entity declarations. Expanded text, element and attribute
+names and values, comments and processing instructions share `max_bytes`;
+expanded nodes and depth retain their existing caps. The second DOM parse runs
+only after those checks. Expat may reject a recursive or amplified entity even
+earlier. The original's external-entity behavior is not probed, and even its
+accepted unused parameter declarations remain outside this safe subset.
+
 The XML stages now admit the captured XML 1.0 and 1.1 cases with UTF-8,
 ISO-8859-1, ISO-8859-15, US-ASCII or Windows-1252 declarations. Each original
 transform first reads the file as UTF-8 with Java replacement, then the XML
@@ -65,10 +87,11 @@ The public file command has exact XML 1.1 and Windows-1252 full-output
 tests. [The scoped receipt](../research/fixtures/project-repair-encoding-scoped-receipt.json)
 binds the fixture, original source hashes, focused test outcome and limits.
 These captured cases do not prove that every document using those encodings
-loads into a native repository. Nine native cases remain unadmitted: internal
-DTD/entity declarations, XML 1.1 restricted character references and XML 1.1
-namespace-prefix undeclaration. The original direct transforms accept some
-of them, so this is a remaining compatibility gap. External entities,
+loads into a native repository. The three internal-entity cases in that matrix
+are now admitted by the separate DTD checkpoint: two direct successes and one
+full-pipeline failure. Six XML 1.1 restricted character-reference and
+namespace-prefix undeclaration cases remain unadmitted in this checkpoint.
+The original direct transforms accept some of them. External entities,
 UTF-16 and unsupported XML versions remain rejected. Intermediate UTF-8 read
 and declared-decode growth are checked against the same byte limit before DOM
 allocation.
