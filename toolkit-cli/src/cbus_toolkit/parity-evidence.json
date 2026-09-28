@@ -94,8 +94,8 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "30867e2b4be5af0b5f303f5a8ff6d77090acfff8",
-      "command": "PYTHONPATH=src python research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
+      "source_revision": "1a75cb7b5b5f38178cbd148bc8dffe109463eeb8",
+      "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "report_verification": {
         "format": "cbus-parity-test-report-v1",
@@ -120,11 +120,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "e24c6afe4b42bfd31418004fdce389e1314a811cc077c16db54565fb21f63fcb"
+          "sha256": "9eeb1b2a2c35a43b85a11b723ff8c9dd96850f22935c7bdc45237c6e03d2a4eb"
         }
       ],
       "skips": [],
-      "record_sha256": "3bc3230978337a22b36aa3d9761861b7fafc4bbf38ed7d849cef682e9d85ec4d"
+      "record_sha256": "ba21756829a192de543136762852fb4dda228755c61e52ef45b9b57384582b3d"
     }
   ]
 }

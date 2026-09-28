@@ -1,15 +1,15 @@
 {
   "format": "cbus-parity-test-report-v1",
   "result": "passed",
-  "source_revision": "30867e2b4be5af0b5f303f5a8ff6d77090acfff8",
-  "command": "PYTHONPATH=src python research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
+  "source_revision": "1a75cb7b5b5f38178cbd148bc8dffe109463eeb8",
+  "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
   "exit_code": 0,
   "source_inputs": {
     "native_capture": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "pilot_manifest": "fda1a42a05e5f51920dbd5e80e03179ad22e16d82b91e88417fd6462783936b5",
     "contract_inventory": "0b65a82d80c30e64163fa2eb4594d918e9df072650ce1260c90ade818f168a8c",
     "capability_matrix": "2c98947862c48776923ea7f757168d29f06062a202afc182c7f9b04d3d467cc5",
-    "capture_script": "99e1e3021d8fe871460b0afc0ff3a377667618928267164c253d27b556c7ffd9"
+    "capture_script": "453ba1c277f9fbc7c5ebd825c69de53913bf8e39fd41dc0ba9e49e3dfcd755c6"
   },
   "cases": [
     {

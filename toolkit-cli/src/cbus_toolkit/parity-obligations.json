@@ -16,10 +16,10 @@
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "fda1a42a05e5f51920dbd5e80e03179ad22e16d82b91e88417fd6462783936b5",
     "cgate_session_differential_cmqttd": "2bdbf7d65b3dc4bb4c1dd10da1da5f32157850cfd6afa84ff19c993a79ce5a11",
-    "cgate_session_physical_applicability": "e24c6afe4b42bfd31418004fdce389e1314a811cc077c16db54565fb21f63fcb",
+    "cgate_session_physical_applicability": "9eeb1b2a2c35a43b85a11b723ff8c9dd96850f22935c7bdc45237c6e03d2a4eb",
     "roadmap": "bc905f9e86ee7d3f3a3a10d81c895d6a4e57a89db19bc349f439e9125906a3e3"
   },
-  "evidence_bundle_sha256": "8d3a85e139878376f274beaab0a3d9f268f23ebd99a465192d7c9c4bcb691ef3",
+  "evidence_bundle_sha256": "6eb3380ffae79d1543c190a5d5a62e999040485be563b498dbcb2eee34ad9c66",
   "work_item_ids": [
     "P0.01",
     "P0.02",

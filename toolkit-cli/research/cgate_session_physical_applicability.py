@@ -17,7 +17,7 @@ CONTRACTS = ROOT / "src/cbus_toolkit/cgate-contract-inventory.json"
 MATRIX = REPOSITORY / "rust/cbus-cgate/src/capability_matrix.rs"
 OUTPUT = ROOT / "research/fixtures/cgate-session-physical-applicability.json"
 COMMAND = (
-    "PYTHONPATH=src python research/cgate_session_physical_applicability.py "
+    "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py "
     "--output research/fixtures/cgate-session-physical-applicability.json"
 )
 
