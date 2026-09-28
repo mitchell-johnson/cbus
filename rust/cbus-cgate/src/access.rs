@@ -297,6 +297,56 @@ pub(crate) const NATIVE_PROBED_ADMIN_COMMANDS: &[(&str, CgateAccessLevel)] = &[
     ("MEASUREMENT DATA", CgateAccessLevel::Operate),
 ];
 
+/// Complete bounded application invocations captured on an absent native
+/// project. These are entry floors only; no application message reached a bus.
+pub(crate) const NATIVE_PROBED_APPLICATION_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    (
+        "AIRCON SET_HUMIDITY_SETBACK_LIMIT",
+        CgateAccessLevel::Operate,
+    ),
+    (
+        "AIRCON SET_HUMIDITY_LOWER_GUARD_LIMIT",
+        CgateAccessLevel::Operate,
+    ),
+    (
+        "AIRCON SET_HUMIDITY_UPPER_GUARD_LIMIT",
+        CgateAccessLevel::Operate,
+    ),
+    (
+        "AIRCON SET_HVAC_LOWER_GUARD_LIMIT",
+        CgateAccessLevel::Operate,
+    ),
+    ("AIRCON SET_HVAC_SETBACK_LIMIT", CgateAccessLevel::Operate),
+    (
+        "AIRCON SET_HVAC_UPPER_GUARD_LIMIT",
+        CgateAccessLevel::Operate,
+    ),
+    ("AIRCON SET_WARD_OFF", CgateAccessLevel::Operate),
+    ("AIRCON SET_WARD_ON", CgateAccessLevel::Operate),
+    ("AIRCON SET_ZONE_HUMIDITY_MODE", CgateAccessLevel::Operate),
+    ("AIRCON SET_ZONE_HVAC_MODE", CgateAccessLevel::Operate),
+    ("CLOCK DATE", CgateAccessLevel::Operate),
+    ("CLOCK REQUEST_REFRESH", CgateAccessLevel::Operate),
+    ("ENABLE LABEL", CgateAccessLevel::Operate),
+    ("ENABLE REMOVE", CgateAccessLevel::Operate),
+    ("LIGHTING UNICODELABEL", CgateAccessLevel::Operate),
+    ("LIGHTING TERMINATERAMP", CgateAccessLevel::Operate),
+    ("SHORTMESSAGE SEND", CgateAccessLevel::Operate),
+    ("TELEPHONY CLEAR_DIVERSION", CgateAccessLevel::Operate),
+    ("TELEPHONY DIVERT", CgateAccessLevel::Operate),
+    (
+        "TELEPHONY ISOLATE_SECONDARY_OUTLET",
+        CgateAccessLevel::Operate,
+    ),
+    (
+        "TELEPHONY RECALL_LAST_NUMBER_REQUEST",
+        CgateAccessLevel::Operate,
+    ),
+    ("TELEPHONY REJECT_INCOMING_CALL", CgateAccessLevel::Operate),
+    ("TRIGGER LABEL", CgateAccessLevel::Program),
+    ("TRIGGER UNICODELABEL", CgateAccessLevel::Program),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -305,6 +355,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_PROGRAMMING_COMMANDS.iter())
         .chain(NATIVE_PROBED_MEDIA_COMMANDS.iter())
         .chain(NATIVE_PROBED_ADMIN_COMMANDS.iter())
+        .chain(NATIVE_PROBED_APPLICATION_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -730,6 +781,76 @@ mod tests {
         let roles = evidence["roles"].as_object().unwrap();
         assert_eq!(roles.len(), 9);
         for (path, minimum) in NATIVE_PROBED_ADMIN_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| *command == *path || command.starts_with(&format!("{path} ")))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn application_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_application_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            evidence["format"],
+            "native-cgate-application-authorization-v1"
+        );
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        assert_eq!(
+            evidence["capture_script_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_application_authorization_probe.py"
+            )))
+        );
+        assert_eq!(
+            evidence["capture_engine_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_admin_authorization_probe.py"
+            )))
+        );
+        assert_eq!(
+            evidence["local_cgate_harness_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../../../toolkit-cli/research/local_cgate.py"
+            )))
+        );
+        let commands = evidence["commands"].as_array().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_APPLICATION_COMMANDS.len());
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_APPLICATION_COMMANDS {
             let matches = commands
                 .iter()
                 .filter_map(serde_json::Value::as_str)

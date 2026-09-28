@@ -71,6 +71,14 @@ NATIVE_ADMIN_ROLE_SCRIPT_PATH = (
     REPOSITORY / "rust" / "cbus-cgate" / "research"
     / "native_admin_authorization_probe.py"
 )
+NATIVE_APPLICATION_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_application_authorization_probe.json"
+)
+NATIVE_APPLICATION_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_application_authorization_probe.py"
+)
 LOCAL_CGATE_HARNESS_PATH = ROOT / "research" / "local_cgate.py"
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
@@ -101,6 +109,7 @@ ACCESS_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADDITIONAL_COMMAN
 ACCESS_PROGRAMMING_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_PROGRAMMING_COMMANDS"
 ACCESS_MEDIA_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_MEDIA_COMMANDS"
 ACCESS_ADMIN_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS"
+ACCESS_APPLICATION_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_APPLICATION_COMMANDS"
 EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
 NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
@@ -118,6 +127,9 @@ NATIVE_PROGRAMMING_ROLE_REF = (
 )
 NATIVE_MEDIA_ROLE_REF = "rust/testdata/fixtures/native_cgate_media_authorization_probe.json"
 NATIVE_ADMIN_ROLE_REF = "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json"
+NATIVE_APPLICATION_ROLE_REF = (
+    "rust/testdata/fixtures/native_cgate_application_authorization_probe.json"
+)
 NATIVE_CGATE_JAR_SHA256 = (
     "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
 )
@@ -142,19 +154,13 @@ NATIVE_MEDIA_ROLE_EVIDENCE_SHA256 = (
 NATIVE_ADMIN_ROLE_EVIDENCE_SHA256 = (
     "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae"
 )
+NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256 = (
+    "5d11a1edb500a995422be2336fcec4feca4c4e07a931e3d64cc604a671191f7d"
+)
 NATIVE_ROLE_LEVELS = (
     "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal", "Max"
 )
 SESSION_PATHS = {"SESSION_ID", "SESSION_ID ALL", "SESSION_ID TAG", "EVENT", "QUIT"}
-TELEPHONY_PROGRAM_PATHS = {
-    "TELEPHONY CLEAR_DIVERSION",
-    "TELEPHONY DIVERT",
-    "TELEPHONY ISOLATE_SECONDARY_OUTLET",
-    "TELEPHONY RECALL_LAST_NUMBER_REQUEST",
-    "TELEPHONY REJECT_INCOMING_CALL",
-}
-
-
 def digest(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
@@ -656,6 +662,7 @@ def _native_role_fixture_observations(
     inventory_paths: set[str], *, fixture_path: Path, fixture_digest: str,
     fixture_format: str, script_path: Path, registry_marker: str,
     expected_commands: int, label: str, response_command_count: int | None = None,
+    capture_engine_path: Path | None = None,
 ) -> dict[str, dict]:
     """Bind one exact invocation per captured floor; retain incomplete scope.
 
@@ -682,6 +689,10 @@ def _native_role_fixture_observations(
         )
         or "no C-Bus endpoint" not in oracle.get("transport", "")
         or report.get("capture_script_sha256") != digest(script_path)
+        or (
+            capture_engine_path is not None
+            and report.get("capture_engine_sha256") != digest(capture_engine_path)
+        )
         or report.get("local_cgate_harness_sha256") != digest(LOCAL_CGATE_HARNESS_PATH)
     ):
         raise ValueError(f"Native C-Gate {label} provenance changed")
@@ -834,7 +845,18 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
         expected_commands=22,
         label="admin role",
     )
-    groups = (initial, additional, programming, media, admin)
+    application = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_APPLICATION_ROLE_PATH,
+        fixture_digest=NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-application-authorization-v1",
+        script_path=NATIVE_APPLICATION_ROLE_SCRIPT_PATH,
+        capture_engine_path=NATIVE_ADMIN_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_APPLICATION_COMMANDS",
+        expected_commands=24,
+        label="application role",
+    )
+    groups = (initial, additional, programming, media, admin, application)
     overlap = set().union(*(
         set(left) & set(right)
         for index, left in enumerate(groups)
@@ -842,7 +864,7 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
     ))
     if overlap:
         raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
-    return initial | additional | programming | media | admin
+    return initial | additional | programming | media | admin | application
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -1078,17 +1100,7 @@ def build_row(
         if gate == "invocation_variant_dependent"
         else resolved(gate, SERVICE_AUTH_REF)
     )
-    if path in TELEPHONY_PROGRAM_PATHS:
-        handler_roles = resolved(
-            {
-                "minimum_access_level": "Program",
-                "enforced_before_physical_handler": True,
-                "lower_access_result": 420,
-            },
-            SERVICE_SESSION_REF,
-            matrix_ref,
-        )
-    elif observed := native_roles.get(path):
+    if observed := native_roles.get(path):
         role_ref, access_ref = {
             NATIVE_INITIAL_ROLE_EVIDENCE_SHA256: (
                 NATIVE_INITIAL_ROLE_REF, "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_COMMANDS"
@@ -1102,6 +1114,9 @@ def build_row(
             ),
             NATIVE_ADMIN_ROLE_EVIDENCE_SHA256: (
                 NATIVE_ADMIN_ROLE_REF, ACCESS_ADMIN_ROLE_REF
+            ),
+            NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256: (
+                NATIVE_APPLICATION_ROLE_REF, ACCESS_APPLICATION_ROLE_REF
             ),
         }[observed["fixture_sha256"]]
         handler_roles = unresolved(
@@ -1271,6 +1286,7 @@ def build() -> dict:
             "native_programming_handler_roles": {"sha256": digest(NATIVE_PROGRAMMING_ROLE_PATH)},
             "native_media_handler_roles": {"sha256": digest(NATIVE_MEDIA_ROLE_PATH)},
             "native_admin_handler_roles": {"sha256": digest(NATIVE_ADMIN_ROLE_PATH)},
+            "native_application_handler_roles": {"sha256": digest(NATIVE_APPLICATION_ROLE_PATH)},
         },
         "counts": {
             "paths": len(contracts),

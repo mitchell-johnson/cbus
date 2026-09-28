@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 195);
+        assert_eq!(floors.len(), 219);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),

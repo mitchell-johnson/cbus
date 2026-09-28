@@ -3023,7 +3023,8 @@ async fn telephony_probed_role_responses_resolve_absent_target_without_pci() {
             );
         }
     }
-    // Unprobed forms keep their established Program gate and response.
+    // The broader native capture now also proves DIVERT's missing-object
+    // response at Operate; a configured target retains the later Program gate.
     let mut client = ClientState {
         access_level: Some(CgateAccessLevel::Operate),
         ..ClientState::default()
@@ -3033,8 +3034,35 @@ async fn telephony_probed_role_responses_resolve_absent_target_without_pci() {
             .handle(&mut client, "[other] TELEPHONY DIVERT 253/224 123")
             .await
             .final_text,
-        "420 Access denied: TELEPHONY (Program access required)"
+        "401 Bad object or device ID: 253/224 (Object not found)"
     );
+    let new_evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_application_authorization_probe.json"
+    ))
+    .unwrap();
+    for command in new_evidence["commands"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(serde_json::Value::as_str)
+        .filter(|command| command.starts_with("TELEPHONY "))
+    {
+        let reply = service
+            .handle(&mut client, &format!("[absent] {command}"))
+            .await;
+        assert_eq!(
+            reply.final_text,
+            new_evidence["roles"]["Operate"]["responses"][command]
+                .as_str()
+                .unwrap(),
+            "{command}"
+        );
+        let configured = command.replace("//MISSING/254/224", "254/224");
+        let reply = service
+            .handle(&mut client, &format!("[known] {configured}"))
+            .await;
+        assert_eq!(reply.final_text, "420 Access denied.", "{configured}");
+    }
     assert_eq!(std::fs::read(&path).unwrap(), before);
     assert!(
         tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
@@ -13881,6 +13909,87 @@ async fn admin_native_handler_floors_deny_before_dispatch_or_mutation() {
             "FILE DOWNLOAD auth-probe-missing.txt",
         ),
         (CgateAccessLevel::Program, "NET SYNCNEW //MISSING/254"),
+    ] {
+        let mut client = ClientState {
+            access_level: Some(level),
+            ..ClientState::default()
+        };
+        let reply = service
+            .handle(&mut client, &format!("[admitted] {command}"))
+            .await;
+        assert_ne!(reply.final_text, "420 Access denied.", "{command}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn application_native_handler_floors_deny_before_dispatch_or_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_application_authorization_probe.json"
+    ))
+    .unwrap();
+
+    for (path_name, minimum) in crate::access::NATIVE_PROBED_APPLICATION_COMMANDS {
+        let command = evidence["commands"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(serde_json::Value::as_str)
+            .find(|command| *command == *path_name || command.starts_with(&format!("{path_name} ")))
+            .unwrap();
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+        ] {
+            if level >= *minimum {
+                continue;
+            }
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}: {reply:?}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    for (level, command) in [
+        (
+            CgateAccessLevel::Operate,
+            "AIRCON SET_WARD_OFF //MISSING/254/172 1",
+        ),
+        (
+            CgateAccessLevel::Operate,
+            "TELEPHONY CLEAR_DIVERSION //MISSING/254/224",
+        ),
+        (
+            CgateAccessLevel::Program,
+            "TRIGGER LABEL //MISSING/254/202 0 1 1 0 test",
+        ),
     ] {
         let mut client = ClientState {
             access_level: Some(level),

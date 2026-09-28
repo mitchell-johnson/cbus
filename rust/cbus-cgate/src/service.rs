@@ -3413,11 +3413,11 @@ impl Service {
             if !is_telephony_subcommand(sub) {
                 return err(tag, 400, "400 Syntax Error.");
             }
-            // The native role probe reaches missing-object resolution at
-            // Operate for these two complete forms, although successful
-            // physical delivery below Program has not been established.
-            // Preserve the Program gate for any target that could exist.
-            let probed = matches!(sub, "CLEAR_DIVERSION" | "RECALL_LAST_NUMBER_REQUEST");
+            // All five native forms reach missing-object resolution at
+            // Operate. Successful physical delivery at that role has not
+            // been established, so keep the later Program gate for targets
+            // that exist and could send a C-Bus message.
+            let probed = true;
             let level = self.ensure_access_level(client).await;
             if level < CgateAccessLevel::Program {
                 if probed && level >= CgateAccessLevel::Operate {
@@ -8513,9 +8513,9 @@ impl Service {
         .await
     }
 
-    /// Native role probes resolve these two absent application targets before
-    /// the later Program gate. Only the probed, complete forms are admitted
-    /// here; an existing target still requires Program before any PCI I/O.
+    /// Native role probes resolve five absent application targets before the
+    /// later Program gate. Only the probed, complete forms are admitted here;
+    /// an existing target still requires Program before any PCI I/O.
     async fn telephony_missing_target_before_access(
         &self,
         client: &ClientState,
@@ -8525,28 +8525,43 @@ impl Service {
     ) -> Option<Response> {
         let complete = match sub {
             "CLEAR_DIVERSION" => words.len() == 3,
+            "DIVERT" | "ISOLATE_SECONDARY_OUTLET" => words.len() == 4,
             "RECALL_LAST_NUMBER_REQUEST" => {
                 words.len() == 4 && matches!(words[3].to_ascii_lowercase().as_str(), "in" | "out")
             }
+            "REJECT_INCOMING_CALL" => words.len() == 3,
             _ => false,
         };
         if !complete {
             return None;
         }
         let target = words[2];
-        let (network, application) = self.addressed_application(target)?;
+        let parts = target
+            .trim_start_matches('/')
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>();
+        let (project, network, application) = match parts.as_slice() {
+            [network, application] => (self.project.as_str(), *network, *application),
+            [project, network, application] => (*project, *network, *application),
+            _ => return None,
+        };
+        let network = network.parse::<u8>().ok()?;
+        let application = parse_application(application)?;
         if application != 224 {
             return None;
         }
         let model = self.model.lock().await;
         if model
             .projects
-            .get(&self.project)
+            .get(project)
             .is_some_and(|project| project.networks.contains_key(&network))
         {
             return None;
         }
-        let reason = if client.current.as_deref() == Some(self.project.as_str()) {
+        let reason = if project == self.project
+            && client.current.as_deref() == Some(self.project.as_str())
+        {
             "Network not found"
         } else {
             "Object not found"

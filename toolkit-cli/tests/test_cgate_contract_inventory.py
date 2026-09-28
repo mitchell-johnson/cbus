@@ -77,12 +77,10 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
         "unresolved": 44,
     }
     assert counts["subaxis_status"]["authorization.handler_roles"] == {
-        "resolved": 5,
-        "unresolved": 437,
+        "unresolved": 442,
     }
     assert counts["axis_status"]["authorization"] == {
-        "partial": 437,
-        "resolved": 5,
+        "partial": 442,
     }
     assert counts["subaxis_status"]["effects_routing.routing_class"] == {
         "resolved": 442
@@ -125,17 +123,20 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert document["sources"]["native_admin_handler_roles"]["sha256"] == sha256(
         contract_builder.NATIVE_ADMIN_ROLE_PATH.read_bytes()
     ).hexdigest()
+    assert document["sources"]["native_application_handler_roles"]["sha256"] == sha256(
+        contract_builder.NATIVE_APPLICATION_ROLE_PATH.read_bytes()
+    ).hexdigest()
     assert document["sources"]["access_handler_registry"]["sha256"] == sha256(
         contract_builder.ACCESS_PATH.read_bytes()
     ).hexdigest()
-    assert document["counts"]["native_handler_role_observations"] == 195
-    assert document["counts"]["native_handler_role_unresolved"] == 195
+    assert document["counts"]["native_handler_role_observations"] == 219
+    assert document["counts"]["native_handler_role_unresolved"] == 219
     observed = [
         row for row in document["contracts"]
         if "native_handler_entry"
         in row["axes"]["authorization"]["subaxes"]["handler_roles"].get("known", {})
     ]
-    assert len(observed) == 195
+    assert len(observed) == 219
     assert all(
         row["axes"]["authorization"]["status"] == "partial"
         and row["axes"]["authorization"]["subaxes"]["handler_roles"]["status"]
@@ -184,6 +185,40 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
         assert row["axes"]["implementation_acceptance"]["subaxes"][
             "functional_acceptance"
         ]["status"] == "unresolved"
+    for path, level in (
+        ("AIRCON SET_WARD_OFF", "Operate"),
+        ("CLOCK DATE", "Operate"),
+        ("ENABLE REMOVE", "Operate"),
+        ("TELEPHONY DIVERT", "Operate"),
+        ("TRIGGER UNICODELABEL", "Program"),
+    ):
+        row = contract_by_path(document, path)
+        role = row["axes"]["authorization"]["subaxes"]["handler_roles"]
+        assert role["status"] == "unresolved"
+        assert role["known"]["native_handler_entry"][
+            "minimum_access_level_at_handler_entry"
+        ] == level
+        assert contract_builder.NATIVE_APPLICATION_ROLE_REF in role["source_refs"]
+
+
+def test_native_application_role_probe_weakening_cannot_rebuild(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_APPLICATION_ROLE_PATH.read_text())
+    command = "TELEPHONY DIVERT //MISSING/254/224 12345"
+    changed["roles"]["Operate"]["responses"][command] = "420 Access denied."
+    fixture = tmp_path / "weakened-application-roles.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_APPLICATION_ROLE_PATH", fixture)
+    with pytest.raises(ValueError, match="application role source changed"):
+        contract_builder.build()
+    monkeypatch.setattr(
+        contract_builder,
+        "NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256",
+        sha256(fixture.read_bytes()).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="role threshold changed"):
+        contract_builder.build()
 
 
 def test_native_role_probe_weakening_cannot_promote_or_rebuild(
@@ -561,25 +596,19 @@ def test_comment_recovery_and_tag_framing_variants_are_not_collapsed() -> None:
         ("TELEPHONY REJECT_INCOMING_CALL", "required_when_gate_armed"),
     ],
 )
-def test_all_telephony_commands_bind_program_access_separately_from_login_gate(
+def test_all_telephony_commands_bind_native_entry_separately_from_login_gate(
     path: str, programming_gate: str
 ) -> None:
     row = contract_by_path(inventory(), path)
     authorization = row["axes"]["authorization"]
-    assert authorization["status"] == "resolved"
+    assert authorization["status"] == "partial"
     assert authorization["subaxes"]["programming_gate"]["value"] == programming_gate
-    assert authorization["subaxes"]["handler_roles"] == {
-        "status": "resolved",
-        "value": {
-            "minimum_access_level": "Program",
-            "enforced_before_physical_handler": True,
-            "lower_access_result": 420,
-        },
-        "source_refs": [
-            "rust/cbus-cgate/src/service.rs#Service::handle",
-            "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX",
-        ],
-    }
+    roles = authorization["subaxes"]["handler_roles"]
+    assert roles["status"] == "unresolved"
+    assert roles["known"]["native_handler_entry"][
+        "minimum_access_level_at_handler_entry"
+    ] == "Operate"
+    assert contract_builder.NATIVE_APPLICATION_ROLE_REF in roles["source_refs"]
     assert "Program ACCESS level" in row["routing_evidence"]
     assert "lower roles make no write" in row["routing_evidence"]
 
