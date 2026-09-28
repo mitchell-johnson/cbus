@@ -1,0 +1,11 @@
+{"id":"single-start-settled","case":"single_start","phase":"settled","index":0,"reply":["123 project=XSTARTA state=started"]}
+{"id":"runtime-set-readback","case":"single_start","phase":"runtime","index":2,"reply":["303 project.start=XSTARTB"]}
+{"id":"runtime-set-does-not-restart","case":"single_start","phase":"runtime","index":3,"reply":["123 project=XSTARTA state=started"]}
+{"id":"snapshot-load-readback","case":"single_start","phase":"runtime","index":5,"reply":["303 project.start=XSTARTA"]}
+{"id":"snapshot-load-does-not-restart","case":"single_start","phase":"runtime","index":6,"reply":["123 project=XSTARTA state=started"]}
+{"id":"saved-set-restarts-project-b","case":"saved_restart","phase":"settled","index":1,"reply":["123 project=XSTARTB state=started"]}
+{"id":"manual-load-adds-stopped","case":"single_start","phase":"default_after_load","index":0,"reply":["123-project=XSTARTA state=started","123 project=XSTARTB state=stopped"]}
+{"id":"missing-name-does-not-block-later","case":"multiple_start","phase":"settled","index":0,"reply":["123-project=XSTARTA state=started","123 project=XSTARTB state=started"]}
+{"id":"missing-only-has-no-started-project","case":"missing_start","phase":"settled","index":0,"reply":["124 no projects found"]}
+{"id":"manual-load-after-missing-start","case":"missing_start","phase":"fresh","index":0,"reply":["123 project=XSTARTB state=stopped"]}
+{"id":"missing-project-load-fails","case":"multiple_start","phase":"cold","index":3,"reply":["408 Operation failed: Project load failed: Error reading db file: Unable to read path '%OWNED_WORK%/Projects/XMISSING/XMISSING.db': file does not exist"]}

@@ -80,6 +80,255 @@ fn options(state: &std::path::Path, token: &std::path::Path) -> Options {
 }
 
 #[tokio::test]
+async fn project_start_samples_valid_durable_names_at_restart_and_keeps_mqtt_live() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_project_start.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-config-project-start-v1");
+    for child in [
+        "seed",
+        "single_start",
+        "saved_restart",
+        "multiple_start",
+        "missing_start",
+    ] {
+        assert_eq!(
+            native["oracle"]["children"][child]["cleanup_complete"],
+            true
+        );
+    }
+    for line in include_str!("../../testdata/vectors/cgate_config_project_start.jsonl").lines() {
+        let vector: serde_json::Value = serde_json::from_str(line).unwrap();
+        let case = vector["case"].as_str().unwrap();
+        let phase = vector["phase"].as_str().unwrap();
+        let index = vector["index"].as_u64().unwrap() as usize;
+        let captured = native[case][phase][index]["response"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row.as_str().unwrap().split_once("] ").unwrap().1)
+            .collect::<Vec<_>>();
+        let expected = vector["reply"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row.as_str().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(captured, expected, "{}", vector["id"]);
+    }
+
+    let state = cbus_test_support::proc::temp_path("cgate-start-project.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+    let first = start_with(options()).await;
+    wait_started(&first).await;
+    let (mut reader, mut writer) = connect(&first).await;
+    for name in ["XSTARTA", "XSTARTB"] {
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                "new",
+                &format!("PROJECT NEW {name}")
+            )
+            .await,
+            ["200 OK."]
+        );
+    }
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "start",
+            "CONFIG SET project.start XSTARTA XMISSING XSTARTB"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "default",
+            "CONFIG SET project.default XSTARTB"
+        )
+        .await,
+        ["200 OK."]
+    );
+    drop((reader, writer, first));
+
+    let mut second = start_with(options()).await;
+    wait_started(&second).await;
+    let (mut reader, mut writer) = connect(&second).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "list", "PROJECT LIST").await,
+        [
+            "123-project=XSTARTA state=started",
+            "123 project=XSTARTB state=started"
+        ]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "use", "PROJECT USE").await,
+        ["123 project=XSTARTB"]
+    );
+    let frames_before = second
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "save",
+            "CONFIG SAVE global retained.conf"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "set",
+            "CONFIG SET project.start XSTARTB"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "read", "CONFIG GET project.start").await,
+        ["303 project.start=XSTARTB"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "still", "PROJECT LIST").await,
+        [
+            "123-project=XSTARTA state=started",
+            "123 project=XSTARTB state=started"
+        ]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "load",
+            "CONFIG LOAD global retained.conf"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "restored",
+            "CONFIG GET project.start"
+        )
+        .await,
+        ["303 project.start=XSTARTA XMISSING XSTARTB"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "stop", "PROJECT STOP XSTARTA").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "stopped", "PROJECT LIST").await,
+        [
+            "123-project=XSTARTA state=stopped",
+            "123 project=XSTARTB state=started"
+        ]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "close-b", "PROJECT CLOSE XSTARTB").await,
+        ["200 OK"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "load-b", "PROJECT LOAD XSTARTB").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "loaded", "PROJECT LIST").await,
+        [
+            "123-project=XSTARTA state=stopped",
+            "123 project=XSTARTB state=stopped"
+        ]
+    );
+    assert_eq!(
+        second
+            .pci
+            .frames()
+            .iter()
+            .filter(|frame| !is_status_request(&frame.payload))
+            .count(),
+        frames_before
+    );
+    let payload = "053800790149";
+    let before = second.pci.count_payload(payload);
+    second
+        .broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(
+        COMMAND_DRAIN,
+        "MQTT command after project.start lifecycle",
+        || second.pci.count_payload(payload) > before,
+    )
+    .await;
+    assert!(second.daemon.is_running());
+    drop((reader, writer, second));
+
+    let third = start_with(options()).await;
+    wait_started(&third).await;
+    let (mut reader, mut writer) = connect(&third).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "again", "PROJECT LIST").await,
+        [
+            "123-project=XSTARTA state=started",
+            "123 project=XSTARTB state=started"
+        ]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "missing",
+            "CONFIG SET project.start XMISSING"
+        )
+        .await,
+        ["200 OK."]
+    );
+    drop((reader, writer, third));
+
+    let fourth = start_with(options()).await;
+    wait_started(&fourth).await;
+    let (mut reader, mut writer) = connect(&fourth).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "none", "PROJECT LIST").await,
+        ["124 no projects found"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "stored",
+            "CONFIG GET project.start"
+        )
+        .await,
+        ["303 project.start=XMISSING"]
+    );
+    drop((reader, writer, fourth));
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn project_default_selects_loaded_project_only_after_restart_without_interrupting_mqtt() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_config_project_default.json"
@@ -296,7 +545,8 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
             "command.show-time",
             "event-millis",
             "heartbeat-time",
-            "project.default"
+            "project.default",
+            "project.start"
         ])
     );
 

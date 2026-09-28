@@ -3,7 +3,7 @@
 //! The metadata below is retained from the pinned 3.4.0.2001 daemon. It does
 //! not by itself establish runtime effects. The implemented restart effects,
 //! `command.show-responses`, `command.show-time`, `event-millis`,
-//! `heartbeat-time`, and `project.default`, have separate loopback oracle
+//! `heartbeat-time`, `project.default`, and `project.start` have separate loopback oracle
 //! evidence.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -205,9 +205,29 @@ pub(crate) fn parameter(name: &str) -> Option<&'static ConfigParameter> {
         .map(|index| &CONFIG_PARAMETERS[index])
 }
 
+/// The native catalogue defines `project.start` as a space-separated list.
+/// Project identity is case-sensitive; duplicate names start only once.
+pub(crate) fn startup_project_names(value: &str) -> Vec<&str> {
+    let mut names = Vec::new();
+    for name in value.split_whitespace() {
+        if !names.contains(&name) {
+            names.push(name);
+        }
+    }
+    names
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn startup_project_names_are_case_sensitive_and_ordered() {
+        assert_eq!(
+            startup_project_names(" XSTARTA\tXSTARTB  XSTARTA xstarta "),
+            ["XSTARTA", "XSTARTB", "xstarta"]
+        );
+    }
 
     #[test]
     fn native_catalog_is_sorted_and_has_pinned_counts() {

@@ -1,0 +1,415 @@
+{
+  "schema": "native-cgate-config-project-start-v1",
+  "captured_utc": "2026-09-28T09:46:37.178129+00:00",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "capture_script_sha256": "d8322911869bb240275c79818ed2e33c4c3b57199f5bc5e18a502bb3bb0b9b39",
+    "physical_endpoint": false,
+    "synthetic_project_db_sha256": {
+      "XSTARTA": "ac66e001d7acc8e13fdb32b3326927da60f7551b46698543bf09a7b2b77e84ec",
+      "XSTARTB": "8abb77ec215c86819565f1c64ed4db4850c4409ddd599cad5b919b6b44db5e4b"
+    },
+    "children": {
+      "seed": {
+        "listeners_owned": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "single_start": {
+        "listeners_owned": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "saved_restart": {
+        "listeners_owned": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "multiple_start": {
+        "listeners_owned": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "missing_start": {
+        "listeners_owned": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    }
+  },
+  "seed": [
+    {
+      "command": "PROJECT NEW XSTARTA",
+      "response": [
+        "[new-a] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XSTARTA",
+      "response": [
+        "[save-a] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT NEW XSTARTB",
+      "response": [
+        "[new-b] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XSTARTB",
+      "response": [
+        "[save-b] 200 OK."
+      ]
+    }
+  ],
+  "single_start": {
+    "cold": [
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[start-get] 303 project.start=XSTARTA"
+        ]
+      },
+      {
+        "command": "CONFIG GET project.default",
+        "response": [
+          "[default-get] 303 project.default=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[list] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[use] 123 project=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT DIRFULL",
+        "response": [
+          "[dir] 123-project=\"XSTARTA\" desc=\"XSTARTA\"",
+          "[dir] 123 project=\"XSTARTB\" desc=\"XSTARTB\""
+        ]
+      }
+    ],
+    "startup_poll": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-0] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-1] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-2] 123 project=XSTARTA state=started"
+        ]
+      }
+    ],
+    "settled": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[settled-list] 123 project=XSTARTA state=started"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[settled-use] 123 project=XSTARTB"
+        ]
+      }
+    ],
+    "runtime": [
+      {
+        "command": "CONFIG SAVE global retained.conf",
+        "response": [
+          "[save-config] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG SET project.start XSTARTB",
+        "response": [
+          "[set-start] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[start-read] 303 project.start=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[list-after-set] 123 project=XSTARTA state=started"
+        ]
+      },
+      {
+        "command": "CONFIG LOAD global retained.conf",
+        "response": [
+          "[load-config] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[start-after-load] 303 project.start=XSTARTA"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[list-after-load] 123 project=XSTARTA state=started"
+        ]
+      }
+    ],
+    "fresh": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[fresh-list] 123 project=XSTARTA state=started"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[fresh-use] 123 project=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LOAD XSTARTB",
+        "response": [
+          "[load-b] 200 OK."
+        ]
+      }
+    ],
+    "default_after_load": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[loaded-list] 123-project=XSTARTA state=started",
+          "[loaded-list] 123 project=XSTARTB state=stopped"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[loaded-use] 123 project=XSTARTB"
+        ]
+      }
+    ],
+    "restart_preparation": [
+      {
+        "command": "CONFIG SET project.start XSTARTB",
+        "response": [
+          "[set-for-restart] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save-for-restart] 200 OK."
+        ]
+      }
+    ]
+  },
+  "saved_restart": {
+    "startup_poll": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-0] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-1] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-2] 123 project=XSTARTB state=started"
+        ]
+      }
+    ],
+    "settled": [
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[restart-get] 303 project.start=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[restart-list] 123 project=XSTARTB state=started"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[restart-use] 123 project=XSTARTB"
+        ]
+      }
+    ]
+  },
+  "multiple_start": {
+    "cold": [
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[start-get] 303 project.start=XSTARTA XMISSING XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[list] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[use] 123 project=XSTARTB"
+        ]
+      },
+      {
+        "command": "PROJECT LOAD XMISSING",
+        "response": [
+          "[missing-load] 408 Operation failed: Project load failed: Error reading db file: Unable to read path '%OWNED_WORK%/Projects/XMISSING/XMISSING.db': file does not exist"
+        ]
+      }
+    ],
+    "startup_poll": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-0] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-1] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[poll-2] 123-project=XSTARTA state=started",
+          "[poll-2] 123 project=XSTARTB state=started"
+        ]
+      }
+    ],
+    "settled": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[settled-list] 123-project=XSTARTA state=started",
+          "[settled-list] 123 project=XSTARTB state=started"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[settled-use] 123 project=XSTARTB"
+        ]
+      }
+    ],
+    "fresh": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[fresh-list] 123-project=XSTARTA state=started",
+          "[fresh-list] 123 project=XSTARTB state=started"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[fresh-use] 123 project=XSTARTB"
+        ]
+      }
+    ]
+  },
+  "missing_start": {
+    "cold": [
+      {
+        "command": "CONFIG GET project.start",
+        "response": [
+          "[start-get] 303 project.start=XMISSING"
+        ]
+      },
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[list] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[use] 123 project=XSTARTB"
+        ]
+      }
+    ],
+    "settled": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[settled-list] 124 no projects found"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[settled-use] 123 project=XSTARTB"
+        ]
+      }
+    ],
+    "manual": [
+      {
+        "command": "PROJECT LOAD XSTARTB",
+        "response": [
+          "[manual-load] 200 OK."
+        ]
+      }
+    ],
+    "fresh": [
+      {
+        "command": "PROJECT LIST",
+        "response": [
+          "[fresh-list] 123 project=XSTARTB state=stopped"
+        ]
+      },
+      {
+        "command": "PROJECT USE",
+        "response": [
+          "[fresh-use] 123 project=XSTARTB"
+        ]
+      }
+    ]
+  }
+}

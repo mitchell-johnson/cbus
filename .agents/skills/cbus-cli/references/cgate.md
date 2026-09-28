@@ -173,7 +173,7 @@ while cmqttd returns 408 so clients do not hang.
 CONFIG state is command compatibility data in cmqttd's atomic JSON repository.
 `LOAD` and `SAVE` retain native response ordering but use bounded internal
 snapshots; a supplied filename is only an identity and is never opened on the
-host. Five source-captured global restart effects are implemented. The listener emits native
+host. Six source-captured global restart effects are implemented. The listener emits native
 level-1 `761 cmdN - Command: ...` entries and, when its startup
 `command.show-responses` value is `yes` (the native default), a level-6 `766`
 entry for each reply line, including multiline replies and errors. Setting it
@@ -187,9 +187,22 @@ project for each new command session once the project exists in the model;
 late project creation activates that original startup name for later sessions.
 `CONFIG SET project.default` updates GET
 immediately but leaves existing and newly opened sessions on the current
-startup selection until the next daemon start. Native C-Gate applies this
-default only after a project is loaded; cmqttd retains all durable projects in
-its atomic JSON model, so its on-disk loaded-project lifecycle differs.
+startup selection until the next daemon start. In the no-start native capture,
+the default became active after its project loaded. With a nonempty
+`project.start`, native selected the configured default even while that
+project was absent from settled `PROJECT LIST`. cmqttd retains all durable
+projects in its atomic JSON model, so its on-disk loaded-project lifecycle differs.
+Nonempty startup `project.start` is sampled as a case-sensitive, space-separated
+list of durable project names. Existing names become started in the runtime
+`PROJECT LIST` view, duplicates collapse, and missing names do not block later
+names. An explicitly saved empty value starts none. Manual project lifecycle commands update that view. Same-process
+CONFIG SET/LOAD changes readback but cannot alter which projects were started;
+the next daemon launch resamples it. The configured MQTT/PCI project remains
+active independently. No vendor project file or additional hardware interface
+is opened. Native startup loading is asynchronous; cmqttd builds its bounded
+view before opening the listener. See
+[`native_cgate_config_project_start.json`](../../../../rust/testdata/fixtures/native_cgate_config_project_start.json)
+and [`cgate_config_project_start.jsonl`](../../../../rust/testdata/vectors/cgate_config_project_start.jsonl).
 GET reflects SET/LOAD immediately, while the current listener retains the
 startup settings. C-Gate event entries redact credential-bearing commands and
 their response payloads; native C-Gate may expose those bytes. Other
@@ -202,7 +215,7 @@ physical C-Bus state.
 `CMQTT CAPABILITIES` publishes the exact command list, catalogue/wildcard
 counts, `config_persistence="cmqttd-json"`,
 `config_runtime_reconfiguration=false`,
-`config_restart_effects=["command.show-responses","command.show-time","event-millis","heartbeat-time","project.default"]`,
+`config_restart_effects=["command.show-responses","command.show-time","event-millis","heartbeat-time","project.default","project.start"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
 and the separate owned restart captures

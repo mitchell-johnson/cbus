@@ -48,7 +48,8 @@ use crate::access::{
 };
 use crate::auth;
 use crate::config::{
-    parameter as config_parameter, ConfigParameter, ConfigScope, CONFIG_HELP, CONFIG_PARAMETERS,
+    parameter as config_parameter, startup_project_names, ConfigParameter, ConfigScope,
+    CONFIG_HELP, CONFIG_PARAMETERS,
 };
 use cbus_protocol::{
     common::{
@@ -693,6 +694,11 @@ pub struct Service {
     /// is checked when each session opens, so loading the originally named
     /// project later can activate it without resampling a same-process SET.
     startup_project_default: Option<String>,
+    /// An explicitly stored startup `project.start` samples durable project names once.
+    /// This runtime view records which named projects were started or later
+    /// loaded; CONFIG SET/LOAD cannot alter it in the current process. The
+    /// configured bridge project remains independently owned by MQTT/PCI.
+    startup_projects: Option<Mutex<BTreeMap<String, bool>>>,
     pci: RwLock<Arc<PciClient>>,
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
@@ -1788,6 +1794,25 @@ impl Service {
         let startup_project_default = config_parameter("project.default")
             .map(|parameter| config_global_value(&model, parameter))
             .filter(|name| !name.is_empty());
+        let startup_projects = config_parameter("project.start")
+            .filter(|parameter| {
+                model
+                    .config_values
+                    .contains_key(&config_key(&ConfigObject::Global, parameter.name))
+            })
+            .map(|parameter| config_global_value(&model, parameter))
+            .map(|value| {
+                let mut projects = BTreeMap::new();
+                for name in startup_project_names(&value) {
+                    // Unlike vendor C-Gate, cmqttd has no Schneider project
+                    // directory. Only already durable JSON projects can be
+                    // started; a missing name does not stop later names.
+                    if model.projects.contains_key(name) {
+                        projects.insert(name.to_string(), true);
+                    }
+                }
+                Mutex::new(projects)
+            });
         let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
@@ -1798,6 +1823,7 @@ impl Service {
             heartbeat_interval,
             heartbeat_started: OnceLock::new(),
             startup_project_default,
+            startup_projects,
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
             pci_generation_gate: Mutex::new(()),
@@ -1830,6 +1856,37 @@ impl Service {
             .projects
             .contains_key(name)
             .then(|| name.clone())
+    }
+
+    /// Report the startup project's loaded/started view with native LIST
+    /// envelopes. This view is enabled when `project.start` was explicitly
+    /// stored at launch, preserving the existing all-durable-project approximation
+    /// for installations that have not opted into this lifecycle setting.
+    async fn startup_project_list(&self, tag: &str) -> Option<Response> {
+        let projects = self.startup_projects.as_ref()?.lock().await;
+        let mut rows = projects
+            .iter()
+            .map(|(name, started)| {
+                format!(
+                    "project={name} state={}",
+                    if *started { "started" } else { "stopped" }
+                )
+            })
+            .collect::<Vec<_>>();
+        let Some(last) = rows.pop() else {
+            return Some(Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "124 no projects found".to_string(),
+                status: 124,
+            });
+        };
+        Some(Response {
+            tag: tag.to_string(),
+            lines: rows,
+            final_text: format!("123 {last}"),
+            status: 123,
+        })
     }
 
     /// Arm the optional shared-secret LOGIN gate with the SHA-256 digest of
@@ -2504,6 +2561,11 @@ impl Service {
         if verb == "PROJECT" && (words.len() == 1 || (words.len() == 2 && words[1] == "?")) {
             return command_help(tag, PROJECT_HELP);
         }
+        if verb == "PROJECT" && sub == "LIST" && words.len() == 2 {
+            if let Some(response) = self.startup_project_list(tag).await {
+                return response;
+            }
+        }
         if verb == "PROJECT" && sub == "USE" && words.len() == 2 {
             return Response {
                 tag: tag.to_string(),
@@ -2874,7 +2936,8 @@ impl Service {
                 "command.show-time",
                 "event-millis",
                 "heartbeat-time",
-                "project.default"
+                "project.default",
+                "project.start"
             ]);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
@@ -3692,7 +3755,19 @@ impl Service {
             return self.net_lifecycle(client, tag, &words, &upper).await;
         }
         if verb == "PROJECT" && matches!(sub, "START" | "STOP") {
-            return self.project_start_stop(client, tag, &words).await;
+            let response = self.project_start_stop(client, tag, &words).await;
+            if response.status == 200 {
+                if let Some(projects) = &self.startup_projects {
+                    let name = words
+                        .get(2)
+                        .filter(|name| !name.starts_with('@') && !name.starts_with("//@"))
+                        .map(|name| (*name).to_string())
+                        .or_else(|| client.current.clone())
+                        .unwrap_or_else(|| self.project.clone());
+                    projects.lock().await.insert(name, sub == "START");
+                }
+            }
+            return response;
         }
         if verb == "TOPOLOGY" && sub == "EXPLORE" {
             return self.topology_explore(tag, &words).await;
@@ -4075,6 +4150,41 @@ impl Service {
             }
         }
         client.current = model.current.clone();
+        if verb == "PROJECT" && response.status < 400 {
+            if let Some(projects) = &self.startup_projects {
+                let mut projects = projects.lock().await;
+                match sub {
+                    "LOAD" => {
+                        if let Some(name) = words.get(2) {
+                            projects.entry((*name).to_string()).or_insert(false);
+                        }
+                    }
+                    "NEW" => {
+                        if let Some(name) = words.get(2) {
+                            projects.insert((*name).to_string(), false);
+                        }
+                    }
+                    "CLOSE" => {
+                        if let Some(name) = words.get(2).copied().or(before.current.as_deref()) {
+                            projects.remove(name);
+                        }
+                    }
+                    "DELETE" => {
+                        if let Some(name) = words.get(2) {
+                            projects.remove(*name);
+                        }
+                    }
+                    "RENAME" => {
+                        if let (Some(from), Some(to)) = (words.get(2), words.get(3)) {
+                            if let Some(started) = projects.remove(*from) {
+                                projects.insert((*to).to_string(), started);
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
         for event in model.drain_events() {
             let _ = self.events.send(self.event_with_startup_precision(event));
         }
@@ -4240,7 +4350,7 @@ impl Service {
 
     /// Native-shaped CONFIG catalogue and scoped value workflow backed by
     /// cmqttd's atomic JSON repository. Evidenced restart keys, including
-    /// `project.default`, are sampled when the service starts; mutations
+    /// `project.default` and `project.start`, are sampled when the service starts; mutations
     /// cannot change the running listener's selection. Other values remain
     /// command data. LOAD/SAVE snapshots stay inside the repository and
     /// cannot be used as an arbitrary host-file interface.

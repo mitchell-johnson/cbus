@@ -16716,6 +16716,181 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
 }
 
 #[tokio::test]
+async fn config_project_start_samples_durable_names_and_runtime_lifecycle_at_restart() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_project_start.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-config-project-start-v1");
+    assert_eq!(
+        native["single_start"]["settled"][0]["response"],
+        serde_json::json!(["[settled-list] 123 project=XSTARTA state=started"])
+    );
+    assert_eq!(
+        native["multiple_start"]["settled"][0]["response"],
+        serde_json::json!([
+            "[settled-list] 123-project=XSTARTA state=started",
+            "[settled-list] 123 project=XSTARTB state=started"
+        ])
+    );
+
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let first = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for name in ["XSTARTA", "XSTARTB"] {
+        assert_eq!(
+            first
+                .handle(&mut client, &format!("[new] PROJECT NEW {name}"))
+                .await
+                .status,
+            200
+        );
+    }
+    assert_eq!(
+        first
+            .handle(
+                &mut client,
+                "[start] CONFIG SET project.start XSTARTA XMISSING XSTARTB XSTARTA"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        first
+            .handle(&mut client, "[default] CONFIG SET project.default XSTARTB")
+            .await
+            .status,
+        200
+    );
+    assert!(first.startup_projects.is_none());
+    drop(first);
+
+    let (pci_client, _remote) = pci();
+    let second = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut new_client = ClientState::default();
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[use] PROJECT USE")
+            .await
+            .final_text,
+        "123 project=XSTARTB"
+    );
+    let list = second.handle(&mut new_client, "[list] PROJECT LIST").await;
+    assert_eq!(list.status, 123);
+    assert_eq!(list.lines, ["project=XSTARTA state=started"]);
+    assert_eq!(list.final_text, "123 project=XSTARTB state=started");
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[save] CONFIG SAVE global retained.conf")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[set] CONFIG SET project.start XSTARTB")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[read] CONFIG GET project.start")
+            .await
+            .final_text,
+        "303 project.start=XSTARTB"
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[still] PROJECT LIST")
+            .await
+            .lines,
+        ["project=XSTARTA state=started"]
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[load] CONFIG LOAD global retained.conf")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[restored] CONFIG GET project.start")
+            .await
+            .final_text,
+        "303 project.start=XSTARTA XMISSING XSTARTB XSTARTA"
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[stop] PROJECT STOP XSTARTA")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[stopped] PROJECT LIST")
+            .await
+            .lines,
+        ["project=XSTARTA state=stopped"]
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[close-b] PROJECT CLOSE XSTARTB")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second
+            .handle(&mut new_client, "[load-b] PROJECT LOAD XSTARTB")
+            .await
+            .status,
+        200
+    );
+    let loaded = second
+        .handle(&mut new_client, "[loaded] PROJECT LIST")
+        .await;
+    assert_eq!(loaded.lines, ["project=XSTARTA state=stopped"]);
+    assert_eq!(loaded.final_text, "123 project=XSTARTB state=stopped");
+    drop(second);
+
+    let (pci_client, _remote) = pci();
+    let third = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let list = third
+        .handle(&mut ClientState::default(), "[again] PROJECT LIST")
+        .await;
+    assert_eq!(list.lines, ["project=XSTARTA state=started"]);
+    assert_eq!(list.final_text, "123 project=XSTARTB state=started");
+    assert_eq!(
+        third
+            .handle(
+                &mut ClientState::default(),
+                "[empty] CONFIG SET project.start"
+            )
+            .await
+            .status,
+        200
+    );
+    drop(third);
+
+    let (pci_client, _remote) = pci();
+    let fourth = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(
+        fourth
+            .handle(&mut ClientState::default(), "[empty-list] PROJECT LIST")
+            .await
+            .final_text,
+        "124 no projects found"
+    );
+    drop(fourth);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io() {
     let path = state_path();
     let (pci_client, mut remote) = pci();
@@ -16902,7 +17077,8 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             "command.show-time",
             "event-millis",
             "heartbeat-time",
-            "project.default"
+            "project.default",
+            "project.start"
         ])
     );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
