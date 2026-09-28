@@ -174,6 +174,15 @@ cbus-toolkit project export demo.cbz demo.xml --format xml
 
 Use a scratch directory for examples. Edits preserve unknown XML and programming fields; `--output` directs an edit to a separate copy. Native C-Gate 3 SQLite projects use C-Gate operations instead of this legacy-file editor.
 
+For a damaged legacy XML file, `cbus-toolkit project repair SOURCE --dry-run`
+previews the bounded lexical/XSLT-equivalent result, and `--output NEWFILE`
+creates a separate file exclusively. The first stage always reads source bytes
+as Java UTF-8. Later XML stages admit UTF-8 and a captured XML1.0
+ISO-8859-1 declaration case; an ISO declaration can therefore yield mojibake
+after the first read. Check the output and its `native_load_verified: false`
+receipt before any separate native load. See
+`toolkit-cli/docs/project-repair.md` for admitted cases and failure bounds.
+
 ## C-Gate client
 
 ```sh

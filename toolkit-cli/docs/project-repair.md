@@ -42,20 +42,34 @@ namespace declarations. Python3.10 and3.13 produce equivalent XML semantics.
 Declaration spelling, namespace placement, empty-element spelling and bytes
 need not match the vendor serializer. CDATA becomes ordinary text.
 
-The XML stages require XML1.0 and UTF-8, reject DTD/entity declarations and
-UTF-16, and default to an8MiB byte limit,100,000 nodes and128 element levels.
+The XML stages admit XML1.0 with UTF-8 or an explicit ISO-8859-1 declaration.
+The full pipeline always performs its first, manual read as UTF-8, even when the
+source declares ISO-8859-1. The committed original C-Gate cases
+`iso-declaration-repair`, `iso-declaration-tidy` and `iso-declaration-full`
+establish this distinction: source bytes `C3 A9` under the ISO declaration
+become UTF-8 `C3 83 C2 A9` (`Ã©`) in the output. The Python stages and the
+integrated `project repair` command now match all three literal native outputs;
+the command also preserves the source file and verifies the new output bytes in
+its focused test. The [scoped receipt](../research/fixtures/project-repair-iso8859-scoped-receipt.json)
+binds those stable case IDs, source hashes, focused command, skips and remaining
+scope. This is a captured encoding case, not proof that every
+ISO-8859-1 project loads into a native repository. Other declared encodings,
+XML1.1, DTD/entity declarations and UTF-16 remain outside the admitted XML
+stages. The byte limit defaults to8MiB, with100,000 nodes and128 element levels.
 API limits can be selected explicitly up to64MiB/1,000,000/256. The node limit
 counts attributes and parser text/comment/PI events before DOM allocation;
 adjacent text events are counted conservatively even if the DOM merges them.
 Input, intermediate and output byte bounds all apply. The lexical-only API
 accepts malformed UTF-8; successful lexical processing does not imply valid XML.
 
-The [portable acceptance](../research/fixtures/project-repair-portable-acceptance.json)
+The historical [portable acceptance](../research/fixtures/project-repair-portable-acceptance.json)
 passes13 tests on each of Python3.13.14 and3.10.20 with zero skips. Each run
 executes3,036 lexical and159 transform cases against unchanged original
 C-Gate3.4.0.2001 Java methods and exact vendor stylesheets. Of the transform
-cases,144 compare supported outcomes and15 establish explicit XML-version or
-encoding exclusions. The Windows newline cases set the original Java process's
+cases,144 compare then-supported outcomes and15 record then-excluded XML-version
+or encoding inputs. The three ISO-8859-1 rows are newly admitted from those
+unchanged native captures; the earlier receipt's counts and hashes remain
+historical. The Windows newline cases set the original Java process's
 line separator to CRLF on the Mac; they do not claim a Windows Java run.
 Exact accepted sources, fixtures and tests are archived. CLI filesystem and
 native-load acceptance are recorded separately.

@@ -1,7 +1,7 @@
 """Portable equivalents of C-Gate's lexical repair and two repair stylesheets.
 
 This operates on bytes, without changing a file or C-Gate repository. The XML
-stages support bounded XML 1.0/UTF-8 without DTDs. Output preserves XML semantics,
+stages support bounded XML 1.0/UTF-8 and declared ISO-8859-1 without DTDs. Output preserves XML semantics,
 not vendor serialization bytes; a repaired document has not been load-tested.
 """
 from __future__ import annotations
@@ -80,20 +80,17 @@ def preprocess_project_xml(data: bytes, *, line_ending: str = "lf",
 
 
 def _parse(data: bytes, stage: str, max_nodes: int, max_depth: int) -> minidom.Document:
-    # Expat also auto-detects UTF-16. The original repair pipeline reads UTF-8,
-    # and direct XML-stage support is intentionally limited to that encoding.
-    try:
-        data.decode("utf-8", "strict")
-    except UnicodeError as error:
-        raise ProjectRepairError("XML stages require valid UTF-8", stage=stage) from error
+    # Expat decodes the declared XML encoding, including ISO-8859-1. The full
+    # pipeline's preceding manual step still reads source bytes as Java UTF-8;
+    # retaining that order reproduces its observed double-decoding case.
     if b"\x00" in data:
         raise ProjectRepairError("NUL and UTF-16 XML are unsupported", stage=stage)
     parser = expat.ParserCreate()
     depth, nodes = 0, 1  # Include the document itself.
 
     def declaration(version, encoding, standalone):
-        if version != "1.0" or encoding is not None and encoding.lower() not in ("utf-8", "utf8"):
-            raise ProjectRepairError("XML stages require XML 1.0 with UTF-8 encoding", stage=stage)
+        if version != "1.0" or encoding is not None and encoding.lower() not in ("utf-8", "utf8", "iso-8859-1"):
+            raise ProjectRepairError("XML stages require XML 1.0 with UTF-8 or ISO-8859-1 encoding", stage=stage)
 
     def doctype(*_):
         raise ProjectRepairError("DTD and entity declarations are unsupported", stage=stage)

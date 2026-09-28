@@ -1,0 +1,138 @@
+{
+  "format": "cbus-project-repair-iso8859-scoped-receipt-v1",
+  "observed_at_utc": "2026-09-28T01:52:38.079581+00:00",
+  "work_item_id": "P8.01",
+  "obligation_ids": [
+    "ledger:native-project-repair"
+  ],
+  "scope_status": "partial_accepted_case_issue_open",
+  "base_revision": "f6a272bafcf7aaffb9293cc5d3cc202e2d414eb0",
+  "integrated_revision": "the commit enclosing this receipt; parent integration is separate",
+  "native_target": "C-Gate 3.4.0.2001 original transform methods; Toolkit 1.18.0.2754 work item",
+  "native_case_source": {
+    "path": "research/fixtures/project-repair-vectors.json",
+    "sha256": "131c02c50ffde57a09b1ccf61162b13330cb8f761e6148ab2b961ecef86e5228",
+    "original_transform_report_sha256": "f29ef76b32be18e362824e1186afeeceaaee8582f0e65415aa25277e67193509",
+    "original_cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "original_repair_xslt_sha256": "f61c3dbb75fca6f9487ec73e25ccc6aece817104dfb66a17071e38bf40ca52aa",
+    "original_tidy_xslt_sha256": "02f0f7f4ccb9130a78bd46e1fd0b0908b96ed6c5e15b3392087c55583bd36969",
+    "captured_before_this_change": true,
+    "historical_supported_field": "false in the prior UTF-8-only acceptance; original status/output remain unchanged"
+  },
+  "cases": [
+    {
+      "id": "P8.01-ISO-REPAIR-01",
+      "native_vector_id": "iso-declaration-repair",
+      "operation": "repair",
+      "native_status": "OK",
+      "input_sha256": "7ab99cfe516f04645cd145075dcb570844e3b1513d6950abbdc193015ab5d75d",
+      "expected_output_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "expected_output_bytes": 538,
+      "independent_expected_source": "unchanged literal original C-Gate output_hex in project-repair-vectors.json"
+    },
+    {
+      "id": "P8.01-ISO-TIDY-01",
+      "native_vector_id": "iso-declaration-tidy",
+      "operation": "tidy",
+      "native_status": "OK",
+      "input_sha256": "7ab99cfe516f04645cd145075dcb570844e3b1513d6950abbdc193015ab5d75d",
+      "expected_output_sha256": "bdd6adf339b448e9ce108dba1e1d6a3cc39ebe36ffbb602a0f1c2ede06b54f45",
+      "expected_output_bytes": 81,
+      "independent_expected_source": "unchanged literal original C-Gate output_hex in project-repair-vectors.json"
+    },
+    {
+      "id": "P8.01-ISO-FULL-01",
+      "native_vector_id": "iso-declaration-full",
+      "operation": "full",
+      "native_status": "OK",
+      "input_sha256": "7ab99cfe516f04645cd145075dcb570844e3b1513d6950abbdc193015ab5d75d",
+      "expected_output_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "expected_output_bytes": 538,
+      "independent_expected_source": "unchanged literal original C-Gate output_hex in project-repair-vectors.json"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "P8.01-ENCODING-REJECT-01",
+      "input": "XML 1.0 declarations US-ASCII, windows-1252, UTF-16",
+      "outcome": "ProjectRepairError before DOM allocation; outside admitted parser profile"
+    },
+    {
+      "id": "P8.01-UTF16-REJECT-01",
+      "input": "captured UTF-16 BOM/no-BOM original vectors",
+      "outcome": "native-rejected domain remains unsupported; no invented recovery"
+    },
+    {
+      "id": "P8.01-XML11-PENDING-01",
+      "input": "captured XML 1.1 vector",
+      "outcome": "original accepts; Python still rejects pending broader XML 1.1 semantics"
+    }
+  ],
+  "source_hashes": {
+    "src/cbus_toolkit/project_repair.py": "4e7c425f4afc91807b042faf90b78fcf7a694600671779aa807c40a9fc0dd22f",
+    "tests/test_project_repair.py": "61a2d85b1bd02db9a572b0f18fa84a41cc3e6851bd54106131e24bdf390e41a5",
+    "tests/test_project_repair_cli.py": "571e7e6b0fb6a9e4d6b24f51ff3d3c4394a84cd212d27ec0eb04065c044d3760",
+    "src/cbus_toolkit/capabilities.json": "7edb8d62208cdb2bf39b804999041f5b25ccbc49c49e54c3f318efeacb4cdd92",
+    "src/cbus_toolkit/parity-obligations.json": "a4231251a828e8bd5c6dbc6bcf214661c3f42b13252e95d2cbdb726e237e8a24"
+  },
+  "installed_artifact": {
+    "wheel_built": false,
+    "reason": "focused source-tree CLI acceptance only; no installed-wheel claim"
+  },
+  "focused_validation": {
+    "command": "PYTHONPATH=src:tests python3.13 -m unittest tests.test_project_repair tests.test_project_repair_cli -v",
+    "cwd": "toolkit-cli",
+    "python": "3.13.14",
+    "exit_code": 0,
+    "tests_run": 31,
+    "passed": 28,
+    "skipped": 3,
+    "skip_reason": "three fresh-original tests require pinned local Java 11 JDK and vendor C-Gate jar/stylesheets absent from this checkout"
+  },
+  "required_gates_not_run": [
+    "make check",
+    "make check-interop",
+    "fresh original Java oracle",
+    "fresh native PROJECT LOAD for ISO output",
+    "Windows x86/AMD64 acceptance"
+  ],
+  "required_gates_not_run_reason": "user directed no full local suites; original pinned software and Windows runtime not available in assigned worktree",
+  "physical_io": "not applicable to this offline XML stage; no C-Gate service or hardware endpoint contacted",
+  "native_load": "not verified for newly admitted ISO output; native_load_verified remains false",
+  "remaining_scope": [
+    "XML 1.1 native-supported inputs",
+    "other native-supported declared encodings",
+    "native loadability and version transforms",
+    "arbitrary corrupt project and full Toolkit repair workflow"
+  ],
+  "invalidation": [
+    "change to repair parser, lexical stage, transform order or CLI write path",
+    "change to the pinned vector inputs/outputs or original source pins",
+    "different original C-Gate or Python XML parser/runtime",
+    "claims about native loading, repository persistence or unsupported encodings"
+  ],
+  "coverage_validation": {
+    "command": "PYTHONPATH=src:tests python3.13 -m unittest tests.test_coverage_require_complete -v",
+    "cwd": "toolkit-cli",
+    "exit_code": 0,
+    "tests_run": 2,
+    "passed": 2,
+    "skipped": 0,
+    "first_attempt": "failed 2 tests because the parity register still pinned the previous feature-ledger hash; source_digests.feature_ledger was updated and the same focused command passed"
+  },
+  "inferred_standard_case": {
+    "id": "P8.01-ISO-DIRECT-HIGH-BYTE-01",
+    "input": "direct repair/tidy XML stage with ISO-8859-1 declaration and literal E9 text byte",
+    "expected": "XML decoder maps E9 to U+00E9; UTF-8 serializer writes C3 A9",
+    "basis": "XML 1.0 ISO-8859-1 encoding semantics; separate native execution not captured"
+  },
+  "native_fixture_validation": {
+    "command": "PYTHONPATH=src:tests python3.13 -m unittest tests.test_project_repair_native -v",
+    "cwd": "toolkit-cli",
+    "exit_code": 0,
+    "tests_run": 4,
+    "passed": 2,
+    "skipped": 2,
+    "skip_reason": "two isolated native PROJECT LOAD tests require selected Java 11/vendor installation; the two committed-fixture checks passed"
+  }
+}

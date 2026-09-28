@@ -254,6 +254,21 @@ class ProjectRepairFileTests(unittest.TestCase):
         self.assertEqual(self.target.read_bytes(), before)
         self.assertEqual(self.source.read_bytes(), self.original)
 
+    def test_integrated_cli_declared_iso_8859_1_matches_native_full_output(self):
+        fixture = Path(__file__).resolve().parents[1] / 'research/fixtures/project-repair-vectors.json'
+        rows = json.loads(fixture.read_text())['transform_rows']
+        native = next(row for row in rows if row['id'] == 'iso-declaration-full')
+        source = bytes.fromhex(native['input_hex'])
+        expected = bytes.fromhex(native['output_hex'])
+        self.source.write_bytes(source)
+        preview = self.invoke_cli(self.source, '--dry-run')
+        self.assertEqual(preview['repair']['output_sha256'], sha256(expected).hexdigest())
+        result = self.invoke_cli(self.source, '--output', self.target)
+        self.assertTrue(result['complete'])
+        self.assertEqual(self.target.read_bytes(), expected)
+        self.assertEqual(self.source.read_bytes(), source)
+        self.assertFalse(result['native_load_verified'])
+
     def test_integrated_cli_interruption_retains_exact_partial_write_evidence(self):
         class First(KeyboardInterrupt):
             def __setattr__(self, name, value):
