@@ -2,21 +2,21 @@
   "admitted_inputs": {
     "base_harness": "research/windows_preferences_cli_repeat_native.py",
     "base_harness_sha256": "a8a8fc6d8c45fd8111fdcae29c7d996eecc2ca7e020fd77f4d0547928e02edd6",
-    "command_sha256": "a052ad2cd10863d42b60899a020b9c203a6b38e96d6c4d85a4b3db79d2b79134",
+    "command_sha256": "3be749275e113f18c49035c3e9bee42009cea016d5f45f97e6cc465a95e55e35",
     "constructed_fixture_sha256": "0bebdf5cf5b6113b1f6b0440623bce52f7b68039ebe1a0a09ea433627509dca3",
-    "fresh_test_namespace": "native-p902i-808c5f1f5a",
+    "fresh_test_namespace": "native-p902i-0d46fc6152",
     "harness": "research/windows_preferences_cli_repeat_interactive.py",
-    "harness_sha256": "fb59703f85cb80f680231b46333767f93ecbaf4984e565149b622140d521ca64",
+    "harness_sha256": "44563c9d10bb0402df9b346a77bd3a263cf34658c4a9ee353ce9e58c281abf27",
     "launcher_executable_sha256": "0aeeb04790e9913fec356e208812da440363c2da1a65e8c28fbd6f5a30b03273",
     "launcher_source": "research/WindowsInteractiveOwnedProcessLauncher.cs",
     "launcher_source_sha256": "a46664c20ec8b17be3ea097b70a3d96659d4e2eaf7937e3f33b540084c338d7d",
-    "one_attempt_admission_marker_sha256": "a3173e5f9c921d2cbf9a40f4958781a2c4e587c8c860a1483416389dbd5b96d7"
+    "one_attempt_admission_marker_sha256": "98c0a17afdcb06ae64af5d6e0b0ca2b32831afbd8b6cbd8e6b8e3211acfe83b7"
   },
   "applicability": {
     "full_local_suite": "deferred under user no-full-suite instruction",
     "interactive_cli_two_load_registry32": "accepted for one active console user and exact wheel",
     "local_system_cli_two_load_registry32": "separate prior receipt",
-    "original_gui_same_user": "not accepted; original executable has no scratch registry namespace hook in this harness",
+    "original_gui_same_user": "separate bounded selected startup/default case accepted; see original GUI receipt; no direct same-instance trace",
     "physical_cbus": "not applicable to this preference-only scratch registry case"
   },
   "base_revision": "f0f8839ddca47eeb5362eb9d5679acf4c5370786",
@@ -61,9 +61,10 @@
     "This receipt cannot be promoted to original GUI same-user or whole preference/update workflow parity."
   ],
   "limits": [
-    "The original Toolkit 1.18 GUI was not run in this interactive account; the comparison remains to a frozen original x86 manager bytecode fixture.",
-    "The original executable manager fixture intercepts registry operations. Full GUI startup, logging/C-Gate effects, real-user preference transition and broader cultures/providers remain unaccepted.",
-    "The test adapter mapped only Toolkit preference keys into an owned HKCU Registry32 namespace; the fixed Toolkit keys and state file were independently hashed unchanged.",
+    "The frozen original x86 manager fixture supplies exact two-load in-memory values. A separate same-user original GUI run observes only the selected stored ShowProjectManager startup/default transition.",
+    "The original GUI manager was not instrumented for same-instance reads, lazy wrapper/cache behavior, culture, logging or C-Gate effects.",
+    "The test adapter mapped only Toolkit preference keys into an owned HKCU Registry32 namespace; fixed Toolkit value trees and the state file were independently checked unchanged.",
+    "Namespace admission is atomic; cleanup requires a matching owner marker. If creation or marker write partially fails, an unmarked scratch key is retained for review, never deleted without proven ownership.",
     "No full local suite was run per the user instruction."
   ],
   "native_result": {
@@ -98,10 +99,17 @@
       ]
     },
     "launch_child_exit_code": 0,
-    "launch_raw_sha256": "668a3e27cb86d4d364215e5c287c0adf4f93b41c7be19b838c73cdb993f25932",
+    "launch_raw_sha256": "e0a6ff5c956e458b78057292d6d794e0561fdb910e1deb8ef0127798b6ccb80e",
+    "namespace_claimed_fresh": true,
+    "namespace_never_deleted_without_owner": true,
+    "namespace_ownership_confirmed_before_cleanup": true,
+    "negative_empty_checks_rejected": true,
+    "negative_invalid_namespace_rejected": true,
+    "negative_missing_required_check_rejected": true,
+    "negative_preexisting_namespace_preserved": true,
     "owned_namespace_absent_after_cleanup": true,
     "passed": true,
-    "result_raw_sha256": "8928add7149760a6fd6c9f33c714d72585468ace0426bb4c212177435c9ed566",
+    "result_raw_sha256": "1a6ab612261627be8fea1392ef51adf0c2af5f7d17186df04c61d1c69b4bebcb",
     "second_receipt": {
       "complete": true,
       "default_write_count": 2,
@@ -118,11 +126,12 @@
     "first_and_second_expected_value_count": 40,
     "fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
     "fixture_sha256": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
-    "same_interactive_user_original_executed": false,
-    "source": "frozen original x86 manager bytecode fixture; no fresh original GUI run",
+    "original_gui_executed_in_this_cli_run": false,
+    "separate_later_same_user_gui_executed": true,
+    "source": "frozen x86 manager bytecode fixture for both in-memory loads; separate bounded original GUI same-user startup receipt for stored default only",
     "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
   },
-  "scope": "One exact installed-wheel Python CLI two-load case on the disposable UTM Windows 11 guest under the active logged-in desktop user, using an owned HKCU Registry32 scratch subtree. Frozen original-manager x86 fixture comparison only; original Toolkit GUI not run in this acceptance.",
+  "scope": "One exact installed-wheel Python CLI two-load case on the disposable Windows 11 guest under the active desktop user, using an owned HKCU Registry32 scratch subtree. Frozen original-manager x86 fixture provides both 40-value expectations; the separate original GUI receipt covers only one stored startup/default case.",
   "source_sha256": {
     "_windows_process_token.py": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae",
     "cli.py": "30aacdb19cd7314b1609a0391821f5a476bc57f2d165879702f8e16e2bc67fb0",

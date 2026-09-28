@@ -103,11 +103,14 @@ that account in this CLI test. A later
 ran the exact pinned Toolkit 1.18 executable twice after snapshotting the six
 fixed Registry32 Toolkit keys and the CLI state file. With
 `ShowProjectManager` removed after the snapshot, the original process left
-its stored value `True` after both launches. The original GUI processes were
-stopped at bounded times, then the keys and file were restored or verified
-unchanged. This supports one startup/default persistence comparison in the
-same user. It does not trace same-instance manager reads, the lazy wrapper,
-culture, rendering, logging or C-Gate effects.
+its stored value `True` after both launches. Both original process trees were
+stopped at their bounds and absent before restoration; the six fixed Registry32
+value trees were restored or verified unchanged, the private exports removed,
+and the state file verified unchanged. The value-tree hashes cover key names,
+value names, types, data and child hierarchy, but do not attest ACLs or
+last-write metadata. This supports one startup/default persistence comparison
+in the same user. It does not trace same-instance manager reads, the lazy
+wrapper, culture, rendering, logging or C-Gate effects.
 
 The adapter explicitly requests the 32-bit registry view. Reads retain the bytes returned by `RegQueryValueExW`. String writes require valid terminated UTF-16 before any key is opened, including two terminators for `REG_MULTI_SZ`. This follows the [Microsoft write contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw); existing malformed strings can still be observed through the raw adapter, as allowed by the [query contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryvalueexw).
 

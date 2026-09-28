@@ -1,12 +1,13 @@
 {
   "admitted_inputs": {
-    "command_sha256": "264b1710a3e56a869cc4b3a79323546549310351274f097f9730fc25031c4895",
-    "launcher_result_raw_sha256": "5429f212496582c2b81a8f8567f7d6272b12d2082887d115155d009c998b280b",
+    "command_sha256": "b68e8a8d6af31ea3e7dc96435658f8151a299cfbb7ae4331065ba1aadfc050ff",
+    "launcher_result_raw_sha256": "39898b96479d200d20b44791ea90965cbf82321d01c41218bf3ef03f05d98d7a",
     "launcher_source": "research/WindowsInteractiveOwnedProcessLauncher.cs",
     "launcher_source_sha256": "a46664c20ec8b17be3ea097b70a3d96659d4e2eaf7937e3f33b540084c338d7d",
-    "native_result_raw_sha256": "d3c06180c6a69d27908748685b0bf1217df1cafd0e4b665e3c4fc4193973ed22",
+    "native_result_raw_sha256": "e8f932792020cbee78b7af2ca4f49eb315f8ff2f3fc1802b03c5fc6de52d8a5a",
+    "one_attempt_admission_marker_sha256": "b694bd9ae520e6adb41f09960cce95d35c065d56f7c2341595bfe62413a78a74",
     "original_gui_harness": "research/windows_preferences_original_gui_same_user.py",
-    "original_gui_harness_sha256": "c9a37b3d52e5b0208cd6248467ac597b9c5e8dd77a0eaeb38d2432cac5a21f8a",
+    "original_gui_harness_sha256": "83650b1bb6ef9ef4ece6cb1cd9a36cb2fe23d91b748772f5cf95ed118a6b02fc",
     "post_process_check_raw_sha256": "943b315e065238b7073b033f534ef954b6b6461fb3f03a3f5b8555b11bc4c0a2",
     "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -23,14 +24,21 @@
   "observations": {
     "first_gui_alive_at_20_second_bound": true,
     "first_gui_process_created": true,
+    "first_gui_process_tree_stop_succeeded": true,
     "first_gui_show_project_manager_after": "True",
     "interpretation": "With the user-hive ShowProjectManager value deliberately absent, original GUI startup left the stored value True after its first launch and it remained True after a second launch. This is selected startup/default persistence evidence, not an instrumented trace of the manager load method or in-memory first/second values.",
+    "negative_backup_partial_export_cleanup_passed": true,
+    "negative_missing_observation_rejected": true,
     "original_gui_process_absent_after_bounded_stops": true,
     "original_gui_rendering_or_lazy_wrapper_directly_observed": false,
+    "original_manager_default_observed": true,
     "same_instance_second_read_directly_observed": false,
     "second_gui_alive_at_10_second_bound": true,
     "second_gui_process_created": true,
-    "second_gui_show_project_manager_after": "True"
+    "second_gui_process_tree_stop_succeeded": true,
+    "second_gui_show_project_manager_after": "True",
+    "seeded_missing_show_project_manager": true,
+    "selected_case_passed": true
   },
   "original_executable": {
     "guest_manifest_sha256": "689931140e99a8366021073dd5980d2e43dbb61059eef0a488b69e8d856f69cc",
@@ -47,19 +55,22 @@
     "vendor_files_staged_in_disposable_guest_directory": true
   },
   "preservation": {
-    "all_fixed_hkcu_keys_restored_by_delete_then_import_and_tree_hash": true,
-    "all_fixed_hklm_keys_unchanged_by_tree_hash": true,
+    "all_fixed_hkcu_value_trees_restored_by_snapshot_hash": true,
+    "all_fixed_hklm_value_trees_unchanged_by_snapshot_hash": true,
     "cli_state_file_restored_if_needed": true,
     "cli_state_file_unchanged": true,
     "disposable_vendor_staging_removed": true,
-    "private_guest_registry_export_files_removed": true
+    "hkcu_restore_method": "delete-import-value-tree",
+    "private_guest_registry_export_files_removed": true,
+    "restoration_verified": true,
+    "value_tree_hash_scope": "key names, value names, decoded data/types and child hierarchy; not ACLs, last-write metadata or raw registry bytes"
   },
   "remaining": [
     "The original GUI manager was not instrumented for direct first/second same-instance in-memory reads or lazy wrapper cache behavior.",
     "Only the ShowProjectManager startup/default persistence case was selected; broader preference runtime effects, logging, C-Gate and cultures/providers remain open.",
     "The two GUI processes were stopped at explicit bounds, not closed through full interactive GUI workflows."
   ],
-  "scope": "Two bounded startups of pinned original Toolkit 1.18 GUI under the same active console user as the installed-wheel CLI acceptance. Fixed Registry32 keys and the CLI state file were snapshotted and restored; original binaries were copied into disposable guest staging.",
+  "scope": "Two bounded startups of pinned original Toolkit 1.18 GUI under the same active console user as the installed-wheel CLI acceptance. Six fixed Registry32 value trees and CLI state file were snapshotted, restored or verified unchanged; original binaries were copied into disposable guest staging.",
   "status": "passed_bounded_original_gui_startup",
   "user_context": {
     "active_console_session_id": 1,
@@ -73,8 +84,10 @@
     "failures": 0,
     "full_local_suite": "deferred per user instruction",
     "native_command_exit_file": "0",
+    "native_complete": true,
     "native_launcher_exit": 0,
     "registry_restore_complete": true,
+    "selected_case_passed": true,
     "skips": 0
   },
   "work_item": "P9.02 / GitHub issue #61"

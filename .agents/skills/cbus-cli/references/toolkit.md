@@ -129,8 +129,10 @@ session 1, each with scratch-key cleanup. See the
 [interactive receipt](../../../../toolkit-cli/research/experiments/2026-09-28/preference-interactive-repeat.json).
 The pinned original GUI was then run twice in that account after snapshotting
 the fixed Toolkit keys. A missing `ShowProjectManager` value became `True`
-after the first startup and stayed `True` after the second; all fixed keys were
-restored or verified unchanged. See the
+after the first startup and stayed `True` after the second; both bounded
+process trees were stopped and the fixed Registry32 value trees restored or
+verified unchanged, with private exports removed. The hashes cover values,
+types and subkey hierarchy, not ACLs or last-write metadata. See the
 [original GUI receipt](../../../../toolkit-cli/research/experiments/2026-09-28/preference-original-gui-same-user.json).
 This does not directly prove same-instance manager reads, lazy wrapper/culture
 behavior or logging/C-Gate effects.

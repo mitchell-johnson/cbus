@@ -1,50 +1,90 @@
 {
-  "format": "cbus-toolkit-p9-02-preference-repeated-load-v1",
-  "work_item": "P9.02 / GitHub issue #61",
-  "base_revision": "f6a272b",
-  "status": "partial",
   "added_behavior": {
+    "admission": "Optional current-process primary-token SID checked once before backend construction",
+    "atomic_snapshot": false,
+    "backend": "One explicitly constructed Windows Registry32 backend, reused for both calls",
     "command": "preferences registry-load STATE.json --repeat-once",
     "first_input": "The explicit complete retained state file",
-    "second_input": "All 40 typed values returned by the completed first load",
-    "backend": "One explicitly constructed Windows Registry32 backend, reused for both calls",
-    "admission": "Optional current-process primary-token SID checked once before backend construction",
     "outcome": "Both ordered load_passes and final state are reported; a noncomplete first pass prevents the second, and an interrupted second exposes both receipts",
-    "state_file_written": false,
-    "atomic_snapshot": false
+    "second_input": "All 40 typed values returned by the completed first load",
+    "state_file_written": false
+  },
+  "base_revision": "f6a272b",
+  "coverage_gate": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_coverage_require_complete.py",
+    "exit_code": 0,
+    "passed": 2,
+    "subtests_passed": 2
+  },
+  "format": "cbus-toolkit-p9-02-preference-repeated-load-v1",
+  "integrated_code_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
+  "integrated_wheel_validation": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
+    "command": "PYTHONPATH=<installed-site>:<toolkit-repo>:<toolkit-tests> python -m pytest -q <seven focused test modules> -p no:cacheprovider",
+    "errors": 0,
+    "failures": 0,
+    "installed_import_path": "/private/tmp/cbus-final-wheel-20260928/site/cbus_toolkit/__init__.py",
+    "passed": 95,
+    "selection": "four diagnostic-bundle modules, repeated preferences, and project repair API/CLI modules",
+    "skipped": 3,
+    "skips": "three provisioned-native cases in project repair; no failure or error",
+    "status": "passed; this is a focused installed-artifact gate, not the full offline suite",
+    "subtests_passed": 3329
+  },
+  "interactive_native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-interactive-repeat.json",
+    "sha256": "4e9b114b7e8b28ef3c3a5643e8e998c07e2626c42d97ef204fa441d195e403c1",
+    "status": "passed in active console user session 1, WinSta0/Default, non-System token; 14 exact checks, collision/invalid-input and false-pass negatives, ownership-gated scratch cleanup; see separate selected original GUI startup supplement"
+  },
+  "invalidation": [
+    "Changed listed source hash or original fixture/executable",
+    "Promotion from a bounded original manager two-load case to complete GUI/runtime parity"
+  ],
+  "native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-native-repeat.json",
+    "sha256": "5e8aa9c2fcc9c797918e316bd0ff35e0d430a672d8c832f626618ef7825d4822",
+    "status": "passed under Windows guest-agent LocalSystem session 0; see separate interactive wheel and bounded original GUI startup supplements"
   },
   "original_evidence": {
-    "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "first_load_show_project_manager": false,
     "fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
     "fixture_sha256": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
-    "original_manager_va": "0x851AE4",
     "observed_case": "The isolated original manager first load retained ShowProjectManager=False while writing the missing True default; its second load yielded ShowProjectManager=True.",
-    "first_load_show_project_manager": false,
+    "original_gui_execution_scope": "Two bounded same-user 1.18 GUI startups with missing ShowProjectManager becoming stored True and staying True on second launch; no direct manager/in-memory read trace.",
+    "original_interactive_gui_executed": true,
+    "original_manager_va": "0x851AE4",
+    "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
     "second_load_show_project_manager": true,
     "source_provenance": "Frozen original x86 Unicorn manager fixture supplies the 40-value in-memory expectations. LocalSystem and interactive installed-wheel runs compare both passes to it. A later same-user original GUI startup probe independently observed the missing ShowProjectManager stored default transition, without instrumenting same-instance reads or broad GUI behavior.",
-    "original_interactive_gui_executed": true,
-    "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
-    "original_gui_execution_scope": "Two bounded same-user 1.18 GUI startups with missing ShowProjectManager becoming stored True and staying True on second launch; no direct manager/in-memory read trace."
+    "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+  },
+  "original_gui_native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-original-gui-same-user.json",
+    "sha256": "0c186d8ca97719beae464a1d63ddfc16bb333f277adfb3737de029c58aa5a410",
+    "status": "bounded original GUI startup twice in same active user passed: missing ShowProjectManager stored default became True, both trees stopped/absent, six fixed Registry32 value trees restored/unchanged and private exports removed; direct same-instance manager behavior remains unverified"
   },
   "portable_acceptance": {
-    "python": "3.13.14",
     "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_cli_toolkit_preferences_repeated_load.py tests/test_cli_toolkit_preferences.py tests/test_cli_toolkit_preferences_user_guard.py tests/test_toolkit_preferences_store.py",
     "exit_code": 0,
-    "passed": 42,
-    "skipped": 0,
     "new_cases": [
       "original empty-store two-load default transition and exact read/write receipts",
       "incomplete first load suppresses second",
       "second-load failure retains both receipts",
       "second-load interruption retains both receipts",
       "wrong process SID prevents backend construction"
-    ]
+    ],
+    "passed": 42,
+    "python": "3.13.14",
+    "skipped": 0
   },
-  "validation_not_run": [
-    "make check and make check-interop, per the task no-full-local-suites instruction",
-    "Full original Toolkit GUI preference workflow, same-instance manager/lazy-wrapper read trace and runtime effects",
-    "Interactive Windows save/reset acceptance"
-  ],
+  "register_consistency": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_parity_register.py",
+    "exit_code": 0,
+    "feature_ledger_digest_updated": true,
+    "passed": 35,
+    "subtests_passed": 471
+  },
   "remaining": [
     "Instrument direct original same-instance preference manager reads, lazy wrapper/culture behavior and complete GUI preference controls in the same interactive account.",
     "Establish logging, C-Gate and broader GUI runtime effects with original evidence.",
@@ -52,58 +92,18 @@
     "Keep the broad preference/update workflow open."
   ],
   "source_sha256": {
+    "docs/implementation-status.md": "09aae1bf0acbef1bfb8d135dfff9b3be153b5c091ad5aacd2f398ddd7bc09a3b",
+    "docs/toolkit-preferences-store.md": "23f74c25d2c6022d3196c481eeb22a95c4b3152b0616f6907fe01e14382648e1",
+    "docs/toolkit-preferences.md": "3d60259a82b9d8a936a799e6e1b3cbf43281823d958ad7d83af9302a5bb52fc0",
+    "src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392",
     "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
-    "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
-    "docs/toolkit-preferences.md": "62d76f72bc03d8d00c69f83a9958e5f619019611968807285e68628549d50d32",
-    "docs/toolkit-preferences-store.md": "8b58174beb1ead2ac14a38bf8dade68cafb7b41f025466c1ec14fcd3f91e0343",
-    "docs/implementation-status.md": "0e3a5b59b5a00e487b44c6322e354cba1f841b3f75ca6d4fe7565d4824b30968",
-    "src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392"
+    "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc"
   },
-  "invalidation": [
-    "Changed listed source hash or original fixture/executable",
-    "Promotion from a bounded original manager two-load case to complete GUI/runtime parity"
+  "status": "partial",
+  "validation_not_run": [
+    "make check and make check-interop, per the task no-full-local-suites instruction",
+    "Full original Toolkit GUI preference workflow, same-instance manager/lazy-wrapper read trace and runtime effects",
+    "Interactive Windows save/reset acceptance"
   ],
-  "register_consistency": {
-    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_parity_register.py",
-    "exit_code": 0,
-    "passed": 35,
-    "subtests_passed": 471,
-    "feature_ledger_digest_updated": true
-  },
-  "coverage_gate": {
-    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_coverage_require_complete.py",
-    "exit_code": 0,
-    "passed": 2,
-    "subtests_passed": 2
-  },
-  "integrated_code_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
-  "integrated_wheel_validation": {
-    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
-    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
-    "installed_import_path": "/private/tmp/cbus-final-wheel-20260928/site/cbus_toolkit/__init__.py",
-    "selection": "four diagnostic-bundle modules, repeated preferences, and project repair API/CLI modules",
-    "command": "PYTHONPATH=<installed-site>:<toolkit-repo>:<toolkit-tests> python -m pytest -q <seven focused test modules> -p no:cacheprovider",
-    "passed": 95,
-    "skipped": 3,
-    "skips": "three provisioned-native cases in project repair; no failure or error",
-    "subtests_passed": 3329,
-    "failures": 0,
-    "errors": 0,
-    "status": "passed; this is a focused installed-artifact gate, not the full offline suite"
-  },
-  "native_acceptance_supplement": {
-    "path": "research/experiments/2026-09-28/preference-native-repeat.json",
-    "sha256": "5e8aa9c2fcc9c797918e316bd0ff35e0d430a672d8c832f626618ef7825d4822",
-    "status": "passed under Windows guest-agent LocalSystem session 0; original same-user GUI comparison remains unverified"
-  },
-  "interactive_native_acceptance_supplement": {
-    "path": "research/experiments/2026-09-28/preference-interactive-repeat.json",
-    "sha256": "5170f2bdb9ddd9c30d85091c934866e0183e83dfce84776956474dac4b5cf8a7",
-    "status": "passed in active console user session 1, WinSta0/Default, non-System primary token; 14 checks passed, scratch cleanup verified; original GUI same-user comparison remains unverified"
-  },
-  "original_gui_native_acceptance_supplement": {
-    "path": "research/experiments/2026-09-28/preference-original-gui-same-user.json",
-    "sha256": "7aab8ff1799b6abf6acbdf92cc446d38ba286ffc63d1f58b1782ce8a739f20ad",
-    "status": "bounded original GUI startup in same active user passed: selected missing ShowProjectManager stored default became True, six fixed keys restored/unchanged, state file preserved; direct same-instance manager behavior remains unverified"
-  }
+  "work_item": "P9.02 / GitHub issue #61"
 }
