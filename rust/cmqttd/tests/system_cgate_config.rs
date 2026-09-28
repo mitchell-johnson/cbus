@@ -80,6 +80,199 @@ fn options(state: &std::path::Path, token: &std::path::Path) -> Options {
 }
 
 #[tokio::test]
+async fn project_default_selects_loaded_project_only_after_restart_without_interrupting_mqtt() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_project_default.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-config-project-default-v1");
+    assert_eq!(native["oracle"]["first_child"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["second_child"]["cleanup_complete"], true);
+    for line in include_str!("../../testdata/vectors/cgate_config_project_default.jsonl").lines() {
+        let vector: serde_json::Value = serde_json::from_str(line).unwrap();
+        let child = vector["native_child"].as_str().unwrap();
+        let index = vector["native_index"].as_u64().unwrap() as usize;
+        let captured = native[child][index]["response"][0].as_str().unwrap();
+        assert_eq!(
+            captured.split_once("] ").unwrap().1,
+            vector["reply"].as_str().unwrap(),
+            "{}",
+            vector["id"]
+        );
+    }
+
+    let state = cbus_test_support::proc::temp_path("cgate-default-project.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+    let first = start_with(options()).await;
+    wait_started(&first).await;
+    let (mut reader, mut writer) = connect(&first).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "initial", "PROJECT USE").await,
+        ["123 project=null"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "create", "PROJECT NEW XDFLT").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "set",
+            "CONFIG SET project.default XDFLT"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read",
+            "CONFIG GET project.default"
+        )
+        .await,
+        ["303 project.default=XDFLT"]
+    );
+    let (mut pending_reader, mut pending_writer) = connect(&first).await;
+    assert_eq!(
+        command(
+            &mut pending_reader,
+            &mut pending_writer,
+            "pending",
+            "PROJECT USE"
+        )
+        .await,
+        ["123 project=null"]
+    );
+    drop((reader, writer, pending_reader, pending_writer, first));
+
+    let mut second = start_with(options()).await;
+    wait_started(&second).await;
+    let (mut reader, mut writer) = connect(&second).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "loaded", "PROJECT USE").await,
+        ["123 project=XDFLT"]
+    );
+    let frames_before = second
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "set-later",
+            "CONFIG SET project.default XOTHER"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "read-later",
+            "CONFIG GET project.default"
+        )
+        .await,
+        ["303 project.default=XOTHER"]
+    );
+    let (mut next_reader, mut next_writer) = connect(&second).await;
+    assert_eq!(
+        command(&mut next_reader, &mut next_writer, "still", "PROJECT USE").await,
+        ["123 project=XDFLT"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "switch", "PROJECT USE HARNESS").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "switched", "PROJECT USE").await,
+        ["123 project=HARNESS"]
+    );
+    assert_eq!(
+        command(
+            &mut next_reader,
+            &mut next_writer,
+            "independent",
+            "PROJECT USE"
+        )
+        .await,
+        ["123 project=XDFLT"]
+    );
+    assert_eq!(
+        second
+            .pci
+            .frames()
+            .iter()
+            .filter(|frame| !is_status_request(&frame.payload))
+            .count(),
+        frames_before
+    );
+    let payload = "053800790149";
+    let before = second.pci.count_payload(payload);
+    second
+        .broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(
+        COMMAND_DRAIN,
+        "MQTT command after project.default selection",
+        || second.pci.count_payload(payload) > before,
+    )
+    .await;
+    assert!(second.daemon.is_running());
+    drop((reader, writer, next_reader, next_writer, second));
+
+    // The saved value is still visible, but an absent target project cannot
+    // become a session default after the next restart.
+    let third = start_with(options()).await;
+    wait_started(&third).await;
+    let (mut reader, mut writer) = connect(&third).await;
+    assert_eq!(
+        command(&mut reader, &mut writer, "missing", "PROJECT USE").await,
+        ["123 project=null"]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "stored",
+            "CONFIG GET project.default"
+        )
+        .await,
+        ["303 project.default=XOTHER"]
+    );
+    assert_eq!(
+        command(&mut reader, &mut writer, "later-load", "PROJECT NEW XOTHER").await,
+        ["200 OK."]
+    );
+    let (mut later_reader, mut later_writer) = connect(&third).await;
+    assert_eq!(
+        command(
+            &mut later_reader,
+            &mut later_writer,
+            "now-loaded",
+            "PROJECT USE"
+        )
+        .await,
+        ["123 project=XOTHER"]
+    );
+    drop((reader, writer, later_reader, later_writer, third));
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_live() {
     let state = cbus_test_support::proc::temp_path("cgate-config.json");
     let token = cbus_test_support::proc::temp_path("cgate-config.token");
@@ -102,7 +295,8 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
             "command.show-responses",
             "command.show-time",
             "event-millis",
-            "heartbeat-time"
+            "heartbeat-time",
+            "project.default"
         ])
     );
 

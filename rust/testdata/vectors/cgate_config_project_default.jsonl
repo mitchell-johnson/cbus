@@ -1,0 +1,5 @@
+{"id":"initial-no-default","native_child":"first_child","native_index":0,"reply":"123 project=null"}
+{"id":"stored-set-readback","native_child":"first_child","native_index":6,"reply":"303 project.default=XDFLT"}
+{"id":"startup-loaded-project","native_child":"second_child","native_index":2,"reply":"123 project=XDFLT"}
+{"id":"set-later-readback","native_child":"second_child","native_index":4,"reply":"303 project.default=XOTHER"}
+{"id":"new-session-uses-startup-snapshot","native_child":"second_child","native_index":5,"reply":"123 project=XDFLT"}

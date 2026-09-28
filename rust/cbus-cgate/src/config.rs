@@ -2,8 +2,9 @@
 //!
 //! The metadata below is retained from the pinned 3.4.0.2001 daemon. It does
 //! not by itself establish runtime effects. The implemented restart effects,
-//! `command.show-responses`, `command.show-time`, and `event-millis`, have
-//! separate loopback oracle evidence.
+//! `command.show-responses`, `command.show-time`, `event-millis`,
+//! `heartbeat-time`, and `project.default`, have separate loopback oracle
+//! evidence.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConfigScope {

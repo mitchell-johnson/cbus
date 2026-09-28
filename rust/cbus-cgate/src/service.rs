@@ -633,6 +633,9 @@ impl ProgrammingNames {
 #[derive(Clone, Default)]
 pub struct ClientState {
     current: Option<String>,
+    /// The startup-only `project.default` selection is applied once per
+    /// connection (and once on first dispatch for embedded callers).
+    project_default_applied: bool,
     locks: ProgrammingNames,
     sessions: ProgrammingNames,
     /// Native-style command-session identifier assigned by the TCP/TLS
@@ -686,6 +689,10 @@ pub struct Service {
     event_millis: bool,
     heartbeat_interval: Option<Duration>,
     heartbeat_started: OnceLock<()>,
+    /// Native C-Gate snapshots this global key at startup.  Project presence
+    /// is checked when each session opens, so loading the originally named
+    /// project later can activate it without resampling a same-process SET.
+    startup_project_default: Option<String>,
     pci: RwLock<Arc<PciClient>>,
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
@@ -1778,6 +1785,9 @@ impl Service {
             .and_then(|parameter| config_global_value(&model, parameter).parse::<u64>().ok())
             .filter(|seconds| (1..=86_400).contains(seconds))
             .map(Duration::from_secs);
+        let startup_project_default = config_parameter("project.default")
+            .map(|parameter| config_global_value(&model, parameter))
+            .filter(|name| !name.is_empty());
         let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
@@ -1787,6 +1797,7 @@ impl Service {
             event_millis,
             heartbeat_interval,
             heartbeat_started: OnceLock::new(),
+            startup_project_default,
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
             pci_generation_gate: Mutex::new(()),
@@ -1809,6 +1820,16 @@ impl Service {
             spam_sessions: Arc::new(Mutex::new(SpamSessions::default())),
             audit_log: Mutex::new(VecDeque::new()),
         }))
+    }
+
+    async fn startup_default_for_loaded_project(&self) -> Option<String> {
+        let name = self.startup_project_default.as_ref()?;
+        self.model
+            .lock()
+            .await
+            .projects
+            .contains_key(name)
+            .then(|| name.clone())
     }
 
     /// Arm the optional shared-secret LOGIN gate with the SHA-256 digest of
@@ -2383,6 +2404,10 @@ impl Service {
 
     /// Execute a tagged command. Hardware work releases the database mutex.
     pub async fn handle(self: &Arc<Self>, client: &mut ClientState, line: &str) -> Response {
+        if !client.project_default_applied {
+            client.current = self.startup_default_for_loaded_project().await;
+            client.project_default_applied = true;
+        }
         let cmd = match parse_command(line) {
             Ok(c) => c,
             Err(e) => return err("", 400, &format!("400 {e}")),
@@ -2468,6 +2493,17 @@ impl Service {
         }
         if verb == "PROJECT" && (words.len() == 1 || (words.len() == 2 && words[1] == "?")) {
             return command_help(tag, PROJECT_HELP);
+        }
+        if verb == "PROJECT" && sub == "USE" && words.len() == 2 {
+            return Response {
+                tag: tag.to_string(),
+                lines: vec![],
+                final_text: format!(
+                    "123 project={}",
+                    client.current.as_deref().unwrap_or("null")
+                ),
+                status: 123,
+            };
         }
         if verb == "PROJECT" && sub == "DIRFULL" {
             return self.project_dirfull(tag, &words).await;
@@ -2827,7 +2863,8 @@ impl Service {
                 "command.show-responses",
                 "command.show-time",
                 "event-millis",
-                "heartbeat-time"
+                "heartbeat-time",
+                "project.default"
             ]);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
@@ -4192,11 +4229,11 @@ impl Service {
     }
 
     /// Native-shaped CONFIG catalogue and scoped value workflow backed by
-    /// cmqttd's atomic JSON repository. `command.show-time` and
-    /// `command.show-responses` are sampled when
-    /// the service starts; mutations cannot change the running listener.
-    /// Other values remain command data. LOAD/SAVE snapshots stay inside the
-    /// repository and cannot be used as an arbitrary host-file interface.
+    /// cmqttd's atomic JSON repository. Evidenced restart keys, including
+    /// `project.default`, are sampled when the service starts; mutations
+    /// cannot change the running listener's selection. Other values remain
+    /// command data. LOAD/SAVE snapshots stay inside the repository and
+    /// cannot be used as an arbitrary host-file interface.
     async fn config(
         &self,
         client: &ClientState,
@@ -13341,6 +13378,8 @@ impl Service {
         let mut events = self.events.subscribe();
         let mut mode = EventMode::OFF;
         let mut client = ClientState::default();
+        client.current = self.startup_default_for_loaded_project().await;
+        client.project_default_applied = true;
         client.local_address = Some(local_address);
         client.remote_address = Some(remote_address);
         client.access_level = Some({

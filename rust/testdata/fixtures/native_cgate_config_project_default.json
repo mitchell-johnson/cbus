@@ -1,0 +1,120 @@
+{
+  "schema": "native-cgate-config-project-default-v1",
+  "captured_utc": "2026-09-28T08:29:01.745308+00:00",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "capture_script_sha256": "41b2ecd72692ab30d100785deb449c8abf1859557416e293b9de783f6e326f52",
+    "physical_endpoint": false,
+    "synthetic_project_db_sha256": "e01baddc3296f0984cb75b51077d6b8b610393c90394a64be6bef0530c52bbbe",
+    "first_child": {
+      "listeners_owned": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    "second_child": {
+      "listeners_owned": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    }
+  },
+  "scope": "One saved synthetic project; project.default startup read, loaded-project requirement, and same-process SET deferral; no vendor project format claim for cmqttd",
+  "first_child": [
+    {
+      "command": "PROJECT USE",
+      "response": [
+        "[initial] 123 project=null"
+      ]
+    },
+    {
+      "command": "PROJECT NEW XDFLT",
+      "response": [
+        "[create] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XDFLT",
+      "response": [
+        "[save-project] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT CLOSE XDFLT",
+      "response": [
+        "[close-project] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT LOAD XDFLT",
+      "response": [
+        "[load-project] 200 OK."
+      ]
+    },
+    {
+      "command": "CONFIG SET project.default XDFLT",
+      "response": [
+        "[set] 200 OK."
+      ]
+    },
+    {
+      "command": "CONFIG GET project.default",
+      "response": [
+        "[read] 303 project.default=XDFLT"
+      ]
+    },
+    {
+      "command": "CONFIG SAVE global",
+      "response": [
+        "[save-config] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE",
+      "response": [
+        "[pending] 123 project="
+      ]
+    }
+  ],
+  "second_child": [
+    {
+      "command": "PROJECT USE",
+      "response": [
+        "[unloaded] 123 project=null"
+      ]
+    },
+    {
+      "command": "PROJECT LOAD XDFLT",
+      "response": [
+        "[load] 200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE",
+      "response": [
+        "[loaded] 123 project=XDFLT"
+      ]
+    },
+    {
+      "command": "CONFIG SET project.default XOTHER",
+      "response": [
+        "[set-later] 200 OK."
+      ]
+    },
+    {
+      "command": "CONFIG GET project.default",
+      "response": [
+        "[read-later] 303 project.default=XOTHER"
+      ]
+    },
+    {
+      "command": "PROJECT USE",
+      "response": [
+        "[still-startup] 123 project=XDFLT"
+      ]
+    }
+  ]
+}

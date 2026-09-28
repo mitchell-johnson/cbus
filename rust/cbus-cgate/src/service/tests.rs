@@ -16810,7 +16810,8 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             "command.show-responses",
             "command.show-time",
             "event-millis",
-            "heartbeat-time"
+            "heartbeat-time",
+            "project.default"
         ])
     );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
