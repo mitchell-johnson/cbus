@@ -142,8 +142,10 @@ artifacts that are not shipped in the wheel. It therefore reports
 `evidence_artifacts_verified: false`, withholds functional percentages and
 cannot report `complete: true` even if all declared states are accepted.
 The release acceptance runner and installed-wheel auditor verify the attached
-artifacts against their source checkout or immutable snapshot root. Physical
-evidence must name a physical environment and stable
+artifacts against their source checkout or immutable snapshot root. Snapshot
+preparation includes every attached artifact named by the evidence bundle,
+including nested research paths, and fails if one is missing or escapes the root.
+Physical evidence must name a physical environment and stable
 hardware references. Original-differential evidence must bind its Toolkit or
 C-Gate oracle by SHA-256. An accepted or not-applicable dimension requires
 evidence; an accepted dimension also requires a passed record naming that

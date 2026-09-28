@@ -14,13 +14,56 @@ from research import acceptance
 
 
 class AcceptanceRunnerTests(unittest.TestCase):
-    def test_scoped_native_oracle_is_pinned_in_wheel_snapshot_inputs(self):
-        path = (
-            acceptance.ROOT
-            / 'research/experiments/2026-09-25/cgate-session-native-acceptance.json'
-        )
-        self.assertTrue(path.is_file())
-        self.assertIn(path, acceptance.input_files('test_*.py'))
+    def test_every_parity_artifact_is_pinned_in_wheel_snapshot_inputs(self):
+        bundle = json.loads((acceptance.ROOT / 'src/cbus_toolkit/parity-evidence.json').read_text())
+        expected = {acceptance.ROOT / artifact['path']
+                    for record in bundle['records'] for artifact in record['artifacts']}
+        self.assertTrue(expected)
+        self.assertLessEqual(expected, acceptance.input_files('test_*.py'))
+
+    def test_nested_parity_artifacts_are_snapshot_inputs_and_missing_ones_fail(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            bundle = root / 'src/cbus_toolkit/parity-evidence.json'
+            bundle.parent.mkdir(parents=True)
+            first = root / 'research/experiments/new/oracle.bin'
+            second = root / 'research/results/new/report.json'
+            for path in (first, second):
+                path.parent.mkdir(parents=True)
+                path.write_bytes(b'fixture')
+            bundle.write_text(json.dumps({'records': [{'artifacts': [
+                {'path': first.relative_to(root).as_posix()},
+                {'path': second.relative_to(root).as_posix()},
+            ]}]}))
+            with patch.object(acceptance, 'ROOT', root):
+                self.assertLessEqual({first, second}, acceptance.input_files('test_*.py'))
+                second.unlink()
+                with self.assertRaisesRegex(ValueError, 'artifact is missing'):
+                    acceptance.input_files('test_*.py')
+
+    def test_parity_artifact_paths_fail_closed_on_escape_or_ambiguity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            bundle = root / 'src/cbus_toolkit/parity-evidence.json'
+            bundle.parent.mkdir(parents=True)
+            with patch.object(acceptance, 'ROOT', root):
+                for name in ('../outside', '/tmp/outside', 'research//a.bin',
+                             'research/./a.bin', 'research\\a.bin', 'C:\\outside'):
+                    with self.subTest(name=name):
+                        bundle.write_text(json.dumps({'records': [{'artifacts': [{'path': name}]}]}))
+                        with self.assertRaisesRegex(ValueError, 'unsafe artifact path'):
+                            acceptance.input_files('test_*.py')
+                if os.name != 'nt':
+                    with tempfile.TemporaryDirectory() as external:
+                        target = Path(external) / 'outside.bin'
+                        target.write_bytes(b'fixture')
+                        link = root / 'research/inside-link.bin'
+                        link.parent.mkdir(parents=True)
+                        link.symlink_to(target)
+                        bundle.write_text(json.dumps({'records': [{'artifacts': [
+                            {'path': 'research/inside-link.bin'}]}]}))
+                        with self.assertRaisesRegex(ValueError, 'escapes its root'):
+                            acceptance.input_files('test_*.py')
 
     @staticmethod
     def successful_outcome(test_file='tests/test_fixture.py'):
@@ -331,6 +374,13 @@ class AcceptanceRunnerTests(unittest.TestCase):
                 'cgate-contract-inventory.json',
             ):
                 (package / name).write_bytes((real_package / name).read_bytes())
+            evidence = json.loads((package / 'parity-evidence.json').read_text())
+            for record in evidence['records']:
+                for artifact in record['artifacts']:
+                    name = artifact['path']
+                    destination = root / name
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes((real_package.parents[1] / name).read_bytes())
             contract = package / 'cgate-contract-inventory.json'
             changed = contract.read_bytes().replace(
                 b'Evidence-bounded per-path contracts',

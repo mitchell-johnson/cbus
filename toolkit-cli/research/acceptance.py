@@ -10,7 +10,7 @@ import hashlib
 from importlib import resources
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
 import ssl
 import stat
@@ -220,6 +220,56 @@ def hashes(paths):
             for path in sorted(paths)}
 
 
+def evidence_artifact_files():
+    """Return every declared parity artifact under this source/snapshot root.
+
+    The same set feeds acceptance's before/after hashes and the installed-wheel
+    snapshot manifest. A new evidence record must not silently refer to an
+    artifact that was absent from the tested, copied inputs.
+    """
+    root = ROOT.resolve()
+    bundle = ROOT / "src/cbus_toolkit/parity-evidence.json"
+    if not bundle.is_file():
+        if (bundle.exists() or bundle.is_symlink()
+                or (ROOT / "src/cbus_toolkit/parity-obligations.json").exists()):
+            raise ValueError("Parity evidence bundle is missing")
+        # Historical/minimal acceptance fixtures can predate the register.
+        return set()
+    if not bundle.resolve(strict=True).is_relative_to(root):
+        raise ValueError("Parity evidence bundle escapes its root")
+
+    from cbus_toolkit.parity import parse_json_document
+
+    document = parse_json_document(bundle.read_bytes(), context="parity-evidence.json")
+    records = document.get("records") if isinstance(document, dict) else None
+    if not isinstance(records, list):
+        raise ValueError("Parity evidence bundle requires a records array")
+    paths = set()
+    for record in records:
+        artifacts = record.get("artifacts") if isinstance(record, dict) else None
+        if not isinstance(artifacts, list):
+            raise ValueError("Parity evidence record requires an artifacts array")
+        for artifact in artifacts:
+            name = artifact.get("path") if isinstance(artifact, dict) else None
+            if not isinstance(name, str) or not name or "\\" in name or any(ord(c) < 32 for c in name):
+                raise ValueError("Parity evidence has an unsafe artifact path")
+            relative = PurePosixPath(name)
+            if (relative.is_absolute() or relative.as_posix() != name
+                    or ".." in relative.parts or PureWindowsPath(name).drive):
+                raise ValueError("Parity evidence has an unsafe artifact path: " + name)
+            candidate = ROOT.joinpath(*relative.parts)
+            try:
+                resolved = candidate.resolve(strict=True)
+            except (OSError, RuntimeError) as error:
+                raise ValueError("Parity evidence artifact is missing: " + name) from error
+            if not resolved.is_relative_to(root):
+                raise ValueError("Parity evidence artifact escapes its root: " + name)
+            if not resolved.is_file():
+                raise ValueError("Parity evidence artifact is not a file: " + name)
+            paths.add(candidate)
+    return paths
+
+
 def input_files(pattern):
     """Include local harnesses and fixture data as well as production code."""
     paths = set((ROOT / "tests").glob(pattern))
@@ -230,15 +280,7 @@ def input_files(pattern):
                                 (ROOT / "research/release-gates", ("*.json",))):
         for suffix in suffixes:
             paths.update(directory.glob(suffix))
-    # The scoped SESSION_ID evidence receipt names this committed native
-    # capture outside the flat fixture directory. Include its exact bytes in
-    # installed-wheel snapshots so their parity audit can verify the oracle
-    # input instead of trusting the packaged digest declaration alone.
-    native_session_receipt = (
-        ROOT / "research/experiments/2026-09-25/cgate-session-native-acceptance.json"
-    )
-    if native_session_receipt.is_file():
-        paths.add(native_session_receipt)
+    paths.update(evidence_artifact_files())
     if (ROOT / "pyproject.toml").is_file():
         paths.add(ROOT / "pyproject.toml")
     return paths
