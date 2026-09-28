@@ -5,6 +5,9 @@ not parse a project or access native storage.  The admitted RELAY4 and KEYE
 profiles replay the two Area getter loads and group lookup/reference changes;
 the RELAY4 profile also models the captured optional missing-unused-group save.
 The KEYGL5 profile consumes sixteen already-resolved functional widget groups.
+The RELDN8SP profile retains both its sixteen initial DIN associations and the
+nine marshalling-box reload associations. The latter replace the group manager
+list and are the nine CSV-visible groups.
 """
 from __future__ import annotations
 
@@ -33,6 +36,7 @@ _DIN_TYPES = {'DIMDN4': 'TDIMDN4', 'DIMDN4F': 'TDIMDN4F',
               'RELDN4': 'TRELDN4', 'RELDN8': 'TRELDN8',
               'RELDN8B': 'TRELDN8B',
               'RELDN12': 'TRELDN12'}
+_RELDN8SP_RELOAD_INDICES = (1, 2, 3, 4, 7, 8, 9, 10, 11)
 _SENSOR_TYPES = {'SENPIROA': 'TST7SENPIROA', 'SENPIRIA': 'TST7SENPIRSS'}
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
@@ -86,6 +90,7 @@ class CachedCSVUnit:
     primary: str
     secondary: str
     group_identities: tuple[str, ...]
+    loader_associations: tuple[str, ...] = ()
 
     def __post_init__(self):
         _identity(self.identity, 'Unit identity')
@@ -97,12 +102,27 @@ class CachedCSVUnit:
         if (type(self.group_identities) is not tuple or len(self.group_identities) > 16
                 or any(type(value) is not str or not value for value in self.group_identities)):
             raise ValueError('Unit groups must be at most sixteen nonempty identities in an exact tuple')
+        if type(self.loader_associations) is not tuple or any(
+                type(value) is not str or not value for value in self.loader_associations):
+            raise ValueError('Loader associations must be nonempty identities in an exact tuple')
+        if self.unit_type.upper() == 'RELDN8SP':
+            if (len(self.group_identities) != 9 or len(self.loader_associations) != 25
+                    or self.group_identities != self.loader_associations[16:]
+                    or self.group_identities != tuple(
+                        self.loader_associations[index]
+                        for index in _RELDN8SP_RELOAD_INDICES)):
+                raise ValueError('RELDN8SP requires sixteen DIN loads followed by its exact nine-group replacement')
+        elif self.loader_associations:
+            raise ValueError('Loader association history is supported only for RELDN8SP')
 
     def as_dict(self):
-        return {'identity': self.identity, 'address': self.address,
+        result = {'identity': self.identity, 'address': self.address,
                 **{name: getattr(self, name) for name in ('part_name', 'tag_name', 'unit_type',
                     'catalog', 'serial', 'firmware', 'primary', 'secondary')},
                 'group_identities': list(self.group_identities)}
+        if self.loader_associations:
+            result['loader_associations'] = list(self.loader_associations)
+        return result
 
 
 @dataclass(frozen=True)
@@ -190,13 +210,15 @@ def _class(unit):
         if len(unit.group_identities) != 16:
             raise ValueError('Cached DIN profile requires exactly sixteen stored groups')
         return _DIN_TYPES[kind]
+    if kind == 'RELDN8SP' and unit.firmware == '2.7.00':
+        return 'TRELDN8SP'
     if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
         if len(unit.group_identities) != 8:
             raise ValueError('Cached sensor profile requires exactly eight stored groups')
         return _SENSOR_TYPES[kind]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, sensor and KEYGL5 type/firmware pairs')
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, RELDN8SP, sensor and KEYGL5 type/firmware pairs')
 
 
 def _validated_groups(unit, groups):
@@ -208,7 +230,8 @@ def _validated_groups(unit, groups):
     oids = [group.oid for group in groups if group.oid]
     if len(set(identities)) != len(groups) or len(set(oids)) != len(oids):
         raise ValueError('Cached group identities and nonempty OID tokens must be unique')
-    if any(identity not in set(identities) for identity in unit.group_identities):
+    if any(identity not in set(identities) for identity in
+           (*unit.group_identities, *unit.loader_associations)):
         raise ValueError('Every unit group identity must resolve in the complete cache')
     if any(unit.identity in group.references for group in groups):
         raise ValueError('The captured v1 profile requires a cold nil Area reference')
@@ -234,7 +257,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
     has_area = selected_class in (
         'TRELAY4', 'TKEYEx', 'TDIMDN4', 'TDIMDN4F', 'TDIMDN8', 'TDIMDN8F',
-        'TRELDN4', 'TRELDN8', 'TRELDN8B', 'TRELDN12',
+        'TRELDN4', 'TRELDN8', 'TRELDN8B', 'TRELDN8SP', 'TRELDN12',
         'TST7SENPIROA', 'TST7SENPIRSS')
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
@@ -292,8 +315,12 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Group-save observation was supplied but the projection did not require a save')
 
     cache = {group.identity: group for group in current}
+    if selected_class == 'TRELDN8SP':
+        events.append(_event('marshalling_box_groups_replaced',
+                             initial_count=16, replacement_count=9))
     interaction_count = {'TRELAY4': 6, 'TDIMDN4': 4, 'TDIMDN4F': 4,
-                         'TRELDN4': 4, 'TRELDN8B': 8, 'TRELDN12': 12,
+                         'TRELDN4': 4, 'TRELDN8B': 8, 'TRELDN8SP': 9,
+                         'TRELDN12': 12,
                          'TCBusEDLTUnit': 16}.get(selected_class, 8)
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities))
@@ -311,13 +338,23 @@ def parse_cached_projection(value, *, columns):
     if type(value) is not dict or set(value) != _ROOT_FIELDS or value.get('format') != PROFILE:
         raise ValueError('Expected the cbus-toolkit-database-cached-projection-v1 object')
     raw_unit = value['unit']
-    if type(raw_unit) is not dict or set(raw_unit) != _UNIT_FIELDS:
+    if type(raw_unit) is not dict or not _UNIT_FIELDS <= set(raw_unit):
+        raise ValueError('Cached unit must provide every documented field, without extras')
+    expected_unit_fields = (_UNIT_FIELDS | {'loader_associations'}
+                            if type(raw_unit['unit_type']) is str
+                            and raw_unit['unit_type'].upper() == 'RELDN8SP'
+                            else _UNIT_FIELDS)
+    if set(raw_unit) != expected_unit_fields:
         raise ValueError('Cached unit must provide every documented field, without extras')
     group_identities = raw_unit['group_identities']
     if type(group_identities) is not list:
         raise ValueError('Cached unit group identities must be a JSON array')
+    raw_loader = raw_unit.get('loader_associations', [])
+    if type(raw_loader) is not list:
+        raise ValueError('Cached loader associations must be a JSON array')
     unit = CachedCSVUnit(**{name: raw_unit[name] for name in _UNIT_FIELDS - {'group_identities'}},
-                         group_identities=tuple(group_identities))
+                         group_identities=tuple(group_identities),
+                         loader_associations=tuple(raw_loader))
 
     raw_groups = value['group_cache']
     if type(raw_groups) is not list or not 1 <= len(raw_groups) <= 256:
@@ -378,7 +415,8 @@ def loads_cached_projection(raw, *, columns):
             depth -= 1
 
     def unique(pairs):
-        if len(pairs) > len(_GROUP_FIELDS) + 6 or len({key for key, _ in pairs}) != len(pairs):
+        if (len(pairs) > max(len(_UNIT_FIELDS) + 1, len(_GROUP_FIELDS) + 6)
+                or len({key for key, _ in pairs}) != len(pairs)):
             raise ValueError('Cached projection contains duplicate or excessive object keys')
         return dict(pairs)
 

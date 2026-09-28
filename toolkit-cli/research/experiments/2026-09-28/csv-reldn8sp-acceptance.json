@@ -1,0 +1,51 @@
+{
+  "format": "cbus-toolkit-database-csv-reldn8sp-acceptance-v1",
+  "source": {
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "native_cgate_class_sha256": "35eeee03c4146e098686012bd937ff15946a433c53b36109b7f58d2305ef1801",
+    "native_cgate_unitspec_index_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "native_cgate_observation": "Extracted C-Gate 3.4 CBusRELDN8SPUnit.e(int[]) selects source indices 1,2,3,4,7,8,9,10,11 into nine terminals; unitspec index maps firmware 1.3.01 through 9 to RELDN8.xml and this class. This corroborates the mapping but is not a native database CSV run."
+  },
+  "source_review": "research/experiments/2026-09-28/csv-reldn8sp-profile-review.json",
+  "artifacts_sha256": {
+    "research/csv_reldn8sp_profile_review.py": "79f94ea833d3bcaa3b9bbdc153a5dafaa421b8cbe0a0ab9aa8b71ff39eec660b",
+    "research/experiments/2026-09-28/csv-reldn8sp-profile-review.json": "f4b22d5e5ca4f064c039ded2f1ce4192bb218f44a8df8cb98c5107142addd76f",
+    "research/fixtures/toolkit-database-csv-reldn8sp-synthetic.xml": "771e0a3457848c853d2245105287da84132475f8645e2cf75be6b1184c495275",
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "3a2e24d7a61bc072bbafaa4021397c5c2e03a5dab4713739103e7c76c19cf2d3",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "cdb1649438a1c902533cd08409f351125aa17643436426157916fea0cbdb9de9",
+    "tests/test_toolkit_database_csv_reldn8sp.py": "5edf304ef0869b661195d54326742abb83b59a2194c35113d18d9cbfbed1e9b9"
+  },
+  "focused_tests": {
+    "command": "PYTHONPATH=src /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q tests/test_toolkit_database_csv_reldn8sp.py tests/test_toolkit_database_csv_reldn8b.py tests/test_toolkit_database_csv_projection.py tests/test_toolkit_database_csv_native.py tests/test_toolkit_database_csv_project_export.py tests/test_cli_toolkit_database_csv.py",
+    "exit_code": 0,
+    "passed": 93,
+    "subtests_passed": 56,
+    "skipped": 0
+  },
+  "behavior": {
+    "stored_group_address_count": 16,
+    "load_operations": 25,
+    "group_manager_clear_between_passes": true,
+    "final_group_count": 9,
+    "visible_csv_groups": 9,
+    "reload_indices_zero_based": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "offline_cached_native_and_one_request_live_synthetic_cases_passed": true,
+    "missing_initial_only_group_rejected_before_output": true
+  },
+  "limits": [
+    "Original GUI CSV report and cold native C-Gate database load on this synthetic fixture were not executed.",
+    "No matching RELDN8SP unit was present in the read-only GRENACHE native XML snapshot; no site data is committed.",
+    "No full test suite, native C-Gate mutation, CNI or physical device was used."
+  ]
+}

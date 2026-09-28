@@ -1,0 +1,62 @@
+{
+  "format": "cbus-toolkit-database-csv-reldn8sp-profile-review-v1",
+  "original_execution": false,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_method_spans": {
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadGroups": {
+      "start": "0x122dd40",
+      "end": "0x122df04",
+      "bytes_sha256": "455b0f618d59746d1c8ca3b66311f121eb1c325dbccad3f802f5342d41e60370"
+    },
+    "CIS_TMarshallingBoxCGateAgent.TMarshallingBoxCGateAgent.LoadGroups": {
+      "start": "0x1244d0c",
+      "end": "0x1244ecc",
+      "bytes_sha256": "aae84e168a26e9df3effd32b3a93263e4a39e8c2ede933f9a6c39bd93ff14442"
+    },
+    "CIS_TCommonCBus.TCBUSUnitManager.AsCSV": {
+      "start": "0xf306bc",
+      "end": "0xf30c98",
+      "bytes_sha256": "5c50d7859b4651db79cee62c5c92219e9ca7388431fe6bd3b5d43572c9634d8a"
+    }
+  },
+  "loader": {
+    "unit_class": "TRELDN8SP",
+    "agent": "TMarshallingBoxCGateAgent",
+    "base_stored_group_count": 16,
+    "second_pass_stored_indices_zero_based": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "association_operations": 25,
+    "group_manager_clear_between_passes": true,
+    "final_group_manager_count": 9,
+    "csv_visible_group_count": 9,
+    "group_manager_vmt": {
+      "get_count": "0x7e8f50",
+      "append": "0x7e9fd0",
+      "clear": "0x7e8b98"
+    }
+  },
+  "synthetic_fixture": {
+    "path": "research/fixtures/toolkit-database-csv-reldn8sp-synthetic.xml",
+    "sha256": "771e0a3457848c853d2245105287da84132475f8645e2cf75be6b1184c495275",
+    "site_data": false
+  },
+  "limits": [
+    "The 25 entries are two ordered load phases, not 25 final CSV groups: the second pass clears and rebuilds the unit group manager.",
+    "The bounded 2.7.00 projection admits a resolved primary application, unused secondary application, existing Area255 and all 16 stored GroupAddress references.",
+    "Original GUI CSV execution and a cold native database load on this synthetic fixture have not been performed.",
+    "The read-only adapter rejects missing groups that the original create=true lookup may create.",
+    "No native C-Gate, CNI, database mutation or physical device was used."
+  ]
+}
