@@ -155,7 +155,7 @@ class DINFourEightCSVTests(unittest.TestCase):
 
     def test_unsupported_profile_rejects_before_output_creation(self):
         def firmware(_, unit): unit.find('FirmwareVersion').text = '2.8.00'
-        def variant(_, unit): unit.find('UnitType').text = 'RELDN8B'
+        def variant(_, unit): unit.find('UnitType').text = 'RELDN8SP'
         def secondary(_, unit): parameter(unit, 'Application').set('Value', '56 57')
         def area(_, unit): parameter(unit, 'AreaGroupAddress').set('Value', '13')
         def short(_, unit): parameter(unit, 'GroupAddress').set('Value', '8 1 8 4')

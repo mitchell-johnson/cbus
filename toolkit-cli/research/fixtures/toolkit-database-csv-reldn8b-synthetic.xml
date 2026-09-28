@@ -1,0 +1,111 @@
+<Installation>
+  <Project>
+    <Address>CSVTEST</Address>
+    <Network>
+      <Address>254</Address>
+      <Application>
+        <OID>00000000-0000-0000-0000-000000000056</OID>
+        <Address>56</Address>
+        <TagName>Lighting</TagName>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001001</OID>
+          <Address>1</Address>
+          <TagName>Kitchen, east</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001002</OID>
+          <Address>2</Address>
+          <TagName>Circuit 02</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001003</OID>
+          <Address>3</Address>
+          <TagName>Circuit 03</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001004</OID>
+          <Address>4</Address>
+          <TagName>Circuit 04</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001005</OID>
+          <Address>5</Address>
+          <TagName>Circuit 05</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001006</OID>
+          <Address>6</Address>
+          <TagName>Circuit 06</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001007</OID>
+          <Address>7</Address>
+          <TagName>Circuit 07</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001008</OID>
+          <Address>8</Address>
+          <TagName>Circuit 08</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001009</OID>
+          <Address>9</Address>
+          <TagName>Circuit 09</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001010</OID>
+          <Address>10</Address>
+          <TagName>Circuit 10</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001011</OID>
+          <Address>11</Address>
+          <TagName>Circuit 11</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001012</OID>
+          <Address>12</Address>
+          <TagName>Circuit 12</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001013</OID>
+          <Address>13</Address>
+          <TagName>Circuit 13</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001014</OID>
+          <Address>14</Address>
+          <TagName>Circuit 14</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001015</OID>
+          <Address>15</Address>
+          <TagName>Circuit 15</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001016</OID>
+          <Address>16</Address>
+          <TagName>Circuit 16</TagName>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001255</OID>
+          <Address>255</Address>
+          <TagName>&lt;Unused&gt;</TagName>
+        </Group>
+      </Application>
+      <Unit>
+        <OID>00000000-0000-0000-0000-000000000508</OID>
+        <Address>8</Address>
+        <UnitType>RELDN8B</UnitType>
+        <UnitName>DIN Relay B Synthetic</UnitName>
+        <TagName>Eight relay B</TagName>
+        <CatalogNumber>SYNTHETIC</CatalogNumber>
+        <SerialNumber>No serial #</SerialNumber>
+        <FirmwareVersion>2.7.00</FirmwareVersion>
+        <PP Name="Application" Value="56 255" />
+        <PP Name="AreaGroupAddress" Value="255" />
+        <PP Name="GroupAddress" Value="8 1 8 4 3 2 7 6 16 15 14 13 12 11 10 9" />
+      </Unit>
+    </Network>
+  </Project>
+</Installation>

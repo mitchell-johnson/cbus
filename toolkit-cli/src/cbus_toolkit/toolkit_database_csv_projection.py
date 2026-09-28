@@ -31,6 +31,7 @@ _KEYE_TYPES = frozenset((
 _DIN_TYPES = {'DIMDN4': 'TDIMDN4', 'DIMDN4F': 'TDIMDN4F',
               'DIMDN8': 'TDIMDN8', 'DIMDN8F': 'TDIMDN8F',
               'RELDN4': 'TRELDN4', 'RELDN8': 'TRELDN8',
+              'RELDN8B': 'TRELDN8B',
               'RELDN12': 'TRELDN12'}
 _SENSOR_TYPES = {'SENPIROA': 'TST7SENPIROA', 'SENPIRIA': 'TST7SENPIRSS'}
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
@@ -233,7 +234,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
     has_area = selected_class in (
         'TRELAY4', 'TKEYEx', 'TDIMDN4', 'TDIMDN4F', 'TDIMDN8', 'TDIMDN8F',
-        'TRELDN4', 'TRELDN8', 'TRELDN12',
+        'TRELDN4', 'TRELDN8', 'TRELDN8B', 'TRELDN12',
         'TST7SENPIROA', 'TST7SENPIRSS')
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
@@ -292,7 +293,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
 
     cache = {group.identity: group for group in current}
     interaction_count = {'TRELAY4': 6, 'TDIMDN4': 4, 'TDIMDN4F': 4,
-                         'TRELDN4': 4, 'TRELDN12': 12,
+                         'TRELDN4': 4, 'TRELDN8B': 8, 'TRELDN12': 12,
                          'TCBusEDLTUnit': 16}.get(selected_class, 8)
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities))

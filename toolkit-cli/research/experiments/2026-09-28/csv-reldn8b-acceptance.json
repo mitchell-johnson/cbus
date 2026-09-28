@@ -1,0 +1,59 @@
+{
+  "format": "cbus-toolkit-database-csv-reldn8b-acceptance-v1",
+  "date": "2026-09-28",
+  "source_pinning": "Toolkit 1.18 original EXE/MAP static review; original GUI not executed",
+  "source_review_fresh_on_this_host": true,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "implemented_profile": {
+    "unit_type": "RELDN8B",
+    "firmware": "2.7.00",
+    "stored_associations": 16,
+    "visible_interaction_groups": 8,
+    "source_selected_class": "TRELDN8B",
+    "source_agent": "TDinRailOutputCGateAgent"
+  },
+  "source_review_only": {
+    "unit_type": "RELDN8SP",
+    "source_selected_class": "TRELDN8SP",
+    "source_agent": "TMarshallingBoxCGateAgent",
+    "source_max_channels": 9,
+    "possible_associations": 25,
+    "public_projection_supported": false
+  },
+  "fixture_site_data": false,
+  "fixture_sha256": "386e180fa8d153261d7f46928e515b7d8f0f61242b4ed93c8e797667a52d7352",
+  "focused_acceptance": {
+    "command": "PYTHONPATH=src:tests:. <Python 3.13 venv> -m pytest tests/test_toolkit_database_csv_reldn8b.py tests/test_toolkit_database_csv_din4_rel4_rel8.py tests/test_toolkit_database_csv_dimdn8f.py tests/test_toolkit_database_csv_native.py tests/test_toolkit_database_csv_projection.py tests/test_toolkit_database_csv_project_export.py tests/test_cli_toolkit_database_csv.py -q -p no:cacheprovider -ra",
+    "passed": 102,
+    "subtests_passed": 68,
+    "skipped": 0,
+    "exit_code": 0,
+    "scope": "source review, 16/8 association visibility, cached/native/whole-project/public live bytes, all-or-nothing rejection and adjacent CSV regression modules"
+  },
+  "inputs_sha256": {
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "5b6db473bac85dd4790a9f2f6708938cf2704cae6bbdaa3c7160682b1d1bd786",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "c85992d76594de08db1b1402e13ea2b1fffea79846da06891bb154a73ceeaee9",
+    "research/csv_reldn8_variants_profile_review.py": "b70fab81f62a8d86d553e2737de1714fe0cfb06df5590bec345a0f36d7af9a30",
+    "research/experiments/2026-09-28/csv-reldn8-variants-profile-review.json": "6dfe5f95afd4b8d53965a5d910a9300e495739945f66343552863e8c24ad0b78",
+    "research/fixtures/toolkit-database-csv-reldn8b-synthetic.xml": "386e180fa8d153261d7f46928e515b7d8f0f61242b4ed93c8e797667a52d7352",
+    "tests/test_toolkit_database_csv_reldn8b.py": "2bae625c061564cb837ff95b169b6edca31c429259c95346ba590febf1fa8562",
+    "tests/test_toolkit_database_csv_din4_rel4_rel8.py": "2e0d6f2763595626f043a1bb189e4154d2640127edb9cc20ef50533c6ee69df8",
+    "docs/toolkit-database-csv.md": "6f341826e5981942659c7c5bd115b9414904a93184861d8ec0b6218fde6b6b17",
+    "docs/implementation-status.md": "ec7e42473ea60e1bb2ead00ac6f3865e5e99d5908b75766793de39c0dbd8e6bc",
+    "../.agents/skills/cbus-cli/references/toolkit.md": "4698e8f309231738bf3d93d73a7fa8bb8b1f1a1ad3d4981fcee91632e822607f"
+  },
+  "effects": {
+    "real_cgate_service_used": false,
+    "loopback_test_peer_used": true,
+    "real_network_used": false,
+    "database_mutated": false,
+    "physical_device_accessed": false,
+    "original_gui_executed": false
+  },
+  "remaining": [
+    "Original Toolkit GUI CSV report and cold native database load were not executed for RELDN8B.",
+    "RELDN8SP needs a separate complete native/cached profile for the marshalling-box agent and possible 25 associations.",
+    "Other firmware, secondary-application associations and remaining unit families remain open."
+  ]
+}

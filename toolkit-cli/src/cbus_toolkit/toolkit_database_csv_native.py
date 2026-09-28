@@ -227,7 +227,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
             for index in range(len(group_addresses)))
         area_address = 255
     elif unit_type in ('DIMDN4', 'DIMDN4F', 'DIMDN8', 'DIMDN8F',
-                       'RELDN4', 'RELDN8', 'RELDN12') and firmware == '2.7.00':
+                       'RELDN4', 'RELDN8', 'RELDN8B', 'RELDN12') and firmware == '2.7.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=16)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
@@ -323,7 +323,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 2.5.00, DIMDN4/DIMDN4F/DIMDN8/DIMDN8F/RELDN4/RELDN8/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 2.5.00, DIMDN4/DIMDN4F/DIMDN8/DIMDN8F/RELDN4/RELDN8/RELDN8B/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
 
     groups = []
     application_groups = {}

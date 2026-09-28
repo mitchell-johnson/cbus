@@ -1,0 +1,78 @@
+{
+  "format": "cbus-toolkit-database-csv-reldn8-variants-profile-review-v1",
+  "original_execution": false,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "registrations": [
+    {
+      "unit_type": "RELDN8B",
+      "selected_class": "TRELDN8B",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x122b4d8",
+      "unit_registration": "0x1398515",
+      "type_agent_registration": "0x1398578",
+      "class_agent_registration": "0x13988e4",
+      "class_agent": "TDinRailOutputCGateAgent",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0x122ba90",
+      "max_channels_getter": "0x122b71c",
+      "max_channels": 8
+    },
+    {
+      "unit_type": "RELDN8SP",
+      "selected_class": "TRELDN8SP",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class_address": "0x122b294",
+      "unit_registration": "0x1398536",
+      "type_agent_registration": "0x1398599",
+      "class_agent_registration": "0x1398bf8",
+      "class_agent": "TMarshallingBoxCGateAgent",
+      "area_getter": "0xd1ef60",
+      "interaction_predicate": "0xd2bf94",
+      "max_channels_getter": "0x122b900",
+      "max_channels": 9
+    }
+  ],
+  "source_method_spans": {
+    "CIS_TRELDN8.TRELDN8B.IsInteractionGroup": {
+      "start": "0x122ba90",
+      "end": "0x122bab0",
+      "bytes_sha256": "fa3f963315959f8ca70b2c90aac4a8366d5bc6438a67cbe12273011ab03edbac"
+    },
+    "CIS_TRELDN8.TRELDN8SP.GetMaxChannels": {
+      "start": "0x122b900",
+      "end": "0x122b918",
+      "bytes_sha256": "dd55f29c49f56ce74c1f36dad25a5af8fc73bde0798f6e0b6df177bc6254fdd2"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadGroups": {
+      "start": "0x122dd40",
+      "end": "0x122df04",
+      "bytes_sha256": "455b0f618d59746d1c8ca3b66311f121eb1c325dbccad3f802f5342d41e60370"
+    },
+    "CIS_TMarshallingBoxCGateAgent.TMarshallingBoxCGateAgent.LoadGroups": {
+      "start": "0x1244d0c",
+      "end": "0x1244ecc",
+      "bytes_sha256": "aae84e168a26e9df3effd32b3a93263e4a39e8c2ede933f9a6c39bd93ff14442"
+    }
+  },
+  "static_facts": {
+    "reldn8b": "The DIN output agent loads 16 ordered primary-application groups; its separate predicate exposes slots 0 through 7.",
+    "reldn8sp": "The marshalling-box agent calls the DIN 16-slot loader and can append nine further groups (up to 25 associations); its inherited predicate exposes slots 0 through 8."
+  },
+  "synthetic_fixture": {
+    "path": "research/fixtures/toolkit-database-csv-reldn8b-synthetic.xml",
+    "sha256": "386e180fa8d153261d7f46928e515b7d8f0f61242b4ed93c8e797667a52d7352",
+    "site_data": false
+  },
+  "limits": [
+    "Only RELDN8B firmware 2.7.00 with Area255, unused secondary application and 16 resolved stored primary groups is admitted.",
+    "RELDN8SP is not projected: its conditional additional groups exceed the existing 16-association cached schema and need their own complete native profile.",
+    "The original GUI CSV report and cold native database load were not run on this synthetic fixture.",
+    "The read-only adapter rejects missing groups that the original create=true path may create.",
+    "No native C-Gate, CNI, database mutation or physical device was used."
+  ]
+}
