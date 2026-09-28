@@ -1,0 +1,1040 @@
+{
+  "schema": "native-cgate-dbsetxml-nested-levels-roundtrip-v1",
+  "captured_utc": "2026-09-28T05:45:14.601804+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:58859",
+      "127.0.0.1:58860",
+      "127.0.0.1:58861",
+      "127.0.0.1:58862",
+      "127.0.0.1:58863",
+      "127.0.0.1:58864"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "09950fbe23c361fd00f434891ad1f831e9b3bafae63be9a535d1f4787508728d",
+  "source_shape_sha256": "6125cd7d1ea80a82f4d58b3717f7d7e2cee27457db99a7936f34a5d07d78b6a1",
+  "exchange_helper_sha256": "22580ef1eb861b029df4154efa267872ea4864115ee0949ac40f25403f24e2a4",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "shared_oid": "33333333-3333-4333-8333-333333333333",
+  "shapes": [
+    {
+      "project": "XRTN",
+      "kind": "Group",
+      "target": "network",
+      "network_oid": "b2f681c0-9d2d-103f-9ded-ae23068e0390",
+      "interface_oid": "b2f6a8d0-9d2d-103f-9dee-ae23068e0390",
+      "set_tag": 910,
+      "address": "//XRTN/254"
+    },
+    {
+      "project": "XRTG",
+      "kind": "Group",
+      "target": "group",
+      "network_oid": "b3250bd0-9d2d-103f-9e5b-ae23068e0390",
+      "interface_oid": "b32532e0-9d2d-103f-9e5c-ae23068e0390",
+      "set_tag": 928,
+      "address": "//XRTG/254/56/1"
+    },
+    {
+      "project": "XRTL",
+      "kind": "Group",
+      "target": "level",
+      "network_oid": "b3322b30-9d2d-103f-9ec9-ae23068e0390",
+      "interface_oid": "b3325240-9d2d-103f-9eca-ae23068e0390",
+      "set_tag": 946,
+      "address": "//XRTL/254/56/1/2"
+    },
+    {
+      "project": "XRVN",
+      "kind": "NetVar",
+      "target": "network",
+      "network_oid": "b343de70-9d2d-103f-9f37-ae23068e0390",
+      "interface_oid": "b3440580-9d2d-103f-9f38-ae23068e0390",
+      "set_tag": 964,
+      "address": "//XRVN/254"
+    },
+    {
+      "project": "XRVV",
+      "kind": "NetVar",
+      "target": "netvar",
+      "network_oid": "b350afb0-9d2d-103f-9fa5-ae23068e0390",
+      "interface_oid": "b350d6c0-9d2d-103f-9fa6-ae23068e0390",
+      "set_tag": 982,
+      "address": "//XRVV/254/56/1"
+    },
+    {
+      "project": "XRVL",
+      "kind": "NetVar",
+      "target": "level_oid",
+      "network_oid": "b35e1d30-9d2d-103f-a013-ae23068e0390",
+      "interface_oid": "b35e4440-9d2d-103f-a014-ae23068e0390",
+      "set_tag": 1000,
+      "address": "!55555555-5555-4555-8555-000000000056"
+    }
+  ],
+  "cases": [
+    {
+      "tag": 900,
+      "command": "PROJECT NEW XRTN",
+      "request": "[900] PROJECT NEW XRTN\r\n",
+      "response_lines": [
+        "[900] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 901,
+      "command": "PROJECT USE XRTN",
+      "request": "[901] PROJECT USE XRTN\r\n",
+      "response_lines": [
+        "[901] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 902,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[902] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[902] 301 OID=b2f681c0-9d2d-103f-9ded-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 903,
+      "command": "DBGETXML //XRTN/254",
+      "request": "[903] DBGETXML //XRTN/254\r\n",
+      "response_lines": [
+        "[903] 343-Begin XML snippet\r\n",
+        "[903] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[903] 347-<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[903] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 904,
+      "command": "DBSETXML //XRTN/254",
+      "request": "[904] DBSETXML //XRTN/254 << END904\r\n<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></Group></Application></Network>\r\nEND904\r\n",
+      "response_lines": [
+        "[904] 301 OID=b2f681c0-9d2d-103f-9ded-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 905,
+      "command": "PROJECT SAVE XRTN",
+      "request": "[905] PROJECT SAVE XRTN\r\n",
+      "response_lines": [
+        "[905] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 906,
+      "command": "PROJECT CLOSE XRTN",
+      "request": "[906] PROJECT CLOSE XRTN\r\n",
+      "response_lines": [
+        "[906] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 907,
+      "command": "PROJECT LOAD XRTN",
+      "request": "[907] PROJECT LOAD XRTN\r\n",
+      "response_lines": [
+        "[907] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 908,
+      "command": "PROJECT USE XRTN",
+      "request": "[908] PROJECT USE XRTN\r\n",
+      "response_lines": [
+        "[908] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 909,
+      "command": "DBGETXML //XRTN/254",
+      "request": "[909] DBGETXML //XRTN/254\r\n",
+      "response_lines": [
+        "[909] 343-Begin XML snippet\r\n",
+        "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[909] 347-<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[909] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 910,
+      "command": "DBSETXML //XRTN/254",
+      "request": "[910] DBSETXML //XRTN/254 << END910\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\nEND910\r\n",
+      "response_lines": [
+        "[910] 301 OID=b2f681c0-9d2d-103f-9ded-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 911,
+      "command": "DBGETXML //XRTN/254",
+      "request": "[911] DBGETXML //XRTN/254\r\n",
+      "response_lines": [
+        "[911] 343-Begin XML snippet\r\n",
+        "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[911] 347-<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[911] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 912,
+      "command": "DBGETXML //XRTN/254",
+      "request": "[912] DBGETXML //XRTN/254\r\n",
+      "response_lines": [
+        "[912] 343-Begin XML snippet\r\n",
+        "[912] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[912] 347-<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[912] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 913,
+      "command": "PROJECT SAVE XRTN",
+      "request": "[913] PROJECT SAVE XRTN\r\n",
+      "response_lines": [
+        "[913] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 914,
+      "command": "PROJECT CLOSE XRTN",
+      "request": "[914] PROJECT CLOSE XRTN\r\n",
+      "response_lines": [
+        "[914] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 915,
+      "command": "PROJECT LOAD XRTN",
+      "request": "[915] PROJECT LOAD XRTN\r\n",
+      "response_lines": [
+        "[915] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 916,
+      "command": "PROJECT USE XRTN",
+      "request": "[916] PROJECT USE XRTN\r\n",
+      "response_lines": [
+        "[916] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 917,
+      "command": "DBGETXML //XRTN/254",
+      "request": "[917] DBGETXML //XRTN/254\r\n",
+      "response_lines": [
+        "[917] 343-Begin XML snippet\r\n",
+        "[917] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[917] 347-<Network><OID>b2f681c0-9d2d-103f-9ded-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b2f6a8d0-9d2d-103f-9dee-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[917] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 918,
+      "command": "PROJECT NEW XRTG",
+      "request": "[918] PROJECT NEW XRTG\r\n",
+      "response_lines": [
+        "[918] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 919,
+      "command": "PROJECT USE XRTG",
+      "request": "[919] PROJECT USE XRTG\r\n",
+      "response_lines": [
+        "[919] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 920,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[920] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[920] 301 OID=b3250bd0-9d2d-103f-9e5b-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 921,
+      "command": "DBGETXML //XRTG/254",
+      "request": "[921] DBGETXML //XRTG/254\r\n",
+      "response_lines": [
+        "[921] 343-Begin XML snippet\r\n",
+        "[921] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[921] 347-<Network><OID>b3250bd0-9d2d-103f-9e5b-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b32532e0-9d2d-103f-9e5c-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[921] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 922,
+      "command": "DBSETXML //XRTG/254",
+      "request": "[922] DBSETXML //XRTG/254 << END922\r\n<Network><OID>b3250bd0-9d2d-103f-9e5b-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b32532e0-9d2d-103f-9e5c-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></Group></Application></Network>\r\nEND922\r\n",
+      "response_lines": [
+        "[922] 301 OID=b3250bd0-9d2d-103f-9e5b-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 923,
+      "command": "PROJECT SAVE XRTG",
+      "request": "[923] PROJECT SAVE XRTG\r\n",
+      "response_lines": [
+        "[923] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 924,
+      "command": "PROJECT CLOSE XRTG",
+      "request": "[924] PROJECT CLOSE XRTG\r\n",
+      "response_lines": [
+        "[924] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 925,
+      "command": "PROJECT LOAD XRTG",
+      "request": "[925] PROJECT LOAD XRTG\r\n",
+      "response_lines": [
+        "[925] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 926,
+      "command": "PROJECT USE XRTG",
+      "request": "[926] PROJECT USE XRTG\r\n",
+      "response_lines": [
+        "[926] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 927,
+      "command": "DBGETXML //XRTG/254/56/1",
+      "request": "[927] DBGETXML //XRTG/254/56/1\r\n",
+      "response_lines": [
+        "[927] 343-Begin XML snippet\r\n",
+        "[927] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[927] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group>\r\n",
+        "[927] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 928,
+      "command": "DBSETXML //XRTG/254/56/1",
+      "request": "[928] DBSETXML //XRTG/254/56/1 << END928\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group>\r\nEND928\r\n",
+      "response_lines": [
+        "[928] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+      ]
+    },
+    {
+      "tag": 929,
+      "command": "DBGETXML //XRTG/254/56/1",
+      "request": "[929] DBGETXML //XRTG/254/56/1\r\n",
+      "response_lines": [
+        "[929] 343-Begin XML snippet\r\n",
+        "[929] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[929] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group>\r\n",
+        "[929] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 930,
+      "command": "DBGETXML //XRTG/254",
+      "request": "[930] DBGETXML //XRTG/254\r\n",
+      "response_lines": [
+        "[930] 343-Begin XML snippet\r\n",
+        "[930] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[930] 347-<Network><OID>b3250bd0-9d2d-103f-9e5b-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b32532e0-9d2d-103f-9e5c-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[930] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 931,
+      "command": "PROJECT SAVE XRTG",
+      "request": "[931] PROJECT SAVE XRTG\r\n",
+      "response_lines": [
+        "[931] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 932,
+      "command": "PROJECT CLOSE XRTG",
+      "request": "[932] PROJECT CLOSE XRTG\r\n",
+      "response_lines": [
+        "[932] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 933,
+      "command": "PROJECT LOAD XRTG",
+      "request": "[933] PROJECT LOAD XRTG\r\n",
+      "response_lines": [
+        "[933] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 934,
+      "command": "PROJECT USE XRTG",
+      "request": "[934] PROJECT USE XRTG\r\n",
+      "response_lines": [
+        "[934] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 935,
+      "command": "DBGETXML //XRTG/254",
+      "request": "[935] DBGETXML //XRTG/254\r\n",
+      "response_lines": [
+        "[935] 343-Begin XML snippet\r\n",
+        "[935] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[935] 347-<Network><OID>b3250bd0-9d2d-103f-9e5b-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b32532e0-9d2d-103f-9e5c-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[935] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 936,
+      "command": "PROJECT NEW XRTL",
+      "request": "[936] PROJECT NEW XRTL\r\n",
+      "response_lines": [
+        "[936] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 937,
+      "command": "PROJECT USE XRTL",
+      "request": "[937] PROJECT USE XRTL\r\n",
+      "response_lines": [
+        "[937] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 938,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[938] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[938] 301 OID=b3322b30-9d2d-103f-9ec9-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 939,
+      "command": "DBGETXML //XRTL/254",
+      "request": "[939] DBGETXML //XRTL/254\r\n",
+      "response_lines": [
+        "[939] 343-Begin XML snippet\r\n",
+        "[939] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[939] 347-<Network><OID>b3322b30-9d2d-103f-9ec9-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3325240-9d2d-103f-9eca-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[939] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 940,
+      "command": "DBSETXML //XRTL/254",
+      "request": "[940] DBSETXML //XRTL/254 << END940\r\n<Network><OID>b3322b30-9d2d-103f-9ec9-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3325240-9d2d-103f-9eca-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></Group></Application></Network>\r\nEND940\r\n",
+      "response_lines": [
+        "[940] 301 OID=b3322b30-9d2d-103f-9ec9-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 941,
+      "command": "PROJECT SAVE XRTL",
+      "request": "[941] PROJECT SAVE XRTL\r\n",
+      "response_lines": [
+        "[941] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 942,
+      "command": "PROJECT CLOSE XRTL",
+      "request": "[942] PROJECT CLOSE XRTL\r\n",
+      "response_lines": [
+        "[942] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 943,
+      "command": "PROJECT LOAD XRTL",
+      "request": "[943] PROJECT LOAD XRTL\r\n",
+      "response_lines": [
+        "[943] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 944,
+      "command": "PROJECT USE XRTL",
+      "request": "[944] PROJECT USE XRTL\r\n",
+      "response_lines": [
+        "[944] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 945,
+      "command": "DBGETXML //XRTL/254/56/1/2",
+      "request": "[945] DBGETXML //XRTL/254/56/1/2\r\n",
+      "response_lines": [
+        "[945] 343-Begin XML snippet\r\n",
+        "[945] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[945] 347-<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\n",
+        "[945] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 946,
+      "command": "DBSETXML //XRTL/254/56/1/2",
+      "request": "[946] DBSETXML //XRTL/254/56/1/2 << END946\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\nEND946\r\n",
+      "response_lines": [
+        "[946] 301 OID=55555555-5555-4555-8555-000000000056\r\n"
+      ]
+    },
+    {
+      "tag": 947,
+      "command": "DBGETXML //XRTL/254/56/1/2",
+      "request": "[947] DBGETXML //XRTL/254/56/1/2\r\n",
+      "response_lines": [
+        "[947] 343-Begin XML snippet\r\n",
+        "[947] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[947] 347-<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\n",
+        "[947] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 948,
+      "command": "DBGETXML //XRTL/254",
+      "request": "[948] DBGETXML //XRTL/254\r\n",
+      "response_lines": [
+        "[948] 343-Begin XML snippet\r\n",
+        "[948] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[948] 347-<Network><OID>b3322b30-9d2d-103f-9ec9-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3325240-9d2d-103f-9eca-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[948] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 949,
+      "command": "PROJECT SAVE XRTL",
+      "request": "[949] PROJECT SAVE XRTL\r\n",
+      "response_lines": [
+        "[949] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 950,
+      "command": "PROJECT CLOSE XRTL",
+      "request": "[950] PROJECT CLOSE XRTL\r\n",
+      "response_lines": [
+        "[950] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 951,
+      "command": "PROJECT LOAD XRTL",
+      "request": "[951] PROJECT LOAD XRTL\r\n",
+      "response_lines": [
+        "[951] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 952,
+      "command": "PROJECT USE XRTL",
+      "request": "[952] PROJECT USE XRTL\r\n",
+      "response_lines": [
+        "[952] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 953,
+      "command": "DBGETXML //XRTL/254",
+      "request": "[953] DBGETXML //XRTL/254\r\n",
+      "response_lines": [
+        "[953] 343-Begin XML snippet\r\n",
+        "[953] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[953] 347-<Network><OID>b3322b30-9d2d-103f-9ec9-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3325240-9d2d-103f-9eca-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><Group><OID>44444444-4444-4444-8444-000000000057</OID><TagName>Group57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></Group></Application></Network>\r\n",
+        "[953] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 954,
+      "command": "PROJECT NEW XRVN",
+      "request": "[954] PROJECT NEW XRVN\r\n",
+      "response_lines": [
+        "[954] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 955,
+      "command": "PROJECT USE XRVN",
+      "request": "[955] PROJECT USE XRVN\r\n",
+      "response_lines": [
+        "[955] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 956,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[956] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[956] 301 OID=b343de70-9d2d-103f-9f37-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 957,
+      "command": "DBGETXML //XRVN/254",
+      "request": "[957] DBGETXML //XRVN/254\r\n",
+      "response_lines": [
+        "[957] 343-Begin XML snippet\r\n",
+        "[957] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[957] 347-<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[957] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 958,
+      "command": "DBSETXML //XRVN/254",
+      "request": "[958] DBSETXML //XRVN/254 << END958\r\n<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></NetVar></Application></Network>\r\nEND958\r\n",
+      "response_lines": [
+        "[958] 301 OID=b343de70-9d2d-103f-9f37-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 959,
+      "command": "PROJECT SAVE XRVN",
+      "request": "[959] PROJECT SAVE XRVN\r\n",
+      "response_lines": [
+        "[959] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 960,
+      "command": "PROJECT CLOSE XRVN",
+      "request": "[960] PROJECT CLOSE XRVN\r\n",
+      "response_lines": [
+        "[960] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 961,
+      "command": "PROJECT LOAD XRVN",
+      "request": "[961] PROJECT LOAD XRVN\r\n",
+      "response_lines": [
+        "[961] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 962,
+      "command": "PROJECT USE XRVN",
+      "request": "[962] PROJECT USE XRVN\r\n",
+      "response_lines": [
+        "[962] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 963,
+      "command": "DBGETXML //XRVN/254",
+      "request": "[963] DBGETXML //XRVN/254\r\n",
+      "response_lines": [
+        "[963] 343-Begin XML snippet\r\n",
+        "[963] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[963] 347-<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[963] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 964,
+      "command": "DBSETXML //XRVN/254",
+      "request": "[964] DBSETXML //XRVN/254 << END964\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\nEND964\r\n",
+      "response_lines": [
+        "[964] 301 OID=b343de70-9d2d-103f-9f37-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 965,
+      "command": "DBGETXML //XRVN/254",
+      "request": "[965] DBGETXML //XRVN/254\r\n",
+      "response_lines": [
+        "[965] 343-Begin XML snippet\r\n",
+        "[965] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[965] 347-<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[965] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 966,
+      "command": "DBGETXML //XRVN/254",
+      "request": "[966] DBGETXML //XRVN/254\r\n",
+      "response_lines": [
+        "[966] 343-Begin XML snippet\r\n",
+        "[966] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[966] 347-<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[966] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 967,
+      "command": "PROJECT SAVE XRVN",
+      "request": "[967] PROJECT SAVE XRVN\r\n",
+      "response_lines": [
+        "[967] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 968,
+      "command": "PROJECT CLOSE XRVN",
+      "request": "[968] PROJECT CLOSE XRVN\r\n",
+      "response_lines": [
+        "[968] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 969,
+      "command": "PROJECT LOAD XRVN",
+      "request": "[969] PROJECT LOAD XRVN\r\n",
+      "response_lines": [
+        "[969] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 970,
+      "command": "PROJECT USE XRVN",
+      "request": "[970] PROJECT USE XRVN\r\n",
+      "response_lines": [
+        "[970] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 971,
+      "command": "DBGETXML //XRVN/254",
+      "request": "[971] DBGETXML //XRVN/254\r\n",
+      "response_lines": [
+        "[971] 343-Begin XML snippet\r\n",
+        "[971] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[971] 347-<Network><OID>b343de70-9d2d-103f-9f37-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3440580-9d2d-103f-9f38-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[971] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 972,
+      "command": "PROJECT NEW XRVV",
+      "request": "[972] PROJECT NEW XRVV\r\n",
+      "response_lines": [
+        "[972] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 973,
+      "command": "PROJECT USE XRVV",
+      "request": "[973] PROJECT USE XRVV\r\n",
+      "response_lines": [
+        "[973] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 974,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[974] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[974] 301 OID=b350afb0-9d2d-103f-9fa5-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 975,
+      "command": "DBGETXML //XRVV/254",
+      "request": "[975] DBGETXML //XRVV/254\r\n",
+      "response_lines": [
+        "[975] 343-Begin XML snippet\r\n",
+        "[975] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[975] 347-<Network><OID>b350afb0-9d2d-103f-9fa5-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b350d6c0-9d2d-103f-9fa6-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[975] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 976,
+      "command": "DBSETXML //XRVV/254",
+      "request": "[976] DBSETXML //XRVV/254 << END976\r\n<Network><OID>b350afb0-9d2d-103f-9fa5-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b350d6c0-9d2d-103f-9fa6-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></NetVar></Application></Network>\r\nEND976\r\n",
+      "response_lines": [
+        "[976] 301 OID=b350afb0-9d2d-103f-9fa5-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 977,
+      "command": "PROJECT SAVE XRVV",
+      "request": "[977] PROJECT SAVE XRVV\r\n",
+      "response_lines": [
+        "[977] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 978,
+      "command": "PROJECT CLOSE XRVV",
+      "request": "[978] PROJECT CLOSE XRVV\r\n",
+      "response_lines": [
+        "[978] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 979,
+      "command": "PROJECT LOAD XRVV",
+      "request": "[979] PROJECT LOAD XRVV\r\n",
+      "response_lines": [
+        "[979] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 980,
+      "command": "PROJECT USE XRVV",
+      "request": "[980] PROJECT USE XRVV\r\n",
+      "response_lines": [
+        "[980] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 981,
+      "command": "DBGETXML //XRVV/254/56/1",
+      "request": "[981] DBGETXML //XRVV/254/56/1\r\n",
+      "response_lines": [
+        "[981] 343-Begin XML snippet\r\n",
+        "[981] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[981] 347-<NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar>\r\n",
+        "[981] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 982,
+      "command": "DBSETXML //XRVV/254/56/1",
+      "request": "[982] DBSETXML //XRVV/254/56/1 << END982\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar>\r\nEND982\r\n",
+      "response_lines": [
+        "[982] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+      ]
+    },
+    {
+      "tag": 983,
+      "command": "DBGETXML //XRVV/254/56/1",
+      "request": "[983] DBGETXML //XRVV/254/56/1\r\n",
+      "response_lines": [
+        "[983] 343-Begin XML snippet\r\n",
+        "[983] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[983] 347-<NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar>\r\n",
+        "[983] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 984,
+      "command": "DBGETXML //XRVV/254",
+      "request": "[984] DBGETXML //XRVV/254\r\n",
+      "response_lines": [
+        "[984] 343-Begin XML snippet\r\n",
+        "[984] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[984] 347-<Network><OID>b350afb0-9d2d-103f-9fa5-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b350d6c0-9d2d-103f-9fa6-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[984] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 985,
+      "command": "PROJECT SAVE XRVV",
+      "request": "[985] PROJECT SAVE XRVV\r\n",
+      "response_lines": [
+        "[985] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 986,
+      "command": "PROJECT CLOSE XRVV",
+      "request": "[986] PROJECT CLOSE XRVV\r\n",
+      "response_lines": [
+        "[986] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 987,
+      "command": "PROJECT LOAD XRVV",
+      "request": "[987] PROJECT LOAD XRVV\r\n",
+      "response_lines": [
+        "[987] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 988,
+      "command": "PROJECT USE XRVV",
+      "request": "[988] PROJECT USE XRVV\r\n",
+      "response_lines": [
+        "[988] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 989,
+      "command": "DBGETXML //XRVV/254",
+      "request": "[989] DBGETXML //XRVV/254\r\n",
+      "response_lines": [
+        "[989] 343-Begin XML snippet\r\n",
+        "[989] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[989] 347-<Network><OID>b350afb0-9d2d-103f-9fa5-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b350d6c0-9d2d-103f-9fa6-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[989] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 990,
+      "command": "PROJECT NEW XRVL",
+      "request": "[990] PROJECT NEW XRVL\r\n",
+      "response_lines": [
+        "[990] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 991,
+      "command": "PROJECT USE XRVL",
+      "request": "[991] PROJECT USE XRVL\r\n",
+      "response_lines": [
+        "[991] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 992,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[992] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[992] 301 OID=b35e1d30-9d2d-103f-a013-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 993,
+      "command": "DBGETXML //XRVL/254",
+      "request": "[993] DBGETXML //XRVL/254\r\n",
+      "response_lines": [
+        "[993] 343-Begin XML snippet\r\n",
+        "[993] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[993] 347-<Network><OID>b35e1d30-9d2d-103f-a013-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b35e4440-9d2d-103f-a014-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[993] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 994,
+      "command": "DBSETXML //XRVL/254",
+      "request": "[994] DBSETXML //XRVL/254 << END994\r\n<Network><OID>b35e1d30-9d2d-103f-a013-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b35e4440-9d2d-103f-a014-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address></Level></NetVar></Application></Network>\r\nEND994\r\n",
+      "response_lines": [
+        "[994] 301 OID=b35e1d30-9d2d-103f-a013-ae23068e0390\r\n"
+      ]
+    },
+    {
+      "tag": 995,
+      "command": "PROJECT SAVE XRVL",
+      "request": "[995] PROJECT SAVE XRVL\r\n",
+      "response_lines": [
+        "[995] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 996,
+      "command": "PROJECT CLOSE XRVL",
+      "request": "[996] PROJECT CLOSE XRVL\r\n",
+      "response_lines": [
+        "[996] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 997,
+      "command": "PROJECT LOAD XRVL",
+      "request": "[997] PROJECT LOAD XRVL\r\n",
+      "response_lines": [
+        "[997] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 998,
+      "command": "PROJECT USE XRVL",
+      "request": "[998] PROJECT USE XRVL\r\n",
+      "response_lines": [
+        "[998] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 999,
+      "command": "DBGETXML !55555555-5555-4555-8555-000000000056",
+      "request": "[999] DBGETXML !55555555-5555-4555-8555-000000000056\r\n",
+      "response_lines": [
+        "[999] 343-Begin XML snippet\r\n",
+        "[999] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[999] 347-<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\n",
+        "[999] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 1000,
+      "command": "DBSETXML !55555555-5555-4555-8555-000000000056",
+      "request": "[1000] DBSETXML !55555555-5555-4555-8555-000000000056 << END1000\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\nEND1000\r\n",
+      "response_lines": [
+        "[1000] 301 OID=55555555-5555-4555-8555-000000000056\r\n"
+      ]
+    },
+    {
+      "tag": 1001,
+      "command": "DBGETXML !55555555-5555-4555-8555-000000000056",
+      "request": "[1001] DBGETXML !55555555-5555-4555-8555-000000000056\r\n",
+      "response_lines": [
+        "[1001] 343-Begin XML snippet\r\n",
+        "[1001] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[1001] 347-<Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level>\r\n",
+        "[1001] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 1002,
+      "command": "DBGETXML //XRVL/254",
+      "request": "[1002] DBGETXML //XRVL/254\r\n",
+      "response_lines": [
+        "[1002] 343-Begin XML snippet\r\n",
+        "[1002] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[1002] 347-<Network><OID>b35e1d30-9d2d-103f-a013-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b35e4440-9d2d-103f-a014-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[1002] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 1003,
+      "command": "PROJECT SAVE XRVL",
+      "request": "[1003] PROJECT SAVE XRVL\r\n",
+      "response_lines": [
+        "[1003] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 1004,
+      "command": "PROJECT CLOSE XRVL",
+      "request": "[1004] PROJECT CLOSE XRVL\r\n",
+      "response_lines": [
+        "[1004] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 1005,
+      "command": "PROJECT LOAD XRVL",
+      "request": "[1005] PROJECT LOAD XRVL\r\n",
+      "response_lines": [
+        "[1005] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 1006,
+      "command": "PROJECT USE XRVL",
+      "request": "[1006] PROJECT USE XRVL\r\n",
+      "response_lines": [
+        "[1006] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 1007,
+      "command": "DBGETXML //XRVL/254",
+      "request": "[1007] DBGETXML //XRVL/254\r\n",
+      "response_lines": [
+        "[1007] 343-Begin XML snippet\r\n",
+        "[1007] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[1007] 347-<Network><OID>b35e1d30-9d2d-103f-a013-ae23068e0390</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b35e4440-9d2d-103f-a014-ae23068e0390</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><NetVar><OID>44444444-4444-4444-8444-000000000056</OID><TagName>NetVar56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App57</TagName><Address>57</Address><NetVar><OID>44444444-4444-4444-8444-000000000057</OID><TagName>NetVar57</TagName><Address>1</Address><Level Value=\"57\"><OID>55555555-5555-4555-8555-000000000057</OID><TagName>Level57</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application></Network>\r\n",
+        "[1007] 344 End XML snippet\r\n"
+      ]
+    }
+  ]
+}

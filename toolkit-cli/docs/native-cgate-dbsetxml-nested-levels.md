@@ -35,6 +35,36 @@ The Rust replay compares every scoped replacement receipt, XML snippet, and
 the service test checks durability across its JSON repository restart and no
 PCI traffic.
 
+## Post-load XML roundtrip
+
+The [108-request follow-up capture](../../rust/testdata/fixtures/native_cgate_dbsetxml_nested_levels_roundtrip.json)
+reused the same owned C-Gate JAR, Java 11 runtime, synthetic CNI, and Level
+shape. Its [script](../research/cgate_dbsetxml_nested_levels_roundtrip.py)
+SHA-256 is `09950fbe23c361fd00f434891ad1f831e9b3bafae63be9a535d1f4787508728d`;
+the fixture SHA-256 is
+`33f7ac5fb6dd6937138382de8b7bec0ca56598a18c0c05a9a48f348dcce48c52`.
+The [source-bound test](../tests/test_native_cgate_dbsetxml_nested_levels_roundtrip.py)
+pins the script, source shape, tagged exchange helper, owned-service harness,
+all requests and replies, listener ownership, and cleanup.
+
+Six fresh projects submitted the exact XML returned by post-load `DBGETXML`
+back to `DBSETXML`: complete Group and NetVar Networks, one Group, one direct
+Group/Level, one NetVar, and one NetVar/Level by OID. All six replacements
+returned `301 OID=<submitted root OID>`. Immediate target readback equaled the
+submitted XML, including each empty Level `<TagsDLT/>`. Whole-Network readback
+kept both Level tags and remained byte-identical after another
+`PROJECT SAVE`, `CLOSE`, `LOAD`, and `USE`. The
+[Rust vector](../../rust/testdata/vectors/cgate_dbsetxml_nested_levels_roundtrip.jsonl)
+and exact replay cover all 108 requests. A service test also roundtrips the
+post-load Network on both child kinds, verifies the second lifecycle and JSON
+repository restart, and observes no PCI traffic.
+
+Rust admits only a single empty, unnamespaced `TagsDLT` child on a Level in
+the evidenced complete-object XML forms. A nonempty Level `TagsDLT` remains a
+bounded unsupported input and is rejected without changing the tree. Native
+acceptance of nonempty labels, attributes, duplicate collections, and broader
+XML variants has not been established.
+
 This is a bounded Level-grandchild extension to the earlier
 [nested-Application capture](native-cgate-dbsetxml-nested-applications.md).
 It does not establish colliding descendant OIDs, mixed or other duplicate

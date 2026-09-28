@@ -3905,6 +3905,158 @@ fn dbsetxml_nested_same_oid_levels_match_owned_native_vectors() {
 }
 
 #[test]
+fn dbsetxml_post_load_level_tags_roundtrip_matches_owned_native_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_nested_levels_roundtrip.json"
+    ))
+    .unwrap();
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbsetxml_nested_levels_roundtrip.jsonl"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-nested-levels-roundtrip-v1"
+    );
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    assert_eq!(native["cases"].as_array().unwrap().len(), 108);
+    assert_eq!(
+        vector["initial_set_tags"],
+        serde_json::json!([904, 922, 940, 958, 976, 994])
+    );
+    assert_eq!(
+        vector["roundtrip_set_tags"],
+        serde_json::json!([910, 928, 946, 964, 982, 1000])
+    );
+
+    let mut server = Server::new(AccessLevel::Program);
+    let mut oids = HashMap::<String, String>::new();
+    for row in native["cases"].as_array().unwrap() {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let request = row["request"].as_str().unwrap();
+        let substitute = |value: &str, oids: &HashMap<String, String>| {
+            oids.iter().fold(value.to_string(), |value, (from, to)| {
+                value.replace(from, to)
+            })
+        };
+        let observed = if command.starts_with("DBSETXML ") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = request
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document, &oids))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        if command.starts_with("DBCREATENET ") {
+            // The native setup issues 301; this mock's older setup issues 200.
+            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            continue;
+        }
+        if command.starts_with("DBGETXML //")
+            && native["shapes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|shape| shape["set_tag"].as_u64() == Some(tag + 1 + 6))
+        {
+            let parsed =
+                roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                    .unwrap();
+            let find_oid = |element: roxmltree::Node<'_, '_>| {
+                element
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap()
+                    .to_string()
+            };
+            let shape = native["shapes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|shape| shape["set_tag"].as_u64() == Some(tag + 1 + 6))
+                .unwrap();
+            let interface = parsed
+                .descendants()
+                .find(|node| node.has_tag_name("Interface"))
+                .unwrap();
+            oids.insert(
+                shape["network_oid"].as_str().unwrap().to_string(),
+                find_oid(parsed.root_element()),
+            );
+            oids.insert(
+                shape["interface_oid"].as_str().unwrap().to_string(),
+                find_oid(interface),
+            );
+        }
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status = if command.starts_with("DBGETXML ") {
+            200
+        } else {
+            expected_final[..3].parse::<u16>().unwrap()
+        };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML ") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(
+                observed.lines[0],
+                substitute(expected_xml, &oids),
+                "tag {tag}"
+            );
+        } else if command.starts_with("DBSETXML ") {
+            assert_eq!(
+                observed.final_text,
+                substitute(expected_final, &oids),
+                "tag {tag}"
+            );
+        }
+    }
+
+    // The accepted element is the captured empty form. A different Level
+    // TagsDLT payload stays outside this parity slice and fails atomically.
+    let before = server.handle("[guard-before] DBGETXML //XRVL/254").lines[0].clone();
+    let level = server.handle("[guard-level] DBGETXML !55555555-5555-4555-8555-000000000056");
+    let source = level.lines[0].strip_prefix("347-").unwrap();
+    for tags in [
+        "<TagsDLT><TagDLT/></TagsDLT>",
+        "<TagsDLT xmlns=\"urn:unprobed\"/>",
+        "<TagsDLT unknown=\"1\"/>",
+        "<TagsDLT/><TagsDLT/>",
+    ] {
+        assert_eq!(
+            server
+                .handle_document(
+                    "[guard-set] DBSETXML !55555555-5555-4555-8555-000000000056",
+                    &source.replace("<TagsDLT/>", tags),
+                )
+                .status,
+            400,
+            "{tags}"
+        );
+    }
+    assert_eq!(
+        server.handle("[guard-after] DBGETXML //XRVL/254").lines[0],
+        before
+    );
+}
+
+#[test]
 fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"

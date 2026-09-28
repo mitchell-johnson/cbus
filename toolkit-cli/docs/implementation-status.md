@@ -103,6 +103,10 @@ extends the Rust C-Gate row with Group/NetVar Level grandchildren beneath
 same-OID Applications. It pins load-time empty `TagsDLT`, direct Group/Level
 XML success, and direct NetVar/Level 500 responses, with exact Rust replay and
 JSON repository restart evidence. Broader combined forms remain open.
+The [108-request post-load roundtrip](native-cgate-dbsetxml-nested-levels.md#post-load-xml-roundtrip)
+adds native `301` and exact readback for XML containing generated empty Level
+`TagsDLT` at Network, Group, NetVar and Level scope; Rust replays every request
+and keeps those tags through a second save/load and repository restart.
 
 Other feature-specific acceptance, including Windows, native C-Gate, transport cleanup and file handling, is linked from the feature documents. Passing simulator tests alone is not evidence of physical-device equivalence.
 

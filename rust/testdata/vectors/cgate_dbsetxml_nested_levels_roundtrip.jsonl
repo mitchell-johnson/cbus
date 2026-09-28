@@ -1,0 +1,53 @@
+{
+  "schema": "cgate-dbsetxml-nested-levels-roundtrip-v1",
+  "native_fixture": "native_cgate_dbsetxml_nested_levels_roundtrip.json",
+  "basis": "native-owned-loopback",
+  "initial_set_tags": [
+    904,
+    922,
+    940,
+    958,
+    976,
+    994
+  ],
+  "roundtrip_set_tags": [
+    910,
+    928,
+    946,
+    964,
+    982,
+    1000
+  ],
+  "read_tags": [
+    903,
+    909,
+    911,
+    912,
+    917,
+    921,
+    927,
+    929,
+    930,
+    935,
+    939,
+    945,
+    947,
+    948,
+    953,
+    957,
+    963,
+    965,
+    966,
+    971,
+    975,
+    981,
+    983,
+    984,
+    989,
+    993,
+    999,
+    1001,
+    1002,
+    1007
+  ]
+}

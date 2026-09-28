@@ -15482,6 +15482,50 @@ async fn nested_same_oid_levels_materialize_on_load_and_survive_repository_resta
         );
         let after_load = service.handle(&mut client, &read("loaded")).await;
         assert_eq!(after_load.lines[0].matches("<TagsDLT/>").count(), 2);
+        let roundtrip_xml = after_load.lines[0]
+            .strip_prefix("347-")
+            .unwrap()
+            .to_string();
+        assert_eq!(
+            service
+                .handle_document(
+                    &mut client,
+                    &format!("[roundtrip] DBSETXML //{project}/254"),
+                    &roundtrip_xml,
+                )
+                .await
+                .status,
+            301
+        );
+        assert_eq!(
+            service.handle(&mut client, &read("replaced")).await.lines[0],
+            after_load.lines[0]
+        );
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[resave] PROJECT SAVE {project}"))
+                .await
+                .status,
+            200
+        );
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[reclose] PROJECT CLOSE {project}"))
+                .await
+                .status,
+            200
+        );
+        assert_eq!(
+            service
+                .handle(&mut client, &format!("[reload] PROJECT LOAD {project}"))
+                .await
+                .status,
+            200
+        );
+        assert_eq!(
+            service.handle(&mut client, &read("reloaded")).await.lines[0],
+            after_load.lines[0]
+        );
         let level = format!("//{project}/254/56/1/2");
         let direct = service
             .handle(&mut client, &format!("[direct] DBGETXML {level}"))

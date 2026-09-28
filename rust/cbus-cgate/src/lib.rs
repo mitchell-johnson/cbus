@@ -965,8 +965,12 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     let mut children = Vec::new();
     let mut units = Vec::new();
     let mut interface = None;
+    let mut extras = DbXmlExtras::default();
     for child in node.children().filter(roxmltree::Node::is_element) {
         if child.tag_name().namespace().is_some() {
+            if kind == DbXmlKind::Level && child.tag_name().name() == "TagsDLT" {
+                return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+            }
             continue;
         }
         let name = child.tag_name().name();
@@ -987,6 +991,18 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
             continue;
         }
         match (kind, name) {
+            (DbXmlKind::Level, "TagsDLT") => {
+                // Owned build-2001 DBGETXML adds exactly this empty child
+                // after load and accepts it in a subsequent DBSETXML at
+                // Network, Group, NetVar, or Level scope.
+                if !extras.children.is_empty()
+                    || child.attributes().len() != 0
+                    || child.children().next().is_some()
+                {
+                    return Err("DBSETXML Level has an unsupported TagsDLT".to_string());
+                }
+                extras.children.push("<TagsDLT/>".to_string());
+            }
             (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
             | (DbXmlKind::Application, "Group" | "NetVar") => {
                 children.push(parse_db_xml_object(child)?);
@@ -1053,9 +1069,9 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         interface,
         units,
         children,
-        // The original mapper accepts unmodeled namespace/comment/PI markup
-        // on the combined typed tree but omits it from DBGETXML readback.
-        extras: DbXmlExtras::default(),
+        // The original mapper omits unmodeled namespace/comment/PI markup;
+        // the one captured empty Level TagsDLT survives exact replacement.
+        extras,
     })
 }
 
