@@ -1370,21 +1370,28 @@ whole-Network XML roundtrip. Other label shapes remain unverified.
 Descendant OID collisions are not admitted by this evidence. An
 [owned 89-request mutation capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#oid-targeted-mutations-of-two-units),
 [229-request three-/four-Unit extension](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#three--and-four-unit-oid-targeted-mutations),
-and [289-request five-/six-Unit capture](../../../../toolkit-cli/docs/native-cgate-five-plus-unit-oid-mutations.md)
+and [289-request five-/six-Unit capture](../../../../toolkit-cli/docs/native-cgate-five-plus-unit-oid-mutations.md),
+plus the [1,551-request seven-/eight-Unit and cross-Network capture](../../../../toolkit-cli/docs/native-cgate-large-cross-network-oid.md),
 establish that `DBSETSAFE`, `DBSET`, `DBSETXML`, `DBCOPYSAFE` and `DBDELETE`
 through a shared OID select the final submitted Unit in one Network, even
 when that Unit has a lower address than an earlier sibling. The copy receives
 a new OID and retains the source `UnitName` and PP `UnitAddress`; OID-targeted
 deletion invalidates the shared OID lookup until `PROJECT LOAD`, while the
 surviving addressed Units remain readable. Rust admits these two- through
-six-Unit one-Network shapes. The
+eight-Unit one-Network shapes. The
 [184-request cross-kind capture](../../../../toolkit-cli/docs/native-cgate-cross-kind-oid-mutations.md)
 also establishes that one Application and one Unit with a shared OID select
 the Unit for all five mutations in either submission order; after OID
-deletion, reload selects the surviving Application. Seven-or-more Unit
-collisions, duplicate-Application fields/deletes,
-repeated-Application-plus-Unit shapes, and cross-network Unit-OID collisions
-remain refused until native semantics and lossless representation are known.
+deletion, reload selects the surviving Application. The later cross-Network
+capture admits one shared-OID object in each of Networks 253 and 254: Unit/Unit
+with either address order, or a Unit and leaf Application in either Network.
+OID reads and all five mutations select Network 253's object, independent of
+the two Networks' insertion order. Delete returns 401 for the OID until load,
+when the Network 254 survivor resolves. Rust retains both addressed records and
+guards same-address Units across Networks because their metadata keys would
+collide. Nine-or-more same-Network Units, wider cross-Network collisions,
+duplicate-Application fields/deletes and repeated-Application-plus-Unit
+shapes remain refused until native semantics and lossless representation are known.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive

@@ -34,7 +34,8 @@ the highest address.
 
 All four project lifecycle commands returned 200 in every case. Direct reads
 of the other four or five Units remained available and their names were
-unchanged. The Rust mock extends its final-submission OID selector only to the
-observed five- and six-Unit shapes in one Network with no same-OID pending
-object. Seven or more Units, cross-Network collisions, and mixed-kind collisions
-at these cardinalities still need separate native evidence and remain guarded.
+unchanged. The Rust mock extends its final-submission OID selector through the
+[later owned seven-/eight-Unit capture](native-cgate-large-cross-network-oid.md).
+That capture also covers bounded cross-Network Unit/Unit and
+leaf-Application/Unit collisions. Nine or more Units and wider cross-Network
+shapes remain guarded.

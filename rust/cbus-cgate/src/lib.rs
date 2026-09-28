@@ -7768,6 +7768,9 @@ impl Server {
     fn dbsetxml_typed(&mut self, tag: &str, path: &str, document: &str) -> Response {
         if path.strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+                && self
+                    .selected_cross_network_oid_path(oid.split('/').next().unwrap_or(""))
+                    .is_none()
         }) {
             return err(
                 tag,
@@ -7983,7 +7986,8 @@ impl Server {
             }
             let units = kinds.iter().filter(|kind| **kind == "Unit").count();
             let applications = kinds.iter().filter(|kind| **kind == "Application").count();
-            let unit_shape = units > 0 && applications <= 1 && units + applications == kinds.len();
+            let unit_shape =
+                units > 0 && units <= 8 && applications <= 1 && units + applications == kinds.len();
             let app_list = if object.kind == DbXmlKind::Network && kinds.len() == applications {
                 let list = object
                     .children
@@ -8007,10 +8011,13 @@ impl Server {
             ));
         }
         let active = self.active_db_oids(&target.project);
-        if submitted_oids
-            .iter()
-            .any(|(oid, _)| active.contains(oid) && !old_oids.contains(oid))
-        {
+        if submitted_oids.iter().any(|(oid, _)| {
+            active.contains(oid)
+                && (!old_oids.contains(oid)
+                    || (target.kind == DbXmlKind::Network
+                        && self.selected_cross_network_oid_path(oid).is_some()))
+                && !self.admitted_cross_network_oid(target, object, oid)
+        }) {
             return Err((
                 status::CONFLICT_EXISTS,
                 "DBSETXML OID already exists in the selected project".to_string(),
@@ -8070,6 +8077,73 @@ impl Server {
         }
         self.retire_inactive_db_oids(&old_oids.into_iter().collect::<Vec<_>>());
         Ok(())
+    }
+
+    fn admitted_cross_network_oid(
+        &self,
+        target: &DbXmlTarget,
+        object: &ParsedDbXmlObject,
+        oid: &str,
+    ) -> bool {
+        if target.kind != DbXmlKind::Network || object.kind != DbXmlKind::Network {
+            return false;
+        }
+        let Some(record) = self.projects.get(&target.project) else {
+            return false;
+        };
+        if record.networks.len() != 2
+            || !record.networks.contains_key(&253)
+            || !record.networks.contains_key(&254)
+            || !matches!(object.address, 253 | 254)
+        {
+            return false;
+        }
+        let other = if object.address == 253 { 254 } else { 253 };
+        let new_unit =
+            object.units.len() == 1 && object.children.is_empty() && object.units[0].oid == oid;
+        let new_application = object.children.len() == 1
+            && object.units.is_empty()
+            && object.children[0].kind == DbXmlKind::Application
+            && object.children[0].oid == oid
+            && object.children[0].children.is_empty()
+            && object.children[0].extras == DbXmlExtras::default();
+        if !new_unit && !new_application {
+            return false;
+        }
+        let other_units = record.networks[&other]
+            .units
+            .values()
+            .filter(|unit| unit.oid == oid)
+            .collect::<Vec<_>>();
+        let other_applications = self
+            .db_pending
+            .values()
+            .filter(|pending| {
+                pending.project == target.project
+                    && pending.element == "Application"
+                    && pending.oid == oid
+                    && pending.path.as_deref().is_some_and(|path| {
+                        path.rsplit_once('/').is_some_and(|(parent, _)| {
+                            parent == format!("//{}/{other}", target.project)
+                        })
+                    })
+            })
+            .collect::<Vec<_>>();
+        if other_units.len() + other_applications.len() != 1
+            || (new_application && !other_applications.is_empty())
+        {
+            return false;
+        }
+        if new_unit && !other_units.is_empty() && object.units[0].address == other_units[0].address
+        {
+            return false;
+        }
+        // Both captured shapes use undecorated leaf Applications; the XML
+        // extension store is keyed by OID and cannot retain two different
+        // decorations on a shared identity.
+        self.db_xml_extras
+            .get(&Self::unit_document_key(&target.project, oid))
+            .is_none_or(|extras| extras == &DbXmlExtras::default())
     }
 
     fn active_db_oids(&self, project: &str) -> HashSet<String> {
@@ -8531,6 +8605,7 @@ impl Server {
         if words[1].strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
                 && self.selected_duplicate_unit_path(oid).is_none()
+                && self.selected_cross_network_oid_path(oid).is_none()
         }) {
             return err(
                 tag,
@@ -8604,6 +8679,43 @@ impl Server {
                     tag: tag.to_string(),
                     lines: Vec::new(),
                     final_text: format!("301 OID={copied_oid}"),
+                    status: 301,
+                };
+            }
+            if self
+                .selected_cross_network_oid_path(oid)
+                .is_some_and(|path| Self::split_unit(&path).is_none())
+            {
+                let parent = words[2].trim_end_matches('/');
+                let path = format!("{parent}/{addr}");
+                if self.database_address_exists(&path) {
+                    return err(
+                        tag,
+                        status::CONFLICT_EXISTS,
+                        "409 Application already exists",
+                    );
+                }
+                let oid = self.issue_oid();
+                let copy = ParsedDbXmlObject {
+                    kind: DbXmlKind::Application,
+                    oid: oid.clone(),
+                    tag: words[4].to_string(),
+                    address: addr as u8,
+                    value: None,
+                    interface: None,
+                    units: Vec::new(),
+                    children: Vec::new(),
+                    extras: DbXmlExtras::default(),
+                };
+                if let Err((code, message)) =
+                    self.insert_db_xml_object(&proj_name, parent, &copy, None)
+                {
+                    return err(tag, code, &format!("{code} {message}"));
+                }
+                return Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: format!("301 OID={oid}"),
                     status: 301,
                 };
             }
@@ -8896,6 +9008,7 @@ impl Server {
         if target.strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
                 && self.selected_duplicate_unit_path(oid).is_none()
+                && self.selected_cross_network_oid_path(oid).is_none()
         }) {
             return err(
                 tag,
@@ -8959,6 +9072,21 @@ impl Server {
                     response.final_text = "200 OK.".to_string();
                 }
                 return response;
+            }
+            if let Some(path) = self
+                .selected_cross_network_oid_path(oid)
+                .filter(|path| Self::split_unit(path).is_none())
+            {
+                if let Ok(selected) = self.resolve_db_xml_target(&path) {
+                    let old_oids = self.db_xml_subtree_oids(&selected);
+                    self.remove_db_xml_subtree(&selected, &old_oids);
+                    self.retire_inactive_db_oids(&old_oids.into_iter().collect::<Vec<_>>());
+                    if let Some(project) = self.current.as_deref() {
+                        self.invalidated_unit_oid_lookups
+                            .insert((project.to_string(), oid.to_string()));
+                    }
+                    return ok(tag, vec![], "200 OK.");
+                }
             }
         }
         let pending_oid = self.current.as_deref().and_then(|project| {
@@ -9374,6 +9502,18 @@ impl Server {
                     }
                     return response;
                 }
+                if let (Some(path), Some(field)) =
+                    (self.selected_cross_network_oid_path(oid), field)
+                {
+                    let resolved = format!("{path}/{field}");
+                    let mut resolved_words = words.to_vec();
+                    resolved_words[1] = &resolved;
+                    let mut response = self.dbset(tag, &resolved_words);
+                    if response.status == status::OK {
+                        response.final_text = "200 OK.".to_string();
+                    }
+                    return response;
+                }
                 return err(
                     tag,
                     status::CONFLICT_EXISTS,
@@ -9492,6 +9632,12 @@ impl Server {
             };
             if self.duplicated_unit_oid_in_current_project(oid) {
                 if let Some(selected) = self.selected_duplicate_unit_path(oid) {
+                    let resolved = format!("{selected}/{field}");
+                    let mut resolved_words = words.to_vec();
+                    resolved_words[1] = &resolved;
+                    return self.dbset_unsafe(tag, &resolved_words);
+                }
+                if let Some(selected) = self.selected_cross_network_oid_path(oid) {
                     let resolved = format!("{selected}/{field}");
                     let mut resolved_words = words.to_vec();
                     resolved_words[1] = &resolved;
@@ -10888,6 +11034,14 @@ impl Server {
 
     fn last_unit_by_oid(&self, project: &str, oid: &str) -> Option<&Unit> {
         if self.current.as_deref() == Some(project) {
+            if self
+                .selected_cross_network_oid_path(oid)
+                .is_some_and(|path| Self::split_unit(&path).is_none())
+            {
+                // In the captured two-Network shape the lower Network's
+                // Application wins over the other Network's Unit.
+                return None;
+            }
             if let Some(path) = self.selected_duplicate_unit_path(oid) {
                 let (_, network, address) = Self::split_unit(&path)?;
                 return self
@@ -10931,9 +11085,12 @@ impl Server {
 
     /// The owned native captures establish Unit-first selection for one Unit
     /// sharing an OID with one Application, regardless of XML submission
-    /// order, and final-submission selection for two to six Units sharing an
+    /// order, and final-submission selection for two to eight Units sharing an
     /// OID in one Network. Other collision shapes remain guarded.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
+        if let Some(path) = self.selected_cross_network_oid_path(oid) {
+            return Self::split_unit(&path).map(|_| path);
+        }
         let project = self.current.as_deref()?;
         let cross_kind = self
             .db_pending
@@ -10959,7 +11116,7 @@ impl Server {
             })
             .collect::<Vec<_>>();
         if !(if cross_kind.is_empty() {
-            (2..=6).contains(&matches.len())
+            (2..=8).contains(&matches.len())
         } else {
             matches.len() == 1
         }) || matches.iter().any(|(network, _)| *network != matches[0].0)
@@ -10989,6 +11146,75 @@ impl Server {
             return None;
         }
         Some(format!("//{project}/{net}/p/{address}"))
+    }
+
+    /// Owned build-2001 probes cover exactly one shared-OID object in each
+    /// of two Networks, 253 and 254. The lower Network wins independently of
+    /// insertion order, Unit address and whether its object is a Unit or a
+    /// leaf Application. Distinct Unit addresses keep our addressed metadata
+    /// keys lossless; wider network and mixed-object shapes remain guarded.
+    fn selected_cross_network_oid_path(&self, oid: &str) -> Option<String> {
+        let project = self.current.as_deref()?;
+        let record = self.projects.get(project)?;
+        if record.networks.len() != 2
+            || !record.networks.contains_key(&253)
+            || !record.networks.contains_key(&254)
+        {
+            return None;
+        }
+        let mut paths = Vec::new();
+        let mut unit_addresses = Vec::new();
+        let mut unit_count = 0;
+        for network in [253, 254] {
+            let units = record.networks[&network]
+                .units
+                .values()
+                .filter(|unit| unit.oid == oid)
+                .collect::<Vec<_>>();
+            let applications = self
+                .db_pending
+                .values()
+                .filter(|object| {
+                    object.project == project
+                        && object.element == "Application"
+                        && object.oid == oid
+                        && object.path.as_deref().is_some_and(|path| {
+                            path.rsplit_once('/').is_some_and(|(parent, _)| {
+                                parent == format!("//{project}/{network}")
+                            })
+                        })
+                })
+                .collect::<Vec<_>>();
+            if units.len() + applications.len() != 1 {
+                return None;
+            }
+            if let Some(unit) = units.first() {
+                unit_count += 1;
+                unit_addresses.push(unit.address);
+                paths.push(format!("//{project}/{network}/p/{}", unit.address));
+            } else {
+                let application = applications[0];
+                // The original capture used only leaf Applications. Their
+                // path remains independent of the other Network's Unit.
+                if self.db_pending.values().any(|child| {
+                    child.project == project
+                        && child.path.as_deref().is_some_and(|path| {
+                            path.starts_with(&format!(
+                                "{}/",
+                                application.path.as_deref().unwrap_or("")
+                            ))
+                        })
+                }) {
+                    return None;
+                }
+                paths.push(application.path.clone()?);
+            }
+        }
+        if unit_count == 0 || (unit_count == 2 && unit_addresses[0] == unit_addresses[1]) {
+            return None;
+        }
+        // The first entry is Network 253.
+        Some(paths.remove(0))
     }
 
     fn duplicated_application_oid(&self, project: &str, oid: &str) -> bool {

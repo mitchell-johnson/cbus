@@ -36,9 +36,11 @@ replays all ten transactions and compares the native semantic readbacks. A
 focused running-`cmqttd` TCP test covers all five verbs and the reload
 fallback through its durable service.
 
-Rust now admits this one-Application, one-Unit, one-Network shape for those
-five OID mutations. Repeated Applications with a Unit and Unit collisions
-across Networks remain guarded. A [separate owned capture](native-cgate-five-plus-unit-oid-mutations.md)
-covers five and six Units with one OID in a single Network; seven or more remain
-guarded. These database-only observations do not
+Rust admits this one-Application, one-Unit, one-Network shape for those five
+OID mutations. A [separate owned capture](native-cgate-five-plus-unit-oid-mutations.md)
+covers five and six Units with one OID in a single Network. The
+[later owned extension](native-cgate-large-cross-network-oid.md) covers
+seven/eight Units and bounded cross-Network Unit/Application selection.
+Repeated Applications with a Unit, nine or more same-Network Units and wider
+cross-Network shapes remain guarded. These database-only observations do not
 establish any physical C-Bus side effect or broader vendor XML compatibility.
