@@ -11,18 +11,18 @@
       "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
     },
     "native_test_sha256": "18b7d2534764eec6c00561f41fffdcde3605d3e21bfe40da4a0902f99306b97e",
-    "portable_module_sha256": "9cec274ed5a0bc9529103a067cd307823006c1f5fc41dd74f44b02f56195c580",
-    "portable_test_sha256": "c396a4baddb8ef82492f27e1ff0aad772efd675943be447a799c8eec9038c3a6",
+    "portable_module_sha256": "ec1fdb82139a30ca6c474a789ad70531712243a4280b8415b92329dc65911f9d",
+    "portable_test_sha256": "133b9268508771688ff26d063f8873b09ac74774e78da204fa58ea65cf593f0b",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
   "cases": [
     {
       "case": "UGEN",
       "source_db_version": "2.1",
-      "source_sha256": "980a8fd5db2e430385401bf4cfbe47fd197b5b0f2b07964761d93bb79cc16058",
-      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
-      "backup_sha256": "980a8fd5db2e430385401bf4cfbe47fd197b5b0f2b07964761d93bb79cc16058",
-      "readback_sha256": "0e1371dbd1ba3aea8ae8191336efc06986212337e993086e9c618e9a293f87ff",
+      "source_sha256": "ab0958b3924800c869eaaef7bb7d6dc3df093aab27fdc6f345e8f531410f2556",
+      "output_sha256": "f78fdc71701633f9882aa71f9afb2b3a87abf88c44af55e59a55a8689a3704bb",
+      "backup_sha256": "ab0958b3924800c869eaaef7bb7d6dc3df093aab27fdc6f345e8f531410f2556",
+      "readback_sha256": "cec58b7e60add06dd189cc3fca1b6580da3a22616e5d460b874957d4378d1270",
       "removed_pp": [],
       "load_before": 408,
       "transform": 200,
@@ -33,10 +33,10 @@
     {
       "case": "UGEN2",
       "source_db_version": "2",
-      "source_sha256": "39f298558c832376aa864e0fc8d73ebd158339f247fa51cf3e90ee791e14b060",
-      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
-      "backup_sha256": "39f298558c832376aa864e0fc8d73ebd158339f247fa51cf3e90ee791e14b060",
-      "readback_sha256": "7b91d890d3fd4c61798e5b7ef802ae7b086b77b1c48aa1cf1a26177f4285c3d1",
+      "source_sha256": "cb93a62931a69aab510eecf04b7d30a1efa6dc204080685f7146e2bad21dc657",
+      "output_sha256": "f78fdc71701633f9882aa71f9afb2b3a87abf88c44af55e59a55a8689a3704bb",
+      "backup_sha256": "cb93a62931a69aab510eecf04b7d30a1efa6dc204080685f7146e2bad21dc657",
+      "readback_sha256": "bc8eccae1be77f733473b948f2d172a1c729466eeedb2893d291a96e588b52ec",
       "removed_pp": [],
       "load_before": 408,
       "transform": 200,
@@ -47,10 +47,10 @@
     {
       "case": "UREM",
       "source_db_version": "2.1",
-      "source_sha256": "ef0c2422055cc2f314e9a844c46bfe49e244ec214b022a1695e0a7a978c41f01",
-      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
-      "backup_sha256": "ef0c2422055cc2f314e9a844c46bfe49e244ec214b022a1695e0a7a978c41f01",
-      "readback_sha256": "96f15797933206d77e6a78a02038ea8094cf9ce90563eb6a9d14b23f9f35e4fc",
+      "source_sha256": "ae209e83129a51d2f9bb9b988b5f9c907dee41363d1ca3e2271e02544c6c427a",
+      "output_sha256": "f78fdc71701633f9882aa71f9afb2b3a87abf88c44af55e59a55a8689a3704bb",
+      "backup_sha256": "ae209e83129a51d2f9bb9b988b5f9c907dee41363d1ca3e2271e02544c6c427a",
+      "readback_sha256": "55f589a72abb002ea4f237c19cfb4993f666db9f4fb0ee2cfc848f91c728b622",
       "removed_pp": [
         "Remote3Identity"
       ],
@@ -63,10 +63,10 @@
     {
       "case": "UFEATURE",
       "source_db_version": "2",
-      "source_sha256": "55f69bb6ce43fa95df145bc9d5c34ecb68b1af74e966d173d9ccbd81cf0f2969",
-      "output_sha256": "43155a6693bd85cf6ffa4b48c470adfdb3ac67012d9142a13af0517e4cb9ecf3",
-      "backup_sha256": "55f69bb6ce43fa95df145bc9d5c34ecb68b1af74e966d173d9ccbd81cf0f2969",
-      "readback_sha256": "1948ed873ba4d0a247625db4761cb58abe6262f9dc8d4cc4ca627d1aeeaae35d",
+      "source_sha256": "e2408f8a30a966f61c19d59eddfe3c17fc3914c680139e609382aa993324fca2",
+      "output_sha256": "f78fdc71701633f9882aa71f9afb2b3a87abf88c44af55e59a55a8689a3704bb",
+      "backup_sha256": "e2408f8a30a966f61c19d59eddfe3c17fc3914c680139e609382aa993324fca2",
+      "readback_sha256": "d1c941027855aac72b4843bf2ef2a303135bb9687173edb2eb97a6f1055308f7",
       "removed_pp": [
         "FeatureSet"
       ],

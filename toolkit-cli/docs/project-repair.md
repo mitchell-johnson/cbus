@@ -146,8 +146,8 @@ and [native readback](project-repair-native.md) for their exact evidence limits.
 Repair and native loading are separate outcomes. The original XML repository
 accepts `PROJECT REPAIR`; its SQLite repository returns408. A repaired bare
 Project has DBVersion2.2 and needs a separate format transform before C-Gate3.4
-can load it. The bounded offline `project transform-legacy` command now performs
-the verified 2.2-to-2.3 conversion into a new file; see its [scope and native
+can load it. The bounded offline `project transform-legacy` command performs
+verified 2/2.1/2.2-to-2.3 conversion into a new file; see its [scope and native
 readback](project-legacy-transform.md). Repair itself does not transform the
 format or infer loadability from well-formed XML or a database-version string.
 

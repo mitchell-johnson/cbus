@@ -43,11 +43,14 @@
         "tests/test_project_legacy_transform_versions_receipt.py",
         "tests/test_project_legacy_transform_units_native.py",
         "tests/test_project_legacy_transform_units_receipt.py",
+        "tests/test_project_legacy_transform_neo_native.py",
+        "tests/test_project_legacy_transform_neo_receipt.py",
         "tests/test_project_legacy_transform_receipt.py",
         "docs/project-legacy-transform.md",
         "research/fixtures/project-legacy-transform-native-receipt.json",
         "research/fixtures/project-legacy-transform-versions-native-receipt.json",
         "research/fixtures/project-legacy-transform-units-native-receipt.json",
+        "research/fixtures/project-legacy-transform-neo-native-receipt.json",
         "tests/test_project_repair_cli.py",
         "research/fixtures/project-repair-portable-acceptance.json",
         "research/fixtures/project-repair-portable-native-acceptance.json",
@@ -68,7 +71,7 @@
         "tests/test_cli_json_output.py",
         "tests/test_windows_project_repair.py"
       ],
-      "limits": "Original XML repository repair has bounded native and portable acceptance; SQLite still rejects PROJECT REPAIR 408. The historical lexical/transform checkpoint ran 3036 original lexical and 159 transform cases, and later pinned captures cover XML 1.0/1.1, ISO-8859-1/15, US-ASCII, Windows-1252, internal DTDs, restricted references and namespace prefix resets for their tested direct and full repair outcomes. Three generated current-format encoding, direct-DTD and XML 1.1 compositions matched original transform bytes and loaded with native XML readback. Ten generated DBVersion 2/2.1/2.2 repaired outputs matched bounded portable version transforms byte-for-byte and passed original TRANSFORM PROJECT, LOAD and DBGETXML; the earlier two versions also admit canonical KEYGL5 5.5.00 Unit/PP snapshots. Four additional owned native migrations match portable bytes and load/readback, including obsolete Remote3Identity and FeatureSet removals. Default native TRANSFORM --test created source backups even when versions 1/2.4 were rejected. Two explicit built-in XSLT variants covered in-place migration with backup and output to a pre-existing server file, each with native load/readback. The portable repair and transform commands write new output files exclusively and preserve source bytes, with partial-output failure evidence. Windows x86/AMD64 file handling has separate bounded acceptance. External/parameter/unparsed entities, unprobed XML 1.1 shapes, additional encodings and failure classes, bounds overflow, arbitrary native loadability, other unit/programming migrations, arbitrary native XSLT/output paths and full Toolkit GUI workflow equivalence remain open."
+      "limits": "Original XML repository repair has bounded native and portable acceptance; SQLite still rejects PROJECT REPAIR 408. The historical lexical/transform checkpoint ran 3036 original lexical and 159 transform cases, and later pinned captures cover XML 1.0/1.1, ISO-8859-1/15, US-ASCII, Windows-1252, internal DTDs, restricted references and namespace prefix resets for their tested direct and full repair outcomes. Three generated current-format encoding, direct-DTD and XML 1.1 compositions matched original transform bytes and loaded with native XML readback. Ten generated DBVersion 2/2.1/2.2 repaired outputs matched bounded portable version transforms byte-for-byte and passed original TRANSFORM PROJECT, LOAD and DBGETXML; the earlier two versions also admit canonical KEYGL5 5.5.00 Unit/PP snapshots and KEYB2/KEYB4 1.6 snapshots. Twelve additional owned native migrations match portable bytes and load/readback, including obsolete Remote3Identity and FeatureSet removals and four Application-gated Neo PP removals. Default native TRANSFORM --test created source backups even when versions 1/2.4 were rejected. Two explicit built-in XSLT variants covered in-place migration with backup and output to a pre-existing server file, each with native load/readback. The portable repair and transform commands write new output files exclusively and preserve source bytes, with partial-output failure evidence. Windows x86/AMD64 file handling has separate bounded acceptance. External/parameter/unparsed entities, unprobed XML 1.1 shapes, additional encodings and failure classes, bounds overflow, arbitrary native loadability, other unit/programming migrations, arbitrary native XSLT/output paths and full Toolkit GUI workflow equivalence remain open."
     },
     {
       "id": "cgate-command-transport",

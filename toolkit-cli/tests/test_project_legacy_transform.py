@@ -181,6 +181,62 @@ class LegacyTransformTests(unittest.TestCase):
                 with self.assertRaises(LegacyProjectTransformError):
                     transform_repaired_legacy_project(source)
 
+    def test_neo_16_application_gate_removes_only_the_matching_units_parameters(self):
+        four = ("KeyDisableGroupInvert", "CorridorLinkEnable", "NightlightColour",
+                "DisableIRNEC")
+        def unit(address: int, unit_type: str, *, application: bool) -> bytes:
+            params = (b'<PP Name="Application" Value="0x38"/>' if application else b'')
+            params += b''.join(f'<PP Name="{name}" Value="1"/>'.encode() for name in four)
+            params += (b'<PP Name="FeatureSet" Value="0x1"/>'
+                       b'<PP Name="Remote3Identity" Value="0xff"/>'
+                       b'<PP Name="UnitAddress" Value="0x14"/>')
+            return (f'<Unit><Address>{address}</Address><UnitType>{unit_type}</UnitType>'
+                    '<FirmwareVersion>1.6</FirmwareVersion>').encode() + params + b'</Unit>'
+
+        for unit_type in ("KEYB2", "KEYB4"):
+            for version in ("2", "2.1"):
+                with self.subTest(unit_type=unit_type, version=version):
+                    with_app = unit(20, unit_type, application=True)
+                    without_app = unit(21, unit_type, application=False)
+                    source = (b'<?xml version="1.0" encoding="utf-8"?><Installation><DBVersion>'
+                              + version.encode() + b'</DBVersion><Project><Network>' + with_app
+                              + without_app + b'</Network></Project></Installation>\n')
+                    result = transform_repaired_legacy_project(source)
+                    expected_with = with_app
+                    expected_without = without_app
+                    for name in (*four, "FeatureSet", "Remote3Identity"):
+                        token = f'<PP Name="{name}" Value="'.encode()
+                        if name in four:
+                            expected_without = expected_without.replace(token + b'1"/>', b'')
+                        elif name == "FeatureSet" and version == "2":
+                            expected_with = expected_with.replace(token + b'0x1"/>', b'')
+                            expected_without = expected_without.replace(token + b'0x1"/>', b'')
+                        elif name == "Remote3Identity":
+                            expected_with = expected_with.replace(token + b'0xff"/>', b'')
+                            expected_without = expected_without.replace(token + b'0xff"/>', b'')
+                    expected = (source.replace(f'<DBVersion>{version}</DBVersion>'.encode(),
+                                               b'<DBVersion>2.3</DBVersion>')
+                                .replace(with_app, expected_with).replace(without_app, expected_without)[:-1])
+                    self.assertEqual(result.transformed_xml, expected)
+                    self.assertEqual(result.removed_programming_parameters,
+                                     (("FeatureSet", "Remote3Identity") if version == "2" else
+                                      ("Remote3Identity",)) +
+                                     tuple((*four, *(("FeatureSet",) if version == "2" else ()),
+                                            "Remote3Identity")))
+
+    def test_neo_16_rejects_other_firmware_and_namespaced_unit(self):
+        source = (b'<?xml version="1.0" encoding="utf-8"?><Installation><DBVersion>2.1</DBVersion>'
+                  b'<Project><Network><Unit><UnitType>KEYB2</UnitType>'
+                  b'<FirmwareVersion>1.6</FirmwareVersion><PP Name="Application" Value="0x38"/>'
+                  b'</Unit></Network></Project></Installation>\n')
+        self.assertEqual(transform_repaired_legacy_project(source).source_db_version, "2.1")
+        for invalid in (source.replace(b'<FirmwareVersion>1.6', b'<FirmwareVersion>1.7'),
+                        source.replace(b'<Unit>', b'<cis:Unit xmlns:cis="urn:test">').replace(
+                            b'</Unit>', b'</cis:Unit>')):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(LegacyProjectTransformError):
+                    transform_repaired_legacy_project(invalid)
+
     def test_earlier_version_cli_is_exclusive_and_preserves_source(self):
         _, _, repaired = next(candidates())
         source = repaired.replace(b"<DBVersion>2.2</DBVersion>", b"<DBVersion>2.1</DBVersion>")

@@ -1,0 +1,208 @@
+{
+  "format": "cbus-project-legacy-transform-neo-native-v1",
+  "target": "original C-Gate 3.4.0 build 2001, owned XML repository and loopback only",
+  "sources": {
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transform_sha256": {
+      "v2tov21.xslt": "8346eab4259b957d53fc2b5c14ee1e058196124eabe4a7e3fb45b145f74735a8",
+      "v21tov22.xslt": "e2090621171b5febf4903eaa964dd7a855b3d3cea827678da3758376dceab875",
+      "v22tov23.xslt": "5674534824826a2db5e3b762c207ce0e566298e54703f628d16f9b3d2d47dab2",
+      "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
+    },
+    "native_test_sha256": "3a2bd6251eea9fb2d061c82962488fec8ec38bba6607de323c76afdc5b54192b",
+    "portable_module_sha256": "ec1fdb82139a30ca6c474a789ad70531712243a4280b8415b92329dc65911f9d",
+    "portable_test_sha256": "133b9268508771688ff26d063f8873b09ac74774e78da204fa58ea65cf593f0b",
+    "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "cases": [
+    {
+      "case": "B2A21",
+      "unit_type": "KEYB2",
+      "source_db_version": "2.1",
+      "application_present": true,
+      "source_pp_count": 66,
+      "readback_pp_count": 65,
+      "source_sha256": "5e1a4a604b7fab4f75cb4dd780051f476aec87aadd7d93872c21267249a2e552",
+      "output_sha256": "eb2751c4c52fe2198230ede7b16c55829a9d14feb30d1cc8cbfe624f848f6dc8",
+      "backup_sha256": "5e1a4a604b7fab4f75cb4dd780051f476aec87aadd7d93872c21267249a2e552",
+      "readback_sha256": "95557b6a7bd215e3672cd9db0fa81a9e2e5d018e78f874243739eae7cbc87493",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B2N21",
+      "unit_type": "KEYB2",
+      "source_db_version": "2.1",
+      "application_present": false,
+      "source_pp_count": 65,
+      "readback_pp_count": 60,
+      "source_sha256": "ba8efd15db802246bd9461d322fe54bcc3b9f88a3106da7c0c1476090719a75f",
+      "output_sha256": "01ded2a5cc35832c1de29f7b47984333d6cd708dbf2191d7cd043fa92defcd34",
+      "backup_sha256": "ba8efd15db802246bd9461d322fe54bcc3b9f88a3106da7c0c1476090719a75f",
+      "readback_sha256": "cffebd10c93b08313bf03f7dd114142deb3121478d625de8146282b532dc8b4d",
+      "removed_pp": [
+        "KeyDisableGroupInvert",
+        "CorridorLinkEnable",
+        "NightlightColour",
+        "DisableIRNEC",
+        "Remote3Identity"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B2A2",
+      "unit_type": "KEYB2",
+      "source_db_version": "2",
+      "application_present": true,
+      "source_pp_count": 67,
+      "readback_pp_count": 65,
+      "source_sha256": "0e0b9b87f4cd1d05fb75780db1adfd8a91b237ce78819338f2f42eac0993083c",
+      "output_sha256": "eb2751c4c52fe2198230ede7b16c55829a9d14feb30d1cc8cbfe624f848f6dc8",
+      "backup_sha256": "0e0b9b87f4cd1d05fb75780db1adfd8a91b237ce78819338f2f42eac0993083c",
+      "readback_sha256": "e1d1d9721590fca2c307d3567a3ece9ee20b529645a3742667373467c70cd6c0",
+      "removed_pp": [
+        "Remote3Identity",
+        "FeatureSet"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B2N2",
+      "unit_type": "KEYB2",
+      "source_db_version": "2",
+      "application_present": false,
+      "source_pp_count": 66,
+      "readback_pp_count": 60,
+      "source_sha256": "08a9c4ffcdbbdfc215b1bcbc2c8d86be83c20995f3014655764f4792efb1de41",
+      "output_sha256": "01ded2a5cc35832c1de29f7b47984333d6cd708dbf2191d7cd043fa92defcd34",
+      "backup_sha256": "08a9c4ffcdbbdfc215b1bcbc2c8d86be83c20995f3014655764f4792efb1de41",
+      "readback_sha256": "0c4f6f07ffa3cd7abb996aea168f4379286962e51a225c74046595fb22e0bbf6",
+      "removed_pp": [
+        "KeyDisableGroupInvert",
+        "CorridorLinkEnable",
+        "NightlightColour",
+        "DisableIRNEC",
+        "Remote3Identity",
+        "FeatureSet"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B4A21",
+      "unit_type": "KEYB4",
+      "source_db_version": "2.1",
+      "application_present": true,
+      "source_pp_count": 66,
+      "readback_pp_count": 65,
+      "source_sha256": "89b51853cad3fbe79ae628471bcb6323d72b37917ae61ce25f370d4f59aaf9e1",
+      "output_sha256": "e854e6f847dd0e3881de970375a3b987a8165a0ce08dff1f96f75b8de09a8407",
+      "backup_sha256": "89b51853cad3fbe79ae628471bcb6323d72b37917ae61ce25f370d4f59aaf9e1",
+      "readback_sha256": "0176a3589ddb327cd4728372e83212ff2b950aedf271f4a45afe893b516257b8",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B4N21",
+      "unit_type": "KEYB4",
+      "source_db_version": "2.1",
+      "application_present": false,
+      "source_pp_count": 65,
+      "readback_pp_count": 60,
+      "source_sha256": "02fd358ecb6824566d7db0bd8f47c7faf223cc2df0f6e84a9e67e109b1dc9e82",
+      "output_sha256": "d1fbed75ccff07f0f9f3bde5d2c61d35fdea16ec321f768744b7f4e60b35537b",
+      "backup_sha256": "02fd358ecb6824566d7db0bd8f47c7faf223cc2df0f6e84a9e67e109b1dc9e82",
+      "readback_sha256": "074e46bfb5851fb335340a0cba5973cbff914d7e40118505f9692f51b6c969f2",
+      "removed_pp": [
+        "KeyDisableGroupInvert",
+        "CorridorLinkEnable",
+        "NightlightColour",
+        "DisableIRNEC",
+        "Remote3Identity"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B4A2",
+      "unit_type": "KEYB4",
+      "source_db_version": "2",
+      "application_present": true,
+      "source_pp_count": 67,
+      "readback_pp_count": 65,
+      "source_sha256": "7752d4a49dc4cfa68a25baa93f5b9cb5d69fb514651d1b30a8cc60e353532a83",
+      "output_sha256": "e854e6f847dd0e3881de970375a3b987a8165a0ce08dff1f96f75b8de09a8407",
+      "backup_sha256": "7752d4a49dc4cfa68a25baa93f5b9cb5d69fb514651d1b30a8cc60e353532a83",
+      "readback_sha256": "02ba64858e1072539a53018501cb8a71127919e39387f60d94625dfc7781a8be",
+      "removed_pp": [
+        "Remote3Identity",
+        "FeatureSet"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "B4N2",
+      "unit_type": "KEYB4",
+      "source_db_version": "2",
+      "application_present": false,
+      "source_pp_count": 66,
+      "readback_pp_count": 60,
+      "source_sha256": "a892779c7693f81fc59a9d1f32802ed37b98d075f92280320ef2f2930257d251",
+      "output_sha256": "d1fbed75ccff07f0f9f3bde5d2c61d35fdea16ec321f768744b7f4e60b35537b",
+      "backup_sha256": "a892779c7693f81fc59a9d1f32802ed37b98d075f92280320ef2f2930257d251",
+      "readback_sha256": "2704d3975b59eaaae015ae62c50da4b464843f9147e6e6e717bd6079640c30eb",
+      "removed_pp": [
+        "KeyDisableGroupInvert",
+        "CorridorLinkEnable",
+        "NightlightColour",
+        "DisableIRNEC",
+        "Remote3Identity",
+        "FeatureSet"
+      ],
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "native_bytes_equal_portable": true
+    }
+  ],
+  "service": {
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "cleanup_complete": true
+  },
+  "physical_networks_opened": false,
+  "scope": "KEYB2/KEYB4 1.6 Application-gated and global PP removals, versions 2/2.1"
+}

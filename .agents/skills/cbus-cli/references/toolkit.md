@@ -45,11 +45,10 @@ portable repair does not establish native project loadability.
 When a repaired XML `Installation` still has DBVersion 2, 2.1 or 2.2, use
 `project transform-legacy REPAIRED.xml --dry-run` to validate the bounded
 conversion, then `--output NEW.xml` to write a new file exclusively. The 2
-and 2.1 portable cases require a unitless, PP-free repaired envelope because
-the original earlier stylesheets can alter those elements. Ten generated
-repairs across the three source versions match original C-Gate transform bytes,
-and the native-staged cases load/read back; other projects still require their
-own native observation. See
+and 2.1 portable cases admit unitless projects and the documented KEYGL5 5.5.00
+and KEYB2/KEYB4 1.6 Unit/PP profiles. Twenty-two generated conversions across
+the three source versions match original C-Gate transform bytes and the staged
+cases load/read back; other projects still require native observation. See
 `toolkit-cli/docs/project-legacy-transform.md`. For an explicitly selected
 original XML repository, `cgate project transform NAME [--test]` forwards the
 default native migration. `--xslt-file SERVER_PATH --output-file SERVER_PATH`
@@ -235,8 +234,8 @@ receipt before any separate native load. See
 `toolkit-cli/docs/project-repair.md` for admitted cases and failure bounds.
 Use `project transform-legacy SOURCE --output NEWFILE` only for the documented
 DBVersion 2/2.1/2.2 repair envelope; it preserves SOURCE and rejects existing
-output. Earlier-version projects containing units or PP data require the
-native XSLT path.
+output. Earlier-version projects containing other units or PP shapes require
+the native XSLT path.
 
 ## C-Gate client
 

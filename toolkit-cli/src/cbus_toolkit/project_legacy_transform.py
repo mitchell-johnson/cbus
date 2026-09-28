@@ -1,8 +1,8 @@
 """Bounded 2/2.1/2.2-to-2.3 conversion of Python-repaired legacy XML.
 
-The original C-Gate's earlier stylesheets can change Unit and PP data. A
-source-bound eDLT profile admits KEYGL5 5.5.00 units and applies the matching
-parameter removals; other earlier-version units still use native TRANSFORM.
+The original C-Gate's earlier stylesheets can change Unit and PP data. The
+source-bound profiles admit KEYGL5 5.5.00 and KEYB2/KEYB4 1.6 units and
+apply their matching parameter removals; other units use native TRANSFORM.
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ _SOURCE_VERSIONS = {
 _START = b'<?xml version="1.0" encoding="utf-8"?><Installation>'
 _END = b"</Installation>\n"
 _PROJECT_NAME = re.compile(r"[A-Z][A-Z0-9_]{0,7}\Z")
-_PP_TOKEN = re.compile(rb'<PP Name="([A-Za-z0-9_]+)" Value="[^"<>]*"/>')
+_PP_TOKEN = re.compile(rb'<PP Name="([A-Za-z0-9_ ]+)" Value="[^"<>]*"/>')
 _V2_PP_REMOVED = frozenset({
     "KeyMaskAllowed", "KeyMaskSave", "KeyCurrentMask", "KeyMaskNetworkVariable",
     "KeyMaskNetworkVariableLevels", "KeyOffsetAllowed", "KeyOffsetSave",
@@ -36,7 +36,13 @@ _V2_PP_REMOVED = frozenset({
 })
 _V21_PP_REMOVED = frozenset(f"Remote{n}{suffix}" for n in range(3, 9)
                              for suffix in ("Identity", "KeyMap"))
+_V21_NEO_WITHOUT_APPLICATION_REMOVED = frozenset({
+    "KeyDisableGroupInvert", "CorridorLinkEnable", "NightlightColour", "DisableIRNEC",
+})
 _V2_PP_EXPANDED_OR_RENAMED = frozenset(("KeyExtraLongPressDuration", "EnableNightlightPCx"))
+_UNIT_PROFILES = frozenset({
+    ("KEYGL5", "5.5.00"), ("KEYB2", "1.6"), ("KEYB4", "1.6"),
+})
 
 
 class LegacyProjectTransformError(ValueError):
@@ -65,11 +71,12 @@ class LegacyProjectTransformResult:
 
 
 def _earlier_unit_removals(document, data: bytes, source_version: str) -> tuple[tuple[str, ...], bytes]:
-    """Match the no-firmware-change KEYGL5 profile of the pinned stylesheets.
+    """Match pinned no-firmware-change profiles of the original stylesheets.
 
     Exact canonical PP tokens let us remove only nodes selected by those XSLT
-    templates while retaining unrelated source bytes. The original's special
-    Unit templates and PP expansion/rename cases are deliberately excluded.
+    templates while retaining unrelated source bytes. The KEYB2/KEYB4 1.6
+    absent-Application rule is from v21tov22.xslt. Other special Unit templates
+    and PP expansion/rename cases are deliberately excluded.
     """
     elements = document.getElementsByTagName("*")
     units = [node for node in elements if node.nodeName.rsplit(":", 1)[-1] == "Unit"]
@@ -84,13 +91,18 @@ def _earlier_unit_removals(document, data: bytes, source_version: str) -> tuple[
     # byte edit is admitted only when this serializer effect cannot diverge.
     if re.search(rb'<([A-Za-z][A-Za-z0-9_.-]*)(?:\s[^<>]*)?></\1>', data):
         raise LegacyProjectTransformError("Earlier-version Unit XML has noncanonical empty elements")
+    neo_without_application: set[Node] = set()
     for unit in units:
         unit_type = [node for node in unit.childNodes if _named(node, "UnitType")]
         firmware = [node for node in unit.childNodes if _named(node, "FirmwareVersion")]
-        if (len(unit_type) != 1 or len(firmware) != 1 or _string(unit_type[0]) != "KEYGL5" or
-                _string(firmware[0]) != "5.5.00"):
+        if (len(unit_type) != 1 or len(firmware) != 1 or
+                (_string(unit_type[0]), _string(firmware[0])) not in _UNIT_PROFILES):
             raise LegacyProjectTransformError(
-                "Earlier-version Unit migration is verified only for KEYGL5 firmware 5.5.00")
+                "Earlier-version Unit migration is verified only for KEYGL5 5.5.00 and KEYB2/KEYB4 1.6")
+        if _string(unit_type[0]) in ("KEYB2", "KEYB4") and not any(
+                _named(child, "PP") and child.getAttribute("Name") == "Application"
+                for child in unit.childNodes):
+            neo_without_application.add(unit)
     tokens = list(_PP_TOKEN.finditer(data))
     if (len(tokens) != len(pps) or len(re.findall(rb'<PP(?:\s|>)', data)) != len(pps) or
             any(set(pp.attributes.keys()) != {"Name", "Value"} for pp in pps)):
@@ -104,8 +116,10 @@ def _earlier_unit_removals(document, data: bytes, source_version: str) -> tuple[
     fragments: list[bytes] = []
     found: list[str] = []
     offset = 0
-    for name, token in zip(names, tokens):
-        if name in removed:
+    for name, pp, token in zip(names, pps, tokens):
+        if (name in removed or
+                (pp.parentNode in neo_without_application and
+                 name in _V21_NEO_WITHOUT_APPLICATION_REMOVED)):
             fragments.append(data[offset:token.start()])
             found.append(name)
             offset = token.end()
@@ -120,9 +134,9 @@ def transform_repaired_legacy_project(
 
     The native cases underlying this subset use a single literal version node
     and a final LF. Earlier versions admit unitless projects and the verified
-    KEYGL5 5.5.00 profile; C-Gate's earlier XSLT stages can change other units
-    and parameters. Other encodings, DTDs, alternate version spelling and XML
-    require separate evidence and are rejected here.
+    KEYGL5 5.5.00 and KEYB2/KEYB4 1.6 profiles; C-Gate's earlier XSLT stages
+    can change other units and parameters. Other encodings, DTDs, alternate
+    version spelling and XML require separate evidence and are rejected here.
     """
     if type(max_bytes) is not int or not 1 <= max_bytes <= 64 * 1024 * 1024:
         raise ValueError("max_bytes must be an integer from 1 to 67108864")

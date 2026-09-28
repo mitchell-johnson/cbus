@@ -33,17 +33,23 @@ conversion alone cannot verify a different project's loadability. The command
 accepts the UTF-8, XML 1.0 `Installation` envelope produced by the portable
 repair, one literal direct DBVersion 2, 2.1 or 2.2, one direct `Project`, a
 final LF, and an optional project address matching `[A-Z][A-Z0-9_]{0,7}`.
-For version 2 or 2.1, it now also admits unnamespaced `KEYGL5` units at
-firmware `5.5.00`, with canonical direct `PP Name="..." Value="..."` tokens. It
-preserves the unit's other programming bytes and applies the original
-stylesheets' simple obsolete-parameter removals: `Remote3` through `Remote8`
-identity/key-map fields in the 2.1→2.2 stage, plus the 2→2.1 stage's specified
-mask, offset, feature, key 9–16 and remote 1–2 fields. The portable result
-lists removed PP names in `removed_programming_parameters`. The earlier
-original stylesheets also add parameters and change selected firmware versions;
-other Unit types, firmware versions, noncanonical PP tokens and the PP
-expansion/rename triggers still require original C-Gate's native transform.
-The portable command rejects DTDs,
+For version 2 or 2.1, it also admits unnamespaced `KEYGL5` firmware `5.5.00`
+and `KEYB2`/`KEYB4` firmware `1.6` units with canonical direct
+`PP Name="..." Value="..."` tokens. A PP name may contain spaces, as the
+native Neo snapshot's `EEPROM Checksum` does. The command preserves other
+programming bytes and applies the original stylesheets' obsolete-parameter
+removals: `Remote3` through `Remote8` identity/key-map fields in the 2.1→2.2
+stage, plus the 2→2.1 stage's specified mask, offset, feature, key 9–16 and
+remote 1–2 fields. For `KEYB2`/`KEYB4` firmware `1.6` without an `Application`
+PP, the 2.1→2.2 stage also removes `KeyDisableGroupInvert`,
+`CorridorLinkEnable`, `NightlightColour` and `DisableIRNEC` from that unit.
+With an `Application` PP, those four fields remain. The portable result lists
+removed names in source order under `removed_programming_parameters`.
+
+The earlier original stylesheets also add parameters and change selected
+firmware versions. Other Unit types and firmware versions, noncanonical PP
+tokens, namespaced units and the PP expansion/rename triggers still require
+original C-Gate's native transform. The portable command rejects DTDs,
 alternate version spelling, other encodings and malformed or oversized XML.
 
 For an explicitly selected original XML repository, the typed native client
@@ -103,8 +109,18 @@ version 2. Each transformed file subsequently passes original `PROJECT LOAD`
 and `DBGETXML`, with the removed fields absent on readback. The service uses
 an owned XML repository and loopback listener and does not open a network.
 
-These observations cover fourteen generated conversions, two rejected versions and
-two explicit built-in-stylesheet variants (server output and in-place) in the original XML
-repository. Arbitrary repaired databases, other unit/PP migrations, other
-custom stylesheets and output paths, SQLite repository behavior, Windows
-conversion and complete Toolkit workflow parity remain unverified.
+The [owned Neo receipt](../research/fixtures/project-legacy-transform-neo-native-receipt.json)
+generates full `KEYB2` and `KEYB4` firmware `1.6` PP snapshots inside the
+original C-Gate. Each snapshot includes `EEPROM Checksum` and the four
+conditional fields. Eight staged version 2/2.1 copies cover both unit types
+with and without an `Application` PP, plus global `Remote3Identity` and
+version-2 `FeatureSet` removals. All eight portable outputs match native
+`TRANSFORM PROJECT` bytes exactly, then pass `PROJECT LOAD` and `DBGETXML`.
+Readback retains the four conditional fields only when `Application` was
+present. The owned service opens no physical network.
+
+These observations cover 22 generated conversions, two rejected versions and
+two explicit built-in-stylesheet variants (server output and in-place) in the
+original XML repository. Arbitrary repaired databases, other unit/PP
+migrations, custom stylesheets and output paths, SQLite repository behavior,
+Windows conversion and complete Toolkit workflow parity remain unverified.

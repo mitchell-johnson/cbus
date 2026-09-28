@@ -526,9 +526,10 @@ The source remains unchanged. The original XML repository supports
 `cgate repositories` lists observed repositories without changing the server's
 selection. Repaired legacy DBVersion 2, 2.1 or 2.2 XML can use the bounded offline
 `project transform-legacy repaired.xml --output converted/PROJECT.xml` step;
-the 2 and 2.1 path accepts unitless projects and a native-verified KEYGL5
-5.5.00 Unit/PP profile, including obsolete parameter removal. The default native
-`cgate project transform NAME` runs the original multi-step stylesheet chain
+the 2 and 2.1 path accepts unitless projects and native-verified KEYGL5 5.5.00
+and KEYB2/KEYB4 1.6 Unit/PP profiles, including conditional obsolete-parameter
+removal. The default native `cgate project transform NAME` runs the original
+multi-step stylesheet chain
 for more complex projects in an explicitly selected XML repository;
 `--xslt-file` and `--output-file` expose the native explicit path for a
 pre-existing writable server-side output file, which is overwritten;
