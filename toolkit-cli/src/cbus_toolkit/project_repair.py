@@ -15,6 +15,10 @@ from xml.parsers import expat
 DEFAULT_MAX_BYTES = 8 * 1024 * 1024
 XMLNS = "http://www.w3.org/2000/xmlns/"
 MAX_INTERNAL_ENTITIES = 256
+_CHAR_REFERENCE = re.compile(r"&#(?:x([0-9a-fA-F]+)|([0-9]+));")
+_PREFIX_UNDECLARATION = re.compile(r"(\s+xmlns:[^\s=/>\"']+\s*=\s*)([\"'])\2")
+_XML11_RESTRICTED = re.compile(r"[\x01-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f]")
+_XML11_C0_RESTRICTED = re.compile(r"[\x01-\x08\x0b\x0c\x0e-\x1f]")
 
 
 class ProjectRepairError(ValueError):
@@ -85,6 +89,164 @@ def preprocess_project_xml(data: bytes, *, line_ending: str = "lf",
     return output
 
 
+def _xml11_parser_input(decoded: str, stage: str) -> tuple[str, dict[str, str], str | None]:
+    """Shield XML 1.1 references and prefix resets from Expat's XML 1.0 rules.
+
+    The stand-ins are chosen outside both literal input and all numeric
+    references. They are restored in the DOM before either stylesheet runs.
+    Only text and start-tag attributes are rewritten: comments, CDATA and PIs
+    contain literal reference spelling, which the original also preserves.
+    """
+    used = {ord(char) for char in decoded}
+    for match in _CHAR_REFERENCE.finditer(decoded):
+        digits = match.group(1) or match.group(2)
+        if len(digits) <= 8:
+            used.add(int(digits, 16 if match.group(1) else 10))
+    available = (value for first, last in ((0xE000, 0xF8FF),
+        (0xF0000, 0xFFFFD), (0x100000, 0x10FFFD))
+        for value in range(first, last + 1) if value not in used)
+    stand_ins: dict[int, str] = {}
+    restore: dict[str, str] = {}
+    undeclared: str | None = None
+
+    def fresh_stand_in() -> str:
+        try:
+            return chr(next(available))
+        except StopIteration as error:
+            raise ProjectRepairError("XML 1.1 parser stand-ins exhausted", stage=stage) from error
+
+    def references(segment: str) -> str:
+        def replace(match: re.Match[str]) -> str:
+            digits = match.group(1) or match.group(2)
+            if len(digits) > 8:
+                raise ProjectRepairError("Oversized XML 1.1 character reference", stage=stage)
+            value = int(digits, 16 if match.group(1) else 10)
+            if value > 0x10FFFF or _XML11_RESTRICTED.fullmatch(chr(value)) is None:
+                return match.group(0)
+            if value not in stand_ins:
+                char = fresh_stand_in()
+                stand_ins[value] = char
+                restore[char] = chr(value)
+            return stand_ins[value]
+        return _CHAR_REFERENCE.sub(replace, segment)
+
+    def prefix_resets(tag: str) -> str:
+        nonlocal undeclared
+        rewritten = []
+        position = 0
+        quote = None
+        while position < len(tag):
+            char = tag[position]
+            if quote:
+                if char == quote:
+                    quote = None
+            elif char in ("'", '"'):
+                quote = char
+            elif char.isspace():
+                match = _PREFIX_UNDECLARATION.match(tag, position)
+                if match:
+                    if undeclared is None:
+                        undeclared = fresh_stand_in()
+                    rewritten.append(match.group(1) + match.group(2) + undeclared + match.group(2))
+                    position = match.end()
+                    continue
+            rewritten.append(char)
+            position += 1
+        return "".join(rewritten)
+
+    parts: list[str] = []
+    position = 0
+    while position < len(decoded):
+        for opening, closing in (("<!--", "-->"), ("<![CDATA[", "]]>"), ("<?", "?>")):
+            if decoded.startswith(opening, position):
+                end = decoded.find(closing, position + len(opening))
+                end = len(decoded) if end < 0 else end + len(closing)
+                parts.append(decoded[position:end])
+                position = end
+                break
+        else:
+            if decoded.startswith("<!DOCTYPE", position):
+                # Leave the declaration intact for the bounded Expat/Dom DTD
+                # path. A declaration may contain quoted '>' and an internal
+                # subset, so a generic tag scan would split entity values.
+                end = position + len("<!DOCTYPE")
+                subset_depth = 0
+                quote = None
+                while end < len(decoded):
+                    char = decoded[end]
+                    if quote:
+                        if char == quote:
+                            quote = None
+                    elif char in ("'", '"'):
+                        quote = char
+                    elif char == "[":
+                        subset_depth += 1
+                    elif char == "]" and subset_depth:
+                        subset_depth -= 1
+                    elif char == ">" and not subset_depth:
+                        end += 1
+                        break
+                    end += 1
+                # XML 1.1 permits restricted references in internal entity
+                # values and default attributes too. Shield them before
+                # Expat's XML 1.0 DTD parser expands them into the DOM.
+                parts.append(references(decoded[position:end]))
+                position = end
+                continue
+            if decoded[position] != "<":
+                end = decoded.find("<", position)
+                end = len(decoded) if end < 0 else end
+                parts.append(references(decoded[position:end]))
+                position = end
+                continue
+            end = position + 1
+            quote = None
+            while end < len(decoded):
+                char = decoded[end]
+                if quote:
+                    if char == quote:
+                        quote = None
+                elif char in ("'", '"'):
+                    quote = char
+                elif char == ">":
+                    end += 1
+                    break
+                end += 1
+            tag = decoded[position:end]
+            if tag.startswith("<") and not tag.startswith(("</", "<!")):
+                tag = prefix_resets(references(tag))
+            parts.append(tag)
+            position = end
+    return "".join(parts), restore, undeclared
+
+
+def _restore_xml11(document: minidom.Document, restore: dict[str, str],
+                   undeclared: str | None, stage: str) -> None:
+    if not restore and undeclared is None:
+        return
+    table = str.maketrans(restore)
+    pending = [document]
+    while pending:
+        node = pending.pop()
+        pending.extend(node.childNodes)
+        if node.nodeType == Node.ELEMENT_NODE:
+            if undeclared is not None and node.namespaceURI == undeclared:
+                raise ProjectRepairError("XML 1.1 undeclared namespace prefix is used", stage=stage)
+            if node.namespaceURI:
+                node.namespaceURI = node.namespaceURI.translate(table)
+            for attr in list(node.attributes.values()):
+                if undeclared is not None and attr.namespaceURI == undeclared:
+                    raise ProjectRepairError("XML 1.1 undeclared namespace prefix is used", stage=stage)
+                if attr.namespaceURI == XMLNS and attr.value == undeclared:
+                    node.removeAttributeNode(attr)
+                    continue
+                if attr.namespaceURI:
+                    attr.namespaceURI = attr.namespaceURI.translate(table)
+                attr.value = attr.value.translate(table)
+        elif node.nodeType in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE):
+            node.data = node.data.translate(table)
+
+
 def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
            max_depth: int) -> minidom.Document:
     # Both original transform methods read the file as UTF-8 text *before*
@@ -126,23 +288,17 @@ def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
     if version == "1.1":
         # XML 1.1 permits these restricted code points only through character
         # references. Expat otherwise accepts some of them as literal text.
-        # The original direct transform admits some references, but our XML
-        # 1.0 serializer cannot represent those outcomes yet; reject them
-        # explicitly rather than emit invalid raw control characters.
-        if re.search(r"[\x01-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f]", decoded):
+        if _XML11_RESTRICTED.search(decoded):
             raise ProjectRepairError("Restricted XML 1.1 literal character", stage=stage)
-        for reference in re.finditer(r"&#(?:x([0-9a-fA-F]+)|([0-9]+));", decoded):
-            digits = reference.group(1) or reference.group(2)
-            if len(digits) > 8:
-                raise ProjectRepairError("Oversized XML 1.1 character reference", stage=stage)
-            value = int(digits, 16 if reference.group(1) else 10)
-            if (1 <= value <= 8 or value in (11, 12) or 14 <= value <= 31
-                    or 127 <= value <= 132 or 134 <= value <= 159):
-                raise ProjectRepairError("XML 1.1 restricted character reference is unsupported", stage=stage)
         decoded = decoded.replace("\u0085", "\n").replace("\u2028", "\n")
     data = decoded.encode("utf-8")
     if len(data) > max_bytes:
         raise ProjectRepairError("XML exceeds max_bytes after declared decode", stage=stage)
+    restore: dict[str, str] = {}
+    undeclared = None
+    if version == "1.1":
+        decoded, restore, undeclared = _xml11_parser_input(decoded, stage)
+        data = decoded.encode("utf-8")
     parser = expat.ParserCreate()
     depth, nodes = 0, 1  # Include the document itself.
     expanded_bytes = 0
@@ -251,6 +407,11 @@ def _parse(data: bytes, stage: str, max_bytes: int, max_nodes: int,
             document = minidom.parseString(data)
     except (expat.ExpatError, UnicodeError) as error:
         raise ProjectRepairError(f"XML is not well formed: {error}", stage=stage) from error
+    try:
+        _restore_xml11(document, restore, undeclared, stage)
+    except Exception:
+        document.unlink()
+        raise
     pending = [document]
     nodes = 0
     while pending:
@@ -353,7 +514,12 @@ def _serialize(document: minidom.Document) -> str:
         value = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\r", "&#13;")
         if attribute:
             value = value.replace('"', "&quot;").replace("\t", "&#9;").replace("\n", "&#10;")
-        return value
+        # The original transformer writes C0 controls as decimal references
+        # even though its output declaration is XML 1.0. It also escapes C1
+        # controls in text, but leaves them literal in attribute values.
+        # A second stage rejects C0 references invalid under XML 1.0.
+        controls = _XML11_C0_RESTRICTED if attribute else _XML11_RESTRICTED
+        return controls.sub(lambda match: f"&#{ord(match.group(0))};", value)
 
     def write(node: Node) -> None:
         if node.nodeType == Node.ELEMENT_NODE:

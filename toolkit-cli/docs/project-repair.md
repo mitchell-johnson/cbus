@@ -89,10 +89,20 @@ binds the fixture, original source hashes, focused test outcome and limits.
 These captured cases do not prove that every document using those encodings
 loads into a native repository. The three internal-entity cases in that matrix
 are now admitted by the separate DTD checkpoint: two direct successes and one
-full-pipeline failure. Six XML 1.1 restricted character-reference and
-namespace-prefix undeclaration cases remain unadmitted in this checkpoint.
-The original direct transforms accept some of them. External entities,
-UTF-16 and unsupported XML versions remain rejected. Intermediate UTF-8 read
+full-pipeline failure. A [separate 57-case original XML 1.1 capture](../research/fixtures/project-repair-xml11-vectors.json)
+now covers restricted numeric character references and namespace-prefix
+undeclarations across direct repair, direct tidy and the full pipeline. Direct
+transforms admit C0 references in text, attributes and namespace URIs and write
+decimal references. Their output declares XML 1.0, so the full pipeline rejects
+those C0 references at tidy. C1 references survive all three operations; the
+original serializer uses decimal references in text and literal C1 characters
+in attributes. It omits an empty prefix declaration when that prefix is unused,
+accepts a later rebind or sibling use outside the reset scope, and rejects a
+prefix used inside the reset scope. Numeric-reference spelling inside comments,
+CDATA and processing instructions remains literal. The [XML 1.1 scoped receipt](../research/fixtures/project-repair-xml11-scoped-receipt.json)
+records the source pins, focused validation and remaining limits. External
+entities, UTF-16 and unsupported XML versions remain
+rejected. Intermediate UTF-8 read
 and declared-decode growth are checked against the same byte limit before DOM
 allocation.
 The byte limit defaults to8MiB, with100,000 nodes and128 element levels.

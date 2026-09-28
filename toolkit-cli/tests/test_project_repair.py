@@ -143,10 +143,10 @@ class ProjectRepairTests(unittest.TestCase):
                     transform_project_repair_xml(data, stage='repair')
                 dom.assert_not_called()
 
-    def test_unadmitted_xml11_restricted_references_fail_before_dom(self):
-        for reference in ('&#x1f;', '&#127;'):
-            data = f'<?xml version="1.1"?><Project><TagName>{reference}</TagName></Project>'.encode()
-            with self.subTest(reference=reference), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
+    def test_xml11_restricted_literals_still_fail_before_dom(self):
+        for literal in ('\x1f', '\x7f'):
+            data = f'<?xml version="1.1"?><Project><TagName>{literal}</TagName></Project>'.encode()
+            with self.subTest(literal=repr(literal)), patch('cbus_toolkit.project_repair.minidom.parseString') as dom:
                 with self.assertRaises(ProjectRepairError):
                     transform_project_repair_xml(data, stage='tidy')
                 dom.assert_not_called()

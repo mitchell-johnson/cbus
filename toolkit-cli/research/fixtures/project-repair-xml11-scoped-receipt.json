@@ -1,0 +1,80 @@
+{
+  "format": "cbus-project-repair-xml11-scoped-receipt-v1",
+  "observed_at_utc": "2026-09-28T05:10:13.891827+00:00",
+  "work_item_id": "P8.01",
+  "obligation_ids": [
+    "ledger:native-project-repair"
+  ],
+  "scope_status": "partial_accepted_case_issue_open",
+  "base_revision": "36a1e20a674ea90bd489ad11d41178bf437da0b6",
+  "integrated_revision": "the commit enclosing this receipt; parent integration is separate",
+  "native_target": "original C-Gate 3.4.0.2001 repair/tidy/full methods on pinned Java 11",
+  "source_bound_fixture": {
+    "path": "research/fixtures/project-repair-xml11-vectors.json",
+    "sha256": "ac0ce71275e85dec2b6f14a075d1e25b3b4142971e91239ad261f1918bcfe75f",
+    "case_count": 57,
+    "native_successes": 44,
+    "native_errors": 13,
+    "source_pins": "stored in fixture, including JDK, jar, both stylesheets, probe source/class and harness"
+  },
+  "accepted_behavior": [
+    "Direct repair/tidy admit captured XML 1.1 C0/C1 numeric references in text, attributes and namespace URI values; C0 is serialized as decimal references.",
+    "The full pipeline rejects serialized C0 references at tidy because the first transform declares XML 1.0; C1 references survive all stages with native text/attribute serialization.",
+    "Unused prefix undeclarations are omitted; rebound prefixes and sibling scopes survive; uses of the undeclared prefix in its reset scope fail.",
+    "Reference spelling in comments, CDATA and processing instructions is retained as literal content."
+  ],
+  "focused_validation": [
+    {
+      "command": "CBUS_CGATE_JAVA=<pinned-java> CBUS_CGATE_JAVAC=<pinned-javac> CBUS_LOCAL_CGATE_VENDOR=<pinned-original> PYTHONPATH=src:tests:. python3.13 -m unittest tests.test_project_repair_xml11 tests.test_project_repair.ProjectRepairTests tests.test_project_repair_cli -q",
+      "cwd": "toolkit-cli",
+      "exit_code": 0,
+      "tests_run": 36,
+      "passed": 36,
+      "skipped": 0,
+      "native_replay_rows": 57
+    },
+    {
+      "command": "PYTHONPATH=src:tests:. python3.10 -m unittest tests.test_project_repair_xml11.ProjectRepairXML11Tests tests.test_project_repair.ProjectRepairTests -q",
+      "cwd": "toolkit-cli",
+      "exit_code": 0,
+      "tests_run": 19,
+      "passed": 19,
+      "skipped": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3.13 -m compileall -q toolkit-cli/src/cbus_toolkit/project_repair.py toolkit-cli/tests/test_project_repair_xml11.py",
+      "exit_code": 0
+    }
+  ],
+  "source_hashes": {
+    "src/cbus_toolkit/project_repair.py": "10b5a83f9c2ddc18b5d308a682c586b70cca2126356148e3a04ded2d06ad0cf1",
+    "tests/test_project_repair.py": "2a0a675667c4416c4d22cec0b71744304aecfcb9c80f8975fcf2a71d95876810",
+    "tests/test_project_repair_xml11.py": "88cba69ec0b78dc5c29d15506bd6fcf84b72e509fbc4651ce06ab15be9565203",
+    "docs/project-repair.md": "a88a6529eb066ce9cc957f2a560dbbc72199ccb111b9d863e39f76203463b1ef",
+    "docs/implementation-status.md": "850ddc146315b5798a5a292671989bc0f3140e3a532c1cdb20d814742be4cf74"
+  },
+  "required_gates_not_run": [
+    "make check",
+    "make check-interop",
+    "fresh native PROJECT LOAD of newly admitted XML 1.1 outputs",
+    "Windows x86/AMD64 acceptance"
+  ],
+  "required_gates_not_run_reason": "The parent requested focused tests only because the shared disk has limited free space; these broader gates are deferred to parent integration.",
+  "native_load": "not verified for the newly admitted XML 1.1 outcomes; repair_project_xml retains native_load_verified=false",
+  "physical_io": "none; the oracle executes isolated original transform methods on generated temporary files and removes them",
+  "remaining_scope": [
+    "Internal DTD/entity cases (separate P8.01 chunk)",
+    "additional encoding/structure/failure domains and arbitrary corrupted projects",
+    "legacy DBVersion 2.2 conversion and full Toolkit workflow",
+    "native repository loading of newly admitted outputs"
+  ],
+  "invalidation": [
+    "different original C-Gate jar/stylesheets or Java runtime",
+    "change to lexical, parser, stylesheet transform or serializer implementation",
+    "change to fixture inputs/outputs, source pins or CLI file-write boundary"
+  ]
+}
