@@ -435,9 +435,16 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
         .await,
         ["211 Access level set to: Monitor"]
     );
+    // The native family entry has an Operate floor, including its help selector.
     assert_eq!(
-        command(&mut low_reader, &mut low_writer, "help", "TELEPHONY ?").await[0],
-        "101-Help: TELEPHONY commands:"
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "help-denied",
+            "TELEPHONY ?"
+        )
+        .await,
+        ["420 Access denied."]
     );
 
     let commands = [
@@ -478,6 +485,16 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
         )
         .await,
         ["211 Access level set to: Admin"]
+    );
+    assert_eq!(
+        command(
+            &mut low_reader,
+            &mut low_writer,
+            "help-admin",
+            "TELEPHONY ?"
+        )
+        .await[0],
+        "101-Help: TELEPHONY commands:"
     );
     assert_eq!(
         command(
