@@ -165,6 +165,14 @@ def project_native_xml_unit(text, unit_path, *, columns):
 
 
 def _snapshot_project(text, project_name):
+    if type(text) is not str:
+        raise ValueError('Native XML snapshot must be UTF-8 text within the 8 MiB bound')
+    try:
+        size = len(text.encode('utf-8'))
+    except UnicodeEncodeError:
+        raise ValueError('Native XML snapshot must be UTF-8 text within the 8 MiB bound') from None
+    if not 1 <= size <= MAX_CAPTURE_BYTES:
+        raise ValueError('Native XML snapshot must be UTF-8 text within the 8 MiB bound')
     document = _container(text, 'Installation')
     root = document.documentElement
     projects = _children(root, 'Project')

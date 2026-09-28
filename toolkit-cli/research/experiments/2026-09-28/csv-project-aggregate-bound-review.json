@@ -1,0 +1,45 @@
+{
+  "format": "cbus-toolkit-csv-project-aggregate-bound-review-v1",
+  "work_item": "P8.02",
+  "date": "2026-09-28",
+  "base_revision": "32c8f28dd6491414d905bf2f57bf456621abf30c",
+  "predecessor": "research/experiments/2026-09-28/csv-project-export-review.json",
+  "scope": "Bound the complete assembled native CSV project snapshot and exercise all previously admitted unit profiles in one project.",
+  "gap": "The live C-Gate client admitted response payloads up to 16 MiB when split across lines, while the native text projector inherited a 16 MiB XML-parser limit. A multi-line project snapshot above the documented 8 MiB CSV limit could therefore be parsed and exported.",
+  "change": "Both public native text projection modes now validate the complete UTF-8 XML size before XML parsing or CSV output. Offline byte entry points keep their existing 8 MiB read bound.",
+  "stable_case_ids": {
+    "P8.02.project.all-admitted-families": "test_whole_project_composes_every_admitted_family_offline_and_live",
+    "P8.02.project.aggregate-bound": "test_live_project_rejects_aggregate_xml_over_8_mib_before_parse_or_output"
+  },
+  "synthetic_composition": {
+    "networks": 8,
+    "units": 15,
+    "profiles": [
+      "RELAY4 4.4",
+      "OWNED_UNKNOWN 4.4",
+      "KEYE1-4 and KEYEIR1-4 2.5.00",
+      "DIMDN8 and RELDN12 2.7.00",
+      "SENPIROA and SENPIRIA 2.4.00",
+      "KEYGL5 5.5.00 / 5055EDL"
+    ],
+    "provenance": "Composed from committed synthetic profile fixtures and test builders; no site project data.",
+    "claims": "Verifies shared offline and one-request live selection, ordered rows, projection classes, source preservation, and no native mutation. Per-profile row behavior remains supported by separate focused tests."
+  },
+  "validation": {
+    "focused_command": "python -m pytest tests/test_toolkit_database_csv_project_export.py tests/test_toolkit_database_csv_selection_export.py tests/test_toolkit_database_csv_native.py tests/test_toolkit_database_csv_keye_family.py tests/test_toolkit_database_csv_senpiria.py tests/test_toolkit_database_csv_keygl5.py tests/test_cli_toolkit_database_csv.py -q -p no:cacheprovider -ra",
+    "focused_result": "105 passed, 73 subtests passed",
+    "project_interop_result": "6 skipped: CBUS_CGATE_MOCK_BIN and CBUS_CMQTTD_BIN were not configured with explicitly built binaries",
+    "parity_register": "make check-parity-register passed after regenerating the feature-ledger hash",
+    "full_suite": "Not run as requested for this bounded work item"
+  },
+  "source_sha256": {
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "7727686c6e72dbfdd2c1025471d376d544ddbd7bf77d44ec9dd6e8700458c81f",
+    "tests/test_toolkit_database_csv_project_export.py": "a7ec006f091744b90a30f7eab64f7cfe164661d87d0ac02b22079f0001361e82",
+    "docs/toolkit-database-csv.md": "3393fdd88818e148637a927a35206c854e61068bdefd34e24cda3e67382252fd"
+  },
+  "limits": [
+    "The earlier project-export receipt remains historical because this change alters its pinned source and test hashes.",
+    "No fresh original Toolkit GUI report, full interactive manager enumeration, native C-Gate process, Rust interop binary or physical hardware was exercised.",
+    "The composite fixture proves composition of the already admitted profiles; it does not admit new unit types, firmware, area behavior or native project metadata."
+  ]
+}
