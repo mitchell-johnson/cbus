@@ -4,6 +4,7 @@
 use super::*;
 pub(crate) mod calculator;
 pub(crate) mod cgl;
+mod connection_admission;
 mod dali;
 mod dali_specialized;
 pub(crate) mod family_help;
@@ -2956,6 +2957,9 @@ impl Service {
             capabilities["config_persistence"] =
                 serde_json::Value::String("cmqttd-json".to_string());
             capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
+            capabilities["config_command_admission_numeric_ip"] = serde_json::Value::Bool(true);
+            capabilities["config_command_admission_localhost"] = serde_json::Value::Bool(true);
+            capabilities["config_command_admission_hostnames"] = serde_json::Value::Bool(false);
             capabilities["config_restart_effects"] = serde_json::json!([
                 "command.show-responses",
                 "command.show-time",
@@ -13287,6 +13291,16 @@ impl Service {
         ok(tag, lines, "200 OK.")
     }
 
+    /// `CONFIG SET` changes native admission for subsequent connections now,
+    /// despite the catalogue's `effective=restart` metadata. Read only the
+    /// current global value; an already admitted session is unaffected.
+    async fn accepts_command_peer(&self, peer: std::net::IpAddr) -> bool {
+        let model = self.model.lock().await;
+        let parameter = config_parameter("accept-connections-from")
+            .expect("native command admission parameter is catalogued");
+        connection_admission::accepts(&config_global_value(&model, parameter), peer)
+    }
+
     /// Run a bounded listener. The caller owns binding and task supervision.
     pub async fn serve(self: Arc<Self>, listener: TcpListener) -> io::Result<()> {
         self.start_heartbeat();
@@ -13298,6 +13312,15 @@ impl Service {
                 .await
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
+            if !self.accepts_command_peer(stream.peer_addr()?.ip()).await {
+                tokio::spawn(async move {
+                    let _permit = permit;
+                    if let Err(e) = connection_admission::hold_silent(stream).await {
+                        tracing::debug!("C-Gate refused command peer disconnected: {e}");
+                    }
+                });
+                continue;
+            }
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
@@ -13347,6 +13370,15 @@ impl Service {
                 .await
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
+            if !self.accepts_command_peer(stream.peer_addr()?.ip()).await {
+                tokio::spawn(async move {
+                    let _permit = permit;
+                    if let Err(e) = connection_admission::hold_silent(stream).await {
+                        tracing::debug!("C-Gate refused TLS peer disconnected: {e}");
+                    }
+                });
+                continue;
+            }
             let acceptor = acceptor.clone();
             let service = self.clone();
             tokio::spawn(async move {

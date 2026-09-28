@@ -8,6 +8,9 @@
 //! `global-event-level` catalogue says immediate, but its observed event
 //! delivery effect is sampled at startup. A nonnumeric saved value prevents
 //! the native command listeners from opening.
+//! `accept-connections-from` also has an owned loopback command-admission
+//! capture: despite `effective=restart` metadata, its SET and LOAD effects
+//! on new connections are immediate.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConfigScope {

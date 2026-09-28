@@ -203,7 +203,7 @@ is opened. Native startup loading is asynchronous; cmqttd builds its bounded
 view before opening the listener. See
 [`native_cgate_config_project_start.json`](../../../../rust/testdata/fixtures/native_cgate_config_project_start.json)
 and [`cgate_config_project_start.jsonl`](../../../../rust/testdata/vectors/cgate_config_project_start.jsonl).
-GET reflects SET/LOAD immediately, while the current listener retains the
+GET reflects SET/LOAD immediately; restart-sampled values retain their
 startup settings. Native `CONFIG INFO global-event-level` says `immediate`,
 but owned Java 11 captures show the valid 0–9 delivery level is sampled at
 startup. For C-Gate `EVENT e+`, 0–2 admit none of the captured event families,
@@ -218,6 +218,13 @@ leaves its optional C-Gate listener disabled with a diagnostic while MQTT and
 PCI continue. Filtering applies only to those source-captured C-Gate event families;
 it does not change MQTT, PCI or live C-Bus observations. See
 [`native_cgate_config_global_event_level.json`](../../../../rust/testdata/fixtures/native_cgate_config_global_event_level.json).
+`accept-connections-from` is a separate immediate command-
+admission effect despite native INFO reporting `effective=restart`: numeric IP
+allow lists gate new C-Gate TCP connections, and an unmatched peer stays silent
+without a greeting while an existing session can restore `all`. This does not
+gate MQTT or PCI. The exact captured `localhost` spelling also works, while
+other hostname resolution is not yet implemented and fails closed;
+see the [owned native receipt](../../../../rust/testdata/fixtures/native_cgate_config_connection_admission.json).
 C-Gate event entries redact credential-bearing commands and
 their response payloads; native C-Gate may expose those bytes. Other
 catalogue values remain stored data and do not reconfigure the listener, PCI,
@@ -229,6 +236,9 @@ physical C-Bus state.
 `CMQTT CAPABILITIES` publishes the exact command list, catalogue/wildcard
 counts, `config_persistence="cmqttd-json"`,
 `config_runtime_reconfiguration=false`,
+`config_command_admission_numeric_ip=true`,
+`config_command_admission_localhost=true`,
+`config_command_admission_hostnames=false`,
 `config_restart_effects=["command.show-responses","command.show-time","event-millis","global-event-level","heartbeat-time","project.default","project.start"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)

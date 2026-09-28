@@ -1,0 +1,157 @@
+{
+  "schema": "native-cgate-config-connection-admission-v1",
+  "captured_utc": "2026-09-28T10:38:17.677428+00:00",
+  "scope": "Owned IPv4 loopback command listeners including exact localhost spelling; no physical endpoint, site project, event listener, TLS listener, arbitrary hostname, or IPv6 assertion",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "capture_script_sha256": "9204de91078c4cff8295660c1249ea09f20612389b405c3ecf5b8ef626785fa5",
+    "physical_endpoint": false,
+    "children": {
+      "default": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "runtime": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "denied": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "allowed": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "multiple": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      },
+      "hostname": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    }
+  },
+  "default": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "commands": [
+      {
+        "command": "CONFIG GET accept-connections-from",
+        "response": [
+          "[default] 303 accept-connections-from=all"
+        ]
+      },
+      {
+        "command": "CONFIG INFO accept-connections-from",
+        "response": [
+          "[info] 304-parameter=accept-connections-from",
+          "[info] 304-value=all",
+          "[info] 304-description=Space separated list of IP addresses or hostnames from which to accept command connections",
+          "[info] 304-defaultValue=all",
+          "[info] 304-scope=global",
+          "[info] 304 effective=restart"
+        ]
+      }
+    ],
+    "new_connection": {
+      "outcome": "greeting",
+      "bytes": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+    }
+  },
+  "runtime": {
+    "commands": [
+      {
+        "command": "CONFIG GET accept-connections-from",
+        "response": [
+          "[before] 303 accept-connections-from=127.0.0.1"
+        ]
+      },
+      {
+        "command": "CONFIG SET accept-connections-from 192.0.2.55",
+        "response": [
+          "[set] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG GET accept-connections-from",
+        "response": [
+          "[after] 303 accept-connections-from=192.0.2.55"
+        ]
+      },
+      {
+        "command": "CONFIG SAVE global",
+        "response": [
+          "[save] 200 OK."
+        ]
+      },
+      {
+        "command": "NOOP",
+        "response": [
+          "[existing] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG SET accept-connections-from all",
+        "response": [
+          "[reallow] 200 OK."
+        ]
+      },
+      {
+        "command": "CONFIG LOAD global",
+        "response": [
+          "[reload] 200 OK."
+        ]
+      }
+    ],
+    "after_set": {
+      "outcome": "connected-no-greeting-timeout"
+    },
+    "after_save": {
+      "outcome": "connected-no-greeting-timeout"
+    },
+    "after_reallow": {
+      "outcome": "greeting",
+      "bytes": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+    },
+    "after_reload": {
+      "outcome": "connected-no-greeting-timeout"
+    }
+  },
+  "fresh_denied": {
+    "outcome": "connected-no-greeting-timeout"
+  },
+  "fresh_denied_long": {
+    "passive_wait_seconds": 12,
+    "after_noop_wait_seconds": 3,
+    "passive_outcome": "silent-timeout",
+    "after_noop_outcome": "silent-timeout"
+  },
+  "fresh_allowed": {
+    "outcome": "greeting",
+    "bytes": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+  },
+  "fresh_multiple": {
+    "outcome": "greeting",
+    "bytes": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+  },
+  "fresh_hostname": {
+    "outcome": "greeting",
+    "bytes": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+  }
+}
