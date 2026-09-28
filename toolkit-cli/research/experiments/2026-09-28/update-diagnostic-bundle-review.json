@@ -2,8 +2,10 @@
   "format": "cbus-toolkit-p9-01-diagnostic-provenance-review-v1",
   "work_item": "P9.01",
   "source_base_revision": "02c0953bf838a920c275ce0567ea38f802f181e8",
+  "integrated_code_revision": "656f09f44685a3459facb151fc341048497efb4a",
+  "assembled_source_revision": "97141b2211a829904bcc6fe23b9ecf11e51396f4",
   "target": "Toolkit 1.18.0.2754 / SESU 3.0.7 diagnostic report composition",
-  "status": "focused implementation review; integration and full gates pending",
+  "status": "integrated source and focused installed-wheel validation passed; final CI and issue closure pending",
   "obligations": [
     {
       "id": "P9.01.RAW",
@@ -89,14 +91,28 @@
     "skips": 0,
     "exit_status": 0
   },
+  "installed_wheel_validation": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "artifact_sha256": "43c18bd55580a9c587adcdabfc510f1a4200b6469bf3322bb660f4e8fb02deeb",
+    "build_command": "python3.13 -m pip wheel --no-deps --wheel-dir /private/tmp/cbus-p9-wheel-integrated-20260928/dist .",
+    "install_command": "python3.13 -m pip install --no-deps --target /private/tmp/cbus-p9-wheel-integrated-20260928/site /private/tmp/cbus-p9-wheel-integrated-20260928/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "import_path": "/private/tmp/cbus-p9-wheel-integrated-20260928/site/cbus_toolkit/__init__.py",
+    "test_command": "PYTHONPATH=/private/tmp/cbus-p9-wheel-integrated-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_preferences_user_guard.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_windows_process_token.py -p no:cacheprovider",
+    "test_scope": "four diagnostic/package-bundle test files (62 cases) and two preference user/token test files (39 cases)",
+    "tests": 101,
+    "subtests": 78,
+    "failures": 0,
+    "skips": 0,
+    "exit_status": 0,
+    "python": "3.13.14"
+  },
   "applicability": {
     "original_composer_comparison": "not applicable: this is a bounded diagnostic composer, not an original Toolkit operation; underlying metadata, revocation and condition cases retain separate native evidence",
     "hardware_or_physical_effect": "not applicable: no physical I/O",
     "persistence_recovery": "not applicable: read-only local composition"
   },
   "pending_gates": [
-    "integrated revision and installed-wheel hash",
-    "make check and make check-interop were deferred by the focused-test instruction",
+    "GitHub CI for the final integrated revision; full local make check and make check-interop were deferred by the user's focused-test instruction",
     "final issue-level closure decision"
   ],
   "invalidation": "Re-run and refresh this review after changes to the composer, its producer receipt schemas, source selectors, tests or synthetic fixture input bytes. Integrated or installed-artifact results require a new receipt."
