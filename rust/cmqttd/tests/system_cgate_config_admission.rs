@@ -80,7 +80,7 @@ async fn denied_connection_stays_silent(sys: &System) {
 }
 
 #[tokio::test]
-async fn numeric_ip_config_admission_changes_new_sessions_and_preserves_mqtt_pci() {
+async fn config_admission_changes_new_sessions_and_preserves_mqtt_pci() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_config_connection_admission.json"
     ))
@@ -110,6 +110,19 @@ async fn numeric_ip_config_admission_changes_new_sessions_and_preserves_mqtt_pci
         native["fresh_denied"]["outcome"],
         "connected-no-greeting-timeout"
     );
+    let hostname_tls: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_hostname_tls_admission.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        hostname_tls["schema"],
+        "native-cgate-config-hostname-tls-admission-v1"
+    );
+    assert_eq!(hostname_tls["baseline"]["tls"]["outcome"], "greeting");
+    assert_eq!(
+        hostname_tls["tls_cases"][3]["tls"]["outcome"],
+        "handshake-timeout"
+    );
 
     let state = cbus_test_support::proc::temp_path("cgate-config-admission.json");
     let options = || Options {
@@ -129,7 +142,9 @@ async fn numeric_ip_config_admission_changes_new_sessions_and_preserves_mqtt_pci
         serde_json::from_str(caps[0].strip_prefix("200-").unwrap()).unwrap();
     assert_eq!(caps["config_command_admission_numeric_ip"], true);
     assert_eq!(caps["config_command_admission_localhost"], true);
-    assert_eq!(caps["config_command_admission_hostnames"], false);
+    assert_eq!(caps["config_command_admission_hostnames"], true);
+    assert_eq!(caps["config_command_admission_tls"], true);
+    assert_eq!(caps["config_command_admission_ipv4_mapped"], true);
     assert_eq!(
         command(
             &mut reader,
@@ -164,6 +179,25 @@ async fn numeric_ip_config_admission_changes_new_sessions_and_preserves_mqtt_pci
     );
     let (local_reader, local_writer) = connect_command(&first).await;
     drop((local_reader, local_writer));
+    for (tag, value) in [
+        ("uppercase", "LOCALHOST"),
+        ("qualified", "localhost."),
+        ("mapped", "::ffff:127.0.0.1"),
+        ("all-uppercase", "ALL"),
+    ] {
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                tag,
+                &format!("CONFIG SET accept-connections-from {value}")
+            )
+            .await,
+            ["200 OK."]
+        );
+        let (new_reader, new_writer) = connect_command(&first).await;
+        drop((new_reader, new_writer));
+    }
     assert_eq!(
         command(
             &mut reader,

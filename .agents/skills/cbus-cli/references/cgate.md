@@ -218,13 +218,20 @@ leaves its optional C-Gate listener disabled with a diagnostic while MQTT and
 PCI continue. Filtering applies only to those source-captured C-Gate event families;
 it does not change MQTT, PCI or live C-Bus observations. See
 [`native_cgate_config_global_event_level.json`](../../../../rust/testdata/fixtures/native_cgate_config_global_event_level.json).
-`accept-connections-from` is a separate immediate command-
-admission effect despite native INFO reporting `effective=restart`: numeric IP
-allow lists gate new C-Gate TCP connections, and an unmatched peer stays silent
-without a greeting while an existing session can restore `all`. This does not
-gate MQTT or PCI. The exact captured `localhost` spelling also works, while
-other hostname resolution is not yet implemented and fails closed;
-see the [owned native receipt](../../../../rust/testdata/fixtures/native_cgate_config_connection_admission.json).
+`accept-connections-from` is a separate immediate command-admission effect
+despite native INFO reporting `effective=restart`: numeric IP and resolvable
+hostname lists gate new C-Gate TCP connections, and an unmatched peer stays
+silent without a greeting. The original admits `LOCALHOST`, `localhost.`, a
+resolved loopback DNS name, uppercase `ALL`, and the IPv4-mapped literal
+`::ffff:127.0.0.1` for a 127.0.0.1 peer. A denied peer cannot complete native
+mutual TLS; cmqttd applies the policy before its own TLS handshake too. The
+cmqttd resolver has a two-second per-connection bound and fails closed on DNS
+failure. This does not gate MQTT or PCI. Native C-Gate remained denied after
+an unresolvable hostname or CIDR-like value followed by `all`; cmqttd permits
+recovery by `all` rather than reproducing that failure. IPv6 peer behavior and
+native hostname re-resolution timing remain unproven. See the
+[original IP receipt](../../../../rust/testdata/fixtures/native_cgate_config_connection_admission.json)
+and [hostname/TLS receipt](../../../../rust/testdata/fixtures/native_cgate_config_hostname_tls_admission.json).
 C-Gate event entries redact credential-bearing commands and
 their response payloads; native C-Gate may expose those bytes. Other
 catalogue values remain stored data and do not reconfigure the listener, PCI,

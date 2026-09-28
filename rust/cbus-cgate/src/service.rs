@@ -2959,7 +2959,9 @@ impl Service {
             capabilities["config_runtime_reconfiguration"] = serde_json::Value::Bool(false);
             capabilities["config_command_admission_numeric_ip"] = serde_json::Value::Bool(true);
             capabilities["config_command_admission_localhost"] = serde_json::Value::Bool(true);
-            capabilities["config_command_admission_hostnames"] = serde_json::Value::Bool(false);
+            capabilities["config_command_admission_hostnames"] = serde_json::Value::Bool(true);
+            capabilities["config_command_admission_tls"] = serde_json::Value::Bool(true);
+            capabilities["config_command_admission_ipv4_mapped"] = serde_json::Value::Bool(true);
             capabilities["config_restart_effects"] = serde_json::json!([
                 "command.show-responses",
                 "command.show-time",
@@ -13295,10 +13297,13 @@ impl Service {
     /// despite the catalogue's `effective=restart` metadata. Read only the
     /// current global value; an already admitted session is unaffected.
     async fn accepts_command_peer(&self, peer: std::net::IpAddr) -> bool {
-        let model = self.model.lock().await;
-        let parameter = config_parameter("accept-connections-from")
-            .expect("native command admission parameter is catalogued");
-        connection_admission::accepts(&config_global_value(&model, parameter), peer)
+        let value = {
+            let model = self.model.lock().await;
+            let parameter = config_parameter("accept-connections-from")
+                .expect("native command admission parameter is catalogued");
+            config_global_value(&model, parameter)
+        };
+        connection_admission::accepts(&value, peer).await
     }
 
     /// Run a bounded listener. The caller owns binding and task supervision.
@@ -13312,18 +13317,16 @@ impl Service {
                 .await
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
-            if !self.accepts_command_peer(stream.peer_addr()?.ip()).await {
-                tokio::spawn(async move {
-                    let _permit = permit;
-                    if let Err(e) = connection_admission::hold_silent(stream).await {
-                        tracing::debug!("C-Gate refused command peer disconnected: {e}");
-                    }
-                });
-                continue;
-            }
+            let peer = stream.peer_addr()?.ip();
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
+                if !service.accepts_command_peer(peer).await {
+                    if let Err(e) = connection_admission::hold_silent(stream).await {
+                        tracing::debug!("C-Gate refused command peer disconnected: {e}");
+                    }
+                    return;
+                }
                 if let Err(e) = service.connection(stream).await {
                     tracing::debug!("C-Gate connection ended: {e}");
                 }
@@ -13370,19 +13373,17 @@ impl Service {
                 .await
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
-            if !self.accepts_command_peer(stream.peer_addr()?.ip()).await {
-                tokio::spawn(async move {
-                    let _permit = permit;
-                    if let Err(e) = connection_admission::hold_silent(stream).await {
-                        tracing::debug!("C-Gate refused TLS peer disconnected: {e}");
-                    }
-                });
-                continue;
-            }
+            let peer = stream.peer_addr()?.ip();
             let acceptor = acceptor.clone();
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
+                if !service.accepts_command_peer(peer).await {
+                    if let Err(e) = connection_admission::hold_silent(stream).await {
+                        tracing::debug!("C-Gate refused TLS peer disconnected: {e}");
+                    }
+                    return;
+                }
                 match tokio::time::timeout(timeout, acceptor.accept(stream)).await {
                     Ok(Ok(tls_stream)) => {
                         if let Err(e) = service.connection_tls(tls_stream).await {

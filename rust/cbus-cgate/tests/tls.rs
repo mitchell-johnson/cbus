@@ -134,6 +134,78 @@ async fn tls_connect(
     connector.connect(name, stream).await
 }
 
+#[tokio::test]
+async fn native_backed_hostname_admission_happens_before_tls_handshake() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_hostname_tls_admission.json"
+    ))
+    .expect("native hostname/TLS admission receipt");
+    assert_eq!(native["oracle"]["tls_cleanup"]["cleanup_complete"], true);
+    assert_eq!(native["baseline"]["tls"]["outcome"], "greeting");
+    assert_eq!(
+        native["tls_cases"][3]["tls"]["outcome"],
+        "handshake-timeout"
+    );
+
+    let (service, _remote, state) = test_service();
+    let listener = TcpListener::bind("127.0.0.1:0")
+        .await
+        .expect("bind TLS listener");
+    let port = listener.local_addr().unwrap().port();
+    let running = service.clone();
+    let task = tokio::spawn(async move {
+        running
+            .serve_tls(listener, test_server_config_with_client_ca())
+            .await
+            .expect("serve TLS");
+    });
+    let config = client_config_with_identity(trusted_roots());
+    let mut client = ClientState::default();
+
+    for (value, admitted) in [
+        ("LOCALHOST", true),
+        ("localhost.", true),
+        ("::ffff:127.0.0.1", true),
+        ("::1", false),
+        ("all", true),
+        ("192.0.2.55", false),
+        ("ALL", true),
+    ] {
+        let result = service
+            .handle(
+                &mut client,
+                &format!("[set] CONFIG SET accept-connections-from {value}"),
+            )
+            .await;
+        assert_eq!(result.status, 200, "CONFIG SET {value}: {result:?}");
+        if admitted {
+            let stream =
+                tokio::time::timeout(Duration::from_secs(3), tls_connect(port, config.clone()))
+                    .await
+                    .expect("TLS admission timeout")
+                    .expect("TLS admission handshake");
+            let mut reader = BufReader::new(stream);
+            assert_eq!(
+                read_greeting(&mut reader).await,
+                "201 cmqttd C-Gate service ready"
+            );
+        } else {
+            assert!(
+                tokio::time::timeout(
+                    Duration::from_millis(350),
+                    tls_connect(port, config.clone())
+                )
+                .await
+                .is_err(),
+                "denied {value} unexpectedly completed TLS handshake"
+            );
+        }
+    }
+    task.abort();
+    let _ = task.await;
+    std::fs::remove_file(state).ok();
+}
+
 async fn read_greeting<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> String {
     let mut line = String::new();
     reader.read_line(&mut line).await.expect("greeting");

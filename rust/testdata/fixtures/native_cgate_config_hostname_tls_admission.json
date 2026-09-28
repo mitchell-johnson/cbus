@@ -1,0 +1,301 @@
+{
+  "schema": "native-cgate-config-hostname-tls-admission-v1",
+  "captured_utc": "2026-09-28T11:09:29.309779+00:00",
+  "scope": "Owned IPv4 loopback command/TLS ports and new sessions; no IPv6 peer, physical endpoint, site project, or event listener",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "source_hashes": {
+      "rust/cbus-cgate/research/native_config_hostname_tls_admission_probe.py": "1b94b4c44c9dd293133e868daaab5ae49b70f84b8448467d9f18aaa45de8692e",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd"
+    },
+    "physical_endpoint": false,
+    "tls_cleanup": {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    "source_hashes_after": {
+      "rust/cbus-cgate/research/native_config_hostname_tls_admission_probe.py": "1b94b4c44c9dd293133e868daaab5ae49b70f84b8448467d9f18aaa45de8692e",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd"
+    }
+  },
+  "cases": [
+    {
+      "value": "LOCALHOST",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=LOCALHOST",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "localhost.",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=localhost.",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "127.0.0.1.nip.io",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=127.0.0.1.nip.io",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "192.0.2.55.nip.io",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=192.0.2.55.nip.io",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "connected-silent",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "localhost 192.0.2.55",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=localhost 192.0.2.55",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "192.0.2.55 localhost",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=192.0.2.55 localhost",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "::1",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=::1",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "connected-silent",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "ip6-localhost",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=ip6-localhost",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "connected-silent",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "connected-silent",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "::ffff:127.0.0.1",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=::ffff:127.0.0.1",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "127.0.0.1/8",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=127.0.0.1/8",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "connected-silent",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "connected-silent",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "unresolved.invalid",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=unresolved.invalid",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "connected-silent",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "connected-silent",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    {
+      "value": "ALL",
+      "set": "[set] 200 OK.",
+      "get": "[get] 303 accept-connections-from=ALL",
+      "existing_noop": "[old] 200 OK.",
+      "plain": "greeting",
+      "restore": "[restore] 200 OK.",
+      "restored_plain": "greeting",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    }
+  ],
+  "tls_cases": [
+    {
+      "value": "LOCALHOST",
+      "set": "[set0] 200 OK.",
+      "get": "[get0] 303 accept-connections-from=LOCALHOST",
+      "existing_noop": "[old0] 200 OK.",
+      "plain": "greeting",
+      "tls": {
+        "outcome": "greeting",
+        "tls_version": "TLSv1.3"
+      }
+    },
+    {
+      "value": "localhost.",
+      "set": "[set1] 200 OK.",
+      "get": "[get1] 303 accept-connections-from=localhost.",
+      "existing_noop": "[old1] 200 OK.",
+      "plain": "greeting",
+      "tls": {
+        "outcome": "greeting",
+        "tls_version": "TLSv1.3"
+      }
+    },
+    {
+      "value": "127.0.0.1.nip.io",
+      "set": "[set2] 200 OK.",
+      "get": "[get2] 303 accept-connections-from=127.0.0.1.nip.io",
+      "existing_noop": "[old2] 200 OK.",
+      "plain": "greeting",
+      "tls": {
+        "outcome": "greeting",
+        "tls_version": "TLSv1.3"
+      }
+    },
+    {
+      "value": "192.0.2.55.nip.io",
+      "set": "[set3] 200 OK.",
+      "get": "[get3] 303 accept-connections-from=192.0.2.55.nip.io",
+      "existing_noop": "[old3] 200 OK.",
+      "plain": "connected-silent",
+      "tls": {
+        "outcome": "handshake-timeout"
+      }
+    },
+    {
+      "value": "all",
+      "set": "[set4] 200 OK.",
+      "get": "[get4] 303 accept-connections-from=all",
+      "existing_noop": "[old4] 200 OK.",
+      "plain": "greeting",
+      "tls": {
+        "outcome": "greeting",
+        "tls_version": "TLSv1.3"
+      }
+    },
+    {
+      "value": "::1",
+      "set": "[set5] 200 OK.",
+      "get": "[get5] 303 accept-connections-from=::1",
+      "existing_noop": "[old5] 200 OK.",
+      "plain": "connected-silent",
+      "tls": {
+        "outcome": "handshake-timeout"
+      }
+    },
+    {
+      "value": "all",
+      "set": "[set6] 200 OK.",
+      "get": "[get6] 303 accept-connections-from=all",
+      "existing_noop": "[old6] 200 OK.",
+      "plain": "greeting",
+      "tls": {
+        "outcome": "greeting",
+        "tls_version": "TLSv1.3"
+      }
+    }
+  ],
+  "pki_public": {
+    "algorithm": "RSA-2048/SHA-256",
+    "server_dns_names": [
+      "localhost"
+    ],
+    "server_certificate_sha256": "02509cc6c634c34fa7d3f4b52cdbe6c558c6f69087ff2453c86e6a7365f53d84",
+    "ca_certificate_sha256": "12a9da69f60e34584a4dc035631ad431b91ab697b2b9a655a5845d2ef013989a"
+  },
+  "baseline": {
+    "plain": "greeting",
+    "tls": {
+      "outcome": "greeting",
+      "tls_version": "TLSv1.3"
+    }
+  }
+}

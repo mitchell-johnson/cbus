@@ -5,20 +5,53 @@
 //! INFO advertises `effective=restart`. Existing sessions continue. A denied
 //! TCP peer stays connected without a greeting or command reply for at least
 //! fifteen seconds. This module implements the observed numeric-IP and `all`
-//! slice, plus the captured `localhost` spelling; other unresolved hostnames
-//! fail closed until independently captured.
+//! slice, plus source-captured case-insensitive hostname resolution, an
+//! IPv4-mapped IPv6 literal, and the corresponding mTLS pre-handshake gate.
+//! DNS lookup is bounded and failed lookups deny new peers. The retained
+//! Java server can remain denied after setting an unresolvable name and then
+//! `all`; cmqttd intentionally recovers on `all` rather than reproducing
+//! that native failure state.
 
-use std::net::{IpAddr, Ipv4Addr};
+use std::{net::IpAddr, time::Duration};
 use tokio::{io, net::TcpStream};
 
-pub(super) fn accepts(value: &str, peer: IpAddr) -> bool {
-    value == "all"
-        || value
-            .split_whitespace()
-            .any(|part| match part.parse::<IpAddr>() {
-                Ok(address) => address == peer,
-                Err(_) => part == "localhost" && peer == IpAddr::V4(Ipv4Addr::LOCALHOST),
-            })
+fn matches_address(allowed: IpAddr, peer: IpAddr) -> bool {
+    allowed == peer
+        || matches!((allowed, peer), (IpAddr::V6(allowed), IpAddr::V4(peer))
+            if allowed.to_ipv4_mapped() == Some(peer))
+}
+
+pub(super) async fn accepts(value: &str, peer: IpAddr) -> bool {
+    let parts = value.split_whitespace().collect::<Vec<_>>();
+    // Match literals first: an unrelated DNS outage must not prevent an
+    // explicit numeric address or native case-insensitive `all` from working.
+    if parts.iter().any(|part| part.eq_ignore_ascii_case("all"))
+        || parts.iter().any(|part| {
+            part.parse::<IpAddr>()
+                .is_ok_and(|allowed| matches_address(allowed, peer))
+        })
+    {
+        return true;
+    }
+
+    // Native accepts DNS names such as LOCALHOST, localhost. and a separately
+    // resolved loopback FQDN on both plain and TLS command listeners. Resolve
+    // only names here, never host:port syntax; the address is the peer IP.
+    tokio::time::timeout(Duration::from_secs(2), async {
+        for part in parts {
+            if part.parse::<IpAddr>().is_ok() {
+                continue;
+            }
+            if let Ok(mut addresses) = tokio::net::lookup_host((part, 0)).await {
+                if addresses.any(|address| matches_address(address.ip(), peer)) {
+                    return true;
+                }
+            }
+        }
+        false
+    })
+    .await
+    .unwrap_or(false)
 }
 
 /// Native build 2001 leaves an explicitly denied command TCP connection
@@ -34,15 +67,34 @@ pub(super) async fn hold_silent(mut stream: TcpStream) -> io::Result<()> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn observed_ipv4_allow_and_deny_values() {
+    #[tokio::test]
+    async fn observed_ipv4_hostname_mapped_and_ipv6_values() {
         let loopback = "127.0.0.1".parse().unwrap();
-        assert!(accepts("all", loopback));
-        assert!(accepts("127.0.0.1", loopback));
-        assert!(!accepts("192.0.2.55", loopback));
-        assert!(!accepts("", loopback));
-        assert!(accepts("192.0.2.55 127.0.0.1", loopback));
-        assert!(accepts("localhost", loopback));
-        assert!(!accepts("unresolved.example", loopback));
+        let oracle: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../testdata/fixtures/native_cgate_config_hostname_tls_admission.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            oracle["schema"],
+            "native-cgate-config-hostname-tls-admission-v1"
+        );
+        assert_eq!(oracle["oracle"]["tls_cleanup"]["cleanup_complete"], true);
+        for row in oracle["cases"].as_array().unwrap() {
+            assert_eq!(row["cleanup"]["cleanup_complete"], true);
+        }
+
+        assert!(accepts("all", loopback).await);
+        assert!(accepts("ALL", loopback).await);
+        assert!(accepts("127.0.0.1", loopback).await);
+        assert!(!accepts("192.0.2.55", loopback).await);
+        assert!(!accepts("", loopback).await);
+        assert!(accepts("192.0.2.55 127.0.0.1", loopback).await);
+        assert!(accepts("localhost", loopback).await);
+        assert!(accepts("LOCALHOST", loopback).await);
+        assert!(accepts("localhost.", loopback).await);
+        assert!(accepts("::ffff:127.0.0.1", loopback).await);
+        assert!(!accepts("::1", loopback).await);
+        assert!(!accepts("unresolved.invalid", loopback).await);
+        assert!(!accepts("127.0.0.1/8", loopback).await);
     }
 }
