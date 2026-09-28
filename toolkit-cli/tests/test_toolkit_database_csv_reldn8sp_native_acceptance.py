@@ -35,6 +35,9 @@ class RELDN8SPNativeAcceptanceTests(unittest.TestCase):
         self.assertTrue(receipt['cleanup']['original_home_restored'])
         self.assertTrue(receipt['cleanup']['guest_route_matches_start'])
         self.assertFalse(receipt['toolkit_gui']['csv_export_observed'])
+        self.assertEqual(
+            hashlib.sha256(receipt['toolkit_gui']['launcher_content'].encode('ascii')).hexdigest(),
+            receipt['toolkit_gui']['launcher_sha256'])
 
     def test_sanitized_native_readback_projects_the_expected_literal_csv(self):
         root = ET.fromstring(NATIVE.read_bytes())
