@@ -625,6 +625,10 @@ behavior. **Depends on:** P0/P1 and P2 where native formats are involved.
 - [ ] **P8.01** ([#55](https://github.com/mitchell-johnson/cbus/issues/55)) — Complete repair behavior across native-supported versions/encodings and
   failure classes; preserve evidence for native-rejected domains rather than
   invent general corrupt-database recovery.
+  Owned original captures now cover bounded internal DTD/entity expansion and
+  XML 1.1 restricted references/prefix undeclarations. The merged parser also
+  matches nine original cases where XML 1.1 and internal DTDs intersect.
+  Native loading of newly admitted outputs and broader failure classes remain open.
 - [ ] **P8.02** ([#56](https://github.com/mitchell-johnson/cbus/issues/56)) — Finish original report-manager enumeration, remaining unit associations,
   secondary applications, whole-project export and encoding/column behavior.
   The admitted snapshot adapter now exports every network/unit in one project

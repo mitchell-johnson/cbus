@@ -101,8 +101,17 @@ accepts a later rebind or sibling use outside the reset scope, and rejects a
 prefix used inside the reset scope. Numeric-reference spelling inside comments,
 CDATA and processing instructions remains literal. The [XML 1.1 scoped receipt](../research/fixtures/project-repair-xml11-scoped-receipt.json)
 records the source pins, focused validation and remaining limits. External
-entities, UTF-16 and unsupported XML versions remain
-rejected. Intermediate UTF-8 read
+entities, UTF-16 and unsupported XML versions remain rejected. The
+[nine-case intersection capture](../research/fixtures/project-repair-dtd-xml11-vectors.json)
+pins XML 1.1 documents with internal entities, including a quoted `>` and a
+restricted C0 reference inside an entity. All six direct repair/tidy outputs
+match the original bytes; the three full pipelines fail during repair after
+the lexical step alters the nonempty DTD. The
+[integration test](../tests/test_project_repair_dtd_xml11.py) also replays the
+pinned original when Java and vendor software are provisioned. The
+[scoped integration receipt](../research/fixtures/project-repair-dtd-xml11-scoped-receipt.json)
+records the merged source hashes, focused gates, and remaining acceptance.
+Intermediate UTF-8 read
 and declared-decode growth are checked against the same byte limit before DOM
 allocation.
 The byte limit defaults to8MiB, with100,000 nodes and128 element levels.

@@ -1,0 +1,45 @@
+{
+  "format": "cbus-project-repair-dtd-xml11-integration-receipt-v1",
+  "work_item_id": "P8.01",
+  "integrated_parents": [
+    "dbf2cf4",
+    "f52a2e2"
+  ],
+  "scope_status": "partial_accepted_case_issue_open",
+  "native_target": "original C-Gate 3.4.0 build 2001 repair/tidy/full methods on pinned Java 11",
+  "source_hashes": {
+    "src/cbus_toolkit/project_repair.py": "6ad258ba051f3e9fdeee6909168153e2b01f6293fe19f5bb794ce08e40fd0d66",
+    "tests/test_project_repair_dtd_xml11.py": "d280db33e8ac9b07d408995c2d1f6b440bf3ec4533f500188536ee7f2209ce0d",
+    "research/capture_project_repair_dtd_xml11.py": "ad4a0a1126931142af354f12e14a5ad6b94668a66686452a9e4ca5bec0adf80d",
+    "research/fixtures/project-repair-dtd-xml11-vectors.json": "0ff8714bf94c9e3f0bd73797379c2f1ef7de5ed4c59a1b6aaf9955592eac9a06"
+  },
+  "original_capture": {
+    "path": "research/fixtures/project-repair-dtd-xml11-vectors.json",
+    "cases": 9,
+    "direct_successes": 6,
+    "full_repair_stage_failures": 3,
+    "fresh_original_replay": "9/9 exact status/output/error/response"
+  },
+  "focused_validation": [
+    {
+      "command": "CBUS_CGATE_JAVA=<pinned-java> CBUS_CGATE_JAVAC=<pinned-javac> CBUS_LOCAL_CGATE_VENDOR=<pinned-original> PYTHONPATH=src:tests:. python -m unittest tests.test_project_repair_dtd tests.test_project_repair_xml11 tests.test_project_repair.ProjectRepairTests tests.test_project_repair_cli -q",
+      "result": "41 tests passed, 0 skipped on merged source"
+    },
+    {
+      "command": "CBUS_CGATE_JAVA=<pinned-java> CBUS_CGATE_JAVAC=<pinned-javac> CBUS_LOCAL_CGATE_VENDOR=<pinned-original> PYTHONPATH=src:tests:. python -m unittest tests.test_project_repair_dtd_xml11 -q",
+      "result": "2 tests passed, 0 skipped; fresh 9-row original replay"
+    }
+  ],
+  "required_gates_not_run": [
+    "full local make check",
+    "full local make check-interop",
+    "fresh native PROJECT LOAD of newly admitted outputs",
+    "Windows Toolkit workflow"
+  ],
+  "reason": "User requested focused tests unless a full suite is absolutely necessary; native LOAD and Windows workflow need separate provisioned acceptance.",
+  "invalidation": [
+    "changed original JAR, stylesheets, Java runtime or probe",
+    "changed merged parser, capture inputs or fixture",
+    "changed CLI or project loading boundary"
+  ]
+}
