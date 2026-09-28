@@ -15,7 +15,7 @@
     "path": "/private/tmp/cbus-parity-final-20260928/rust/target/debug/cmqttd",
     "sha256": "98d1f2c8432879e59c49b00447ead8d2bf3fd7fcb41957f3881b37fe479c1b83"
   },
-  "source_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
+  "source_revision": "9665a7953dd2690d5ac30be07417121172cd8e97",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "b2a2be997813cc94c43c6bc47a82055eabdfcc66aa05f919e04447f7d2312fe7",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
@@ -119,7 +119,7 @@
     "rust/cmqttd/src/gateway.rs": "cdccf444faad769a0750fcbb694066d8db3db7255e7c0aa0af4cd84d37ab9e38",
     "rust/cmqttd/src/main.rs": "e8a2077f1a4d0cc7553c7435fcdd08894991adc5442d24a3203e20ade6468d27",
     "rust/cmqttd/src/setup.rs": "5e5c4d1fdb39a3e9c92dd0ac365cb520ff633cb407fea5fad7cd75b4227e8f24",
-    "rust/cmqttd/tests/system_cgate_admin.rs": "33cc992ef9b77ffff33a2e8ff63ddf34399020e5626ce1a934a5226b03215d42",
+    "rust/cmqttd/tests/system_cgate_admin.rs": "1c17d7e598f3cc7cfa407e2585cb7dc40b6cfbe0fda6e91a4599275135818b47",
     "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json": "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e",
     "rust/testdata/fixtures/native_cgate_authorization_probe.json": "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0",
     "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
@@ -147,7 +147,7 @@
     "toolkit-cli/src/cbus_toolkit/simulator.py": "1626a046f5bd274b185bec1b11236f32a274abe06d41e87012655012dc58fec6",
     "toolkit-cli/tests/test_cgate_dbsetxml_unit_differential.py": "beb9ecd83694cb6386655b3425627a598e1c9aefc2cd306af96f2a1662621e5c",
     "toolkit-cli/tests/test_native_cgate_dbgetxml_framing_vm.py": "4029cc1f2ac0becc4850157738f44f8377eab25674549a08a4223794b2e296cd",
-    "toolkit-cli/tests/test_rust_cgate_interop.py": "f23bcb74459434fd12399ee6baf7f3cf2d041e0162a35dbba9197757e50790f8"
+    "toolkit-cli/tests/test_rust_cgate_interop.py": "d947069c5f0f3e2988d2cd23a87672365041a33fdd9cc13f63f826f96cdd1c3c"
   },
   "normalization": "generated Network and Interface OIDs only; all XML bytes otherwise exact",
   "xml_wire_boundary": "native and Rust 343/347/344 with LF-only declaration; raw rows retained",
