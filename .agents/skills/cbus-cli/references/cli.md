@@ -18,6 +18,19 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### Native database XML file workflow
+
+For a saved Group/eDLT project label or another supported database object, use
+`cbus-toolkit cgate --host HOST database get-xml PATH --project NAME --output
+new.xml`. It creates a new UTF-8 file and emits the exported document hash.
+Review a separate edited copy, then use `database set-xml PATH edited.xml
+--project NAME --expect-current-sha256 EXPORTED_HASH --readback`. The guard
+performs a fresh read before one native `DBSETXML` here-document; it is not an
+atomic compare-and-swap. Inspect the accepted receipt and the native-mapped
+readback, then explicitly `cgate project save NAME` on original C-Gate. The
+command does not program physical eDLT cache labels. See
+`toolkit-cli/docs/native-database-xml-files.md` for bounds and acceptance.
+
 ### CNI interface discovery
 
 Run `cbus-toolkit interface discover-cni` for the Python workflow or

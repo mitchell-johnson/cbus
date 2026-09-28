@@ -32,6 +32,28 @@ class NativeGrammarTests(unittest.TestCase):
             db.get("//TEST/254\nNOOP")
         self.assertEqual(self.client.commands, [])
 
+    def test_complete_xml_document_uses_one_here_document_and_rejects_bad_paths(self):
+        from cbus_toolkit.cgate import CGateResponse
+
+        class DocumentClient(CaptureClient):
+            def command_document(self, command, document):
+                self.commands.append((command, document))
+                return CGateResponse((), "301 OID=11111111-1111-4111-8111-111111111111", 301)
+
+        client = DocumentClient()
+        database = NativeDatabase(client)
+        xml = "<Group><OID>11111111-1111-4111-8111-111111111111</OID></Group>"
+        reply = database.set_xml("//TEST/254/56/1", xml)
+        self.assertEqual(reply.code, 301)
+        self.assertEqual(client.commands, [("DBSETXML //TEST/254/56/1", xml)])
+        client.commands.clear()
+        for path in ("//TEST/254/56/1\r\nNOOP", "//TEST/254<bad>", ""):
+            with self.assertRaises(ValueError):
+                database.set_xml(path, xml)
+        with self.assertRaises(ValueError):
+            database.set_xml("//TEST/254/56/1", "")
+        self.assertEqual(client.commands, [])
+
     def test_address_and_project_name_validation(self):
         projects = NativeProjects(self.client)
         for name in ("NINECHARS", "../../x", "name two", ""):

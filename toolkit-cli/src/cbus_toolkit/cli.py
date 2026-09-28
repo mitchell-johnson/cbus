@@ -39,6 +39,13 @@ def _number(value):
         raise argparse.ArgumentTypeError("Use a decimal, 0x-prefixed or $-prefixed integer") from exc
 
 
+def _sha256_digest(value):
+    import re
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", value):
+        raise argparse.ArgumentTypeError("Use a 64-character SHA-256 hex digest")
+    return value.lower()
+
+
 def _byte(value):
     result = _number(value)
     if not 0 <= result <= 255:
@@ -1600,6 +1607,9 @@ def build_parser():
     for action in ("get", "get-xml", "set", "add", "copy", "delete", "validate", "rename-network"):
         p = dbop.add_parser(action)
         p.add_argument("path")
+        if action == "get-xml":
+            p.add_argument("--output", type=Path, help="Write raw native XML to a new local file")
+            p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
         if action == "set":
             p.add_argument("value")
         if action == "add":
@@ -1610,6 +1620,14 @@ def build_parser():
             p.add_argument("address", type=_byte)
         if action in ("add", "copy"):
             p.add_argument("name")
+    p = dbop.add_parser("set-xml", help="Submit a UTF-8 file as one native DBSETXML document")
+    p.add_argument("path", help="Database object or field path, including //PROJECT/... or !OID")
+    p.add_argument("file", type=Path, help="Local UTF-8 XML document, at most 16 MiB")
+    p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
+    p.add_argument("--expect-current-sha256", type=_sha256_digest,
+                   help="Refuse if a fresh DBGETXML differs from this exported document hash")
+    p.add_argument("--readback", action="store_true",
+                   help="Read the target after acceptance and report its native-mapped XML hash")
 
     unit = cgops.add_parser("unit", help="Edit a unit through a native C-Gate programming session")
     unit.add_argument("--lock-address", required=True, help="Network/unit to lock, e.g. //TEST/254")
@@ -2337,6 +2355,45 @@ def _cgate_timeout(args):
     return 10.0
 
 
+def _read_cgate_xml_file(path):
+    import hashlib
+
+    limit = 16 * 1024 * 1024
+    with path.open("rb") as source:
+        raw = source.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("C-Gate XML file exceeds 16 MiB")
+    if not raw:
+        raise ValueError("C-Gate XML file is empty")
+    try:
+        document = raw.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError("C-Gate XML file must be UTF-8") from error
+    if not document.strip():
+        raise ValueError("C-Gate XML file contains no document")
+    return document, hashlib.sha256(raw).hexdigest()
+
+
+def _write_cgate_xml_export(path, document):
+    import tempfile
+
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=path.parent, prefix="." + path.name + ".", delete=False
+        ) as output:
+            temporary = Path(output.name)
+            output.write(document)
+            output.flush()
+            os.fsync(output.fileno())
+        # Publish only if the caller's destination is still absent. A failed
+        # read or competing writer cannot leave a partial export behind.
+        os.link(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def _cgate(args):
     import ssl
     from .cgate import CGateClient
@@ -2393,6 +2450,13 @@ def _cgate(args):
         commands = [" ".join(tokens)]
     else:
         commands = []
+    database_xml_document = None
+    database_xml_sha256 = None
+    if args.action == "database" and args.remote_action == "set-xml":
+        database_xml_document, database_xml_sha256 = _read_cgate_xml_file(args.file)
+    if (args.action == "database" and args.remote_action == "get-xml"
+            and args.output is not None and args.output.exists()):
+        raise ValueError("XML export destination already exists")
     edlt_audit_expected = None
     if args.action == "edlt-label-audit" and args.baseline is not None:
         # Reject malformed or tampered evidence before opening a server
@@ -2403,7 +2467,8 @@ def _cgate(args):
     # Native C-Gate and cmqttd return the network document in one potentially
     # large 347 row after the short XML declaration. Leave room for the 4 MiB
     # document bound plus its status envelope.
-    connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" else {}
+    large_xml = args.action == "database" and args.remote_action in ("get-xml", "set-xml")
+    connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "edlt-labels":
@@ -2476,8 +2541,13 @@ def _cgate(args):
                                      xslt_file=getattr(args, "xslt_file", None),
                                      output_file=getattr(args, "output_file", None)), 0
         if args.action == "database":
+            import hashlib
+            from .programming import xml_text
             from .native import NativeDatabase
             db = NativeDatabase(client)
+            if args.remote_action in ("get-xml", "set-xml") and args.project is not None:
+                from .native import NativeProjects
+                NativeProjects(client).operation("use", args.project)
             if args.remote_action == "network-new":
                 result = db.create_network(args.project, args.address, args.name, args.interface_type, args.interface_address)
             elif args.remote_action == "unit-new":
@@ -2485,6 +2555,38 @@ def _cgate(args):
                                         catalog_number=args.catalog_number)
             elif args.remote_action in ("get", "get-xml"):
                 result = db.get(args.path, xml=args.remote_action == "get-xml")
+                if args.remote_action == "get-xml" and args.output is not None:
+                    raw = xml_text(result).encode("utf-8")
+                    _write_cgate_xml_export(args.output, raw)
+                    result = {"format": "cbus-cgate-dbgetxml-export-v1", "path": args.path,
+                              "file": str(args.output), "bytes": len(raw),
+                              "sha256": hashlib.sha256(raw).hexdigest(),
+                              "response": result.final}
+            elif args.remote_action == "set-xml":
+                before_sha256 = None
+                if args.expect_current_sha256 is not None:
+                    before = xml_text(db.get(args.path, xml=True)).encode("utf-8")
+                    before_sha256 = hashlib.sha256(before).hexdigest()
+                    if before_sha256 != args.expect_current_sha256:
+                        raise ValueError(
+                            "Current C-Gate XML SHA-256 differs from --expect-current-sha256: "
+                            + before_sha256
+                        )
+                response = db.set_xml(args.path, database_xml_document)
+                result = {"format": "cbus-cgate-dbsetxml-file-v1", "path": args.path,
+                          "file": str(args.file), "file_sha256": database_xml_sha256,
+                          "accepted": True, "response": response,
+                          "before_sha256": before_sha256,
+                          "project_save_requested": False}
+                if args.readback:
+                    try:
+                        after = xml_text(db.get(args.path, xml=True)).encode("utf-8")
+                    except RuntimeError as error:
+                        result["readback"] = {"retrieved": False, "error": str(error)}
+                        return result, 1
+                    result["readback"] = {"retrieved": True,
+                                          "sha256": hashlib.sha256(after).hexdigest(),
+                                          "bytes": len(after)}
             elif args.remote_action == "set":
                 result = db.set(args.path, args.value)
             elif args.remote_action == "add":

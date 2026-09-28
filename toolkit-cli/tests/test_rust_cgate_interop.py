@@ -684,6 +684,80 @@ class RustInteropTests(unittest.TestCase):
         self.assertEqual(retained.findtext("OID"), issued_oid)
         self.assertEqual(retained.findtext("TagValue"), "Garage scene")
 
+    def test_public_cli_exports_and_replaces_complete_group_xml_file(self):
+        import hashlib
+        import sys
+        import tempfile
+        from xml.etree import ElementTree as ET
+
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import xml_text
+
+        self.client.command("PROJECT NEW XMLC")
+        self.client.command("DBCREATENET 254 Local Cni 127.0.0.1:1")
+        database = NativeDatabase(self.client)
+        network = xml_text(database.get("//XMLC/254", xml=True))
+        tree = (
+            "<Application><OID>33333333-3333-4333-8333-333333333333</OID>"
+            "<TagName>Lighting</TagName><Address>56</Address>"
+            "<Group><OID>44444444-4444-4444-8444-444444444444</OID>"
+            "<TagName>Garage</TagName><Address>1</Address></Group></Application>")
+        self.assertEqual(self.client.command_document(
+            "DBSETXML //XMLC/254",
+            network.replace("</Network>", tree + "</Network>")).code, 301)
+
+        def invoke(*arguments):
+            process = subprocess.run(
+                [sys.executable, "-m", "cbus_toolkit", "cgate", "--host", "127.0.0.1",
+                 "--port", str(self.port), "database", *map(str, arguments)],
+                text=True, capture_output=True, timeout=15,
+            )
+            return process.returncode, json.loads(process.stdout or process.stderr)
+
+        group_path = "//XMLC/254/56/1"
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory) / "group.xml"
+            status, export = invoke("get-xml", group_path, "--project", "XMLC",
+                                    "--output", original)
+            self.assertEqual(status, 0)
+            self.assertEqual(export["format"], "cbus-cgate-dbgetxml-export-v1")
+            baseline = original.read_bytes()
+            self.assertEqual(export["sha256"], hashlib.sha256(baseline).hexdigest())
+            self.assertEqual(ET.fromstring(baseline).tag, "Group")
+            status, refusal = invoke("get-xml", group_path, "--project", "XMLC",
+                                     "--output", original)
+            self.assertEqual(status, 1)
+            self.assertIn("already exists", refusal["error"])
+            self.assertEqual(original.read_bytes(), baseline)
+
+            label = ("<TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID>"
+                     "<TagType>TEXT</TagType><TagValue>Garage scene</TagValue>"
+                     "</TagDLT></TagsDLT>")
+            replacement = Path(directory) / "replacement.xml"
+            replacement.write_text(baseline.decode("utf-8").replace(
+                "</Group>", label + "</Group>"), encoding="utf-8")
+            status, applied = invoke(
+                "set-xml", group_path, replacement, "--project", "XMLC",
+                "--expect-current-sha256", export["sha256"], "--readback",
+            )
+            self.assertEqual(status, 0)
+            self.assertTrue(applied["accepted"])
+            self.assertEqual(applied["response"]["status"], 301)
+            self.assertTrue(applied["readback"]["retrieved"])
+            self.assertFalse(applied["project_save_requested"])
+            group = ET.fromstring(xml_text(database.get(group_path, xml=True)))
+            self.assertEqual(group.findtext("TagsDLT/TagDLT/TagValue"), "Garage scene")
+
+            status, refusal = invoke(
+                "set-xml", group_path, replacement, "--project", "XMLC",
+                "--expect-current-sha256", "0" * 64,
+            )
+            self.assertEqual(status, 1)
+            self.assertIn("SHA-256 differs", refusal["error"])
+            self.assertEqual(
+                xml_text(database.get(group_path, xml=True)).count("Garage scene"), 1
+            )
+
     def test_named_trigger_event_resolves_through_level_xml(self):
         # End-to-end tag resolution with production wrappers only: create
         # and initialize a level (the wrapper performs the native 301 +

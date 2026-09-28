@@ -78,6 +78,21 @@ cbus-toolkit cgate --host 192.168.1.20 --port 20023 project list
 
 Replace the example address and port with your server's values. Use `cbus-toolkit cgate --help` for project, network, database, unit, addressing, scene, and control commands. The transport supports verified TLS and client certificates. Advanced parameter workflows may require vendor unit specifications; those files are supplied separately.
 
+To edit a saved C-Gate object as XML, export it, review a separate edited file,
+then submit it with the export hash as a stale-document guard:
+
+```sh
+cbus-toolkit cgate --host 192.168.1.20 database get-xml \
+  //PROJECT/254/56/1 --project PROJECT --output group.xml
+cbus-toolkit cgate --host 192.168.1.20 database set-xml \
+  //PROJECT/254/56/1 edited-group.xml --project PROJECT \
+  --expect-current-sha256 SHA256_FROM_EXPORT --readback
+```
+
+This changes the server's database object; save the project separately on
+original C-Gate. The hash check is read-before-write, and native XML readback
+may differ from the submitted file. See the [XML file workflow](toolkit-cli/docs/native-database-xml-files.md).
+
 For an exact C-Gate command or a batch that must share one session, use:
 
 ```sh

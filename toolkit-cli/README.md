@@ -34,6 +34,13 @@ include the cached 44-byte `WidgetGroups` mapping. The audit distinguishes
 verified static configuration from transient network-wide label observations
 and unread device caches; see [the eDLT label acceptance workflow](docs/edlt-label-audit.md).
 
+To edit a saved database object as XML, `cgate database get-xml PATH
+--project NAME --output NEW.xml` writes a new native XML file and reports its
+SHA-256. `cgate database set-xml PATH EDITED.xml --project NAME
+--expect-current-sha256 HASH --readback` submits one complete document and
+reports the server's mapped readback without implicitly saving the project.
+See the [native XML file workflow and limits](docs/native-database-xml-files.md).
+
 Run the source, installed-wheel and interoperability gates below for results
 from the current revision. CI retains JUnit reports with the executed tests and
 provisioning skips; those reports are separate from the evidence-derived parity

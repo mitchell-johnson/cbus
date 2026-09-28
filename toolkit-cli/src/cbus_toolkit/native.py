@@ -96,6 +96,22 @@ class NativeDatabase:
     def get(self, path, *, xml=False):
         return _command(self.client, f"{'DBGETXML' if xml else 'DBGET'} {_token(path, 'database path')}")
 
+    def set_xml(self, path, document):
+        """Submit one complete native DBSETXML document without an implicit save.
+
+        The transport owns here-document framing and its ambiguity boundary.
+        C-Gate returns 200 for scalar XML and 301 for typed-object replacement.
+        """
+        path = _token(path, "database path")
+        if "<" in path or ">" in path:
+            raise ValueError("Database path cannot contain XML delimiters")
+        if not isinstance(document, str) or not document:
+            raise ValueError("Native XML document must be nonempty text")
+        response = self.client.command_document(f"DBSETXML {path}", document)
+        if getattr(response, "code", None) not in (200, 301):
+            raise RuntimeError("Native XML replacement did not complete: " + response.final)
+        return response
+
     def create_network(self, project, address, name, interface_type, interface_address):
         """Create all required network fields, then load its closed runtime model."""
         if interface_type.lower() not in ("serial", "cni", "bridge"):
