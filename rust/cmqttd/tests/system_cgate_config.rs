@@ -3,6 +3,7 @@
 
 mod util;
 
+use std::time::Duration;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::TcpStream,
@@ -100,7 +101,8 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         serde_json::json!([
             "command.show-responses",
             "command.show-time",
-            "event-millis"
+            "event-millis",
+            "heartbeat-time"
         ])
     );
 
@@ -441,6 +443,169 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     drop(enabled);
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
+}
+
+async fn next_heartbeat(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    native_wire: &str,
+) -> std::time::Instant {
+    tokio::time::timeout(Duration::from_secs(5), async {
+        loop {
+            let mut line = String::new();
+            assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+            let Some(body) = line.strip_prefix("#e# ") else {
+                continue;
+            };
+            let Some((timestamp, payload)) = body.trim_end().split_once(' ') else {
+                continue;
+            };
+            if payload != "700 cgate - Heartbeat." {
+                continue;
+            }
+            chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+            assert_eq!(native_wire, "#e# <timestamp> 700 cgate - Heartbeat.");
+            return std::time::Instant::now();
+        }
+    })
+    .await
+    .expect("native-shaped C-Gate heartbeat was not delivered")
+}
+
+async fn assert_no_heartbeat(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    interval: Duration,
+) {
+    let deadline = tokio::time::Instant::now() + interval;
+    loop {
+        let mut line = String::new();
+        match tokio::time::timeout_at(deadline, reader.read_line(&mut line)).await {
+            Err(_) => return,
+            Ok(Ok(0)) => panic!("C-Gate event connection closed"),
+            Ok(Ok(_)) => assert!(!line.contains(" 700 cgate - Heartbeat."), "{line}"),
+            Ok(Err(error)) => panic!("C-Gate event read failed: {error}"),
+        }
+    }
+}
+
+#[tokio::test]
+async fn heartbeat_time_uses_native_envelope_and_changes_only_on_restart() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_config_heartbeat.json"
+    ))
+    .unwrap();
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 3);
+    assert_eq!(cases[0]["before_set"]["count"], 0);
+    assert_eq!(cases[1]["startup_heartbeat_time"], "1");
+    assert_eq!(cases[2]["startup_heartbeat_time"], "2");
+    assert_eq!(cases[1]["set_reply"], "[set] 200 OK.");
+    assert_eq!(cases[1]["readback_reply"], "[get] 303 heartbeat-time=0");
+    let native_wire = cases[1]["before_set"]["normalized_wire"].as_str().unwrap();
+    assert_eq!(cases[2]["before_set"]["normalized_wire"], native_wire);
+
+    let state = cbus_test_support::proc::temp_path("cgate-heartbeat-config.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+    let first = start_with(options()).await;
+    wait_started(&first).await;
+    let (mut reader, mut writer) = connect(&first).await;
+    let (mut monitor, mut subscription) = connect(&first).await;
+    assert_eq!(
+        command(&mut monitor, &mut subscription, "event", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "one",
+            "CONFIG SET heartbeat-time 1"
+        )
+        .await,
+        ["200 OK."]
+    );
+    assert_no_heartbeat(&mut monitor, Duration::from_millis(1300)).await;
+    drop((reader, writer, monitor, subscription, first));
+
+    let mut second = start_with(options()).await;
+    wait_started(&second).await;
+    let (mut reader, mut writer) = connect(&second).await;
+    let (mut monitor, mut subscription) = connect(&second).await;
+    assert_eq!(
+        command(&mut monitor, &mut subscription, "event", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    let first_beat = next_heartbeat(&mut monitor, native_wire).await;
+    let second_beat = next_heartbeat(&mut monitor, native_wire).await;
+    assert!((0.6..1.5).contains(&second_beat.duration_since(first_beat).as_secs_f64()));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "two",
+            "CONFIG SET heartbeat-time 2"
+        )
+        .await,
+        ["200 OK."]
+    );
+    let next = next_heartbeat(&mut monitor, native_wire).await;
+    let next_after = next_heartbeat(&mut monitor, native_wire).await;
+    assert!((0.6..1.5).contains(&next_after.duration_since(next).as_secs_f64()));
+    let payload = "053800790149";
+    let before = second.pci.count_payload(payload);
+    second
+        .broker
+        .inject("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(
+        COMMAND_DRAIN,
+        "MQTT command during C-Gate heartbeat",
+        || second.pci.count_payload(payload) > before,
+    )
+    .await;
+    assert!(second.daemon.is_running());
+    drop((reader, writer, monitor, subscription, second));
+
+    let third = start_with(options()).await;
+    wait_started(&third).await;
+    let (mut reader, mut writer) = connect(&third).await;
+    let (mut monitor, mut subscription) = connect(&third).await;
+    assert_eq!(
+        command(&mut monitor, &mut subscription, "event", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    let first_beat = next_heartbeat(&mut monitor, native_wire).await;
+    let second_beat = next_heartbeat(&mut monitor, native_wire).await;
+    assert!((1.5..2.7).contains(&second_beat.duration_since(first_beat).as_secs_f64()));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "zero",
+            "CONFIG SET heartbeat-time 0"
+        )
+        .await,
+        ["200 OK."]
+    );
+    next_heartbeat(&mut monitor, native_wire).await;
+    drop((reader, writer, monitor, subscription, third));
+
+    let fourth = start_with(options()).await;
+    wait_started(&fourth).await;
+    let (mut monitor, mut subscription) = connect(&fourth).await;
+    assert_eq!(
+        command(&mut monitor, &mut subscription, "event", "EVENT e9s0c0").await,
+        ["200 OK."]
+    );
+    assert_no_heartbeat(&mut monitor, Duration::from_millis(2300)).await;
+    drop((monitor, subscription, fourth));
+    std::fs::remove_file(state).unwrap();
 }
 
 async fn assert_broadcast_event_precision(sys: &System, tag: &str, milliseconds: bool) {

@@ -684,6 +684,8 @@ pub struct Service {
     command_show_responses: bool,
     command_show_time: bool,
     event_millis: bool,
+    heartbeat_interval: Option<Duration>,
+    heartbeat_started: OnceLock<()>,
     pci: RwLock<Arc<PciClient>>,
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
@@ -1769,6 +1771,13 @@ impl Service {
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let event_millis = config_parameter("event-millis")
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
+        // Native heartbeat-time takes effect at startup. Bound the timer to
+        // one day so a malformed or extreme stored value cannot panic a
+        // listener or create a high-frequency event loop.
+        let heartbeat_interval = config_parameter("heartbeat-time")
+            .and_then(|parameter| config_global_value(&model, parameter).parse::<u64>().ok())
+            .filter(|seconds| (1..=86_400).contains(seconds))
+            .map(Duration::from_secs);
         let shutdown = broadcast::channel(8).0;
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
@@ -1776,6 +1785,8 @@ impl Service {
             command_show_responses,
             command_show_time,
             event_millis,
+            heartbeat_interval,
+            heartbeat_started: OnceLock::new(),
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
             pci_generation_gate: Mutex::new(()),
@@ -2815,7 +2826,8 @@ impl Service {
             capabilities["config_restart_effects"] = serde_json::json!([
                 "command.show-responses",
                 "command.show-time",
-                "event-millis"
+                "event-millis",
+                "heartbeat-time"
             ]);
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
@@ -13094,6 +13106,7 @@ impl Service {
 
     /// Run a bounded listener. The caller owns binding and task supervision.
     pub async fn serve(self: Arc<Self>, listener: TcpListener) -> io::Result<()> {
+        self.start_heartbeat();
         let slots = Arc::new(Semaphore::new(64));
         loop {
             let permit = slots
@@ -13141,6 +13154,7 @@ impl Service {
         tls: Arc<rustls::ServerConfig>,
         timeout: Duration,
     ) -> io::Result<()> {
+        self.start_heartbeat();
         let acceptor = tokio_rustls::TlsAcceptor::from(tls);
         let slots = Arc::new(Semaphore::new(64));
         loop {
@@ -13178,6 +13192,28 @@ impl Service {
         } else {
             now.format("%Y%m%d-%H%M%S").to_string()
         }
+    }
+
+    fn start_heartbeat(self: &Arc<Self>) {
+        let Some(interval) = self.heartbeat_interval else {
+            return;
+        };
+        // Plain TCP and TLS can share one Service. Start only one timer, and
+        // keep no strong reference that would prevent daemon shutdown.
+        if self.heartbeat_started.set(()).is_err() {
+            return;
+        }
+        let service = Arc::downgrade(self);
+        tokio::spawn(async move {
+            loop {
+                tokio::time::sleep(interval).await;
+                let Some(service) = service.upgrade() else {
+                    break;
+                };
+                let event = format!("#e# {} 700 cgate - Heartbeat.", service.event_timestamp());
+                let _ = service.events.send(event);
+            }
+        });
     }
 
     fn event_with_startup_precision(&self, event: String) -> String {

@@ -1541,8 +1541,13 @@ and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
 time fields. `EVENT` and its `EVENTS` alias default to `e0s0c0` on a new cmqttd
 connection. `QUIT` and `EXIT` flush `204 Closing connection.` before closing the
 stream, even when extra words follow the verb. These operations are volatile
-and perform no PCI or persistent database I/O. Both Rust servers include a
-native-shaped internal `cmd1` Console row in `SESSION_ID ALL`; it is a
+and perform no PCI or persistent database I/O. The global
+`heartbeat-time` CONFIG value is sampled at listener startup: a positive
+whole-second value up to one day emits native-shaped
+`700 cgate - Heartbeat.` events, and zero disables them. SET/GET changes
+readback immediately while the running cadence persists until restart; the
+owned native capture is `native_cgate_config_heartbeat.json`. Both Rust servers
+include a native-shaped internal `cmd1` Console row in `SESSION_ID ALL`; it is a
 compatibility row in cmqttd, which has no interactive console.
 For the captured loopback `SESSION_ID` profile, use the
 [nine-case differential runner](../../../../toolkit-cli/docs/cgate-session-differential.md).

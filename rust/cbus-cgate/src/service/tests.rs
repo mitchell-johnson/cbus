@@ -16646,7 +16646,8 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
         serde_json::json!([
             "command.show-responses",
             "command.show-time",
-            "event-millis"
+            "event-millis",
+            "heartbeat-time"
         ])
     );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
@@ -16670,6 +16671,60 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             .await
             .final_text,
         "303 sync-time=7"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_heartbeat_time_is_snapshot_at_start_and_bounded() {
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let first = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(first.heartbeat_interval, None);
+    let mut client = ClientState::default();
+    assert_eq!(
+        first
+            .handle(&mut client, "[set] CONFIG SET heartbeat-time 1")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(first.heartbeat_interval, None);
+    drop(first);
+
+    let (pci_client, _remote) = pci();
+    let second = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(second.heartbeat_interval, Some(Duration::from_secs(1)));
+    assert_eq!(
+        second
+            .handle(&mut client, "[unset] CONFIG SET heartbeat-time 0")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(second.heartbeat_interval, Some(Duration::from_secs(1)));
+    drop(second);
+
+    let (pci_client, _remote) = pci();
+    let third = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(third.heartbeat_interval, None);
+    assert_eq!(
+        third
+            .handle(&mut client, "[large] CONFIG SET heartbeat-time 86401")
+            .await
+            .status,
+        200
+    );
+    drop(third);
+    let (pci_client, _remote) = pci();
+    let fourth = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(fourth.heartbeat_interval, None);
+    assert_eq!(
+        fourth
+            .handle(&mut client, "[read] CONFIG GET heartbeat-time")
+            .await
+            .final_text,
+        "303 heartbeat-time=86401"
     );
     std::fs::remove_file(path).unwrap();
 }

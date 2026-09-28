@@ -1,0 +1,72 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "environment": "owned Java 11 child; six verified IPv4 loopback listeners; disposable work directory; no C-Bus endpoint"
+  },
+  "scope": "Valid startup values 0, 1 and 2 seconds; one same-process SET 0 per start; timestamp and child session identity normalized",
+  "cases": [
+    {
+      "startup_heartbeat_time": "0",
+      "subscription_reply": "[event] 200 OK.",
+      "before_set": {
+        "count": 0,
+        "normalized_wire": null,
+        "spacings_seconds": []
+      },
+      "set_reply": "[set] 200 OK.",
+      "readback_reply": "[get] 303 heartbeat-time=0",
+      "after_set": {
+        "count": 0,
+        "normalized_wire": null,
+        "spacings_seconds": []
+      },
+      "owned_child_cleanup_complete": true
+    },
+    {
+      "startup_heartbeat_time": "1",
+      "subscription_reply": "[event] 200 OK.",
+      "before_set": {
+        "count": 4,
+        "normalized_wire": "#e# <timestamp> 700 cgate - Heartbeat.",
+        "spacings_seconds": [
+          1.001,
+          1.007,
+          1.003
+        ]
+      },
+      "set_reply": "[set] 200 OK.",
+      "readback_reply": "[get] 303 heartbeat-time=0",
+      "after_set": {
+        "count": 2,
+        "normalized_wire": "#e# <timestamp> 700 cgate - Heartbeat.",
+        "spacings_seconds": [
+          1.01
+        ]
+      },
+      "owned_child_cleanup_complete": true
+    },
+    {
+      "startup_heartbeat_time": "2",
+      "subscription_reply": "[event] 200 OK.",
+      "before_set": {
+        "count": 2,
+        "normalized_wire": "#e# <timestamp> 700 cgate - Heartbeat.",
+        "spacings_seconds": [
+          2.011
+        ]
+      },
+      "set_reply": "[set] 200 OK.",
+      "readback_reply": "[get] 303 heartbeat-time=0",
+      "after_set": {
+        "count": 2,
+        "normalized_wire": "#e# <timestamp> 700 cgate - Heartbeat.",
+        "spacings_seconds": [
+          2.01
+        ]
+      },
+      "owned_child_cleanup_complete": true
+    }
+  ]
+}
