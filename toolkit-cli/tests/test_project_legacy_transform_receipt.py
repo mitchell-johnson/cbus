@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / "research/fixtures/project-legacy-transform-native-receipt.json"
-RECEIPT_SHA256 = "7c9fcd76480604b0a0209f4548b002170964a5d46bb302496eecc8a4e592f85b"
+RECEIPT_SHA256 = "693e41cda7ab41759164ee72be71fd67aabdbe47b1591ac0f1da490b7bbef148"
 SOURCES = {
     "portable_module_sha256": "src/cbus_toolkit/project_legacy_transform.py",
     "cli_module_sha256": "src/cbus_toolkit/project_legacy_transform_cli.py",

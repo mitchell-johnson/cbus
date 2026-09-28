@@ -56,18 +56,27 @@ class NativeProjects:
     def directory(self):
         return _command(self.client, "PROJECT DIR")
 
-    def operation(self, action, name, other=None, *, test=False):
+    def operation(self, action, name, other=None, *, test=False,
+                  xslt_file=None, output_file=None):
         action = action.lower()
         if type(test) is not bool or test and action != "transform":
             raise ValueError("--test is supported only for TRANSFORM PROJECT")
+        if action != "transform" and (xslt_file is not None or output_file is not None):
+            raise ValueError("XSLT and output-file options are supported only for TRANSFORM PROJECT")
         if action in ("new", "use", "load", "save", "close", "delete", "repair"):
             if other is not None:
                 raise ValueError(f"PROJECT {action.upper()} takes one project name")
             command = f"PROJECT {action.upper()} {_project(name)}"
         elif action == "transform":
             if other is not None:
-                raise ValueError("TRANSFORM PROJECT accepts one project name in this workflow")
+                raise ValueError("TRANSFORM PROJECT uses named stylesheet/output options")
+            if output_file is not None and xslt_file is None:
+                raise ValueError("--output-file requires --xslt-file")
             command = f"TRANSFORM PROJECT {'--test ' if test else ''}{_project(name)}"
+            if xslt_file is not None:
+                command += f" {_token(xslt_file, 'server-side XSLT file')}"
+            if output_file is not None:
+                command += f" {_token(output_file, 'server-side output file')}"
         elif action in ("copy", "rename"):
             command = f"PROJECT {action.upper()} {_project(name)} {_project(other)}"
         elif action in ("archive", "restore"):

@@ -517,8 +517,13 @@ and `.db`. [Portable XML repair](docs/project-repair.md) is available as
 The source remains unchanged. The original XML repository supports
 `cgate project repair NAME`; the SQLite repository rejects that native command.
 `cgate repositories` lists observed repositories without changing the server's
-selection. Repaired legacy DBVersion2.2 XML can use the bounded offline
+selection. Repaired legacy DBVersion 2, 2.1 or 2.2 XML can use the bounded offline
 `project transform-legacy repaired.xml --output converted/PROJECT.xml` step;
+the 2 and 2.1 path requires no units or PP elements. The default native
+`cgate project transform NAME` runs the original multi-step stylesheet chain
+for more complex projects in an explicitly selected XML repository;
+`--xslt-file` and `--output-file` expose the native explicit path for a
+pre-existing writable server-side output file, which is overwritten;
 see its [native conversion and readback evidence](docs/project-legacy-transform.md).
 The combined repair checkpoint passes 31 tests on both supported Python versions,
 including fresh original-code comparisons, native loading and CLI file handling.

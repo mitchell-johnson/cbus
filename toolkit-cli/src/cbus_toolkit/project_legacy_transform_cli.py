@@ -12,7 +12,7 @@ from .project_repair import DEFAULT_MAX_BYTES
 
 def options(commands):
     parser = commands.add_parser(
-        "transform-legacy", help="Convert a repaired DBVersion 2.2 XML file to 2.3 in a new file"
+        "transform-legacy", help="Convert a bounded repaired DBVersion 2, 2.1 or 2.2 XML file to 2.3 in a new file"
     )
     parser.add_argument("file", type=Path)
     parser.add_argument("--output", type=Path, help="New output path; existing files are never replaced")

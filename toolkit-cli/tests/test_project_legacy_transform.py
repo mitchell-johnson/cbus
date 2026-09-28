@@ -67,7 +67,7 @@ def candidates():
 
 
 class LegacyTransformTests(unittest.TestCase):
-    def test_typed_remote_transform_forwards_only_the_observed_command(self):
+    def test_typed_remote_transform_forwards_observed_default_and_custom_forms(self):
         class RecordingClient:
             def __init__(self):
                 self.commands = []
@@ -80,14 +80,30 @@ class LegacyTransformTests(unittest.TestCase):
         project = NativeProjects(client)
         project.operation("transform", "RPMAL", test=True)
         project.operation("transform", "RPMAL")
+        project.operation("transform", "RPMAL", test=True,
+                          xslt_file="transform/v22tov23.xslt", output_file="/srv/cgate/RPMAL_OUT.xml")
+        project.operation("transform", "RPMAL", xslt_file="transform/v22tov23.xslt")
         self.assertEqual(client.commands,
-                         ["TRANSFORM PROJECT --test RPMAL", "TRANSFORM PROJECT RPMAL"])
+                         ["TRANSFORM PROJECT --test RPMAL", "TRANSFORM PROJECT RPMAL",
+                          "TRANSFORM PROJECT --test RPMAL transform/v22tov23.xslt /srv/cgate/RPMAL_OUT.xml",
+                          "TRANSFORM PROJECT RPMAL transform/v22tov23.xslt"])
         with self.assertRaises(ValueError):
             project.operation("transform", "bad name")
         with self.assertRaises(ValueError):
             project.operation("repair", "RPMAL", test=True)
+        with self.assertRaises(ValueError):
+            project.operation("transform", "RPMAL", output_file="/srv/cgate/OUT.xml")
+        with self.assertRaises(ValueError):
+            project.operation("transform", "RPMAL", xslt_file="evil\nPROJECT DELETE RPMAL")
+        with self.assertRaises(ValueError):
+            project.operation("repair", "RPMAL", xslt_file="transform/v22tov23.xslt")
         parsed = build_parser().parse_args(["cgate", "project", "transform", "RPMAL", "--test"])
         self.assertEqual((parsed.remote_action, parsed.name, parsed.test), ("transform", "RPMAL", True))
+        parsed = build_parser().parse_args(["cgate", "project", "transform", "RPMAL",
+                                            "--xslt-file", "transform/v22tov23.xslt",
+                                            "--output-file", "/srv/cgate/RPMAL_OUT.xml"])
+        self.assertEqual((parsed.xslt_file, parsed.output_file),
+                         ("transform/v22tov23.xslt", "/srv/cgate/RPMAL_OUT.xml"))
 
     def test_four_source_bound_outputs_match_original_bytes(self):
         for name, _, source in candidates():
@@ -99,6 +115,48 @@ class LegacyTransformTests(unittest.TestCase):
                                  source.replace(b"<DBVersion>2.2</DBVersion>", b"<DBVersion>2.3</DBVersion>")[:-1])
                 self.assertEqual(result.project_address, "RPMAL" if name == "RPMAL" else None)
                 self.assertFalse(result.as_dict()["native_load_verified"])
+
+    def test_earlier_unitless_versions_have_exact_bounded_conversion(self):
+        for original, _, repaired in candidates():
+            for version in ("2", "2.1"):
+                with self.subTest(original=original, version=version):
+                    source = repaired.replace(
+                        b"<DBVersion>2.2</DBVersion>", f"<DBVersion>{version}</DBVersion>".encode())
+                    converted = transform_repaired_legacy_project(source)
+                    self.assertEqual(converted.source_db_version, version)
+                    self.assertEqual(converted.as_dict()["source_db_version"], version)
+                    self.assertEqual(converted.as_dict()["output_sha256"], NATIVE_OUTPUT_SHA[original])
+                    self.assertEqual(converted.transformed_xml,
+                                     source.replace(f"<DBVersion>{version}</DBVersion>".encode(),
+                                                    b"<DBVersion>2.3</DBVersion>")[:-1])
+
+    def test_earlier_versions_reject_unit_and_programming_elements(self):
+        _, _, repaired = next(candidates())
+        for version in ("2", "2.1"):
+            source = repaired.replace(b"<DBVersion>2.2</DBVersion>",
+                                      f"<DBVersion>{version}</DBVersion>".encode())
+            for insert in (b"<Unit><UnitType>KEYBL5</UnitType></Unit>",
+                           b'<PP Name="Remote3Identity" Value="0xff"/>',
+                           b'<cis:Unit xmlns:cis="urn:example"/>'):
+                with self.subTest(version=version, insert=insert):
+                    candidate = source.replace(b"<Project>", b"<Project>" + insert, 1)
+                    with self.assertRaisesRegex(LegacyProjectTransformError, "native XSLT conversion"):
+                        transform_repaired_legacy_project(candidate)
+
+    def test_earlier_version_cli_is_exclusive_and_preserves_source(self):
+        _, _, repaired = next(candidates())
+        source = repaired.replace(b"<DBVersion>2.2</DBVersion>", b"<DBVersion>2.1</DBVersion>")
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory) / "repaired.xml"
+            output = Path(directory) / "converted.xml"
+            original.write_bytes(source)
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                code = main(["project", "transform-legacy", str(original), "--output", str(output)])
+            self.assertEqual(code, 0, stderr.getvalue())
+            self.assertEqual(json.loads(stdout.getvalue())["transform"]["source_db_version"], "2.1")
+            self.assertEqual(output.read_bytes(), transform_repaired_legacy_project(source).transformed_xml)
+            self.assertEqual(original.read_bytes(), source)
 
     def test_cli_dry_run_and_exclusive_output_preserve_source(self):
         _, _, source = next(candidates())

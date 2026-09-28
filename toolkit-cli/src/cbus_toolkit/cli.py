@@ -1578,6 +1578,8 @@ def build_parser():
             p.add_argument("name")
         if action == "transform":
             p.add_argument("--test", action="store_true", help="Show native plan (original C-Gate may create a .xml.0 backup)")
+            p.add_argument("--xslt-file", help="Server-side stylesheet path; original C-Gate resolves it from its working directory")
+            p.add_argument("--output-file", help="Server-side output file, which must already exist and may be overwritten")
         if action in ("copy", "rename", "archive", "restore"):
             p.add_argument("other", help="New project name, or server-side archive path")
     database = cgops.add_parser("database", help="Edit the native project tree using C-Gate business rules")
@@ -2470,7 +2472,9 @@ def _cgate(args):
             if args.remote_action in ("list", "directory"):
                 return getattr(manager, args.remote_action)(), 0
             return manager.operation(args.remote_action, args.name, getattr(args, "other", None),
-                                     test=getattr(args, "test", False)), 0
+                                     test=getattr(args, "test", False),
+                                     xslt_file=getattr(args, "xslt_file", None),
+                                     output_file=getattr(args, "output_file", None)), 0
         if args.action == "database":
             from .native import NativeDatabase
             db = NativeDatabase(client)

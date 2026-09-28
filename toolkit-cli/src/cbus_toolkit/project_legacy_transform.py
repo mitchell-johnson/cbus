@@ -1,8 +1,9 @@
-"""Bounded 2.2-to-2.3 conversion of Python-repaired legacy project XML.
+"""Bounded 2/2.1/2.2-to-2.3 conversion of Python-repaired legacy XML.
 
-The original C-Gate v22tov23.xslt is an identity transform except for the
-unnamespaced DBVersion element. The byte operation below is intentionally
-limited to the generated repair envelope observed in native acceptance.
+The original C-Gate's three migration stylesheets share the DBVersion update.
+The earlier two also edit unit parameters, so their portable byte operation is
+restricted to repaired projects with no Unit or PP elements. Every admitted
+version retains the generated repair envelope observed in native acceptance.
 """
 from __future__ import annotations
 
@@ -14,8 +15,12 @@ from xml.dom import Node
 from .project_repair import DEFAULT_MAX_BYTES, ProjectRepairError, _named, _parse, _string
 
 
-_VERSION_22 = b"<DBVersion>2.2</DBVersion>"
 _VERSION_23 = b"<DBVersion>2.3</DBVersion>"
+_SOURCE_VERSIONS = {
+    "2": b"<DBVersion>2</DBVersion>",
+    "2.1": b"<DBVersion>2.1</DBVersion>",
+    "2.2": b"<DBVersion>2.2</DBVersion>",
+}
 _START = b'<?xml version="1.0" encoding="utf-8"?><Installation>'
 _END = b"</Installation>\n"
 _PROJECT_NAME = re.compile(r"[A-Z][A-Z0-9_]{0,7}\Z")
@@ -30,13 +35,14 @@ class LegacyProjectTransformResult:
     transformed_xml: bytes
     source_sha256: str
     project_address: str | None
+    source_db_version: str
 
     def as_dict(self) -> dict:
         return {
             "source_sha256": self.source_sha256,
             "output_sha256": sha256(self.transformed_xml).hexdigest(),
             "output_bytes": len(self.transformed_xml),
-            "source_db_version": "2.2", "output_db_version": "2.3",
+            "source_db_version": self.source_db_version, "output_db_version": "2.3",
             "project_address": self.project_address,
             "native_load_verified": False, "physical_io_attempted": False,
             "source_modified": False,
@@ -48,9 +54,11 @@ def transform_repaired_legacy_project(
 ) -> LegacyProjectTransformResult:
     """Convert one canonical repaired Installation while preserving other bytes.
 
-    The four native cases underlying this subset use a single literal version
-    node and a final LF. Other encodings, DTDs, alternate version spelling and
-    arbitrary project XML require separate evidence and are rejected here.
+    The native cases underlying this subset use a single literal version node
+    and a final LF. Earlier versions are admitted only with no unit/programming
+    elements because C-Gate's earlier XSLT stages can change them. Other
+    encodings, DTDs, alternate version spelling and arbitrary project XML
+    require separate evidence and are rejected here.
     """
     if type(max_bytes) is not int or not 1 <= max_bytes <= 64 * 1024 * 1024:
         raise ValueError("max_bytes must be an integer from 1 to 67108864")
@@ -62,8 +70,12 @@ def transform_repaired_legacy_project(
         raise LegacyProjectTransformError("Expected the UTF-8 Python-repaired Installation envelope with final LF")
     if b"<!DOCTYPE" in data or b"<!ENTITY" in data:
         raise LegacyProjectTransformError("DTD-bearing XML is outside the legacy conversion subset")
-    if data.count(_VERSION_22) != 1:
-        raise LegacyProjectTransformError("Expected one literal DBVersion 2.2 element")
+    candidates = [version for version, literal in _SOURCE_VERSIONS.items()
+                  if data.count(literal) == 1]
+    if len(candidates) != 1:
+        raise LegacyProjectTransformError("Expected one literal DBVersion 2, 2.1 or 2.2 element")
+    source_db_version = candidates[0]
+    version_literal = _SOURCE_VERSIONS[source_db_version]
     try:
         data.decode("utf-8", "strict")
         document = _parse(data, "legacy-transform", max_bytes, 100_000, 128)
@@ -77,8 +89,14 @@ def transform_repaired_legacy_project(
         if (len(versions) != 1 or versions[0].parentNode is not root or
                 len(versions[0].childNodes) != 1 or
                 versions[0].firstChild.nodeType != Node.TEXT_NODE or
-                versions[0].firstChild.data != "2.2"):
-            raise LegacyProjectTransformError("Expected one direct DBVersion 2.2 element")
+                versions[0].firstChild.data != source_db_version):
+            raise LegacyProjectTransformError("Expected one direct DBVersion element with the selected source version")
+        if source_db_version in ("2", "2.1") and any(
+            node.tagName.rsplit(":", 1)[-1] in ("Unit", "PP")
+            for node in document.getElementsByTagName("*")
+        ):
+            raise LegacyProjectTransformError(
+                "DBVersion 2/2.1 projects with Unit or PP elements require native XSLT conversion")
         projects = [node for node in root.childNodes if _named(node, "Project")]
         if len(projects) != 1:
             raise LegacyProjectTransformError("Expected exactly one direct Project element")
@@ -90,7 +108,7 @@ def transform_repaired_legacy_project(
             raise LegacyProjectTransformError("Project Address is outside the verified name domain")
     finally:
         document.unlink()
-    output = data.replace(_VERSION_22, _VERSION_23, 1)[:-1]
+    output = data.replace(version_literal, _VERSION_23, 1)[:-1]
     try:
         changed = _parse(output, "legacy-transform-verify", max_bytes, 100_000, 128)
     except ProjectRepairError as error:
@@ -101,4 +119,4 @@ def transform_repaired_legacy_project(
             raise LegacyProjectTransformError("Conversion did not update the root database version")
     finally:
         changed.unlink()
-    return LegacyProjectTransformResult(output, sha256(data).hexdigest(), address)
+    return LegacyProjectTransformResult(output, sha256(data).hexdigest(), address, source_db_version)

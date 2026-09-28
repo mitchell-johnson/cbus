@@ -42,15 +42,20 @@ comparisons; see `toolkit-cli/docs/project-repair.md` for the exact encoding
 behavior. The returned `native_load_verified=false` is intentional: a successful
 portable repair does not establish native project loadability.
 
-When a repaired XML `Installation` still has DBVersion 2.2, use
+When a repaired XML `Installation` still has DBVersion 2, 2.1 or 2.2, use
 `project transform-legacy REPAIRED.xml --dry-run` to validate the bounded
-conversion, then `--output NEW.xml` to write a new file exclusively. Four
-generated repairs match original C-Gate transform bytes and load/read back;
-other projects still require their own native observation. See
+conversion, then `--output NEW.xml` to write a new file exclusively. The 2
+and 2.1 portable cases require a unitless, PP-free repaired envelope because
+the original earlier stylesheets can alter those elements. Ten generated
+repairs across the three source versions match original C-Gate transform bytes,
+and the native-staged cases load/read back; other projects still require their
+own native observation. See
 `toolkit-cli/docs/project-legacy-transform.md`. For an explicitly selected
 original XML repository, `cgate project transform NAME [--test]` forwards the
-two captured native forms. The native `--test` can create a `.xml.0` backup on
-the server, unlike the offline dry-run.
+default native migration. `--xslt-file SERVER_PATH --output-file SERVER_PATH`
+selects the captured explicit native form; its output must be a pre-existing
+writable file on the server and is overwritten. The native default `--test`
+can create a `.xml.0` backup on the server, unlike the offline dry-run.
 
 For `serial-address apply`, the Toolkit CLI uses a nonblocking host-local advisory
 lease for the canonical numeric-IP endpoint during fresh preconditions, the
@@ -229,7 +234,9 @@ after the first read. Check the output and its `native_load_verified: false`
 receipt before any separate native load. See
 `toolkit-cli/docs/project-repair.md` for admitted cases and failure bounds.
 Use `project transform-legacy SOURCE --output NEWFILE` only for the documented
-DBVersion 2.2 repair envelope; it preserves SOURCE and rejects existing output.
+DBVersion 2/2.1/2.2 repair envelope; it preserves SOURCE and rejects existing
+output. Earlier-version projects containing units or PP data require the
+native XSLT path.
 
 ## C-Gate client
 

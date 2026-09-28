@@ -12,11 +12,11 @@
       "xml11": "ac0ce71275e85dec2b6f14a075d1e25b3b4142971e91239ad261f1918bcfe75f"
     },
     "test_sha256": "59172bba8c9ecb555794ebef67e6bb8a2620742e33bbf452281cf3d89163a983",
-    "portable_test_sha256": "ce5b23e18be872df0fd8901df9272b517ab4e3b31c7b01261985755eda201b4f",
-    "portable_module_sha256": "d5ce1b29b9473f1c81c694fda59b0c669819cd8fc86d485c5e3b758c16343ef7",
-    "cli_module_sha256": "1a727950e7fb472777ed7ac744d887cfcf1319bba54455904b9bda9006b9662f",
-    "native_module_sha256": "54da485b877aee14f51504020b6c6f960a75e753e4d082ce53fe57bcef03daf2",
-    "cli_dispatch_sha256": "d860eb13c831689f3d4a46b161abc2de7d6cdadcc8948030f283a68b102db387",
+    "portable_test_sha256": "4e9556ed3f2c994c01122c832a18afd14bd75a5d7bdbbce821215fd6b501eb40",
+    "portable_module_sha256": "0922360ae69d0358570a14ed9d8603e2ebf5fb1b2bca81790e44717aceeb4308",
+    "cli_module_sha256": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e",
+    "native_module_sha256": "81b1e60f2c751aa6de6f8414a1b9a01df7f8c2a671a2f9d3467f4f7ebf379ca7",
+    "cli_dispatch_sha256": "3b8e26c055ef69345d0b2992212f594df91612f3e4c066e302162625388f365c",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
   "help": [
@@ -132,9 +132,5 @@
     "cleanup_complete": true
   },
   "physical_networks_opened": false,
-  "scope": "Four generated repaired inputs; no arbitrary-project or Toolkit GUI parity claim",
-  "validation": {
-    "command": "PYTHONPATH=src:. CBUS_CGATE_JAVA=<pinned-java11> CBUS_LOCAL_CGATE_VENDOR=<pinned-original-app> CBUS_PROJECT_LEGACY_TRANSFORM_REPORT=<scratch-json> python3.13 -m unittest tests.test_project_legacy_transform tests.test_project_legacy_transform_native -v",
-    "result": "6 passed, 0 skipped, exit 0"
-  }
+  "scope": "Four generated repaired inputs; no arbitrary-project or Toolkit GUI parity claim"
 }
