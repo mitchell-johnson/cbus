@@ -162,6 +162,7 @@ authorization; `CMQTT CAPABILITIES` exposes the exact covered paths under
 `access_global_command_level_matrix: false`. The retained native role and
 TLS probes are in `rust/testdata/fixtures/native_cgate_authorization_probe.json`,
 `native_cgate_authorization_expansion_probe.json`, and
+`native_cgate_programming_authorization_probe.json`, alongside
 `native_cgate_tls_authorization_probe.json`. The expansion used absent
 objects or local commands on an owned loopback child with no C-Bus endpoint;
 its 420/non-420 thresholds do not establish authorization for later successful

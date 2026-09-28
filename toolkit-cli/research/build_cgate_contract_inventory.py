@@ -35,6 +35,14 @@ NATIVE_ROLE_SCRIPT_PATH = (
     REPOSITORY / "rust" / "cbus-cgate" / "research"
     / "native_authorization_matrix_expansion.py"
 )
+NATIVE_PROGRAMMING_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_programming_authorization_probe.json"
+)
+NATIVE_PROGRAMMING_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_programming_authorization_probe.py"
+)
 LOCAL_CGATE_HARNESS_PATH = ROOT / "research" / "local_cgate.py"
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
@@ -62,6 +70,7 @@ MANUAL_REF = "rust/cbus-cgate/src/manual.rs#APPLICATION_COMMANDS+MEDIA_COMMANDS"
 SERVICE_AUTH_REF = "rust/cbus-cgate/src/service.rs#requires_programming_auth"
 SERVICE_SESSION_REF = "rust/cbus-cgate/src/service.rs#Service::handle"
 ACCESS_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADDITIONAL_COMMANDS"
+ACCESS_PROGRAMMING_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_PROGRAMMING_COMMANDS"
 EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
 NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
@@ -69,6 +78,9 @@ NATIVE_SESSION_REF = (
 )
 NATIVE_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json"
+)
+NATIVE_PROGRAMMING_ROLE_REF = (
+    "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json"
 )
 NATIVE_CGATE_JAR_SHA256 = (
     "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
@@ -78,6 +90,9 @@ NATIVE_SESSION_EVIDENCE_SHA256 = (
 )
 NATIVE_ROLE_EVIDENCE_SHA256 = (
     "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e"
+)
+NATIVE_PROGRAMMING_ROLE_EVIDENCE_SHA256 = (
+    "cdcbb2507762c404c7ee2193893a3128c2250d35aedc15b98a4611a2ab7ade2f"
 )
 NATIVE_ROLE_LEVELS = (
     "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal", "Max"
@@ -537,19 +552,23 @@ def validate_native_session_observations() -> None:
         raise ValueError("Native C-Gate session acceptance source changed")
 
 
-def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dict]:
+def _native_role_fixture_observations(
+    inventory_paths: set[str], *, fixture_path: Path, fixture_digest: str,
+    fixture_format: str, script_path: Path, registry_marker: str,
+    expected_commands: int, label: str,
+) -> dict[str, dict]:
     """Bind one exact invocation per captured floor; retain incomplete scope.
 
     A lower-role 420 followed by a non-420 at the recorded floor establishes
     entry to a later parser/handler stage. It does not prove authorization
     after object resolution or a successful physical send.
     """
-    if digest(NATIVE_ROLE_PATH) != NATIVE_ROLE_EVIDENCE_SHA256:
-        raise ValueError("Native C-Gate role expansion source changed")
-    report = json.loads(NATIVE_ROLE_PATH.read_text(encoding="utf-8"))
+    if digest(fixture_path) != fixture_digest:
+        raise ValueError(f"Native C-Gate {label} source changed")
+    report = json.loads(fixture_path.read_text(encoding="utf-8"))
     oracle = report.get("oracle", {})
     if (
-        report.get("format") != "native-cgate-authorization-expansion-v1"
+        report.get("format") != fixture_format
         or oracle.get("version") != "3.4.0.2001"
         or oracle.get("jar_sha256") != NATIVE_CGATE_JAR_SHA256
         or any(
@@ -562,28 +581,27 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
             )
         )
         or "no C-Bus endpoint" not in oracle.get("transport", "")
-        or report.get("capture_script_sha256") != digest(NATIVE_ROLE_SCRIPT_PATH)
+        or report.get("capture_script_sha256") != digest(script_path)
         or report.get("local_cgate_harness_sha256") != digest(LOCAL_CGATE_HARNESS_PATH)
     ):
-        raise ValueError("Native C-Gate role expansion provenance changed")
+        raise ValueError(f"Native C-Gate {label} provenance changed")
 
     commands = report.get("commands")
     roles = report.get("roles")
     if (
         not isinstance(commands, list)
-        or len(commands) != 58
+        or len(commands) != expected_commands
         or any(not isinstance(command, str) or not command for command in commands)
         or len(commands) != len(set(commands))
         or not isinstance(roles, dict)
         or set(roles) != set(NATIVE_ROLE_LEVELS)
     ):
-        raise ValueError("Native C-Gate role expansion command/role set changed")
+        raise ValueError(f"Native C-Gate {label} command/role set changed")
 
     access_source = ACCESS_PATH.read_text(encoding="utf-8")
-    marker = "pub(crate) const NATIVE_PROBED_ADDITIONAL_COMMANDS"
-    if marker not in access_source:
+    if registry_marker not in access_source:
         raise ValueError("Native C-Gate role registry is missing")
-    start = access_source.index(marker)
+    start = access_source.index(registry_marker)
     end = access_source.find("];", start)
     if end < 0:
         raise ValueError("Native C-Gate role registry is incomplete")
@@ -607,7 +625,7 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
             or not isinstance(record.get("responses"), dict)
             or set(record["responses"]) != set(commands)
         ):
-            raise ValueError(f"Native C-Gate role expansion {level} session changed")
+            raise ValueError(f"Native C-Gate {label} {level} session changed")
 
     observations: dict[str, dict] = {}
     for path, minimum in registry:
@@ -640,12 +658,40 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
             "lower_access_status": 420,
             "at_floor_status": int(floor_reply[:3]),
             "observed_roles": len(NATIVE_ROLE_LEVELS),
-            "fixture_sha256": NATIVE_ROLE_EVIDENCE_SHA256,
+            "fixture_sha256": fixture_digest,
             "scope": "exact_invocation_only; no_later_object_or_physical_success_claim",
         }
     if len(observations) != len(commands):
-        raise ValueError("Native C-Gate role expansion mapping changed")
+        raise ValueError(f"Native C-Gate {label} mapping changed")
     return observations
+
+
+def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dict]:
+    """Combine both disjoint original role probes without resolving later checks."""
+    additional = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_ROLE_PATH,
+        fixture_digest=NATIVE_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-authorization-expansion-v1",
+        script_path=NATIVE_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_ADDITIONAL_COMMANDS",
+        expected_commands=58,
+        label="role expansion",
+    )
+    programming = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_PROGRAMMING_ROLE_PATH,
+        fixture_digest=NATIVE_PROGRAMMING_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-programming-authorization-v1",
+        script_path=NATIVE_PROGRAMMING_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_PROGRAMMING_COMMANDS",
+        expected_commands=40,
+        label="programming role",
+    )
+    overlap = set(additional) & set(programming)
+    if overlap:
+        raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
+    return additional | programming
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -894,12 +940,17 @@ def build_row(
             matrix_ref,
         )
     elif observed := native_roles.get(path):
+        role_ref, access_ref = (
+            (NATIVE_ROLE_REF, ACCESS_ROLE_REF)
+            if observed["fixture_sha256"] == NATIVE_ROLE_EVIDENCE_SHA256
+            else (NATIVE_PROGRAMMING_ROLE_REF, ACCESS_PROGRAMMING_ROLE_REF)
+        )
         handler_roles = unresolved(
             "One native handler-entry invocation and its lower-role denial are "
             "captured; other selectors, object-specific checks and successful "
             "physical delivery remain unverified.",
-            NATIVE_ROLE_REF,
-            ACCESS_ROLE_REF,
+            role_ref,
+            access_ref,
             SERVICE_SESSION_REF,
             known={"native_handler_entry": observed},
         )
@@ -1043,7 +1094,7 @@ def build() -> dict:
     return {
         "schema_version": 1,
         "target": "C-Gate 3.4.0.2001 command endpoint",
-        "inventory_version": "cgate-contracts-2026-09-28.1",
+        "inventory_version": "cgate-contracts-2026-09-28.2",
         "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
         "sources": {
             "capability_matrix": {"sha256": digest(MATRIX_PATH)},
@@ -1055,6 +1106,7 @@ def build() -> dict:
             "toolkit_surface": {"sha256": digest(SURFACE_PATH)},
             "native_session_acceptance": {"sha256": digest(NATIVE_SESSION_PATH)},
             "native_handler_role_expansion": {"sha256": digest(NATIVE_ROLE_PATH)},
+            "native_programming_handler_roles": {"sha256": digest(NATIVE_PROGRAMMING_ROLE_PATH)},
         },
         "counts": {
             "paths": len(contracts),

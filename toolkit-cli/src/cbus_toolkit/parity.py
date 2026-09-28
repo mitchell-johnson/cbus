@@ -386,7 +386,10 @@ def validate_cgate_contract_inventory(
             or not SHA256_RE.fullmatch(source["sha256"])
         ):
             raise ValueError(f"C-Gate contract source is invalid: {source_name!r}")
-    if not {"access_handler_registry", "native_handler_role_expansion"} <= set(sources):
+    if not {
+        "access_handler_registry", "native_handler_role_expansion",
+        "native_programming_handler_roles",
+    } <= set(sources):
         raise ValueError("C-Gate contract native handler role sources are missing")
     contracts = inventory.get("contracts")
     if not isinstance(contracts, list) or len(contracts) != 442:
@@ -441,10 +444,19 @@ def validate_cgate_contract_inventory(
         observation = roles_known.get("native_handler_entry")
         if observation is not None:
             native_role_observations += 1
+            matching_role_sources = [
+                source_name
+                for source_name, reference in (
+                    ("native_handler_role_expansion", "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json"),
+                    ("native_programming_handler_roles", "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json"),
+                )
+                if isinstance(observation, dict)
+                and observation.get("fixture_sha256") == sources[source_name]["sha256"]
+                and reference in roles_axis["source_refs"]
+            ]
             if (
                 roles_axis["status"] != "unresolved"
-                or "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json"
-                not in roles_axis["source_refs"]
+                or len(matching_role_sources) != 1
                 or not isinstance(observation, dict)
                 or set(observation)
                 != {
@@ -471,8 +483,6 @@ def validate_cgate_contract_inventory(
                 or not 100 <= observation["at_floor_status"] <= 599
                 or observation["at_floor_status"] == 420
                 or observation["observed_roles"] != 9
-                or observation["fixture_sha256"]
-                != sources["native_handler_role_expansion"]["sha256"]
                 or observation["scope"]
                 != "exact_invocation_only; no_later_object_or_physical_success_claim"
             ):
@@ -489,8 +499,8 @@ def validate_cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
-        "native_handler_role_observations": 58,
-        "native_handler_role_unresolved": 58,
+        "native_handler_role_observations": 98,
+        "native_handler_role_unresolved": 98,
     }
     if not isinstance(counts, dict) or any(
         counts.get(key) != value for key, value in expected_fixed.items()

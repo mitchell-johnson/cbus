@@ -56,8 +56,8 @@ changes no provisional source count, and supplies no physical cache readback.
   C-Gate paths.
 - `research/build_cgate_contract_inventory.py` derives that inventory from the
   Rust routing matrix, declarative application arities, endpoint authorization
-  policy, public-help syntax hashes and the sanitized native handler-role
-  expansion probe. It records unknown selector/state fields explicitly instead
+  policy, public-help syntax hashes and both sanitized native handler-role
+  probes. It records unknown selector/state fields explicitly instead
   of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
   deterministically from the committed documentation/executable surface
@@ -230,14 +230,16 @@ for all five TELEPHONY leaves as minimum `Program`, including
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
 authorization axis.
 
-The inventory also records 58 exact native handler-entry role probes, each
+The inventory also records 98 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
-sessions. Their pinned fixture is
-`rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json`.
+sessions. Their pinned fixtures are
+`rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json` (58)
+and `rust/testdata/fixtures/native_cgate_programming_authorization_probe.json`
+(40 PP, PROGRAMMER and DEPLOY_QUEUE leaves).
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks the fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 58 `handler_roles` subaxes remain
+emitting these known facts. All 98 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.

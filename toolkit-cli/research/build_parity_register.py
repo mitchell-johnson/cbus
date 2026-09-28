@@ -263,8 +263,8 @@ def cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
-        "native_handler_role_observations": 58,
-        "native_handler_role_unresolved": 58,
+        "native_handler_role_observations": 98,
+        "native_handler_role_unresolved": 98,
         "axis_status": {
             key: dict(sorted(value.items())) for key, value in axis_counts.items()
         },
