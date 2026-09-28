@@ -816,21 +816,33 @@ class ParityRegisterTests(unittest.TestCase):
         record["record_sha256"] = record_digest(record)
         parity.validate_evidence_bundle(evidence, artifact_root=ROOT)
 
-        with TemporaryDirectory() as folder:
-            root = Path(folder)
-            for artifact in record["artifacts"]:
-                destination = root / artifact["path"]
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes((ROOT / artifact["path"]).read_bytes())
-            report = json.loads(report_source.read_bytes())
-            report["cases"][0]["rust_normalized"] = ["300 sessionID=substituted"]
-            report_raw = (json.dumps(report, indent=2) + "\n").encode()
-            (root / report_relative).write_bytes(report_raw)
-            next(artifact for artifact in record["artifacts"]
-                 if artifact["path"] == report_relative)["sha256"] = sha256(report_raw).hexdigest()
-            record["record_sha256"] = record_digest(record)
-            with self.assertRaisesRegex(ValueError, "differential case evidence changed"):
-                parity.validate_evidence_bundle(evidence, artifact_root=root)
+        alterations = {
+            "normalized payload": lambda report: report["cases"][0].update(
+                rust_normalized=["300 sessionID=substituted"]
+            ),
+            "raw wire": lambda report: report["cases"][0].update(
+                rust_wire_reply=["[d00] 300 sessionID=cmd3\n"]
+            ),
+            "missing case": lambda report: report["cases"].pop(),
+        }
+        for label, alter in alterations.items():
+            with self.subTest(label=label), TemporaryDirectory() as folder:
+                current = json.loads(json.dumps(evidence))
+                current_record = current["records"][0]
+                root = Path(folder)
+                for artifact in current_record["artifacts"]:
+                    destination = root / artifact["path"]
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes((ROOT / artifact["path"]).read_bytes())
+                report = json.loads(report_source.read_bytes())
+                alter(report)
+                report_raw = (json.dumps(report, indent=2) + "\n").encode()
+                (root / report_relative).write_bytes(report_raw)
+                next(artifact for artifact in current_record["artifacts"]
+                     if artifact["path"] == report_relative)["sha256"] = sha256(report_raw).hexdigest()
+                current_record["record_sha256"] = record_digest(current_record)
+                with self.assertRaisesRegex(ValueError, "differential (case evidence changed|report is incomplete)"):
+                    parity.validate_evidence_bundle(current, artifact_root=root)
 
     def test_passed_evidence_requires_a_recognized_report_artifact(self):
         register, evidence, ledger, _ = fixture_documents()

@@ -138,6 +138,17 @@ CGATE_SESSION_PILOT_IDS = {
     "SESSION_ID ALL": "cgate-function:session-id-all",
     "SESSION_ID TAG": "cgate-function:session-id-tag",
 }
+CGATE_SESSION_CASES = (
+    ("session-query-a", "a", "SESSION_ID", "cgate-function:session-id-query"),
+    ("session-query-b", "b", "SESSION_ID", "cgate-function:session-id-query"),
+    ("session-all-initial", "a", "SESSION_ID ALL", "cgate-function:session-id-all"),
+    ("session-tag-initial", "a", "SESSION_ID TAG C-Bus   Toolkit test", "cgate-function:session-id-tag"),
+    ("session-all-tagged", "b", "SESSION_ID ALL", "cgate-function:session-id-all"),
+    ("session-tag-reassign", "a", "SESSION_ID TAG replacement", "cgate-function:session-id-tag"),
+    ("session-tag-missing", "a", "SESSION_ID TAG", "cgate-function:session-id-tag"),
+    ("session-query-invalid", "a", "SESSION_ID bogus", "cgate-function:session-id-query"),
+    ("session-all-trailing", "a", "SESSION_ID ALL ignored-by-native", "cgate-function:session-id-all"),
+)
 
 
 def cgate_path_obligation_id(path: str) -> str:
@@ -194,7 +205,9 @@ def parse_json_document(raw: str | bytes, *, context: str) -> dict[str, Any]:
     return value
 
 
-def _validate_execution_report(record: dict[str, Any], report: dict[str, Any]) -> None:
+def _validate_execution_report(
+    record: dict[str, Any], report: dict[str, Any], *, artifact_root: Path
+) -> None:
     """Bind a passed evidence claim to the cases in its verified report bytes.
 
     The producer-side generator validates the full native differential and its
@@ -237,7 +250,21 @@ def _validate_execution_report(record: dict[str, Any], report: dict[str, Any]) -
         if report_ids != set(record["test_ids"]) or not required.issubset(covered):
             raise ValueError(f"{evidence_id} report cases do not cover declared tests and dimensions")
     elif report_format == "cgate-session-differential-v2":
+        if "original_differential" not in record["dimensions"] or not isinstance(record.get("oracle"), dict):
+            raise ValueError(f"{evidence_id} differential report requires an oracle")
         native_capture = report.get("native_capture")
+        native_inputs = [
+            artifact for artifact in record["artifacts"]
+            if artifact["role"] == "input"
+            and artifact["sha256"] == record["oracle"]["artifact_sha256"]
+        ]
+        if len(native_inputs) != 1:
+            raise ValueError(f"{evidence_id} differential requires one native input")
+        native = parse_json_document(
+            (artifact_root / native_inputs[0]["path"]).read_bytes(),
+            context=f"{evidence_id} native oracle",
+        )
+        native_cases = native.get("cases")
         if (
             report.get("product") != "cmqttd"
             or report.get("failed") != 0
@@ -246,27 +273,45 @@ def _validate_execution_report(record: dict[str, Any], report: dict[str, Any]) -
             or report.get("normalization_errors") != []
             or report.get("executed") != len(cases)
             or report.get("passed") != len(cases)
+            or len(cases) != len(CGATE_SESSION_CASES)
             or report.get("obligation_ids") != sorted(record["obligation_ids"])
             or not isinstance(native_capture, dict)
             or native_capture.get("sha256") != record["oracle"]["artifact_sha256"]
+            or native_capture.get("path") != "toolkit-cli/" + native_inputs[0]["path"]
+            or native.get("format") != "cbus-cgate-session-native-acceptance-v1"
+            or native.get("passed") is not True
+            or native.get("vendor_jar_sha256") != report.get("vendor_jar_sha256")
+            or not isinstance(native_cases, list)
+            or len(native_cases) < len(CGATE_SESSION_CASES)
         ):
             raise ValueError(f"{evidence_id} differential report is incomplete or mismatched")
         prefix = "research/cgate_session_differential.py::"
         report_ids: set[str] = set()
         covered_ids: set[str] = set()
-        for case in cases:
+        for index, (case, spec) in enumerate(zip(cases, CGATE_SESSION_CASES)):
             if not isinstance(case, dict):
                 raise ValueError(f"{evidence_id} differential report has an invalid case")
             case_id = case.get("id")
             obligation_id = case.get("obligation_id")
+            native_case = native_cases[index]
+            reply = case.get("rust_reply")
+            wire = case.get("rust_wire_reply")
             if (
                 not isinstance(case_id, str) or not case_id
                 or case_id in report_ids
                 or obligation_id not in record["obligation_ids"]
+                or (case_id, case.get("connection"), case.get("command"), obligation_id) != spec
+                or not isinstance(native_case, dict)
+                or native_case.get("connection") != spec[1]
+                or native_case.get("command") != spec[2]
+                or native_case.get("status") != case.get("native_status")
                 or case.get("result") != "passed"
                 or case.get("client_tag_echoed") is not True
                 or case.get("native_status") != case.get("rust_status")
                 or case.get("native_normalized") != case.get("rust_normalized")
+                or not isinstance(reply, list) or not reply
+                or not all(isinstance(row, str) for row in reply)
+                or wire != [f"[d{index:02d}] {row}\r\n" for row in reply]
             ):
                 raise ValueError(f"{evidence_id} differential case evidence changed")
             report_ids.add(case_id)
@@ -711,7 +756,7 @@ def validate_evidence_bundle(
                 report = parse_json_document(
                     report_path.read_bytes(), context=f"{evidence_id} execution report"
                 )
-                _validate_execution_report(record, report)
+                _validate_execution_report(record, report, artifact_root=artifact_root)
         if "original_differential" in dimensions and oracle_digest not in input_digests:
             raise ValueError(f"{evidence_id} oracle digest requires a matching input artifact")
         skips = record.get("skips")
