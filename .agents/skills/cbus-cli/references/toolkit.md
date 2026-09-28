@@ -127,7 +127,13 @@ Owned Windows wheel checks passed both 40-value comparisons under guest-agent
 LocalSystem session 0 and then the logged-in user on `WinSta0\Default`
 session 1, each with scratch-key cleanup. See the
 [interactive receipt](../../../../toolkit-cli/research/experiments/2026-09-28/preference-interactive-repeat.json).
-The original GUI was not run in that same account.
+The pinned original GUI was then run twice in that account after snapshotting
+the fixed Toolkit keys. A missing `ShowProjectManager` value became `True`
+after the first startup and stayed `True` after the second; all fixed keys were
+restored or verified unchanged. See the
+[original GUI receipt](../../../../toolkit-cli/research/experiments/2026-09-28/preference-original-gui-same-user.json).
+This does not directly prove same-instance manager reads, lazy wrapper/culture
+behavior or logging/C-Gate effects.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
 once after a clean Boolean result. Keep the previous report, use a distinct fresh

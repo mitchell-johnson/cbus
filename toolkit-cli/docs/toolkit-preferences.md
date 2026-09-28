@@ -98,8 +98,16 @@ hash-pinned wheel and an owned Registry32 HKCU test subtree. All 14 checks
 passed, including both 40-value fixture comparisons, first default write,
 second direct read, independent fixed-key and state-file preservation, SID
 admission and scratch-key cleanup. The original Toolkit GUI was not run under
-that account, so its startup, lazy preference wrapper, culture and runtime
-effects remain separate acceptance work.
+that account in this CLI test. A later
+[same-user original GUI startup probe](../research/experiments/2026-09-28/preference-original-gui-same-user.json)
+ran the exact pinned Toolkit 1.18 executable twice after snapshotting the six
+fixed Registry32 Toolkit keys and the CLI state file. With
+`ShowProjectManager` removed after the snapshot, the original process left
+its stored value `True` after both launches. The original GUI processes were
+stopped at bounded times, then the keys and file were restored or verified
+unchanged. This supports one startup/default persistence comparison in the
+same user. It does not trace same-instance manager reads, the lazy wrapper,
+culture, rendering, logging or C-Gate effects.
 
 The adapter explicitly requests the 32-bit registry view. Reads retain the bytes returned by `RegQueryValueExW`. String writes require valid terminated UTF-16 before any key is opened, including two terminators for `REG_MULTI_SZ`. This follows the [Microsoft write contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw); existing malformed strings can still be observed through the raw adapter, as allowed by the [query contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryvalueexw).
 

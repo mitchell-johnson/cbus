@@ -1,0 +1,81 @@
+{
+  "admitted_inputs": {
+    "command_sha256": "264b1710a3e56a869cc4b3a79323546549310351274f097f9730fc25031c4895",
+    "launcher_result_raw_sha256": "5429f212496582c2b81a8f8567f7d6272b12d2082887d115155d009c998b280b",
+    "launcher_source": "research/WindowsInteractiveOwnedProcessLauncher.cs",
+    "launcher_source_sha256": "a46664c20ec8b17be3ea097b70a3d96659d4e2eaf7937e3f33b540084c338d7d",
+    "native_result_raw_sha256": "d3c06180c6a69d27908748685b0bf1217df1cafd0e4b665e3c4fc4193973ed22",
+    "original_gui_harness": "research/windows_preferences_original_gui_same_user.py",
+    "original_gui_harness_sha256": "c9a37b3d52e5b0208cd6248467ac597b9c5e8dd77a0eaeb38d2432cac5a21f8a",
+    "post_process_check_raw_sha256": "943b315e065238b7073b033f534ef954b6b6461fb3f03a3f5b8555b11bc4c0a2",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wheel_sha256": "dea2fcd631339671b13bdc9beebc82bf3eec0c9e7a5e0fe3878c936fc2c38382"
+  },
+  "base_revision": "0151a4eae84d5494a297a473effdae1888fedc17",
+  "format": "cbus-p9-02-original-gui-same-user-acceptance-v1",
+  "invalidation": [
+    "Different original executable or vendor manifest",
+    "Changed wheel, launcher or GUI harness",
+    "Different Windows user/session or registry state",
+    "Promotion from selected startup effect to full original GUI preference parity"
+  ],
+  "observations": {
+    "first_gui_alive_at_20_second_bound": true,
+    "first_gui_process_created": true,
+    "first_gui_show_project_manager_after": "True",
+    "interpretation": "With the user-hive ShowProjectManager value deliberately absent, original GUI startup left the stored value True after its first launch and it remained True after a second launch. This is selected startup/default persistence evidence, not an instrumented trace of the manager load method or in-memory first/second values.",
+    "original_gui_process_absent_after_bounded_stops": true,
+    "original_gui_rendering_or_lazy_wrapper_directly_observed": false,
+    "same_instance_second_read_directly_observed": false,
+    "second_gui_alive_at_10_second_bound": true,
+    "second_gui_process_created": true,
+    "second_gui_show_project_manager_after": "True"
+  },
+  "original_executable": {
+    "guest_manifest_sha256": "689931140e99a8366021073dd5980d2e43dbb61059eef0a488b69e8d856f69cc",
+    "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "staged_files": 25,
+    "staged_source_files_verified_before_copy": true,
+    "version": "1.18.0.2754"
+  },
+  "preparation": {
+    "show_project_manager_initially": "True",
+    "show_project_manager_removed_after_snapshot": true,
+    "six_fixed_registry32_keys_exported_before_launch": true,
+    "state_file_sha256": "05c62cb10302a182cb9eb72d508eb8cc4bbf56d40f9a0920ea464c225bdb6731",
+    "vendor_files_staged_in_disposable_guest_directory": true
+  },
+  "preservation": {
+    "all_fixed_hkcu_keys_restored_by_delete_then_import_and_tree_hash": true,
+    "all_fixed_hklm_keys_unchanged_by_tree_hash": true,
+    "cli_state_file_restored_if_needed": true,
+    "cli_state_file_unchanged": true,
+    "disposable_vendor_staging_removed": true,
+    "private_guest_registry_export_files_removed": true
+  },
+  "remaining": [
+    "The original GUI manager was not instrumented for direct first/second same-instance in-memory reads or lazy wrapper cache behavior.",
+    "Only the ShowProjectManager startup/default persistence case was selected; broader preference runtime effects, logging, C-Gate and cultures/providers remain open.",
+    "The two GUI processes were stopped at explicit bounds, not closed through full interactive GUI workflows."
+  ],
+  "scope": "Two bounded startups of pinned original Toolkit 1.18 GUI under the same active console user as the installed-wheel CLI acceptance. Fixed Registry32 keys and the CLI state file were snapshotted and restored; original binaries were copied into disposable guest staging.",
+  "status": "passed_bounded_original_gui_startup",
+  "user_context": {
+    "active_console_session_id": 1,
+    "desktop": "WinSta0/Default inherited from the launcher; original child desktop was not separately queried",
+    "launcher_primary_token_sid_hash_match": true,
+    "non_system": true,
+    "process_user_sid_sha256": "a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6",
+    "same_user_sid_hash_as_interactive_cli": true
+  },
+  "validation": {
+    "failures": 0,
+    "full_local_suite": "deferred per user instruction",
+    "native_command_exit_file": "0",
+    "native_launcher_exit": 0,
+    "registry_restore_complete": true,
+    "skips": 0
+  },
+  "work_item": "P9.02 / GitHub issue #61"
+}

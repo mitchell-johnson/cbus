@@ -21,9 +21,10 @@
     "observed_case": "The isolated original manager first load retained ShowProjectManager=False while writing the missing True default; its second load yielded ShowProjectManager=True.",
     "first_load_show_project_manager": false,
     "second_load_show_project_manager": true,
-    "source_provenance": "The frozen original x86 Unicorn manager fixture supplies the original expected values. Later Windows wheel runs compared under LocalSystem and the active desktop user; neither executed the original GUI in the same account.",
-    "original_interactive_gui_executed": false,
-    "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857"
+    "source_provenance": "Frozen original x86 Unicorn manager fixture supplies the 40-value in-memory expectations. LocalSystem and interactive installed-wheel runs compare both passes to it. A later same-user original GUI startup probe independently observed the missing ShowProjectManager stored default transition, without instrumenting same-instance reads or broad GUI behavior.",
+    "original_interactive_gui_executed": true,
+    "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857",
+    "original_gui_execution_scope": "Two bounded same-user 1.18 GUI startups with missing ShowProjectManager becoming stored True and staying True on second launch; no direct manager/in-memory read trace."
   },
   "portable_acceptance": {
     "python": "3.13.14",
@@ -41,21 +42,21 @@
   },
   "validation_not_run": [
     "make check and make check-interop, per the task no-full-local-suites instruction",
-    "Whole original Toolkit GUI startup and preference runtime effects",
+    "Full original Toolkit GUI preference workflow, same-instance manager/lazy-wrapper read trace and runtime effects",
     "Interactive Windows save/reset acceptance"
   ],
   "remaining": [
-    "Compare the original Toolkit GUI preferences/settings lazy wrapper and culture behavior in the same interactive account; the separate SESU condition-checker matrix is a different scope.",
+    "Instrument direct original same-instance preference manager reads, lazy wrapper/culture behavior and complete GUI preference controls in the same interactive account.",
     "Establish logging, C-Gate and broader GUI runtime effects with original evidence.",
     "Accept interactive save/reset and broader preference transitions.",
-    "Keep the broad preference/update workflow and original interactive GUI acceptance open."
+    "Keep the broad preference/update workflow open."
   ],
   "source_sha256": {
     "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
     "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
-    "docs/toolkit-preferences.md": "184a87a99133d3613fda93542761c9658bbc956012488deeff0e8e3b6dbd34a6",
-    "docs/toolkit-preferences-store.md": "16280598dc41cd8212540f2dc456b8aa0f3c63daa77a4e10dc49dca350e3e74a",
-    "docs/implementation-status.md": "e48068f9977cb38bb5baa9c4c1788d3e9967508c5784cb34ab1003ab9cb88486",
+    "docs/toolkit-preferences.md": "62d76f72bc03d8d00c69f83a9958e5f619019611968807285e68628549d50d32",
+    "docs/toolkit-preferences-store.md": "8b58174beb1ead2ac14a38bf8dade68cafb7b41f025466c1ec14fcd3f91e0343",
+    "docs/implementation-status.md": "0e3a5b59b5a00e487b44c6322e354cba1f841b3f75ca6d4fe7565d4824b30968",
     "src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392"
   },
   "invalidation": [
@@ -99,5 +100,10 @@
     "path": "research/experiments/2026-09-28/preference-interactive-repeat.json",
     "sha256": "5170f2bdb9ddd9c30d85091c934866e0183e83dfce84776956474dac4b5cf8a7",
     "status": "passed in active console user session 1, WinSta0/Default, non-System primary token; 14 checks passed, scratch cleanup verified; original GUI same-user comparison remains unverified"
+  },
+  "original_gui_native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-original-gui-same-user.json",
+    "sha256": "7aab8ff1799b6abf6acbdf92cc446d38ba286ffc63d1f58b1782ce8a739f20ad",
+    "status": "bounded original GUI startup in same active user passed: selected missing ShowProjectManager stored default became True, six fixed keys restored/unchanged, state file preserved; direct same-instance manager behavior remains unverified"
   }
 }
