@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/private/tmp/cbus-parity-final-20260928/rust/target/debug/cmqttd",
-    "sha256": "41ed2b34d8cea6e2524a1b78dff43729c1bfc39494ec3ed984e5c1108761266f"
+    "sha256": "5bb22b1be560b4320c83f1170ab39d10934d2e103e0acbcd69040313509f2564"
   },
-  "source_revision": "9617f0f260fa406acee6156c105f7e394029efef",
+  "source_revision": "c82d0de395c004b40610ae9cc780c730ca0573b4",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "b2a2be997813cc94c43c6bc47a82055eabdfcc66aa05f919e04447f7d2312fe7",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
@@ -30,9 +30,9 @@
     "rust/cbus-cgate/src/config.rs": "dc5524f5ac7a9934f92bf894fab56a972c4da3ecf9323fed4b4225332125790a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "c2c740c6faff7e48e3ac8b307860b4bc3f428494df6ae16a2ef535760c622f9c",
-    "rust/cbus-cgate/src/lib.rs": "860ea73cd58ea5f22153d2f0f70b9356e23a507dc8a5311d320fd5d9011edf1b",
+    "rust/cbus-cgate/src/lib.rs": "9ca0be17de682057f98cbe2ff3d344f4ca362b8b66d81600f469018a44767750",
     "rust/cbus-cgate/src/main.rs": "c283a230ade13eee06839d53f58ab4793c7afc192e9196c3ef595adc083b27b9",
-    "rust/cbus-cgate/src/manual.rs": "60b1da793101d0299198559b6af77d38f6ccd2d646bc31a7527bb7442a458c0f",
+    "rust/cbus-cgate/src/manual.rs": "0e95958c2f9e68ca0e618124db9b797946729fd1aa7b2ece7115981b2d7c6f15",
     "rust/cbus-cgate/src/port.rs": "44c6f3f952e6d2330a29c19616c32d5245454a7cab3327b2d895815d7ad33924",
     "rust/cbus-cgate/src/service/calculator.rs": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411",
     "rust/cbus-cgate/src/service/cgl.rs": "b39a79b0d7aefcc9287a5d916f21c901ebf66cd88ca26ee50de8f032997509d9",
@@ -41,12 +41,12 @@
     "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
     "rust/cbus-cgate/src/service/net_lifecycle.rs": "408434ff835df6d5cf5aa1a83133d335696dc83b17e49d618ccada665ec5bb1b",
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
-    "rust/cbus-cgate/src/service/tests.rs": "27a94cc50a05ecea586e9640afd1905a881c07c205c552421d84aad4f0cc7e21",
+    "rust/cbus-cgate/src/service/tests.rs": "9a394d246740a827f78cccb609682ea771fefcdce9cc377ae50fcc9eba8248c9",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
-    "rust/cbus-cgate/src/service.rs": "27f2799963be6ceefa8773dffa9426da7f77271b92be2e6f351f8631ee6889dd",
+    "rust/cbus-cgate/src/service.rs": "b3b421596e8567b1e8054bf03ea882ef1973d8586181fd6e13a94541f903336b",
     "rust/cbus-cgate/src/show.rs": "19dc904dbe016c925c9972dc01e6423d9a2b2f0a7083bae9dbc9d12f8b7eeb5d",
     "rust/cbus-cgate/src/unitspec.rs": "d2f64bf3e45e3810530435df72845c69cb173ab235e706a6e96c56daa8153fd9",
-    "rust/cbus-cgate/tests/server.rs": "c290537a65dd9c1104007ab0b7a6289fefd69ca8f709ee53891ab16ed3f43b2d",
+    "rust/cbus-cgate/tests/server.rs": "d2a54100d7e66382d1be41a784a1f3ba2c0c2600c8a1e627cfd546ff671e8bc0",
     "rust/cbus-cgate/tests/tcp.rs": "01121815d291fa31dec69f27327fc4843953f3a4633910a8d7d8a20f6af55328",
     "rust/cbus-mqtt/Cargo.toml": "16a45b2f77df915497457f1d7a636829af2dd2dc75bdbb279e3d50ca3de54777",
     "rust/cbus-mqtt/src/cbz.rs": "90a92a29011646ea0370e574779dadd7a9f2e77c491a20e7606d4ae89b9aecaa",
@@ -548,5 +548,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-parity-final-20260928/rust/target/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-parity-final-20260928/rust/target/debug/cmqttd --output-dir research/runtime"
+  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin ../rust/target/debug/cgate-mock --cmqttd-bin ../rust/target/debug/cmqttd --output-dir research/fixtures"
 }
