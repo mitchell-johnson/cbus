@@ -145,11 +145,16 @@ This does not directly prove same-instance manager reads, lazy wrapper/culture
 behavior or logging/C-Gate effects.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
-once after a clean Boolean result. Keep the previous report, use a distinct fresh
-observer for every call, and treat the CLI as one evaluation per invocation.
+once after a clean Boolean result. The CLI exposes the same bounded path with
+`update-condition-live ... --repeat-once`; it reports two ordered evaluation
+receipts and final result, constructing and closing a fresh Windows observer
+for each pass. An incomplete first pass stops before the second observer.
+Keep the previous report and do not treat the two reads as an atomic snapshot.
 This matches the pinned original true-then-false outcomes with separate Python
 observers; it does not establish identical original worker lifetime or a
-repeat-after-failure contract. See `toolkit-cli/docs/toolkit-live-registry-observation.md`.
+repeat-after-failure contract. The CLI two-worker path has focused portable
+tests but no native Windows acceptance yet. See
+`toolkit-cli/docs/toolkit-live-registry-observation.md`.
 
 `update-package-file --catalogue-response raw-catalogue.json --node-id ID
 --file-id ID --package-path local-package.exe` compares one already-local

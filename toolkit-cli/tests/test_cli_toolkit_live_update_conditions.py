@@ -35,8 +35,10 @@ class LiveConditionsCLITests(unittest.TestCase):
 
     def invoke(self, arguments, observer, expected=0):
         output, error = io.StringIO(), io.StringIO()
+        factory_options = ({'side_effect': observer} if isinstance(observer, list)
+                           else {'return_value': observer})
         with redirect_stdout(output), redirect_stderr(error), \
-             patch.object(helper, 'WindowsConditionRegistry', return_value=observer) as factory, \
+             patch.object(helper, 'WindowsConditionRegistry', **factory_options) as factory, \
              patch('socket.socket', side_effect=AssertionError('No network')):
             status = cli.main(list(map(str, arguments)))
         self.assertEqual(status, expected, output.getvalue() + error.getvalue())
@@ -67,6 +69,105 @@ class LiveConditionsCLITests(unittest.TestCase):
                 self.assertIsNone(value['updates_available'])
                 self.assertEqual([Path(arguments[index]).read_bytes() for index in (2, 4, 6)], sources)
                 factory.assert_called_once()
+
+    def test_repeat_once_matches_original_public_true_then_false_cache_reset(self):
+        native_path = Path(__file__).resolve().parents[1] / 'research/experiments/2026-09-28/registry-lazy-culture-native.json'
+        native = json.loads(native_path.read_bytes())
+        rows = {row['id']: row for row in native['native_rows']}
+        first, second = StubObserver(0), StubObserver(1)
+        first.last_report = second.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            arguments = self.files(directory)
+            value, factory = self.invoke(arguments + ['--repeat-once'], [first, second])
+        self.assertEqual(factory.call_count, 2)
+        self.assertTrue(value['repeated_evaluation'])
+        self.assertTrue(value['second_evaluation_attempted'])
+        self.assertEqual([row['condition_result'] for row in value['evaluation_passes']],
+                         [rows['public-first-true']['result'], rows['public-fresh-evaluate-false']['result']])
+        self.assertEqual([row['condition_result_cache'] for row in value['evaluation_passes']],
+                         [rows['public-first-true']['cache'], rows['public-fresh-evaluate-false']['cache']])
+        self.assertIs(value['condition_result'], False)
+        self.assertEqual([len(first.queries), len(second.queries)], [1, 1])
+        self.assertEqual([first.close_calls, second.close_calls], [1, 1])
+        self.assertNotEqual(value['evaluation_passes'][0]['registry_observations'][0]['result'],
+                            value['evaluation_passes'][1]['registry_observations'][0]['result'])
+
+    def test_repeat_once_stops_after_incomplete_first_pass_without_second_observer(self):
+        first = StubObserver(0)
+        first.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            arguments = self.files(directory)
+            Path(arguments[4]).write_text(json.dumps({'format': 'cbus-toolkit-condition-context-v1',
+                'culture': 'tr-TR', 'files': []}))
+            value, factory = self.invoke(arguments + ['--repeat-once'], [first], expected=1)
+        factory.assert_called_once()
+        self.assertFalse(value['evaluation_completed'])
+        self.assertFalse(value['second_evaluation_attempted'])
+        self.assertEqual(len(value['evaluation_passes']), 1)
+        self.assertEqual(first.queries, [])
+        self.assertEqual(first.close_calls, 1)
+
+    def test_repeat_once_second_interruption_retains_both_receipts(self):
+        interruption = KeyboardInterrupt('second observation interrupted')
+        first, second = StubObserver(0), StubObserver(error=interruption)
+        first.last_report = second.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            value, factory = self.invoke(self.files(directory) + ['--repeat-once'],
+                                         [first, second], expected=130)
+        self.assertEqual(factory.call_count, 2)
+        evidence = value[helper.EVIDENCE]
+        self.assertTrue(evidence['repeated_evaluation'])
+        self.assertTrue(evidence['second_evaluation_attempted'])
+        self.assertEqual(len(evidence['evaluation_passes']), 2)
+        self.assertTrue(evidence['evaluation_passes'][0]['evaluation_completed'])
+        self.assertFalse(evidence['evaluation_passes'][1]['evaluation_completed'])
+        self.assertTrue(evidence['evaluation_passes'][1]['observer_closed'])
+        self.assertEqual([first.close_calls, second.close_calls], [1, 1])
+
+    def test_repeat_once_second_observer_construction_failure_keeps_first(self):
+        first = StubObserver(0)
+        first.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            value, factory = self.invoke(self.files(directory) + ['--repeat-once'],
+                                         [first, OSError('second worker unavailable')], expected=1)
+        self.assertEqual(factory.call_count, 2)
+        evidence = value[helper.EVIDENCE]
+        self.assertFalse(evidence['second_evaluation_attempted'])
+        self.assertEqual(len(evidence['evaluation_passes']), 1)
+        self.assertTrue(evidence['evaluation_passes'][0]['evaluation_completed'])
+        self.assertEqual(first.close_calls, 1)
+
+    def test_repeat_once_reused_observer_is_rejected_without_second_read(self):
+        first = StubObserver(0)
+        first.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            value, factory = self.invoke(self.files(directory) + ['--repeat-once'],
+                                         [first, first], expected=1)
+        self.assertEqual(factory.call_count, 2)
+        evidence = value[helper.EVIDENCE]
+        self.assertTrue(evidence['second_evaluation_attempted'])
+        self.assertEqual(len(evidence['evaluation_passes']), 1)
+        self.assertEqual(len(first.queries), 1)
+        self.assertEqual(first.close_calls, 1)
+
+    def test_repeat_once_output_failure_does_not_nest_incomplete_first_receipt(self):
+        first = StubObserver(0)
+        first.last_report = None
+        with tempfile.TemporaryDirectory() as directory:
+            arguments = self.files(directory) + ['--repeat-once']
+            Path(arguments[4]).write_text(json.dumps({'format': 'cbus-toolkit-condition-context-v1',
+                'culture': 'tr-TR', 'files': []}))
+            args = cli.build_parser().parse_args(list(map(str, arguments)))
+            with patch.object(helper, 'WindowsConditionRegistry', return_value=first):
+                result, status = helper.run(args)
+            self.assertEqual(status, 1)
+            self.assertEqual(len(result['evaluation_passes']), 1)
+            failure = OSError('stdout failed')
+            helper.record_output_error(args, failure)
+            evidence = helper.error_payload(failure, args)[helper.EVIDENCE]
+        self.assertEqual(len(evidence['evaluation_passes']), 1)
+        self.assertNotIn('evaluation_passes', evidence['evaluation_passes'][0])
+        self.assertEqual(first.close_calls, 1)
 
     def test_explicit_user_sid_is_forwarded_and_invalid_sid_precedes_file_reads(self):
         sid = 'S-1-5-21-123-456-789-1001'

@@ -1,0 +1,90 @@
+{
+  "added_behavior": {
+    "atomic_registry_snapshot": false,
+    "command": "cbus-toolkit update-condition-live CONDITIONS.json --file-context FILES.json --registry-scope SCOPE.json --repeat-once",
+    "input_files_read_once": true,
+    "observers": "A distinct checked Windows observer and owned worker per completed pass",
+    "one_python_wrapper": true,
+    "package_applicability_or_publisher_trust_claim": false,
+    "receipts": "Ordered evaluation_passes, final top-level report, explicit second_evaluation_attempted flag",
+    "second_pass_condition": "Only after a clean Boolean first result"
+  },
+  "branch_base_revision": "19a8c1cd68d96f9fe1a0d544c1296c8eb15a7135",
+  "format": "cbus-p9-02-live-condition-cli-repeated-evaluation-v1",
+  "invalidation": [
+    "Changed listed source/fixture hash or installed wheel",
+    "Promotion from deterministic observer comparison to Windows worker/native Toolkit acceptance",
+    "Different original runtime, culture or registry provider"
+  ],
+  "original_evidence": {
+    "fixture": "research/experiments/2026-09-28/registry-lazy-culture-native.json",
+    "fixture_sha256": "aa76f4f8eeeb5ad9c0f43c857a73aa762d3c3c75ac0972fc366258a18f21402c",
+    "original_worker_lifetime_matched": false,
+    "provider_call_count_instrumented": false,
+    "same_original_checker_instance": true,
+    "selected_caches": [
+      {
+        "a": true
+      },
+      {
+        "a": false
+      }
+    ],
+    "selected_outcomes": [
+      true,
+      false
+    ],
+    "selected_rows": [
+      "public-first-true",
+      "public-fresh-evaluate-false"
+    ]
+  },
+  "remaining": [
+    "Direct original Toolkit preference manager same-instance in-memory reads and preference/settings lazy wrapper",
+    "Culture-sensitive comparisons outside invariant-ascii",
+    "Interactive Windows acceptance of this new two-worker command",
+    "Preference save/reset and logging/C-Gate GUI runtime effects"
+  ],
+  "source_sha256": {
+    "../.agents/skills/cbus-cli/references/toolkit.md": "38796b6ff00b8aa4e23a6d398683748cc5fba27a5426ae9f7708032a61ae656c",
+    "docs/implementation-status.md": "758595349bc9ef99758496c520285dcff10540874fc0726a8b62dadf10c1400c",
+    "docs/toolkit-live-registry-observation.md": "b1b1eed59b2cdbd5de7e1ffb5f3c9214d6543938a102a7e6b6a6ad52b7b490d6",
+    "research/experiments/2026-09-28/registry-lazy-culture-native.json": "aa76f4f8eeeb5ad9c0f43c857a73aa762d3c3c75ac0972fc366258a18f21402c",
+    "src/cbus_toolkit/capabilities.json": "fd77915733d35b4fcc3ca905737f7749df042c59403380de7d5e9bce0ea44672",
+    "src/cbus_toolkit/parity-obligations.json": "52370079bc29b42d5410252e2aeccda595f7e20734aa55329820131f64f9c972",
+    "src/cbus_toolkit/toolkit_live_update_conditions.py": "171f1318be694629ca9734008574a635df5d006167d2ec238cb7c20bbc62f5b1",
+    "src/cbus_toolkit/toolkit_live_update_conditions_cli.py": "5673c8635b8ad5f3b445529f4cadcf0aab25019e6bcfc1d69e834346262135f6",
+    "tests/test_cli_toolkit_live_update_conditions.py": "40d84359feb9b080f83cfd7ce3385f52ad6e815b2eacbc214a73fb82cb74ef33",
+    "tests/test_registry_lazy_native_acceptance.py": "4c7f945b1f20e4a05a7fae231a829e39d7ec439c9b19f1ea8fd449e38752110e"
+  },
+  "status": "partial",
+  "target": "Toolkit 1.18.0.2754 / SESU 3.0.7 original ClientConditionChecker public Evaluate",
+  "validation": {
+    "full_local_suite": "not run per user instruction",
+    "installed_wheel": {
+      "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "command": "PYTHONPATH=<installed-site>:<toolkit-repo>:<toolkit-tests> <python3.13> -m pytest -q tests/test_cli_toolkit_live_update_conditions.py tests/test_toolkit_live_update_conditions.py tests/test_registry_lazy_native_acceptance.py tests/test_cli_toolkit_preferences_repeated_load.py -p no:cacheprovider",
+      "failures": 0,
+      "installed_import_path": "/private/tmp/cbus-p902-manager-wheel-20260928/site/cbus_toolkit/__init__.py",
+      "passed": 42,
+      "sha256": "62c9b10f089705823898167f0ad520b50a6c834b828a59d98212d71b72458ad7",
+      "skipped": 0,
+      "subtests_passed": 20
+    },
+    "native_windows_two_worker_run": "not run; no VM use in this isolated chunk",
+    "negative_cases": [
+      "incomplete first pass suppresses second observer",
+      "second observation interruption retains both receipts",
+      "second observer construction failure retains first receipt",
+      "reused observer rejected before second read",
+      "output failure after incomplete first pass does not nest or alias its receipt"
+    ],
+    "source_focused": {
+      "command": "PYTHONPATH=src:tests <python3.13> -m pytest -q tests/test_cli_toolkit_live_update_conditions.py tests/test_registry_lazy_native_acceptance.py -p no:cacheprovider",
+      "failures": 0,
+      "passed": 20,
+      "skipped": 0
+    }
+  },
+  "work_item": "P9.02 / GitHub issue #61"
+}

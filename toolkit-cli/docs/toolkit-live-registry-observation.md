@@ -212,9 +212,40 @@ source test now repeats that sequence on one Python wrapper with two determinist
 observers and checks both retained receipts and independent closes. It does not
 claim identical Windows worker lifetime or original provider scheduling: the
 caller supplies a fresh observer for each evaluation, and each Windows observer
-starts its own worker on its first read. The public
-CLI remains a single evaluation per invocation. No interactive-user context,
+starts its own worker on its first read. No interactive-user context,
 thread impersonation, or full preferences runtime effect is established.
+
+The command now exposes that same two-call sequence:
+
+```sh
+cbus-toolkit update-condition-live conditions.json \
+  --file-context file-facts.json --registry-scope registry-scope.json \
+  --expected-user-sid S-1-5-21-... --repeat-once
+```
+
+With `--repeat-once`, a clean first Boolean result permits exactly one second
+evaluation on the same Python wrapper. The command constructs a new checked
+Windows observer for that call, so each pass owns and closes its own worker.
+It reads the same three input files once and reuses their exact bytes and
+scope; `evaluation_passes` retains both ordered detached reports and the
+top-level result is the second pass. An incomplete first report stops before
+constructing a second observer. If second-observer construction or evaluation
+raises, the error receipt retains the first report and any actual second
+report, with `second_evaluation_attempted` distinguishing those cases. Each
+worker has its own `--timeout` deadline; two passes are not an atomic registry
+snapshot, and another process can change HKCU between them. Both clean Boolean
+outcomes return zero, even when the second value is false.
+
+The focused CLI test compares ordered true→false results and per-name caches
+to the pinned original public `Evaluate` rows, then checks incomplete first
+pass, second-pass interruption, second-worker construction failure and
+reused-observer rejection. Those tests use deterministic observers. The
+two-worker command has not yet been executed against original Toolkit or a
+live Windows registry. Original worker lifetime, preference GUI effects and
+culture-sensitive `tr-TR` remain outside this admitted scope. The
+[P9.02 CLI repeat receipt](../research/experiments/2026-09-28/live-registry-cli-repeat.json)
+records the exact source and installed-wheel hashes, selected original rows,
+focused checks and remaining native gate.
 
 The native fixture was removed, no owned probe process remained, and the
 Host Only disposable VM was stopped with its original networking restored.
