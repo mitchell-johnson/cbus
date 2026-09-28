@@ -457,15 +457,12 @@ async fn telephony_access_level_is_per_session_and_denies_before_pci() {
         .iter()
         .map(|(_, payload)| sys.pci.count_payload(&checksummed(payload)))
         .collect::<Vec<_>>();
+    // native_cgate_application_authorization_probe.json captures this entry
+    // denial for all five leaves at Monitor. No PCI send is admitted here.
     for (index, (text, _)) in commands.iter().enumerate() {
-        let denied = if matches!(index, 0 | 3) {
-            "420 Access denied."
-        } else {
-            "420 Access denied: TELEPHONY (Program access required)"
-        };
         assert_eq!(
             command(&mut low_reader, &mut low_writer, &index.to_string(), text).await,
-            [denied],
+            ["420 Access denied."],
             "{text}"
         );
     }
