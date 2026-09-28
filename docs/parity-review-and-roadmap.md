@@ -116,8 +116,9 @@ duplicate keys and ambiguous identities, binds selected metadata to the
 catalogue response, and requires matching condition and revocation receipts.
 The 2026-09-28 P9.01 review and focused adversarial tests also pin condition
 source representation and the unverified revocation request-subject boundary.
-Unlinked reports keep `diagnostics_complete=false`. An integrated installed
-wheel and CI receipt is still needed before closing [#60](https://github.com/mitchell-johnson/cbus/issues/60).
+Unlinked reports keep `diagnostics_complete=false`. A focused installed-wheel
+check passed; final integrated CI and issue-level acceptance remain before
+closing [#60](https://github.com/mitchell-johnson/cbus/issues/60).
 This diagnostic work does not establish publisher trust or installation parity.
 
 ### R3 — P1: primary command routing does not cover valid selectors
@@ -640,7 +641,7 @@ exchange remains intact after each workflow.
 **Owns:** Python preferences, Windows workers, metadata/trust/update modules.
 **Depends on:** P1; independent of most physical C-Bus work.
 
-- [ ] **P9.01** ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) — Verify the integrated R2 diagnostic-bundle provenance fix with an installed artifact and final acceptance receipt.
+- [ ] **P9.01** ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) — Complete final integrated CI and issue-level acceptance for the R2 diagnostic-bundle provenance fix; focused source and installed-wheel checks pass.
 - [ ] **P9.02** ([#61](https://github.com/mitchell-johnson/cbus/issues/61)) — Validate all preference runtime effects and interactive-user registry
   behavior, including the original lazy wrapper, culture and repeated reads.
 - [ ] **P9.03** ([#62](https://github.com/mitchell-johnson/cbus/issues/62)) — Bind catalogue, signed metadata, revocation, conditions and package bytes to

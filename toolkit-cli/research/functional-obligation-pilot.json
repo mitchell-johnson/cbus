@@ -19,7 +19,7 @@
         "syntax_end_line": 2622,
         "syntax_sha256": "143c54a154393f4e916064f339dbb5fe25bd3796f8e4bcc04663aa68aa9656fb"
       },
-      "contract_sha256": "f2780a572fbe44b853bb162b511ae8be3ec4ee23eb5fbf18f66deecacb2d325f",
+      "contract_sha256": "a134bc4f3b76e55c991165fc9934960af2ea114784ec23b711253b5bd6185769",
       "native_cases": [
         {"command": "SESSION_ID", "status": 300},
         {"command": "SESSION_ID bogus", "status": 400}

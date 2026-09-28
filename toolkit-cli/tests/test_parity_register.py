@@ -232,7 +232,7 @@ class ParityRegisterTests(unittest.TestCase):
             report["cgate_contracts"]["subaxis_status"][
                 "selector_grammar.argument_arity"
             ],
-            {"resolved": 3, "unresolved": 439},
+            {"resolved": 5, "unresolved": 437},
         )
         self.assertEqual(
             report["cgate_contracts"]["subaxis_status"][
