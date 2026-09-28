@@ -15698,6 +15698,7 @@ fn seed_imported_object(
                 ("TagName".to_string(), tag),
             ]),
             path: Some(path.to_string()),
+            xml_order: None,
         },
     );
     Some(oid)

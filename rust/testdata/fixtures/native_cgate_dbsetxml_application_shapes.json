@@ -1,0 +1,1165 @@
+{
+  "schema": "native-cgate-dbsetxml-application-shapes-v1",
+  "captured_utc": "2026-09-28T04:43:12.085957+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:53464",
+      "127.0.0.1:53465",
+      "127.0.0.1:53466",
+      "127.0.0.1:53467",
+      "127.0.0.1:53468",
+      "127.0.0.1:53469"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "009c5faf6ea63ac747e1cc212203e418b3c114f1782215f5c86825f1d2995001",
+  "exchange_helper_sha256": "22580ef1eb861b029df4154efa267872ea4864115ee0949ac40f25403f24e2a4",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "shared_oid": "33333333-3333-4333-8333-333333333333",
+  "shapes": [
+    {
+      "project": "XREVA",
+      "submitted": [
+        57,
+        56
+      ],
+      "network_oid": "083fc8c0-9d25-103f-898c-85d310833983",
+      "interface_oid": "083fefd0-9d25-103f-898d-85d310833983",
+      "submit_tag": 404
+    },
+    {
+      "project": "XTRIA",
+      "submitted": [
+        56,
+        57,
+        58
+      ],
+      "network_oid": "0873aa00-9d25-103f-89fa-85d310833983",
+      "interface_oid": "0873d110-9d25-103f-89fb-85d310833983",
+      "submit_tag": 440
+    },
+    {
+      "project": "XQUAD",
+      "submitted": [
+        59,
+        57,
+        56,
+        58
+      ],
+      "network_oid": "0885ab60-9d25-103f-8a68-85d310833983",
+      "interface_oid": "0885d270-9d25-103f-8a69-85d310833983",
+      "submit_tag": 478
+    }
+  ],
+  "cases": [
+    {
+      "tag": 400,
+      "command": "PROJECT NEW XREVA",
+      "request": "[400] PROJECT NEW XREVA\r\n",
+      "response_lines": [
+        "[400] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 401,
+      "command": "PROJECT USE XREVA",
+      "request": "[401] PROJECT USE XREVA\r\n",
+      "response_lines": [
+        "[401] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 402,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[402] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[402] 301 OID=083fc8c0-9d25-103f-898c-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 403,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[403] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[403] 343-Begin XML snippet\r\n",
+        "[403] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[403] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[403] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 404,
+      "command": "DBSETXML //XREVA/254",
+      "request": "[404] DBSETXML //XREVA/254 << END404\r\n<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application></Network>\r\nEND404\r\n",
+      "response_lines": [
+        "[404] 301 OID=083fc8c0-9d25-103f-898c-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 405,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[405] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[405] 343-Begin XML snippet\r\n",
+        "[405] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[405] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application></Network>\r\n",
+        "[405] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 406,
+      "command": "DBGETXML //XREVA/254/57",
+      "request": "[406] DBGETXML //XREVA/254/57\r\n",
+      "response_lines": [
+        "[406] 343-Begin XML snippet\r\n",
+        "[406] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[406] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[406] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 407,
+      "command": "DBGETXML //XREVA/254/56",
+      "request": "[407] DBGETXML //XREVA/254/56\r\n",
+      "response_lines": [
+        "[407] 343-Begin XML snippet\r\n",
+        "[407] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[407] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[407] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 408,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[408] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[408] 343-Begin XML snippet\r\n",
+        "[408] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[408] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[408] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 409,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[409] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[409] 342 !33333333-3333-4333-8333-333333333333/Address=56\r\n"
+      ]
+    },
+    {
+      "tag": 410,
+      "command": "PROJECT SAVE XREVA",
+      "request": "[410] PROJECT SAVE XREVA\r\n",
+      "response_lines": [
+        "[410] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 411,
+      "command": "PROJECT CLOSE XREVA",
+      "request": "[411] PROJECT CLOSE XREVA\r\n",
+      "response_lines": [
+        "[411] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 412,
+      "command": "PROJECT LOAD XREVA",
+      "request": "[412] PROJECT LOAD XREVA\r\n",
+      "response_lines": [
+        "[412] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 413,
+      "command": "PROJECT USE XREVA",
+      "request": "[413] PROJECT USE XREVA\r\n",
+      "response_lines": [
+        "[413] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 414,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[414] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[414] 343-Begin XML snippet\r\n",
+        "[414] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[414] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application></Network>\r\n",
+        "[414] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 415,
+      "command": "DBGETXML //XREVA/254/57",
+      "request": "[415] DBGETXML //XREVA/254/57\r\n",
+      "response_lines": [
+        "[415] 343-Begin XML snippet\r\n",
+        "[415] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[415] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[415] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 416,
+      "command": "DBGETXML //XREVA/254/56",
+      "request": "[416] DBGETXML //XREVA/254/56\r\n",
+      "response_lines": [
+        "[416] 343-Begin XML snippet\r\n",
+        "[416] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[416] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[416] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 417,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[417] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[417] 343-Begin XML snippet\r\n",
+        "[417] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[417] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[417] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 418,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[418] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[418] 342 !33333333-3333-4333-8333-333333333333/Address=56\r\n"
+      ]
+    },
+    {
+      "tag": 419,
+      "command": "DBSETXML //XREVA/254/57",
+      "request": "[419] DBSETXML //XREVA/254/57 << END419\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application>\r\nEND419\r\n",
+      "response_lines": [
+        "[419] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 420,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[420] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[420] 343-Begin XML snippet\r\n",
+        "[420] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[420] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application></Network>\r\n",
+        "[420] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 421,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[421] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[421] 343-Begin XML snippet\r\n",
+        "[421] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[421] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[421] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 422,
+      "command": "DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID",
+      "request": "[422] DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID\r\n",
+      "response_lines": [
+        "[422] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 423,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[423] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[423] 343-Begin XML snippet\r\n",
+        "[423] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[423] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>56</Address></Application></Network>\r\n",
+        "[423] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 424,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[424] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[424] 343-Begin XML snippet\r\n",
+        "[424] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[424] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>56</Address></Application>\r\n",
+        "[424] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 425,
+      "command": "DBSETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[425] DBSETXML !33333333-3333-4333-8333-333333333333 << END425\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application>\r\nEND425\r\n",
+      "response_lines": [
+        "[425] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 426,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[426] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[426] 343-Begin XML snippet\r\n",
+        "[426] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[426] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application></Network>\r\n",
+        "[426] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 427,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[427] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[427] 343-Begin XML snippet\r\n",
+        "[427] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[427] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application>\r\n",
+        "[427] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 428,
+      "command": "DBGETXML //XREVA/254/57",
+      "request": "[428] DBGETXML //XREVA/254/57\r\n",
+      "response_lines": [
+        "[428] 343-Begin XML snippet\r\n",
+        "[428] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[428] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application>\r\n",
+        "[428] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 429,
+      "command": "DBGETXML //XREVA/254/56",
+      "request": "[429] DBGETXML //XREVA/254/56\r\n",
+      "response_lines": [
+        "[429] 343-Begin XML snippet\r\n",
+        "[429] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[429] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application>\r\n",
+        "[429] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 430,
+      "command": "PROJECT SAVE XREVA",
+      "request": "[430] PROJECT SAVE XREVA\r\n",
+      "response_lines": [
+        "[430] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 431,
+      "command": "PROJECT CLOSE XREVA",
+      "request": "[431] PROJECT CLOSE XREVA\r\n",
+      "response_lines": [
+        "[431] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 432,
+      "command": "PROJECT LOAD XREVA",
+      "request": "[432] PROJECT LOAD XREVA\r\n",
+      "response_lines": [
+        "[432] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 433,
+      "command": "PROJECT USE XREVA",
+      "request": "[433] PROJECT USE XREVA\r\n",
+      "response_lines": [
+        "[433] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 434,
+      "command": "DBGETXML //XREVA/254",
+      "request": "[434] DBGETXML //XREVA/254\r\n",
+      "response_lines": [
+        "[434] 343-Begin XML snippet\r\n",
+        "[434] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[434] 347-<Network><OID>083fc8c0-9d25-103f-898c-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>083fefd0-9d25-103f-898d-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedSecond</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application></Network>\r\n",
+        "[434] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 435,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[435] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[435] 343-Begin XML snippet\r\n",
+        "[435] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[435] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>56</Address></Application>\r\n",
+        "[435] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 436,
+      "command": "PROJECT NEW XTRIA",
+      "request": "[436] PROJECT NEW XTRIA\r\n",
+      "response_lines": [
+        "[436] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 437,
+      "command": "PROJECT USE XTRIA",
+      "request": "[437] PROJECT USE XTRIA\r\n",
+      "response_lines": [
+        "[437] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 438,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[438] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[438] 301 OID=0873aa00-9d25-103f-89fa-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 439,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[439] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[439] 343-Begin XML snippet\r\n",
+        "[439] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[439] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[439] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 440,
+      "command": "DBSETXML //XTRIA/254",
+      "request": "[440] DBSETXML //XTRIA/254 << END440\r\n<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\nEND440\r\n",
+      "response_lines": [
+        "[440] 301 OID=0873aa00-9d25-103f-89fa-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 441,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[441] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[441] 343-Begin XML snippet\r\n",
+        "[441] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[441] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[441] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 442,
+      "command": "DBGETXML //XTRIA/254/56",
+      "request": "[442] DBGETXML //XTRIA/254/56\r\n",
+      "response_lines": [
+        "[442] 343-Begin XML snippet\r\n",
+        "[442] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[442] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[442] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 443,
+      "command": "DBGETXML //XTRIA/254/57",
+      "request": "[443] DBGETXML //XTRIA/254/57\r\n",
+      "response_lines": [
+        "[443] 343-Begin XML snippet\r\n",
+        "[443] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[443] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[443] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 444,
+      "command": "DBGETXML //XTRIA/254/58",
+      "request": "[444] DBGETXML //XTRIA/254/58\r\n",
+      "response_lines": [
+        "[444] 343-Begin XML snippet\r\n",
+        "[444] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[444] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[444] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 445,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[445] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[445] 343-Begin XML snippet\r\n",
+        "[445] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[445] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[445] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 446,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[446] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[446] 342 !33333333-3333-4333-8333-333333333333/Address=58\r\n"
+      ]
+    },
+    {
+      "tag": 447,
+      "command": "PROJECT SAVE XTRIA",
+      "request": "[447] PROJECT SAVE XTRIA\r\n",
+      "response_lines": [
+        "[447] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 448,
+      "command": "PROJECT CLOSE XTRIA",
+      "request": "[448] PROJECT CLOSE XTRIA\r\n",
+      "response_lines": [
+        "[448] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 449,
+      "command": "PROJECT LOAD XTRIA",
+      "request": "[449] PROJECT LOAD XTRIA\r\n",
+      "response_lines": [
+        "[449] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 450,
+      "command": "PROJECT USE XTRIA",
+      "request": "[450] PROJECT USE XTRIA\r\n",
+      "response_lines": [
+        "[450] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 451,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[451] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[451] 343-Begin XML snippet\r\n",
+        "[451] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[451] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[451] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 452,
+      "command": "DBGETXML //XTRIA/254/56",
+      "request": "[452] DBGETXML //XTRIA/254/56\r\n",
+      "response_lines": [
+        "[452] 343-Begin XML snippet\r\n",
+        "[452] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[452] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[452] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 453,
+      "command": "DBGETXML //XTRIA/254/57",
+      "request": "[453] DBGETXML //XTRIA/254/57\r\n",
+      "response_lines": [
+        "[453] 343-Begin XML snippet\r\n",
+        "[453] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[453] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[453] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 454,
+      "command": "DBGETXML //XTRIA/254/58",
+      "request": "[454] DBGETXML //XTRIA/254/58\r\n",
+      "response_lines": [
+        "[454] 343-Begin XML snippet\r\n",
+        "[454] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[454] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[454] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 455,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[455] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[455] 343-Begin XML snippet\r\n",
+        "[455] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[455] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[455] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 456,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[456] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[456] 342 !33333333-3333-4333-8333-333333333333/Address=58\r\n"
+      ]
+    },
+    {
+      "tag": 457,
+      "command": "DBSETXML //XTRIA/254/56",
+      "request": "[457] DBSETXML //XTRIA/254/56 << END457\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application>\r\nEND457\r\n",
+      "response_lines": [
+        "[457] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 458,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[458] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[458] 343-Begin XML snippet\r\n",
+        "[458] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[458] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[458] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 459,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[459] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[459] 343-Begin XML snippet\r\n",
+        "[459] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[459] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[459] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 460,
+      "command": "DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID",
+      "request": "[460] DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID\r\n",
+      "response_lines": [
+        "[460] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 461,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[461] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[461] 343-Begin XML snippet\r\n",
+        "[461] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[461] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>58</Address></Application></Network>\r\n",
+        "[461] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 462,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[462] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[462] 343-Begin XML snippet\r\n",
+        "[462] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[462] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>58</Address></Application>\r\n",
+        "[462] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 463,
+      "command": "DBSETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[463] DBSETXML !33333333-3333-4333-8333-333333333333 << END463\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\nEND463\r\n",
+      "response_lines": [
+        "[463] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 464,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[464] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[464] 343-Begin XML snippet\r\n",
+        "[464] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[464] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application></Network>\r\n",
+        "[464] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 465,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[465] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[465] 343-Begin XML snippet\r\n",
+        "[465] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[465] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[465] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 466,
+      "command": "DBGETXML //XTRIA/254/56",
+      "request": "[466] DBGETXML //XTRIA/254/56\r\n",
+      "response_lines": [
+        "[466] 343-Begin XML snippet\r\n",
+        "[466] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[466] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application>\r\n",
+        "[466] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 467,
+      "command": "DBGETXML //XTRIA/254/58",
+      "request": "[467] DBGETXML //XTRIA/254/58\r\n",
+      "response_lines": [
+        "[467] 343-Begin XML snippet\r\n",
+        "[467] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[467] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[467] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 468,
+      "command": "PROJECT SAVE XTRIA",
+      "request": "[468] PROJECT SAVE XTRIA\r\n",
+      "response_lines": [
+        "[468] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 469,
+      "command": "PROJECT CLOSE XTRIA",
+      "request": "[469] PROJECT CLOSE XTRIA\r\n",
+      "response_lines": [
+        "[469] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 470,
+      "command": "PROJECT LOAD XTRIA",
+      "request": "[470] PROJECT LOAD XTRIA\r\n",
+      "response_lines": [
+        "[470] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 471,
+      "command": "PROJECT USE XTRIA",
+      "request": "[471] PROJECT USE XTRIA\r\n",
+      "response_lines": [
+        "[471] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 472,
+      "command": "DBGETXML //XTRIA/254",
+      "request": "[472] DBGETXML //XTRIA/254\r\n",
+      "response_lines": [
+        "[472] 343-Begin XML snippet\r\n",
+        "[472] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[472] 347-<Network><OID>0873aa00-9d25-103f-89fa-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0873d110-9d25-103f-89fb-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFirst</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application></Network>\r\n",
+        "[472] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 473,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[473] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[473] 343-Begin XML snippet\r\n",
+        "[473] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[473] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[473] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 474,
+      "command": "PROJECT NEW XQUAD",
+      "request": "[474] PROJECT NEW XQUAD\r\n",
+      "response_lines": [
+        "[474] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 475,
+      "command": "PROJECT USE XQUAD",
+      "request": "[475] PROJECT USE XQUAD\r\n",
+      "response_lines": [
+        "[475] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 476,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[476] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[476] 301 OID=0885ab60-9d25-103f-8a68-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 477,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[477] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[477] 343-Begin XML snippet\r\n",
+        "[477] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[477] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[477] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 478,
+      "command": "DBSETXML //XQUAD/254",
+      "request": "[478] DBSETXML //XQUAD/254 << END478\r\n<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Fourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\nEND478\r\n",
+      "response_lines": [
+        "[478] 301 OID=0885ab60-9d25-103f-8a68-85d310833983\r\n"
+      ]
+    },
+    {
+      "tag": 479,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[479] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[479] 343-Begin XML snippet\r\n",
+        "[479] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[479] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Fourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[479] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 480,
+      "command": "DBGETXML //XQUAD/254/59",
+      "request": "[480] DBGETXML //XQUAD/254/59\r\n",
+      "response_lines": [
+        "[480] 343-Begin XML snippet\r\n",
+        "[480] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[480] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Fourth</TagName><Address>59</Address></Application>\r\n",
+        "[480] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 481,
+      "command": "DBGETXML //XQUAD/254/57",
+      "request": "[481] DBGETXML //XQUAD/254/57\r\n",
+      "response_lines": [
+        "[481] 343-Begin XML snippet\r\n",
+        "[481] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[481] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[481] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 482,
+      "command": "DBGETXML //XQUAD/254/56",
+      "request": "[482] DBGETXML //XQUAD/254/56\r\n",
+      "response_lines": [
+        "[482] 343-Begin XML snippet\r\n",
+        "[482] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[482] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[482] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 483,
+      "command": "DBGETXML //XQUAD/254/58",
+      "request": "[483] DBGETXML //XQUAD/254/58\r\n",
+      "response_lines": [
+        "[483] 343-Begin XML snippet\r\n",
+        "[483] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[483] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[483] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 484,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[484] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[484] 343-Begin XML snippet\r\n",
+        "[484] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[484] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[484] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 485,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[485] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[485] 342 !33333333-3333-4333-8333-333333333333/Address=58\r\n"
+      ]
+    },
+    {
+      "tag": 486,
+      "command": "PROJECT SAVE XQUAD",
+      "request": "[486] PROJECT SAVE XQUAD\r\n",
+      "response_lines": [
+        "[486] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 487,
+      "command": "PROJECT CLOSE XQUAD",
+      "request": "[487] PROJECT CLOSE XQUAD\r\n",
+      "response_lines": [
+        "[487] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 488,
+      "command": "PROJECT LOAD XQUAD",
+      "request": "[488] PROJECT LOAD XQUAD\r\n",
+      "response_lines": [
+        "[488] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 489,
+      "command": "PROJECT USE XQUAD",
+      "request": "[489] PROJECT USE XQUAD\r\n",
+      "response_lines": [
+        "[489] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 490,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[490] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[490] 343-Begin XML snippet\r\n",
+        "[490] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[490] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Fourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[490] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 491,
+      "command": "DBGETXML //XQUAD/254/59",
+      "request": "[491] DBGETXML //XQUAD/254/59\r\n",
+      "response_lines": [
+        "[491] 343-Begin XML snippet\r\n",
+        "[491] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[491] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Fourth</TagName><Address>59</Address></Application>\r\n",
+        "[491] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 492,
+      "command": "DBGETXML //XQUAD/254/57",
+      "request": "[492] DBGETXML //XQUAD/254/57\r\n",
+      "response_lines": [
+        "[492] 343-Begin XML snippet\r\n",
+        "[492] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[492] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application>\r\n",
+        "[492] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 493,
+      "command": "DBGETXML //XQUAD/254/56",
+      "request": "[493] DBGETXML //XQUAD/254/56\r\n",
+      "response_lines": [
+        "[493] 343-Begin XML snippet\r\n",
+        "[493] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[493] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application>\r\n",
+        "[493] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 494,
+      "command": "DBGETXML //XQUAD/254/58",
+      "request": "[494] DBGETXML //XQUAD/254/58\r\n",
+      "response_lines": [
+        "[494] 343-Begin XML snippet\r\n",
+        "[494] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[494] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[494] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 495,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[495] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[495] 343-Begin XML snippet\r\n",
+        "[495] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[495] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[495] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 496,
+      "command": "DBGET !33333333-3333-4333-8333-333333333333/Address",
+      "request": "[496] DBGET !33333333-3333-4333-8333-333333333333/Address\r\n",
+      "response_lines": [
+        "[496] 342 !33333333-3333-4333-8333-333333333333/Address=58\r\n"
+      ]
+    },
+    {
+      "tag": 497,
+      "command": "DBSETXML //XQUAD/254/59",
+      "request": "[497] DBSETXML //XQUAD/254/59 << END497\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application>\r\nEND497\r\n",
+      "response_lines": [
+        "[497] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 498,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[498] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[498] 343-Begin XML snippet\r\n",
+        "[498] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[498] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application></Network>\r\n",
+        "[498] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 499,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[499] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[499] 343-Begin XML snippet\r\n",
+        "[499] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[499] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Third</TagName><Address>58</Address></Application>\r\n",
+        "[499] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 500,
+      "command": "DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID",
+      "request": "[500] DBSET !33333333-3333-4333-8333-333333333333/TagName ByOID\r\n",
+      "response_lines": [
+        "[500] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 501,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[501] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[501] 343-Begin XML snippet\r\n",
+        "[501] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[501] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>58</Address></Application></Network>\r\n",
+        "[501] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 502,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[502] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[502] 343-Begin XML snippet\r\n",
+        "[502] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[502] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ByOID</TagName><Address>58</Address></Application>\r\n",
+        "[502] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 503,
+      "command": "DBSETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[503] DBSETXML !33333333-3333-4333-8333-333333333333 << END503\r\n<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\nEND503\r\n",
+      "response_lines": [
+        "[503] 301 OID=33333333-3333-4333-8333-333333333333\r\n"
+      ]
+    },
+    {
+      "tag": 504,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[504] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[504] 343-Begin XML snippet\r\n",
+        "[504] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[504] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application></Network>\r\n",
+        "[504] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 505,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[505] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[505] 343-Begin XML snippet\r\n",
+        "[505] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[505] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[505] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 506,
+      "command": "DBGETXML //XQUAD/254/59",
+      "request": "[506] DBGETXML //XQUAD/254/59\r\n",
+      "response_lines": [
+        "[506] 343-Begin XML snippet\r\n",
+        "[506] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[506] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application>\r\n",
+        "[506] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 507,
+      "command": "DBGETXML //XQUAD/254/58",
+      "request": "[507] DBGETXML //XQUAD/254/58\r\n",
+      "response_lines": [
+        "[507] 343-Begin XML snippet\r\n",
+        "[507] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[507] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[507] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 508,
+      "command": "PROJECT SAVE XQUAD",
+      "request": "[508] PROJECT SAVE XQUAD\r\n",
+      "response_lines": [
+        "[508] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 509,
+      "command": "PROJECT CLOSE XQUAD",
+      "request": "[509] PROJECT CLOSE XQUAD\r\n",
+      "response_lines": [
+        "[509] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 510,
+      "command": "PROJECT LOAD XQUAD",
+      "request": "[510] PROJECT LOAD XQUAD\r\n",
+      "response_lines": [
+        "[510] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 511,
+      "command": "PROJECT USE XQUAD",
+      "request": "[511] PROJECT USE XQUAD\r\n",
+      "response_lines": [
+        "[511] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 512,
+      "command": "DBGETXML //XQUAD/254",
+      "request": "[512] DBGETXML //XQUAD/254\r\n",
+      "response_lines": [
+        "[512] 343-Begin XML snippet\r\n",
+        "[512] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[512] 347-<Network><OID>0885ab60-9d25-103f-8a68-85d310833983</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>0885d270-9d25-103f-8a69-85d310833983</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ChangedFourth</TagName><Address>59</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>Second</TagName><Address>57</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>First</TagName><Address>56</Address></Application><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application></Network>\r\n",
+        "[512] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 513,
+      "command": "DBGETXML !33333333-3333-4333-8333-333333333333",
+      "request": "[513] DBGETXML !33333333-3333-4333-8333-333333333333\r\n",
+      "response_lines": [
+        "[513] 343-Begin XML snippet\r\n",
+        "[513] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[513] 347-<Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ViaXML</TagName><Address>58</Address></Application>\r\n",
+        "[513] 344 End XML snippet\r\n"
+      ]
+    }
+  ]
+}

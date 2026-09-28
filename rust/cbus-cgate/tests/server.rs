@@ -1,4 +1,5 @@
 use cbus_cgate::{format_response, is_event_line, parse_command, AccessLevel, Server};
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 fn catalogue_dir() -> PathBuf {
@@ -3393,9 +3394,6 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
         409
     );
     let before_unsupported = server.handle("[before] DBGETXML //XAPP/254").lines[0].clone();
-    let third = format!(
-        "<Application><OID>{shared}</OID><TagName>Third</TagName><Address>58</Address></Application>"
-    );
     let submitted_pair = substitute(
         cases[4]["request"]
             .as_str()
@@ -3406,31 +3404,18 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
             .strip_suffix("\r\nEND304\r\n")
             .unwrap(),
     );
-    let triple = submitted_pair.replace("</Network>", &format!("{third}</Network>"));
-    assert_eq!(
-        server
-            .handle_document("[closed] DBSETXML //XAPP/254", &triple)
-            .status,
-        409
-    );
-    assert_eq!(
-        server.handle("[after] DBGETXML //XAPP/254").lines[0],
-        before_unsupported
-    );
-    let first_app = format!(
-        "<Application><OID>{shared}</OID><TagName>First</TagName><Address>56</Address></Application>"
-    );
     let second_app = format!(
         "<Application><OID>{shared}</OID><TagName>Second</TagName><Address>57</Address></Application>"
     );
-    let reversed = submitted_pair.replace(
-        &format!("{first_app}{second_app}"),
-        &format!("{second_app}{first_app}"),
+    let nested_second = second_app.replace(
+        "</Application>",
+        "<Group><OID>44444444-4444-4444-8444-444444444444</OID><TagName>Nested</TagName><Address>1</Address></Group></Application>",
     );
-    assert_ne!(reversed, submitted_pair);
+    let nested = submitted_pair.replace(&second_app, &nested_second);
+    assert_ne!(nested, submitted_pair);
     assert_eq!(
         server
-            .handle_document("[closed] DBSETXML //XAPP/254", &reversed)
+            .handle_document("[closed] DBSETXML //XAPP/254", &nested)
             .status,
         409
     );
@@ -3498,6 +3483,214 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
             200
         );
     }
+}
+
+#[test]
+fn dbsetxml_reversed_and_multiple_leaf_applications_match_owned_native_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_application_shapes.json"
+    ))
+    .unwrap();
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbsetxml_application_shapes.jsonl"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-application-shapes-v1"
+    );
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    let cases = native["cases"].as_array().unwrap();
+    let shapes = native["shapes"].as_array().unwrap();
+    assert_eq!(cases.len(), 114);
+    assert_eq!(shapes.len(), 3);
+    assert_eq!(
+        vector["set_tags"],
+        serde_json::json!([404, 419, 422, 425, 440, 457, 460, 463, 478, 497, 500, 503])
+    );
+    assert_eq!(vector["read_tags"].as_array().unwrap().len(), 69);
+
+    let mut server = Server::new(AccessLevel::Program);
+    let mut oids = HashMap::<String, String>::new();
+    for row in cases {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let request = row["request"].as_str().unwrap();
+        let substitute = |value: &str, oids: &HashMap<String, String>| {
+            oids.iter().fold(value.to_string(), |value, (from, to)| {
+                value.replace(from, to)
+            })
+        };
+        let observed = if command.starts_with("DBSETXML ") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = request
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document, &oids))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        let shape = shapes.iter().find(|shape| {
+            shape["submit_tag"]
+                .as_u64()
+                .is_some_and(|submit| submit >= tag && submit <= tag + 2)
+        });
+        if command.starts_with("DBCREATENET ") {
+            // The synthetic setup has its own older DBCREATENET response
+            // difference; replacement and its readbacks are the vector.
+            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            continue;
+        } else if command.starts_with("DBGETXML //") {
+            if let Some(shape) = shape.filter(|shape| shape["submit_tag"].as_u64() == Some(tag + 1))
+            {
+                let parsed =
+                    roxmltree::Document::parse(observed.lines[0].strip_prefix("347-").unwrap())
+                        .unwrap();
+                let network_oid = parsed
+                    .root_element()
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap();
+                let interface = parsed
+                    .descendants()
+                    .find(|node| node.has_tag_name("Interface"))
+                    .unwrap();
+                let interface_oid = interface
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .unwrap()
+                    .text()
+                    .unwrap();
+                oids.insert(
+                    shape["network_oid"].as_str().unwrap().to_string(),
+                    network_oid.to_string(),
+                );
+                oids.insert(
+                    shape["interface_oid"].as_str().unwrap().to_string(),
+                    interface_oid.to_string(),
+                );
+            }
+        }
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status = if command.starts_with("DBGETXML ") {
+            200
+        } else {
+            expected_final[..3].parse::<u16>().unwrap()
+        };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML ") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(
+                observed.lines[0],
+                substitute(expected_xml, &oids),
+                "tag {tag}"
+            );
+        } else if command.starts_with("DBGET ") || command.starts_with("DBSETXML ") {
+            assert_eq!(
+                observed.final_text,
+                substitute(expected_final, &oids),
+                "tag {tag}"
+            );
+        }
+    }
+
+    // A sibling's direct replacement does not make it the OID winner. The
+    // last document position remains authoritative through all three shapes.
+    for (project, selected, addresses) in [
+        ("XREVA", 56, &[57, 56][..]),
+        ("XTRIA", 58, &[56, 57, 58][..]),
+        ("XQUAD", 58, &[59, 57, 56, 58][..]),
+    ] {
+        assert_eq!(
+            server
+                .handle(&format!("[use] PROJECT USE {project}"))
+                .status,
+            200
+        );
+        let selected_read =
+            server.handle("[selected] DBGET !33333333-3333-4333-8333-333333333333/Address");
+        assert_eq!(selected_read.status, 342);
+        assert!(selected_read
+            .final_text
+            .ends_with(&format!("/Address={selected}")));
+        for address in addresses {
+            let path = server.handle(&format!("[path] DBGETXML //{project}/254/{address}"));
+            assert_eq!(path.status, 200, "{path:?}");
+            assert!(path.lines[0].contains(&format!("<Address>{address}</Address>")));
+        }
+        let before = server
+            .handle(&format!("[before] DBGETXML //{project}/254"))
+            .lines[0]
+            .clone();
+        let shared = "33333333-3333-4333-8333-333333333333";
+        let rejected = format!("<Application><OID>{shared}</OID><TagName>Moved</TagName><Address>60</Address></Application>");
+        assert_eq!(
+            server
+                .handle_document(
+                    &format!("[safe] DBSETXML //{project}/254/{}", addresses[0]),
+                    &rejected
+                )
+                .status,
+            409
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[after] DBGETXML //{project}/254"))
+                .lines[0],
+            before
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[safe] DBDELETE !{shared}/TagName"))
+                .status,
+            409
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[after] DBGETXML //{project}/254"))
+                .lines[0],
+            before
+        );
+    }
+    assert_eq!(server.handle("[use] PROJECT USE XQUAD").status, 200);
+    let ordered = server.handle("[before-copy] DBGETXML //XQUAD/254").lines[0].clone();
+    assert_eq!(
+        server.handle("[copy] PROJECT COPY XQUAD XQCOPY").status,
+        200
+    );
+    assert_eq!(server.handle("[use] PROJECT USE XQCOPY").status, 200);
+    assert_eq!(
+        server.handle("[copy-tree] DBGETXML //XQCOPY/254").lines[0],
+        ordered
+    );
+    assert_eq!(
+        server.handle("[rename] PROJECT RENAME XQCOPY XQREN").status,
+        200
+    );
+    assert_eq!(server.handle("[use] PROJECT USE XQREN").status, 200);
+    assert_eq!(
+        server.handle("[rename-tree] DBGETXML //XQREN/254").lines[0],
+        ordered
+    );
+    assert!(server
+        .handle("[selected] DBGET !33333333-3333-4333-8333-333333333333/Address")
+        .final_text
+        .ends_with("/Address=58"));
 }
 
 #[test]

@@ -1754,6 +1754,11 @@ pub struct DbPendingObject {
     pub fields: HashMap<String, String>,
     /// Canonical address after all compulsory fields have been supplied.
     pub path: Option<String>,
+    /// Position in a complete Network's repeated-OID Application list.
+    /// Native OID lookup selects the last submitted record, independently
+    /// of its numeric Address. Old repositories retain address ordering.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub xml_order: Option<u16>,
 }
 
 /// In-memory C-Gate server.
@@ -2539,10 +2544,9 @@ impl Server {
         }
     }
 
-    // A complete Network can contain the captured pair of leaf Applications
-    // with one OID. Keep the legacy project/OID key for the first record and
-    // give its sibling a stable path suffix so JSON persistence cannot merge
-    // them. OID lookup is separately resolved to the last Application.
+    // A complete Network can contain repeated-OID leaf Applications. Keep
+    // the legacy project/OID key for its first record and give every sibling
+    // a stable path suffix so JSON persistence cannot merge them.
     fn insert_db_pending_object(&mut self, object: DbPendingObject) {
         let base = format!("{}\u{1f}{}", object.project, object.oid);
         let key = if self
@@ -4247,11 +4251,20 @@ impl Server {
             })
             .collect::<Vec<_>>();
         children.sort_by_key(|object| {
-            object
+            let address = object
                 .fields
                 .get("Address")
                 .and_then(|address| address.parse::<u8>().ok())
-                .unwrap_or_default()
+                .unwrap_or_default();
+            if object.element == "Application" {
+                object
+                    .xml_order
+                    .map_or((1, u16::from(address), address), |order| {
+                        (0, order, address)
+                    })
+            } else {
+                (1, u16::from(address), address)
+            }
         });
         children
     }
@@ -7615,9 +7628,8 @@ impl Server {
             kinds_by_oid.entry(oid).or_default().push(kind);
         }
         // The owned captures admit Application+Unit, repeated Units, and
-        // precisely two leaf Applications in ascending Address order in a
-        // complete Network. Other collisions still need a wider identity
-        // migration or their own native evidence.
+        // repeated leaf Applications in a complete Network. Other collisions
+        // still need a wider identity migration or their own native evidence.
         let unsupported_duplicate = kinds_by_oid.iter().any(|(oid, kinds)| {
             if kinds.len() < 2 {
                 return false;
@@ -7625,20 +7637,21 @@ impl Server {
             let units = kinds.iter().filter(|kind| **kind == "Unit").count();
             let applications = kinds.iter().filter(|kind| **kind == "Application").count();
             let unit_shape = units > 0 && applications <= 1 && units + applications == kinds.len();
-            let app_pair =
-                if object.kind == DbXmlKind::Network && kinds.len() == 2 && applications == 2 {
-                    let pair = object
-                        .children
-                        .iter()
-                        .filter(|child| child.kind == DbXmlKind::Application && child.oid == **oid)
-                        .collect::<Vec<_>>();
-                    pair.len() == 2
-                        && pair[0].address < pair[1].address
-                        && pair.iter().all(|child| child.children.is_empty())
-                } else {
-                    false
-                };
-            object.kind != DbXmlKind::Network || !(unit_shape || app_pair)
+            let app_list = if object.kind == DbXmlKind::Network && kinds.len() == applications {
+                let list = object
+                    .children
+                    .iter()
+                    .filter(|child| child.kind == DbXmlKind::Application && child.oid == **oid)
+                    .collect::<Vec<_>>();
+                list.len() == applications
+                    && list.len() <= u16::MAX as usize
+                    && list.iter().all(|child| {
+                        child.children.is_empty() && child.extras == DbXmlExtras::default()
+                    })
+            } else {
+                false
+            };
+            object.kind != DbXmlKind::Network || !(unit_shape || app_list)
         });
         if unsupported_duplicate {
             return Err((
@@ -7692,11 +7705,22 @@ impl Server {
         } else {
             None
         };
+        let xml_order = (target.kind == DbXmlKind::Application)
+            .then(|| {
+                self.db_pending
+                    .values()
+                    .find(|candidate| {
+                        candidate.project == target.project
+                            && candidate.path.as_deref() == Some(target.path.as_str())
+                    })
+                    .and_then(|candidate| candidate.xml_order)
+            })
+            .flatten();
         self.remove_db_xml_subtree(target, &old_oids);
         if object.kind == DbXmlKind::Network {
             self.insert_db_xml_network(&target.project, object, old_network.as_ref())?;
         } else {
-            self.insert_db_xml_object(&target.project, &target.parent, object)?;
+            self.insert_db_xml_object(&target.project, &target.parent, object, xml_order)?;
         }
         self.retire_inactive_db_oids(&old_oids.into_iter().collect::<Vec<_>>());
         Ok(())
@@ -7851,6 +7875,7 @@ impl Server {
         project: &str,
         parent: &str,
         object: &ParsedDbXmlObject,
+        xml_order: Option<u16>,
     ) -> Result<String, (u16, String)> {
         let path = format!("{parent}/{}", object.address);
         let mut fields = HashMap::from([
@@ -7867,6 +7892,7 @@ impl Server {
             element: object.kind.element().to_string(),
             fields,
             path: Some(path.clone()),
+            xml_order,
         };
         self.insert_db_pending_object(pending);
         self.known_oids.insert(object.oid.clone());
@@ -7903,21 +7929,21 @@ impl Server {
                     },
                 );
                 for child in &object.children {
-                    self.insert_db_xml_object(project, &path, child)?;
+                    self.insert_db_xml_object(project, &path, child, None)?;
                 }
             }
             DbXmlKind::Group => {
                 self.objects
                     .insert(format!("{parent}-GROUP-{}", object.address));
                 for child in &object.children {
-                    self.insert_db_xml_object(project, &path, child)?;
+                    self.insert_db_xml_object(project, &path, child, None)?;
                 }
             }
             DbXmlKind::Application => {
                 self.objects
                     .insert(format!("{parent}-APPLICATION-{}", object.address));
                 for child in &object.children {
-                    self.insert_db_xml_object(project, &path, child)?;
+                    self.insert_db_xml_object(project, &path, child, None)?;
                 }
             }
             DbXmlKind::Network => {
@@ -8023,8 +8049,27 @@ impl Server {
             self.unit_pp_fields
                 .insert(document_key, unit.pp_fields.clone());
         }
-        for child in &object.children {
-            self.insert_db_xml_object(project, &path, child)?;
+        let repeated_app_oid = object.children.iter().any(|child| {
+            child.kind == DbXmlKind::Application
+                && object
+                    .children
+                    .iter()
+                    .filter(|other| other.kind == DbXmlKind::Application && other.oid == child.oid)
+                    .count()
+                    > 1
+        });
+        for (position, child) in object.children.iter().enumerate() {
+            let xml_order = if repeated_app_oid && child.kind == DbXmlKind::Application {
+                Some(u16::try_from(position).map_err(|_| {
+                    (
+                        status::CONFLICT_EXISTS,
+                        "Too many Application children".to_string(),
+                    )
+                })?)
+            } else {
+                None
+            };
+            self.insert_db_xml_object(project, &path, child, xml_order)?;
         }
         Ok(())
     }

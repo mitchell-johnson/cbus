@@ -34,11 +34,14 @@ and focused server test replay all post-setup native transactions and compare
 every direct and OID XML/field readback. A service test also checks both
 records through JSON repository restart and later direct replacement without
 PCI traffic. Rust keeps the captured pair under separate project/OID/path
-keys, selects the higher-address Application for OID reads and the captured
+keys, selects the last submitted Application (the higher address in this
+ascending pair) for OID reads and the captured
 TagName writes, and preserves both on copy, rename and archive restoration.
-Its support is intentionally limited to two leaf Applications in ascending
-address order in one complete Network. Other repeated Application counts,
-reversed submission order, nested same-OID Application descendants, mixed
+The [later 114-request owned capture](native-cgate-dbsetxml-application-shapes.md)
+extends this pair to reversed submission order, three and four same-OID leaf
+Applications. It proves submission-order Network XML, final-submitted
+Application OID selection, direct-path and OID replacement, and two
+save/reload cycles. Nested same-OID Application descendants, mixed
 Application/Unit/typed-container collisions beyond the [earlier captured
 shapes](native-cgate-dbsetxml-duplicate-oids.md), and cross-network identity
 collisions still need native evidence and/or a broader identity model.

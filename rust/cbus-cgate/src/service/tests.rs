@@ -15254,6 +15254,166 @@ async fn duplicate_application_oid_keeps_both_paths_through_service_restart() {
 }
 
 #[tokio::test]
+async fn reversed_four_application_oid_order_survives_repository_restart() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] PROJECT NEW XQUAD",
+        "[2] PROJECT USE XQUAD",
+        "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(service.handle(&mut client, command).await.status, 200);
+    }
+    let initial = service
+        .handle(&mut client, "[4] DBGETXML //XQUAD/254")
+        .await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let shared = "33333333-3333-4333-8333-333333333333";
+    let application = |address: u8, name: &str| {
+        format!("<Application><OID>{shared}</OID><TagName>{name}</TagName><Address>{address}</Address></Application>")
+    };
+    let document = format!(
+        "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>{}{}{}{}</Network>",
+        application(59, "Fourth"), application(57, "Second"),
+        application(56, "First"), application(58, "Third")
+    );
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[5] DBSETXML //XQUAD/254", &document)
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[6] PROJECT SAVE XQUAD")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[7] PROJECT CLOSE XQUAD")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[8] PROJECT LOAD XQUAD")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[9] PROJECT USE XQUAD")
+            .await
+            .status,
+        200
+    );
+    let expected_tree = service
+        .handle(&mut client, "[10] DBGETXML //XQUAD/254")
+        .await
+        .lines[0]
+        .clone();
+    let mut last = 0;
+    for address in [59, 57, 56, 58] {
+        let marker = format!("<Address>{address}</Address></Application>");
+        let position = expected_tree.find(&marker).unwrap();
+        assert!(position > last);
+        last = position;
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "database-only replacement must not reach PCI"
+    );
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[11] PROJECT USE XQUAD")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[12] DBGETXML //XQUAD/254")
+            .await
+            .lines[0],
+        expected_tree
+    );
+    let selected = restarted
+        .handle(&mut client, &format!("[13] DBGETXML !{shared}"))
+        .await;
+    assert_eq!(selected.status, 200);
+    assert!(selected.lines[0].contains("<Address>58</Address>"));
+    let replacement = application(59, "ChangedFourth");
+    assert_eq!(
+        restarted
+            .handle_document(&mut client, "[14] DBSETXML //XQUAD/254/59", &replacement)
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, &format!("[15] DBGETXML !{shared}"))
+            .await
+            .lines[0],
+        selected.lines[0]
+    );
+    drop(restarted);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[16] PROJECT USE XQUAD")
+            .await
+            .status,
+        200
+    );
+    let tree = restarted
+        .handle(&mut client, "[17] DBGETXML //XQUAD/254")
+        .await
+        .lines[0]
+        .clone();
+    assert!(tree.contains("<TagName>ChangedFourth</TagName><Address>59</Address>"));
+    assert_eq!(tree.matches(&format!("<OID>{shared}</OID>")).count(), 4);
+    assert!(restarted
+        .handle(&mut client, &format!("[18] DBGETXML !{shared}"))
+        .await
+        .lines[0]
+        .contains("<Address>58</Address>"));
+    drop(restarted);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

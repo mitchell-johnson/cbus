@@ -2661,6 +2661,7 @@ impl Server {
                 element,
                 fields: Default::default(),
                 path: None,
+                xml_order: None,
             },
         );
         self.objects.insert(format!("!{oid}"));
@@ -2987,14 +2988,20 @@ impl Server {
         self.db_pending
             .values()
             .filter(|object| object.project == project && object.oid == oid)
-            // The captured pair of leaf Applications resolves !OID to the
-            // second (higher-address) record after save/reload as well.
+            // Native OID lookup selects the final submitted leaf
+            // Application, including reversed and four-record lists. Legacy
+            // snapshots without xml_order retain higher-address selection.
             .max_by_key(|object| {
-                object
+                let address = object
                     .fields
                     .get("Address")
                     .and_then(|address| address.parse::<u8>().ok())
-                    .unwrap_or_default()
+                    .unwrap_or_default();
+                (
+                    object.xml_order.is_some(),
+                    object.xml_order.unwrap_or_default(),
+                    address,
+                )
             })
     }
 
@@ -3003,11 +3010,16 @@ impl Server {
             .iter()
             .filter(|(_, object)| object.project == project && object.oid == oid)
             .max_by_key(|(_, object)| {
-                object
+                let address = object
                     .fields
                     .get("Address")
                     .and_then(|address| address.parse::<u8>().ok())
-                    .unwrap_or_default()
+                    .unwrap_or_default();
+                (
+                    object.xml_order.is_some(),
+                    object.xml_order.unwrap_or_default(),
+                    address,
+                )
             })
             .map(|(key, _)| key.clone())
     }
@@ -3672,6 +3684,7 @@ impl Server {
                 element: node.element.clone(),
                 fields,
                 path: None,
+                xml_order: None,
             },
         );
         self.objects.insert(format!("!{oid}"));
