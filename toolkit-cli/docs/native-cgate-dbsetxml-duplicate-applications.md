@@ -43,6 +43,9 @@ Application/Unit/typed-container collisions beyond the [earlier captured
 shapes](native-cgate-dbsetxml-duplicate-oids.md), and cross-network identity
 collisions still need native evidence and/or a broader identity model.
 Uncaptured duplicate-Application Address and other field writes, and
-`DBDELETE` of a duplicated Application or its containing Network, return
-`409` rather than risking sibling loss. Native file format and physical
-effects remain outside this capture.
+`DBDELETE` of a duplicated Application, its descendants or its containing
+Network return `409` rather than risking sibling loss. The offline safety
+regression checks OID field suffixes, both Application paths, numeric Network
+aliases, project selection and Network rename; these deletion and rename
+results are mock safeguards, not native observations. Native file format and
+physical effects remain outside this capture.

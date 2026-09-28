@@ -3332,10 +3332,17 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
 
     let shared = "33333333-3333-4333-8333-333333333333";
     let survivor = server.handle("[survivor] DBGETXML //XAPP/254/56").lines[0].clone();
+    let sibling = server.handle("[sibling] DBGETXML //XAPP/254/57").lines[0].clone();
     for target in [
         format!("!{shared}"),
+        format!("!{shared}/TagName"),
+        format!("!{network_oid}"),
         "//XAPP/254/56".to_string(),
+        "//XAPP/254/56/TagName".to_string(),
+        "//XAPP/254/57/TagName".to_string(),
         "//XAPP/254".to_string(),
+        "//XAPP/0254".to_string(),
+        "//XAPP/+254".to_string(),
     ] {
         assert_eq!(
             server.handle(&format!("[closed] DBDELETE {target}")).status,
@@ -3345,7 +3352,25 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
             server.handle("[still] DBGETXML //XAPP/254/56").lines[0],
             survivor
         );
+        assert_eq!(
+            server.handle("[still] DBGETXML //XAPP/254/57").lines[0],
+            sibling
+        );
     }
+    assert_eq!(server.handle("[other] PROJECT NEW OTHER").status, 200);
+    assert_eq!(server.handle("[other] PROJECT USE OTHER").status, 200);
+    assert_eq!(server.handle("[closed] DBDELETE //XAPP/254").status, 404);
+    assert_eq!(server.handle("[none] PROJECT CLOSE").status, 200);
+    assert_eq!(server.handle("[closed] DBDELETE //XAPP/254").status, 404);
+    assert_eq!(server.handle("[again] PROJECT USE XAPP").status, 200);
+    assert_eq!(
+        server.handle("[still] DBGETXML //XAPP/254/56").lines[0],
+        survivor
+    );
+    assert_eq!(
+        server.handle("[still] DBGETXML //XAPP/254/57").lines[0],
+        sibling
+    );
     assert_eq!(
         server
             .handle(&format!("[closed] DBSET !{shared}/Address 58"))
@@ -3451,6 +3476,24 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
         assert_eq!(
             server
                 .handle(&format!("[restored] DBGETXML //XAPPA/254/{address}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(server.handle("[move] DBRENAMENET 254 253").status, 200);
+    for address in [56, 57] {
+        assert_eq!(
+            server
+                .handle(&format!("[moved] DBGETXML //XAPPA/253/{address}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(server.handle("[closed] DBDELETE //XAPPA/253").status, 409);
+    for address in [56, 57] {
+        assert_eq!(
+            server
+                .handle(&format!("[still] DBGETXML //XAPPA/253/{address}"))
                 .status,
             200
         );

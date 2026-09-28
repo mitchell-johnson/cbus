@@ -8372,44 +8372,50 @@ impl Server {
         ok(tag, vec![], "200 OK.")
     }
 
-    /// Remap `db_fields`/`objects` keys across a network rename, using an
-    /// exact-segment boundary so `//P/25/...` never matches `//P/254/...`.
+    /// Remap database paths across a network rename, using an exact-segment
+    /// boundary so `//P/25/...` never matches `//P/254/...`.
     fn remap_network_paths(&mut self, project: &str, src: u8, dst: u8) {
         let from = format!("//{project}/{src}/");
         let to = format!("//{project}/{dst}/");
         let exact = format!("//{project}/{src}");
+        let remap = |value: String| {
+            if value == exact {
+                format!("//{project}/{dst}")
+            } else if let Some(rest) = value.strip_prefix(&from) {
+                format!("{to}{rest}")
+            } else {
+                value
+            }
+        };
         self.db_fields = std::mem::take(&mut self.db_fields)
             .into_iter()
-            .map(|(k, v)| {
-                if k == exact {
-                    (format!("//{project}/{dst}"), v)
-                } else if let Some(rest) = k.strip_prefix(&from) {
-                    (format!("{to}{rest}"), v)
-                } else {
-                    (k, v)
-                }
-            })
+            .map(|(key, value)| (remap(key), value))
             .collect();
         self.objects = std::mem::take(&mut self.objects)
             .into_iter()
-            .map(|k| {
-                if k == exact {
-                    format!("//{project}/{dst}")
-                } else if let Some(rest) = k.strip_prefix(&from) {
-                    format!("{to}{rest}")
-                } else {
-                    k
+            .map(&remap)
+            .collect();
+        // Level parents and complete pending records live under the renamed
+        // network too. The pending-map suffix contains the path for same-OID
+        // siblings and must move with the record.
+        for level in self.db_levels.values_mut() {
+            level.parent = remap(std::mem::take(&mut level.parent));
+        }
+        self.db_pending = std::mem::take(&mut self.db_pending)
+            .into_iter()
+            .map(|(key, mut object)| {
+                if object.project != project {
+                    return (key, object);
                 }
+                object.parent = remap(object.parent);
+                object.path = object.path.map(&remap);
+                let key = match key.split_once('\u{1e}') {
+                    Some((base, path)) => format!("{base}\u{1e}{}", remap(path.to_string())),
+                    None => key,
+                };
+                (key, object)
             })
             .collect();
-        // Level parents live under the renamed network too.
-        for level in self.db_levels.values_mut() {
-            if level.parent == exact {
-                level.parent = format!("//{project}/{dst}");
-            } else if let Some(rest) = level.parent.strip_prefix(&from) {
-                level.parent = format!("{to}{rest}");
-            }
-        }
     }
 
     /// Native `DBDELETE path`.
@@ -8427,6 +8433,15 @@ impl Server {
         } else {
             words[1].to_string()
         };
+        // Path deletion must remain in the selected project. The generic
+        // Network branch below resolves the project embedded in the path,
+        // so enforce ownership before it can remove another project's net.
+        if target
+            .strip_prefix("//")
+            .is_some_and(|path| self.current.as_deref() != path.split('/').next())
+        {
+            return err(tag, status::NOT_FOUND, "404 Project not selected");
+        }
         if target.strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
         }) {
@@ -8437,16 +8452,41 @@ impl Server {
             );
         }
         // DBDELETE's older OID-based subtree walk cannot distinguish these
-        // siblings. Keep deletion closed until its native selection semantics
-        // and path-aware removal are captured.
+        // siblings. An OID target can carry a field suffix, which the walk
+        // strips before deleting, and a Network OID can contain both paths.
+        // Keep both forms closed until native selection semantics and
+        // path-aware removal are captured.
         if self.current.as_deref().is_some_and(|project| {
             self.db_pending.values().any(|object| {
                 object.project == project
                     && object.element == "Application"
                     && self.duplicated_application_oid(project, &object.oid)
-                    && (target == format!("!{}", object.oid)
-                        || object.path.as_deref().is_some_and(|path| {
-                            path == target || path.starts_with(&format!("{target}/"))
+                    && (target.strip_prefix('!').is_some_and(|rest| {
+                        let oid = rest.split('/').next().unwrap_or("");
+                        oid == object.oid
+                            || self.projects.get(project).is_some_and(|record| {
+                                record.networks.values().any(|network| {
+                                    network.oid == oid
+                                        && object.path.as_deref().is_some_and(|path| {
+                                            path.starts_with(&format!(
+                                                "//{project}/{}/",
+                                                network.address
+                                            ))
+                                        })
+                                })
+                            })
+                    }) || object.path.as_deref().is_some_and(|path| {
+                        path == target
+                            || path.starts_with(&format!("{target}/"))
+                            || target.starts_with(&format!("{path}/"))
+                    }) || target
+                        .strip_prefix(&format!("//{project}/"))
+                        .filter(|remainder| !remainder.contains('/'))
+                        .and_then(|remainder| remainder.parse::<u8>().ok())
+                        .is_some_and(|address| {
+                            object.path.as_deref().is_some_and(|path| {
+                                path.starts_with(&format!("//{project}/{address}/"))
+                            })
                         }))
             })
         }) {

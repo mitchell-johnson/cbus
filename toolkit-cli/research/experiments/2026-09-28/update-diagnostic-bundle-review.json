@@ -348,5 +348,27 @@
     "install_command": "python3.13 -m pip install --no-deps --target /private/tmp/cbus-p901-closure-wheel-final-20260928/site /private/tmp/cbus-p901-closure-wheel-final-20260928/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
     "test_command": "PYTHONPATH=/private/tmp/cbus-p901-closure-wheel-final-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_parity_register.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_coverage_require_complete.py -p no:cacheprovider",
     "python": "3.13.14"
+  },
+  "post_closure_p2_regression": {
+    "reason": "P2.02 same-OID Application support and follow-up DBDELETE/rename safety changed Rust source, C-Gate contract inventory and packaged parity metadata after P9.01 closure; composer source and 62 required case IDs are unchanged.",
+    "integration_base_revision": "9617f0f",
+    "wheel_sha256": "758b188aa310b8aecb0373bb460326d694913b009e7b43807d05fcafe513eef9",
+    "wheel_filename": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "installed_import_path": "/private/tmp/cbus-post-p2-final-wheel-20260928/site/cbus_toolkit/__init__.py",
+    "package_input_sha256": {
+      "toolkit-cli/src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392",
+      "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": "1e5c7f67c1d3d0092b950001f612549a32af654e7d2ea69dc7e29c4759ef5117",
+      "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "916897f8ec58b353c28fb307c01f3bc13adc8e1fd8e6a14b840bf6b752c1dcbe",
+      "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "7bc20097d4023b474e650cda0ea8b2e1dfe60424c0d2055fb0b4f9c11b2534ce"
+    },
+    "selection": "four P9.01 diagnostic/package-bundle modules, parity register, coverage and C-Gate contract inventory tests",
+    "passed": 146,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "subtests_passed": 551,
+    "p9_01_case_ids_passed": 62,
+    "p9_01_case_ids_skipped": 0,
+    "source_bound_differentials": "six refreshed current-debug-binary receipts passed: SESSION_ID 9x2, tagged 11x2, direct/combined Unit mapper 12x2 plus two combined reads per server"
   }
 }

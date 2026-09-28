@@ -1277,13 +1277,15 @@ cmqttd repository boundary;
 the bounded DBSETXML surface. Complete forms validate the selected path/OID,
 whole submitted tree, Unit scalar/PP ownership and modeled identity/address
 conflicts before an atomic durable replacement and `301 OID=...` root receipt.
-An owned build-2001 capture establishes that an Application and Unit, or two
-Units at different addresses, may share an OID and retain independent scalar
-and PP readback through save/reload and path-targeted Unit replacement. cmqttd
-admits these shapes with address-keyed Unit metadata; other duplicate shapes
-still return 409 until their native semantics and lossless representation are
-established. Ambiguous OID-based mutations return 409; use an addressed Unit
-path. Cross-network Unit-OID collisions remain refused project-wide.
+Owned build-2001 captures establish that an Application and Unit, two Units,
+or two leaf Applications at different addresses may share an OID and retain
+separate addressed readback through save/reload. cmqttd keeps address-keyed
+Unit metadata and path-distinct pending Application records for these shapes.
+For the captured two-Application pair, OID reads and TagName mutations select
+the later Application; direct-path mutation preserves its sibling. Ambiguous
+Unit-OID mutations and unprobed duplicate-Application fields/deletes return
+409. Other duplicate shapes and cross-network Unit-OID collisions remain
+refused until their native semantics and lossless representation are known.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive
@@ -1299,6 +1301,9 @@ pins discarded comments, processing instructions, namespaced additions,
 omitted optional Unit fields and PP, save/reload identity, and the duplicate-OID
 cases. The [owned duplicate-OID capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md)
 pins separate Unit identity, OID lookup precedence and durable direct mutation.
+The [leaf Application pair capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-applications.md)
+pins both persisted paths, later-Application OID selection and the two captured
+TagName mutation forms.
 Other combined forms and private vendor XML/repository formats
 remain unverified.
 
