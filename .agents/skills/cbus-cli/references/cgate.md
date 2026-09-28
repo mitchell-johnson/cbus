@@ -1202,8 +1202,8 @@ invocations; `TRIGGER EVENT` and `EVENT_CHANNEL LIST` enter at Program, while
 `TREE`/`TREEXML` and `GETSTATE` enter at Monitor. These checks run before
 mutation or PCI dispatch, including `DBSETXML` documents; `EVENTS` follows the
 captured `EVENT` Monitor floor. `ACCESS` retains its Clipsal/Max family check.
-The 58 expansion observations appear in the Toolkit CLI's C-Gate contract
-inventory as source-bound known facts for exact invocations; their handler-role
+All 129 initial, expansion and programming observations appear in the Toolkit
+CLI's C-Gate contract inventory as source-bound known facts for exact invocations; their handler-role
 subaxes remain unresolved and do not count as functional acceptance.
 A third owned native capture adds 27 PP leaves at Clipsal and all eight
 PROGRAMMER/five DEPLOY_QUEUE leaves at Program. The PP family therefore

@@ -27,6 +27,18 @@ SURFACE_PATH = ROOT / "docs" / "toolkit-surface.json"
 NATIVE_SESSION_PATH = (
     ROOT / "research" / "experiments" / "2026-09-25" / "cgate-session-native-acceptance.json"
 )
+NATIVE_SELECTOR_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_session_selectors.json"
+)
+NATIVE_INITIAL_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_authorization_probe.json"
+)
+NATIVE_INITIAL_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_authorization_probe.py"
+)
 NATIVE_ROLE_PATH = (
     REPOSITORY / "rust" / "testdata" / "fixtures"
     / "native_cgate_authorization_expansion_probe.json"
@@ -76,8 +88,12 @@ NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
     "cgate-session-native-acceptance.json"
 )
+NATIVE_SELECTOR_REF = "rust/testdata/fixtures/native_cgate_session_selectors.json"
 NATIVE_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json"
+)
+NATIVE_INITIAL_ROLE_REF = (
+    "rust/testdata/fixtures/native_cgate_authorization_probe.json"
 )
 NATIVE_PROGRAMMING_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json"
@@ -88,8 +104,14 @@ NATIVE_CGATE_JAR_SHA256 = (
 NATIVE_SESSION_EVIDENCE_SHA256 = (
     "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
 )
+NATIVE_SELECTOR_EVIDENCE_SHA256 = (
+    "537a0718d94948010d27e2b3aa3e3abce1478d0af08448a4af7199d11766a562"
+)
 NATIVE_ROLE_EVIDENCE_SHA256 = (
     "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e"
+)
+NATIVE_INITIAL_ROLE_EVIDENCE_SHA256 = (
+    "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0"
 )
 NATIVE_PROGRAMMING_ROLE_EVIDENCE_SHA256 = (
     "cdcbb2507762c404c7ee2193893a3128c2250d35aedc15b98a4611a2ab7ade2f"
@@ -552,10 +574,62 @@ def validate_native_session_observations() -> None:
         raise ValueError("Native C-Gate session acceptance source changed")
 
 
+def validate_native_selector_observations() -> None:
+    """Bound EVENT and QUIT trailing-word claims to the owned native trace."""
+    if digest(NATIVE_SELECTOR_PATH) != NATIVE_SELECTOR_EVIDENCE_SHA256:
+        raise ValueError("Native C-Gate session selector source changed")
+    report = json.loads(NATIVE_SELECTOR_PATH.read_text(encoding="utf-8"))
+    if (
+        report.get("format") != "native-cgate-session-selectors-v1"
+        or report.get("target") != "C-Gate v3.4.0 build 2001"
+        or report.get("vendor_jar_sha256") != NATIVE_CGATE_JAR_SHA256
+        or report.get("physical_networks_opened") is not False
+        or not isinstance(report.get("captures"), list)
+        or len(report["captures"]) != 3
+    ):
+        raise ValueError("Native C-Gate session selector provenance changed")
+    matrix = report["captures"][0]
+    cleanup = matrix.get("cleanup", {})
+    cases = matrix.get("cases")
+    if (
+        matrix.get("name") != "session_matrix"
+        or matrix.get("listener_count") != 6
+        or matrix.get("listeners_loopback_only") is not True
+        or not isinstance(cases, list)
+        or len(cases) != 43
+        or any(
+            cleanup.get(key) is not True
+            for key in (
+                "process_exit_confirmed", "reserved_sockets_closed",
+                "log_closed", "work_removed", "cleanup_complete",
+            )
+        )
+    ):
+        raise ValueError("Native C-Gate session selector capture changed")
+    expected = {
+        "EVENT ON extra": 200,
+        "EVENT e5s1c1 extra": 200,
+        "EVENT OFF extra": 200,
+        "QUIT extra": 204,
+        "EXIT extra": 204,
+    }
+    for command, status in expected.items():
+        matches = [case for case in cases if case.get("command") == command]
+        if (
+            len(matches) != 1
+            or matches[0].get("status") != status
+            or (status == 204 and matches[0].get("eof_after_reply") is not True)
+            or not isinstance(matches[0].get("reply"), list)
+            or len(matches[0]["reply"]) != 1
+            or not re.match(rf"^\[[^]]+\] {status} ", matches[0]["reply"][0])
+        ):
+            raise ValueError(f"Native C-Gate session selector changed: {command}")
+
+
 def _native_role_fixture_observations(
     inventory_paths: set[str], *, fixture_path: Path, fixture_digest: str,
     fixture_format: str, script_path: Path, registry_marker: str,
-    expected_commands: int, label: str,
+    expected_commands: int, label: str, response_command_count: int | None = None,
 ) -> dict[str, dict]:
     """Bind one exact invocation per captured floor; retain incomplete scope.
 
@@ -588,9 +662,20 @@ def _native_role_fixture_observations(
 
     commands = report.get("commands")
     roles = report.get("roles")
+    if response_command_count is not None:
+        # The original probe predates the top-level commands list. Its nine
+        # role records retain the complete response-key set instead.
+        none_record = roles.get("None") if isinstance(roles, dict) else None
+        if (
+            "commands" in report
+            or not isinstance(none_record, dict)
+            or not isinstance(none_record.get("responses"), dict)
+        ):
+            raise ValueError(f"Native C-Gate {label} response command set changed")
+        commands = list(none_record["responses"])
     if (
         not isinstance(commands, list)
-        or len(commands) != expected_commands
+        or len(commands) != (response_command_count or expected_commands)
         or any(not isinstance(command, str) or not command for command in commands)
         or len(commands) != len(set(commands))
         or not isinstance(roles, dict)
@@ -609,7 +694,7 @@ def _native_role_fixture_observations(
         r'\("([^"]+)", CgateAccessLevel::(\w+)\)', access_source[start:end]
     )
     if (
-        len(registry) != len(commands)
+        len(registry) != expected_commands
         or len({path for path, _ in registry}) != len(registry)
         or any(level not in NATIVE_ROLE_LEVELS for _, level in registry)
     ):
@@ -633,9 +718,12 @@ def _native_role_fixture_observations(
             command for command in commands
             if command == path or command.startswith(f"{path} ")
         ]
-        if len(matching) != 1:
+        if path in matching:
+            command = path
+        elif len(matching) == 1:
+            command = matching[0]
+        else:
             raise ValueError(f"Native C-Gate role invocation changed for {path}")
-        command = matching[0]
         floor_index = NATIVE_ROLE_LEVELS.index(minimum)
         for index, level in enumerate(NATIVE_ROLE_LEVELS):
             reply = roles[level]["responses"][command]
@@ -647,9 +735,9 @@ def _native_role_fixture_observations(
         if not re.match(r"^[0-9]{3} ", floor_reply):
             raise ValueError(f"Native C-Gate role response changed for {command}")
 
-        # SHOW OBJECTS is a selector beneath the maintained SHOW path. Keep
-        # its exact invocation in known facts; do not promote all SHOW forms.
-        inventory_path = "SHOW" if path == "SHOW OBJECTS" else path
+        # SHOW OBJECTS and SCENE PLAY are selectors beneath maintained
+        # primary paths. Keep exact invocations without promoting every form.
+        inventory_path = {"SHOW OBJECTS": "SHOW", "SCENE PLAY": "SCENE"}.get(path, path)
         if inventory_path not in inventory_paths or inventory_path in observations:
             raise ValueError(f"Native C-Gate role path is not uniquely inventoried: {path}")
         observations[inventory_path] = {
@@ -661,13 +749,24 @@ def _native_role_fixture_observations(
             "fixture_sha256": fixture_digest,
             "scope": "exact_invocation_only; no_later_object_or_physical_success_claim",
         }
-    if len(observations) != len(commands):
+    if len(observations) != expected_commands:
         raise ValueError(f"Native C-Gate {label} mapping changed")
     return observations
 
 
 def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dict]:
-    """Combine both disjoint original role probes without resolving later checks."""
+    """Combine three disjoint original role probes without resolving later checks."""
+    initial = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_INITIAL_ROLE_PATH,
+        fixture_digest=NATIVE_INITIAL_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-authorization-probe-v1",
+        script_path=NATIVE_INITIAL_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_COMMANDS",
+        expected_commands=31,
+        response_command_count=38,
+        label="initial role",
+    )
     additional = _native_role_fixture_observations(
         inventory_paths,
         fixture_path=NATIVE_ROLE_PATH,
@@ -688,10 +787,10 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
         expected_commands=40,
         label="programming role",
     )
-    overlap = set(additional) & set(programming)
+    overlap = (set(initial) & set(additional)) | (set(initial) & set(programming)) | (set(additional) & set(programming))
     if overlap:
         raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
-    return additional | programming
+    return initial | additional | programming
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -713,19 +812,17 @@ def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
             "trailing_words": "ignored_by_native_and_endpoint",
         },
         "SESSION_ID TAG": {"minimum": 1, "maximum": None},
-        "EVENT": {"query": 0, "set": 1, "more_than_one": "syntax_error"},
-        "QUIT": {"minimum": 0, "maximum": 0, "alias": "EXIT"},
+        "EVENT": {
+            "query": 0, "set_minimum": 1, "set_maximum": None,
+            "after_first_mode_word": "ignored_by_native_and_endpoint",
+        },
+        "QUIT": {
+            "minimum": 0, "maximum": None, "alias": "EXIT",
+            "trailing_words": "ignored_by_native_and_endpoint",
+        },
     }
-    if path in {"EVENT", "QUIT"}:
-        selector["argument_arity"] = unresolved(
-            "The retained native trace does not bound trailing-word handling for this command.",
-            help_ref,
-            *refs,
-            known={"observed_native_forms": ["EVENT", "EVENTS", "EVENTS ON", "EVENT OFF", "EVENT e5s1c1"]
-                   if path == "EVENT" else ["QUIT", "EXIT"]},
-        )
-    else:
-        selector["argument_arity"] = resolved(arities[path], help_ref, *refs)
+    arity_refs = (*refs, NATIVE_SELECTOR_REF) if path in {"EVENT", "QUIT"} else refs
+    selector["argument_arity"] = resolved(arities[path], help_ref, *arity_refs)
     domains: dict[str, object] = {
         "SESSION_ID": "no_arguments",
         "SESSION_ID ALL": "ALL_selector_with_ignored_trailing_words",
@@ -940,11 +1037,15 @@ def build_row(
             matrix_ref,
         )
     elif observed := native_roles.get(path):
-        role_ref, access_ref = (
-            (NATIVE_ROLE_REF, ACCESS_ROLE_REF)
-            if observed["fixture_sha256"] == NATIVE_ROLE_EVIDENCE_SHA256
-            else (NATIVE_PROGRAMMING_ROLE_REF, ACCESS_PROGRAMMING_ROLE_REF)
-        )
+        role_ref, access_ref = {
+            NATIVE_INITIAL_ROLE_EVIDENCE_SHA256: (
+                NATIVE_INITIAL_ROLE_REF, "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_COMMANDS"
+            ),
+            NATIVE_ROLE_EVIDENCE_SHA256: (NATIVE_ROLE_REF, ACCESS_ROLE_REF),
+            NATIVE_PROGRAMMING_ROLE_EVIDENCE_SHA256: (
+                NATIVE_PROGRAMMING_ROLE_REF, ACCESS_PROGRAMMING_ROLE_REF
+            ),
+        }[observed["fixture_sha256"]]
         handler_roles = unresolved(
             "One native handler-entry invocation and its lower-role denial are "
             "captured; other selectors, object-specific checks and successful "
@@ -1065,6 +1166,7 @@ def build_row(
 
 def build() -> dict:
     validate_native_session_observations()
+    validate_native_selector_observations()
     primary, supplement = capability_paths()
     native_roles = native_handler_role_observations(
         {row["path"] for row in primary + supplement}
@@ -1094,7 +1196,7 @@ def build() -> dict:
     return {
         "schema_version": 1,
         "target": "C-Gate 3.4.0.2001 command endpoint",
-        "inventory_version": "cgate-contracts-2026-09-28.2",
+        "inventory_version": "cgate-contracts-2026-09-28.3",
         "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
         "sources": {
             "capability_matrix": {"sha256": digest(MATRIX_PATH)},
@@ -1105,6 +1207,8 @@ def build() -> dict:
             "access_handler_registry": {"sha256": digest(ACCESS_PATH)},
             "toolkit_surface": {"sha256": digest(SURFACE_PATH)},
             "native_session_acceptance": {"sha256": digest(NATIVE_SESSION_PATH)},
+            "native_session_selectors": {"sha256": digest(NATIVE_SELECTOR_PATH)},
+            "native_initial_handler_roles": {"sha256": digest(NATIVE_INITIAL_ROLE_PATH)},
             "native_handler_role_expansion": {"sha256": digest(NATIVE_ROLE_PATH)},
             "native_programming_handler_roles": {"sha256": digest(NATIVE_PROGRAMMING_ROLE_PATH)},
         },

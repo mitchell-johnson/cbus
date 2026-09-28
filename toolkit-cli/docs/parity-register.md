@@ -56,7 +56,7 @@ changes no provisional source count, and supplies no physical cache readback.
   C-Gate paths.
 - `research/build_cgate_contract_inventory.py` derives that inventory from the
   Rust routing matrix, declarative application arities, endpoint authorization
-  policy, public-help syntax hashes and both sanitized native handler-role
+  policy, public-help syntax hashes and all three sanitized native handler-role
   probes. It records unknown selector/state fields explicitly instead
   of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
@@ -231,28 +231,30 @@ for all five TELEPHONY leaves as minimum `Program`, including
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
 authorization axis.
 
-The inventory also records 98 exact native handler-entry role probes, each
+The inventory also records 129 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
 sessions. Their pinned fixtures are
+`rust/testdata/fixtures/native_cgate_authorization_probe.json` (31),
 `rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json` (58)
 and `rust/testdata/fixtures/native_cgate_programming_authorization_probe.json`
 (40 PP, PROGRAMMER and DEPLOY_QUEUE leaves).
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks the fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 98 `handler_roles` subaxes remain
+emitting these known facts. All 129 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.
 
-A pinned, sanitized original C-Gate 3.4.0.2001 command-session trace plus the
-public HELP syntax and production endpoint now expand five command paths:
+A pinned, sanitized original C-Gate 3.4.0.2001 command-session trace, the
+owned native session-selector matrix, public HELP syntax and production
+endpoint now expand five command paths:
 `SESSION_ID`, `SESSION_ID ALL`, `SESSION_ID TAG`, `EVENT` and `QUIT` (including
 the observed `EVENTS` and `EXIT` aliases). Their absence of C-Bus address/route
 targets, lack of project or programming-session preconditions, and
-connection-state effects are structured and source-bound. The three
-`SESSION_ID` forms have resolved arities; `EVENT` and `QUIT` trailing-word
-behavior remains unresolved. `SESSION_ID`, `SESSION_ID ALL`, and the
+connection-state effects are structured and source-bound. All five paths have
+resolved arities: the selector matrix confirms that native `EVENT` uses its
+first mode word and that `QUIT`/`EXIT` ignore trailing words. `SESSION_ID`, `SESSION_ID ALL`, and the
 `QUIT`/`EXIT` verb choice have resolved value domains. Tag text limits and
 `EVENT` mode case/numeric forms remain unresolved. Native
 `SESSION_ID ALL` ignores trailing words, a tag can be set only once, `EVENT`
@@ -265,7 +267,7 @@ subaxes remain unresolved. The source digest and required native cases are
 checked during generation; fixture weakening fails closed.
 
 The 70 declarative model arities remain known but unresolved until each is
-reconciled with the production parser. Across all paths, three argument-arity
+reconciled with the production parser. Across all paths, five argument-arity
 subaxes, three value domains, five full session-state axes, five target-form
 axes and nine state-effect subaxes are now resolved; the other 437 target-form
 axes and 433 command-specific effect subaxes remain open. Response framing is

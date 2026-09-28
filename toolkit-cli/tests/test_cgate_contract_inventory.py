@@ -56,8 +56,8 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
         "resolved": 442
     }
     assert counts["subaxis_status"]["selector_grammar.argument_arity"] == {
-        "resolved": 3,
-        "unresolved": 439,
+        "resolved": 5,
+        "unresolved": 437,
     }
     assert counts["subaxis_status"]["selector_grammar.value_domains"] == {
         "resolved": 3,
@@ -110,6 +110,9 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
 def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> None:
     document = contract_builder.build()
     parity.validate_cgate_contract_inventory(document)
+    assert document["sources"]["native_initial_handler_roles"]["sha256"] == sha256(
+        contract_builder.NATIVE_INITIAL_ROLE_PATH.read_bytes()
+    ).hexdigest()
     assert document["sources"]["native_handler_role_expansion"]["sha256"] == sha256(
         contract_builder.NATIVE_ROLE_PATH.read_bytes()
     ).hexdigest()
@@ -119,14 +122,14 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert document["sources"]["access_handler_registry"]["sha256"] == sha256(
         contract_builder.ACCESS_PATH.read_bytes()
     ).hexdigest()
-    assert document["counts"]["native_handler_role_observations"] == 98
-    assert document["counts"]["native_handler_role_unresolved"] == 98
+    assert document["counts"]["native_handler_role_observations"] == 129
+    assert document["counts"]["native_handler_role_unresolved"] == 129
     observed = [
         row for row in document["contracts"]
         if "native_handler_entry"
         in row["axes"]["authorization"]["subaxes"]["handler_roles"].get("known", {})
     ]
-    assert len(observed) == 98
+    assert len(observed) == 129
     assert all(
         row["axes"]["authorization"]["status"] == "partial"
         and row["axes"]["authorization"]["subaxes"]["handler_roles"]["status"]
@@ -139,6 +142,14 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert contract_by_path(document, "SHOW")["axes"]["authorization"]["subaxes"][
         "handler_roles"
     ]["known"]["native_handler_entry"]["invocation"] == "SHOW OBJECTS //MISSING"
+    event_role = contract_by_path(document, "EVENT")["axes"]["authorization"]["subaxes"][
+        "handler_roles"
+    ]
+    assert event_role["known"]["native_handler_entry"]["invocation"] == "EVENT"
+    assert event_role["known"]["native_handler_entry"][
+        "minimum_access_level_at_handler_entry"
+    ] == "Monitor"
+    assert contract_builder.NATIVE_INITIAL_ROLE_REF in event_role["source_refs"]
     assert contract_by_path(document, "TRIGGER EVENT")["axes"]["authorization"][
         "subaxes"
     ]["handler_roles"]["known"]["native_handler_entry"][
@@ -172,6 +183,25 @@ def test_native_role_probe_weakening_cannot_promote_or_rebuild(
         contract_builder.build()
     monkeypatch.setattr(
         contract_builder, "NATIVE_ROLE_EVIDENCE_SHA256", sha256(fixture.read_bytes()).hexdigest()
+    )
+    with pytest.raises(ValueError, match="role threshold changed"):
+        contract_builder.build()
+
+
+def test_initial_native_role_probe_weakening_cannot_rebuild(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_INITIAL_ROLE_PATH.read_text())
+    changed["roles"]["Monitor"]["responses"]["EVENT"] = "420 Access denied."
+    fixture = tmp_path / "weakened-initial-native-roles.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_INITIAL_ROLE_PATH", fixture)
+    with pytest.raises(ValueError, match="initial role source changed"):
+        contract_builder.build()
+    monkeypatch.setattr(
+        contract_builder,
+        "NATIVE_INITIAL_ROLE_EVIDENCE_SHA256",
+        sha256(fixture.read_bytes()).hexdigest(),
     )
     with pytest.raises(ValueError, match="role threshold changed"):
         contract_builder.build()
@@ -230,23 +260,32 @@ def test_native_role_observation_cannot_be_reclassified_as_resolved() -> None:
         ("SESSION_ID TAG", {"minimum": 1, "maximum": None}, "set_calling_tag_once"),
         (
             "EVENT",
-            None,
+            {
+                "query": 0, "set_minimum": 1, "set_maximum": None,
+                "after_first_mode_word": "ignored_by_native_and_endpoint",
+            },
             "replace_calling_connection_filter",
         ),
-        ("QUIT", None, "flush_204_then_close"),
+        (
+            "QUIT",
+            {
+                "minimum": 0, "maximum": None, "alias": "EXIT",
+                "trailing_words": "ignored_by_native_and_endpoint",
+            },
+            "flush_204_then_close",
+        ),
     ],
 )
 def test_native_session_contracts_are_bounded_and_preserve_open_axes(
-    path: str, arity: dict | None, effect: str
+    path: str, arity: dict, effect: str
 ) -> None:
     row = contract_by_path(inventory(), path)
     axes = row["axes"]
     argument_arity = axes["selector_grammar"]["subaxes"]["argument_arity"]
-    if arity is None:
-        assert argument_arity["status"] == "unresolved"
-        assert argument_arity["known"]["observed_native_forms"]
-    else:
-        assert argument_arity["value"] == arity
+    assert argument_arity["status"] == "resolved"
+    assert argument_arity["value"] == arity
+    if path in {"EVENT", "QUIT"}:
+        assert contract_builder.NATIVE_SELECTOR_REF in argument_arity["source_refs"]
     assert axes["session_states"]["status"] == "resolved"
     assert axes["target_forms"]["status"] == "resolved"
     assert axes["target_forms"]["subaxes"]["route_shape"]["value"] == (
@@ -312,6 +351,30 @@ def test_native_session_status_without_matching_reply_cannot_resolve_contract(
     fixture.write_text(json.dumps(changed), encoding="utf-8")
     monkeypatch.setattr(contract_builder, "NATIVE_SESSION_PATH", fixture)
     with pytest.raises(ValueError, match="session response evidence changed"):
+        contract_builder.build()
+
+
+@pytest.mark.parametrize("command", ["EVENT ON extra", "QUIT extra"])
+def test_native_selector_trace_weakening_cannot_resolve_arity(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, command: str
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_SELECTOR_PATH.read_text())
+    row = next(
+        case for case in changed["captures"][0]["cases"]
+        if case.get("command") == command
+    )
+    row["status"] = 408
+    fixture = tmp_path / "weakened-session-selectors.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_SELECTOR_PATH", fixture)
+    with pytest.raises(ValueError, match="session selector source changed"):
+        contract_builder.build()
+    monkeypatch.setattr(
+        contract_builder,
+        "NATIVE_SELECTOR_EVIDENCE_SHA256",
+        sha256(fixture.read_bytes()).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="session selector changed"):
         contract_builder.build()
 
 
