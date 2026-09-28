@@ -459,3 +459,80 @@ async fn docker_proxy_peer_bootstraps_then_uses_token_only_recovery() {
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
 }
+
+#[tokio::test]
+async fn native_media_role_floors_deny_before_bus_io() {
+    let state = cbus_test_support::proc::temp_path("cgate-media-roles.json");
+    let mut sys = start_with(options_for(&state, None, "127.0.0.1:0")).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = connect(&sys).await;
+    for (tag, body) in [
+        (
+            "add-monitor",
+            "ACCESS ADD user monitor temporary-monitor Monitor",
+        ),
+        (
+            "add-operate",
+            "ACCESS ADD user operate temporary-operate Operate",
+        ),
+    ] {
+        assert_eq!(
+            command(&mut reader, &mut writer, tag, body).await,
+            ["200 OK."]
+        );
+    }
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "low",
+            "LOGIN monitor temporary-monitor"
+        )
+        .await,
+        ["211 Access level set to: Monitor"]
+    );
+    let probes = [
+        "AUDIO DYNAMIC_1 //MISSING/254/203 1 1",
+        "SECURITY ARM //MISSING/254/203 1",
+        "MEDIATRANSPORT PLAY //MISSING/254/203 1",
+    ];
+    let frames_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    for (index, probe) in probes.iter().enumerate() {
+        let reply = command(&mut reader, &mut writer, &format!("denied-{index}"), probe).await;
+        assert_eq!(reply, ["420 Access denied."], "{probe}");
+    }
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "high",
+            "LOGIN operate temporary-operate"
+        )
+        .await,
+        ["211 Access level set to: Operate"]
+    );
+    for (index, probe) in probes.iter().enumerate() {
+        let reply = command(&mut reader, &mut writer, &format!("reached-{index}"), probe).await;
+        assert!(
+            reply
+                .last()
+                .is_some_and(|line| line.starts_with("401 ") || line.starts_with("404 ")),
+            "{probe}: {reply:?}"
+        );
+    }
+    let frames_after = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(frames_after, frames_before);
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}
