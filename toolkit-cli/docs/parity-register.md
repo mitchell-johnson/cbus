@@ -305,9 +305,11 @@ evidence.
 
 The current register has 39 provisional umbrella obligations, 442 provisional
 C-Gate path obligations and three defined `SESSION_ID` functions, with zero
-fully accepted obligations and two evidence records. One accepts only
-the original-differential dimension of the three scoped functions; the other
-marks their physical dimension not applicable to the owned loopback profile.
+fully accepted obligations and three evidence records. Two accept only
+the original-differential dimension of the three scoped functions: the
+nine-case payload comparison and the eleven-case exact numeric-tag wire
+comparison. The third marks their physical dimension not applicable to the
+owned loopback profile.
 The 484 records overlap and
 are not a deduplicated functional denominator. All 22,156 source records and
 15 source domains remain unresolved. Executable forms, controls and event

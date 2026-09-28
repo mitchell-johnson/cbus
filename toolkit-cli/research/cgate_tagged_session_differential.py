@@ -57,6 +57,9 @@ FINGERPRINT_FILES = (
     "toolkit-cli/research/cgate_tagged_session_differential.py",
     "toolkit-cli/research/cgate_session_differential.py",  # source-closure helper
     "toolkit-cli/research/experiments/2026-09-28/cgate-tagged-session-native.json",
+    "toolkit-cli/research/build_parity_register.py",
+    "toolkit-cli/src/cbus_toolkit/parity.py",
+    "toolkit-cli/tests/test_parity_register.py",
     "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
     "toolkit-cli/Makefile",
     ".github/workflows/ci.yml",

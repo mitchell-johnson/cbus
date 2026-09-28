@@ -109,5 +109,6 @@ The separate [tagged-wire differential](cgate-tagged-session-native.md)
 requires all eleven numeric-tag request and response envelopes on both Rust
 servers. It preserves the `cmd1` Console row, exact echoed tags on every
 continuation and terminal line, CRLF, status and tag-reassignment behavior.
-Its two receipts are additional scope-specific evidence and are not counted
-as new fully accepted functional obligations.
+The cmqttd receipt is separately bound into the parity evidence bundle for
+the three defined session functions. It adds no fully accepted obligation;
+all other required dimensions and profiles remain open.

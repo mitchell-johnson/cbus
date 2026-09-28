@@ -28,7 +28,7 @@
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["query and syntax error leave the session identity and C-Bus state unchanged"],
       "implementation_basis": "in_progress: cmqttd and cgate-mock implement the observed loopback query, but authorization and response-event variants remain partial",
-      "differential_gap": "The retained native capture stores response payloads without client-tag prefixes; the differential validates Rust tag echo separately, while native tag-prefix capture remains outside this receipt.",
+      "differential_gap": "The nine-case payload capture omits client-tag prefixes; a separate eleven-case native capture and cmqttd differential now cover exact numeric-tag reply envelopes on two owned loopback sessions. Other tag forms and access-policy variants remain open.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
     },
     {
@@ -51,7 +51,7 @@
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["listing does not change another session, any project, or C-Bus state"],
       "implementation_basis": "in_progress: cmqttd and cgate-mock list the native-shaped internal Console row and live external sessions, and remove closed peers, but access-policy variants remain open",
-      "differential_gap": "The scoped payload differential now requires the internal Console cmd1 row and CRLF; native tagged-wire equivalence and broader access-policy or session variants remain open.",
+      "differential_gap": "The nine-case payload differential requires the internal Console cmd1 row and CRLF; a separate eleven-case native differential also matches numeric tags on every continuation and terminal row. Other tag forms and access-policy or session variants remain open.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
     },
     {
@@ -75,7 +75,7 @@
       "preconditions": ["C-Gate 3.4.0.2001 command connection", "owned loopback listener with no project or physical network"],
       "preservation": ["failed reassignment leaves the first tag and all other sessions unchanged", "no project or C-Bus state changes"],
       "implementation_basis": "in_progress: cmqttd and cgate-mock cover one-shot assignment and observed errors, but other authorization and selector variants remain open",
-      "differential_gap": "The scoped differential covers observed whitespace, reassignment and missing-tag cases; tag length, quoting and ACCESS/LOGIN variants remain open.",
+      "differential_gap": "The scoped payload and numeric-tag wire differentials cover the observed one-shot assignment, rejection and missing-tag cases. Tag length, quoting and ACCESS/LOGIN variants remain open.",
       "physical_candidate_reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
     }
   ]

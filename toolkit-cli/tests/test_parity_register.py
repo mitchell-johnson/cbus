@@ -240,7 +240,7 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertEqual(report["scope_items"]["unresolved"], 22156)
         self.assertEqual(report["source_inventory"]["total_domains"], 15)
         self.assertEqual(report["source_inventory"]["resolved_domains"], 0)
-        self.assertEqual(report["evidence_records"], 2)
+        self.assertEqual(report["evidence_records"], 3)
         self.assertEqual(
             report["acceptance_by_dimension"]["original_differential"]["accepted"], 3
         )
@@ -275,10 +275,11 @@ class ParityRegisterTests(unittest.TestCase):
 
     def test_session_function_pilot_has_scoped_differential_and_physical_decisions(self):
         register, evidence, _, _, _, _, _ = packaged_documents()
-        self.assertEqual(len(evidence["records"]), 2)
+        self.assertEqual(len(evidence["records"]), 3)
         self.assertEqual(evidence["records"][0]["dimensions"], ["original_differential"])
-        self.assertEqual(evidence["records"][1]["dimensions"], [])
-        self.assertEqual(len(evidence["records"][1]["applicability_receipts"]), 3)
+        self.assertEqual(evidence["records"][1]["dimensions"], ["original_differential"])
+        self.assertEqual(evidence["records"][2]["dimensions"], [])
+        self.assertEqual(len(evidence["records"][2]["applicability_receipts"]), 3)
         self.assertFalse(register["census_complete"])
         functions = {
             item["source_id"]: item
@@ -305,6 +306,7 @@ class ParityRegisterTests(unittest.TestCase):
                 )
                 self.assertEqual(obligation["evidence_ids"],
                                  ["evidence:cgate-session-id-loopback-differential-v1",
+                                  "evidence:cgate-session-id-tagged-wire-differential-v1",
                                   "evidence:cgate-session-id-physical-applicability-v1"])
                 broad = next(
                     item for item in register["obligations"]
@@ -334,6 +336,51 @@ class ParityRegisterTests(unittest.TestCase):
             with patch.object(register_builder, "SESSION_DIFFERENTIAL_PATH", partial):
                 with self.assertRaisesRegex(ValueError, "case evidence changed"):
                     register_builder.session_differential_evidence()
+
+    def test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts(self):
+        with TemporaryDirectory() as folder:
+            missing = Path(folder, "missing.json")
+            with patch.object(register_builder, "TAGGED_SESSION_DIFFERENTIAL_PATH", missing):
+                with self.assertRaisesRegex(ValueError, "tagged SESSION_ID differential receipt is missing"):
+                    register_builder.session_tagged_wire_evidence()
+
+            receipt = json.loads(register_builder.TAGGED_SESSION_DIFFERENTIAL_PATH.read_text())
+            receipt["source_fingerprint"]["rust/cbus-cgate/src/main.rs"] = "0" * 64
+            stale = Path(folder, "stale.json")
+            stale.write_text(json.dumps(receipt))
+            with patch.object(register_builder, "TAGGED_SESSION_DIFFERENTIAL_PATH", stale):
+                with self.assertRaisesRegex(ValueError, "source fingerprint is stale"):
+                    register_builder.session_tagged_wire_evidence()
+
+            receipt = json.loads(register_builder.TAGGED_SESSION_DIFFERENTIAL_PATH.read_text())
+            receipt["cases"][2]["rust_wire_reply"][0] = (
+                receipt["cases"][2]["rust_wire_reply"][0].replace("[502]", "[999]")
+            )
+            altered = Path(folder, "altered.json")
+            altered.write_text(json.dumps(receipt))
+            with patch.object(register_builder, "TAGGED_SESSION_DIFFERENTIAL_PATH", altered):
+                with self.assertRaisesRegex(ValueError, "raw wire changed"):
+                    register_builder.session_tagged_wire_evidence()
+
+    def test_packaged_tagged_wire_rejects_forged_raw_prefix_with_updated_digests(self):
+        _, evidence, _, _, _, _, _ = packaged_documents()
+        evidence = json.loads(json.dumps(evidence))
+        tagged = evidence["records"][1]
+        raw = json.loads(register_builder.TAGGED_SESSION_DIFFERENTIAL_PATH.read_text())
+        raw["cases"][2]["rust_wire_reply"][0] = raw["cases"][2]["rust_wire_reply"][0].replace("[502]", "[999]")
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            for artifact in tagged["artifacts"]:
+                source = ROOT / artifact["path"]
+                destination = root / artifact["path"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(source.read_bytes())
+            report_path = root / tagged["report_verification"]["path"]
+            report_path.write_text(json.dumps(raw))
+            next(item for item in tagged["artifacts"] if item["role"] == "report")["sha256"] = sha256(report_path.read_bytes()).hexdigest()
+            tagged["record_sha256"] = record_digest(tagged)
+            with self.assertRaisesRegex(ValueError, "tagged case 2 lost wire framing"):
+                parity._validate_execution_report(tagged, raw, artifact_root=root)
 
     def test_session_physical_applicability_rejects_stale_or_missing_receipt(self):
         with TemporaryDirectory() as folder:

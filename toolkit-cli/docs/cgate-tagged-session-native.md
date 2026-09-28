@@ -54,8 +54,12 @@ committed [mock](../research/fixtures/cgate-tagged-session-differential-cgate-mo
 and [cmqttd](../research/fixtures/cgate-tagged-session-differential-cmqttd.json)
 receipts bind the native fixture SHA-256, exact Rust binary SHA-256 and the
 transitive Rust source closure. CI executes and retains a fresh receipt for
-both products. This is additional narrowly scoped evidence; it does not
-change the existing functional obligation status or complete the parity census.
+both products. The cmqttd receipt is now a separate record in the generated
+parity evidence bundle for the three defined `SESSION_ID` functions. It adds
+exact numeric-tag response framing to their already accepted scoped
+original-differential dimension; it does not accept their other dimensions,
+change their `in_progress` status or complete the parity census. The mock
+receipt remains a separate interop check, without cmqttd acceptance credit.
 
 The greeting check covers 201/readiness and CRLF, not product-specific text.
 Other tag forms, concurrent commands, TLS and non-loopback peers remain

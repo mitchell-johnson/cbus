@@ -36,7 +36,11 @@ EVIDENCE_ENVIRONMENTS = {
     "physical",
 }
 ARTIFACT_ROLES = {"input", "output", "executable", "report"}
-REPORT_FORMATS = {"cbus-parity-test-report-v1", "cgate-session-differential-v2"}
+REPORT_FORMATS = {
+    "cbus-parity-test-report-v1",
+    "cgate-session-differential-v2",
+    "cgate-tagged-session-differential-v1",
+}
 SCOPE_DISPOSITIONS = {
     "pending_analysis",
     "provisional_obligation",
@@ -334,6 +338,98 @@ def _validate_execution_report(
             or covered_ids != set(record["obligation_ids"])
         ):
             raise ValueError(f"{evidence_id} differential cases do not cover declared tests")
+    elif report_format == "cgate-tagged-session-differential-v1":
+        if "original_differential" not in record["dimensions"] or not isinstance(record.get("oracle"), dict):
+            raise ValueError(f"{evidence_id} tagged report requires an original oracle")
+        native_inputs = [
+            artifact for artifact in record["artifacts"]
+            if artifact["role"] == "input"
+            and artifact["sha256"] == record["oracle"]["artifact_sha256"]
+        ]
+        if len(native_inputs) != 1:
+            raise ValueError(f"{evidence_id} tagged report requires one native input")
+        native = parse_json_document(
+            (artifact_root / native_inputs[0]["path"]).read_bytes(),
+            context=f"{evidence_id} tagged native oracle",
+        )
+        native_cases = native.get("cases")
+        native_capture = report.get("native_capture")
+        ports = report.get("peer_ports")
+        if (
+            report.get("product") != "cmqttd"
+            or report.get("failed") != 0
+            or report.get("skipped") != 0
+            or report.get("errors") != []
+            or report.get("executed") != 11
+            or report.get("passed") != 11
+            or len(cases) != 11
+            or native.get("format") != "cbus-cgate-tagged-session-native-envelope-v1"
+            or native.get("vendor_jar_sha256") != report.get("vendor_jar_sha256")
+            or not isinstance(native_cases, list)
+            or len(native_cases) != 11
+            or not isinstance(native_capture, dict)
+            or native_capture.get("sha256") != record["oracle"]["artifact_sha256"]
+            or native_capture.get("path") != "toolkit-cli/" + native_inputs[0]["path"]
+            or not isinstance(ports, dict)
+            or set(ports) != {"a", "b"}
+            or any(type(port) is not int or not 1 <= port <= 65535 for port in ports.values())
+            or ports["a"] == ports["b"]
+        ):
+            raise ValueError(f"{evidence_id} tagged report is incomplete or mismatched")
+        covered_ids: set[str] = set()
+        for index, (case, native_case) in enumerate(zip(cases, native_cases)):
+            if not isinstance(case, dict) or not isinstance(native_case, dict):
+                raise ValueError(f"{evidence_id} tagged case {index} is invalid")
+            command = native_case.get("command")
+            if command == "SESSION_ID":
+                obligation_id = CGATE_SESSION_PILOT_IDS["SESSION_ID"]
+            elif command == "SESSION_ID ALL":
+                obligation_id = CGATE_SESSION_PILOT_IDS["SESSION_ID ALL"]
+            elif isinstance(command, str) and command.startswith("SESSION_ID TAG"):
+                obligation_id = CGATE_SESSION_PILOT_IDS["SESSION_ID TAG"]
+            else:
+                raise ValueError(f"{evidence_id} tagged case {index} has an unknown command")
+            tag = native_case.get("client_tag")
+            prefix = f"[{tag}] "
+            expected = native_case.get("response_lines")
+            raw = case.get("rust_wire_reply")
+            if (
+                not isinstance(tag, str) or not re.fullmatch(r"[0-9]+", tag)
+                or case.get("index") != index
+                or case.get("connection") != native_case.get("connection")
+                or case.get("client_tag") != tag
+                or case.get("command") != command
+                or case.get("request") != native_case.get("request")
+                or native_case.get("request") != f"{prefix}{command}\r\n"
+                or case.get("native_normalized") != expected
+                or case.get("rust_normalized") != expected
+                or case.get("result") != "passed"
+                or not isinstance(expected, list) or not expected
+                or not isinstance(raw, list) or len(raw) != len(expected)
+            ):
+                raise ValueError(f"{evidence_id} tagged case {index} changed")
+            for row_index, (wire, normalized) in enumerate(zip(raw, expected)):
+                separator = " " if row_index == len(raw) - 1 else "-"
+                if (
+                    not isinstance(wire, str)
+                    or not isinstance(normalized, str)
+                    or not wire.startswith(prefix)
+                    or not normalized.startswith(prefix)
+                    or not wire.endswith("\r\n")
+                    or not normalized.endswith("\r\n")
+                    or not re.match(rf"^\[{tag}\] [1-6][0-9]{{2}}{separator}", wire)
+                    or wire[:len(prefix) + 4] != normalized[:len(prefix) + 4]
+                ):
+                    raise ValueError(f"{evidence_id} tagged case {index} lost wire framing")
+            covered_ids.add(obligation_id)
+        if (
+            covered_ids != set(record["obligation_ids"])
+            or record["test_ids"] != [
+                f"research/cgate_tagged_session_differential.py::case-{index}"
+                for index in range(len(cases))
+            ]
+        ):
+            raise ValueError(f"{evidence_id} tagged cases do not cover declared tests")
 
 
 def _strings(value: Any, *, field: str, nonempty: bool = False) -> list[str]:

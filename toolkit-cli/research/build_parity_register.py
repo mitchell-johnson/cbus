@@ -37,6 +37,13 @@ FUNCTIONAL_PILOT_PATH = ROOT / "research" / "functional-obligation-pilot.json"
 SESSION_DIFFERENTIAL_PATH = (
     ROOT / "research" / "fixtures" / "cgate-session-differential-cmqttd.json"
 )
+TAGGED_SESSION_NATIVE_SOURCE_REF = (
+    "research/experiments/2026-09-28/cgate-tagged-session-native.json"
+)
+TAGGED_SESSION_NATIVE_PATH = ROOT / TAGGED_SESSION_NATIVE_SOURCE_REF
+TAGGED_SESSION_DIFFERENTIAL_PATH = (
+    ROOT / "research" / "fixtures" / "cgate-tagged-session-differential-cmqttd.json"
+)
 SESSION_PHYSICAL_PATH = (
     ROOT / "research" / "fixtures" / "cgate-session-physical-applicability.json"
 )
@@ -529,6 +536,74 @@ def session_differential_evidence() -> dict:
     return record
 
 
+def session_tagged_wire_evidence() -> dict:
+    """Bind the exact native numeric-tag envelope to a current cmqttd receipt.
+
+    The older nine-case capture has tag-stripped payloads. This independent
+    eleven-case capture includes request and reply tags on every wire row.
+    It adds evidence to the same three functions, not new obligations or a
+    claim about other prefix forms, connection types or policy variants.
+    """
+    from cbus_toolkit.parity import CGATE_SESSION_PILOT_IDS
+
+    sys.path.insert(0, str(ROOT))
+    from research.cgate_tagged_session_differential import (
+        CASE_SPECS, validate_passed_receipt,
+    )
+
+    if not TAGGED_SESSION_DIFFERENTIAL_PATH.is_file():
+        raise ValueError("Scoped tagged SESSION_ID differential receipt is missing")
+    receipt = load_json(TAGGED_SESSION_DIFFERENTIAL_PATH)
+    validate_passed_receipt(receipt)
+    if receipt["product"] != "cmqttd":
+        raise ValueError("Scoped tagged SESSION_ID acceptance requires cmqttd")
+    command = receipt.get("command")
+    if not isinstance(command, str) or not command.strip():
+        raise ValueError("Scoped tagged SESSION_ID differential lacks its exact command")
+    obligation_ids = sorted(CGATE_SESSION_PILOT_IDS.values())
+    record = {
+        "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
+        "obligation_ids": obligation_ids,
+        "scope_disposition_receipts": [],
+        "dimensions": ["original_differential"],
+        "result": "passed",
+        "test_ids": [
+            f"research/cgate_tagged_session_differential.py::case-{index}"
+            for index in range(len(CASE_SPECS))
+        ],
+        "environment": {
+            "kind": "interop",
+            "identity": "owned cmqttd loopback listener, synthetic PCI, disposable project and held local broker",
+        },
+        "oracle": {
+            "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
+            "artifact_sha256": digest(TAGGED_SESSION_NATIVE_PATH),
+        },
+        "source_revision": receipt["source_revision"],
+        "command": command,
+        "exit_code": 0,
+        "report_verification": {
+            "format": "cgate-tagged-session-differential-v1",
+            "path": TAGGED_SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
+        },
+        "artifacts": [
+            {
+                "role": "input",
+                "path": TAGGED_SESSION_NATIVE_SOURCE_REF,
+                "sha256": digest(TAGGED_SESSION_NATIVE_PATH),
+            },
+            {
+                "role": "report",
+                "path": TAGGED_SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
+                "sha256": digest(TAGGED_SESSION_DIFFERENTIAL_PATH),
+            },
+        ],
+        "skips": [],
+    }
+    record["record_sha256"] = canonical_digest(record)
+    return record
+
+
 def session_physical_applicability_evidence() -> dict:
     """Bind local-only SESSION_ID physical decisions to current source artifacts."""
     from cbus_toolkit.parity import CGATE_SESSION_PILOT_IDS
@@ -870,6 +945,7 @@ def build() -> tuple[dict, dict]:
         )
 
     session_evidence = session_differential_evidence()
+    session_tagged_evidence = session_tagged_wire_evidence()
     session_physical_evidence = session_physical_applicability_evidence()
     scope_by_id = {item["id"]: item for item in scope_items}
     for function in functional_pilot(surface, contract_by_path):
@@ -878,6 +954,8 @@ def build() -> tuple[dict, dict]:
         if function["id"] in session_evidence["obligation_ids"]:
             function["acceptance"]["original_differential"] = "accepted"
             function["evidence_ids"].append(session_evidence["id"])
+        if function["id"] in session_tagged_evidence["obligation_ids"]:
+            function["evidence_ids"].append(session_tagged_evidence["id"])
         if function["id"] in session_physical_evidence["obligation_ids"]:
             function["acceptance"]["physical"] = "not_applicable"
             function["applicability"]["physical_candidate"] = "not_applicable_verified"
@@ -914,7 +992,7 @@ def build() -> tuple[dict, dict]:
     evidence = {
         "schema_version": 1,
         "target": ledger["target"],
-        "records": [session_evidence, session_physical_evidence],
+        "records": [session_evidence, session_tagged_evidence, session_physical_evidence],
     }
     evidence_raw = (json.dumps(evidence, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     register = {
@@ -935,8 +1013,10 @@ def build() -> tuple[dict, dict]:
             "cgate_capability_matrix": digest(MATRIX_PATH),
             "cgate_contract_inventory": digest(CGATE_CONTRACT_PATH),
             "cgate_session_native_acceptance": digest(NATIVE_SESSION_PATH),
+            "cgate_tagged_session_native_acceptance": digest(TAGGED_SESSION_NATIVE_PATH),
             "functional_obligation_pilot": digest(FUNCTIONAL_PILOT_PATH),
             "cgate_session_differential_cmqttd": digest(SESSION_DIFFERENTIAL_PATH),
+            "cgate_tagged_session_differential_cmqttd": digest(TAGGED_SESSION_DIFFERENTIAL_PATH),
             "cgate_session_physical_applicability": digest(SESSION_PHYSICAL_PATH),
             "roadmap": digest(ROADMAP_PATH),
         },
