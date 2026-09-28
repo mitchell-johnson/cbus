@@ -11,7 +11,7 @@
     "process": "Python 3.13.14 x86 under active non-System console user",
     "registry_boundary": "Guest Python winreg Registry32 hooks for original JCL create/read/write calls; original Delphi allocation, strings, resources, collection and exception dispatch remain research fixtures",
     "same_manager_object_both_loads": true,
-    "same_sid_hash_as_prior_interactive_cli_receipt": false
+    "same_sid_hash_as_prior_interactive_cli_receipt": true
   },
   "format": "cbus-p902-original-same-instance-registry32-acceptance-v1",
   "limits": [
@@ -125,6 +125,7 @@
   },
   "python_api_differential": {
     "existing_interactive_cli_receipt": "research/experiments/2026-09-28/preference-interactive-repeat.json",
+    "existing_interactive_cli_receipt_sha256": "4e9b114b7e8b28ef3c3a5643e8e998c07e2626c42d97ef204fa441d195e403c1",
     "first_actions": [
       "read",
       "read",
