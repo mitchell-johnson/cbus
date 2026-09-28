@@ -1,0 +1,113 @@
+{
+  "base_revision": "40b8d1a2b09711402197dbd8acc5eba13ca5f85c",
+  "checks": [
+    {
+      "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/csv_dimdn8f_profile_review.py --exe /private/tmp/cbus-toolkit-installer-audit/extracted-20260926/app/CBusToolkit.exe --map /private/tmp/cbus-toolkit-installer-audit/extracted-20260926/app/CBusToolkit.map --fixture research/fixtures/toolkit-database-csv-dimdn8f-synthetic.xml --output research/experiments/2026-09-28/csv-dimdn8f-profile-review.json",
+      "exit": 0,
+      "result": "EXE/MAP hashes, factory and agent registration instructions, inherited VMT pointers and method spans pinned; generated review deterministic"
+    },
+    {
+      "command": "PYTHONPATH=src:tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest tests/test_toolkit_database_csv*.py -q -p no:cacheprovider -ra",
+      "exit": 0,
+      "failed": 0,
+      "passed": 118,
+      "skipped": 8,
+      "subtests_passed": 226
+    },
+    {
+      "command": "PYTHONPATH=src:tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest tests/test_toolkit_database_csv*.py tests/test_parity_register.py -q -p no:cacheprovider -ra",
+      "exit": 0,
+      "failed": 0,
+      "passed": 154,
+      "result": "Focused CSV family plus parity register tests after generated ledger refresh",
+      "skipped": 8,
+      "subtests_passed": 697
+    },
+    {
+      "command": "PYTHONPATH=src:tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/build_parity_register.py --check",
+      "exit": 0,
+      "result": "generated parity register current"
+    },
+    {
+      "command": "PYTHONPATH=src:tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/build_cgate_contract_inventory.py --check",
+      "exit": 0,
+      "result": "contract inventory current"
+    },
+    {
+      "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m compileall -q src/cbus_toolkit/toolkit_database_csv_native.py src/cbus_toolkit/toolkit_database_csv_projection.py research/csv_dimdn8f_profile_review.py tests/test_toolkit_database_csv_dimdn8f.py",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "checks_working_directory": "toolkit-cli/",
+  "created_at_utc": "2026-09-28T07:55:39+00:00",
+  "expected_output": {
+    "din_row_sha256": "a939d0b9369289ec94eeeb32156cc224a869373384585a70028ded1d1994c171",
+    "encoding": "UTF-8 without BOM",
+    "extra_final_blank_line": true,
+    "full_report_sha256": "799efd76f5240649ee0f4015fc6b8fb547cab04a647ada2ba43bccd1c15c27c4",
+    "line_ending": "CRLF"
+  },
+  "focused_test_ids": [
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_cached_profile_rejects_fifteen_stored_groups",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_live_export_reads_one_snapshot_without_physical_access",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_native_and_cached_projection_keep_sixteen_associations",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_offline_unit_and_whole_project_emit_exact_bytes_without_network",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_original_source_review_pins_class_agent_and_fixture",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_unsupported_or_incomplete_native_profiles_reject_atomically",
+    "tests.test_toolkit_database_csv_dimdn8f.DIMDN8FCSVTests.test_whole_project_composes_original_unit_order_and_rejects_later_failure"
+  ],
+  "format": "cbus-toolkit-database-csv-dimdn8f-acceptance-v1",
+  "invalidation_rules": [
+    "Changing the pinned EXE/MAP, source review script, fixture, projector, adapter or serializer requires regenerating this review and rerunning focused CSV tests.",
+    "Changing supported firmware, PP layout, application routing or missing-group policy requires new original/native evidence before widening the profile.",
+    "Changing the feature ledger requires rebuilding and checking parity-obligations.json; integrated revision and full required gates must be recorded by the parent work item before issue closure."
+  ],
+  "issue": "https://github.com/mitchell-johnson/cbus/issues/56",
+  "observations": [
+    "The DIMDN8F factory registration points to TDIMDN8F, and both DIMDN8 and DIMDN8F resolve to the same DIN output agent.",
+    "DIMDN8F and DIMDN8 VMT pointers match over the report-relevant range, including Area getter, interaction predicate and eight-channel maximum.",
+    "Synthetic native and cached projection agree on the exact 26-column row, including a repeated visible group identity and eight unavailable later columns.",
+    "Offline unit and whole-project exports preserve input bytes; loopback C-Gate project export sends one DBGETXML request and accesses no physical endpoint.",
+    "A later unsupported unit in a mixed project and malformed profiles fail before CSV file creation.",
+    "The generated parity register contains the refreshed feature-ledger hash and its check is current."
+  ],
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "scope": {
+    "cold_native_database_load_executed": false,
+    "firmware": "2.7.00",
+    "original_exe_map_static_comparison": true,
+    "original_gui_report_executed": false,
+    "physical_endpoint_accessed": false,
+    "profile": "read-only native XML and cached-object CSV projection, 16 ordered group slots, first eight interaction groups, two Area observations, one unit or composed whole-project report",
+    "selected_class": "TDIMDN8F",
+    "unit_type": "DIMDN8F"
+  },
+  "skips_and_limits": [
+    "One Java 11 native Area test, one exact original executable test and six Rust binary interop cases were provision-skipped in the focused family; none is counted as a pass.",
+    "DIMDN8F original GUI CSV and cold native database loading are not executed; this is a source-backed synthetic profile.",
+    "Other firmware, missing group creation, secondary application associations and physical hardware remain outside this increment.",
+    "The full make check and make check-interop gates were not run in this isolated delegated slice."
+  ],
+  "source_hashes": {
+    "README.md": "6a8290804d8831af90651f19228c2f8c7157d4fb7f338c7ff63e8ce624b1788c",
+    "docs/implementation-status.md": "1f38c03af912068312d4e219cde30a7bbf8b25bcefb3154d325c3759dc00f2d1",
+    "docs/toolkit-database-csv.md": "5029d5fcef7ce12bddb470b8eda218e476cb691b4e389d8f50fbccb455b68975",
+    "research/csv_dimdn8f_profile_review.py": "a3038f4ecd7bacd2275c21ffed75724150a2330486bd10ce8d4196015ec4ae6d",
+    "research/experiments/2026-09-28/csv-dimdn8f-profile-review.json": "ad7abaae959e29cddaef7649442f6fffcc6a11c0aad631091998799422115e80",
+    "research/fixtures/toolkit-database-csv-dimdn8f-synthetic.xml": "c7d4aaf2e7fe9b272fef547a3b346513cc7f854a40e71bdff2547edf87718cf1",
+    "src/cbus_toolkit/capabilities.json": "722e7189797141901072f9883560ef451bde1563ab674ed96f412ccfba74e609",
+    "src/cbus_toolkit/parity-obligations.json": "3eb26f3339da69981529058c5ff0773a6d05b6f01deefc38c83ab99630b97337",
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "38aad5fbb36572895bca308413bd1526456d5e773fe7ad799852d36c9cb10554",
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "e712e353fe9c4ed0b333f2a8c0750ddcb30b03f57b84d673e49a7f6dc4243eea",
+    "tests/test_toolkit_database_csv_dimdn8f.py": "3ad8c93ab6acd58c91e4db077da7798b2c78097ef5e1adf5a3910d7515378bad"
+  },
+  "status": "bounded_increment_accepted_offline",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001"
+}
