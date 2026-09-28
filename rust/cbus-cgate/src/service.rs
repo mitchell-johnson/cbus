@@ -2405,7 +2405,12 @@ impl Service {
     /// Execute a tagged command. Hardware work releases the database mutex.
     pub async fn handle(self: &Arc<Self>, client: &mut ClientState, line: &str) -> Response {
         if !client.project_default_applied {
-            client.current = self.startup_default_for_loaded_project().await;
+            // A caller may pass a client that already selected a project.
+            // Only fresh sessions without a selection inherit the startup
+            // default; never discard an explicit session choice.
+            if client.current.is_none() {
+                client.current = self.startup_default_for_loaded_project().await;
+            }
             client.project_default_applied = true;
         }
         let cmd = match parse_command(line) {
