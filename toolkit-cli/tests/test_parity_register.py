@@ -34,6 +34,34 @@ def record_digest(record: dict) -> str:
     ).hexdigest()
 
 
+def write_fixture_report(record: dict, root: Path) -> None:
+    """Keep a synthetic execution report bound to its changed test decision."""
+    report = {
+        "format": "cbus-parity-test-report-v1",
+        "result": record["result"],
+        "source_revision": record["source_revision"],
+        "command": record["command"],
+        "exit_code": record["exit_code"],
+        "cases": [{
+            "id": record["test_ids"][0],
+            "result": record["result"],
+            "obligation_ids": record["obligation_ids"],
+            "dimensions": record["dimensions"],
+            "applicability_receipts": record.get("applicability_receipts", []),
+            "scope_disposition_receipts": record["scope_disposition_receipts"],
+        }],
+    }
+    raw = (json.dumps(report, sort_keys=True) + "\n").encode()
+    path = record["report_verification"]["path"]
+    destination = root / path
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(raw)
+    next(artifact for artifact in record["artifacts"] if artifact["path"] == path)[
+        "sha256"
+    ] = sha256(raw).hexdigest()
+    record["record_sha256"] = record_digest(record)
+
+
 def fixture_documents() -> tuple[dict, dict, dict, bytes]:
     artifact = FIXTURE_REPORT
     evidence_record = {
@@ -649,7 +677,7 @@ class ParityRegisterTests(unittest.TestCase):
                     "decision": parity.SCOPE_EXCLUSION_DECISION,
                 }
             ]
-            evidence_record["record_sha256"] = record_digest(evidence_record)
+            write_fixture_report(evidence_record, self.artifact_root)
             raw = (json.dumps(evidence, indent=2) + "\n").encode()
             register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
             return register, evidence, ledger, raw
@@ -854,6 +882,35 @@ class ParityRegisterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requires a recognized report artifact"):
             parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
 
+    def test_rehashed_decision_declarations_must_match_executed_report(self):
+        decisions = {
+            "applicability_receipts": [{
+                "obligation_id": "obligation:one",
+                "dimension": "physical",
+                "decision": "not_applicable",
+                "reason": "Static fixture has no bus output",
+            }],
+            "scope_disposition_receipts": [{
+                "scope_item_id": "scope:one",
+                "decision": parity.SCOPE_EXCLUSION_DECISION,
+            }],
+        }
+        for field, receipts in decisions.items():
+            with self.subTest(field=field):
+                _, evidence, _, _ = fixture_documents()
+                record = evidence["records"][0]
+                record[field] = json.loads(json.dumps(receipts))
+                write_fixture_report(record, self.artifact_root)
+                if field == "applicability_receipts":
+                    record[field][0]["reason"] = "Different unsupported claim"
+                else:
+                    record[field][0]["scope_item_id"] = "scope:other"
+                record["record_sha256"] = record_digest(record)
+                with self.assertRaisesRegex(ValueError, "report decisions differ"):
+                    parity.validate_evidence_bundle(
+                        evidence, artifact_root=self.artifact_root
+                    )
+
     def test_passed_evidence_requires_result_and_bound_oracle_artifacts(self):
         def changed_case(mutate, expected):
             register, evidence, ledger, _ = fixture_documents()
@@ -934,7 +991,7 @@ class ParityRegisterTests(unittest.TestCase):
 
         def evaluate_current():
             record = evidence["records"][0]
-            record["record_sha256"] = record_digest(record)
+            write_fixture_report(record, self.artifact_root)
             raw = (json.dumps(evidence, indent=2) + "\n").encode()
             register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
             return parity.evaluate(
@@ -988,13 +1045,17 @@ class ParityRegisterTests(unittest.TestCase):
         ]
         exercised["environment"] = {"kind": "offline", "identity": "fixture process"}
         del exercised["oracle"]
-        exercised["record_sha256"] = record_digest(exercised)
+        write_fixture_report(exercised, self.artifact_root)
 
         decision = json.loads(json.dumps(exercised))
         decision["id"] = "evidence:applicability"
         decision["dimensions"] = []
         decision["test_ids"] = ["tests/test_applicability.py::test_no_physical_or_oracle"]
         decision["command"] = "python -m pytest tests/test_applicability.py"
+        decision["report_verification"]["path"] = "decision.txt"
+        next(artifact for artifact in decision["artifacts"] if artifact["role"] == "report")[
+            "path"
+        ] = "decision.txt"
         decision["applicability_receipts"] = [
             {
                 "obligation_id": "obligation:one",
@@ -1004,12 +1065,12 @@ class ParityRegisterTests(unittest.TestCase):
             }
             for dimension in ("physical", "original_differential")
         ]
-        decision["record_sha256"] = record_digest(decision)
+        write_fixture_report(decision, self.artifact_root)
         evidence["records"].append(decision)
         obligation["evidence_ids"].append(decision["id"])
 
         def evaluate_current():
-            decision["record_sha256"] = record_digest(decision)
+            write_fixture_report(decision, self.artifact_root)
             raw = (json.dumps(evidence, indent=2) + "\n").encode()
             register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
             return parity.evaluate(

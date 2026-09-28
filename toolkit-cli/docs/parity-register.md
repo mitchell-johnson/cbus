@@ -134,7 +134,8 @@ Receipts also require explicit test IDs, environment identity, artifact roles
 and an exit code consistent with the result. A passed record must name a
 recognized machine-readable report artifact. With an evidence root, the
 validator reads that report and checks its executed case IDs, per-obligation
-and per-dimension coverage, result, source revision and command against the
+and per-dimension coverage, applicability and scope decisions, result, source
+revision and command against the
 evidence declaration. The current C-Gate SESSION_ID differential additionally
 checks its cmqttd endpoint, native input digest, zero failures/skips and every
 reported native/Rust normalized payload pair. Rehashing a report and its

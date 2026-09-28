@@ -234,6 +234,8 @@ def _validate_execution_report(
             raise ValueError(f"{evidence_id} report exit code differs from evidence")
         report_ids: set[str] = set()
         covered: set[tuple[str, str]] = set()
+        reported_applicability: list[dict[str, Any]] = []
+        reported_scope_dispositions: list[dict[str, Any]] = []
         for case in cases:
             if not isinstance(case, dict) or case.get("result") != "passed":
                 raise ValueError(f"{evidence_id} report has a nonpassing case")
@@ -242,13 +244,24 @@ def _validate_execution_report(
                 raise ValueError(f"{evidence_id} report has an invalid case id")
             report_ids.add(test_id)
             obligation_ids = _strings(case.get("obligation_ids"), field=f"{evidence_id}.{test_id}.obligation_ids", nonempty=True)
-            dimensions = _strings(case.get("dimensions"), field=f"{evidence_id}.{test_id}.dimensions", nonempty=True)
+            dimensions = _strings(case.get("dimensions"), field=f"{evidence_id}.{test_id}.dimensions")
+            case_applicability = case.get("applicability_receipts", [])
+            case_dispositions = case.get("scope_disposition_receipts", [])
+            if not isinstance(case_applicability, list) or not isinstance(case_dispositions, list):
+                raise ValueError(f"{evidence_id} report has invalid decision cases")
             if set(obligation_ids) - set(record["obligation_ids"]) or set(dimensions) - set(record["dimensions"]):
                 raise ValueError(f"{evidence_id} report case exceeds its evidence scope")
             covered.update((obligation_id, dimension) for obligation_id in obligation_ids for dimension in dimensions)
+            reported_applicability.extend(case_applicability)
+            reported_scope_dispositions.extend(case_dispositions)
         required = {(obligation_id, dimension) for obligation_id in record["obligation_ids"] for dimension in record["dimensions"]}
         if report_ids != set(record["test_ids"]) or not required.issubset(covered):
             raise ValueError(f"{evidence_id} report cases do not cover declared tests and dimensions")
+        if (
+            reported_applicability != record.get("applicability_receipts", [])
+            or reported_scope_dispositions != record["scope_disposition_receipts"]
+        ):
+            raise ValueError(f"{evidence_id} report decisions differ from evidence")
     elif report_format == "cgate-session-differential-v2":
         if "original_differential" not in record["dimensions"] or not isinstance(record.get("oracle"), dict):
             raise ValueError(f"{evidence_id} differential report requires an oracle")
