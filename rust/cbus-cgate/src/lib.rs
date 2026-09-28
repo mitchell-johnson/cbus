@@ -1695,7 +1695,7 @@ pub struct Network {
     /// Database units keyed by address.
     pub units: HashMap<u8, Unit>,
     /// Original complete-Network XML submission order. Native OID lookup
-    /// selects the final submitted Unit when two Units share one OID.
+    /// selects the final submitted Unit when multiple Units share one OID.
     /// Older modeled repositories fall back to address order.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unit_xml_order: Vec<u8>,
@@ -10929,8 +10929,8 @@ impl Server {
         units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
     }
 
-    /// The owned native captures establish final-submission selection only for
-    /// two Units with a shared OID in one Network. Other collision shapes
+    /// The owned native captures establish final-submission selection for
+    /// two to four Units with a shared OID in one Network. Other collision shapes
     /// remain guarded until their native behavior is witnessed.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
         let project = self.current.as_deref()?;
@@ -10950,7 +10950,9 @@ impl Server {
                     .map(move |unit| (*net, unit.address))
             })
             .collect::<Vec<_>>();
-        if matches.len() != 2 || matches[0].0 != matches[1].0 {
+        if !(2..=4).contains(&matches.len())
+            || matches.iter().any(|(network, _)| *network != matches[0].0)
+        {
             return None;
         }
         let net = matches[0].0;

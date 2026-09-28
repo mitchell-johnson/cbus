@@ -3214,6 +3214,275 @@ fn dbsetxml_duplicate_oid_matches_owned_native_vectors() {
 }
 
 #[test]
+fn three_and_four_duplicate_unit_oid_mutations_match_owned_native_capture() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_duplicate_unit_oid_cardinality.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-duplicate-unit-oid-cardinality-v1"
+    );
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    let vectors = include_str!("../../testdata/vectors/cgate_duplicate_unit_oid_cardinality.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), vectors.len());
+    let document = |row: &serde_json::Value| {
+        let tag = row["tag"].as_u64().unwrap();
+        row["request"]
+            .as_str()
+            .unwrap()
+            .split_once(&format!(" << END{tag}\r\n"))
+            .unwrap()
+            .1
+            .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+            .unwrap()
+            .to_string()
+    };
+    let native_xml = |row: &serde_json::Value| {
+        row["response_lines"][2]
+            .as_str()
+            .unwrap()
+            .strip_prefix(&format!("[{}] 347-", row["tag"].as_u64().unwrap()))
+            .unwrap()
+            .trim_end_matches("\r\n")
+            .to_string()
+    };
+    let native_status = |row: &serde_json::Value| -> u16 {
+        row["response_lines"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .split_whitespace()
+            .nth(1)
+            .unwrap()
+            .parse()
+            .unwrap()
+    };
+    let mut server = Server::new(AccessLevel::Program);
+    for row in native["setup"].as_array().unwrap().iter().take(3) {
+        let response = server.handle(&format!(
+            "[{}] {}",
+            row["tag"].as_u64().unwrap(),
+            row["command"].as_str().unwrap()
+        ));
+        assert!(matches!(response.status, 200 | 301), "{response:?}");
+    }
+    let baseline = server.handle("[baseline] DBGETXML //XUMULT/254");
+    let parsed =
+        roxmltree::Document::parse(baseline.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let replace_oids = |value: &str| {
+        value
+            .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+            .replace(native["interface_oid"].as_str().unwrap(), &interface_oid)
+    };
+    let read = |server: &mut Server,
+                row: &serde_json::Value,
+                copied_oid: Option<(&str, &str)>,
+                reload: bool| {
+        let command = row["command"].as_str().unwrap();
+        let result = server.handle(&format!("[{}] {command}", row["tag"].as_u64().unwrap()));
+        if native_status(row) == 401 {
+            assert_eq!(result.status, 401, "{command}: {result:?}");
+            return;
+        }
+        assert_eq!(result.status, 200, "{command}: {result:?}");
+        let mut expected = native_xml(row);
+        if let Some((native_oid, rust_oid)) = copied_oid {
+            expected = expected.replace(native_oid, rust_oid);
+        }
+        let observed = result.lines[0].strip_prefix("347-").unwrap();
+        if !reload {
+            assert_eq!(observed, expected, "{command}");
+            return;
+        }
+        let expected = roxmltree::Document::parse(&expected).unwrap();
+        let observed = roxmltree::Document::parse(observed).unwrap();
+        for field in [
+            "OID",
+            "TagName",
+            "Address",
+            "UnitType",
+            "UnitName",
+            "FirmwareVersion",
+        ] {
+            let value = |root: roxmltree::Node<'_, '_>| {
+                root.children()
+                    .find(|child| child.has_tag_name(field))
+                    .and_then(|child| child.text())
+                    .map(str::to_string)
+            };
+            assert_eq!(
+                value(observed.root_element()),
+                value(expected.root_element()),
+                "{command}: {field}"
+            );
+        }
+        let pp = |root: roxmltree::Node<'_, '_>| {
+            root.children()
+                .find(|child| {
+                    child.has_tag_name("PP") && child.attribute("Name") == Some("UnitAddress")
+                })
+                .and_then(|child| child.attribute("Value"))
+                .map(str::to_string)
+        };
+        assert_eq!(
+            pp(observed.root_element()),
+            pp(expected.root_element()),
+            "{command}: PP UnitAddress"
+        );
+    };
+
+    for (case, vector) in cases.iter().zip(&vectors) {
+        let name = case["name"].as_str().unwrap();
+        assert_eq!(
+            vector["name"],
+            format!(
+                "{}_{}",
+                if case["submitted_addresses"].as_array().unwrap().len() == 3 {
+                    "three"
+                } else {
+                    "four"
+                },
+                name
+            )
+        );
+        assert_eq!(case["submitted_addresses"], vector["submitted_addresses"]);
+        assert_eq!(case["selected_address"], vector["selected_address"]);
+        let reset = &case["reset"];
+        let result = server.handle_document(
+            &format!(
+                "[{}] {}",
+                reset["tag"].as_u64().unwrap(),
+                reset["command"].as_str().unwrap()
+            ),
+            &replace_oids(&document(reset)),
+        );
+        assert_eq!(result.status, 301, "{name}: {result:?}");
+        for row in case["before"].as_array().unwrap() {
+            read(&mut server, row, None, false);
+        }
+        let oid_before = &case["oid_before"];
+        let selected = server.handle(&format!(
+            "[{}] {}",
+            oid_before["tag"].as_u64().unwrap(),
+            oid_before["command"].as_str().unwrap()
+        ));
+        assert_eq!(selected.status, 200, "{name}: {selected:?}");
+        assert_eq!(
+            selected.lines[0],
+            format!(
+                "347-{}",
+                native_xml(
+                    &case["before"][case["submitted_addresses"].as_array().unwrap().len() - 1]
+                )
+            )
+        );
+        let applied = &case["applied"];
+        let command = applied["command"].as_str().unwrap();
+        assert!(command.starts_with(vector["command"].as_str().unwrap()));
+        let line = format!("[{}] {command}", applied["tag"].as_u64().unwrap());
+        let result = if name == "set_xml" {
+            server.handle_document(&line, &document(applied))
+        } else {
+            server.handle(&line)
+        };
+        let receipt = applied["response_lines"][0].as_str().unwrap();
+        let copied_oid = if name == "copy_safe" {
+            assert_eq!(result.status, 301, "{name}: {result:?}");
+            Some((
+                receipt.split("OID=").nth(1).unwrap().trim(),
+                result
+                    .final_text
+                    .strip_prefix("301 OID=")
+                    .unwrap()
+                    .to_string(),
+            ))
+        } else {
+            assert_eq!(
+                result.final_text,
+                receipt
+                    .strip_prefix(&format!("[{}] ", applied["tag"].as_u64().unwrap()))
+                    .unwrap()
+                    .trim_end_matches("\r\n"),
+                "{name}"
+            );
+            None
+        };
+        let copied_oid_pair = copied_oid
+            .as_ref()
+            .map(|(original, observed)| (*original, observed.as_str()));
+        for row in case["after"].as_array().unwrap() {
+            read(&mut server, row, copied_oid_pair, false);
+        }
+        let oid_after = &case["oid_after"];
+        let selected = server.handle(&format!(
+            "[{}] {}",
+            oid_after["tag"].as_u64().unwrap(),
+            oid_after["command"].as_str().unwrap()
+        ));
+        if name == "delete" {
+            assert_eq!(selected.status, 401, "{name}: {selected:?}");
+        } else {
+            assert_eq!(selected.status, 200, "{name}: {selected:?}");
+            let selected_read = server.handle("[selected] DBGETXML //XUMULT/254/p/22");
+            assert_eq!(selected.lines[0], selected_read.lines[0], "{name}");
+        }
+        for row in case["lifecycle"].as_array().unwrap() {
+            let result = server.handle(&format!(
+                "[{}] {}",
+                row["tag"].as_u64().unwrap(),
+                row["command"].as_str().unwrap()
+            ));
+            assert_eq!(result.status, 200, "{name}: {result:?}");
+        }
+        for row in case["reloaded"].as_array().unwrap() {
+            read(&mut server, row, copied_oid_pair, true);
+        }
+        let oid_reloaded = &case["oid_reloaded"];
+        let selected = server.handle(&format!(
+            "[{}] {}",
+            oid_reloaded["tag"].as_u64().unwrap(),
+            oid_reloaded["command"].as_str().unwrap()
+        ));
+        assert_eq!(selected.status, 200, "{name}: {selected:?}");
+        let selected_address = if name == "delete" {
+            vector["reloaded_selected_address"].as_u64().unwrap()
+        } else {
+            22
+        };
+        let selected_read = server.handle(&format!(
+            "[selected] DBGETXML //XUMULT/254/p/{selected_address}"
+        ));
+        assert_eq!(
+            selected.lines[0], selected_read.lines[0],
+            "{name}: reloaded OID selection"
+        );
+    }
+}
+
+#[test]
 fn duplicate_unit_oid_mutations_match_owned_native_capture() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_duplicate_unit_oid_mutations.json"

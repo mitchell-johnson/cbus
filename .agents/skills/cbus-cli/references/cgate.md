@@ -1333,12 +1333,14 @@ pins a generated TagDLT OID, an explicit-OID text edit, save/load and
 whole-Network XML roundtrip. Other label shapes remain unverified.
 Descendant OID collisions are not admitted by this evidence. An
 [owned 89-request mutation capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#oid-targeted-mutations-of-two-units)
-establishes that `DBSETSAFE`, `DBSET`, `DBSETXML`, `DBCOPYSAFE` and `DBDELETE`
-through a shared OID select Unit 21 of two Units at addresses 20 and 21 in
-one Network. The copy receives a new OID and retains the source `UnitName`
-and PP `UnitAddress`; OID-targeted deletion invalidates the shared OID lookup
-until `PROJECT LOAD`, while the surviving addressed Unit remains readable.
-Rust admits exactly this two-Unit, one-Network shape. Unprobed
+and [229-request three-/four-Unit extension](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#three--and-four-unit-oid-targeted-mutations)
+establish that `DBSETSAFE`, `DBSET`, `DBSETXML`, `DBCOPYSAFE` and `DBDELETE`
+through a shared OID select the final submitted Unit in one Network, even
+when that Unit has a lower address than an earlier sibling. The copy receives
+a new OID and retains the source `UnitName` and PP `UnitAddress`; OID-targeted
+deletion invalidates the shared OID lookup until `PROJECT LOAD`, while the
+surviving addressed Units remain readable. Rust admits these two-, three-,
+and four-Unit one-Network shapes. Unprobed five-or-more Unit collisions,
 duplicate-Application fields/deletes, other duplicate shapes and
 cross-network Unit-OID collisions remain refused until native semantics and
 lossless representation are known.

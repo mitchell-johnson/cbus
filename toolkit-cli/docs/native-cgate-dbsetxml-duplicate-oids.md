@@ -77,7 +77,30 @@ It submits Unit 21 before Unit 20. `DBGETXML !oid` selects Unit 20,
 that selection. The [reverse-order vector](../../rust/testdata/vectors/cgate_duplicate_unit_oid_reverse_order.jsonl)
 prevents accidentally treating this as highest-address selection.
 
-Rust applies final-submission selection only to exactly two Units with the same OID in
-one Network and no same-OID pending object. Cross-kind, cross-network and
-larger Unit collisions remain guarded pending separate native evidence.
+## Three- and four-Unit OID-targeted mutations
+
+The [229-request owned capture](../../rust/testdata/fixtures/native_cgate_duplicate_unit_oid_cardinality.json)
+and its [reproducer](../research/cgate_duplicate_unit_oid_cardinality.py)
+extend the same five commands to three Units submitted as `20, 21, 22` and
+four Units submitted as `23, 21, 20, 22`, all sharing one OID in one Network.
+The capture is pinned to C-Gate 3.4.0 build 2001 and Java 11 by the hashes in
+the fixture. It used six owned loopback listeners, an unopened synthetic CNI
+address and a disposable project; process exit and work-directory removal were
+confirmed. No real C-Bus network or broker was involved.
+
+In all ten cases the OID selects Unit 22, the **final submitted** Unit. In the
+four-Unit case address 23 is the highest, so address sorting would be wrong.
+`DBSETSAFE`, `DBSET`, and `DBSETXML` change only Unit 22; `DBCOPYSAFE` creates
+Unit 30 with Unit 22's name and `PP UnitAddress=22`; `DBDELETE` removes only
+Unit 22. Immediately after deletion the shared-OID lookup returns 401 even
+though the other Units remain accessible by path. After save, close, load and
+use, OID lookup selects Unit 21 in the three-Unit case and Unit 20 in the
+four-Unit case. The [vectors](../../rust/testdata/vectors/cgate_duplicate_unit_oid_cardinality.jsonl)
+and source-bound Python and Rust tests pin the exact command receipts, direct
+readbacks and selection lifecycle.
+
+Rust applies final-submission selection to the captured two-, three- and
+four-Unit shapes with the same OID in one Network and no same-OID pending
+object. Cross-kind, cross-network and five-or-more Unit collision mutations
+remain guarded pending separate native evidence.
 Native file format and physical effects remain outside these captures.

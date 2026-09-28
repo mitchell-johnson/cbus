@@ -1,0 +1,10 @@
+{"name":"three_set_safe","submitted_addresses":[20,21,22],"selected_address":22,"command":"DBSETSAFE","oid_after":344,"oid_after_reload":344}
+{"name":"three_set_unsafe","submitted_addresses":[20,21,22],"selected_address":22,"command":"DBSET","oid_after":344,"oid_after_reload":344}
+{"name":"three_set_xml","submitted_addresses":[20,21,22],"selected_address":22,"command":"DBSETXML","oid_after":344,"oid_after_reload":344}
+{"name":"three_copy_safe","submitted_addresses":[20,21,22],"selected_address":22,"command":"DBCOPYSAFE","copied_address":30,"copied_source_pp_address":22,"oid_after":344,"oid_after_reload":344}
+{"name":"three_delete","submitted_addresses":[20,21,22],"selected_address":22,"command":"DBDELETE","oid_after":401,"oid_after_reload":344,"reloaded_selected_address":21}
+{"name":"four_set_safe","submitted_addresses":[23,21,20,22],"selected_address":22,"command":"DBSETSAFE","oid_after":344,"oid_after_reload":344}
+{"name":"four_set_unsafe","submitted_addresses":[23,21,20,22],"selected_address":22,"command":"DBSET","oid_after":344,"oid_after_reload":344}
+{"name":"four_set_xml","submitted_addresses":[23,21,20,22],"selected_address":22,"command":"DBSETXML","oid_after":344,"oid_after_reload":344}
+{"name":"four_copy_safe","submitted_addresses":[23,21,20,22],"selected_address":22,"command":"DBCOPYSAFE","copied_address":30,"copied_source_pp_address":22,"oid_after":344,"oid_after_reload":344}
+{"name":"four_delete","submitted_addresses":[23,21,20,22],"selected_address":22,"command":"DBDELETE","oid_after":401,"oid_after_reload":344,"reloaded_selected_address":20}
