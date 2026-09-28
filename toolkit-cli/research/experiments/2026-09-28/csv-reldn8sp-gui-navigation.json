@@ -1,0 +1,31 @@
+{
+  "format": "cbus-original-toolkit-gui-navigation-v1",
+  "date": "2026-09-28",
+  "application": "C-Bus Toolkit 1.18.0",
+  "environment": "Windows VM in UTM, interactive user session 1",
+  "scope": "Synthetic XCSVSP2 project only, Network 254, CNI 127.0.0.1:1, one RELDN8SP database unit at address 9",
+  "original_help": {
+    "topic": "Document Database function",
+    "vendor_help_file": "4357.htm",
+    "instruction": "C-Bus Projects > Project > Network > Units in Database toolbar, or right-click the Units in Database node or window"
+  },
+  "observed_steps": [
+    "Selected the XCSVSP2 Units node; Toolkit displayed Units in Database (1) - XCSVSP2 and the RELDN8SP row at address 009.",
+    "Right-clicked that Units node; its context menu showed an enabled Document Database action.",
+    "Invoked Document Database; Toolkit opened CSV Selection with checked column rows.",
+    "Accepted the current column selection; Toolkit opened a native Windows Save As dialog with CSV Files (*.csv) selected."
+  ],
+  "outcome": {
+    "native_gui_csv_saved": false,
+    "csv_bytes_compared": false,
+    "reason": "Filename entry through UTM computer input became corrupt; the UTM guest-agent RPC later timed out, so no reliable output path or file could be verified.",
+    "accepted_scope_change": "none"
+  },
+  "safety": {
+    "site_project_selected": false,
+    "synthetic_cni_interface": "127.0.0.1:1",
+    "synthetic_network_gui_state": "closed",
+    "physical_network_interaction_observed_during_probe": false,
+    "diagnostic_email_sent": false
+  }
+}
