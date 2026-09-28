@@ -10,15 +10,15 @@
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "412f4d942c375adfc5780112aa351ca06ef51bb05abc6ecaf54cea110d5121f1",
+    "feature_ledger": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392",
     "cgate_capability_matrix": "201a91dc8a7fd8ebcc3a18d434cfb1a0e10b0d8019a79e10b1f122944a82ca3e",
     "cgate_contract_inventory": "6697b015081b2cb96838c2f588dd427de148c69df3984bcd13298c762288d595",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "d717bcd9e197e1dc42ac0dd8ed84068438c15ec2a1315156f10235b5e2f85d58",
-    "cgate_session_differential_cmqttd": "1fbe457fb2a5af1efcdaaaa593422d881b658c6e37a2dea119fe4ee6c79b24e4",
-    "roadmap": "5d8f6e52cf01e4291c00951495b35951c904ac758e9144c6dc36161784f403a8"
+    "cgate_session_differential_cmqttd": "7008f7b1cce3c335bea66fd15fa5594c67ca7a575451137b3209d88cf70841cd",
+    "roadmap": "919bfe8e0ed476d5526ca52d084d0d71a1b062859fcc4d590522dcb53bca07f4"
   },
-  "evidence_bundle_sha256": "b4f127cf1b374d8c2b4b8dba6f90f5f964062a5ed72301f9aa1e4f7c5844b6e6",
+  "evidence_bundle_sha256": "c0b50414b3b27a7c999aefbe023c5169093ae698b1fd6238968ee2eb60df3b4d",
   "work_item_ids": [
     "P0.01",
     "P0.02",

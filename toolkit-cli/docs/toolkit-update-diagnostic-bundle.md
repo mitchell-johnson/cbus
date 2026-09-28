@@ -138,4 +138,6 @@ tests; they do not add native Windows, publisher-trust, network, or installer
 evidence.
 The [P9.01 focused review](../research/experiments/2026-09-28/update-diagnostic-bundle-review.json)
 maps the source-link obligations to stable case IDs, input hashes and the
-current offline result. Integrated and installed-artifact gates remain separate.
+source, installed-artifact and CI results. The receipt accepts only this bounded
+diagnostic composition; the broader preferences/update ledger and publisher
+trust, update availability, download and installation work remain open.

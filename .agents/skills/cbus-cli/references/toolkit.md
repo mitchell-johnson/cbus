@@ -54,6 +54,10 @@ its declared installed version; this is report consistency, not network attestat
 Metadata and revocation canonicalization rows must include hexadecimal and base64
 SHA-256 receipts matching their canonical UTF-8 bytes; missing or mismatched
 receipts keep the corresponding link and completion false.
+The condition report must retain its producer's exact-file source representation;
+a substituted observed-host claim cannot establish the link. The revocation
+report must retain `request_subject_association_verified=false`: matching the
+source-bound subject does not prove which subject an API request used.
 Each DER is bounded to 64 KiB and must match both its producer report's SHA-256
 and SHA-1 thumbprint; matching the revocation subject to a report-only
 thumbprint is insufficient. This binds exact certificate bytes, not publisher

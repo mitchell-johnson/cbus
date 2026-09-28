@@ -3,6 +3,7 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
@@ -180,8 +181,13 @@ def evaluate_packaged_change(register: dict) -> dict:
 class ParityRegisterTests(unittest.TestCase):
     def test_completed_roadmap_item_remains_in_work_item_roster(self):
         roadmap = register_builder.ROADMAP_PATH.read_text(encoding="utf-8")
-        completed = roadmap.replace("- [ ] **P9.01**", "- [x] **P9.01**", 1)
-        self.assertNotEqual(completed, roadmap)
+        self.assertRegex(roadmap, r"(?m)^- \[[ xX]\] \*\*P9\.01\*\*")
+        completed = re.sub(
+            r"(?m)^- \[[ xX]\] (?=\*\*P9\.01\*\*)",
+            "- [x] ",
+            roadmap,
+            count=1,
+        )
         with TemporaryDirectory() as directory:
             path = Path(directory) / "roadmap.md"
             path.write_text(completed, encoding="utf-8")
