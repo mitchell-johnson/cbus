@@ -98,6 +98,9 @@ use, OID lookup selects Unit 21 in the three-Unit case and Unit 20 in the
 four-Unit case. The [vectors](../../rust/testdata/vectors/cgate_duplicate_unit_oid_cardinality.jsonl)
 and source-bound Python and Rust tests pin the exact command receipts, direct
 readbacks and selection lifecycle.
+A real cmqttd TCP system test repeats the four-Unit import, OID read and
+mutation, copy, delete, and save/close/load sequence on its durable service
+without opening the synthetic C-Bus Network.
 
 Rust applies final-submission selection to the captured two-, three- and
 four-Unit shapes with the same OID in one Network and no same-OID pending
