@@ -5,16 +5,16 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "2c98947862c48776923ea7f757168d29f06062a202afc182c7f9b04d3d467cc5"
+      "sha256": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7"
     },
     "manual": {
       "sha256": "920c51b233fa53d958a44f8900f427b6c575ac95118008a2a69c992cf98bb3bc"
     },
     "service": {
-      "sha256": "ec6f1bd91ba04e2ea8ebd78a6c255b7e52e5471fddaf1060e775bb0e6324b5b6"
+      "sha256": "a80c5f0ae9629fb4d801a05c24d8443b050c19ab549c890f5104614557c59d18"
     },
     "event_mode": {
-      "sha256": "66d72e000eb52618a745fdefb1293d6fee66f9cd97b06036f69626bafeeb10c0"
+      "sha256": "ad873eea13c697ad6d17ab5977a2cbbf659c03b64ade554d231a9d5f10892131"
     },
     "authorization_policy": {
       "sha256": "a3f3ce920dee91f33e30a9c1a7f32ab8f2bb1c06f8d497db29523d470a227614"
@@ -12774,7 +12774,7 @@
       "id": "cgate-contract:7963ba4f1f49fd77",
       "path": "CONFIG OBSET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json pins project selection.",
+      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -12950,7 +12950,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json pins project selection."
+                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle."
               }
             }
           }
@@ -12982,8 +12982,8 @@
           }
         }
       },
-      "axes_sha256": "bae32e16dc2fc818f6c0c4aae4f781e3c0010aa964f484e4eea0f9ab78be879f",
-      "contract_sha256": "5fd7412cfd7453f95bdef162fb14a4ccc019766403fe596f3168c5d175e4d68c"
+      "axes_sha256": "d7fe4339005619904bc75d7c3dfcea8b8c33ebe854a7e21cfadd083685a12776",
+      "contract_sha256": "0b67837b77a7d678d234e4bb8b5b6f154e094148891bba1aaf7f7583455d3ecd"
     },
     {
       "id": "cgate-contract:e90b43df5fe2f03e",
@@ -13204,7 +13204,7 @@
       "id": "cgate-contract:926bd1e76aca5431",
       "path": "CONFIG SET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json pins project selection.",
+      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -13380,7 +13380,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json pins project selection."
+                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle."
               }
             }
           }
@@ -13412,8 +13412,8 @@
           }
         }
       },
-      "axes_sha256": "befa248b47a5f59bf9170c1cbb5d7569bb2a6685a8eef4e05278f626fb1d8e22",
-      "contract_sha256": "7537117806a6e238fd0b2046021b81e541d858ad07882afb2d95779140baf427"
+      "axes_sha256": "1314eb3f75fe8c433c7f82e96e08c94163e19e52c2c1f91c26122ced45048d32",
+      "contract_sha256": "ae3b85da5ee52096b4f4c7b52f30fcc5905249a30d23b3c957f4c2e51c0b9bca"
     },
     {
       "id": "cgate-contract:8adb7edfc88fd891",

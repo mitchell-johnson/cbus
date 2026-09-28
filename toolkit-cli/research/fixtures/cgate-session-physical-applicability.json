@@ -1,14 +1,14 @@
 {
   "format": "cbus-parity-test-report-v1",
   "result": "passed",
-  "source_revision": "1a75cb7b5b5f38178cbd148bc8dffe109463eeb8",
+  "source_revision": "31caabddf6ac071276bc40eb7918b5784423cd53",
   "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
   "exit_code": 0,
   "source_inputs": {
     "native_capture": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
-    "pilot_manifest": "fda1a42a05e5f51920dbd5e80e03179ad22e16d82b91e88417fd6462783936b5",
-    "contract_inventory": "0b65a82d80c30e64163fa2eb4594d918e9df072650ce1260c90ade818f168a8c",
-    "capability_matrix": "2c98947862c48776923ea7f757168d29f06062a202afc182c7f9b04d3d467cc5",
+    "pilot_manifest": "c1c9b2e2e1235f1dc7a49332bb3cad0189f562e14e4b8df9bf245cb811d59b43",
+    "contract_inventory": "4d2afa9ee71f69bf09fe02d78084126a9ab6de05e2df2c7dd04f468bf1537116",
+    "capability_matrix": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7",
     "capture_script": "453ba1c277f9fbc7c5ebd825c69de53913bf8e39fd41dc0ba9e49e3dfcd755c6"
   },
   "cases": [
@@ -24,7 +24,7 @@
           "obligation_id": "cgate-function:session-id-query",
           "dimension": "physical",
           "decision": "not_applicable",
-          "reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+          "reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
         }
       ],
       "scope_disposition_receipts": []
@@ -41,7 +41,7 @@
           "obligation_id": "cgate-function:session-id-all",
           "dimension": "physical",
           "decision": "not_applicable",
-          "reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+          "reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
         }
       ],
       "scope_disposition_receipts": []
@@ -58,7 +58,7 @@
           "obligation_id": "cgate-function:session-id-tag",
           "dimension": "physical",
           "decision": "not_applicable",
-          "reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+          "reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome."
         }
       ],
       "scope_disposition_receipts": []

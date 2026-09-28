@@ -10,16 +10,16 @@
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "0fee71abd591e9091437fe925811200e04873935953c3e32833026e5a0c2b7df",
-    "cgate_capability_matrix": "2c98947862c48776923ea7f757168d29f06062a202afc182c7f9b04d3d467cc5",
-    "cgate_contract_inventory": "0b65a82d80c30e64163fa2eb4594d918e9df072650ce1260c90ade818f168a8c",
+    "feature_ledger": "1f4961d581bdf32603d8c1221759f58baf51c357ec92f29f82e4f5f3784377cf",
+    "cgate_capability_matrix": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7",
+    "cgate_contract_inventory": "4d2afa9ee71f69bf09fe02d78084126a9ab6de05e2df2c7dd04f468bf1537116",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
-    "functional_obligation_pilot": "fda1a42a05e5f51920dbd5e80e03179ad22e16d82b91e88417fd6462783936b5",
-    "cgate_session_differential_cmqttd": "2bdbf7d65b3dc4bb4c1dd10da1da5f32157850cfd6afa84ff19c993a79ce5a11",
-    "cgate_session_physical_applicability": "9eeb1b2a2c35a43b85a11b723ff8c9dd96850f22935c7bdc45237c6e03d2a4eb",
+    "functional_obligation_pilot": "c1c9b2e2e1235f1dc7a49332bb3cad0189f562e14e4b8df9bf245cb811d59b43",
+    "cgate_session_differential_cmqttd": "5ca2e1e5b4e2aea2a21d0373a3af19faacc469286d1c6981402272f744988582",
+    "cgate_session_physical_applicability": "6be2163a5f645909f3b19f7e83de92b2e1f80985a7eeefd7b5e8da5469d46e30",
     "roadmap": "bc905f9e86ee7d3f3a3a10d81c895d6a4e57a89db19bc349f439e9125906a3e3"
   },
-  "evidence_bundle_sha256": "6eb3380ffae79d1543c190a5d5a62e999040485be563b498dbcb2eee34ad9c66",
+  "evidence_bundle_sha256": "11051c01f3680a5cfc2f9dde2deb16a49bbacb02fc51e57c1f43099329a1cd95",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -108688,8 +108688,8 @@
       "source_id": "CONFIG OBSET",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:7963ba4f1f49fd77",
-      "contract_sha256": "5fd7412cfd7453f95bdef162fb14a4ccc019766403fe596f3168c5d175e4d68c",
-      "contract_axes_sha256": "bae32e16dc2fc818f6c0c4aae4f781e3c0010aa964f484e4eea0f9ab78be879f",
+      "contract_sha256": "0b67837b77a7d678d234e4bb8b5b6f154e094148891bba1aaf7f7583455d3ecd",
+      "contract_axes_sha256": "d7fe4339005619904bc75d7c3dfcea8b8c33ebe854a7e21cfadd083685a12776",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -108865,7 +108865,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json pins project selection."
+                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start take effect at the next startup, and LOGIN is required when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle."
               }
             }
           }
@@ -109130,8 +109130,8 @@
       "source_id": "CONFIG SET",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:926bd1e76aca5431",
-      "contract_sha256": "7537117806a6e238fd0b2046021b81e541d858ad07882afb2d95779140baf427",
-      "contract_axes_sha256": "befa248b47a5f59bf9170c1cbb5d7569bb2a6685a8eef4e05278f626fb1d8e22",
+      "contract_sha256": "ae3b85da5ee52096b4f4c7b52f30fcc5905249a30d23b3c957f4c2e51c0b9bca",
+      "contract_axes_sha256": "1314eb3f75fe8c433c7f82e96e08c94163e19e52c2c1f91c26122ced45048d32",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -109307,7 +109307,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time and project.default alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json pins project selection."
+                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis, heartbeat-time, project.default and project.start alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed. native_cgate_config_project_default.json and native_cgate_config_project_start.json pin project lifecycle."
               }
             }
           }
@@ -319306,7 +319306,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:7963ba4f1f49fd77",
       "source_id": "CONFIG OBSET",
       "contract_id": "cgate-contract:7963ba4f1f49fd77",
-      "contract_sha256": "5fd7412cfd7453f95bdef162fb14a4ccc019766403fe596f3168c5d175e4d68c",
+      "contract_sha256": "0b67837b77a7d678d234e4bb8b5b6f154e094148891bba1aaf7f7583455d3ecd",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -319398,7 +319398,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:926bd1e76aca5431",
       "source_id": "CONFIG SET",
       "contract_id": "cgate-contract:926bd1e76aca5431",
-      "contract_sha256": "7537117806a6e238fd0b2046021b81e541d858ad07882afb2d95779140baf427",
+      "contract_sha256": "ae3b85da5ee52096b4f4c7b52f30fcc5905249a30d23b3c957f4c2e51c0b9bca",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -336996,7 +336996,7 @@
       "applicability": {
         "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
         "physical_candidate": "not_applicable_verified",
-        "physical_candidate_reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome.",
         "unresolved_profiles": [
           "TLS and non-loopback peers",
           "ACCESS/LOGIN policy variants"
@@ -337081,7 +337081,7 @@
       "applicability": {
         "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
         "physical_candidate": "not_applicable_verified",
-        "physical_candidate_reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome.",
         "unresolved_profiles": [
           "TLS and non-loopback peers",
           "ACCESS/LOGIN policy variants"
@@ -337170,7 +337170,7 @@
       "applicability": {
         "profile": "owned C-Gate 3.4.0.2001 loopback command session without a project or physical network",
         "physical_candidate": "not_applicable_verified",
-        "physical_candidate_reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required.",
+        "physical_candidate_reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. Physical bus behavior is outside this scoped loopback outcome.",
         "unresolved_profiles": [
           "TLS and non-loopback peers",
           "ACCESS/LOGIN policy variants"
