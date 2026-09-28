@@ -2535,11 +2535,26 @@ impl Server {
                     *path = format!("{to}/{rest}");
                 }
             }
-            self.db_pending.insert(
-                format!("{}\u{1f}{}", destination_project, object.oid),
-                object,
-            );
+            self.insert_db_pending_object(object);
         }
+    }
+
+    // A complete Network can contain the captured pair of leaf Applications
+    // with one OID. Keep the legacy project/OID key for the first record and
+    // give its sibling a stable path suffix so JSON persistence cannot merge
+    // them. OID lookup is separately resolved to the last Application.
+    fn insert_db_pending_object(&mut self, object: DbPendingObject) {
+        let base = format!("{}\u{1f}{}", object.project, object.oid);
+        let key = if self
+            .db_pending
+            .get(&base)
+            .is_some_and(|existing| existing.path != object.path)
+        {
+            format!("{base}\u{1e}{}", object.path.as_deref().unwrap_or_default())
+        } else {
+            base
+        };
+        self.db_pending.insert(key, object);
     }
 
     fn unit_document_key(project: &str, oid: &str) -> String {
@@ -2977,8 +2992,7 @@ impl Server {
                 object.parent = remap(&object.parent);
                 object.path = object.path.as_deref().map(&remap);
                 self.known_oids.insert(object.oid.clone());
-                self.db_pending
-                    .insert(format!("{project}\u{1f}{}", object.oid), object);
+                self.insert_db_pending_object(object);
             }
         }
     }
@@ -7094,10 +7108,10 @@ impl Server {
             }
         }
         if renamed_project.is_some() {
-            self.db_pending = std::mem::take(&mut self.db_pending)
-                .into_values()
-                .map(|object| (format!("{}\u{1f}{}", object.project, object.oid), object))
-                .collect();
+            let pending = std::mem::take(&mut self.db_pending);
+            for object in pending.into_values() {
+                self.insert_db_pending_object(object);
+            }
         }
     }
 
@@ -7508,11 +7522,7 @@ impl Server {
                     oid: oid.to_string(),
                 });
             }
-            if let Some(object) = self
-                .db_pending
-                .values()
-                .find(|object| object.project == project && object.oid == oid)
-            {
+            if let Some(object) = self.pending_object(project, oid) {
                 if let Some(target) = pending_target(object) {
                     return Ok(target);
                 }
@@ -7604,20 +7614,31 @@ impl Server {
         for (oid, kind) in &submitted_oids {
             kinds_by_oid.entry(oid).or_default().push(kind);
         }
-        // The owned native capture admits one Application sharing an OID
-        // with Units, or several Units sharing one OID. Typed descendants,
-        // the Interface and the Network still use OID-keyed Rust maps, so
-        // other duplicate shapes must stay closed until those maps migrate.
-        let unsupported_duplicate = kinds_by_oid.values().any(|kinds| {
+        // The owned captures admit Application+Unit, repeated Units, and
+        // precisely two leaf Applications in ascending Address order in a
+        // complete Network. Other collisions still need a wider identity
+        // migration or their own native evidence.
+        let unsupported_duplicate = kinds_by_oid.iter().any(|(oid, kinds)| {
             if kinds.len() < 2 {
                 return false;
             }
             let units = kinds.iter().filter(|kind| **kind == "Unit").count();
             let applications = kinds.iter().filter(|kind| **kind == "Application").count();
-            object.kind != DbXmlKind::Network
-                || units == 0
-                || applications > 1
-                || units + applications != kinds.len()
+            let unit_shape = units > 0 && applications <= 1 && units + applications == kinds.len();
+            let app_pair =
+                if object.kind == DbXmlKind::Network && kinds.len() == 2 && applications == 2 {
+                    let pair = object
+                        .children
+                        .iter()
+                        .filter(|child| child.kind == DbXmlKind::Application && child.oid == **oid)
+                        .collect::<Vec<_>>();
+                    pair.len() == 2
+                        && pair[0].address < pair[1].address
+                        && pair.iter().all(|child| child.children.is_empty())
+                } else {
+                    false
+                };
+            object.kind != DbXmlKind::Network || !(unit_shape || app_pair)
         });
         if unsupported_duplicate {
             return Err((
@@ -7640,6 +7661,16 @@ impl Server {
         } else {
             format!("{}/{}", target.parent, object.address)
         };
+        if target.kind == DbXmlKind::Application
+            && self.duplicated_application_oid(&target.project, &target.oid)
+            && (destination != target.path || !object.children.is_empty())
+        {
+            return Err((
+                status::CONFLICT_EXISTS,
+                "DBSETXML duplicate Application replacement requires the same leaf Address"
+                    .to_string(),
+            ));
+        }
         if destination != target.path && self.database_address_exists(&destination) {
             return Err((
                 status::CONFLICT_EXISTS,
@@ -7706,6 +7737,7 @@ impl Server {
             }) || self.db_pending.values().any(|object| object.oid == *oid)
                 || self.db_levels.values().any(|level| level.oid == *oid);
             if active {
+                self.objects.insert(format!("!{oid}"));
                 continue;
             }
             self.known_oids.remove(oid);
@@ -7790,15 +7822,14 @@ impl Server {
         });
         self.db_pending.retain(|_, object| {
             object.project != target.project
-                || !old_oids.contains(&object.oid)
-                    && !object
-                        .path
-                        .as_ref()
-                        .is_some_and(|path| path == &target.path || path.starts_with(&slash))
+                || !match object.path.as_deref() {
+                    Some(path) => path == target.path.as_str() || path.starts_with(&slash),
+                    None => old_oids.contains(&object.oid),
+                }
         });
         self.db_levels.retain(|_, level| {
             let path = format!("{}/{}", level.parent, level.address);
-            !old_oids.contains(&level.oid) && path != target.path && !path.starts_with(&slash)
+            path != target.path && !path.starts_with(&slash)
         });
         for oid in old_oids {
             self.db_xml_extras
@@ -7837,8 +7868,7 @@ impl Server {
             fields,
             path: Some(path.clone()),
         };
-        self.db_pending
-            .insert(format!("{project}\u{1f}{}", object.oid), pending);
+        self.insert_db_pending_object(pending);
         self.known_oids.insert(object.oid.clone());
         self.objects.insert(format!("!{}", object.oid));
         self.objects.insert(path.clone());
@@ -8406,6 +8436,26 @@ impl Server {
                 "409 Ambiguous duplicate Unit OID; use its path",
             );
         }
+        // DBDELETE's older OID-based subtree walk cannot distinguish these
+        // siblings. Keep deletion closed until its native selection semantics
+        // and path-aware removal are captured.
+        if self.current.as_deref().is_some_and(|project| {
+            self.db_pending.values().any(|object| {
+                object.project == project
+                    && object.element == "Application"
+                    && self.duplicated_application_oid(project, &object.oid)
+                    && (target == format!("!{}", object.oid)
+                        || object.path.as_deref().is_some_and(|path| {
+                            path == target || path.starts_with(&format!("{target}/"))
+                        }))
+            })
+        }) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 Duplicate Application deletion requires separate native evidence",
+            );
+        }
         let pending_oid = self.current.as_deref().and_then(|project| {
             self.db_pending
                 .values()
@@ -8806,6 +8856,13 @@ impl Server {
                     "409 Ambiguous duplicate Unit OID; use its path",
                 );
             }
+            if self.duplicated_application_oid_in_current_project(oid) && field != Some("TagName") {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Unsupported duplicate Application OID field mutation",
+                );
+            }
             if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
             }
@@ -8824,19 +8881,40 @@ impl Server {
         if self.unit_of(words[1]).is_some() && !self.unit_anywhere(words[1]) {
             return err(tag, status::ABSENT, "401 Unit not found");
         }
+        if let Some((object_path, field)) = words[1].rsplit_once('/') {
+            if field != "TagName"
+                && self.current.as_deref().is_some_and(|project| {
+                    self.db_pending.values().any(|object| {
+                        object.project == project
+                            && object.element == "Application"
+                            && object.path.as_deref() == Some(object_path)
+                            && self.duplicated_application_oid(project, &object.oid)
+                    })
+                })
+            {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Unsupported duplicate Application field mutation",
+                );
+            }
+        }
         // Imported Application/Group objects have both a canonical path and
         // a stable OID. Keep their mutable TagName in the same project-scoped
         // record whichever address form the caller used. An unscoped
         // `!oid/TagName` db_fields alias could leak across project copies.
         if let Some((object_address, "TagName")) = words[1].rsplit_once('/') {
             if let Some(project) = self.current.as_deref() {
-                let key = self.db_pending.iter().find_map(|(key, object)| {
-                    (object.project == project
-                        && matches!(object.element.as_str(), "Application" | "Group")
-                        && (object.path.as_deref() == Some(object_address)
-                            || object_address == format!("!{}", object.oid)))
-                    .then(|| key.clone())
-                });
+                let key = if let Some(oid) = object_address.strip_prefix('!') {
+                    self.pending_object_key(project, oid)
+                } else {
+                    self.db_pending.iter().find_map(|(key, object)| {
+                        (object.project == project
+                            && matches!(object.element.as_str(), "Application" | "Group")
+                            && object.path.as_deref() == Some(object_address))
+                        .then(|| key.clone())
+                    })
+                };
                 if let Some(key) = key {
                     if let Some(object) = self.db_pending.get_mut(&key) {
                         if let Some(path) = object.path.as_deref() {
@@ -8893,6 +8971,13 @@ impl Server {
                     tag,
                     status::CONFLICT_EXISTS,
                     "409 Ambiguous duplicate Unit OID; use its path",
+                );
+            }
+            if self.duplicated_application_oid_in_current_project(oid) && field != "TagName" {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Unsupported duplicate Application OID field mutation",
                 );
             }
             if field.eq_ignore_ascii_case("OID") {
@@ -9021,6 +9106,21 @@ impl Server {
         let Some(field) = parts.last().copied() else {
             return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
         };
+        if field != "TagName" && parts.len() == 4 {
+            let object_path = format!("//{}", parts[..3].join("/"));
+            if self.db_pending.values().any(|object| {
+                object.project == current
+                    && object.element == "Application"
+                    && object.path.as_deref() == Some(object_path.as_str())
+                    && self.duplicated_application_oid(&current, &object.oid)
+            }) {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Unsupported duplicate Application field mutation",
+                );
+            }
+        }
         if field.eq_ignore_ascii_case("OID") {
             return err(
                 tag,
@@ -9234,6 +9334,16 @@ impl Server {
             }
         }
         if field.eq_ignore_ascii_case("Address") {
+            if materialized_pending_oid
+                .as_deref()
+                .is_some_and(|oid| self.duplicated_application_oid(&current, oid))
+            {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Unsupported duplicate Application Address mutation",
+                );
+            }
             let Ok(destination) = value.parse::<u8>() else {
                 return err(
                     tag,
@@ -9306,7 +9416,11 @@ impl Server {
             }
             return ok(tag, vec![], "200 OK.");
         }
-        if let Some(oid) = &materialized_pending_oid {
+        if let Some(object) = self.db_pending.values_mut().find(|object| {
+            object.project == current && object.path.as_deref() == Some(canonical_object.as_str())
+        }) {
+            object.fields.insert(field.to_string(), value.clone());
+        } else if let Some(oid) = &materialized_pending_oid {
             self.sync_pending_database_field(&current, oid, field, &value);
         }
         self.db_fields.insert(path, value);
@@ -10265,6 +10379,22 @@ impl Server {
                 .count()
         });
         units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
+    }
+
+    fn duplicated_application_oid(&self, project: &str, oid: &str) -> bool {
+        self.db_pending
+            .values()
+            .filter(|object| {
+                object.project == project && object.element == "Application" && object.oid == oid
+            })
+            .count()
+            > 1
+    }
+
+    fn duplicated_application_oid_in_current_project(&self, oid: &str) -> bool {
+        self.current
+            .as_deref()
+            .is_some_and(|project| self.duplicated_application_oid(project, oid))
     }
 
     /// Issue a deterministic OID for `Level`/`NetVar` creation and units.

@@ -34,11 +34,14 @@ compare the two submitted Network documents, their `301` receipts, ten exact
 native readbacks and the ambiguous OID selection. A service test also checks
 that both Unit templates and PP values survive JSON repository restart and
 one direct path replacement without PCI traffic. Rust admits these captured
-duplicate shapes through address-keyed Unit metadata while leaving typed
-descendant, Interface and Network OID collisions closed with `409`; those
-other shapes have no native evidence or lossless Rust representation yet.
+duplicate shapes through address-keyed Unit metadata. A [later owned
+capture](native-cgate-dbsetxml-duplicate-applications.md) adds two leaf
+Applications sharing one OID. Typed descendant, Interface and Network OID
+collisions remain closed with `409`; those shapes have no native evidence or
+lossless Rust representation yet.
 Project-wide collision checks also prevent two Networks from importing the
-same Unit OID and address into one project. Ambiguous OID-based mutations
+same Unit OID and address into one project. For the Unit-containing shapes,
+ambiguous OID-based mutations
 (`DBSET`, `DBSETSAFE`, `DBSETXML`, `DBDELETE`, `DBCOPYSAFE`) return `409` and
 leave both objects unchanged; the owned capture establishes OID read
 selection, not those mutation semantics. Path-based Unit replacement and

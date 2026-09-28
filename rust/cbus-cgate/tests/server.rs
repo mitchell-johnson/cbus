@@ -3243,6 +3243,221 @@ fn dbsetxml_duplicate_oid_matches_owned_native_vectors() {
 }
 
 #[test]
+fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_duplicate_applications.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-duplicate-applications-v1"
+    );
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbsetxml_duplicate_applications.jsonl"
+    ))
+    .unwrap();
+    assert_eq!(vector["set_tags"], serde_json::json!([304, 318, 328, 334]));
+    assert_eq!(vector["read_tags"].as_array().unwrap().len(), 23);
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 39);
+
+    let mut server = Server::new(AccessLevel::Program);
+    for row in &cases[..3] {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        assert_eq!(server.handle(&format!("[{tag}] {command}")).status, 200);
+    }
+    let initial = server.handle("[303] DBGETXML //XAPP/254");
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let substitute = |value: &str| {
+        value
+            .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+            .replace(native["interface_oid"].as_str().unwrap(), &interface_oid)
+    };
+
+    for row in &cases[4..] {
+        let tag = row["tag"].as_u64().unwrap();
+        let command = row["command"].as_str().unwrap();
+        let request = row["request"].as_str().unwrap();
+        let observed = if command.starts_with("DBSETXML") {
+            let marker = format!(" << END{tag}\r\n");
+            let document = request
+                .split_once(&marker)
+                .unwrap()
+                .1
+                .strip_suffix(&format!("\r\nEND{tag}\r\n"))
+                .unwrap();
+            server.handle_document(&format!("[{tag}] {command}"), &substitute(document))
+        } else {
+            server.handle(&format!("[{tag}] {command}"))
+        };
+        let response = row["response_lines"].as_array().unwrap();
+        let final_line = response.last().unwrap().as_str().unwrap();
+        let expected_final = final_line
+            .trim_start_matches(&format!("[{tag}] "))
+            .trim_end_matches("\r\n");
+        let expected_status = if command.starts_with("DBGETXML") {
+            200
+        } else {
+            expected_final[..3].parse::<u16>().unwrap()
+        };
+        assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
+        if command.starts_with("DBGETXML") {
+            let expected_xml = response[2]
+                .as_str()
+                .unwrap()
+                .trim_start_matches(&format!("[{tag}] "))
+                .trim_end_matches("\r\n");
+            assert_eq!(observed.lines[0], substitute(expected_xml), "tag {tag}");
+        } else if command.starts_with("DBGET ") || command.starts_with("DBSETXML") {
+            assert_eq!(observed.final_text, substitute(expected_final), "tag {tag}");
+        }
+    }
+
+    let shared = "33333333-3333-4333-8333-333333333333";
+    let survivor = server.handle("[survivor] DBGETXML //XAPP/254/56").lines[0].clone();
+    for target in [
+        format!("!{shared}"),
+        "//XAPP/254/56".to_string(),
+        "//XAPP/254".to_string(),
+    ] {
+        assert_eq!(
+            server.handle(&format!("[closed] DBDELETE {target}")).status,
+            409
+        );
+        assert_eq!(
+            server.handle("[still] DBGETXML //XAPP/254/56").lines[0],
+            survivor
+        );
+    }
+    assert_eq!(
+        server
+            .handle(&format!("[closed] DBSET !{shared}/Address 58"))
+            .status,
+        409
+    );
+    assert_eq!(
+        server
+            .handle("[closed] DBSETSAFE //XAPP/254/56/Address 58")
+            .status,
+        409
+    );
+    let moved = format!(
+        "<Application><OID>{shared}</OID><TagName>Moved</TagName><Address>58</Address></Application>"
+    );
+    assert_eq!(
+        server
+            .handle_document("[closed] DBSETXML //XAPP/254/57", &moved)
+            .status,
+        409
+    );
+    let before_unsupported = server.handle("[before] DBGETXML //XAPP/254").lines[0].clone();
+    let third = format!(
+        "<Application><OID>{shared}</OID><TagName>Third</TagName><Address>58</Address></Application>"
+    );
+    let submitted_pair = substitute(
+        cases[4]["request"]
+            .as_str()
+            .unwrap()
+            .split_once(" << END304\r\n")
+            .unwrap()
+            .1
+            .strip_suffix("\r\nEND304\r\n")
+            .unwrap(),
+    );
+    let triple = submitted_pair.replace("</Network>", &format!("{third}</Network>"));
+    assert_eq!(
+        server
+            .handle_document("[closed] DBSETXML //XAPP/254", &triple)
+            .status,
+        409
+    );
+    assert_eq!(
+        server.handle("[after] DBGETXML //XAPP/254").lines[0],
+        before_unsupported
+    );
+    let first_app = format!(
+        "<Application><OID>{shared}</OID><TagName>First</TagName><Address>56</Address></Application>"
+    );
+    let second_app = format!(
+        "<Application><OID>{shared}</OID><TagName>Second</TagName><Address>57</Address></Application>"
+    );
+    let reversed = submitted_pair.replace(
+        &format!("{first_app}{second_app}"),
+        &format!("{second_app}{first_app}"),
+    );
+    assert_ne!(reversed, submitted_pair);
+    assert_eq!(
+        server
+            .handle_document("[closed] DBSETXML //XAPP/254", &reversed)
+            .status,
+        409
+    );
+    assert_eq!(
+        server.handle("[after] DBGETXML //XAPP/254").lines[0],
+        before_unsupported
+    );
+    assert_eq!(server.handle("[copy] PROJECT COPY XAPP XAPPC").status, 200);
+    assert_eq!(server.handle("[use] PROJECT USE XAPPC").status, 200);
+    for address in [56, 57] {
+        let copied = server.handle(&format!("[copied] DBGETXML //XAPPC/254/{address}"));
+        assert_eq!(copied.status, 200, "{copied:?}");
+        assert!(copied.lines[0].contains(&format!("<Address>{address}</Address>")));
+    }
+    assert_eq!(
+        server.handle("[rename] PROJECT RENAME XAPPC XAPPR").status,
+        200
+    );
+    assert_eq!(server.handle("[use] PROJECT USE XAPPR").status, 200);
+    for address in [56, 57] {
+        assert_eq!(
+            server
+                .handle(&format!("[renamed] DBGETXML //XAPPR/254/{address}"))
+                .status,
+            200
+        );
+    }
+    assert_eq!(
+        server
+            .handle("[archive] PROJECT ARCHIVE XAPPR cmqttd:duplicate-apps")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[delete] PROJECT DELETE XAPPR").status, 200);
+    assert_eq!(
+        server
+            .handle("[restore] PROJECT RESTORE XAPPA cmqttd:duplicate-apps")
+            .status,
+        200
+    );
+    assert_eq!(server.handle("[use] PROJECT USE XAPPA").status, 200);
+    for address in [56, 57] {
+        assert_eq!(
+            server
+                .handle(&format!("[restored] DBGETXML //XAPPA/254/{address}"))
+                .status,
+            200
+        );
+    }
+}
+
+#[test]
 fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_dbsetxml_unit_vm.json"

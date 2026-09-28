@@ -2978,12 +2978,38 @@ impl Server {
 
     fn pending_for_project(&self, project: &str, oid: &str) -> Option<String> {
         self.db_pending
-            .contains_key(&pending_key(project, oid))
+            .values()
+            .any(|object| object.project == project && object.oid == oid)
             .then_some(format!("!{oid}"))
     }
 
     pub(crate) fn pending_object(&self, project: &str, oid: &str) -> Option<&DbPendingObject> {
-        self.db_pending.get(&pending_key(project, oid))
+        self.db_pending
+            .values()
+            .filter(|object| object.project == project && object.oid == oid)
+            // The captured pair of leaf Applications resolves !OID to the
+            // second (higher-address) record after save/reload as well.
+            .max_by_key(|object| {
+                object
+                    .fields
+                    .get("Address")
+                    .and_then(|address| address.parse::<u8>().ok())
+                    .unwrap_or_default()
+            })
+    }
+
+    pub(crate) fn pending_object_key(&self, project: &str, oid: &str) -> Option<String> {
+        self.db_pending
+            .iter()
+            .filter(|(_, object)| object.project == project && object.oid == oid)
+            .max_by_key(|(_, object)| {
+                object
+                    .fields
+                    .get("Address")
+                    .and_then(|address| address.parse::<u8>().ok())
+                    .unwrap_or_default()
+            })
+            .map(|(key, _)| key.clone())
     }
 
     fn oid_in_project(&self, project: &str, oid: &str) -> bool {
@@ -3073,7 +3099,11 @@ impl Server {
         field: &str,
         value: &str,
     ) {
-        if let Some(object) = self.db_pending.get_mut(&pending_key(project, oid)) {
+        if let Some(key) = self.pending_object_key(project, oid) {
+            let object = self
+                .db_pending
+                .get_mut(&key)
+                .expect("selected pending object still exists");
             object.fields.insert(field.to_string(), value.to_string());
         }
     }
