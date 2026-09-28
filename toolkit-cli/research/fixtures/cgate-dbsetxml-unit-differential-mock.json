@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/private/tmp/cbus-parity-foundation-20260927/rust/target/debug/cgate-mock",
-    "sha256": "d3740481d188e91bcde2f59255f9b63c6f2d8222869788272e28c740f7f3a89b"
+    "sha256": "75e7beeb29acba1afce749993ba13f2291ec870d38e907d0c043919fcb45be60"
   },
-  "source_revision": "824d719b039c4c9c93907cd539c248a1a9babb33",
+  "source_revision": "e76882b83ea72d6f67f8e289d0b60beb944c93da",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "b2a2be997813cc94c43c6bc47a82055eabdfcc66aa05f919e04447f7d2312fe7",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
@@ -26,7 +26,7 @@
     "rust/cbus-cgate/src/access.rs": "b3b9ade610f0a2cf2b9b43cb24b414a12a8c8e61afd3d0028b98fbe686b98b2c",
     "rust/cbus-cgate/src/auth.rs": "292f88233343040c0453672269ac5f0d605d1f314d7fc04aab9ccf2faac135f8",
     "rust/cbus-cgate/src/capability_matrix.rs": "e3aca7d984e98a12d1afa0adc1aec5578918bf42518e8a6677ca6ab9b9607406",
-    "rust/cbus-cgate/src/config.rs": "cf260aca2ff6aadb8b56ec4b096d065e519ca1aaac0c8ce63b3d1eb36b5c5f70",
+    "rust/cbus-cgate/src/config.rs": "dc5524f5ac7a9934f92bf894fab56a972c4da3ecf9323fed4b4225332125790a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "c2c740c6faff7e48e3ac8b307860b4bc3f428494df6ae16a2ef535760c622f9c",
     "rust/cbus-cgate/src/lib.rs": "815d4e6a16248b656aaddc1d8cebbaff4f517b2df36d93cadb26ecd511bde0df",
@@ -40,9 +40,9 @@
     "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
     "rust/cbus-cgate/src/service/net_lifecycle.rs": "408434ff835df6d5cf5aa1a83133d335696dc83b17e49d618ccada665ec5bb1b",
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
-    "rust/cbus-cgate/src/service/tests.rs": "54ce86949b35863f23565bf1b796038e809f95b00eda17e4ac89bced60fd56df",
+    "rust/cbus-cgate/src/service/tests.rs": "5c8b55a999c94b4ccb4abfdb927d71ea3ae4a9be80317f2e81841a374572697e",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
-    "rust/cbus-cgate/src/service.rs": "bb7d02da1789afe34b58e40abfb39455322da9c616680e6f1d208ff95ad8af40",
+    "rust/cbus-cgate/src/service.rs": "27f2799963be6ceefa8773dffa9426da7f77271b92be2e6f351f8631ee6889dd",
     "rust/cbus-cgate/src/show.rs": "19dc904dbe016c925c9972dc01e6423d9a2b2f0a7083bae9dbc9d12f8b7eeb5d",
     "rust/cbus-cgate/src/unitspec.rs": "d2f64bf3e45e3810530435df72845c69cb173ab235e706a6e96c56daa8153fd9",
     "rust/cbus-cgate/tests/server.rs": "941960a443cd2f53cdb4efd06b317f6de7d184491bb629f7429734243b8d1b47",
@@ -104,6 +104,7 @@
     "rust/testdata/fixtures/native_cgate_authorization_probe.json": "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0",
     "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
     "rust/testdata/fixtures/native_cgate_config_command_show_responses.json": "e142a46133fbf8ee655b5169a57dd34398c0d8e1aa8d6e4ee8880ff4db117bd2",
+    "rust/testdata/fixtures/native_cgate_config_event_millis.json": "396c09d58052f8feed927a67ad2dd121aa2de70668cad3806bc8a53880854766",
     "rust/testdata/fixtures/native_cgate_dali_help.json": "c60df73cb0d62c84b009c8a88fb436b50f9abd0e5d47f79cbde2668443c600e0",
     "rust/testdata/fixtures/native_cgate_dali_specialized.json": "9d947d08a95e1384805155e768940b3ff125c189352a1d7a028bc3fad92d3aff",
     "rust/testdata/fixtures/native_cgate_dbgetxml_framing_vm.json": "c819303fbe8d38d552fa3aa9b80fbe60ca1161ae731f1aeb830323f0e7e6863a",
