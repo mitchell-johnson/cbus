@@ -178,6 +178,17 @@ def evaluate_packaged_change(register: dict) -> dict:
 
 
 class ParityRegisterTests(unittest.TestCase):
+    def test_completed_roadmap_item_remains_in_work_item_roster(self):
+        roadmap = register_builder.ROADMAP_PATH.read_text(encoding="utf-8")
+        completed = roadmap.replace("- [ ] **P9.01**", "- [x] **P9.01**", 1)
+        self.assertNotEqual(completed, roadmap)
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "roadmap.md"
+            path.write_text(completed, encoding="utf-8")
+            with patch.object(register_builder, "ROADMAP_PATH", path):
+                work_items, _ = register_builder.roadmap_maps()
+        self.assertIn("P9.01", work_items["P9"])
+
     def setUp(self):
         self.artifact_folder = TemporaryDirectory()
         self.addCleanup(self.artifact_folder.cleanup)

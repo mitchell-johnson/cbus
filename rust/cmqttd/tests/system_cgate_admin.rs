@@ -216,7 +216,10 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
     assert!(!network_unit
         .iter()
         .any(|line| line.contains("<x:Opaque>yes</x:Opaque>")));
-    assert!(network_unit.iter().any(|line| line.contains("<!--kept-->")));
+    assert!(!network_unit.iter().any(|line| line.contains("<!--kept-->")));
+    assert!(network_unit
+        .iter()
+        .any(|line| line.contains("<PP Name=\"StaticTextString0\" Value=\"System\"/>")));
     assert_eq!(sys.pci.payloads(), before_network_document);
 
     writer

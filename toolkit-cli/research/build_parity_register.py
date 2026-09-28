@@ -86,7 +86,7 @@ def load_json(path: Path) -> dict:
 def roadmap_maps() -> tuple[dict[str, list[str]], dict[str, list[str]]]:
     text = ROADMAP_PATH.read_text(encoding="utf-8")
     items: dict[str, list[str]] = {}
-    for package in re.findall(r'^- \[ \] \*\*(P\d+\.\d{2})\*\*', text, re.M):
+    for package in re.findall(r'^- \[[ xX]\] \*\*(P\d+\.\d{2})\*\*', text, re.M):
         items.setdefault(package.split(".")[0], []).append(package)
     if sum(map(len, items.values())) != 59:
         raise ValueError("Roadmap must expose all 59 stable work item IDs")
