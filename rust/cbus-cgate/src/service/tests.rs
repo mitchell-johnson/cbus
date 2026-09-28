@@ -868,6 +868,14 @@ fn assert_native_broadcast_event(line: &str, session: u64, content: &str) {
     assert_eq!(crate::event_reporting_level(line), Some(3));
 }
 
+fn assert_native_command_entry_event(line: &str, session: u64, command: &str) {
+    let body = line.strip_prefix("#e# ").expect("event marker");
+    let (timestamp, payload) = body.split_once(" 761 ").expect("native 761 envelope");
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    assert_eq!(payload, format!("cmd{session} - Command: {command}"));
+    assert_eq!(crate::event_reporting_level(line), Some(1));
+}
+
 fn assert_native_command_time_event(line: &str, session: u64, command_id: &str) {
     let body = line.strip_prefix("#e# ").expect("event marker");
     let (timestamp, payload) = body.split_once(" 767 ").expect("native 767 envelope");
@@ -896,11 +904,7 @@ async fn assert_native_command_trace(
     timed_tag: Option<&str>,
 ) {
     let command_event = next_command_trace_event(events).await;
-    let body = command_event.strip_prefix("#e# ").expect("event marker");
-    let (timestamp, payload) = body.split_once(" 761 ").expect("native 761 envelope");
-    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
-    assert_eq!(payload, format!("cmd{session} - Command: {command}"));
-    assert_eq!(crate::event_reporting_level(&command_event), Some(1));
+    assert_native_command_entry_event(&command_event, session, command);
     for expected in response {
         let event = next_command_trace_event(events).await;
         let body = event.strip_prefix("#e# ").expect("event marker");
@@ -985,6 +989,44 @@ async fn connect_command_session(
     (reader, writer)
 }
 
+/// Command and response trace events share an EVENT-enabled command socket
+/// with replies. Keep reply assertions exact while admitting only the three
+/// native-shaped trace codes; an application event still fails a reply read.
+async fn command_socket_reply_line(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    line: &mut String,
+) -> usize {
+    loop {
+        line.clear();
+        let read = reader.read_line(line).await.unwrap();
+        if read == 0 {
+            return 0;
+        }
+        let event = line.trim_end_matches(['\r', '\n']);
+        let Some(body) = event.strip_prefix("#e# ") else {
+            return read;
+        };
+        let (timestamp, rest) = body.split_once(' ').expect("trace code");
+        chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f")
+            .expect("trace timestamp");
+        let (code, payload) = rest.split_once(' ').expect("trace payload");
+        let (session, content) = payload
+            .strip_prefix("cmd")
+            .and_then(|payload| payload.split_once(" - "))
+            .expect("trace session");
+        session.parse::<u64>().expect("numeric trace session");
+        match code {
+            "761" => assert!(content.starts_with("Command: "), "{event}"),
+            "766" => assert!(content.starts_with("Response: "), "{event}"),
+            "767" => {
+                assert!(content.starts_with("commandId="), "{event}");
+                assert!(content.contains(" time="), "{event}");
+            }
+            _ => panic!("unexpected event on command socket: {event}"),
+        }
+    }
+}
+
 async fn command_lines(
     reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
     writer: &mut tokio::net::tcp::OwnedWriteHalf,
@@ -999,7 +1041,7 @@ async fn command_lines(
     let mut lines = Vec::new();
     loop {
         let mut line = String::new();
-        assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
+        assert_ne!(command_socket_reply_line(reader, &mut line).await, 0);
         let line = line.trim_end_matches(['\r', '\n']).to_string();
         let payload = line
             .strip_prefix(&prefix)
@@ -6178,7 +6220,17 @@ async fn broadcast_event_fans_out_between_embedded_command_connections() {
     let mut event = String::new();
     tokio::time::timeout(Duration::from_secs(2), event_reader.read_line(&mut event))
         .await
-        .expect("subscribed client did not receive BROADCAST_EVENT")
+        .expect("subscribed client did not receive BROADCAST_EVENT command trace")
+        .unwrap();
+    assert_native_command_entry_event(
+        event.trim_end_matches(['\r', '\n']),
+        3,
+        "[send] BROADCAST_EVENT SP class payload text",
+    );
+    event.clear();
+    tokio::time::timeout(Duration::from_secs(2), event_reader.read_line(&mut event))
+        .await
+        .expect("subscribed client did not receive BROADCAST_EVENT application event")
         .unwrap();
     let event = event.trim_end_matches(['\r', '\n']);
     assert_native_broadcast_event(event, 3, "SP class payload text");
@@ -6296,7 +6348,10 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
         ["[11] 204 Closing connection."]
     );
     let mut eof = String::new();
-    assert_eq!(first_reader.read_line(&mut eof).await.unwrap(), 0);
+    assert_eq!(
+        command_socket_reply_line(&mut first_reader, &mut eof).await,
+        0
+    );
     let remaining = command_lines(
         &mut second_reader,
         &mut second_writer,
@@ -6314,7 +6369,10 @@ async fn native_session_event_alias_and_quit_are_connection_local() {
         ["[13] 204 Closing connection."]
     );
     eof.clear();
-    assert_eq!(second_reader.read_line(&mut eof).await.unwrap(), 0);
+    assert_eq!(
+        command_socket_reply_line(&mut second_reader, &mut eof).await,
+        0
+    );
 
     server.abort();
     std::fs::remove_file(path).unwrap();
@@ -6370,7 +6428,11 @@ async fn native_session_selector_matrix_matches_owned_cgate_capture() {
         );
         if case["eof_after_reply"] == true {
             let mut eof = String::new();
-            assert_eq!(reader.read_line(&mut eof).await.unwrap(), 0, "{command}");
+            assert_eq!(
+                command_socket_reply_line(reader, &mut eof).await,
+                0,
+                "{command}"
+            );
         }
     }
 
@@ -13434,7 +13496,8 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
     .await;
     assert_eq!(help, ["[monitor-help] 404 Help topic not found"]);
 
-    // The denied command cannot mutate global configuration or fan an event.
+    // Denied commands still publish native command/response traces, but must
+    // neither mutate global configuration nor fan an application event.
     let mut events = service.events.subscribe();
     assert_eq!(
         command_lines(
@@ -13446,6 +13509,14 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
         .await,
         ["[cfg-denied] 420 Access denied."]
     );
+    assert_native_command_trace(
+        &mut events,
+        7,
+        "[cfg-denied] CONFIG SET clock.master yes",
+        &["[cfg-denied] 420 Access denied."],
+        None,
+    )
+    .await;
     assert_eq!(
         command_lines(
             &mut monitor_reader,
@@ -13456,7 +13527,14 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
         .await,
         ["[event-denied] 420 Access denied."]
     );
-    assert!(events.try_recv().is_err());
+    assert_native_command_trace(
+        &mut events,
+        5,
+        "[event-denied] BROADCAST_EVENT SP blocked",
+        &["[event-denied] 420 Access denied."],
+        None,
+    )
+    .await;
     assert_eq!(
         command_lines(
             &mut operate_reader,
@@ -15335,7 +15413,7 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
     assert_eq!(document["config_runtime_reconfiguration"], false);
     assert_eq!(
         document["config_restart_effects"],
-        serde_json::json!(["command.show-time"])
+        serde_json::json!(["command.show-responses", "command.show-time"])
     );
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
 
