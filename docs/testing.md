@@ -132,7 +132,9 @@ The hardware selection stays private until P1.04 defines the required fixtures;
 an absent manifest fails instead of turning hardware acceptance into a skip.
 
 Both provisioned jobs upload the JSON receipt and JUnit report, then run
-`.venv/bin/cbus-toolkit coverage --require-complete` directly. That final
+`.venv/bin/cbus-toolkit coverage --evidence-root . --require-complete` directly
+from `toolkit-cli/`. The explicit root verifies the recorded input and report
+bytes against the checked-out acceptance snapshot. That final
 command remains nonzero while the census or any implementation/acceptance
 requirement is incomplete. `make coverage` is only an informational local
 summary that prints the same status without enforcing it; use

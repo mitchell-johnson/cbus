@@ -10,7 +10,9 @@ includes 412 parsed Toolkit forms, 10,102 executable controls and 1,892 event
 bindings, but all remain provisional until P0 resolves them into a complete,
 deduplicated functional denominator.
 Run `cbus-toolkit coverage --require-complete` to inspect the evidence-derived
-status. Functional percentages are `null` while `denominator_ready` is false,
+status. From this directory, add `--evidence-root .` to verify every recorded
+input and report before attempting a release decision. Functional percentages
+are `null` while `denominator_ready` is false or evidence files are unverified,
 and the command deliberately exits nonzero while census or acceptance work is
 unfinished.
 

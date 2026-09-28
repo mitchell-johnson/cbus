@@ -1284,12 +1284,22 @@ def evaluate(
         and len(defined) == len(obligations)
     )
 
+    # The register binds declared hashes, but only a caller with a trusted
+    # artifact root can verify that the recorded inputs and reports exist and
+    # still have those bytes. A wheel's embedded declarations alone cannot
+    # establish a completed release.
+    evidence_artifacts_verified = artifact_root is not None
+
     def percent(count: int, total: int) -> float | None:
-        if not denominator_ready or not total:
+        if not denominator_ready or not evidence_artifacts_verified or not total:
             return None
         return round(count * 100.0 / total, 2)
 
-    complete = denominator_ready and len(accepted) == len(obligations)
+    complete = (
+        denominator_ready
+        and evidence_artifacts_verified
+        and len(accepted) == len(obligations)
+    )
     status_counts = Counter(feature["status"] for feature in ledger["features"])
     ledger_total = len(ledger["features"])
     acceptance_by_dimension = {}
@@ -1297,7 +1307,7 @@ def evaluate(
         states = Counter(item["acceptance"][dimension] for item in obligations)
         required = len(obligations) - states["not_applicable"]
         dimension_percent = None
-        if denominator_ready:
+        if denominator_ready and evidence_artifacts_verified:
             dimension_percent = (
                 100.0
                 if required == 0
@@ -1326,12 +1336,15 @@ def evaluate(
         blockers.append(f"{len(obligations) - len(defined)} obligations remain provisional")
     if len(accepted) != len(obligations):
         blockers.append(f"{len(obligations) - len(accepted)} obligations are not fully accepted")
+    if not evidence_artifacts_verified:
+        blockers.append("evidence artifacts have not been verified against a trusted root")
     return {
         "schema_version": register["schema_version"],
         "denominator_version": register["denominator_version"],
         "census_complete": register["census_complete"],
         "denominator_ready": denominator_ready,
-        "functional_percent_available": denominator_ready,
+        "functional_percent_available": denominator_ready and evidence_artifacts_verified,
+        "evidence_artifacts_verified": evidence_artifacts_verified,
         "obligations": {
             "total": len(obligations),
             "defined": len(defined),
@@ -1388,7 +1401,9 @@ def load_packaged_documents() -> tuple[
     )
 
 
-def evaluate_packaged(ledger: dict[str, Any]) -> dict[str, Any]:
+def evaluate_packaged(
+    ledger: dict[str, Any], *, artifact_root: Path | None = None
+) -> dict[str, Any]:
     (
         register,
         evidence,
@@ -1408,4 +1423,5 @@ def evaluate_packaged(ledger: dict[str, Any]) -> dict[str, Any]:
         ledger_raw=ledger_raw,
         cgate_contract_inventory=cgate_contract_inventory,
         cgate_contract_raw=cgate_contract_raw,
+        artifact_root=artifact_root,
     )

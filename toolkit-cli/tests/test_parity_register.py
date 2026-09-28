@@ -133,6 +133,13 @@ def evaluate_packaged_change(register: dict) -> dict:
 
 
 class ParityRegisterTests(unittest.TestCase):
+    def setUp(self):
+        self.artifact_folder = TemporaryDirectory()
+        self.addCleanup(self.artifact_folder.cleanup)
+        self.artifact_root = Path(self.artifact_folder.name)
+        (self.artifact_root / "oracle.txt").write_bytes(b"fixture original")
+        (self.artifact_root / "result.txt").write_bytes(b"accepted result\n")
+
     def test_packaged_register_accounts_for_all_committed_source_surfaces(self):
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
         report = parity.evaluate_packaged(ledger)
@@ -476,6 +483,7 @@ class ParityRegisterTests(unittest.TestCase):
                 ledger,
                 evidence_raw=evidence_raw,
                 ledger_raw=ledger_raw,
+                artifact_root=self.artifact_root,
             )["complete"]
         )
         changed = ledger_raw.replace(b'"fixture"', b'"changed"')
@@ -492,7 +500,8 @@ class ParityRegisterTests(unittest.TestCase):
         register, evidence, ledger, evidence_raw = fixture_documents()
         self.assertTrue(
             parity.evaluate(
-                register, evidence, ledger, evidence_raw=evidence_raw
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=self.artifact_root,
             )["complete"]
         )
 
@@ -534,13 +543,18 @@ class ParityRegisterTests(unittest.TestCase):
             report = parity.evaluate(
                 register, evidence, ledger, evidence_raw=evidence_raw
             )
-            self.assertTrue(report["complete"])
-            self.assertEqual(report["obligations"]["accepted_percent"], 100.0)
+            self.assertFalse(report["complete"])
+            self.assertFalse(report["evidence_artifacts_verified"])
+            self.assertIsNone(report["obligations"]["accepted_percent"])
             self.assertEqual(
                 report["acceptance_by_dimension"]["original_differential"]["percent"],
-                100.0,
+                None,
             )
-            self.assertEqual(report["physical_acceptance"]["percent"], 100.0)
+            self.assertIsNone(report["physical_acceptance"]["percent"])
+            self.assertIn(
+                "evidence artifacts have not been verified against a trusted root",
+                report["blockers"],
+            )
         with self.subTest("with source artifact verification"):
             import tempfile
 
@@ -555,6 +569,7 @@ class ParityRegisterTests(unittest.TestCase):
                     artifact_root=Path(folder),
                 )
                 self.assertTrue(report["complete"])
+                self.assertTrue(report["evidence_artifacts_verified"])
 
     def test_duplicate_json_keys_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "Duplicate JSON key"):
@@ -625,7 +640,8 @@ class ParityRegisterTests(unittest.TestCase):
         register, evidence, ledger, evidence_raw = exclusion_fixture()
         self.assertTrue(
             parity.evaluate(
-                register, evidence, ledger, evidence_raw=evidence_raw
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=self.artifact_root,
             )["complete"]
         )
 
@@ -827,7 +843,10 @@ class ParityRegisterTests(unittest.TestCase):
             record["record_sha256"] = record_digest(record)
             raw = (json.dumps(evidence, indent=2) + "\n").encode()
             register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
-            return parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+            return parity.evaluate(
+                register, evidence, ledger, evidence_raw=raw,
+                artifact_root=self.artifact_root,
+            )
 
         # A passed physical test is not a reason to remove a physical test
         # obligation from the denominator.
@@ -899,7 +918,10 @@ class ParityRegisterTests(unittest.TestCase):
             decision["record_sha256"] = record_digest(decision)
             raw = (json.dumps(evidence, indent=2) + "\n").encode()
             register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
-            return parity.evaluate(register, evidence, ledger, evidence_raw=raw)
+            return parity.evaluate(
+                register, evidence, ledger, evidence_raw=raw,
+                artifact_root=self.artifact_root,
+            )
 
         self.assertTrue(evaluate_current()["complete"])
         decision["result"] = "failed"
@@ -993,7 +1015,10 @@ class ParityRegisterTests(unittest.TestCase):
     def test_complete_census_requires_one_counted_domain_per_scope_kind(self):
         register, evidence, ledger, evidence_raw = fixture_documents()
         self.assertTrue(
-            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)[
+            parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=self.artifact_root,
+            )[
                 "complete"
             ]
         )

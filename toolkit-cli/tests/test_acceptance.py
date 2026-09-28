@@ -14,6 +14,14 @@ from research import acceptance
 
 
 class AcceptanceRunnerTests(unittest.TestCase):
+    def test_scoped_native_oracle_is_pinned_in_wheel_snapshot_inputs(self):
+        path = (
+            acceptance.ROOT
+            / 'research/experiments/2026-09-25/cgate-session-native-acceptance.json'
+        )
+        self.assertTrue(path.is_file())
+        self.assertIn(path, acceptance.input_files('test_*.py'))
+
     @staticmethod
     def successful_outcome(test_file='tests/test_fixture.py'):
         return acceptance.PytestOutcome(

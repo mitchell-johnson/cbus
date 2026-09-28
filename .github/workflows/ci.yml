@@ -215,7 +215,7 @@ jobs:
       - name: Enforce full parity completion
         if: ${{ always() }}
         working-directory: toolkit-cli
-        run: .venv/bin/cbus-toolkit coverage --require-complete
+        run: .venv/bin/cbus-toolkit coverage --evidence-root . --require-complete
 
       - name: Retain native gate receipt
         if: ${{ always() }}
@@ -267,7 +267,7 @@ jobs:
       - name: Enforce full parity completion
         if: ${{ always() }}
         working-directory: toolkit-cli
-        run: .venv/bin/cbus-toolkit coverage --require-complete
+        run: .venv/bin/cbus-toolkit coverage --evidence-root . --require-complete
 
       - name: Retain hardware gate receipt
         if: ${{ always() }}

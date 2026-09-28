@@ -220,7 +220,9 @@ The next acceptance work is the unfinished work itself:
 `cbus-toolkit coverage --require-complete` intentionally returns nonzero while this work remains. The **46.15%** implemented-row ratio is simple ledger arithmetic, not an estimated completion percentage; the executable-level functionality census and its acceptance mapping are still incomplete.
 
 Completion-gate note: `coverage` validates the packaged parity register and
-evidence bundle, then requires a complete census, defined and applicable
+evidence bundle; `--evidence-root` additionally reopens and hashes every
+attached input and report. Full completion requires that verified root, a
+complete census, defined and applicable
 functional obligations, implementation, and passed evidence for every required
 acceptance dimension. Historical ledger labels are reported separately and
 cannot make the gate pass. The census remains incomplete, all 39 obligations

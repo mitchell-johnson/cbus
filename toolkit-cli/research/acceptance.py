@@ -230,6 +230,15 @@ def input_files(pattern):
                                 (ROOT / "research/release-gates", ("*.json",))):
         for suffix in suffixes:
             paths.update(directory.glob(suffix))
+    # The scoped SESSION_ID evidence receipt names this committed native
+    # capture outside the flat fixture directory. Include its exact bytes in
+    # installed-wheel snapshots so their parity audit can verify the oracle
+    # input instead of trusting the packaged digest declaration alone.
+    native_session_receipt = (
+        ROOT / "research/experiments/2026-09-25/cgate-session-native-acceptance.json"
+    )
+    if native_session_receipt.is_file():
+        paths.add(native_session_receipt)
     if (ROOT / "pyproject.toml").is_file():
         paths.add(ROOT / "pyproject.toml")
     return paths
@@ -340,6 +349,7 @@ def main():
                 cgate_contract_raw, context=parity.CGATE_CONTRACT_RESOURCE
             ),
             cgate_contract_raw=cgate_contract_raw,
+            artifact_root=ROOT,
         )
     except FileNotFoundError:
         # Historical/minimal acceptance fixtures predate the evidence register.

@@ -80,7 +80,7 @@ Run:
 ```sh
 PYTHONPATH=src python3 research/build_cgate_contract_inventory.py --check
 PYTHONPATH=src python3 research/build_parity_register.py --check
-cbus-toolkit coverage --require-complete
+cbus-toolkit coverage --evidence-root . --require-complete
 ```
 
 Maintainers with the retained vendor artifacts can also reproduce the
@@ -93,10 +93,11 @@ python3 research/extract_toolkit_executable_surface.py \
   --check
 ```
 
-The first command fails when a source inventory changes without regenerating
-the register. The second exits nonzero until the versioned census is complete,
+The first two commands fail when a source inventory changes without regenerating
+the register. The coverage command exits nonzero until the versioned census is complete,
 every obligation is defined and implemented, every applicable acceptance
-dimension has matching passed evidence, and no required case is skipped.
+dimension has matching passed evidence, every attached artifact matches its
+recorded SHA-256 under the trusted root, and no required case is skipped.
 
 Each obligation tracks implementation and applicability independently from
 the required acceptance dimensions: nominal behavior, error behavior, invalid
@@ -135,9 +136,14 @@ with the result. A passed record must attach an output or report artifact, not
 just its inputs. An original-differential oracle hash must match an attached
 input artifact. Skipped case IDs must be unique and cannot also appear among
 the executed test IDs. The source-checkout validator reopens and hashes every
-attached artifact; the installed-wheel `coverage` command validates packaged
-receipt structure and digests but cannot reopen research artifacts that are
-not shipped in the wheel. Physical evidence must name a physical environment and stable
+attached artifact. Without `--evidence-root`, an installed wheel validates the
+packaged receipt structure and declared digests but cannot reopen research
+artifacts that are not shipped in the wheel. It therefore reports
+`evidence_artifacts_verified: false`, withholds functional percentages and
+cannot report `complete: true` even if all declared states are accepted.
+The release acceptance runner and installed-wheel auditor verify the attached
+artifacts against their source checkout or immutable snapshot root. Physical
+evidence must name a physical environment and stable
 hardware references. Original-differential evidence must bind its Toolkit or
 C-Gate oracle by SHA-256. An accepted or not-applicable dimension requires
 evidence; an accepted dimension also requires a passed record naming that

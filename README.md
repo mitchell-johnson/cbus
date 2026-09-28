@@ -151,9 +151,13 @@ physical acceptance remain outstanding.
 
 ```sh
 cbus-toolkit coverage --require-complete
+cbus-toolkit coverage --evidence-root toolkit-cli --require-complete
 ```
 
 This intentionally returns exit status `1` while parity remains unfinished.
+The second form checks every recorded evidence artifact against a trusted
+Toolkit source checkout; the first reports packaged declarations and cannot
+pass the final gate without that byte verification.
 Completion is now derived from the packaged [functional parity register](toolkit-cli/docs/parity-register.md),
 which accounts for 22,156 committed source-surface records, including 412
 parsed Toolkit forms, 10,102 executable controls and 1,892 event bindings, but

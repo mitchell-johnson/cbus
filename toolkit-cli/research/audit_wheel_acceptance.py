@@ -82,6 +82,7 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
                     context='wheel cgate-contract-inventory.json',
                 ),
                 cgate_contract_raw=cgate_contract_raw,
+                artifact_root=snapshot,
             )
             parity = bool(parity_progress['complete'])
         else:

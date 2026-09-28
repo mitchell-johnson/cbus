@@ -1990,6 +1990,10 @@ def build_parser():
 
     coverage = commands.add_parser("coverage", help="Show implementation and verification gaps")
     coverage.add_argument("--require-complete", action="store_true", help="Fail until all Toolkit functionality has independent acceptance evidence")
+    coverage.add_argument(
+        "--evidence-root", type=Path,
+        help="Verify every evidence input and report against this trusted Toolkit source or acceptance snapshot root",
+    )
 
     memory = commands.add_parser("memory", help="Encode/decode logical unit memory and masked patches; no hardware I/O")
     memory.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -3674,7 +3678,7 @@ def run(args):
         ledger = json.loads(files("cbus_toolkit").joinpath("capabilities.json").read_text())
         from .parity import evaluate_packaged
 
-        progress = evaluate_packaged(ledger)
+        progress = evaluate_packaged(ledger, artifact_root=args.evidence_root)
         # The historical category ledger remains visible, but completion is
         # derived from the versioned functional-obligation/evidence register.
         # Until its census is complete, functional percentages remain null.

@@ -147,6 +147,7 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
 
     def test_wheel_cannot_substitute_the_cgate_contract_inventory(self):
         package = Path(__file__).resolve().parents[1] / 'src/cbus_toolkit'
+        source_root = package.parents[1]
         resource_names = (
             'capabilities.json',
             'parity-obligations.json',
@@ -162,6 +163,12 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
             value = self.add_snapshot_input(snapshot_name, raw)
             self.report['input_sha256'][snapshot_name] = value
             entries[f'cbus_toolkit/{resource_name}'] = raw
+        evidence = json.loads((package / 'parity-evidence.json').read_bytes())
+        for record in evidence['records']:
+            for artifact in record['artifacts']:
+                name = artifact['path']
+                value = self.add_snapshot_input(name, (source_root / name).read_bytes())
+                self.report['input_sha256'][name] = value
         with zipfile.ZipFile(wheel_path, 'w') as wheel:
             for entry, contents in entries.items():
                 wheel.writestr(entry, contents)
@@ -171,6 +178,25 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
         manifest['package_files'] = sorted(entries)
         manifest_path.write_text(json.dumps(manifest))
         self.assertFalse(self.run_audit()['toolkit_parity_complete'])
+
+        report_name = next(
+            artifact['path'] for record in evidence['records']
+            for artifact in record['artifacts'] if artifact['role'] == 'report'
+        )
+        report_path = self.root / report_name
+        original_report = report_path.read_bytes()
+        report_path.write_bytes(original_report + b'\n')
+        changed_digest = hashlib.sha256(report_path.read_bytes()).hexdigest()
+        manifest['input_sha256'][report_name] = changed_digest
+        self.report['input_sha256'][report_name] = changed_digest
+        manifest_path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, 'artifact digest changed'):
+            self.run_audit()
+        report_path.write_bytes(original_report)
+        original_digest = hashlib.sha256(original_report).hexdigest()
+        manifest['input_sha256'][report_name] = original_digest
+        self.report['input_sha256'][report_name] = original_digest
+        manifest_path.write_text(json.dumps(manifest))
 
         contract_name = 'src/cbus_toolkit/cgate-contract-inventory.json'
         changed = (self.root / contract_name).read_bytes().replace(

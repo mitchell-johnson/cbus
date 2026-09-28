@@ -8,12 +8,33 @@ later phase supplies independent acceptance evidence.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import subprocess
 import sys
 import unittest
 
 
 class CoverageRequireCompleteTests(unittest.TestCase):
+    def test_evidence_root_verifies_artifacts_without_claiming_full_parity(self):
+        root = Path(__file__).resolve().parents[1]
+        proc = subprocess.run(
+            [sys.executable, "-m", "cbus_toolkit", "coverage",
+             "--evidence-root", str(root), "--require-complete"],
+            text=True, capture_output=True, timeout=120,
+        )
+        self.assertEqual(proc.returncode, 1, proc.stderr)
+        payload = json.loads(proc.stdout)
+        self.assertTrue(payload["progress"]["evidence_artifacts_verified"])
+        self.assertFalse(payload["progress"]["complete"])
+
+        missing = subprocess.run(
+            [sys.executable, "-m", "cbus_toolkit", "coverage",
+             "--evidence-root", str(root / "missing-evidence-root")],
+            text=True, capture_output=True, timeout=120,
+        )
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn("artifact is missing", missing.stdout + missing.stderr)
+
     def test_require_complete_still_fails(self):
         proc = subprocess.run(
             [sys.executable, "-m", "cbus_toolkit", "coverage", "--require-complete"],
@@ -34,6 +55,7 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertFalse(progress["complete"])
         self.assertFalse(progress["denominator_ready"])
         self.assertFalse(progress["functional_percent_available"])
+        self.assertFalse(progress["evidence_artifacts_verified"])
         self.assertIsNone(progress["obligations"]["implementation_percent"])
         self.assertIsNone(progress["obligations"]["accepted_percent"])
         self.assertEqual(progress["legacy_category_summary"]["implemented"], 18)
