@@ -870,7 +870,9 @@ fn assert_native_broadcast_event(line: &str, session: u64, content: &str) {
 
 fn assert_native_command_entry_event(line: &str, session: u64, command: &str) {
     let body = line.strip_prefix("#e# ").expect("event marker");
-    let (timestamp, payload) = body.split_once(" 761 ").expect("native 761 envelope");
+    let (timestamp, payload) = body
+        .split_once(" 761 ")
+        .unwrap_or_else(|| panic!("missing native 761 envelope: {line:?}"));
     chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
     assert_eq!(payload, format!("cmd{session} - Command: {command}"));
     assert_eq!(crate::event_reporting_level(line), Some(9));
@@ -6386,9 +6388,26 @@ async fn broadcast_event_fans_out_between_embedded_command_connections() {
     let (mut event_reader, mut event_writer) = connect_command_session(address).await;
 
     assert_eq!(
-        command_lines(&mut event_reader, &mut event_writer, "on", "EVENT e3s0c0").await,
+        command_lines(&mut event_reader, &mut event_writer, "on", "EVENT e9s0c0").await,
         ["[on] 200 OK."]
     );
+    // The e9 subscriber receives the native response trace for its own
+    // EVENT command before any producer event is sent.
+    let mut own_response = String::new();
+    tokio::time::timeout(
+        Duration::from_secs(2),
+        event_reader.read_line(&mut own_response),
+    )
+    .await
+    .expect("subscribed client did not receive its EVENT response trace")
+    .unwrap();
+    let own_response = own_response.trim_end_matches(['\r', '\n']);
+    let body = own_response.strip_prefix("#e# ").expect("event marker");
+    let (timestamp, payload) = body
+        .split_once(" 766 ")
+        .unwrap_or_else(|| panic!("missing native 766 envelope: {own_response:?}"));
+    chrono::NaiveDateTime::parse_from_str(timestamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    assert_eq!(payload, "cmd5 - Response: [on] 200 OK.");
     assert_eq!(
         command_lines(
             &mut producer_reader,
@@ -17230,6 +17249,7 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             "command.show-responses",
             "command.show-time",
             "event-millis",
+            "global-event-level",
             "heartbeat-time",
             "project.default",
             "project.start"
