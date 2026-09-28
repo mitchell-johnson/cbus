@@ -102,12 +102,13 @@ A real cmqttd TCP system test repeats the four-Unit import, OID read and
 mutation, copy, delete, and save/close/load sequence on its durable service
 without opening the synthetic C-Bus Network.
 
-Rust applies final-submission selection to the captured two-, three- and
-four-Unit shapes with the same OID in one Network and no same-OID pending
-object. A [184-request cross-kind extension](native-cgate-cross-kind-oid-mutations.md)
+Rust applies final-submission selection to the captured two- through six-Unit
+shapes with the same OID in one Network and no same-OID pending object. The
+[five- and six-Unit capture](native-cgate-five-plus-unit-oid-mutations.md)
+extends this result with ten more mutation cases. A [184-request cross-kind extension](native-cgate-cross-kind-oid-mutations.md)
 establishes that one Application and one Unit sharing an OID select the Unit
 for all five mutation verbs, regardless of their XML submission order; OID
 deletion leaves the Application intact and reload makes it selectable.
-Cross-network, repeated-Application-plus-Unit and five-or-more Unit collision
+Cross-network, repeated-Application-plus-Unit and seven-or-more Unit collision
 mutations remain guarded pending separate native evidence.
 Native file format and physical effects remain outside these captures.

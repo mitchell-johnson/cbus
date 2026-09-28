@@ -37,7 +37,8 @@ focused running-`cmqttd` TCP test covers all five verbs and the reload
 fallback through its durable service.
 
 Rust now admits this one-Application, one-Unit, one-Network shape for those
-five OID mutations. Repeated Applications with a Unit, Unit collisions across
-Networks, and five-or-more Units with one OID remain guarded pending separate
-native evidence and a lossless model. These database-only observations do not
+five OID mutations. Repeated Applications with a Unit and Unit collisions
+across Networks remain guarded. A [separate owned capture](native-cgate-five-plus-unit-oid-mutations.md)
+covers five and six Units with one OID in a single Network; seven or more remain
+guarded. These database-only observations do not
 establish any physical C-Bus side effect or broader vendor XML compatibility.

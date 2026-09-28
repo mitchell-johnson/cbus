@@ -10931,7 +10931,7 @@ impl Server {
 
     /// The owned native captures establish Unit-first selection for one Unit
     /// sharing an OID with one Application, regardless of XML submission
-    /// order, and final-submission selection for two to four Units sharing an
+    /// order, and final-submission selection for two to six Units sharing an
     /// OID in one Network. Other collision shapes remain guarded.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
         let project = self.current.as_deref()?;
@@ -10959,7 +10959,7 @@ impl Server {
             })
             .collect::<Vec<_>>();
         if !(if cross_kind.is_empty() {
-            (2..=4).contains(&matches.len())
+            (2..=6).contains(&matches.len())
         } else {
             matches.len() == 1
         }) || matches.iter().any(|(network, _)| *network != matches[0].0)
