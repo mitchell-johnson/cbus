@@ -2023,7 +2023,7 @@ fn document_store_mirror_import_and_rejects() {
 }
 
 #[test]
-fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata() {
+fn dbsetxml_replaces_typed_unit_and_discards_unmodeled_xml_markup() {
     let mut server = Server::new(AccessLevel::Program);
     assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
     assert_eq!(
@@ -2076,21 +2076,22 @@ fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata
     let moved_xml = moved.lines[0].strip_prefix("347-").unwrap();
     assert!(!moved_xml.contains("x:mode=\"kept\""), "{moved_xml}");
     assert!(!moved_xml.contains("y:unused=\"yes\""), "{moved_xml}");
-    assert!(moved_xml.contains("xmlns:x=\"urn:test\""), "{moved_xml}");
+    assert!(!moved_xml.contains("xmlns:x=\"urn:test\""), "{moved_xml}");
     assert!(!moved_xml.contains("xmlns:y=\"urn:test\""), "{moved_xml}");
-    assert!(moved_xml.contains("xmlns:t=\"urn:types\""), "{moved_xml}");
+    assert!(!moved_xml.contains("xmlns:t=\"urn:types\""), "{moved_xml}");
     assert!(
-        moved_xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
+        !moved_xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
         "{moved_xml}"
     );
-    assert!(moved_xml.contains("xsi:type=\"t:Widget\""), "{moved_xml}");
-    assert!(moved_xml.contains("<!--keep-->"), "{moved_xml}");
+    assert!(!moved_xml.contains("xsi:type=\"t:Widget\""), "{moved_xml}");
+    assert!(!moved_xml.contains("<!--keep-->"), "{moved_xml}");
     assert!(!moved_xml.contains("<x:TagName"), "{moved_xml}");
     assert!(!moved_xml.contains("<x:PP"), "{moved_xml}");
     assert!(
-        moved_xml.contains("<x:Nested>yes</x:Nested>"),
+        moved_xml.contains("<Description>A &amp; B</Description>"),
         "{moved_xml}"
     );
+    assert!(!moved_xml.contains("<x:Nested>"), "{moved_xml}");
     assert!(moved_xml.contains("<PP Name=\"UnitAddress\" Value=\"21\"/>"));
 
     assert_eq!(
@@ -2104,10 +2105,9 @@ fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata
     assert!(updated_xml.contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
     assert!(!updated_xml.contains("<x:TagName"));
     assert!(!updated_xml.contains("<x:PP"));
-    assert!(updated_xml.contains("<x:Nested>yes</x:Nested>"));
+    assert!(!updated_xml.contains("<x:Nested>yes</x:Nested>"));
 
-    // Unit copies receive fresh identities while retaining the complete
-    // typed template; scalar and PP values are projected for the copy.
+    // Unit copies receive fresh identities and keep the mapped scalar/PP data.
     assert_eq!(
         server
             .handle("[10a] DBCOPYSAFE //TEST/254/p/21 //TEST/254 23 Copied")
@@ -2122,7 +2122,7 @@ fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata
         copied_xml.contains("<TagName>Copied</TagName>"),
         "{copied_xml}"
     );
-    assert!(copied_xml.contains("<x:Nested>yes</x:Nested>"));
+    assert!(!copied_xml.contains("<x:Nested>yes</x:Nested>"));
     let copied_oid = roxmltree::Document::parse(copied_xml)
         .unwrap()
         .descendants()
@@ -2133,8 +2133,7 @@ fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata
         .to_string();
     assert_ne!(copied_oid, oid);
 
-    // Project copies retain OIDs, but their opaque document templates must
-    // diverge after a replacement in only one selected project.
+    // Project copies retain OIDs while selected-project replacement stays local.
     assert_eq!(server.handle("[10c] PROJECT COPY TEST COPY").status, 200);
     assert_eq!(server.handle("[10d] PROJECT USE COPY").status, 200);
     let copy_replacement = replacement
@@ -2223,7 +2222,7 @@ fn dbsetxml_replaces_typed_unit_and_selectively_preserves_nested_opaque_metadata
     let restored = server.handle("[20] DBGETXML //REST/254/p/21");
     assert_eq!(restored.status, 200);
     assert!(!restored.lines[0].contains("x:mode="));
-    assert!(restored.lines[0].contains("<x:Nested>yes</x:Nested>"));
+    assert!(!restored.lines[0].contains("<x:Nested>yes</x:Nested>"));
     assert!(restored.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"22\"/>"));
 }
 
@@ -2408,9 +2407,12 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert_eq!(server.handle("[11] DBGETXML //XMLT/254/56").status, 401);
     let application = server.handle("[12] DBGETXML //XMLT/254/58");
     let application = application.lines[0].strip_prefix("347-").unwrap();
-    assert!(application.contains("x:source=\"native\""), "{application}");
-    assert!(application.contains("<!--retained-->"), "{application}");
-    assert!(application.contains("<x:Metadata>opaque</x:Metadata>"));
+    assert!(
+        !application.contains("x:source=\"native\""),
+        "{application}"
+    );
+    assert!(!application.contains("<!--retained-->"), "{application}");
+    assert!(!application.contains("<x:Metadata>opaque</x:Metadata>"));
     assert!(application.contains("<NetVar"));
     assert!(application.contains("<Level"));
     assert!(application.contains("Value=\"129\""));
@@ -2479,8 +2481,8 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert_eq!(unit.status, 200, "{unit:?}");
     assert!(!unit.lines[0].contains("xmlns:x=\"urn:topology\""));
     assert!(!unit.lines[0].contains("x:source=\"submitted\""));
-    assert!(unit.lines[0].contains("<!--unit-comment-->"));
-    assert!(unit.lines[0].contains("<?unit retained?>"));
+    assert!(!unit.lines[0].contains("<!--unit-comment-->"));
+    assert!(!unit.lines[0].contains("<?unit retained?>"));
     assert!(!unit.lines[0].contains("<x:Opaque>yes</x:Opaque>"));
     assert!(unit.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"20\"/>"));
     let before = network.lines[0].clone();
@@ -2524,8 +2526,8 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
     assert!(restored.lines[0].contains("30000000-0000-4000-8000-000000000002"));
     let restored_unit = server.handle("[37] DBGETXML //XMLA/253/p/20");
     assert_eq!(restored_unit.status, 200, "{restored_unit:?}");
-    assert!(restored_unit.lines[0].contains("<!--unit-comment-->"));
-    assert!(restored_unit.lines[0].contains("<?unit retained?>"));
+    assert!(!restored_unit.lines[0].contains("<!--unit-comment-->"));
+    assert!(!restored_unit.lines[0].contains("<?unit retained?>"));
 }
 
 #[test]
@@ -2627,12 +2629,8 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
     );
     let unit = server.handle("[12] DBGETXML //MIXED/254/p/21");
     assert_eq!(unit.status, 200, "{unit:?}");
-    for expected in ["<!--inside-->", "<PP Name=\"UnitAddress\" Value=\"0x15\"/>"] {
-        assert!(
-            unit.lines[0].contains(expected),
-            "missing {expected}: {unit:?}"
-        );
-    }
+    assert!(!unit.lines[0].contains("<!--inside-->"), "{unit:?}");
+    assert!(unit.lines[0].contains("<PP Name=\"UnitAddress\" Value=\"0x15\"/>"));
     assert!(!unit.lines[0].contains("x:vendor=\"kept\""));
     assert!(!unit.lines[0].contains("<x:Data>opaque</x:Data>"));
     assert!(!unit.lines[0].contains("xmlns:x=\"urn:mixed\""));
@@ -2854,9 +2852,7 @@ fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
     );
     assert!(observed_unit(&mut server).contains("<PP Name=\"Note\" Value=\"Added\"/>"));
 
-    // A known-name element with nested extension markup is not plain XML.
-    // Preserve the supplied subtree instead of flattening it to an empty
-    // scalar while canonicalizing ordinary Unit fields.
+    // Native mapping accepts nested decoration but stores only direct text.
     let nested_catalog = concat!(
         "<Unit><OID>11111111-1111-4111-8111-111111111111</OID>",
         "<TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType>",
@@ -2871,13 +2867,10 @@ fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
     );
     let nested = observed_unit(&mut server);
     assert!(
-        nested.contains("<CatalogNumber><Opaque keep=\"yes\">VENDOR</Opaque></CatalogNumber>"),
+        nested.contains("<CatalogNumber></CatalogNumber>"),
         "{nested}"
     );
-    assert!(
-        !nested.contains("<CatalogNumber></CatalogNumber>"),
-        "{nested}"
-    );
+    assert!(!nested.contains("<Opaque"), "{nested}");
 
     // Native XML mapping accepts decoration on required UnitName, while
     // discarding the decoration and keeping only direct text.
@@ -2920,6 +2913,98 @@ fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
                 .unwrap()
         )
     );
+}
+
+#[test]
+fn dbsetxml_replacement_mapper_matches_owned_native_edge_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_replacement_edges.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-replacement-edges-v1"
+    );
+    let cases = native["cases"].as_array().unwrap();
+    let by_tag = |tag: u64| {
+        cases
+            .iter()
+            .find(|row| row["tag"].as_u64() == Some(tag))
+            .unwrap()
+    };
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[100] PROJECT NEW XEDGE").status, 200);
+    assert_eq!(server.handle("[101] PROJECT USE XEDGE").status, 200);
+    assert_eq!(
+        server
+            .handle("[102] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let initial = server.handle("[103] DBGETXML //XEDGE/254");
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let scalar = |element: roxmltree::Node<'_, '_>, name: &str| {
+        element
+            .children()
+            .find(|child| child.has_tag_name(name))
+            .and_then(|child| child.text())
+            .unwrap()
+            .to_string()
+    };
+    let root = parsed.root_element();
+    let network_oid = scalar(root, "OID");
+    let interface = root
+        .children()
+        .find(|child| child.has_tag_name("Interface"))
+        .unwrap();
+    let interface_oid = scalar(interface, "OID");
+    let substitute = |value: &str| {
+        value
+            .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+            .replace(native["interface_oid"].as_str().unwrap(), &interface_oid)
+    };
+    let vectors = include_str!("../../testdata/vectors/cgate_dbsetxml_replacement_edges.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 7);
+    for vector in vectors {
+        let name = vector["name"].as_str().unwrap();
+        let set_tag = vector["set_tag"].as_u64().unwrap();
+        let native_set = by_tag(set_tag);
+        let command = native_set["command"].as_str().unwrap();
+        let request = native_set["request"].as_str().unwrap();
+        let marker = format!(" << END{set_tag}\r\n");
+        let document = request.split_once(&marker).unwrap().1;
+        let document = document
+            .strip_suffix(&format!("\r\nEND{set_tag}\r\n"))
+            .unwrap();
+        let accepted =
+            server.handle_document(&format!("[{set_tag}] {command}"), &substitute(document));
+        assert_eq!(accepted.status, 301, "{name}: {accepted:?}");
+        let native_receipt = native_set["response_lines"][0].as_str().unwrap();
+        assert_eq!(
+            accepted.final_text,
+            substitute(native_receipt)
+                .trim_start_matches(&format!("[{set_tag}] "))
+                .trim_end_matches("\r\n"),
+            "{name}"
+        );
+        for read_tag in vector["read_tags"].as_array().unwrap() {
+            let read_tag = read_tag.as_u64().unwrap();
+            let native_read = by_tag(read_tag);
+            let command = native_read["command"].as_str().unwrap();
+            let observed = server.handle(&format!("[{read_tag}] {command}"));
+            assert_eq!(observed.status, 200, "{name}: {observed:?}");
+            let native_xml = native_read["response_lines"][2].as_str().unwrap();
+            let native_xml = native_xml
+                .strip_prefix(&format!("[{read_tag}] "))
+                .unwrap()
+                .trim_end_matches("\r\n");
+            assert_eq!(observed.lines[0], substitute(native_xml), "{name}");
+        }
+    }
 }
 
 #[test]
@@ -3033,7 +3118,7 @@ fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
 }
 
 #[test]
-fn dbsetxml_combined_network_root_keeps_prefix_used_by_nested_unit_markup() {
+fn dbsetxml_combined_network_discards_unmodeled_namespace_markup() {
     let mut server = Server::new(AccessLevel::Program);
     assert_eq!(server.handle("[1] PROJECT NEW NSNEST").status, 200);
     assert_eq!(
@@ -3067,23 +3152,30 @@ fn dbsetxml_combined_network_root_keeps_prefix_used_by_nested_unit_markup() {
     let unit = server.handle("[5] DBGETXML //NSNEST/254/p/20");
     assert_eq!(unit.status, 200, "{unit:?}");
     let unit_xml = unit.lines[0].strip_prefix("347-").unwrap();
-    assert!(unit_xml.contains("xmlns:x=\"urn:same\""), "{unit_xml}");
-    assert!(unit_xml.contains("<x:Nested>kept</x:Nested>"), "{unit_xml}");
+    assert!(!unit_xml.contains("xmlns:x=\"urn:same\""), "{unit_xml}");
+    assert!(
+        !unit_xml.contains("<x:Nested>kept</x:Nested>"),
+        "{unit_xml}"
+    );
+    assert!(
+        unit_xml.contains("<Description></Description>"),
+        "{unit_xml}"
+    );
     assert!(!unit_xml.contains("xmlns:y=\"urn:same\""), "{unit_xml}");
     assert!(!unit_xml.contains("<y:Discard>"), "{unit_xml}");
     let network = server.handle("[6] DBGETXML //NSNEST/254");
     let network_xml = network.lines[0].strip_prefix("347-").unwrap();
     let root_opening = network_xml.split_once('>').unwrap().0;
     assert!(
-        root_opening.contains("xmlns:x=\"urn:same\""),
+        !root_opening.contains("xmlns:x=\"urn:same\""),
         "{network_xml}"
     );
     assert!(
-        root_opening.contains("xmlns:z=\"urn:application\""),
+        !root_opening.contains("xmlns:z=\"urn:application\""),
         "{network_xml}"
     );
     assert!(
-        network_xml.contains("z:revision=\"retained\""),
+        !network_xml.contains("z:revision=\"retained\""),
         "{network_xml}"
     );
     assert!(
@@ -3094,7 +3186,7 @@ fn dbsetxml_combined_network_root_keeps_prefix_used_by_nested_unit_markup() {
 }
 
 #[test]
-fn dbsetxml_network_retains_prefix_inside_opaque_extension_unit() {
+fn dbsetxml_network_discards_opaque_extension_unit() {
     let mut server = Server::new(AccessLevel::Program);
     assert_eq!(server.handle("[1] PROJECT NEW NSOPAQUE").status, 200);
     assert_eq!(
@@ -3127,15 +3219,15 @@ fn dbsetxml_network_retains_prefix_inside_opaque_extension_unit() {
     assert_eq!(response.status, 301, "{response:?}");
     let network = server.handle("[5] DBGETXML //NSOPAQUE/254");
     let xml = network.lines[0].strip_prefix("347-").unwrap();
-    assert!(xml.contains("xmlns:v=\"urn:extension\""), "{xml}");
-    assert!(xml.contains("xmlns:x=\"urn:extension-data\""), "{xml}");
-    assert!(xml.contains("xmlns:t=\"urn:types\""), "{xml}");
+    assert!(!xml.contains("xmlns:v=\"urn:extension\""), "{xml}");
+    assert!(!xml.contains("xmlns:x=\"urn:extension-data\""), "{xml}");
+    assert!(!xml.contains("xmlns:t=\"urn:types\""), "{xml}");
     assert!(
-        xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
+        !xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""),
         "{xml}"
     );
     assert!(
-        xml.contains(
+        !xml.contains(
             "<v:Extension><Unit><x:Data xsi:type=\"t:Widget\">opaque</x:Data></Unit></v:Extension>"
         ),
         "{xml}"

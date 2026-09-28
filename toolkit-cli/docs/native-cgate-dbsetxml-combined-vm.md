@@ -56,8 +56,8 @@ not a claim about every descendant class or stateful live Network. The earlier
 [combined fixture](../../rust/testdata/fixtures/native_cgate_dbsetxml_combined.json)
 separately pins missing-`UnitName` validation and preservation on failure.
 
-These cases do not establish broad namespace, comment or processing-instruction
+These cases alone do not establish broad namespace, comment or processing-instruction
 handling, all Unit fields, all combined-tree forms or physical-device behavior.
 A later [direct-Unit original capture and scoped Rust differential](native-cgate-dbsetxml-unit-mapper-vm.md)
 establish the same two unknown namespaced additions are omitted on direct
-Unit readback and pins 12/12 Unit mapper results plus 2/2 full combined Network readbacks for each Rust server. A later [framing capture](native-cgate-dbgetxml-framing-vm.md) pins the `343/347/344` TCP envelope and its LF-only declaration row; the scoped Rust replay now requires exact wire equality. These captures do not establish broad XML parity.
+Unit readback and pins 12/12 Unit mapper results plus 2/2 full combined Network readbacks for each Rust server. The later [replacement-edge capture](native-cgate-dbsetxml-replacement-edges.md) pins accepted-then-discarded comments, processing instructions and further namespaced markup, plus optional-field omission and a native duplicate-OID conflict divergence. A later [framing capture](native-cgate-dbgetxml-framing-vm.md) pins the `343/347/344` TCP envelope and its LF-only declaration row; the scoped Rust replay now requires exact wire equality. These captures do not establish broad XML parity.

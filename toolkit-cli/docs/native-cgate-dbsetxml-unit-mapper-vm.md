@@ -51,10 +51,10 @@ Rust/source fingerprint. Both pass **12/12 direct/combined Unit mapper cases plu
 Network readbacks**, including the four changed Unit readbacks. Five `301`
 reply rows are byte-identical. A later [framing implementation and fresh original VM capture](native-cgate-dbgetxml-framing-vm.md) changed the Rust TCP boundary: the seven XML reads now also match the original `343/347/344` envelope, including its LF-only declaration row. The updated source-bound differential requires **12/12 exact wire matches** plus **2/2 full Network readbacks** on each server. The original mapper conclusions remain bounded to these cases.
 
-Rust also retains comments, processing instructions, ordinary PP fields and
-nested namespaced markup inside an unnamespaced Unit child in existing mock
-tests. That nested retention is a maintained mock contract, **not** proven by
-this original 21-command capture. The fixture does not establish behavior for
-other namespaces, Unit fields, XML error classes, TLS, ACCESS, physical units,
-or broad native `DBSETXML` parity. Offline XML/CBZ editing in the Python
-Toolkit CLI is a separate lossless project-file workflow.
+The later [37-request original-service replacement-edge capture](native-cgate-dbsetxml-replacement-edges.md)
+shows comments, processing instructions and nested namespaced markup are also
+accepted and discarded by the original mapper. Rust now matches seven exact
+readback vectors from that capture. Its duplicate-OID conflict guard remains
+an explicit native-parity gap. Neither capture establishes all XML variants,
+TLS, ACCESS, physical units or broad `DBSETXML` parity. Offline XML/CBZ editing
+in the Python Toolkit CLI is a separate lossless project-file workflow.

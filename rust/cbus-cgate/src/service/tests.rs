@@ -15065,7 +15065,7 @@ async fn configured_network_dbsetxml_replaces_database_topology_without_rebindin
     assert_eq!(unit_xml.status, 200, "{unit_xml:?}");
     assert!(!unit_xml.lines[0].contains("xmlns:x=\"urn:configured\""));
     assert!(!unit_xml.lines[0].contains("x:source=\"document\""));
-    assert!(unit_xml.lines[0].contains("<!--unit-->"));
+    assert!(!unit_xml.lines[0].contains("<!--unit-->"));
     assert!(!unit_xml.lines[0].contains("<x:Opaque>kept</x:Opaque>"));
     let persisted = std::fs::read(&path).unwrap();
 

@@ -1,0 +1,7 @@
+{"name":"combined plain Network/Application/Unit","set_tag":104,"read_tags":[105,106]}
+{"name":"combined comments and processing instructions omitted","set_tag":107,"read_tags":[108,109,110]}
+{"name":"combined unknown namespaced metadata omitted","set_tag":111,"read_tags":[112,113]}
+{"name":"direct Unit comments and processing instructions omitted","set_tag":114,"read_tags":[115]}
+{"name":"direct nested namespaced Description content omitted","set_tag":116,"read_tags":[117]}
+{"name":"combined omitted optional Unit fields and PP cleared","set_tag":118,"read_tags":[119]}
+{"name":"direct nested CatalogNumber markup becomes empty scalar","set_tag":129,"read_tags":[130]}

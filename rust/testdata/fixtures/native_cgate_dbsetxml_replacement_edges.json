@@ -1,0 +1,379 @@
+{
+  "schema": "native-cgate-dbsetxml-replacement-edges-v1",
+  "captured_utc": "2026-09-28T01:30:24.607363+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:54565",
+      "127.0.0.1:54566",
+      "127.0.0.1:54567",
+      "127.0.0.1:54568",
+      "127.0.0.1:54569",
+      "127.0.0.1:54570"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "146a32b83791197b1015663236692047e8a392c54447d7700b1d0b8e0217b30c",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "network_oid": "19a85f70-9d0a-103f-ba6c-a24ce45a4fe4",
+  "interface_oid": "19a88680-9d0a-103f-ba6d-a24ce45a4fe4",
+  "cases": [
+    {
+      "tag": 100,
+      "command": "PROJECT NEW XEDGE",
+      "request": "[100] PROJECT NEW XEDGE\r\n",
+      "response_lines": [
+        "[100] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 101,
+      "command": "PROJECT USE XEDGE",
+      "request": "[101] PROJECT USE XEDGE\r\n",
+      "response_lines": [
+        "[101] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 102,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[102] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[102] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 103,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[103] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[103] 343-Begin XML snippet\r\n",
+        "[103] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[103] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[103] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 104,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[104] DBSETXML //XEDGE/254 << END104\r\n<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>123.4</SerialNumber><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND104\r\n",
+      "response_lines": [
+        "[104] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 105,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[105] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[105] 343-Begin XML snippet\r\n",
+        "[105] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[105] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>\r\n",
+        "[105] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 106,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[106] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[106] 343-Begin XML snippet\r\n",
+        "[106] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[106] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit>\r\n",
+        "[106] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 107,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[107] DBSETXML //XEDGE/254 << END107\r\n<Network xmlns:x=\"urn:edge\"><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress><!--interface-comment--><?edge interface?></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address><!--application-comment--><?edge application?></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>123.4</SerialNumber><PP Name=\"UnitAddress\" Value=\"20\"/><!--unit-comment--><?edge unit?></Unit><!--network-comment--><?edge network?></Network>\r\nEND107\r\n",
+      "response_lines": [
+        "[107] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 108,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[108] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[108] 343-Begin XML snippet\r\n",
+        "[108] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[108] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>\r\n",
+        "[108] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 109,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[109] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[109] 343-Begin XML snippet\r\n",
+        "[109] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[109] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit>\r\n",
+        "[109] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 110,
+      "command": "DBGETXML //XEDGE/254/56",
+      "request": "[110] DBGETXML //XEDGE/254/56\r\n",
+      "response_lines": [
+        "[110] 343-Begin XML snippet\r\n",
+        "[110] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[110] 347-<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[110] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 111,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[111] DBSETXML //XEDGE/254 << END111\r\n<Network xmlns:x=\"urn:edge\" x:flag=\"network\"><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress><x:Diagnostic>interface</x:Diagnostic></Interface><Application x:flag=\"application\"><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address><x:Diagnostic>application</x:Diagnostic></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>123.4</SerialNumber><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><x:Diagnostic>network</x:Diagnostic></Network>\r\nEND111\r\n",
+      "response_lines": [
+        "[111] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 112,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[112] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[112] 343-Begin XML snippet\r\n",
+        "[112] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[112] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>\r\n",
+        "[112] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 113,
+      "command": "DBGETXML //XEDGE/254/56",
+      "request": "[113] DBGETXML //XEDGE/254/56\r\n",
+      "response_lines": [
+        "[113] 343-Begin XML snippet\r\n",
+        "[113] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[113] 347-<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[113] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 114,
+      "command": "DBSETXML //XEDGE/254/p/20",
+      "request": "[114] DBSETXML //XEDGE/254/p/20 << END114\r\n<Unit xmlns:x=\"urn:edge\"><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>123.4</SerialNumber><PP Name=\"UnitAddress\" Value=\"20\"/><!--direct-comment--><?edge direct?></Unit>\r\nEND114\r\n",
+      "response_lines": [
+        "[114] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ]
+    },
+    {
+      "tag": 115,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[115] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[115] 343-Begin XML snippet\r\n",
+        "[115] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[115] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit>\r\n",
+        "[115] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 116,
+      "command": "DBSETXML //XEDGE/254/p/20",
+      "request": "[116] DBSETXML //XEDGE/254/p/20 << END116\r\n<Unit xmlns:x=\"urn:edge\"><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>123.4</SerialNumber><PP Name=\"UnitAddress\" Value=\"20\"/><Description><x:Nested>opaque</x:Nested></Description></Unit>\r\nEND116\r\n",
+      "response_lines": [
+        "[116] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ]
+    },
+    {
+      "tag": 117,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[117] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[117] 343-Begin XML snippet\r\n",
+        "[117] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[117] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><Description></Description><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><CatalogNumber>5031N</CatalogNumber></Unit>\r\n",
+        "[117] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 118,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[118] DBSETXML //XEDGE/254 << END118\r\n<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND118\r\n",
+      "response_lines": [
+        "[118] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 119,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[119] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[119] 343-Begin XML snippet\r\n",
+        "[119] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[119] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[119] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 120,
+      "command": "DBGET //XEDGE/254/p/20/CatalogNumber",
+      "request": "[120] DBGET //XEDGE/254/p/20/CatalogNumber\r\n",
+      "response_lines": [
+        "[120] 401 Bad object or device ID: Object is null\r\n"
+      ]
+    },
+    {
+      "tag": 121,
+      "command": "DBGET //XEDGE/254/p/20/SerialNumber",
+      "request": "[121] DBGET //XEDGE/254/p/20/SerialNumber\r\n",
+      "response_lines": [
+        "[121] 401 Bad object or device ID: Object is null\r\n"
+      ]
+    },
+    {
+      "tag": 122,
+      "command": "PROJECT SAVE XEDGE",
+      "request": "[122] PROJECT SAVE XEDGE\r\n",
+      "response_lines": [
+        "[122] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 123,
+      "command": "PROJECT CLOSE XEDGE",
+      "request": "[123] PROJECT CLOSE XEDGE\r\n",
+      "response_lines": [
+        "[123] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 124,
+      "command": "PROJECT LOAD XEDGE",
+      "request": "[124] PROJECT LOAD XEDGE\r\n",
+      "response_lines": [
+        "[124] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 125,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[125] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[125] 343-Begin XML snippet\r\n",
+        "[125] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[125] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[125] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 126,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[126] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[126] 343-Begin XML snippet\r\n",
+        "[126] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[126] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[126] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 127,
+      "command": "DBSETXML //XEDGE/254/p/20",
+      "request": "[127] DBSETXML //XEDGE/254/p/20 << END127\r\n<Unit xmlns:x=\"urn:edge\"><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><Foo>bar</Foo><Description>A<x:Nested/>B</Description></Unit>\r\nEND127\r\n",
+      "response_lines": [
+        "[127] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ]
+    },
+    {
+      "tag": 128,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[128] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[128] 343-Begin XML snippet\r\n",
+        "[128] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[128] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><Description>AB</Description><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[128] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 129,
+      "command": "DBSETXML //XEDGE/254/p/20",
+      "request": "[129] DBSETXML //XEDGE/254/p/20 << END129\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber><Opaque keep=\"yes\">VENDOR</Opaque></CatalogNumber></Unit>\r\nEND129\r\n",
+      "response_lines": [
+        "[129] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ]
+    },
+    {
+      "tag": 130,
+      "command": "DBGETXML //XEDGE/254/p/20",
+      "request": "[130] DBGETXML //XEDGE/254/p/20\r\n",
+      "response_lines": [
+        "[130] 343-Begin XML snippet\r\n",
+        "[130] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[130] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber></CatalogNumber></Unit>\r\n",
+        "[130] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 131,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[131] DBSETXML //XEDGE/254 << END131\r\n<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND131\r\n",
+      "response_lines": [
+        "[131] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 132,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[132] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[132] 343-Begin XML snippet\r\n",
+        "[132] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[132] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[132] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 133,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[133] DBSETXML //XEDGE/254 << END133\r\n<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND133\r\n",
+      "response_lines": [
+        "[133] 301 OID=19a85f70-9d0a-103f-ba6c-a24ce45a4fe4\r\n"
+      ]
+    },
+    {
+      "tag": 134,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[134] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[134] 343-Begin XML snippet\r\n",
+        "[134] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[134] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[134] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 135,
+      "command": "DBSETXML //XEDGE/254",
+      "request": "[135] DBSETXML //XEDGE/254 << END135\r\n<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND135\r\n",
+      "response_lines": [
+        "[135] 446 Unable to set XML: ValidationException: The following exception occured while validating field '_unitList' of class 'com.clipsal.cgate.tag.model.Network';    - location of error: XPATH: /Network/Unit The field '_unitName' (whose xml name is 'UnitName') is a required field of class 'com.clipsal.cgate.tag.model.Unit'\r\n"
+      ]
+    },
+    {
+      "tag": 136,
+      "command": "DBGETXML //XEDGE/254",
+      "request": "[136] DBGETXML //XEDGE/254\r\n",
+      "response_lines": [
+        "[136] 343-Begin XML snippet\r\n",
+        "[136] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[136] 347-<Network><OID>19a85f70-9d0a-103f-ba6c-a24ce45a4fe4</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>19a88680-9d0a-103f-ba6d-a24ce45a4fe4</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[136] 344 End XML snippet\r\n"
+      ]
+    }
+  ]
+}

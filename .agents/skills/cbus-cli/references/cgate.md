@@ -1271,8 +1271,11 @@ cmqttd repository boundary;
 "typed-netvar", "typed-group", "typed-application", "typed-network",
 "typed-network-with-unit"]` records
 the bounded DBSETXML surface. Complete forms validate the selected path/OID,
-whole submitted tree, Unit scalar/PP ownership, OIDs and sibling addresses
-before an atomic durable replacement and `301 OID=...` root receipt.
+whole submitted tree, Unit scalar/PP ownership and modeled identity/address
+conflicts before an atomic durable replacement and `301 OID=...` root receipt.
+Native build 2001 accepts duplicate OIDs across these combined objects while
+cmqttd returns 409 to avoid collapsing them in its keyed model; this conflict
+axis is unresolved native parity.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive
@@ -1282,13 +1285,18 @@ preserved and `database_document_physical_io: false` remains authoritative.
 The complete Network and Unit contracts are separately retained. One owned
 native combined Network/Application/Unit replacement capture pins the `301`
 root receipt, plain Unit readback, and a missing-`UnitName` `446` without
-mutation (`rust/testdata/fixtures/native_cgate_dbsetxml_combined.json`);
-other combined forms and private vendor XML/repository formats remain
-unverified.
+mutation (`rust/testdata/fixtures/native_cgate_dbsetxml_combined.json`). The
+[later owned original capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-replacement-edges.md)
+pins discarded comments, processing instructions, namespaced additions,
+omitted optional Unit fields and PP, save/reload identity, and the duplicate-OID
+divergence. Other combined forms and private vendor XML/repository formats
+remain unverified.
 
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
 the cmqttd JSON repository (never vendor archive files). Internal snapshots
-retain modeled typed-object metadata and Unit templates/PP ownership, with the captured unknown namespaced Unit root attribute and direct child omitted on DBSETXML as pinned by the offline native direct/combined Unit oracle,
+retain modeled typed-object and Unit scalar/PP ownership. Fresh DBSETXML
+replacements omit the captured comments, processing instructions and unknown
+namespaced additions; older cmqttd snapshots can still contain legacy extras,
 `project_rename_secondary: true` denotes rename support except for the running
 hardware-bound project,
 `project_copy: "cmqttd-internal"` denotes an OID-preserving durable copy inside
@@ -1384,10 +1392,12 @@ Installation/Project and survives restart. These local operations, DBTAGLIST,
 unsafe scalar DBSET, complete typed-Unit DBSETXML, and secondary-project
 DBRENAMENET variants commit atomically and send no PCI traffic. DBSETXML validates
 the selected existing Unit and its required fields before replacement, returns
-`301 OID=...`, and retains the accepted document as a projection template so
-unknown attributes, nested elements, comments, and order survive later modeled
-scalar or PP updates. It does not implement complete typed replacement for other
-object families or import private Schneider XML formats.
+`301 OID=...`, and retains a normalized scalar/PP projection template. The
+captured comments, processing instructions and unknown namespaced additions
+are accepted then discarded; nested decoration on known Unit scalar fields
+reduces to direct text or an empty scalar. Complete typed replacements for
+the bounded Level/NetVar/Group/Application/Network families are implemented
+separately; private Schneider XML formats are not imported.
 
 `DBCREATE`, `DBUPDATE` and `DBVERIFY` are physical inventory operations for the
 configured project. They run the normal generation-guarded NET SYNC first.
@@ -1454,10 +1464,12 @@ and complete typed `Unit`, `Level`, `NetVar`, `Group`, `Application` and
 Application children. It validates the selected-project target, required
 fields and sibling identities before one durable database replacement, returns
 `301 OID=...` for the submitted root, and performs no physical I/O. The
-captured unknown namespaced Unit root attribute and direct child are accepted
-then omitted on readback in both direct and combined original cases. Nested
-markup under an unnamespaced Unit child remains a separately tested mock
-preservation contract. Successful single-row `DBGETXML` replies use the original `343/347/344` TCP envelope, including an LF-only XML declaration row; errors remain ordinary status replies. The [fresh original framing capture](../../../../toolkit-cli/docs/native-cgate-dbgetxml-framing-vm.md) and scoped two-server differential pin address/OID reads and pipelined transport. This does not establish multiline XML payloads, broader XML variants, or private Schneider repository formats.
+captured comments, processing instructions and unknown namespaced additions
+are accepted then omitted on readback in the tested combined and direct Unit
+cases. Nested decoration on `Description` and `CatalogNumber` becomes direct
+text or an empty scalar. The original accepts duplicate combined-tree OIDs,
+which cmqttd rejects with 409 as a deliberate model-safety divergence.
+Successful single-row `DBGETXML` replies use the original `343/347/344` TCP envelope, including an LF-only XML declaration row; errors remain ordinary status replies. The [fresh original framing capture](../../../../toolkit-cli/docs/native-cgate-dbgetxml-framing-vm.md) and scoped two-server differential pin address/OID reads and pipelined transport. This does not establish multiline XML payloads, broader XML variants, or private Schneider repository formats.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
 and one-shot `SESSION_ID TAG` state, including live TCP/TLS peer and connection
