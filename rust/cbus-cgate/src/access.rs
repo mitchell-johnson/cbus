@@ -347,6 +347,236 @@ pub(crate) const NATIVE_PROBED_APPLICATION_COMMANDS: &[(&str, CgateAccessLevel)]
     ("TRIGGER UNICODELABEL", CgateAccessLevel::Program),
 ];
 
+/// DALI handler floors from the owned native child. Both default and poll
+/// selectors were captured where the original help advertises mode=(auto).
+/// These are exact entry observations against absent CDG objects. The private
+/// PROJECT_CUSTOM path is retained only as an entry-role case;
+/// its bare invocation returns a later native syntax error.
+pub(crate) const NATIVE_PROBED_DALI_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("DALI ADDRESS_UNKNOWN", CgateAccessLevel::Program),
+    ("DALI BROKEN", CgateAccessLevel::Program),
+    ("DALI CATALOG", CgateAccessLevel::Program),
+    ("DALI CATALOG GET_SPEC", CgateAccessLevel::Program),
+    ("DALI CATALOG RELOAD", CgateAccessLevel::Program),
+    ("DALI CHECK_FOR_UNKNOWN", CgateAccessLevel::Program),
+    ("DALI COLOUR_POWER_FAIL_PARAMS", CgateAccessLevel::Program),
+    ("DALI COLOUR_TEMPERATURE", CgateAccessLevel::Program),
+    ("DALI COLOUR_TYPE", CgateAccessLevel::Program),
+    ("DALI COMMON_PARAMS", CgateAccessLevel::Program),
+    ("DALI COMMON_READ_ONLY_PARAMS", CgateAccessLevel::Program),
+    ("DALI CONFLICTING", CgateAccessLevel::Program),
+    ("DALI DISCOVER_GTIN_SERIAL", CgateAccessLevel::Program),
+    ("DALI DISCOVER_KNOWN_FULL_INFO", CgateAccessLevel::Program),
+    ("DALI DISCOVER_KNOWN_TYPE_INFO", CgateAccessLevel::Program),
+    ("DALI DISCOVER_STATUS_INFO", CgateAccessLevel::Program),
+    ("DALI EMERGENCY", CgateAccessLevel::Program),
+    ("DALI EMERGENCY INHIBIT", CgateAccessLevel::Program),
+    ("DALI EMERGENCY PARAMS", CgateAccessLevel::Program),
+    ("DALI EMERGENCY RELIGHT", CgateAccessLevel::Program),
+    ("DALI EMERGENCY REST", CgateAccessLevel::Program),
+    ("DALI EMERGENCY SET_LEVEL_MANY", CgateAccessLevel::Program),
+    ("DALI EMERGENCY SET_PARAMS", CgateAccessLevel::Program),
+    ("DALI EMERGENCY SET_PROLONG_MANY", CgateAccessLevel::Program),
+    (
+        "DALI EMERGENCY SET_TEST_TIMEOUT_MANY",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI EMERGENCY START_DURATION_TEST",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI EMERGENCY START_FUNCTION_TEST",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI EMERGENCY STATUS", CgateAccessLevel::Program),
+    ("DALI EMERGENCY STOP_TEST", CgateAccessLevel::Program),
+    ("DALI EMERGENCY TEST_STATUS", CgateAccessLevel::Program),
+    (
+        "DALI EMERGENCY UPDATE_TEST_STATUS",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI ERROR_REPORTING", CgateAccessLevel::Program),
+    (
+        "DALI ERROR_REPORTING ACK_ALL_ERRORS_ACTION_SELECTOR",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI ERROR_REPORTING DEVICE_ID", CgateAccessLevel::Program),
+    (
+        "DALI ERROR_REPORTING ENABLE_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI ERROR_REPORTING INTERVAL", CgateAccessLevel::Program),
+    ("DALI ERROR_REPORTING MODE", CgateAccessLevel::Program),
+    (
+        "DALI ERROR_REPORTING NETWORK_PATH",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING RESEND_ACTION_SELECTOR",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_ACK_ALL_ERRORS_ACTION_SELECTOR",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_DEVICE_ID",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_ENABLE_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_INTERVAL",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI ERROR_REPORTING SET_MODE", CgateAccessLevel::Program),
+    (
+        "DALI ERROR_REPORTING SET_NETWORK_PATH",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_RESEND_ACTION_SELECTOR",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_STORE_OPTION",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_TRIGGER_REPORT_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING SET_USED_DEVICE_MASK",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING STORE_OPTION",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING TRIGGER_REPORT_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI ERROR_REPORTING USED_DEVICE_MASK",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI FACTORY_RESET", CgateAccessLevel::Program),
+    ("DALI GATEWAY", CgateAccessLevel::Program),
+    ("DALI GATEWAY DEVICE_ID_LIST", CgateAccessLevel::Program),
+    ("DALI GATEWAY FACTORY_RESET", CgateAccessLevel::Program),
+    ("DALI GATEWAY LIST", CgateAccessLevel::Program),
+    ("DALI GATEWAY LOAD_PRESET", CgateAccessLevel::Program),
+    ("DALI GATEWAY NAC_SUMMARY_LIST", CgateAccessLevel::Program),
+    ("DALI GATEWAY PAGED_RECALL", CgateAccessLevel::Program),
+    ("DALI GATEWAY PAGED_STORE", CgateAccessLevel::Program),
+    ("DALI GATEWAY PRIMARY_ADDRESS", CgateAccessLevel::Program),
+    ("DALI GATEWAY PROJECT_CUSTOM", CgateAccessLevel::Program),
+    (
+        "DALI GATEWAY READ_EXTENDED_PARAMETERS",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI GATEWAY RESTART", CgateAccessLevel::Program),
+    ("DALI GATEWAY SAVE_TO_NVM", CgateAccessLevel::Program),
+    (
+        "DALI GATEWAY SET_EXTENDED_PARAMETERS",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI GATEWAY SET_PRIMARY_ADDRESS",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI GATEWAY SET_VIRTUAL_GROUP", CgateAccessLevel::Program),
+    ("DALI GATEWAY SHORT_MAP", CgateAccessLevel::Program),
+    ("DALI GATEWAY VIRTUAL_GROUP", CgateAccessLevel::Program),
+    (
+        "DALI GATEWAY WRITE_EXTENDED_PARAMETERS",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI GTIN", CgateAccessLevel::Program),
+    ("DALI KNOWN", CgateAccessLevel::Program),
+    ("DALI KNOWN_TYPE_INFO", CgateAccessLevel::Program),
+    ("DALI LED_PARAMS", CgateAccessLevel::Program),
+    ("DALI MEASUREMENT", CgateAccessLevel::Program),
+    (
+        "DALI MEASUREMENT CLEAR_TRIGGER_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI MEASUREMENT LAMP_RUNNING_TIME",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI MEASUREMENT REQUEST_TRIGGER_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI MEASUREMENT SET_CLEAR_TRIGGER_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI MEASUREMENT SET_LAMP_RUNNING_TIME",
+        CgateAccessLevel::Program,
+    ),
+    (
+        "DALI MEASUREMENT SET_REQUEST_TRIGGER_GROUP",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI MISSING", CgateAccessLevel::Program),
+    ("DALI REASSIGN_ONE", CgateAccessLevel::Program),
+    ("DALI RECALL_MAX", CgateAccessLevel::Program),
+    ("DALI RECALL_MAX_MANY", CgateAccessLevel::Program),
+    ("DALI RECALL_MIN", CgateAccessLevel::Program),
+    ("DALI RECALL_OFF", CgateAccessLevel::Program),
+    ("DALI RECALL_OFF_MANY", CgateAccessLevel::Program),
+    ("DALI REMOVE_GROUP_MANY", CgateAccessLevel::Program),
+    ("DALI REMOVE_MANY", CgateAccessLevel::Program),
+    ("DALI REPLACE_BAD", CgateAccessLevel::Program),
+    ("DALI RESCAN", CgateAccessLevel::Program),
+    ("DALI SCENE_VALUES_HIGH", CgateAccessLevel::Program),
+    ("DALI SCENE_VALUES_LOW", CgateAccessLevel::Program),
+    ("DALI SERIAL", CgateAccessLevel::Program),
+    ("DALI SESSION", CgateAccessLevel::Program),
+    ("DALI SESSION CATALOG_DEVICE_ADD", CgateAccessLevel::Program),
+    (
+        "DALI SESSION CATALOG_DEVICE_REMOVE",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI SESSION DEPLOY", CgateAccessLevel::Program),
+    ("DALI SESSION END", CgateAccessLevel::Program),
+    ("DALI SESSION EXTRACT", CgateAccessLevel::Program),
+    ("DALI SESSION GET", CgateAccessLevel::Program),
+    ("DALI SESSION LOAD", CgateAccessLevel::Program),
+    ("DALI SESSION MULTIGET", CgateAccessLevel::Program),
+    ("DALI SESSION NEW", CgateAccessLevel::Program),
+    ("DALI SESSION SAVE", CgateAccessLevel::Program),
+    ("DALI SESSION SET", CgateAccessLevel::Program),
+    ("DALI SESSION SET_EXT_PARAMS", CgateAccessLevel::Program),
+    (
+        "DALI SET_COLOUR_POWER_FAIL_PARAMS",
+        CgateAccessLevel::Program,
+    ),
+    ("DALI SET_COLOUR_TEMPERATURE", CgateAccessLevel::Program),
+    ("DALI SET_COMMON_PARAMS", CgateAccessLevel::Program),
+    ("DALI SET_FAILURE_MANY", CgateAccessLevel::Program),
+    ("DALI SET_GROUP_MANY", CgateAccessLevel::Program),
+    ("DALI SET_LED_PARAMS", CgateAccessLevel::Program),
+    ("DALI SET_MAX_MANY", CgateAccessLevel::Program),
+    ("DALI SET_MIN_MANY", CgateAccessLevel::Program),
+    ("DALI SET_RECOVERY_MANY", CgateAccessLevel::Program),
+    ("DALI SET_SCENE_LEVEL_MANY", CgateAccessLevel::Program),
+    ("DALI SET_SCENE_VALUES_HIGH", CgateAccessLevel::Program),
+    ("DALI SET_SCENE_VALUES_LOW", CgateAccessLevel::Program),
+    ("DALI SWAP_TWO", CgateAccessLevel::Program),
+    ("DALI TRIGGER_SCENE", CgateAccessLevel::Program),
+    ("DALI WINK_ECG_OFF", CgateAccessLevel::Program),
+    ("DALI WINK_ECG_ON", CgateAccessLevel::Program),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -356,6 +586,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_MEDIA_COMMANDS.iter())
         .chain(NATIVE_PROBED_ADMIN_COMMANDS.iter())
         .chain(NATIVE_PROBED_APPLICATION_COMMANDS.iter())
+        .chain(NATIVE_PROBED_DALI_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -873,6 +1104,106 @@ mod tests {
                 .map(str::to_ascii_uppercase)
                 .collect::<Vec<_>>();
             assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn dali_handler_and_poll_selector_floors_match_owned_native_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_dali_authorization_probe.json"
+        ))
+        .unwrap();
+        let help: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_dali_help.json"
+        ))
+        .unwrap();
+        assert_eq!(evidence["format"], "native-cgate-dali-authorization-v1");
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        for (field, source) in [
+            (
+                "capture_script_sha256",
+                include_bytes!("../research/native_dali_authorization_probe.py").as_slice(),
+            ),
+            (
+                "capture_engine_sha256",
+                include_bytes!("../research/native_admin_authorization_probe.py").as_slice(),
+            ),
+            (
+                "local_cgate_harness_sha256",
+                include_bytes!("../../../toolkit-cli/research/local_cgate.py").as_slice(),
+            ),
+            (
+                "help_fixture_sha256",
+                include_bytes!("../../testdata/fixtures/native_cgate_dali_help.json").as_slice(),
+            ),
+        ] {
+            assert_eq!(
+                evidence[field],
+                hex::encode(auth::sha256(source)),
+                "{field}"
+            );
+        }
+        let commands = evidence["commands"].as_array().unwrap();
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(commands.len(), 192);
+        assert_eq!(roles.len(), 9);
+        assert_eq!(NATIVE_PROBED_DALI_COMMANDS.len(), 126);
+        for (path, minimum) in NATIVE_PROBED_DALI_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| {
+                    // DALI parents also prefix their leaves. Assign every
+                    // invocation to the longest registered command path.
+                    let longest = NATIVE_PROBED_DALI_COMMANDS
+                        .iter()
+                        .filter(|(candidate, _)| {
+                            *command == *candidate || command.starts_with(&format!("{candidate} "))
+                        })
+                        .max_by_key(|(candidate, _)| candidate.len())
+                        .map(|(candidate, _)| *candidate);
+                    longest == Some(*path)
+                })
+                .collect::<Vec<_>>();
+            let first_help = help["paths"][*path][0].as_str().unwrap();
+            let expected = if first_help.contains("[mode=(auto)]") {
+                2
+            } else {
+                1
+            };
+            assert_eq!(matches.len(), expected, "native selectors for {path}");
+            for (index, command) in matches.iter().enumerate() {
+                let command = *command;
+                if expected == 2 {
+                    assert_eq!(command.contains(" poll "), index == 1);
+                }
+                for (role, record) in roles {
+                    let level = CgateAccessLevel::parse(role);
+                    assert_eq!(record["query"], format!("210 Access level: {role}"));
+                    let reply = record["responses"][command].as_str().unwrap();
+                    assert_eq!(
+                        reply == "420 Access denied.",
+                        level < *minimum,
+                        "native {command} at {role}: {reply}"
+                    );
+                }
+                let upper = command
+                    .split_whitespace()
+                    .map(str::to_ascii_uppercase)
+                    .collect::<Vec<_>>();
+                assert_eq!(native_minimum_for(&upper), Some(*minimum));
+            }
         }
     }
 }

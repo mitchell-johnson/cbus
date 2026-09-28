@@ -451,6 +451,7 @@ def validate_cgate_contract_inventory(
         "native_media_handler_roles",
         "native_admin_handler_roles",
         "native_application_handler_roles",
+        "native_dali_handler_selector_roles",
     } <= set(sources):
         raise ValueError("C-Gate contract native handler role sources are missing")
     contracts = inventory.get("contracts")
@@ -515,25 +516,31 @@ def validate_cgate_contract_inventory(
                     ("native_media_handler_roles", "rust/testdata/fixtures/native_cgate_media_authorization_probe.json"),
                     ("native_admin_handler_roles", "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json"),
                     ("native_application_handler_roles", "rust/testdata/fixtures/native_cgate_application_authorization_probe.json"),
+                    ("native_dali_handler_selector_roles", "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json"),
                 )
                 if isinstance(observation, dict)
                 and observation.get("fixture_sha256") == sources[source_name]["sha256"]
                 and reference in roles_axis["source_refs"]
             ]
+            dali_role_source = matching_role_sources == [
+                "native_dali_handler_selector_roles"
+            ]
+            expected_fields = {
+                "invocation",
+                "minimum_access_level_at_handler_entry",
+                "lower_access_status",
+                "at_floor_status",
+                "observed_roles",
+                "fixture_sha256",
+                "scope",
+            }
+            if dali_role_source:
+                expected_fields.add("selector_invocations")
             if (
                 roles_axis["status"] != "unresolved"
                 or len(matching_role_sources) != 1
                 or not isinstance(observation, dict)
-                or set(observation)
-                != {
-                    "invocation",
-                    "minimum_access_level_at_handler_entry",
-                    "lower_access_status",
-                    "at_floor_status",
-                    "observed_roles",
-                    "fixture_sha256",
-                    "scope",
-                }
+                or set(observation) != expected_fields
                 or not isinstance(observation["invocation"], str)
                 or not (
                     observation["invocation"] == path
@@ -553,6 +560,33 @@ def validate_cgate_contract_inventory(
                 != "exact_invocation_only; no_later_object_or_physical_success_claim"
             ):
                 raise ValueError(f"{contract_id} native handler entry evidence changed")
+            if dali_role_source:
+                selectors = observation["selector_invocations"]
+                if (
+                    not isinstance(selectors, list)
+                    or len(selectors) not in {1, 2}
+                    or selectors[0] != {
+                        "invocation": observation["invocation"],
+                        "at_floor_status": observation["at_floor_status"],
+                    }
+                    or any(
+                        not isinstance(item, dict)
+                        or set(item) != {"invocation", "at_floor_status"}
+                        or not isinstance(item["invocation"], str)
+                        or not (
+                            item["invocation"] == path
+                            or item["invocation"].startswith(f"{path} ")
+                        )
+                        or type(item["at_floor_status"]) is not int
+                        or not 100 <= item["at_floor_status"] <= 599
+                        or item["at_floor_status"] == 420
+                        for item in selectors
+                    )
+                    or (len(selectors) == 2 and not selectors[1]["invocation"].startswith(
+                        f"{path} poll "
+                    ))
+                ):
+                    raise ValueError(f"{contract_id} native DALI selector evidence changed")
         for name, status in statuses.items():
             axis_counts[name][status] += 1
         for name, status in substatuses.items():
@@ -565,8 +599,8 @@ def validate_cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
-        "native_handler_role_observations": 219,
-        "native_handler_role_unresolved": 219,
+        "native_handler_role_observations": 345,
+        "native_handler_role_unresolved": 345,
     }
     if not isinstance(counts, dict) or any(
         counts.get(key) != value for key, value in expected_fixed.items()

@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 219);
+        assert_eq!(floors.len(), 345);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),
@@ -287,6 +287,10 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
             ("FILE DOWNLOAD", "Program"),
             ("LABEL KFIGET", "Program"),
             ("MEASUREMENT DATA", "Operate"),
+            ("DALI RECALL_MAX", "Program"),
+            ("DALI EMERGENCY INHIBIT", "Program"),
+            ("DALI GATEWAY PROJECT_CUSTOM", "Program"),
+            ("DALI SESSION GET", "Program"),
         ] {
             assert!(
                 floors
@@ -332,6 +336,80 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
 
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
+}
+
+#[tokio::test]
+async fn dali_native_role_vectors_hold_on_the_real_cgate_listener() {
+    let state = cbus_test_support::proc::temp_path("cgate-dali-roles.json");
+    let mut sys = start_with(options_for(&state, None, "127.0.0.1:0")).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = connect(&sys).await;
+    for (name, role) in [("admin", "Admin"), ("program", "Program")] {
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                "add",
+                &format!("ACCESS ADD user matrix-{name} matrix-secret-{name} {role}"),
+            )
+            .await,
+            ["200 OK."]
+        );
+    }
+    let before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dali_authorization_probe.json"
+    ))
+    .unwrap();
+    let vectors = include_str!("../../testdata/vectors/cgate_dali_authorization.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 5);
+
+    for (name, role) in [("admin", "Admin"), ("program", "Program")] {
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                "login",
+                &format!("LOGIN matrix-{name} matrix-secret-{name}"),
+            )
+            .await,
+            [format!("211 Access level set to: {role}")]
+        );
+        for (index, vector) in vectors.iter().enumerate() {
+            let body = vector["command"].as_str().unwrap();
+            let expected = if role == "Admin" {
+                assert_eq!(vector["denied_role"], role);
+                let expected = vector["denied_reply"].as_str().unwrap();
+                assert_eq!(native["roles"][role]["responses"][body], expected);
+                expected
+            } else {
+                assert_eq!(vector["admitted_role"], role);
+                let expected = vector["native_at_floor"].as_str().unwrap();
+                assert_eq!(native["roles"][role]["responses"][body], expected);
+                vector["endpoint_at_floor"].as_str().unwrap_or(expected)
+            };
+            let reply = command(&mut reader, &mut writer, &format!("d{index}"), body).await;
+            assert_eq!(reply, [expected], "{body} at {role}");
+        }
+    }
+    let after = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(after, before);
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
 }
 
 #[tokio::test]

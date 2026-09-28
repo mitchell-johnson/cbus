@@ -126,17 +126,20 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert document["sources"]["native_application_handler_roles"]["sha256"] == sha256(
         contract_builder.NATIVE_APPLICATION_ROLE_PATH.read_bytes()
     ).hexdigest()
+    assert document["sources"]["native_dali_handler_selector_roles"]["sha256"] == sha256(
+        contract_builder.NATIVE_DALI_ROLE_PATH.read_bytes()
+    ).hexdigest()
     assert document["sources"]["access_handler_registry"]["sha256"] == sha256(
         contract_builder.ACCESS_PATH.read_bytes()
     ).hexdigest()
-    assert document["counts"]["native_handler_role_observations"] == 219
-    assert document["counts"]["native_handler_role_unresolved"] == 219
+    assert document["counts"]["native_handler_role_observations"] == 345
+    assert document["counts"]["native_handler_role_unresolved"] == 345
     observed = [
         row for row in document["contracts"]
         if "native_handler_entry"
         in row["axes"]["authorization"]["subaxes"]["handler_roles"].get("known", {})
     ]
-    assert len(observed) == 219
+    assert len(observed) == 345
     assert all(
         row["axes"]["authorization"]["status"] == "partial"
         and row["axes"]["authorization"]["subaxes"]["handler_roles"]["status"]
@@ -199,6 +202,23 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
             "minimum_access_level_at_handler_entry"
         ] == level
         assert contract_builder.NATIVE_APPLICATION_ROLE_REF in role["source_refs"]
+    for path, expected_selectors in (
+        ("DALI RECALL_MAX", 2),
+        ("DALI EMERGENCY INHIBIT", 2),
+        ("DALI GATEWAY LIST", 1),
+        ("DALI GATEWAY PROJECT_CUSTOM", 1),
+        ("DALI SESSION GET", 1),
+    ):
+        row = contract_by_path(document, path)
+        role = row["axes"]["authorization"]["subaxes"]["handler_roles"]
+        assert role["status"] == "unresolved"
+        entry = role["known"]["native_handler_entry"]
+        assert entry["minimum_access_level_at_handler_entry"] == "Program"
+        assert len(entry["selector_invocations"]) == expected_selectors
+        assert contract_builder.NATIVE_DALI_ROLE_REF in role["source_refs"]
+        assert row["axes"]["implementation_acceptance"]["subaxes"][
+            "functional_acceptance"
+        ]["status"] == "unresolved"
 
 
 def test_native_application_role_probe_weakening_cannot_rebuild(
@@ -215,6 +235,26 @@ def test_native_application_role_probe_weakening_cannot_rebuild(
     monkeypatch.setattr(
         contract_builder,
         "NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256",
+        sha256(fixture.read_bytes()).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="role threshold changed"):
+        contract_builder.build()
+
+
+def test_native_dali_poll_role_probe_weakening_cannot_rebuild(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    changed = json.loads(contract_builder.NATIVE_DALI_ROLE_PATH.read_text())
+    command = "DALI RECALL_MAX poll //MISSING/254/p/1 A"
+    changed["roles"]["Program"]["responses"][command] = "420 Access denied."
+    fixture = tmp_path / "weakened-dali-poll-roles.json"
+    fixture.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "NATIVE_DALI_ROLE_PATH", fixture)
+    with pytest.raises(ValueError, match="DALI handler and selector roles source changed"):
+        contract_builder.build()
+    monkeypatch.setattr(
+        contract_builder,
+        "NATIVE_DALI_ROLE_EVIDENCE_SHA256",
         sha256(fixture.read_bytes()).hexdigest(),
     )
     with pytest.raises(ValueError, match="role threshold changed"):

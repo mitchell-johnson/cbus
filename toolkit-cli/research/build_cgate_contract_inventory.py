@@ -79,6 +79,18 @@ NATIVE_APPLICATION_ROLE_SCRIPT_PATH = (
     REPOSITORY / "rust" / "cbus-cgate" / "research"
     / "native_application_authorization_probe.py"
 )
+NATIVE_DALI_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_dali_authorization_probe.json"
+)
+NATIVE_DALI_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_dali_authorization_probe.py"
+)
+NATIVE_DALI_HELP_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_dali_help.json"
+)
 LOCAL_CGATE_HARNESS_PATH = ROOT / "research" / "local_cgate.py"
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
@@ -110,6 +122,7 @@ ACCESS_PROGRAMMING_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_PROGR
 ACCESS_MEDIA_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_MEDIA_COMMANDS"
 ACCESS_ADMIN_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS"
 ACCESS_APPLICATION_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_APPLICATION_COMMANDS"
+ACCESS_DALI_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_DALI_COMMANDS"
 EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
 NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
@@ -130,6 +143,7 @@ NATIVE_ADMIN_ROLE_REF = "rust/testdata/fixtures/native_cgate_admin_authorization
 NATIVE_APPLICATION_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_application_authorization_probe.json"
 )
+NATIVE_DALI_ROLE_REF = "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json"
 NATIVE_CGATE_JAR_SHA256 = (
     "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
 )
@@ -156,6 +170,9 @@ NATIVE_ADMIN_ROLE_EVIDENCE_SHA256 = (
 )
 NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256 = (
     "5d11a1edb500a995422be2336fcec4feca4c4e07a931e3d64cc604a671191f7d"
+)
+NATIVE_DALI_ROLE_EVIDENCE_SHA256 = (
+    "d2ffb8d86b296ea123b6b667d484e9c5415ec41b0db55c25f14ef6262f67af8f"
 )
 NATIVE_ROLE_LEVELS = (
     "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal", "Max"
@@ -663,8 +680,10 @@ def _native_role_fixture_observations(
     fixture_format: str, script_path: Path, registry_marker: str,
     expected_commands: int, label: str, response_command_count: int | None = None,
     capture_engine_path: Path | None = None,
+    variant_command_count: int | None = None,
+    help_fixture_path: Path | None = None,
 ) -> dict[str, dict]:
-    """Bind one exact invocation per captured floor; retain incomplete scope.
+    """Bind exact invocations to captured floors; retain incomplete scope.
 
     A lower-role 420 followed by a non-420 at the recorded floor establishes
     entry to a later parser/handler stage. It does not prove authorization
@@ -693,6 +712,10 @@ def _native_role_fixture_observations(
             capture_engine_path is not None
             and report.get("capture_engine_sha256") != digest(capture_engine_path)
         )
+        or (
+            help_fixture_path is not None
+            and report.get("help_fixture_sha256") != digest(help_fixture_path)
+        )
         or report.get("local_cgate_harness_sha256") != digest(LOCAL_CGATE_HARNESS_PATH)
     ):
         raise ValueError(f"Native C-Gate {label} provenance changed")
@@ -712,7 +735,9 @@ def _native_role_fixture_observations(
         commands = list(none_record["responses"])
     if (
         not isinstance(commands, list)
-        or len(commands) != (response_command_count or expected_commands)
+        or len(commands) != (
+            response_command_count or variant_command_count or expected_commands
+        )
         or any(not isinstance(command, str) or not command for command in commands)
         or len(commands) != len(set(commands))
         or not isinstance(roles, dict)
@@ -750,28 +775,63 @@ def _native_role_fixture_observations(
         ):
             raise ValueError(f"Native C-Gate {label} {level} session changed")
 
+    command_paths: dict[str, str] = {}
+    if variant_command_count is not None:
+        for command in commands:
+            matching_paths = [
+                path for path, _ in registry
+                if command == path or command.startswith(f"{path} ")
+            ]
+            if not matching_paths:
+                raise ValueError(f"Native C-Gate {label} invocation has no registry path: {command}")
+            command_paths[command] = max(matching_paths, key=len)
+    help_paths = (
+        json.loads(help_fixture_path.read_text(encoding="utf-8"))["paths"]
+        if help_fixture_path is not None else {}
+    )
+
     observations: dict[str, dict] = {}
     for path, minimum in registry:
         matching = [
             command for command in commands
-            if command == path or command.startswith(f"{path} ")
+            if (
+                command_paths.get(command) == path
+                if variant_command_count is not None
+                else command == path or command.startswith(f"{path} ")
+            )
         ]
-        if path in matching:
-            command = path
+        if variant_command_count is not None:
+            first_help = help_paths[path][0]
+            expected_variants = 2 if "[mode=(auto)]" in first_help else 1
+            if len(matching) != expected_variants:
+                raise ValueError(f"Native C-Gate {label} selector set changed for {path}")
+            if len(matching) == 2 and (
+                not matching[1].startswith(f"{path} poll ")
+                or matching[0].startswith(f"{path} poll ")
+            ):
+                raise ValueError(f"Native C-Gate {label} poll selector changed for {path}")
+        elif path in matching:
+            matching = [path]
         elif len(matching) == 1:
-            command = matching[0]
+            pass
         else:
             raise ValueError(f"Native C-Gate role invocation changed for {path}")
         floor_index = NATIVE_ROLE_LEVELS.index(minimum)
-        for index, level in enumerate(NATIVE_ROLE_LEVELS):
-            reply = roles[level]["responses"][command]
-            if not isinstance(reply, str) or (reply == "420 Access denied.") != (
-                index < floor_index
-            ):
-                raise ValueError(f"Native C-Gate role threshold changed for {command}")
-        floor_reply = roles[minimum]["responses"][command]
-        if not re.match(r"^[0-9]{3} ", floor_reply):
-            raise ValueError(f"Native C-Gate role response changed for {command}")
+        selector_invocations = []
+        for command in matching:
+            for index, level in enumerate(NATIVE_ROLE_LEVELS):
+                reply = roles[level]["responses"][command]
+                if not isinstance(reply, str) or (reply == "420 Access denied.") != (
+                    index < floor_index
+                ):
+                    raise ValueError(f"Native C-Gate role threshold changed for {command}")
+            floor_reply = roles[minimum]["responses"][command]
+            if not re.match(r"^[0-9]{3} ", floor_reply):
+                raise ValueError(f"Native C-Gate role response changed for {command}")
+            selector_invocations.append({
+                "invocation": command,
+                "at_floor_status": int(floor_reply[:3]),
+            })
 
         # SHOW OBJECTS and SCENE PLAY are selectors beneath maintained
         # primary paths. Keep exact invocations without promoting every form.
@@ -779,13 +839,17 @@ def _native_role_fixture_observations(
         if inventory_path not in inventory_paths or inventory_path in observations:
             raise ValueError(f"Native C-Gate role path is not uniquely inventoried: {path}")
         observations[inventory_path] = {
-            "invocation": command,
+            "invocation": matching[0],
             "minimum_access_level_at_handler_entry": minimum,
             "lower_access_status": 420,
-            "at_floor_status": int(floor_reply[:3]),
+            "at_floor_status": selector_invocations[0]["at_floor_status"],
             "observed_roles": len(NATIVE_ROLE_LEVELS),
             "fixture_sha256": fixture_digest,
             "scope": "exact_invocation_only; no_later_object_or_physical_success_claim",
+            **(
+                {"selector_invocations": selector_invocations}
+                if variant_command_count is not None else {}
+            ),
         }
     if len(observations) != expected_commands:
         raise ValueError(f"Native C-Gate {label} mapping changed")
@@ -856,7 +920,20 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
         expected_commands=24,
         label="application role",
     )
-    groups = (initial, additional, programming, media, admin, application)
+    dali = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_DALI_ROLE_PATH,
+        fixture_digest=NATIVE_DALI_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-dali-authorization-v1",
+        script_path=NATIVE_DALI_ROLE_SCRIPT_PATH,
+        capture_engine_path=NATIVE_ADMIN_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_DALI_COMMANDS",
+        expected_commands=126,
+        variant_command_count=192,
+        help_fixture_path=NATIVE_DALI_HELP_PATH,
+        label="DALI handler and selector roles",
+    )
+    groups = (initial, additional, programming, media, admin, application, dali)
     overlap = set().union(*(
         set(left) & set(right)
         for index, left in enumerate(groups)
@@ -864,7 +941,7 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
     ))
     if overlap:
         raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
-    return initial | additional | programming | media | admin | application
+    return initial | additional | programming | media | admin | application | dali
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -1118,11 +1195,20 @@ def build_row(
             NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256: (
                 NATIVE_APPLICATION_ROLE_REF, ACCESS_APPLICATION_ROLE_REF
             ),
+            NATIVE_DALI_ROLE_EVIDENCE_SHA256: (
+                NATIVE_DALI_ROLE_REF, ACCESS_DALI_ROLE_REF
+            ),
         }[observed["fixture_sha256"]]
         handler_roles = unresolved(
-            "One native handler-entry invocation and its lower-role denial are "
-            "captured; other selectors, object-specific checks and successful "
-            "physical delivery remain unverified.",
+            (
+                "Two native handler-entry selector invocations and their lower-role "
+                "denials are captured; other selectors, object-specific checks and "
+                "successful physical delivery remain unverified."
+                if len(observed.get("selector_invocations", [])) == 2
+                else "One native handler-entry invocation and its lower-role denial are "
+                "captured; other selectors, object-specific checks and successful "
+                "physical delivery remain unverified."
+            ),
             role_ref,
             access_ref,
             SERVICE_SESSION_REF,
@@ -1287,6 +1373,7 @@ def build() -> dict:
             "native_media_handler_roles": {"sha256": digest(NATIVE_MEDIA_ROLE_PATH)},
             "native_admin_handler_roles": {"sha256": digest(NATIVE_ADMIN_ROLE_PATH)},
             "native_application_handler_roles": {"sha256": digest(NATIVE_APPLICATION_ROLE_PATH)},
+            "native_dali_handler_selector_roles": {"sha256": digest(NATIVE_DALI_ROLE_PATH)},
         },
         "counts": {
             "paths": len(contracts),

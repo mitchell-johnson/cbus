@@ -225,13 +225,13 @@ row that no longer matches its packaged contract.
 The current inventory resolves the command path for all 442 paths, connection
 and recovery-mode behavior for all 442, peer access policy for all 442, and the
 optional programming LOGIN gate for 398. Forty-four programming-gate rows
-remain invocation-dependent. The independent native ACCESS role is resolved
-for all five TELEPHONY leaves as minimum `Program`, including
-`RECALL_LAST_NUMBER_REQUEST`; that read-like leaf remains outside the optional
-operation-based LOGIN gate. Those five paths therefore have a fully resolved
-authorization axis.
+remain invocation-dependent. The five TELEPHONY leaves have an observed
+`Operate` entry floor on absent objects, while later permission for configured
+targets and successful physical delivery remains unresolved.
+`RECALL_LAST_NUMBER_REQUEST` remains outside the optional operation-based
+LOGIN gate. Their authorization axes remain partial.
 
-The inventory also records 195 exact native handler-entry role probes, each
+The inventory also records 345 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
 sessions. Their pinned fixtures are
 `rust/testdata/fixtures/native_cgate_authorization_probe.json` (31),
@@ -241,11 +241,15 @@ and `rust/testdata/fixtures/native_cgate_programming_authorization_probe.json`
 `rust/testdata/fixtures/native_cgate_media_authorization_probe.json` (44 Audio,
 Security and Media Transport leaves), and
 `rust/testdata/fixtures/native_cgate_admin_authorization_probe.json` (22 CONFIG,
-FILE, PROJECT, NET, LABEL and Measurement leaves).
+FILE, PROJECT, NET, LABEL and Measurement leaves), plus
+`rust/testdata/fixtures/native_cgate_application_authorization_probe.json` (24
+application leaves) and
+`rust/testdata/fixtures/native_cgate_dali_authorization_probe.json` (126 DALI
+paths, including 66 repeated `poll` selector invocations).
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks the fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 195 `handler_roles` subaxes remain
+emitting these known facts. All 345 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.

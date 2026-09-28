@@ -14004,6 +14004,75 @@ async fn application_native_handler_floors_deny_before_dispatch_or_mutation() {
 }
 
 #[tokio::test]
+async fn dali_native_handler_and_poll_floors_deny_before_dispatch_or_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_dali_authorization_probe.json"
+    ))
+    .unwrap();
+
+    for command in evidence["commands"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|value| value.as_str().unwrap())
+    {
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+        ] {
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}: {reply:?}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    for command in [
+        "DALI RECALL_MAX //MISSING/254/p/1 A",
+        "DALI RECALL_MAX poll //MISSING/254/p/1 A",
+        "DALI SESSION GET auth-dali Missing.Value",
+        "DALI GATEWAY LIST",
+        "DALI GATEWAY PROJECT_CUSTOM",
+    ] {
+        let mut client = ClientState {
+            access_level: Some(CgateAccessLevel::Program),
+            ..ClientState::default()
+        };
+        let reply = service
+            .handle(&mut client, &format!("[admitted] {command}"))
+            .await;
+        assert_ne!(reply.final_text, "420 Access denied.", "{command}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn expanded_native_cgl_import_floor_denies_document_before_mutation() {
     let path = state_path();
     let (pci, mut remote) = pci();

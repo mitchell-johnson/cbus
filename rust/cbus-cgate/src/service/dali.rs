@@ -328,10 +328,17 @@ impl Service {
                 .and_then(|(_, _, address)| network.and_then(|network| network.units.get(&address)))
         };
         let Some(unit) = unit.filter(|unit| unit.unit_type.eq_ignore_ascii_case("SYS_DAL2")) else {
+            let reason = if Server::split_unit(target)
+                .is_some_and(|(project, _, _)| !model.projects.contains_key(&project))
+            {
+                "Object not found"
+            } else {
+                "Unit not found"
+            };
             return Err(err(
                 tag,
                 401,
-                &format!("401 Bad object or device ID: {target} (Unit not found)"),
+                &format!("401 Bad object or device ID: {target} ({reason})"),
             ));
         };
         Ok((
