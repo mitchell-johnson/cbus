@@ -1,0 +1,910 @@
+{
+  "atomic_machine_snapshot": false,
+  "condition_result": false,
+  "condition_result_cache": {
+    "a": false
+  },
+  "conditions_sha256": "98e4321df90e8b0502e3b54645c9017750b97a3cb39daf0ed7166f8217d83616",
+  "evaluation_completed": true,
+  "evaluation_passes": [
+    {
+      "atomic_machine_snapshot": false,
+      "condition_result": true,
+      "condition_result_cache": {
+        "a": true
+      },
+      "conditions_sha256": "98e4321df90e8b0502e3b54645c9017750b97a3cb39daf0ed7166f8217d83616",
+      "evaluation_completed": true,
+      "events": [
+        {
+          "cache_after": {
+            "a": true
+          },
+          "cache_before": {},
+          "definition_name": "A",
+          "how_to_check": 10,
+          "lookup_name": "a",
+          "observations": [
+            {
+              "provider": "framework-registry-getvalue-x86-process-default-v1",
+              "query": {
+                "default": {
+                  "kind": "System.String",
+                  "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+                },
+                "entry": "Value",
+                "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+              },
+              "result": {
+                "kind": "System.Int32",
+                "value": 0
+              },
+              "sequence": 0,
+              "source": "registry_observation_sequence",
+              "status": "observed"
+            }
+          ],
+          "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+          "registry_observation_sequence": 0,
+          "registry_steps": [
+            {
+              "absent": false,
+              "step": "null_or_exact_sentinel",
+              "text": "0"
+            },
+            {
+              "lowered": "0",
+              "step": "lowercase_lhs",
+              "text": "0"
+            },
+            {
+              "lowered": "0",
+              "step": "lowercase_rhs",
+              "text": "0"
+            },
+            {
+              "step": "integer_rhs_parse",
+              "text": "0"
+            },
+            {
+              "step": "integer_lhs_parse",
+              "text": "0"
+            },
+            {
+              "how": 10,
+              "left": 0,
+              "right": 0,
+              "step": "integer_comparator"
+            }
+          ],
+          "resolution": "leaf",
+          "result": true,
+          "status": "passed",
+          "what_to_check": 6
+        }
+      ],
+      "file_context_sha256": "250e8fa2ca26f6ab12ca821c124a36776d7e2ce475cfb1f6ebe1d55c3ad372ab",
+      "file_context_source": "caller_supplied",
+      "file_context_verified": false,
+      "grammar_provenance": "Accepted bounded Boolean parser; recursive parenthesized NOT is source-composed",
+      "metadata_admission_evaluated": false,
+      "normalized_expression": "a",
+      "normalized_names": [
+        {
+          "lookup_name": "a",
+          "name": "A"
+        }
+      ],
+      "observer_closed": true,
+      "observer_evidence": {
+        "artifact_directory": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-l32czcng",
+        "atomic_machine_snapshot": false,
+        "capture_completed": true,
+        "cause": null,
+        "cleanup": [
+          {
+            "stage": "finish",
+            "status": "passed"
+          },
+          {
+            "stage": "worker_reaped",
+            "status": "passed"
+          },
+          {
+            "stage": "compiler_reaped",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "input_hashes_after",
+            "status": "passed"
+          },
+          {
+            "stage": "evidence_export",
+            "status": "started"
+          }
+        ],
+        "closed": true,
+        "network_accessed": false,
+        "observations": [
+          {
+            "query": {
+              "default": {
+                "kind": "System.String",
+                "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+              },
+              "entry": "Value",
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+            },
+            "request_published": true,
+            "response_received": true,
+            "result": {
+              "kind": "System.Int32",
+              "value": 0
+            },
+            "sequence": 0,
+            "status": "observed"
+          }
+        ],
+        "profile": "framework-registry-getvalue-x86-process-default-v1",
+        "provenance_is_host_attestation": false,
+        "provider_proof": {
+          "authored_source_sha256": "5bba83a68e97a57a49f95d15ef43ddc91e47dc1790696aa8977dd74424e5adc4",
+          "culture": "invariant",
+          "helper_path": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-l32czcng\\RegistryWorker.exe",
+          "helper_sha256": "1744301ea5b40f46e052a392a7234dd0b074acc088186e233d5d9c4909bacf5e",
+          "method_il_sha256": "c0363d229d83fb9ca8d8c88ef77816bbd3971cec725fafb68ef96d1486024b72",
+          "method_token": "060000f3",
+          "nonce": "edcde689fea14d27a90a339bde1b67da",
+          "pointer_size": 4,
+          "provider": "Microsoft.Win32.Registry.GetValue(System.String,System.String,System.Object)",
+          "registry_view": "x86-process-default",
+          "runtime_mvid": "5f1a0e73-9147-408f-b533-0f636e32558c",
+          "runtime_path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+          "runtime_sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+          "user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "worker_pid": 8632
+        },
+        "registry_provider_identity_verified": true,
+        "registry_writes_performed": false,
+        "runtime_internal_syscalls_instrumented": false,
+        "scope": [
+          {
+            "default": {
+              "kind": "System.String",
+              "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+            },
+            "entry": "Value",
+            "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+          }
+        ],
+        "user_context": {
+          "expected_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "interactive_user_context_verified": false,
+          "observed_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "process_token_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "process_token_user_verified": true,
+          "sid_requirement_satisfied": true
+        }
+      },
+      "package_applicability_evaluated": false,
+      "profile": "toolkit-1.18-sesu-3.0.7-lazy-registry-observations-v1",
+      "publisher_trust_evaluated": false,
+      "raw_typed_data": {
+        "conditions": {
+          "A": {
+            "comparisonRightSideValue": "0",
+            "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+            "howToCheck": 10,
+            "registryEntryNameOrProductCode": "Value",
+            "whatToCheck": 6
+          }
+        },
+        "expression": "A"
+      },
+      "registry_observations": [
+        {
+          "lookup_name": "a",
+          "provider_identity_verified": true,
+          "query": {
+            "default": {
+              "kind": "System.String",
+              "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+            },
+            "entry": "Value",
+            "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+          },
+          "receipt": {
+            "query": {
+              "default": {
+                "kind": "System.String",
+                "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+              },
+              "entry": "Value",
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+            },
+            "request_published": true,
+            "response_received": true,
+            "result": {
+              "kind": "System.Int32",
+              "value": 0
+            },
+            "sequence": 0,
+            "status": "observed"
+          },
+          "result": {
+            "kind": "System.Int32",
+            "value": 0
+          },
+          "sequence": 0,
+          "source": "checked_framework_worker",
+          "status": "observed"
+        }
+      ],
+      "registry_provider_identity_verified": true,
+      "registry_provider_profile": "framework-registry-getvalue-x86-process-default-v1",
+      "scope": "Lazy registry condition observations with supplied file facts",
+      "stages": [
+        {
+          "stage": "typed_input",
+          "status": "passed"
+        },
+        {
+          "culture": "invariant-ascii",
+          "file_records": 0,
+          "stage": "context_input",
+          "status": "passed"
+        },
+        {
+          "stage": "definition_validation",
+          "status": "passed"
+        },
+        {
+          "stage": "expression_domain",
+          "status": "passed"
+        },
+        {
+          "result": true,
+          "stage": "expression_evaluation",
+          "status": "passed"
+        }
+      ],
+      "supplied_file_context": {
+        "culture": "invariant-ascii",
+        "files": [],
+        "format": "cbus-toolkit-condition-context-v1"
+      },
+      "typed_model": {
+        "conditions": [
+          {
+            "name": "A",
+            "value": {
+              "entry": "Value",
+              "how": 10,
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+              "right": "0",
+              "what": 6
+            }
+          }
+        ],
+        "expression": "A"
+      },
+      "unrequested_definition_names": [],
+      "updates_available": null
+    },
+    {
+      "atomic_machine_snapshot": false,
+      "condition_result": false,
+      "condition_result_cache": {
+        "a": false
+      },
+      "conditions_sha256": "98e4321df90e8b0502e3b54645c9017750b97a3cb39daf0ed7166f8217d83616",
+      "evaluation_completed": true,
+      "events": [
+        {
+          "cache_after": {
+            "a": false
+          },
+          "cache_before": {},
+          "definition_name": "A",
+          "how_to_check": 10,
+          "lookup_name": "a",
+          "observations": [
+            {
+              "provider": "framework-registry-getvalue-x86-process-default-v1",
+              "query": {
+                "default": {
+                  "kind": "System.String",
+                  "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+                },
+                "entry": "Value",
+                "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+              },
+              "result": {
+                "kind": "System.Int32",
+                "value": 1
+              },
+              "sequence": 0,
+              "source": "registry_observation_sequence",
+              "status": "observed"
+            }
+          ],
+          "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+          "registry_observation_sequence": 0,
+          "registry_steps": [
+            {
+              "absent": false,
+              "step": "null_or_exact_sentinel",
+              "text": "1"
+            },
+            {
+              "lowered": "1",
+              "step": "lowercase_lhs",
+              "text": "1"
+            },
+            {
+              "lowered": "0",
+              "step": "lowercase_rhs",
+              "text": "0"
+            },
+            {
+              "step": "integer_rhs_parse",
+              "text": "0"
+            },
+            {
+              "step": "integer_lhs_parse",
+              "text": "1"
+            },
+            {
+              "how": 10,
+              "left": 1,
+              "right": 0,
+              "step": "integer_comparator"
+            }
+          ],
+          "resolution": "leaf",
+          "result": false,
+          "status": "passed",
+          "what_to_check": 6
+        }
+      ],
+      "file_context_sha256": "250e8fa2ca26f6ab12ca821c124a36776d7e2ce475cfb1f6ebe1d55c3ad372ab",
+      "file_context_source": "caller_supplied",
+      "file_context_verified": false,
+      "grammar_provenance": "Accepted bounded Boolean parser; recursive parenthesized NOT is source-composed",
+      "metadata_admission_evaluated": false,
+      "normalized_expression": "a",
+      "normalized_names": [
+        {
+          "lookup_name": "a",
+          "name": "A"
+        }
+      ],
+      "observer_closed": true,
+      "observer_evidence": {
+        "artifact_directory": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-kc85s9jn",
+        "atomic_machine_snapshot": false,
+        "capture_completed": true,
+        "cause": null,
+        "cleanup": [
+          {
+            "stage": "finish",
+            "status": "passed"
+          },
+          {
+            "stage": "worker_reaped",
+            "status": "passed"
+          },
+          {
+            "stage": "compiler_reaped",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "file_close",
+            "status": "passed"
+          },
+          {
+            "stage": "input_hashes_after",
+            "status": "passed"
+          },
+          {
+            "stage": "evidence_export",
+            "status": "started"
+          }
+        ],
+        "closed": true,
+        "network_accessed": false,
+        "observations": [
+          {
+            "query": {
+              "default": {
+                "kind": "System.String",
+                "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+              },
+              "entry": "Value",
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+            },
+            "request_published": true,
+            "response_received": true,
+            "result": {
+              "kind": "System.Int32",
+              "value": 1
+            },
+            "sequence": 0,
+            "status": "observed"
+          }
+        ],
+        "profile": "framework-registry-getvalue-x86-process-default-v1",
+        "provenance_is_host_attestation": false,
+        "provider_proof": {
+          "authored_source_sha256": "5bba83a68e97a57a49f95d15ef43ddc91e47dc1790696aa8977dd74424e5adc4",
+          "culture": "invariant",
+          "helper_path": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-kc85s9jn\\RegistryWorker.exe",
+          "helper_sha256": "8a17d14e14c0fceef7e60bf98ce28908b1ebfca9767e764dc8d89749aaa2b969",
+          "method_il_sha256": "c0363d229d83fb9ca8d8c88ef77816bbd3971cec725fafb68ef96d1486024b72",
+          "method_token": "060000f3",
+          "nonce": "92367c2882ea4c7e8c614fe188c2baf6",
+          "pointer_size": 4,
+          "provider": "Microsoft.Win32.Registry.GetValue(System.String,System.String,System.Object)",
+          "registry_view": "x86-process-default",
+          "runtime_mvid": "5f1a0e73-9147-408f-b533-0f636e32558c",
+          "runtime_path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+          "runtime_sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+          "user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "worker_pid": 2580
+        },
+        "registry_provider_identity_verified": true,
+        "registry_writes_performed": false,
+        "runtime_internal_syscalls_instrumented": false,
+        "scope": [
+          {
+            "default": {
+              "kind": "System.String",
+              "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+            },
+            "entry": "Value",
+            "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+          }
+        ],
+        "user_context": {
+          "expected_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "interactive_user_context_verified": false,
+          "observed_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "process_token_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+          "process_token_user_verified": true,
+          "sid_requirement_satisfied": true
+        }
+      },
+      "package_applicability_evaluated": false,
+      "profile": "toolkit-1.18-sesu-3.0.7-lazy-registry-observations-v1",
+      "publisher_trust_evaluated": false,
+      "raw_typed_data": {
+        "conditions": {
+          "A": {
+            "comparisonRightSideValue": "0",
+            "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+            "howToCheck": 10,
+            "registryEntryNameOrProductCode": "Value",
+            "whatToCheck": 6
+          }
+        },
+        "expression": "A"
+      },
+      "registry_observations": [
+        {
+          "lookup_name": "a",
+          "provider_identity_verified": true,
+          "query": {
+            "default": {
+              "kind": "System.String",
+              "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+            },
+            "entry": "Value",
+            "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+          },
+          "receipt": {
+            "query": {
+              "default": {
+                "kind": "System.String",
+                "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+              },
+              "entry": "Value",
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+            },
+            "request_published": true,
+            "response_received": true,
+            "result": {
+              "kind": "System.Int32",
+              "value": 1
+            },
+            "sequence": 0,
+            "status": "observed"
+          },
+          "result": {
+            "kind": "System.Int32",
+            "value": 1
+          },
+          "sequence": 0,
+          "source": "checked_framework_worker",
+          "status": "observed"
+        }
+      ],
+      "registry_provider_identity_verified": true,
+      "registry_provider_profile": "framework-registry-getvalue-x86-process-default-v1",
+      "scope": "Lazy registry condition observations with supplied file facts",
+      "stages": [
+        {
+          "stage": "typed_input",
+          "status": "passed"
+        },
+        {
+          "culture": "invariant-ascii",
+          "file_records": 0,
+          "stage": "context_input",
+          "status": "passed"
+        },
+        {
+          "stage": "definition_validation",
+          "status": "passed"
+        },
+        {
+          "stage": "expression_domain",
+          "status": "passed"
+        },
+        {
+          "result": false,
+          "stage": "expression_evaluation",
+          "status": "passed"
+        }
+      ],
+      "supplied_file_context": {
+        "culture": "invariant-ascii",
+        "files": [],
+        "format": "cbus-toolkit-condition-context-v1"
+      },
+      "typed_model": {
+        "conditions": [
+          {
+            "name": "A",
+            "value": {
+              "entry": "Value",
+              "how": 10,
+              "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+              "right": "0",
+              "what": 6
+            }
+          }
+        ],
+        "expression": "A"
+      },
+      "unrequested_definition_names": [],
+      "updates_available": null
+    }
+  ],
+  "events": [
+    {
+      "cache_after": {
+        "a": false
+      },
+      "cache_before": {},
+      "definition_name": "A",
+      "how_to_check": 10,
+      "lookup_name": "a",
+      "observations": [
+        {
+          "provider": "framework-registry-getvalue-x86-process-default-v1",
+          "query": {
+            "default": {
+              "kind": "System.String",
+              "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+            },
+            "entry": "Value",
+            "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+          },
+          "result": {
+            "kind": "System.Int32",
+            "value": 1
+          },
+          "sequence": 0,
+          "source": "registry_observation_sequence",
+          "status": "observed"
+        }
+      ],
+      "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+      "registry_observation_sequence": 0,
+      "registry_steps": [
+        {
+          "absent": false,
+          "step": "null_or_exact_sentinel",
+          "text": "1"
+        },
+        {
+          "lowered": "1",
+          "step": "lowercase_lhs",
+          "text": "1"
+        },
+        {
+          "lowered": "0",
+          "step": "lowercase_rhs",
+          "text": "0"
+        },
+        {
+          "step": "integer_rhs_parse",
+          "text": "0"
+        },
+        {
+          "step": "integer_lhs_parse",
+          "text": "1"
+        },
+        {
+          "how": 10,
+          "left": 1,
+          "right": 0,
+          "step": "integer_comparator"
+        }
+      ],
+      "resolution": "leaf",
+      "result": false,
+      "status": "passed",
+      "what_to_check": 6
+    }
+  ],
+  "file_context_sha256": "250e8fa2ca26f6ab12ca821c124a36776d7e2ce475cfb1f6ebe1d55c3ad372ab",
+  "file_context_source": "caller_supplied",
+  "file_context_verified": false,
+  "grammar_provenance": "Accepted bounded Boolean parser; recursive parenthesized NOT is source-composed",
+  "metadata_admission_evaluated": false,
+  "normalized_expression": "a",
+  "normalized_names": [
+    {
+      "lookup_name": "a",
+      "name": "A"
+    }
+  ],
+  "observer_closed": true,
+  "observer_evidence": {
+    "artifact_directory": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-kc85s9jn",
+    "atomic_machine_snapshot": false,
+    "capture_completed": true,
+    "cause": null,
+    "cleanup": [
+      {
+        "stage": "finish",
+        "status": "passed"
+      },
+      {
+        "stage": "worker_reaped",
+        "status": "passed"
+      },
+      {
+        "stage": "compiler_reaped",
+        "status": "passed"
+      },
+      {
+        "stage": "file_close",
+        "status": "passed"
+      },
+      {
+        "stage": "file_close",
+        "status": "passed"
+      },
+      {
+        "stage": "file_close",
+        "status": "passed"
+      },
+      {
+        "stage": "file_close",
+        "status": "passed"
+      },
+      {
+        "stage": "input_hashes_after",
+        "status": "passed"
+      },
+      {
+        "stage": "evidence_export",
+        "status": "started"
+      }
+    ],
+    "closed": true,
+    "network_accessed": false,
+    "observations": [
+      {
+        "query": {
+          "default": {
+            "kind": "System.String",
+            "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+          },
+          "entry": "Value",
+          "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+        },
+        "request_published": true,
+        "response_received": true,
+        "result": {
+          "kind": "System.Int32",
+          "value": 1
+        },
+        "sequence": 0,
+        "status": "observed"
+      }
+    ],
+    "profile": "framework-registry-getvalue-x86-process-default-v1",
+    "provenance_is_host_attestation": false,
+    "provider_proof": {
+      "authored_source_sha256": "5bba83a68e97a57a49f95d15ef43ddc91e47dc1790696aa8977dd74424e5adc4",
+      "culture": "invariant",
+      "helper_path": "C:\\CBusCliOracle118-88d8\\p902i-476a86d924-live\\workers\\cbus-registry-observation-kc85s9jn\\RegistryWorker.exe",
+      "helper_sha256": "8a17d14e14c0fceef7e60bf98ce28908b1ebfca9767e764dc8d89749aaa2b969",
+      "method_il_sha256": "c0363d229d83fb9ca8d8c88ef77816bbd3971cec725fafb68ef96d1486024b72",
+      "method_token": "060000f3",
+      "nonce": "92367c2882ea4c7e8c614fe188c2baf6",
+      "pointer_size": 4,
+      "provider": "Microsoft.Win32.Registry.GetValue(System.String,System.String,System.Object)",
+      "registry_view": "x86-process-default",
+      "runtime_mvid": "5f1a0e73-9147-408f-b533-0f636e32558c",
+      "runtime_path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\mscorlib.dll",
+      "runtime_sha256": "93d46bdac1664dba87641925572c789d71a21bb01dc7c7e5aa99c0eca8335e5e",
+      "user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+      "worker_pid": 2580
+    },
+    "registry_provider_identity_verified": true,
+    "registry_writes_performed": false,
+    "runtime_internal_syscalls_instrumented": false,
+    "scope": [
+      {
+        "default": {
+          "kind": "System.String",
+          "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+        },
+        "entry": "Value",
+        "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+      }
+    ],
+    "user_context": {
+      "expected_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+      "interactive_user_context_verified": false,
+      "observed_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+      "process_token_user_sid": "[user-sid-sha256:a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6]",
+      "process_token_user_verified": true,
+      "sid_requirement_satisfied": true
+    }
+  },
+  "package_applicability_evaluated": false,
+  "profile": "toolkit-1.18-sesu-3.0.7-lazy-registry-observations-v1",
+  "publisher_trust_evaluated": false,
+  "raw_typed_data": {
+    "conditions": {
+      "A": {
+        "comparisonRightSideValue": "0",
+        "fileOrRegistryKeyPath": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+        "howToCheck": 10,
+        "registryEntryNameOrProductCode": "Value",
+        "whatToCheck": 6
+      }
+    },
+    "expression": "A"
+  },
+  "registry_observations": [
+    {
+      "lookup_name": "a",
+      "provider_identity_verified": true,
+      "query": {
+        "default": {
+          "kind": "System.String",
+          "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+        },
+        "entry": "Value",
+        "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+      },
+      "receipt": {
+        "query": {
+          "default": {
+            "kind": "System.String",
+            "value": "23021957-xxx-yy-z-27331bfa-adf0-46be-8d44-18b1a831affe"
+          },
+          "entry": "Value",
+          "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live"
+        },
+        "request_published": true,
+        "response_received": true,
+        "result": {
+          "kind": "System.Int32",
+          "value": 1
+        },
+        "sequence": 0,
+        "status": "observed"
+      },
+      "result": {
+        "kind": "System.Int32",
+        "value": 1
+      },
+      "sequence": 0,
+      "source": "checked_framework_worker",
+      "status": "observed"
+    }
+  ],
+  "registry_provider_identity_verified": true,
+  "registry_provider_profile": "framework-registry-getvalue-x86-process-default-v1",
+  "repeated_evaluation": true,
+  "scope": "Lazy registry condition observations with supplied file facts",
+  "second_evaluation_attempted": true,
+  "source": {
+    "conditions_file_sha256": "98e4321df90e8b0502e3b54645c9017750b97a3cb39daf0ed7166f8217d83616",
+    "file_context_sha256": "250e8fa2ca26f6ab12ca821c124a36776d7e2ce475cfb1f6ebe1d55c3ad372ab",
+    "registry_scope_sha256": "1fdc2f471f66f53f9d3a73a4c3ed76479d360da0ddb5358791514dcce005c2de",
+    "representation": "Exact supplied bytes; normalized model and observed requests reported separately"
+  },
+  "stages": [
+    {
+      "stage": "typed_input",
+      "status": "passed"
+    },
+    {
+      "culture": "invariant-ascii",
+      "file_records": 0,
+      "stage": "context_input",
+      "status": "passed"
+    },
+    {
+      "stage": "definition_validation",
+      "status": "passed"
+    },
+    {
+      "stage": "expression_domain",
+      "status": "passed"
+    },
+    {
+      "result": false,
+      "stage": "expression_evaluation",
+      "status": "passed"
+    }
+  ],
+  "supplied_file_context": {
+    "culture": "invariant-ascii",
+    "files": [],
+    "format": "cbus-toolkit-condition-context-v1"
+  },
+  "typed_model": {
+    "conditions": [
+      {
+        "name": "A",
+        "value": {
+          "entry": "Value",
+          "how": 10,
+          "path": "HKEY_CURRENT_USER\\Software\\CBusToolkitCli\\Tests\\p902i-476a86d924-live",
+          "right": "0",
+          "what": 6
+        }
+      }
+    ],
+    "expression": "A"
+  },
+  "unrequested_definition_names": [],
+  "updates_available": null
+}

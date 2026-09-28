@@ -2,10 +2,10 @@
 
 `ToolkitLiveUpdateConditions` evaluates registry conditions lazily through a
 provider. The Python API is implemented and tested with deterministic providers
-and retained original results. The production Windows worker now has a bounded
-seven-case execution under the VM guest agent's LocalSystem HKCU. Interactive
-user-context acceptance is still outstanding, so this is not a completed live
-Toolkit parity claim.
+and retained original results. The production Windows worker has a bounded
+seven-case execution under the VM guest agent's LocalSystem HKCU. A separate
+installed-wheel `--repeat-once` run now covers one active desktop user's HKCU
+context with two checked workers. These cases do not complete live Toolkit parity.
 
 The wrapper is available through the Windows command line:
 
@@ -240,17 +240,31 @@ The focused CLI test compares ordered true→false results and per-name caches
 to the pinned original public `Evaluate` rows, then checks incomplete first
 pass, second-pass interruption, second-worker construction failure and
 reused-observer rejection. Those tests use deterministic observers. The
-two-worker command has not yet been executed against original Toolkit or a
-live Windows registry. Original worker lifetime, preference GUI effects and
-culture-sensitive `tr-TR` remain outside this admitted scope. The
-[P9.02 CLI repeat receipt](../research/experiments/2026-09-28/live-registry-cli-repeat.json)
-records the exact source and installed-wheel hashes, selected original rows,
-focused checks and remaining native gate.
+[source receipt](../research/experiments/2026-09-28/live-registry-cli-repeat.json)
+records that earlier admission. The later [interactive Windows receipt](../research/experiments/2026-09-28/live-registry-cli-interactive-repeat.json)
+and [redacted raw CLI result](../research/experiments/2026-09-28/live-registry-cli-interactive-repeat-redacted.json)
+pin one installed-wheel command under the active desktop user: an owned HKCU
+Registry32 DWORD changed from 0 to 1 after the first worker's response; the
+same wrapper returned true then false, with fresh `a` caches, separate checked
+x86 workers, two matching SID guards and completed worker cleanup. The CLI
+exited zero and the owned key was removed. The native harness initially marked
+this clean CLI run failed because it required the serialized `evidence_export`
+stage to say `passed`; that snapshot necessarily records its own export as
+`started`. All operational cleanup stages passed, and the corrected harness
+predicate is retained in source. A later fresh attempt was interrupted by a
+frozen VM before a CLI result and was not replayed; after reboot its intended
+user-hive key was independently found absent.
+
+Original worker lifetime, preference GUI effects and culture-sensitive
+`tr-TR` remain outside this admitted scope. The original Toolkit checker was
+not executed in the same CLI process; the pinned original same-instance rows
+provide the selected result/cache comparison.
 
 The native fixture was removed, no owned probe process remained, and the
 Host Only disposable VM was stopped with its original networking restored.
-This oracle did not capture user/token identity, exercise the interactive
-Toolkit preferences/settings wrapper, or accept an interactive-user context.
-The separate process-token smoke above retains its narrower identity evidence.
-P9.02 / issue #61 remains open for those untested workflows and broader culture,
-provider and runtime-effect coverage.
+That original-checker oracle did not capture user/token identity or exercise
+the interactive Toolkit preferences/settings wrapper. The separate process-token
+smoke above retains its narrower identity evidence. The new CLI run verifies
+its active user and worker primary tokens for the bounded case only. P9.02 /
+issue #61 remains open for the untested wrappers and broader culture, provider
+and runtime-effect coverage.

@@ -241,11 +241,11 @@ lazily reading only the one to eight exact HKCU queries admitted by the scope.
 It uses the checked x86 .NET Framework worker, hashes all three input files and
 retains partial observation and cleanup evidence on failure or interruption.
 Both computed Boolean results exit successfully. The accepted worker has seven
-typed observations in LocalSystem HKCU; an 11-case original checker matrix
-and one bounded two-call Python API comparison cover selected lazy behavior.
-Interactive Toolkit-user context and broader preferences/settings-wrapper
-comparison remain outstanding. See [live registry
-observation](docs/toolkit-live-registry-observation.md).
+typed observations in LocalSystem HKCU; an 11-case original checker matrix,
+one bounded two-call Python API comparison and one active-desktop-user
+installed-wheel `--repeat-once` run cover selected lazy behavior. Broader
+interactive contexts and preferences/settings-wrapper comparison remain open.
+See [live registry observation](docs/toolkit-live-registry-observation.md).
 
 `update-diagnostic-bundle --catalogue catalogue-report.json --metadata
 metadata-report.json --revocation revocation-report.json --conditions
