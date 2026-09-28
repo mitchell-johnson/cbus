@@ -547,7 +547,7 @@ class RustInteropTests(unittest.TestCase):
             "DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n")
         self.assertEqual(stored.code, 200)
 
-    def test_typed_unit_document_drops_direct_extensions_and_preserves_nested_markup(self):
+    def test_typed_unit_document_drops_unmodeled_markup_like_native_mapper(self):
         from cbus_toolkit.native import NativeDatabase
         from cbus_toolkit.programming import xml_text
 
@@ -584,20 +584,22 @@ class RustInteropTests(unittest.TestCase):
 
         moved = xml_text(database.get("//TEST/254/p/21", xml=True))
         self.assertNotIn('x:mode="preserve"', moved)
-        self.assertIn('xmlns:x="urn:interop"', moved)
-        self.assertIn("<!--opaque-comment-->", moved)
-        self.assertIn("<x:Nested>yes</x:Nested>", moved)
+        self.assertNotIn('xmlns:x="urn:interop"', moved)
+        self.assertNotIn("<!--opaque-comment-->", moved)
+        self.assertNotIn("<x:Nested>yes</x:Nested>", moved)
+        self.assertIn("<Description></Description>", moved)
         self.assertIn('<PP Name="UnitAddress" Value="21"/>', moved)
 
-        # Later modeled changes keep the nested mock template and comment.
+        # Later modeled changes retain the scalar/PP projection only.
         database.set("//TEST/254/p/21/TagName", "Projected")
         database.set("//TEST/254/p/21/UnitAddress", "22")
         projected = xml_text(database.get("//TEST/254/p/21", xml=True))
         self.assertIn("<TagName>Projected</TagName>", projected)
         self.assertIn('<PP Name="UnitAddress" Value="22"/>', projected)
         self.assertNotIn('x:mode="preserve"', projected)
-        self.assertIn("<!--opaque-comment-->", projected)
-        self.assertIn("<x:Nested>yes</x:Nested>", projected)
+        self.assertNotIn("<!--opaque-comment-->", projected)
+        self.assertNotIn("<x:Nested>yes</x:Nested>", projected)
+        self.assertIn("<Description></Description>", projected)
 
     def test_typed_container_document_replaces_complete_subtree(self):
         from cbus_toolkit.native import NativeDatabase
@@ -629,13 +631,14 @@ class RustInteropTests(unittest.TestCase):
 
         database = NativeDatabase(self.client)
         readback = xml_text(database.get("//XMLT/254/58", xml=True))
-        self.assertIn('<Application xmlns:x="urn:interop" x:source="python">',
-                      readback)
+        self.assertIn('<Application>', readback)
+        self.assertNotIn('xmlns:x="urn:interop"', readback)
+        self.assertNotIn('x:source="python"', readback)
         self.assertIn('<Level', readback)
         self.assertIn('Value="128"', readback)
         self.assertIn('<Address>1</Address>', readback)
-        self.assertIn('<!--kept-->', readback)
-        self.assertIn('<x:Metadata>opaque</x:Metadata>', readback)
+        self.assertNotIn('<!--kept-->', readback)
+        self.assertNotIn('<x:Metadata>opaque</x:Metadata>', readback)
         with self.assertRaises(RuntimeError):
             database.get("//XMLT/254/56", xml=True)
         with self.assertRaises(RuntimeError):

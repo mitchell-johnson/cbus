@@ -5,7 +5,7 @@
   "integrated_code_revision": "656f09f44685a3459facb151fc341048497efb4a",
   "assembled_source_revision": "97141b2211a829904bcc6fe23b9ecf11e51396f4",
   "target": "Toolkit 1.18.0.2754 / SESU 3.0.7 diagnostic report composition",
-  "status": "integrated source and focused installed-wheel validation passed; final CI and issue closure pending",
+  "status": "integrated source, focused installed-wheel and prior CI installed-wheel checks passed; final integrated CI and issue closure pending",
   "obligations": [
     {
       "id": "P9.01.RAW",
@@ -112,8 +112,36 @@
     "persistence_recovery": "not applicable: read-only local composition"
   },
   "pending_gates": [
-    "GitHub CI for the final integrated revision; full local make check and make check-interop were deferred by the user's focused-test instruction",
+    "GitHub CI for the final integrated revision; full local make check and make check-interop deferred by user focused-test instruction",
     "final issue-level closure decision"
   ],
-  "invalidation": "Re-run and refresh this review after changes to the composer, its producer receipt schemas, source selectors, tests or synthetic fixture input bytes. Integrated or installed-artifact results require a new receipt."
+  "invalidation": "Re-run and refresh this review after changes to the composer, its producer receipt schemas, source selectors, tests or synthetic fixture input bytes. Integrated or installed-artifact results require a new receipt.",
+  "latest_integrated_code_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
+  "latest_installed_wheel_validation": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
+    "source_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607 plus refreshed generated contract/parity receipts; no composer or diagnostic-test source changes",
+    "installed_import_path": "/private/tmp/cbus-final-wheel-20260928/site/cbus_toolkit/__init__.py",
+    "selection": "four diagnostic/package-bundle modules (62 cases), repeated preferences and project repair API/CLI modules",
+    "passed": 95,
+    "skipped": 3,
+    "skips": "project repair provisioned-native cases; diagnostic/package-bundle cases had zero skips",
+    "subtests_passed": 3329,
+    "failures": 0,
+    "errors": 0,
+    "exit_status": 0
+  },
+  "prior_ci_installed_wheel": {
+    "run": "https://github.com/mitchell-johnson/cbus/actions/runs/36367130850",
+    "source_revision": "f6a272bafcf7aaffb9293cc5d3cc202e2d414eb0",
+    "job": "Toolkit isolated installed wheel",
+    "job_conclusion": "success",
+    "audit_artifact": "toolkit-wheel-results-36367130850-1",
+    "audit_selection": "installed-wheel",
+    "audit_passed": true,
+    "diagnostic_bundle_cases": 62,
+    "diagnostic_bundle_failures": 0,
+    "diagnostic_bundle_skips": 0,
+    "run_conclusion": "failure in other jobs: stale Rust/Python interop expectations from the native DBSETXML mapper change; corrected in later integration, so this is not final CI acceptance"
+  }
 }

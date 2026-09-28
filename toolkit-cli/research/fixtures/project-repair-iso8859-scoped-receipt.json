@@ -72,12 +72,14 @@
     "src/cbus_toolkit/project_repair.py": "4e7c425f4afc91807b042faf90b78fcf7a694600671779aa807c40a9fc0dd22f",
     "tests/test_project_repair.py": "61a2d85b1bd02db9a572b0f18fa84a41cc3e6851bd54106131e24bdf390e41a5",
     "tests/test_project_repair_cli.py": "571e7e6b0fb6a9e4d6b24f51ff3d3c4394a84cd212d27ec0eb04065c044d3760",
-    "src/cbus_toolkit/capabilities.json": "7edb8d62208cdb2bf39b804999041f5b25ccbc49c49e54c3f318efeacb4cdd92",
-    "src/cbus_toolkit/parity-obligations.json": "a4231251a828e8bd5c6dbc6bcf214661c3f42b13252e95d2cbdb726e237e8a24"
+    "src/cbus_toolkit/capabilities.json": "412f4d942c375adfc5780112aa351ca06ef51bb05abc6ecaf54cea110d5121f1",
+    "src/cbus_toolkit/parity-obligations.json": "313b180bb43cd894be84a8f630cb02d109313a467b74fca6499d6e2dbab5e2f3"
   },
   "installed_artifact": {
-    "wheel_built": false,
-    "reason": "focused source-tree CLI acceptance only; no installed-wheel claim"
+    "wheel_built": true,
+    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
+    "focused_installed_validation_passed": true,
+    "full_installed_suite_not_run_locally": true
   },
   "focused_validation": {
     "command": "PYTHONPATH=src:tests python3.13 -m unittest tests.test_project_repair tests.test_project_repair_cli -v",
@@ -90,13 +92,11 @@
     "skip_reason": "three fresh-original tests require pinned local Java 11 JDK and vendor C-Gate jar/stylesheets absent from this checkout"
   },
   "required_gates_not_run": [
-    "make check",
-    "make check-interop",
-    "fresh original Java oracle",
-    "fresh native PROJECT LOAD for ISO output",
+    "make check and make check-interop locally, per user focused-test instruction",
+    "fresh native PROJECT LOAD for newly admitted ISO output",
     "Windows x86/AMD64 acceptance"
   ],
-  "required_gates_not_run_reason": "user directed no full local suites; original pinned software and Windows runtime not available in assigned worktree",
+  "required_gates_not_run_reason": "full local suites deferred by user; scoped original C-Gate repair fixture test completed using owned loopback runtime",
   "physical_io": "not applicable to this offline XML stage; no C-Gate service or hardware endpoint contacted",
   "native_load": "not verified for newly admitted ISO output; native_load_verified remains false",
   "remaining_scope": [
@@ -127,12 +127,28 @@
     "basis": "XML 1.0 ISO-8859-1 encoding semantics; separate native execution not captured"
   },
   "native_fixture_validation": {
-    "command": "PYTHONPATH=src:tests python3.13 -m unittest tests.test_project_repair_native -v",
+    "command": "CBUS_CGATE_JAVA=/private/tmp/temurin11/Contents/Home/bin/java CBUS_LOCAL_CGATE_VENDOR=/private/tmp/cbus-toolkit-installer-audit/cgate-extracted-20260926/app PYTHONPATH=src:tests:. python -m pytest -q tests/test_project_repair_native.py -p no:cacheprovider",
     "cwd": "toolkit-cli",
-    "exit_code": 0,
     "tests_run": 4,
-    "passed": 2,
-    "skipped": 2,
-    "skip_reason": "two isolated native PROJECT LOAD tests require selected Java 11/vendor installation; the two committed-fixture checks passed"
+    "passed": 4,
+    "skipped": 0,
+    "subtests_passed": 8,
+    "exit_code": 0,
+    "scope": "existing repaired-project native LOAD/readback fixtures; new ISO transform output loadability remains unverified"
+  },
+  "integrated_code_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
+  "integrated_wheel_validation": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
+    "installed_import_path": "/private/tmp/cbus-final-wheel-20260928/site/cbus_toolkit/__init__.py",
+    "selection": "four diagnostic-bundle modules, repeated preferences, and project repair API/CLI modules",
+    "command": "PYTHONPATH=<installed-site>:<toolkit-repo>:<toolkit-tests> python -m pytest -q <seven focused test modules> -p no:cacheprovider",
+    "passed": 95,
+    "skipped": 3,
+    "skips": "three provisioned-native cases in project repair; no failure or error",
+    "subtests_passed": 3329,
+    "failures": 0,
+    "errors": 0,
+    "status": "passed; this is a focused installed-artifact gate, not the full offline suite"
   }
 }

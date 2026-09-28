@@ -55,8 +55,8 @@
     "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
     "docs/toolkit-preferences.md": "ff04aed4a2f41a0cb0af5dd8ba6b57630a58c5810dd83a78baedc33e9a8252a5",
     "docs/toolkit-preferences-store.md": "0448cbd01f1d1ca01ee2bf13259a714b1b9a3ed062273a3cab2686671b602fba",
-    "docs/implementation-status.md": "5e151f82d1fe15a8ceff811c776e3af660cb382494f84907587efdde004f16ef",
-    "src/cbus_toolkit/capabilities.json": "b4aaa33a3ef29bda5d076191ee69e49cbde6ca68fc52699a77535669330be821"
+    "docs/implementation-status.md": "6b57e3887b0c3c706ccf1b469191cd5b20b1a8b03d437dcdd2fa1da2c8288764",
+    "src/cbus_toolkit/capabilities.json": "412f4d942c375adfc5780112aa351ca06ef51bb05abc6ecaf54cea110d5121f1"
   },
   "invalidation": [
     "Changed listed source hash or original fixture/executable",
@@ -74,5 +74,20 @@
     "exit_code": 0,
     "passed": 2,
     "subtests_passed": 2
+  },
+  "integrated_code_revision": "7504cc4827f86ea15175ae4a90a6c154cc429607",
+  "integrated_wheel_validation": {
+    "artifact": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "artifact_sha256": "73a336d9adb008fbd4429cc660b61e5ea8c716f47c8f3bc6433ea606d10bbdd1",
+    "installed_import_path": "/private/tmp/cbus-final-wheel-20260928/site/cbus_toolkit/__init__.py",
+    "selection": "four diagnostic-bundle modules, repeated preferences, and project repair API/CLI modules",
+    "command": "PYTHONPATH=<installed-site>:<toolkit-repo>:<toolkit-tests> python -m pytest -q <seven focused test modules> -p no:cacheprovider",
+    "passed": 95,
+    "skipped": 3,
+    "skips": "three provisioned-native cases in project repair; no failure or error",
+    "subtests_passed": 3329,
+    "failures": 0,
+    "errors": 0,
+    "status": "passed; this is a focused installed-artifact gate, not the full offline suite"
   }
 }
