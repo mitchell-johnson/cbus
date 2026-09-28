@@ -14774,8 +14774,10 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
     let xml = service
         .handle(&mut client, "[xml] DBGETXML //HARNESS/254/p/5")
         .await;
-    assert!(xml.lines[0].contains("source=\"service-test\""));
-    assert!(xml.lines[0].contains("<Nested>kept</Nested>"));
+    assert!(xml.lines[0].contains("<TagName>Document eDLT</TagName>"));
+    assert!(xml.lines[0].contains("<PP Name=\"StaticTextString0\" Value=\"Replaced\"/>"));
+    assert!(!xml.lines[0].contains("source=\"service-test\""));
+    assert!(!xml.lines[0].contains("<Nested>kept</Nested>"));
     drop(service);
     let (restart_pci, _remote) = pci();
     let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
@@ -14786,7 +14788,8 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
         )
         .await;
     assert!(restarted_xml.lines[0].contains("<TagName>Document eDLT</TagName>"));
-    assert!(restarted_xml.lines[0].contains("<Nested>kept</Nested>"));
+    assert!(restarted_xml.lines[0].contains("<PP Name=\"StaticTextString0\" Value=\"Replaced\"/>"));
+    assert!(!restarted_xml.lines[0].contains("<Nested>kept</Nested>"));
     let mut archive_client = ClientState::default();
     assert_eq!(
         restarted
@@ -14818,8 +14821,10 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
     let restored_copy = restarted
         .handle(&mut archive_client, "[copy-xml] DBGETXML //COPY/254/p/5")
         .await;
-    assert!(restored_copy.lines[0].contains("source=\"service-test\""));
-    assert!(restored_copy.lines[0].contains("<Nested>kept</Nested>"));
+    assert!(restored_copy.lines[0].contains("<TagName>Document eDLT</TagName>"));
+    assert!(restored_copy.lines[0].contains("<PP Name=\"StaticTextString0\" Value=\"Replaced\"/>"));
+    assert!(!restored_copy.lines[0].contains("source=\"service-test\""));
+    assert!(!restored_copy.lines[0].contains("<Nested>kept</Nested>"));
     drop(restarted);
     let (second_restart_pci, _remote) = pci();
     let second_restart =
@@ -14835,8 +14840,10 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
     let durable_copy = second_restart
         .handle(&mut copy_client, "[durable-copy] DBGETXML //COPY/254/p/5")
         .await;
-    assert!(durable_copy.lines[0].contains("source=\"service-test\""));
-    assert!(durable_copy.lines[0].contains("<Nested>kept</Nested>"));
+    assert!(durable_copy.lines[0].contains("<TagName>Document eDLT</TagName>"));
+    assert!(durable_copy.lines[0].contains("<PP Name=\"StaticTextString0\" Value=\"Replaced\"/>"));
+    assert!(!durable_copy.lines[0].contains("source=\"service-test\""));
+    assert!(!durable_copy.lines[0].contains("<Nested>kept</Nested>"));
 
     let (authed, auth_path) = authed_service();
     let mut authenticated = ClientState::default();
@@ -14886,6 +14893,206 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
     );
     std::fs::remove_file(path).unwrap();
     std::fs::remove_file(auth_path).unwrap();
+}
+
+#[tokio::test]
+async fn duplicate_oid_units_keep_independent_documents_through_service_restart() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(&mut client, "[1] PROJECT NEW XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[2] PROJECT USE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[3] DBCREATENET 253 Local Cni 127.0.0.1:1")
+            .await
+            .status,
+        200
+    );
+    let initial = service.handle(&mut client, "[4] DBGETXML //XDUP/253").await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let shared = "11111111-1111-4111-8111-111111111111";
+    let document = format!(
+        "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>{shared}</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>{shared}</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>{shared}</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>"
+    );
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[5] DBSETXML //XDUP/253", &document)
+            .await
+            .status,
+        301
+    );
+    let first = service
+        .handle(&mut client, "[6] DBGETXML //XDUP/253/p/20")
+        .await
+        .lines[0]
+        .clone();
+    let second = service
+        .handle(&mut client, "[7] DBGETXML //XDUP/253/p/21")
+        .await
+        .lines[0]
+        .clone();
+    assert!(first.contains("<PP Name=\"UnitAddress\" Value=\"20\"/>"));
+    assert!(second.contains("<PP Name=\"UnitAddress\" Value=\"21\"/>"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[save] PROJECT SAVE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[close] PROJECT CLOSE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[load] PROJECT LOAD XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[use] PROJECT USE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[post-load] DBGETXML //XDUP/253/p/20")
+            .await
+            .lines[0],
+        first
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[post-load] DBGETXML //XDUP/253/p/21")
+            .await
+            .lines[0],
+        second
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(service);
+
+    let (restart_pci, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[8] PROJECT USE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[9] DBGETXML //XDUP/253/p/20")
+            .await
+            .lines[0],
+        first
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[10] DBGETXML //XDUP/253/p/21")
+            .await
+            .lines[0],
+        second
+    );
+    let tree = restarted
+        .handle(&mut client, "[11] DBGETXML //XDUP/253")
+        .await
+        .lines[0]
+        .clone();
+    assert_eq!(tree.matches(&format!("<OID>{shared}</OID>")).count(), 3);
+    let replacement = format!(
+        "<Unit><OID>{shared}</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.69</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>"
+    );
+    assert_eq!(
+        restarted
+            .handle_document(&mut client, "[12] DBSETXML //XDUP/253/p/21", &replacement)
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[13] DBGETXML //XDUP/253/p/20")
+            .await
+            .lines[0],
+        first
+    );
+    drop(restarted);
+
+    let (second_restart_pci, _remote) = pci();
+    let second_restart =
+        Service::new(&fixture(), None, path.clone(), second_restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        second_restart
+            .handle(&mut client, "[14] PROJECT USE XDUP")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        second_restart
+            .handle(&mut client, "[15] DBGETXML //XDUP/253/p/20")
+            .await
+            .lines[0],
+        first
+    );
+    let changed = second_restart
+        .handle(&mut client, "[16] DBGETXML //XDUP/253/p/21")
+        .await
+        .lines[0]
+        .clone();
+    assert!(changed.contains("<UnitName>Changed room</UnitName>"));
+    assert!(changed.contains("<PP Name=\"UnitAddress\" Value=\"21\"/>"));
+    assert_eq!(
+        second_restart
+            .handle(&mut client, "[17] DBGETXML //XDUP/253/56")
+            .await
+            .status,
+        200
+    );
+    drop(second_restart);
+    std::fs::remove_file(path).unwrap();
 }
 
 #[tokio::test]

@@ -2607,6 +2607,13 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         .text()
         .unwrap()
         .to_string();
+    assert_eq!(
+        server
+            .handle("[other-unit] DBADDSAFE //MIXED/253 Unit 21 Other")
+            .status,
+        200
+    );
+    let external_unit_oid = first_oid(server.handle("[other-unit-oid] DBGETXML //MIXED/253/p/21"));
 
     let replacement = format!(
         "<Network xmlns:x=\"urn:mixed\" x:revision=\"2\"><OID>{network_oid}</OID><TagName>Local replaced</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface><Unit x:vendor=\"kept\"><OID>51000000-0000-4000-8000-000000000001</OID><TagName>New unit</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>New unit</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><CatalogNumber>5031N</CatalogNumber><SerialNumber>00100700.3526</SerialNumber><PP Name=\"UnitAddress\" Value=\"0x15\"/><!--inside--><x:Data>opaque</x:Data></Unit><Application><OID>51000000-0000-4000-8000-000000000002</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>51000000-0000-4000-8000-000000000003</OID><TagName>Group</TagName><Address>1</Address></Group></Application><!--network-comment--></Network>"
@@ -2648,6 +2655,10 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         "51000000-0000-4000-8000-000000000001</OID><TagName>New unit",
         &format!("{occupied_oid}</OID><TagName>New unit"),
     );
+    let cross_network_unit_oid = replacement.replace(
+        "51000000-0000-4000-8000-000000000001</OID><TagName>New unit",
+        &format!("{external_unit_oid}</OID><TagName>New unit"),
+    );
     let ambiguous_pp = replacement.replace(
         "<PP Name=\"UnitAddress\" Value=\"0x15\"/>",
         "<PP Name=\"OID\" Value=\"shadow\"/>",
@@ -2655,8 +2666,8 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
     let incomplete = replacement.replace("<FirmwareVersion>1.2.67</FirmwareVersion>", "");
     for (tag, invalid) in [
         ("duplicate-address", duplicate_address),
-        ("duplicate-oid", duplicate_oid),
         ("project-collision", project_collision),
+        ("cross-network-unit-oid", cross_network_unit_oid),
         ("ambiguous-pp", ambiguous_pp),
         ("incomplete", incomplete),
     ] {
@@ -2668,6 +2679,12 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
             "{tag} mutated the complete tree"
         );
     }
+    let accepted_duplicate =
+        server.handle_document("[duplicate-oid] DBSETXML //MIXED/254", &duplicate_oid);
+    assert_eq!(accepted_duplicate.status, 301, "{accepted_duplicate:?}");
+    let duplicate_xml = server.handle("[duplicate-read] DBGETXML //MIXED/254").lines[0].clone();
+    assert!(duplicate_xml.contains("<Application><OID>51000000-0000-4000-8000-000000000001</OID>"));
+    assert!(duplicate_xml.contains("<Unit><OID>51000000-0000-4000-8000-000000000001</OID>"));
 
     let omitted = format!(
         "<Network><OID>{network_oid}</OID><TagName>No units</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface></Network>"
@@ -3005,6 +3022,224 @@ fn dbsetxml_replacement_mapper_matches_owned_native_edge_vectors() {
             assert_eq!(observed.lines[0], substitute(native_xml), "{name}");
         }
     }
+}
+
+#[test]
+fn dbsetxml_duplicate_oid_matches_owned_native_vectors() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_duplicate_oids.json"
+    ))
+    .unwrap();
+    assert_eq!(native["schema"], "native-cgate-dbsetxml-duplicate-oids-v1");
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    let cases = native["cases"].as_array().unwrap();
+    let by_tag = |tag: u64| {
+        cases
+            .iter()
+            .find(|row| row["tag"].as_u64() == Some(tag))
+            .unwrap()
+    };
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[200] PROJECT NEW XDUP").status, 200);
+    assert_eq!(server.handle("[201] PROJECT USE XDUP").status, 200);
+    assert_eq!(
+        server
+            .handle("[202] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let initial = server.handle("[203] DBGETXML //XDUP/254");
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let substitute = |value: &str| {
+        value
+            .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+            .replace(native["interface_oid"].as_str().unwrap(), &interface_oid)
+    };
+    let vectors = include_str!("../../testdata/vectors/cgate_dbsetxml_duplicate_oids.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 2);
+    for vector in vectors {
+        let name = vector["name"].as_str().unwrap();
+        let set_tag = vector["set_tag"].as_u64().unwrap();
+        let source = by_tag(set_tag);
+        let request = source["request"].as_str().unwrap();
+        let marker = format!(" << END{set_tag}\r\n");
+        let document = request
+            .split_once(&marker)
+            .unwrap()
+            .1
+            .strip_suffix(&format!("\r\nEND{set_tag}\r\n"))
+            .unwrap();
+        let accepted = server.handle_document(
+            &format!("[{set_tag}] {}", source["command"].as_str().unwrap()),
+            &substitute(document),
+        );
+        assert_eq!(accepted.status, 301, "{name}: {accepted:?}");
+        assert_eq!(
+            accepted.final_text,
+            format!("301 OID={network_oid}"),
+            "{name}"
+        );
+        for read_tag in vector["read_tags"].as_array().unwrap() {
+            let read_tag = read_tag.as_u64().unwrap();
+            let native_read = by_tag(read_tag);
+            let command = native_read["command"].as_str().unwrap();
+            let observed = server.handle(&format!("[{read_tag}] {command}"));
+            if command.starts_with("DBGETXML") {
+                assert_eq!(observed.status, 200, "{name}: {observed:?}");
+                let native_line = native_read["response_lines"][2].as_str().unwrap();
+                let expected = native_line
+                    .trim_start_matches(&format!("[{read_tag}] "))
+                    .trim_end_matches("\r\n");
+                assert_eq!(observed.lines[0], substitute(expected), "{name}");
+            } else {
+                assert_eq!(observed.status, 342, "{name}: {observed:?}");
+                let expected = native_read["response_lines"][0]
+                    .as_str()
+                    .unwrap()
+                    .trim_start_matches(&format!("[{read_tag}] "))
+                    .trim_end_matches("\r\n");
+                assert_eq!(observed.final_text, expected, "{name}");
+            }
+        }
+        if set_tag == 204 {
+            assert_eq!(
+                server
+                    .handle("[copy-cross-kind] PROJECT COPY XDUP XDUPA")
+                    .status,
+                200
+            );
+        }
+    }
+    let shared = "11111111-1111-4111-8111-111111111111";
+    let unchanged = server.handle("[preflight] DBGETXML //XDUP/254").lines[0].clone();
+    for command in [
+        format!("DBSETSAFE !{shared}/TagName Wrong"),
+        format!("DBSET !{shared}/TagName Wrong"),
+        format!("DBDELETE !{shared}"),
+        format!("DBCOPYSAFE !{shared} //XDUP/254 30 Copy"),
+    ] {
+        let refused = server.handle(&format!("[ambiguous] {command}"));
+        assert_eq!(refused.status, 409, "{command}: {refused:?}");
+        assert_eq!(
+            server.handle("[unchanged] DBGETXML //XDUP/254").lines[0],
+            unchanged
+        );
+    }
+    let oid_document = by_tag(230)["request"]
+        .as_str()
+        .unwrap()
+        .split_once(" << END230\r\n")
+        .unwrap()
+        .1
+        .strip_suffix("\r\nEND230\r\n")
+        .unwrap();
+    assert_eq!(
+        server
+            .handle_document(&format!("[ambiguous] DBSETXML !{shared}"), oid_document)
+            .status,
+        409
+    );
+    assert_eq!(
+        server.handle("[unchanged] DBGETXML //XDUP/254").lines[0],
+        unchanged
+    );
+    let before20 = server.handle("[before] DBGETXML //XDUP/254/p/20").lines[0].clone();
+    let replacement = by_tag(230)["request"]
+        .as_str()
+        .unwrap()
+        .split_once(" << END230\r\n")
+        .unwrap()
+        .1
+        .strip_suffix("\r\nEND230\r\n")
+        .unwrap();
+    assert_eq!(
+        server
+            .handle_document("[230] DBSETXML //XDUP/254/p/21", replacement)
+            .status,
+        301
+    );
+    assert_eq!(
+        server.handle("[231] DBGETXML //XDUP/254/p/20").lines[0],
+        before20
+    );
+    let after21 = server.handle("[232] DBGETXML //XDUP/254/p/21").lines[0].clone();
+    assert!(after21.contains("<UnitName>Changed room</UnitName>"));
+    assert!(after21.contains("<FirmwareVersion>1.2.69</FirmwareVersion>"));
+    assert!(after21.contains("<PP Name=\"UnitAddress\" Value=\"21\"/>"));
+    assert_eq!(server.handle("[copy] PROJECT COPY XDUP XDUPC").status, 200);
+    assert_eq!(server.handle("[use-copy] PROJECT USE XDUPC").status, 200);
+    assert_eq!(
+        server.handle("[copy-20] DBGETXML //XDUPC/254/p/20").lines[0],
+        before20
+    );
+    assert_eq!(
+        server.handle("[copy-21] DBGETXML //XDUPC/254/p/21").lines[0],
+        after21
+    );
+    assert_eq!(server.handle("[use-source] PROJECT USE XDUP").status, 200);
+    assert_eq!(
+        server.handle("[delete-21] DBDELETE //XDUP/254/p/21").status,
+        200
+    );
+    assert_eq!(
+        server.handle("[survivor] DBGETXML //XDUP/254/p/20").lines[0],
+        before20
+    );
+    assert_eq!(
+        server.handle(&format!("[oid] DBGETXML !{shared}")).lines[0],
+        before20
+    );
+    assert_eq!(
+        server.handle("[delete-20] DBDELETE //XDUP/254/p/20").status,
+        200
+    );
+    let app_after = server.handle("[app] DBGETXML //XDUP/254/56");
+    assert_eq!(app_after.status, 200, "{app_after:?}");
+    assert_eq!(
+        server.handle(&format!("[oid] DBGETXML !{shared}")).status,
+        401
+    );
+    assert_eq!(
+        server.handle("[use-copy-again] PROJECT USE XDUPC").status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle(&format!("[copy-oid] DBGETXML !{shared}"))
+            .lines[0],
+        after21
+    );
+    assert_eq!(
+        server.handle("[use-cross-kind] PROJECT USE XDUPA").status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[delete-cross-kind-unit] DBDELETE //XDUPA/254/p/20")
+            .status,
+        200
+    );
+    let application = server.handle(&format!("[cross-kind-oid] DBGETXML !{shared}"));
+    assert_eq!(application.status, 200, "{application:?}");
+    assert!(application.lines[0].contains("<Application>"));
 }
 
 #[test]

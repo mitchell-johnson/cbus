@@ -118,8 +118,8 @@ def test_saved_reload_and_native_conflict_boundary():
     assert "<CatalogNumber></CatalogNumber>" in xml(case[130])
     assert "<Opaque" not in xml(case[130])
 
-    # The native mapper accepts duplicate identities. Rust deliberately
-    # rejects these because its keyed model cannot retain both objects.
+    # The native mapper accepts duplicate identities. The follow-up captured
+    # their independent readback and lifecycle in the duplicate-OID fixture.
     assert status(case[131]) == status(case[133]) == 301
     collision = ET.fromstring(xml(case[132]))
     assert collision.findtext("Application/OID") == collision.findtext("Unit/OID")

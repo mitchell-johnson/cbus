@@ -207,7 +207,7 @@ DBSETXML stores scalar-field documents and complete typed Unit, Level, NetVar,
 Group, Application and Network/Interface replacements in the atomic local
 repository without PCI I/O. A complete Network may contain complete Unit and
 Application subtrees. Complete forms validate the whole tree and target
-identity, Unit scalar/PP ownership, OID uniqueness, and sibling addresses
+identity, Unit scalar/PP ownership, supported duplicate-OID shape, and sibling addresses
 before mutation, return the submitted-root `301 OID=...`, retire the old
 subtree, and survive project lifecycle operations and restart. The configured
 live Network accepts this database-only replacement at its existing address
@@ -220,6 +220,11 @@ readback order and missing-UnitName validation. The captured direct and
 combined Unit cases establish omission of two unknown namespaced additions on
 readback; broader combined forms, namespace variants and private vendor
 formats remain unverified.
+An owned follow-up capture pins Application/Unit and two-Unit shared OIDs,
+distinct Unit scalar/PP readback, last-Unit OID lookup, save/reload identity,
+and path-targeted replacement of one duplicate Unit. Address-keyed Unit
+metadata retains those cases in cmqttd; other duplicate forms still return
+409 pending native and model evidence.
 `REPOSITORY USE 1` is an idempotent
 selection of cmqttd's only repository, and `PROJECT REPAIR` performs an atomic
 JSON serialize/parse/restore validation while preserving runtime caches. All

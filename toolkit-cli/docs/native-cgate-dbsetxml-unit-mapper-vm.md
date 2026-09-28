@@ -54,7 +54,9 @@ reply rows are byte-identical. A later [framing implementation and fresh origina
 The later [37-request original-service replacement-edge capture](native-cgate-dbsetxml-replacement-edges.md)
 shows comments, processing instructions and nested namespaced markup are also
 accepted and discarded by the original mapper. Rust now matches seven exact
-readback vectors from that capture. Its duplicate-OID conflict guard remains
-an explicit native-parity gap. Neither capture establishes all XML variants,
+readback vectors from that capture. The [later duplicate-OID capture](native-cgate-dbsetxml-duplicate-oids.md)
+pins the Application/Unit and two-Unit cases now retained by Rust; other
+duplicate shapes and ambiguous OID-based mutations remain a parity gap.
+Neither capture establishes all XML variants,
 TLS, ACCESS, physical units or broad `DBSETXML` parity. Offline XML/CBZ editing
 in the Python Toolkit CLI is a separate lossless project-file workflow.

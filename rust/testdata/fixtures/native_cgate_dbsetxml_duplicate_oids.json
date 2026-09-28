@@ -1,0 +1,398 @@
+{
+  "schema": "native-cgate-dbsetxml-duplicate-oids-v1",
+  "captured_utc": "2026-09-28T01:49:29.600154+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:55979",
+      "127.0.0.1:55980",
+      "127.0.0.1:55981",
+      "127.0.0.1:55982",
+      "127.0.0.1:55983",
+      "127.0.0.1:55984"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "5eab7b8f4fd70d90d61fe2356dc239415c4a1501bce285e6a0f11c6598ec466a",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "network_oid": "c416ac80-9d0c-103f-82a4-caf8ca37c6c8",
+  "interface_oid": "c416d390-9d0c-103f-82a5-caf8ca37c6c8",
+  "cases": [
+    {
+      "tag": 200,
+      "command": "PROJECT NEW XDUP",
+      "request": "[200] PROJECT NEW XDUP\r\n",
+      "response_lines": [
+        "[200] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 201,
+      "command": "PROJECT USE XDUP",
+      "request": "[201] PROJECT USE XDUP\r\n",
+      "response_lines": [
+        "[201] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 202,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[202] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[202] 301 OID=c416ac80-9d0c-103f-82a4-caf8ca37c6c8\r\n"
+      ]
+    },
+    {
+      "tag": 203,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[203] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[203] 343-Begin XML snippet\r\n",
+        "[203] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[203] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[203] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 204,
+      "command": "DBSETXML //XDUP/254",
+      "request": "[204] DBSETXML //XDUP/254 << END204\r\n<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND204\r\n",
+      "response_lines": [
+        "[204] 301 OID=c416ac80-9d0c-103f-82a4-caf8ca37c6c8\r\n"
+      ]
+    },
+    {
+      "tag": 205,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[205] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[205] 343-Begin XML snippet\r\n",
+        "[205] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[205] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\n",
+        "[205] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 206,
+      "command": "DBGETXML //XDUP/254/56",
+      "request": "[206] DBGETXML //XDUP/254/56\r\n",
+      "response_lines": [
+        "[206] 343-Begin XML snippet\r\n",
+        "[206] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[206] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[206] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 207,
+      "command": "DBGETXML //XDUP/254/p/20",
+      "request": "[207] DBGETXML //XDUP/254/p/20\r\n",
+      "response_lines": [
+        "[207] 343-Begin XML snippet\r\n",
+        "[207] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[207] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+        "[207] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 208,
+      "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+      "request": "[208] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+      "response_lines": [
+        "[208] 343-Begin XML snippet\r\n",
+        "[208] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[208] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+        "[208] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 209,
+      "command": "DBGET !11111111-1111-4111-8111-111111111111/Address",
+      "request": "[209] DBGET !11111111-1111-4111-8111-111111111111/Address\r\n",
+      "response_lines": [
+        "[209] 342 !11111111-1111-4111-8111-111111111111/Address=20\r\n"
+      ]
+    },
+    {
+      "tag": 210,
+      "command": "PROJECT SAVE XDUP",
+      "request": "[210] PROJECT SAVE XDUP\r\n",
+      "response_lines": [
+        "[210] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 211,
+      "command": "PROJECT CLOSE XDUP",
+      "request": "[211] PROJECT CLOSE XDUP\r\n",
+      "response_lines": [
+        "[211] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 212,
+      "command": "PROJECT LOAD XDUP",
+      "request": "[212] PROJECT LOAD XDUP\r\n",
+      "response_lines": [
+        "[212] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 213,
+      "command": "PROJECT USE XDUP",
+      "request": "[213] PROJECT USE XDUP\r\n",
+      "response_lines": [
+        "[213] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 214,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[214] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[214] 343-Begin XML snippet\r\n",
+        "[214] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[214] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[214] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 215,
+      "command": "DBGETXML //XDUP/254/56",
+      "request": "[215] DBGETXML //XDUP/254/56\r\n",
+      "response_lines": [
+        "[215] 343-Begin XML snippet\r\n",
+        "[215] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[215] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+        "[215] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 216,
+      "command": "DBGETXML //XDUP/254/p/20",
+      "request": "[216] DBGETXML //XDUP/254/p/20\r\n",
+      "response_lines": [
+        "[216] 343-Begin XML snippet\r\n",
+        "[216] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[216] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[216] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 217,
+      "command": "DBSETXML //XDUP/254",
+      "request": "[217] DBSETXML //XDUP/254 << END217\r\n<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND217\r\n",
+      "response_lines": [
+        "[217] 301 OID=c416ac80-9d0c-103f-82a4-caf8ca37c6c8\r\n"
+      ]
+    },
+    {
+      "tag": 218,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[218] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[218] 343-Begin XML snippet\r\n",
+        "[218] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[218] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\n",
+        "[218] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 219,
+      "command": "DBGETXML //XDUP/254/p/20",
+      "request": "[219] DBGETXML //XDUP/254/p/20\r\n",
+      "response_lines": [
+        "[219] 343-Begin XML snippet\r\n",
+        "[219] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[219] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+        "[219] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 220,
+      "command": "DBGETXML //XDUP/254/p/21",
+      "request": "[220] DBGETXML //XDUP/254/p/21\r\n",
+      "response_lines": [
+        "[220] 343-Begin XML snippet\r\n",
+        "[220] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[220] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+        "[220] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 221,
+      "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+      "request": "[221] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+      "response_lines": [
+        "[221] 343-Begin XML snippet\r\n",
+        "[221] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[221] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+        "[221] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 222,
+      "command": "DBGET !11111111-1111-4111-8111-111111111111/Address",
+      "request": "[222] DBGET !11111111-1111-4111-8111-111111111111/Address\r\n",
+      "response_lines": [
+        "[222] 342 !11111111-1111-4111-8111-111111111111/Address=21\r\n"
+      ]
+    },
+    {
+      "tag": 223,
+      "command": "PROJECT SAVE XDUP",
+      "request": "[223] PROJECT SAVE XDUP\r\n",
+      "response_lines": [
+        "[223] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 224,
+      "command": "PROJECT CLOSE XDUP",
+      "request": "[224] PROJECT CLOSE XDUP\r\n",
+      "response_lines": [
+        "[224] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 225,
+      "command": "PROJECT LOAD XDUP",
+      "request": "[225] PROJECT LOAD XDUP\r\n",
+      "response_lines": [
+        "[225] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 226,
+      "command": "PROJECT USE XDUP",
+      "request": "[226] PROJECT USE XDUP\r\n",
+      "response_lines": [
+        "[226] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 227,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[227] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[227] 343-Begin XML snippet\r\n",
+        "[227] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[227] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[227] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 228,
+      "command": "DBGETXML //XDUP/254/p/20",
+      "request": "[228] DBGETXML //XDUP/254/p/20\r\n",
+      "response_lines": [
+        "[228] 343-Begin XML snippet\r\n",
+        "[228] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[228] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[228] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 229,
+      "command": "DBGETXML //XDUP/254/p/21",
+      "request": "[229] DBGETXML //XDUP/254/p/21\r\n",
+      "response_lines": [
+        "[229] 343-Begin XML snippet\r\n",
+        "[229] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[229] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[229] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 230,
+      "command": "DBSETXML //XDUP/254/p/21",
+      "request": "[230] DBSETXML //XDUP/254/p/21 << END230\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.69</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\nEND230\r\n",
+      "response_lines": [
+        "[230] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ]
+    },
+    {
+      "tag": 231,
+      "command": "DBGETXML //XDUP/254/p/20",
+      "request": "[231] DBGETXML //XDUP/254/p/20\r\n",
+      "response_lines": [
+        "[231] 343-Begin XML snippet\r\n",
+        "[231] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[231] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[231] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 232,
+      "command": "DBGETXML //XDUP/254/p/21",
+      "request": "[232] DBGETXML //XDUP/254/p/21\r\n",
+      "response_lines": [
+        "[232] 343-Begin XML snippet\r\n",
+        "[232] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[232] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.69</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+        "[232] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 233,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[233] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[233] 343-Begin XML snippet\r\n",
+        "[233] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[233] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.69</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\n",
+        "[233] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 234,
+      "command": "PROJECT SAVE XDUP",
+      "request": "[234] PROJECT SAVE XDUP\r\n",
+      "response_lines": [
+        "[234] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 235,
+      "command": "PROJECT CLOSE XDUP",
+      "request": "[235] PROJECT CLOSE XDUP\r\n",
+      "response_lines": [
+        "[235] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 236,
+      "command": "PROJECT LOAD XDUP",
+      "request": "[236] PROJECT LOAD XDUP\r\n",
+      "response_lines": [
+        "[236] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 237,
+      "command": "PROJECT USE XDUP",
+      "request": "[237] PROJECT USE XDUP\r\n",
+      "response_lines": [
+        "[237] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 238,
+      "command": "DBGETXML //XDUP/254",
+      "request": "[238] DBGETXML //XDUP/254\r\n",
+      "response_lines": [
+        "[238] 343-Begin XML snippet\r\n",
+        "[238] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[238] 347-<Network><OID>c416ac80-9d0c-103f-82a4-caf8ca37c6c8</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>c416d390-9d0c-103f-82a5-caf8ca37c6c8</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.69</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[238] 344 End XML snippet\r\n"
+      ]
+    }
+  ]
+}

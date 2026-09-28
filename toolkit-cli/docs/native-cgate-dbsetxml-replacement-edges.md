@@ -50,13 +50,14 @@ instructions, namespaces, direct Unit decoration, omitted optional fields,
 and empty nested `CatalogNumber`. The unknown plain `<Foo>` observation is
 retained as evidence but remains outside that exact Rust differential.
 
-Tags 131–136 define an important unresolved conflict boundary. The original
+Tags 131–136 first established a duplicate-OID conflict boundary. The original
 accepted an Application and Unit sharing an OID, then accepted two Units at
 addresses 20 and 21 sharing an OID; both requests returned `301`, and XML
-readback showed both records. Rust returns `409` for duplicate submitted OIDs
-because its keyed database model cannot retain both objects without losing an
-identity. Its duplicate-address and project-wide conflict guards remain local
-safety behavior, **not** accepted native conflict parity. A following
+readback showed both records. The [follow-up owned capture](native-cgate-dbsetxml-duplicate-oids.md)
+pins distinct Unit scalar/PP readback, save/reload and path-targeted mutation.
+Rust now retains these two shapes with address-keyed Unit metadata; other
+duplicate shapes remain closed until their lossless representation and native
+semantics are established. A following
 replacement missing `UnitName` returned native `446` and left the duplicate
 graph unchanged. Other conflicts, all optional Unit fields, comments or
 namespaces in every typed family, private Schneider formats and physical

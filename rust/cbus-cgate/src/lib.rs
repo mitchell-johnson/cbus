@@ -1059,12 +1059,12 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     })
 }
 
-fn db_xml_object_oids(object: &ParsedDbXmlObject, output: &mut Vec<String>) {
-    output.push(object.oid.clone());
+fn db_xml_object_oids(object: &ParsedDbXmlObject, output: &mut Vec<(String, &'static str)>) {
+    output.push((object.oid.clone(), object.kind.element()));
     if let Some(interface) = &object.interface {
-        output.push(interface.oid.clone());
+        output.push((interface.oid.clone(), "Interface"));
     }
-    output.extend(object.units.iter().map(|unit| unit.oid.clone()));
+    output.extend(object.units.iter().map(|unit| (unit.oid.clone(), "Unit")));
     for child in &object.children {
         db_xml_object_oids(child, output);
     }
@@ -2546,6 +2546,52 @@ impl Server {
         format!("{project}\u{1f}{oid}")
     }
 
+    // Complete Network documents can contain distinct Units with the same
+    // native OID. Keep their XML shape and PP ownership by address; the
+    // legacy OID key remains readable for repositories written before this
+    // path-specific representation.
+    fn addressed_unit_document_key(project: &str, oid: &str, address: u8) -> String {
+        format!("{project}\u{1f}{oid}\u{1e}{address}")
+    }
+
+    fn stored_unit_document_key(&self, project: &str, oid: &str, address: u8) -> String {
+        let addressed = Self::addressed_unit_document_key(project, oid, address);
+        if self.unit_documents.contains_key(&addressed)
+            || self.unit_pp_fields.contains_key(&addressed)
+        {
+            addressed
+        } else {
+            Self::unit_document_key(project, oid)
+        }
+    }
+
+    fn remove_unit_document_metadata(&mut self, project: &str, oid: &str, address: u8) {
+        let addressed = Self::addressed_unit_document_key(project, oid, address);
+        self.unit_documents.remove(&addressed);
+        self.unit_pp_fields.remove(&addressed);
+        // Older repositories use the OID-only key. Keep it if a surviving
+        // Unit with this OID still has no address-keyed metadata.
+        let legacy_is_used = self.projects.get(project).is_some_and(|record| {
+            record
+                .networks
+                .values()
+                .flat_map(|network| network.units.values())
+                .any(|unit| {
+                    if unit.oid != oid {
+                        return false;
+                    }
+                    let key = Self::addressed_unit_document_key(project, oid, unit.address);
+                    !self.unit_documents.contains_key(&key)
+                        && !self.unit_pp_fields.contains_key(&key)
+                })
+        });
+        if !legacy_is_used {
+            let legacy = Self::unit_document_key(project, oid);
+            self.unit_documents.remove(&legacy);
+            self.unit_pp_fields.remove(&legacy);
+        }
+    }
+
     fn duplicate_unit_document_project(&mut self, source: &str, destination: &str) {
         let prefix = format!("{source}\u{1f}");
         let documents = self
@@ -3753,6 +3799,23 @@ impl Server {
                 let field = segments.next();
                 if let Some(field) = field {
                     if let Some(project) = self.current.as_deref() {
+                        if let Some(unit) = self.last_unit_by_oid(project, oid) {
+                            let value = unit.field(field);
+                            return if value.is_empty() {
+                                err(
+                                    tag,
+                                    status::ABSENT,
+                                    "401 Bad object or device ID: Object is null",
+                                )
+                            } else {
+                                Response {
+                                    tag: tag.to_string(),
+                                    lines: Vec::new(),
+                                    final_text: format!("342 {path}={value}"),
+                                    status: 342,
+                                }
+                            };
+                        }
                         if let Some(object) = self.pending_object(project, oid) {
                             let value = object
                                 .path
@@ -3876,6 +3939,9 @@ impl Server {
             }
             if xml && !rest.contains('/') {
                 if let Some(project) = self.current.as_deref() {
+                    if let Some(unit) = self.last_unit_by_oid(project, rest) {
+                        return Self::db_xml_response(tag, self.unit_xml_document(project, unit));
+                    }
                     if let Some(object) = self.pending_object(project, rest) {
                         if matches!(
                             object.element.as_str(),
@@ -4247,7 +4313,7 @@ impl Server {
     /// scalar/PP template after dropping unmodeled markup. Values are read from
     /// current state so later DBSET/PP SAVE operations cannot leave it stale.
     fn unit_xml_document(&self, project: &str, unit: &Unit) -> String {
-        let document_key = Self::unit_document_key(project, &unit.oid);
+        let document_key = self.stored_unit_document_key(project, &unit.oid, unit.address);
         let pp = self
             .unit_pp_fields
             .get(&document_key)
@@ -6384,8 +6450,9 @@ impl Server {
                 .insert(format!("{path}/{key}"), value.clone());
         }
         let oid = unit.oid.clone();
+        let metadata_key = self.stored_unit_document_key(&proj_name, &oid, addr);
         self.unit_pp_fields
-            .entry(Self::unit_document_key(&proj_name, &oid))
+            .entry(metadata_key)
             .or_default()
             .extend(session.params.keys().cloned());
         Ok(())
@@ -7287,15 +7354,15 @@ impl Server {
             .expect("validated DBSETXML network");
         network.units.remove(&old_address);
         network.units.insert(new_address, new_unit.clone());
-        self.db_pending
-            .remove(&format!("{project_name}\u{1f}{}", old_unit.oid));
-        self.known_oids.insert(oid.clone());
-        let old_document_key = Self::unit_document_key(&project_name, &old_unit.oid);
-        let document_key = Self::unit_document_key(&project_name, &oid);
-        if old_document_key != document_key {
-            self.unit_documents.remove(&old_document_key);
-            self.unit_pp_fields.remove(&old_document_key);
+        let pending_key = format!("{project_name}\u{1f}{}", old_unit.oid);
+        if self.db_pending.get(&pending_key).is_some_and(|pending| {
+            pending.element == "Unit" && pending.path.as_deref() == Some(path)
+        }) {
+            self.db_pending.remove(&pending_key);
         }
+        self.known_oids.insert(oid.clone());
+        self.remove_unit_document_metadata(&project_name, &old_unit.oid, old_address);
+        let document_key = Self::addressed_unit_document_key(&project_name, &oid, new_address);
         self.unit_documents
             .insert(document_key.clone(), parsed_unit.document);
         self.unit_pp_fields
@@ -7329,6 +7396,15 @@ impl Server {
     /// complete mutation run on a clone; the live model changes only after
     /// every descendant has been accepted.
     fn dbsetxml_typed(&mut self, tag: &str, path: &str, document: &str) -> Response {
+        if path.strip_prefix('!').is_some_and(|oid| {
+            self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+        }) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 Ambiguous duplicate Unit OID; use its path",
+            );
+        }
         if document.len() > 16 * 1024 * 1024 {
             return err(
                 tag,
@@ -7524,20 +7600,35 @@ impl Server {
         let old_oids = self.db_xml_subtree_oids(target);
         let mut submitted_oids = Vec::new();
         db_xml_object_oids(object, &mut submitted_oids);
-        let mut distinct = HashSet::new();
-        if submitted_oids
-            .iter()
-            .any(|oid| !distinct.insert(oid.clone()))
-        {
+        let mut kinds_by_oid: HashMap<&str, Vec<&str>> = HashMap::new();
+        for (oid, kind) in &submitted_oids {
+            kinds_by_oid.entry(oid).or_default().push(kind);
+        }
+        // The owned native capture admits one Application sharing an OID
+        // with Units, or several Units sharing one OID. Typed descendants,
+        // the Interface and the Network still use OID-keyed Rust maps, so
+        // other duplicate shapes must stay closed until those maps migrate.
+        let unsupported_duplicate = kinds_by_oid.values().any(|kinds| {
+            if kinds.len() < 2 {
+                return false;
+            }
+            let units = kinds.iter().filter(|kind| **kind == "Unit").count();
+            let applications = kinds.iter().filter(|kind| **kind == "Application").count();
+            object.kind != DbXmlKind::Network
+                || units == 0
+                || applications > 1
+                || units + applications != kinds.len()
+        });
+        if unsupported_duplicate {
             return Err((
                 status::CONFLICT_EXISTS,
-                "DBSETXML document contains duplicate OIDs".to_string(),
+                "DBSETXML document contains unsupported duplicate OIDs".to_string(),
             ));
         }
         let active = self.active_db_oids(&target.project);
         if submitted_oids
             .iter()
-            .any(|oid| active.contains(oid) && !old_oids.contains(oid))
+            .any(|(oid, _)| active.contains(oid) && !old_oids.contains(oid))
         {
             return Err((
                 status::CONFLICT_EXISTS,
@@ -7684,9 +7775,7 @@ impl Server {
             Vec::new()
         };
         for unit in removed_units {
-            let key = Self::unit_document_key(&target.project, &unit.oid);
-            self.unit_documents.remove(&key);
-            self.unit_pp_fields.remove(&key);
+            self.remove_unit_document_metadata(&target.project, &unit.oid, unit.address);
         }
         self.db_fields.retain(|path, _| {
             path != &target.path && !path.starts_with(&slash) && !path.starts_with(&dash)
@@ -7898,7 +7987,7 @@ impl Server {
                 self.db_fields
                     .insert(format!("{unit_path}/{name}"), value.clone());
             }
-            let document_key = Self::unit_document_key(project, &unit.oid);
+            let document_key = Self::addressed_unit_document_key(project, &unit.oid, unit.address);
             self.unit_documents
                 .insert(document_key.clone(), unit.document.clone());
             self.unit_pp_fields
@@ -8017,6 +8106,15 @@ impl Server {
         if !valid_target(words[1]) || !valid_target(words[2]) {
             return err(tag, status::BAD_REQUEST, "400 Invalid copy path");
         }
+        if words[1].strip_prefix('!').is_some_and(|oid| {
+            self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+        }) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 Ambiguous duplicate Unit OID; use its path",
+            );
+        }
         let addr: i64 = words[3].parse().unwrap_or(-1);
         if !(0..=255).contains(&addr) {
             return err(tag, status::BAD_REQUEST, "400 Invalid database address");
@@ -8040,7 +8138,7 @@ impl Server {
                 .and_then(|n| n.units.get(&src_addr))
                 .cloned();
             if let Some(mut unit) = snapshot {
-                let source_key = Self::unit_document_key(&proj_name, &unit.oid);
+                let source_key = self.stored_unit_document_key(&proj_name, &unit.oid, src_addr);
                 let source_document = self.unit_documents.get(&source_key).cloned();
                 let source_pp_fields = self.unit_pp_fields.get(&source_key).cloned();
                 let addr = addr as u8;
@@ -8299,6 +8397,15 @@ impl Server {
         } else {
             words[1].to_string()
         };
+        if target.strip_prefix('!').is_some_and(|oid| {
+            self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+        }) {
+            return err(
+                tag,
+                status::CONFLICT_EXISTS,
+                "409 Ambiguous duplicate Unit OID; use its path",
+            );
+        }
         let pending_oid = self.current.as_deref().and_then(|project| {
             self.db_pending
                 .values()
@@ -8329,20 +8436,10 @@ impl Server {
                 .retain(|k, _| k != &target && !k.starts_with(&prefix));
             self.objects.remove(&target);
             if let Some(unit) = removed {
-                let document_key = Self::unit_document_key(&proj_name, &unit.oid);
-                self.unit_documents.remove(&document_key);
-                self.unit_pp_fields.remove(&document_key);
-                // Repository copies retain OIDs, so retire the identity only
-                // after the last project record using it is deleted.
-                let in_use = self.projects.values().any(|project| {
-                    project.networks.values().any(|network| {
-                        network
-                            .units
-                            .values()
-                            .any(|candidate| candidate.oid == unit.oid)
-                    })
-                });
-                if !in_use {
+                self.remove_unit_document_metadata(&proj_name, &unit.oid, addr);
+                // A duplicate OID can still belong to an Application (or
+                // another Unit) after this addressed Unit is deleted.
+                if !self.oid_used_anywhere(&unit.oid) {
                     self.known_oids.remove(&unit.oid);
                 }
                 self.push_event(format!("#e# db unit {addr} deleted"));
@@ -8702,6 +8799,13 @@ impl Server {
             let mut segments = rest.splitn(2, '/');
             let oid = segments.next().unwrap_or("");
             let field = segments.next();
+            if self.duplicated_unit_oid_in_current_project(oid) {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Ambiguous duplicate Unit OID; use its path",
+                );
+            }
             if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
             }
@@ -8784,6 +8888,13 @@ impl Server {
             let Some((oid, field)) = rest.split_once('/') else {
                 return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
             };
+            if self.duplicated_unit_oid_in_current_project(oid) {
+                return err(
+                    tag,
+                    status::CONFLICT_EXISTS,
+                    "409 Ambiguous duplicate Unit OID; use its path",
+                );
+            }
             if field.eq_ignore_ascii_case("OID") {
                 return err(
                     tag,
@@ -10123,6 +10234,37 @@ impl Server {
                 })
             })
             || self.level_key(oid).is_some()
+    }
+
+    fn last_unit_by_oid(&self, project: &str, oid: &str) -> Option<&Unit> {
+        self.projects
+            .get(project)?
+            .networks
+            .iter()
+            .flat_map(|(network_address, network)| {
+                network
+                    .units
+                    .values()
+                    .map(move |unit| (*network_address, unit))
+            })
+            .filter(|(_, unit)| unit.oid == oid)
+            .max_by_key(|(network_address, unit)| (*network_address, unit.address))
+            .map(|(_, unit)| unit)
+    }
+
+    fn duplicated_unit_oid_in_current_project(&self, oid: &str) -> bool {
+        let Some(project) = self.current.as_deref() else {
+            return false;
+        };
+        let units = self.projects.get(project).map_or(0, |record| {
+            record
+                .networks
+                .values()
+                .flat_map(|network| network.units.values())
+                .filter(|unit| unit.oid == oid)
+                .count()
+        });
+        units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
     }
 
     /// Issue a deterministic OID for `Level`/`NetVar` creation and units.

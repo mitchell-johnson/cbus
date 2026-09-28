@@ -1277,9 +1277,13 @@ cmqttd repository boundary;
 the bounded DBSETXML surface. Complete forms validate the selected path/OID,
 whole submitted tree, Unit scalar/PP ownership and modeled identity/address
 conflicts before an atomic durable replacement and `301 OID=...` root receipt.
-Native build 2001 accepts duplicate OIDs across these combined objects while
-cmqttd returns 409 to avoid collapsing them in its keyed model; this conflict
-axis is unresolved native parity.
+An owned build-2001 capture establishes that an Application and Unit, or two
+Units at different addresses, may share an OID and retain independent scalar
+and PP readback through save/reload and path-targeted Unit replacement. cmqttd
+admits these shapes with address-keyed Unit metadata; other duplicate shapes
+still return 409 until their native semantics and lossless representation are
+established. Ambiguous OID-based mutations return 409; use an addressed Unit
+path. Cross-network Unit-OID collisions remain refused project-wide.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive
@@ -1293,7 +1297,9 @@ mutation (`rust/testdata/fixtures/native_cgate_dbsetxml_combined.json`). The
 [later owned original capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-replacement-edges.md)
 pins discarded comments, processing instructions, namespaced additions,
 omitted optional Unit fields and PP, save/reload identity, and the duplicate-OID
-divergence. Other combined forms and private vendor XML/repository formats
+cases. The [owned duplicate-OID capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md)
+pins separate Unit identity, OID lookup precedence and durable direct mutation.
+Other combined forms and private vendor XML/repository formats
 remain unverified.
 
 `project_archive_restore: "cmqttd-internal"` denotes durable snapshot keys in
@@ -1471,8 +1477,9 @@ fields and sibling identities before one durable database replacement, returns
 captured comments, processing instructions and unknown namespaced additions
 are accepted then omitted on readback in the tested combined and direct Unit
 cases. Nested decoration on `Description` and `CatalogNumber` becomes direct
-text or an empty scalar. The original accepts duplicate combined-tree OIDs,
-which cmqttd rejects with 409 as a deliberate model-safety divergence.
+text or an empty scalar. The captured Application/Unit and two-Unit duplicate
+OIDs are accepted without sharing Unit scalar/PP metadata; other duplicate
+shapes remain a 409 model-safety boundary.
 Successful single-row `DBGETXML` replies use the original `343/347/344` TCP envelope, including an LF-only XML declaration row; errors remain ordinary status replies. The [fresh original framing capture](../../../../toolkit-cli/docs/native-cgate-dbgetxml-framing-vm.md) and scoped two-server differential pin address/OID reads and pipelined transport. This does not establish multiline XML payloads, broader XML variants, or private Schneider repository formats.
 
 Command connections also provide native-shaped `SESSION_ID`, `SESSION_ID ALL`
