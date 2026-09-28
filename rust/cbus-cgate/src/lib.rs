@@ -506,6 +506,8 @@ fn err(tag: &str, code: u16, text: &str) -> Response {
 }
 
 const DB_XML_UNIT_NAME_REQUIRED: &str = "DBSETXML Unit is missing UnitName";
+const DB_XML_GROUP_DLT_DUPLICATE_COLLECTION: &str =
+    "DBSETXML Group has duplicate TagsDLT collections";
 
 fn db_xml_missing_unit_name(tag: &str, network_child: bool) -> Response {
     let detail = if network_child {
@@ -1019,6 +1021,80 @@ fn parse_tags_dlt(node: roxmltree::Node<'_, '_>, kind: DbXmlKind) -> Result<Stri
     Ok(output)
 }
 
+/// Build-2001 accepts Group label rows as ordered XML records rather than
+/// validating language, flavour, type, or unique identity. Keep the observed
+/// 65-row case while bounding stored XML and ignoring the attributes and
+/// namespaced fields observed in the owned-loopback capture.
+fn parse_group_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
+    let tags = node
+        .children()
+        .filter(roxmltree::Node::is_element)
+        .collect::<Vec<_>>();
+    if node
+        .children()
+        .filter(roxmltree::Node::is_text)
+        .any(|text| !text.text().unwrap_or_default().trim().is_empty())
+        || tags.len() > 65
+    {
+        return Err("DBSETXML Group has an unsupported TagsDLT".to_string());
+    }
+    if tags.is_empty() {
+        return Ok("<TagsDLT/>".to_string());
+    }
+    let mut output = String::from("<TagsDLT>");
+    for tag in tags {
+        if !tag.has_tag_name("TagDLT") {
+            return Err("DBSETXML Group has an unsupported TagDLT".to_string());
+        }
+        let mut fields = HashMap::new();
+        for child in tag.children().filter(roxmltree::Node::is_element) {
+            if child.tag_name().namespace().is_some() {
+                continue;
+            }
+            if child.attributes().len() != 0
+                || child.children().any(|descendant| descendant.is_element())
+                || !matches!(
+                    child.tag_name().name(),
+                    "OID" | "LanguageID" | "FlavourID" | "TagType" | "TagValue"
+                )
+            {
+                return Err("DBSETXML Group has an unsupported TagDLT field".to_string());
+            }
+            if fields
+                .insert(child.tag_name().name(), child.text().unwrap_or_default())
+                .is_some()
+            {
+                return Err("DBSETXML Group has duplicate TagDLT fields".to_string());
+            }
+        }
+        let oid = match fields.remove("OID") {
+            Some(oid) if valid_uuid(oid) => oid.to_string(),
+            Some(_) => return Err("DBSETXML TagDLT has an invalid OID".to_string()),
+            None => fresh_oid(),
+        };
+        output.push_str("<TagDLT><OID>");
+        output.push_str(&oid);
+        output.push_str("</OID>");
+        for name in ["LanguageID", "FlavourID", "TagType", "TagValue"] {
+            if let Some(value) = fields.remove(name) {
+                if value.len() > 1024 || value.chars().any(char::is_control) {
+                    return Err(format!("DBSETXML TagDLT has an invalid {name}"));
+                }
+                output.push('<');
+                output.push_str(name);
+                output.push('>');
+                output.push_str(&xml_escape(value));
+                output.push_str("</");
+                output.push_str(name);
+                output.push('>');
+            }
+        }
+        output.push_str("</TagDLT>");
+    }
+    output.push_str("</TagsDLT>");
+    Ok(output)
+}
+
 fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObject, String> {
     if node.tag_name().namespace().is_some() {
         return Err("DBSETXML complete object root must be unnamespaced".to_string());
@@ -1061,6 +1137,13 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     let mut extras = DbXmlExtras::default();
     for child in node.children().filter(roxmltree::Node::is_element) {
         if child.tag_name().namespace().is_some() {
+            if kind == DbXmlKind::Group && child.tag_name().name() == "TagsDLT" {
+                if !extras.children.is_empty() {
+                    return Err(DB_XML_GROUP_DLT_DUPLICATE_COLLECTION.to_string());
+                }
+                extras.children.push(parse_group_tags_dlt(child)?);
+                continue;
+            }
             if matches!(kind, DbXmlKind::Level | DbXmlKind::Group)
                 && child.tag_name().name() == "TagsDLT"
             {
@@ -1091,12 +1174,19 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         match (kind, name) {
             (DbXmlKind::Level | DbXmlKind::Group, "TagsDLT") => {
                 if !extras.children.is_empty() {
+                    if kind == DbXmlKind::Group {
+                        return Err(DB_XML_GROUP_DLT_DUPLICATE_COLLECTION.to_string());
+                    }
                     return Err(format!(
                         "DBSETXML {} has an unsupported TagsDLT",
                         kind.element()
                     ));
                 }
-                extras.children.push(parse_tags_dlt(child, kind)?);
+                extras.children.push(if kind == DbXmlKind::Group {
+                    parse_group_tags_dlt(child)?
+                } else {
+                    parse_tags_dlt(child, kind)?
+                });
             }
             (DbXmlKind::Group | DbXmlKind::NetVar, "Level")
             | (DbXmlKind::Application, "Group" | "NetVar") => {
@@ -7656,6 +7746,9 @@ impl Server {
             Ok(object) => object,
             Err(error) if error == DB_XML_UNIT_NAME_REQUIRED => {
                 return db_xml_missing_unit_name(tag, true)
+            }
+            Err(error) if error == DB_XML_GROUP_DLT_DUPLICATE_COLLECTION => {
+                return err(tag, 446, "446 Unable to set XML: ValidationException: Element 'TagsDLT' occurs more than once. (parent class: com.clipsal.cgate.tag.model.Group  location: /Group/TagsDLT");
             }
             Err(error) => return err(tag, status::BAD_REQUEST, &format!("400 {error}")),
         };

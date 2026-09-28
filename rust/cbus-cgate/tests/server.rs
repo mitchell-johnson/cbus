@@ -4287,10 +4287,8 @@ fn dbsetxml_group_dlt_labels_match_owned_native_lifecycle() {
     let source = group.lines[0].strip_prefix("347-").unwrap();
     let (prefix, suffix) = source.rsplit_once("<TagsDLT/>").unwrap();
     for tags in [
-        "<TagsDLT><TagDLT/></TagsDLT>",
-        "<TagsDLT xmlns=\"urn:unprobed\"/>",
-        "<TagsDLT unknown=\"1\"/>",
-        "<TagsDLT/><TagsDLT/>",
+        "<TagsDLT><TagDLT><OID>invalid</OID></TagDLT></TagsDLT>",
+        "<TagsDLT><Other/></TagsDLT>",
     ] {
         assert_eq!(
             server
@@ -4304,9 +4302,170 @@ fn dbsetxml_group_dlt_labels_match_owned_native_lifecycle() {
         );
     }
     assert_eq!(
+        server
+            .handle_document(
+                "[guard-duplicate] DBSETXML //XGDLT/254/56/1",
+                &format!("{prefix}<TagsDLT/><TagsDLT/>{suffix}"),
+            )
+            .status,
+        446
+    );
+    assert_eq!(
         server.handle("[after] DBGETXML //XGDLT/254").lines[0],
         before
     );
+}
+
+#[test]
+fn dbsetxml_group_dlt_boundaries_match_owned_native_capture() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_dbsetxml_group_dlt_boundaries.json"
+    ))
+    .unwrap();
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_dbsetxml_group_dlt_boundaries.jsonl"
+    ))
+    .unwrap();
+    assert_eq!(
+        native["schema"],
+        "native-cgate-dbsetxml-group-dlt-boundaries-v1"
+    );
+    assert_eq!(native["oracle"]["physical_endpoint"], false);
+    assert_eq!(native["oracle"]["cleanup_complete"], true);
+    assert_eq!(native["oracle"]["owned_loopback_listeners"], true);
+    assert_eq!(
+        vector["native_fixture"],
+        "native_cgate_dbsetxml_group_dlt_boundaries.json"
+    );
+    let cases = native["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 30);
+    let expected_names = vector["case_names"].as_array().unwrap();
+    assert_eq!(expected_names.len(), cases.len());
+
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[setup-new] PROJECT NEW XGDB").status, 200);
+    assert_eq!(server.handle("[setup-use] PROJECT USE XGDB").status, 200);
+    assert_eq!(
+        server
+            .handle("[setup-network] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let baseline = server.handle("[setup-read] DBGETXML //XGDB/254");
+    let document =
+        roxmltree::Document::parse(baseline.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let root = document.root_element();
+    let child_oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = child_oid(root);
+    let interface_oid = child_oid(
+        root.children()
+            .find(|child| child.has_tag_name("Interface"))
+            .unwrap(),
+    );
+    let network_set = &native["setup"][3];
+    let request = network_set["request"].as_str().unwrap();
+    let source = request.split_once("\r\n").unwrap().1;
+    let source = source.strip_suffix("\r\nEND2204\r\n").unwrap();
+    let source = source
+        .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+        .replace(native["interface_oid"].as_str().unwrap(), &interface_oid);
+    assert_eq!(
+        server
+            .handle_document("[setup-set] DBSETXML //XGDB/254", &source)
+            .status,
+        301
+    );
+    for command in [
+        "PROJECT SAVE XGDB",
+        "PROJECT CLOSE XGDB",
+        "PROJECT LOAD XGDB",
+        "PROJECT USE XGDB",
+    ] {
+        assert_eq!(
+            server
+                .handle(&format!("[setup-lifecycle] {command}"))
+                .status,
+            200,
+            "{command}"
+        );
+    }
+
+    let normalize = |xml: &str| {
+        let parsed = roxmltree::Document::parse(xml).unwrap();
+        let mut result = xml.to_string();
+        for (index, label) in parsed
+            .descendants()
+            .filter(|node| node.has_tag_name("TagDLT"))
+            .enumerate()
+        {
+            let Some(oid) = label
+                .children()
+                .find(|node| node.has_tag_name("OID"))
+                .and_then(|node| node.text())
+            else {
+                continue;
+            };
+            if oid != "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+                && oid != native["group_oid"].as_str().unwrap()
+                && oid != native["level_oid"].as_str().unwrap()
+            {
+                result = result.replace(
+                    &format!("<OID>{oid}</OID>"),
+                    &format!("<OID>generated-{index}</OID>"),
+                );
+            }
+        }
+        result
+    };
+    let captured_xml = |row: &serde_json::Value| {
+        let tag = row["tag"].as_u64().unwrap();
+        let lines = row["response_lines"].as_array().unwrap();
+        assert_eq!(lines.len(), 4);
+        lines[2]
+            .as_str()
+            .unwrap()
+            .strip_prefix(&format!("[{tag}] 347-"))
+            .unwrap()
+            .strip_suffix("\r\n")
+            .unwrap()
+            .to_string()
+    };
+    for (index, row) in cases.iter().enumerate() {
+        let name = row["name"].as_str().unwrap();
+        assert_eq!(row["name"], expected_names[index], "case {index}");
+        let before = server.handle("[boundary-before] DBGETXML //XGDB/254/56/1");
+        assert_eq!(
+            normalize(before.lines[0].strip_prefix("347-").unwrap()),
+            normalize(&captured_xml(&row["before"])),
+            "before {name}"
+        );
+        let set = &row["set"];
+        let tag = set["tag"].as_u64().unwrap();
+        let request = set["request"].as_str().unwrap();
+        let source = request.split_once("\r\n").unwrap().1;
+        let source = source.strip_suffix(&format!("\r\nEND{tag}\r\n")).unwrap();
+        let observed = server.handle_document("[boundary-set] DBSETXML //XGDB/254/56/1", source);
+        let expected = set["response_lines"].as_array().unwrap()[0]
+            .as_str()
+            .unwrap()
+            .strip_prefix(&format!("[{tag}] "))
+            .unwrap()
+            .trim_end_matches("\r\n");
+        assert_eq!(observed.final_text, expected, "set {name}");
+        let after = server.handle("[boundary-after] DBGETXML //XGDB/254/56/1");
+        assert_eq!(
+            normalize(after.lines[0].strip_prefix("347-").unwrap()),
+            normalize(&captured_xml(&row["after"])),
+            "after {name}"
+        );
+    }
 }
 
 #[test]

@@ -104,11 +104,38 @@ exact tagged framing and label lifecycle. The
 replay compare every request and scoped XML response after substituting only
 the four generated Network, Interface and label OIDs. A service test keeps the
 label and nested Level through durable JSON restart without PCI traffic.
-Malformed or duplicate Group collections fail before tree mutation.
+Duplicate Group collections fail before tree mutation.
 
-This does not establish every language/type, collection cardinality, invalid
-field response, namespaced attribute, or cross-object TagDLT OID case. Those
-remain outside the admitted native comparison.
+### Group label field and collection boundary
+
+The [30-case owned build-2001 capture](../../rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt_boundaries.json)
+extends the same disposable Group/Level project through immediate direct-Group
+`DBSETXML` and `DBGETXML` pairs. The
+[reproducible script](../research/cgate_dbsetxml_group_dlt_boundaries.py),
+[source-bound assertions](../tests/test_native_cgate_dbsetxml_group_dlt_boundaries.py),
+and [Rust replay vector](../../rust/testdata/vectors/cgate_dbsetxml_group_dlt_boundaries.jsonl)
+pin the original JAR, Java 11 executable, all six owned loopback listeners,
+tagged wire replies and cleanup. No C-Bus endpoint was opened.
+
+Native Group `TagDLT` fields behave as ordered XML records in this capture.
+`LanguageID` and `FlavourID` retain zero, values above 255 and nonnumeric text;
+`TagType` retains `IMAGE`, lowercase, unknown and empty strings. Two, four,
+five and 65 rows return `301` in submission order. Two rows with the same
+language/flavour or explicit OID both survive immediate Group readback; an
+explicit TagDLT OID equal to its parent Group or nested Level OID also survives.
+Those readbacks establish only XML replacement, not safe resolution of a
+colliding OID by later OID-targeted commands.
+
+The probed default namespace on an empty `TagsDLT` and an unknown collection
+attribute materialize as a plain empty collection. An unknown `TagDLT`
+attribute is dropped; a namespaced `TagDLT` with no recognized fields receives
+only a generated OID; a namespaced `TagType` field is omitted. Two Group
+`TagsDLT` containers produce native `446` with the prior Group XML unchanged.
+The Rust Group parser reproduces these captured forms, with an explicit
+65-row and 1,024-byte-per-field safety bound. Level labels retain their
+earlier, narrower parser. Larger collections, other malformed or namespaced
+shapes, save/load of these unusual field values, and OID-targeted effects are
+unprobed.
 
 This is a bounded Level-grandchild extension to the earlier
 [nested-Application capture](native-cgate-dbsetxml-nested-applications.md).

@@ -1,0 +1,42 @@
+{
+  "schema": "cgate-dbsetxml-group-dlt-boundaries-v1",
+  "native_fixture": "native_cgate_dbsetxml_group_dlt_boundaries.json",
+  "basis": "native-owned-loopback",
+  "case_names": [
+    "empty",
+    "language_zero",
+    "language_two",
+    "language_255",
+    "language_256",
+    "language_text",
+    "flavour_zero",
+    "flavour_four",
+    "flavour_five",
+    "flavour_255",
+    "flavour_text",
+    "type_text",
+    "type_image",
+    "type_lowercase",
+    "type_unknown",
+    "type_empty",
+    "two_flavours",
+    "four_flavours",
+    "five_flavours",
+    "duplicate_variant",
+    "duplicate_oid",
+    "group_oid",
+    "level_oid",
+    "default_namespace",
+    "collection_attribute",
+    "tag_namespace",
+    "field_namespace",
+    "tag_attribute",
+    "duplicate_collection",
+    "sixty_five"
+  ],
+  "normalization": [
+    "generated Network and Interface OIDs in setup",
+    "generated TagDLT OIDs in scoped Group XML"
+  ],
+  "scope": "30 complete-Group replacement cases on one disposable project; immediate direct-Group readback only"
+}

@@ -1,0 +1,1089 @@
+{
+  "schema": "native-cgate-dbsetxml-group-dlt-boundaries-v1",
+  "captured_utc": "2026-09-28T07:16:27.720889+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "2fe1decd61295e8e61e6157447f2cf1e3782eb101cff937e9a8176ef17fe584e",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:52422",
+      "127.0.0.1:52423",
+      "127.0.0.1:52424",
+      "127.0.0.1:52425",
+      "127.0.0.1:52426",
+      "127.0.0.1:52427"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "8ca3c1e8daeb21d41d10e04c3bb6f0ba08a20d296926c3b77530a43011b11631",
+  "source_shape_sha256": "6125cd7d1ea80a82f4d58b3717f7d7e2cee27457db99a7936f34a5d07d78b6a1",
+  "exchange_helper_sha256": "22580ef1eb861b029df4154efa267872ea4864115ee0949ac40f25403f24e2a4",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "network_oid": "71510350-9d3a-103f-bce3-fed74dd3804e",
+  "interface_oid": "71512a60-9d3a-103f-bce4-fed74dd3804e",
+  "group_oid": "44444444-4444-4444-8444-000000000056",
+  "level_oid": "55555555-5555-4555-8555-000000000056",
+  "setup": [
+    {
+      "tag": 2200,
+      "command": "PROJECT NEW XGDB",
+      "request": "[2200] PROJECT NEW XGDB\r\n",
+      "response_lines": [
+        "[2200] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 2201,
+      "command": "PROJECT USE XGDB",
+      "request": "[2201] PROJECT USE XGDB\r\n",
+      "response_lines": [
+        "[2201] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 2202,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[2202] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[2202] 301 OID=71510350-9d3a-103f-bce3-fed74dd3804e\r\n"
+      ]
+    },
+    {
+      "tag": 2204,
+      "command": "DBSETXML //XGDB/254",
+      "request": "[2204] DBSETXML //XGDB/254 << END2204\r\n<Network><OID>71510350-9d3a-103f-bce3-fed74dd3804e</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>71512a60-9d3a-103f-bce4-fed74dd3804e</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>33333333-3333-4333-8333-333333333333</OID><TagName>App56</TagName><Address>56</Address><Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address></Level></Group></Application></Network>\r\nEND2204\r\n",
+      "response_lines": [
+        "[2204] 301 OID=71510350-9d3a-103f-bce3-fed74dd3804e\r\n"
+      ]
+    },
+    {
+      "tag": 2205,
+      "command": "PROJECT SAVE XGDB",
+      "request": "[2205] PROJECT SAVE XGDB\r\n",
+      "response_lines": [
+        "[2205] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 2206,
+      "command": "PROJECT CLOSE XGDB",
+      "request": "[2206] PROJECT CLOSE XGDB\r\n",
+      "response_lines": [
+        "[2206] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 2207,
+      "command": "PROJECT LOAD XGDB",
+      "request": "[2207] PROJECT LOAD XGDB\r\n",
+      "response_lines": [
+        "[2207] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 2208,
+      "command": "PROJECT USE XGDB",
+      "request": "[2208] PROJECT USE XGDB\r\n",
+      "response_lines": [
+        "[2208] 200 OK.\r\n"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "empty",
+      "before": {
+        "tag": 2210,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2210] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2210] 343-Begin XML snippet\r\n",
+          "[2210] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2210] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level></Group>\r\n",
+          "[2210] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2211,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2211] DBSETXML //XGDB/254/56/1 << END2211\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\nEND2211\r\n",
+        "response_lines": [
+          "[2211] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2212,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2212] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2212] 343-Begin XML snippet\r\n",
+          "[2212] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2212] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2212] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "language_zero",
+      "before": {
+        "tag": 2213,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2213] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2213] 343-Begin XML snippet\r\n",
+          "[2213] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2213] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2213] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2214,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2214] DBSETXML //XGDB/254/56/1 << END2214\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>0</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2214\r\n",
+        "response_lines": [
+          "[2214] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2215,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2215] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2215] 343-Begin XML snippet\r\n",
+          "[2215] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2215] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7178d6a0-9d3a-103f-bd19-fed74dd3804e</OID><LanguageID>0</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2215] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "language_two",
+      "before": {
+        "tag": 2216,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2216] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2216] 343-Begin XML snippet\r\n",
+          "[2216] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2216] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7178d6a0-9d3a-103f-bd19-fed74dd3804e</OID><LanguageID>0</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2216] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2217,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2217] DBSETXML //XGDB/254/56/1 << END2217\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>2</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2217\r\n",
+        "response_lines": [
+          "[2217] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2218,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2218] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2218] 343-Begin XML snippet\r\n",
+          "[2218] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2218] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717a3630-9d3a-103f-bd1a-fed74dd3804e</OID><LanguageID>2</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2218] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "language_255",
+      "before": {
+        "tag": 2219,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2219] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2219] 343-Begin XML snippet\r\n",
+          "[2219] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2219] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717a3630-9d3a-103f-bd1a-fed74dd3804e</OID><LanguageID>2</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2219] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2220,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2220] DBSETXML //XGDB/254/56/1 << END2220\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>255</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2220\r\n",
+        "response_lines": [
+          "[2220] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2221,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2221] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2221] 343-Begin XML snippet\r\n",
+          "[2221] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2221] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717c8020-9d3a-103f-bd1b-fed74dd3804e</OID><LanguageID>255</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2221] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "language_256",
+      "before": {
+        "tag": 2222,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2222] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2222] 343-Begin XML snippet\r\n",
+          "[2222] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2222] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717c8020-9d3a-103f-bd1b-fed74dd3804e</OID><LanguageID>255</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2222] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2223,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2223] DBSETXML //XGDB/254/56/1 << END2223\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>256</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2223\r\n",
+        "response_lines": [
+          "[2223] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2224,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2224] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2224] 343-Begin XML snippet\r\n",
+          "[2224] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2224] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717db8a0-9d3a-103f-bd1c-fed74dd3804e</OID><LanguageID>256</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2224] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "language_text",
+      "before": {
+        "tag": 2225,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2225] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2225] 343-Begin XML snippet\r\n",
+          "[2225] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2225] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717db8a0-9d3a-103f-bd1c-fed74dd3804e</OID><LanguageID>256</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2225] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2226,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2226] DBSETXML //XGDB/254/56/1 << END2226\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>English</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2226\r\n",
+        "response_lines": [
+          "[2226] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2227,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2227] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2227] 343-Begin XML snippet\r\n",
+          "[2227] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2227] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717eca10-9d3a-103f-bd1d-fed74dd3804e</OID><LanguageID>English</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2227] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "flavour_zero",
+      "before": {
+        "tag": 2228,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2228] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2228] 343-Begin XML snippet\r\n",
+          "[2228] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2228] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>717eca10-9d3a-103f-bd1d-fed74dd3804e</OID><LanguageID>English</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2228] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2229,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2229] DBSETXML //XGDB/254/56/1 << END2229\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>0</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2229\r\n",
+        "response_lines": [
+          "[2229] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2230,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2230] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2230] 343-Begin XML snippet\r\n",
+          "[2230] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2230] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71800290-9d3a-103f-bd1e-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>0</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2230] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "flavour_four",
+      "before": {
+        "tag": 2231,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2231] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2231] 343-Begin XML snippet\r\n",
+          "[2231] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2231] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71800290-9d3a-103f-bd1e-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>0</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2231] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2232,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2232] DBSETXML //XGDB/254/56/1 << END2232\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2232\r\n",
+        "response_lines": [
+          "[2232] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2233,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2233] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2233] 343-Begin XML snippet\r\n",
+          "[2233] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2233] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71811400-9d3a-103f-bd1f-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2233] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "flavour_five",
+      "before": {
+        "tag": 2234,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2234] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2234] 343-Begin XML snippet\r\n",
+          "[2234] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2234] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71811400-9d3a-103f-bd1f-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2234] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2235,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2235] DBSETXML //XGDB/254/56/1 << END2235\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2235\r\n",
+        "response_lines": [
+          "[2235] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2236,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2236] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2236] 343-Begin XML snippet\r\n",
+          "[2236] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2236] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71824c80-9d3a-103f-bd20-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2236] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "flavour_255",
+      "before": {
+        "tag": 2237,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2237] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2237] 343-Begin XML snippet\r\n",
+          "[2237] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2237] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71824c80-9d3a-103f-bd20-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2237] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2238,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2238] DBSETXML //XGDB/254/56/1 << END2238\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>255</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2238\r\n",
+        "response_lines": [
+          "[2238] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2239,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2239] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2239] 343-Begin XML snippet\r\n",
+          "[2239] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2239] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7183ac10-9d3a-103f-bd21-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>255</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2239] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "flavour_text",
+      "before": {
+        "tag": 2240,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2240] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2240] 343-Begin XML snippet\r\n",
+          "[2240] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2240] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7183ac10-9d3a-103f-bd21-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>255</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2240] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2241,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2241] DBSETXML //XGDB/254/56/1 << END2241\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>Primary</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2241\r\n",
+        "response_lines": [
+          "[2241] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2242,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2242] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2242] 343-Begin XML snippet\r\n",
+          "[2242] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2242] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71850ba0-9d3a-103f-bd22-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>Primary</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2242] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "type_text",
+      "before": {
+        "tag": 2243,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2243] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2243] 343-Begin XML snippet\r\n",
+          "[2243] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2243] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71850ba0-9d3a-103f-bd22-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>Primary</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2243] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2244,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2244] DBSETXML //XGDB/254/56/1 << END2244\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2244\r\n",
+        "response_lines": [
+          "[2244] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2245,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2245] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2245] 343-Begin XML snippet\r\n",
+          "[2245] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2245] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71869240-9d3a-103f-bd23-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2245] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "type_image",
+      "before": {
+        "tag": 2246,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2246] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2246] 343-Begin XML snippet\r\n",
+          "[2246] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2246] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71869240-9d3a-103f-bd23-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2246] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2247,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2247] DBSETXML //XGDB/254/56/1 << END2247\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>IMAGE</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2247\r\n",
+        "response_lines": [
+          "[2247] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2248,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2248] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2248] 343-Begin XML snippet\r\n",
+          "[2248] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2248] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71877ca0-9d3a-103f-bd24-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>IMAGE</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2248] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "type_lowercase",
+      "before": {
+        "tag": 2249,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2249] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2249] 343-Begin XML snippet\r\n",
+          "[2249] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2249] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71877ca0-9d3a-103f-bd24-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>IMAGE</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2249] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2250,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2250] DBSETXML //XGDB/254/56/1 << END2250\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>text</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2250\r\n",
+        "response_lines": [
+          "[2250] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2251,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2251] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2251] 343-Begin XML snippet\r\n",
+          "[2251] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2251] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71886700-9d3a-103f-bd25-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>text</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2251] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "type_unknown",
+      "before": {
+        "tag": 2252,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2252] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2252] 343-Begin XML snippet\r\n",
+          "[2252] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2252] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71886700-9d3a-103f-bd25-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>text</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2252] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2253,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2253] DBSETXML //XGDB/254/56/1 << END2253\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>UNRECOGNISED</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2253\r\n",
+        "response_lines": [
+          "[2253] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2254,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2254] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2254] 343-Begin XML snippet\r\n",
+          "[2254] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2254] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71892a50-9d3a-103f-bd26-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>UNRECOGNISED</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2254] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "type_empty",
+      "before": {
+        "tag": 2255,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2255] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2255] 343-Begin XML snippet\r\n",
+          "[2255] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2255] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71892a50-9d3a-103f-bd26-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>UNRECOGNISED</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2255] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2256,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2256] DBSETXML //XGDB/254/56/1 << END2256\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType></TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2256\r\n",
+        "response_lines": [
+          "[2256] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2257,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2257] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2257] 343-Begin XML snippet\r\n",
+          "[2257] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2257] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718a3bc0-9d3a-103f-bd27-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType></TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2257] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "two_flavours",
+      "before": {
+        "tag": 2258,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2258] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2258] 343-Begin XML snippet\r\n",
+          "[2258] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2258] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718a3bc0-9d3a-103f-bd27-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType></TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2258] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2259,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2259] DBSETXML //XGDB/254/56/1 << END2259\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Second</TagValue></TagDLT></TagsDLT></Group>\r\nEND2259\r\n",
+        "response_lines": [
+          "[2259] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2260,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2260] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2260] 343-Begin XML snippet\r\n",
+          "[2260] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2260] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718b7440-9d3a-103f-bd28-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>718b9b50-9d3a-103f-bd29-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Second</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2260] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "four_flavours",
+      "before": {
+        "tag": 2261,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2261] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2261] 343-Begin XML snippet\r\n",
+          "[2261] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2261] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718b7440-9d3a-103f-bd28-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>718b9b50-9d3a-103f-bd29-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Second</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2261] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2262,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2262] DBSETXML //XGDB/254/56/1 << END2262\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT></TagsDLT></Group>\r\nEND2262\r\n",
+        "response_lines": [
+          "[2262] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2263,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2263] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2263] 343-Begin XML snippet\r\n",
+          "[2263] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2263] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718cacc0-9d3a-103f-bd2a-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><OID>718cd3d0-9d3a-103f-bd2b-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><OID>718cfae0-9d3a-103f-bd2c-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><OID>718d21f0-9d3a-103f-bd2d-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2263] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "five_flavours",
+      "before": {
+        "tag": 2264,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2264] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2264] 343-Begin XML snippet\r\n",
+          "[2264] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2264] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718cacc0-9d3a-103f-bd2a-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><OID>718cd3d0-9d3a-103f-bd2b-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><OID>718cfae0-9d3a-103f-bd2c-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><OID>718d21f0-9d3a-103f-bd2d-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2264] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2265,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2265] DBSETXML //XGDB/254/56/1 << END2265\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Label5</TagValue></TagDLT></TagsDLT></Group>\r\nEND2265\r\n",
+        "response_lines": [
+          "[2265] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2266,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2266] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2266] 343-Begin XML snippet\r\n",
+          "[2266] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2266] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718de540-9d3a-103f-bd2e-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><OID>718e0c50-9d3a-103f-bd2f-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><OID>718e3360-9d3a-103f-bd30-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><OID>718e5a70-9d3a-103f-bd31-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT><TagDLT><OID>718e8180-9d3a-103f-bd32-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Label5</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2266] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "duplicate_variant",
+      "before": {
+        "tag": 2267,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2267] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2267] 343-Begin XML snippet\r\n",
+          "[2267] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2267] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718de540-9d3a-103f-bd2e-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><OID>718e0c50-9d3a-103f-bd2f-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><OID>718e3360-9d3a-103f-bd30-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>3</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><OID>718e5a70-9d3a-103f-bd31-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>4</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT><TagDLT><OID>718e8180-9d3a-103f-bd32-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>5</FlavourID><TagType>TEXT</TagType><TagValue>Label5</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2267] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2268,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2268] DBSETXML //XGDB/254/56/1 << END2268\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Duplicate</TagValue></TagDLT></TagsDLT></Group>\r\nEND2268\r\n",
+        "response_lines": [
+          "[2268] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2269,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2269] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2269] 343-Begin XML snippet\r\n",
+          "[2269] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2269] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718f1dc0-9d3a-103f-bd33-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>718f44d0-9d3a-103f-bd34-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Duplicate</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2269] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "duplicate_oid",
+      "before": {
+        "tag": 2270,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2270] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2270] 343-Begin XML snippet\r\n",
+          "[2270] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2270] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>718f1dc0-9d3a-103f-bd33-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>718f44d0-9d3a-103f-bd34-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Duplicate</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2270] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2271,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2271] DBSETXML //XGDB/254/56/1 << END2271\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2271\r\n",
+        "response_lines": [
+          "[2271] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2272,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2272] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2272] 343-Begin XML snippet\r\n",
+          "[2272] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2272] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2272] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "group_oid",
+      "before": {
+        "tag": 2273,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2273] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2273] 343-Begin XML snippet\r\n",
+          "[2273] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2273] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT><TagDLT><OID>aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa</OID><LanguageID>1</LanguageID><FlavourID>2</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2273] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2274,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2274] DBSETXML //XGDB/254/56/1 << END2274\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2274\r\n",
+        "response_lines": [
+          "[2274] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2275,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2275] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2275] 343-Begin XML snippet\r\n",
+          "[2275] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2275] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2275] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "level_oid",
+      "before": {
+        "tag": 2276,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2276] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2276] 343-Begin XML snippet\r\n",
+          "[2276] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2276] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2276] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2277,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2277] DBSETXML //XGDB/254/56/1 << END2277\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>55555555-5555-4555-8555-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2277\r\n",
+        "response_lines": [
+          "[2277] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2278,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2278] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2278] 343-Begin XML snippet\r\n",
+          "[2278] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2278] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>55555555-5555-4555-8555-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2278] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "default_namespace",
+      "before": {
+        "tag": 2279,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2279] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2279] 343-Begin XML snippet\r\n",
+          "[2279] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2279] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>55555555-5555-4555-8555-000000000056</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2279] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2280,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2280] DBSETXML //XGDB/254/56/1 << END2280\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT xmlns=\"urn:unprobed\"/></Group>\r\nEND2280\r\n",
+        "response_lines": [
+          "[2280] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2281,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2281] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2281] 343-Begin XML snippet\r\n",
+          "[2281] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2281] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2281] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "collection_attribute",
+      "before": {
+        "tag": 2282,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2282] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2282] 343-Begin XML snippet\r\n",
+          "[2282] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2282] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2282] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2283,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2283] DBSETXML //XGDB/254/56/1 << END2283\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT unknown=\"1\"/></Group>\r\nEND2283\r\n",
+        "response_lines": [
+          "[2283] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2284,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2284] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2284] 343-Begin XML snippet\r\n",
+          "[2284] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2284] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2284] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "tag_namespace",
+      "before": {
+        "tag": 2285,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2285] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2285] 343-Begin XML snippet\r\n",
+          "[2285] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2285] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/></Group>\r\n",
+          "[2285] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2286,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2286] DBSETXML //XGDB/254/56/1 << END2286\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT xmlns=\"urn:unprobed\"/></TagsDLT></Group>\r\nEND2286\r\n",
+        "response_lines": [
+          "[2286] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2287,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2287] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2287] 343-Begin XML snippet\r\n",
+          "[2287] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2287] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7194ea20-9d3a-103f-bd35-fed74dd3804e</OID></TagDLT></TagsDLT></Group>\r\n",
+          "[2287] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "field_namespace",
+      "before": {
+        "tag": 2288,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2288] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2288] 343-Begin XML snippet\r\n",
+          "[2288] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2288] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>7194ea20-9d3a-103f-bd35-fed74dd3804e</OID></TagDLT></TagsDLT></Group>\r\n",
+          "[2288] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2289,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2289] DBSETXML //XGDB/254/56/1 << END2289\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType xmlns=\"urn:unprobed\">TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2289\r\n",
+        "response_lines": [
+          "[2289] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2290,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2290] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2290] 343-Begin XML snippet\r\n",
+          "[2290] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2290] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>719622a0-9d3a-103f-bd36-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2290] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "tag_attribute",
+      "before": {
+        "tag": 2291,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2291] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2291] 343-Begin XML snippet\r\n",
+          "[2291] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2291] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>719622a0-9d3a-103f-bd36-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2291] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2292,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2292] DBSETXML //XGDB/254/56/1 << END2292\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT unknown=\"1\"><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\nEND2292\r\n",
+        "response_lines": [
+          "[2292] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2293,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2293] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2293] 343-Begin XML snippet\r\n",
+          "[2293] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2293] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71970d00-9d3a-103f-bd37-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2293] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "duplicate_collection",
+      "before": {
+        "tag": 2294,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2294] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2294] 343-Begin XML snippet\r\n",
+          "[2294] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2294] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71970d00-9d3a-103f-bd37-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2294] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2295,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2295] DBSETXML //XGDB/254/56/1 << END2295\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT/><TagsDLT/></Group>\r\nEND2295\r\n",
+        "response_lines": [
+          "[2295] 446 Unable to set XML: ValidationException: Element 'TagsDLT' occurs more than once. (parent class: com.clipsal.cgate.tag.model.Group  location: /Group/TagsDLT\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2296,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2296] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2296] 343-Begin XML snippet\r\n",
+          "[2296] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2296] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71970d00-9d3a-103f-bd37-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2296] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "sixty_five",
+      "before": {
+        "tag": 2297,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2297] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2297] 343-Begin XML snippet\r\n",
+          "[2297] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2297] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>71970d00-9d3a-103f-bd37-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Boundary label</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2297] 344 End XML snippet\r\n"
+        ]
+      },
+      "set": {
+        "tag": 2298,
+        "command": "DBSETXML //XGDB/254/56/1",
+        "request": "[2298] DBSETXML //XGDB/254/56/1 << END2298\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><LanguageID>0</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label0</TagValue></TagDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><LanguageID>2</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><LanguageID>3</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><LanguageID>4</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT><TagDLT><LanguageID>5</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label5</TagValue></TagDLT><TagDLT><LanguageID>6</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label6</TagValue></TagDLT><TagDLT><LanguageID>7</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label7</TagValue></TagDLT><TagDLT><LanguageID>8</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label8</TagValue></TagDLT><TagDLT><LanguageID>9</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label9</TagValue></TagDLT><TagDLT><LanguageID>10</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label10</TagValue></TagDLT><TagDLT><LanguageID>11</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label11</TagValue></TagDLT><TagDLT><LanguageID>12</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label12</TagValue></TagDLT><TagDLT><LanguageID>13</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label13</TagValue></TagDLT><TagDLT><LanguageID>14</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label14</TagValue></TagDLT><TagDLT><LanguageID>15</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label15</TagValue></TagDLT><TagDLT><LanguageID>16</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label16</TagValue></TagDLT><TagDLT><LanguageID>17</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label17</TagValue></TagDLT><TagDLT><LanguageID>18</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label18</TagValue></TagDLT><TagDLT><LanguageID>19</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label19</TagValue></TagDLT><TagDLT><LanguageID>20</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label20</TagValue></TagDLT><TagDLT><LanguageID>21</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label21</TagValue></TagDLT><TagDLT><LanguageID>22</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label22</TagValue></TagDLT><TagDLT><LanguageID>23</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label23</TagValue></TagDLT><TagDLT><LanguageID>24</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label24</TagValue></TagDLT><TagDLT><LanguageID>25</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label25</TagValue></TagDLT><TagDLT><LanguageID>26</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label26</TagValue></TagDLT><TagDLT><LanguageID>27</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label27</TagValue></TagDLT><TagDLT><LanguageID>28</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label28</TagValue></TagDLT><TagDLT><LanguageID>29</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label29</TagValue></TagDLT><TagDLT><LanguageID>30</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label30</TagValue></TagDLT><TagDLT><LanguageID>31</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label31</TagValue></TagDLT><TagDLT><LanguageID>32</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label32</TagValue></TagDLT><TagDLT><LanguageID>33</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label33</TagValue></TagDLT><TagDLT><LanguageID>34</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label34</TagValue></TagDLT><TagDLT><LanguageID>35</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label35</TagValue></TagDLT><TagDLT><LanguageID>36</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label36</TagValue></TagDLT><TagDLT><LanguageID>37</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label37</TagValue></TagDLT><TagDLT><LanguageID>38</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label38</TagValue></TagDLT><TagDLT><LanguageID>39</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label39</TagValue></TagDLT><TagDLT><LanguageID>40</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label40</TagValue></TagDLT><TagDLT><LanguageID>41</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label41</TagValue></TagDLT><TagDLT><LanguageID>42</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label42</TagValue></TagDLT><TagDLT><LanguageID>43</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label43</TagValue></TagDLT><TagDLT><LanguageID>44</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label44</TagValue></TagDLT><TagDLT><LanguageID>45</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label45</TagValue></TagDLT><TagDLT><LanguageID>46</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label46</TagValue></TagDLT><TagDLT><LanguageID>47</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label47</TagValue></TagDLT><TagDLT><LanguageID>48</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label48</TagValue></TagDLT><TagDLT><LanguageID>49</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label49</TagValue></TagDLT><TagDLT><LanguageID>50</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label50</TagValue></TagDLT><TagDLT><LanguageID>51</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label51</TagValue></TagDLT><TagDLT><LanguageID>52</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label52</TagValue></TagDLT><TagDLT><LanguageID>53</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label53</TagValue></TagDLT><TagDLT><LanguageID>54</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label54</TagValue></TagDLT><TagDLT><LanguageID>55</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label55</TagValue></TagDLT><TagDLT><LanguageID>56</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label56</TagValue></TagDLT><TagDLT><LanguageID>57</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label57</TagValue></TagDLT><TagDLT><LanguageID>58</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label58</TagValue></TagDLT><TagDLT><LanguageID>59</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label59</TagValue></TagDLT><TagDLT><LanguageID>60</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label60</TagValue></TagDLT><TagDLT><LanguageID>61</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label61</TagValue></TagDLT><TagDLT><LanguageID>62</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label62</TagValue></TagDLT><TagDLT><LanguageID>63</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label63</TagValue></TagDLT><TagDLT><LanguageID>64</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label64</TagValue></TagDLT></TagsDLT></Group>\r\nEND2298\r\n",
+        "response_lines": [
+          "[2298] 301 OID=44444444-4444-4444-8444-000000000056\r\n"
+        ]
+      },
+      "after": {
+        "tag": 2299,
+        "command": "DBGETXML //XGDB/254/56/1",
+        "request": "[2299] DBGETXML //XGDB/254/56/1\r\n",
+        "response_lines": [
+          "[2299] 343-Begin XML snippet\r\n",
+          "[2299] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[2299] 347-<Group><OID>44444444-4444-4444-8444-000000000056</OID><TagName>Group56</TagName><Address>1</Address><Level Value=\"56\"><OID>55555555-5555-4555-8555-000000000056</OID><TagName>Level56</TagName><Address>2</Address><TagsDLT/></Level><TagsDLT><TagDLT><OID>719908d0-9d3a-103f-bd38-fed74dd3804e</OID><LanguageID>0</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label0</TagValue></TagDLT><TagDLT><OID>71992fe0-9d3a-103f-bd39-fed74dd3804e</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label1</TagValue></TagDLT><TagDLT><OID>719956f0-9d3a-103f-bd3a-fed74dd3804e</OID><LanguageID>2</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label2</TagValue></TagDLT><TagDLT><OID>71997e00-9d3a-103f-bd3b-fed74dd3804e</OID><LanguageID>3</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label3</TagValue></TagDLT><TagDLT><OID>7199a510-9d3a-103f-bd3c-fed74dd3804e</OID><LanguageID>4</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label4</TagValue></TagDLT><TagDLT><OID>7199cc20-9d3a-103f-bd3d-fed74dd3804e</OID><LanguageID>5</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label5</TagValue></TagDLT><TagDLT><OID>7199f330-9d3a-103f-bd3e-fed74dd3804e</OID><LanguageID>6</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label6</TagValue></TagDLT><TagDLT><OID>719a1a40-9d3a-103f-bd3f-fed74dd3804e</OID><LanguageID>7</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label7</TagValue></TagDLT><TagDLT><OID>719a4150-9d3a-103f-bd40-fed74dd3804e</OID><LanguageID>8</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label8</TagValue></TagDLT><TagDLT><OID>719a6860-9d3a-103f-bd41-fed74dd3804e</OID><LanguageID>9</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label9</TagValue></TagDLT><TagDLT><OID>719a8f70-9d3a-103f-bd42-fed74dd3804e</OID><LanguageID>10</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label10</TagValue></TagDLT><TagDLT><OID>719ab680-9d3a-103f-bd43-fed74dd3804e</OID><LanguageID>11</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label11</TagValue></TagDLT><TagDLT><OID>719add90-9d3a-103f-bd44-fed74dd3804e</OID><LanguageID>12</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label12</TagValue></TagDLT><TagDLT><OID>719b04a0-9d3a-103f-bd45-fed74dd3804e</OID><LanguageID>13</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label13</TagValue></TagDLT><TagDLT><OID>719b2bb0-9d3a-103f-bd46-fed74dd3804e</OID><LanguageID>14</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label14</TagValue></TagDLT><TagDLT><OID>719b52c0-9d3a-103f-bd47-fed74dd3804e</OID><LanguageID>15</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label15</TagValue></TagDLT><TagDLT><OID>719b79d0-9d3a-103f-bd48-fed74dd3804e</OID><LanguageID>16</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label16</TagValue></TagDLT><TagDLT><OID>719ba0e0-9d3a-103f-bd49-fed74dd3804e</OID><LanguageID>17</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label17</TagValue></TagDLT><TagDLT><OID>719bc7f0-9d3a-103f-bd4a-fed74dd3804e</OID><LanguageID>18</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label18</TagValue></TagDLT><TagDLT><OID>719bef00-9d3a-103f-bd4b-fed74dd3804e</OID><LanguageID>19</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label19</TagValue></TagDLT><TagDLT><OID>719c1610-9d3a-103f-bd4c-fed74dd3804e</OID><LanguageID>20</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label20</TagValue></TagDLT><TagDLT><OID>719c3d20-9d3a-103f-bd4d-fed74dd3804e</OID><LanguageID>21</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label21</TagValue></TagDLT><TagDLT><OID>719c6430-9d3a-103f-bd4e-fed74dd3804e</OID><LanguageID>22</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label22</TagValue></TagDLT><TagDLT><OID>719c8b40-9d3a-103f-bd4f-fed74dd3804e</OID><LanguageID>23</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label23</TagValue></TagDLT><TagDLT><OID>719cb250-9d3a-103f-bd50-fed74dd3804e</OID><LanguageID>24</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label24</TagValue></TagDLT><TagDLT><OID>719cd960-9d3a-103f-bd51-fed74dd3804e</OID><LanguageID>25</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label25</TagValue></TagDLT><TagDLT><OID>719d0070-9d3a-103f-bd52-fed74dd3804e</OID><LanguageID>26</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label26</TagValue></TagDLT><TagDLT><OID>719d2780-9d3a-103f-bd53-fed74dd3804e</OID><LanguageID>27</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label27</TagValue></TagDLT><TagDLT><OID>719d4e90-9d3a-103f-bd54-fed74dd3804e</OID><LanguageID>28</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label28</TagValue></TagDLT><TagDLT><OID>719d75a0-9d3a-103f-bd55-fed74dd3804e</OID><LanguageID>29</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label29</TagValue></TagDLT><TagDLT><OID>719d9cb0-9d3a-103f-bd56-fed74dd3804e</OID><LanguageID>30</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label30</TagValue></TagDLT><TagDLT><OID>719dc3c0-9d3a-103f-bd57-fed74dd3804e</OID><LanguageID>31</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label31</TagValue></TagDLT><TagDLT><OID>719dead0-9d3a-103f-bd58-fed74dd3804e</OID><LanguageID>32</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label32</TagValue></TagDLT><TagDLT><OID>719e11e0-9d3a-103f-bd59-fed74dd3804e</OID><LanguageID>33</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label33</TagValue></TagDLT><TagDLT><OID>719e38f0-9d3a-103f-bd5a-fed74dd3804e</OID><LanguageID>34</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label34</TagValue></TagDLT><TagDLT><OID>719e6000-9d3a-103f-bd5b-fed74dd3804e</OID><LanguageID>35</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label35</TagValue></TagDLT><TagDLT><OID>719e8710-9d3a-103f-bd5c-fed74dd3804e</OID><LanguageID>36</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label36</TagValue></TagDLT><TagDLT><OID>719eae20-9d3a-103f-bd5d-fed74dd3804e</OID><LanguageID>37</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label37</TagValue></TagDLT><TagDLT><OID>719ed530-9d3a-103f-bd5e-fed74dd3804e</OID><LanguageID>38</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label38</TagValue></TagDLT><TagDLT><OID>719efc40-9d3a-103f-bd5f-fed74dd3804e</OID><LanguageID>39</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label39</TagValue></TagDLT><TagDLT><OID>719f2350-9d3a-103f-bd60-fed74dd3804e</OID><LanguageID>40</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label40</TagValue></TagDLT><TagDLT><OID>719f4a60-9d3a-103f-bd61-fed74dd3804e</OID><LanguageID>41</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label41</TagValue></TagDLT><TagDLT><OID>719f7170-9d3a-103f-bd62-fed74dd3804e</OID><LanguageID>42</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label42</TagValue></TagDLT><TagDLT><OID>719f9880-9d3a-103f-bd63-fed74dd3804e</OID><LanguageID>43</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label43</TagValue></TagDLT><TagDLT><OID>719fbf90-9d3a-103f-bd64-fed74dd3804e</OID><LanguageID>44</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label44</TagValue></TagDLT><TagDLT><OID>719fe6a0-9d3a-103f-bd65-fed74dd3804e</OID><LanguageID>45</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label45</TagValue></TagDLT><TagDLT><OID>71a00db0-9d3a-103f-bd66-fed74dd3804e</OID><LanguageID>46</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label46</TagValue></TagDLT><TagDLT><OID>71a034c0-9d3a-103f-bd67-fed74dd3804e</OID><LanguageID>47</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label47</TagValue></TagDLT><TagDLT><OID>71a05bd0-9d3a-103f-bd68-fed74dd3804e</OID><LanguageID>48</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label48</TagValue></TagDLT><TagDLT><OID>71a082e0-9d3a-103f-bd69-fed74dd3804e</OID><LanguageID>49</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label49</TagValue></TagDLT><TagDLT><OID>71a0a9f0-9d3a-103f-bd6a-fed74dd3804e</OID><LanguageID>50</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label50</TagValue></TagDLT><TagDLT><OID>71a0d100-9d3a-103f-bd6b-fed74dd3804e</OID><LanguageID>51</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label51</TagValue></TagDLT><TagDLT><OID>71a0f810-9d3a-103f-bd6c-fed74dd3804e</OID><LanguageID>52</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label52</TagValue></TagDLT><TagDLT><OID>71a11f20-9d3a-103f-bd6d-fed74dd3804e</OID><LanguageID>53</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label53</TagValue></TagDLT><TagDLT><OID>71a14630-9d3a-103f-bd6e-fed74dd3804e</OID><LanguageID>54</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label54</TagValue></TagDLT><TagDLT><OID>71a16d40-9d3a-103f-bd6f-fed74dd3804e</OID><LanguageID>55</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label55</TagValue></TagDLT><TagDLT><OID>71a19450-9d3a-103f-bd70-fed74dd3804e</OID><LanguageID>56</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label56</TagValue></TagDLT><TagDLT><OID>71a1bb60-9d3a-103f-bd71-fed74dd3804e</OID><LanguageID>57</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label57</TagValue></TagDLT><TagDLT><OID>71a1e270-9d3a-103f-bd72-fed74dd3804e</OID><LanguageID>58</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label58</TagValue></TagDLT><TagDLT><OID>71a20980-9d3a-103f-bd73-fed74dd3804e</OID><LanguageID>59</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label59</TagValue></TagDLT><TagDLT><OID>71a23090-9d3a-103f-bd74-fed74dd3804e</OID><LanguageID>60</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label60</TagValue></TagDLT><TagDLT><OID>71a257a0-9d3a-103f-bd75-fed74dd3804e</OID><LanguageID>61</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label61</TagValue></TagDLT><TagDLT><OID>71a27eb0-9d3a-103f-bd76-fed74dd3804e</OID><LanguageID>62</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label62</TagValue></TagDLT><TagDLT><OID>71a2a5c0-9d3a-103f-bd77-fed74dd3804e</OID><LanguageID>63</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label63</TagValue></TagDLT><TagDLT><OID>71a2ccd0-9d3a-103f-bd78-fed74dd3804e</OID><LanguageID>64</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Label64</TagValue></TagDLT></TagsDLT></Group>\r\n",
+          "[2299] 344 End XML snippet\r\n"
+        ]
+      }
+    }
+  ]
+}
