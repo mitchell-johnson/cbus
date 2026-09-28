@@ -1,0 +1,6 @@
+{"command":"IDENTIFY ON //MISSING/254/251/1","denied_role":"Monitor","denied_reply":"420 Access denied.","admitted_role":"Operate","native_at_floor":"401 Bad object or device ID: //MISSING/254/251/1 (Object not found)"}
+{"command":"DBADDSAFE //MISSING/254 Network","denied_role":"Monitor","denied_reply":"420 Access denied.","admitted_role":"Operate","native_at_floor":"440 There is no tag database to perform this operation on"}
+{"command":"DBGETJSON NAC_OBJECTS_LIST //MISSING/254","denied_role":"Operate","denied_reply":"420 Access denied.","admitted_role":"Admin","native_at_floor":"500 Internal error: Unable to get the tag database instance."}
+{"command":"NET PROJECT_IDENTIFY //MISSING/254","denied_role":"Admin","denied_reply":"420 Access denied.","admitted_role":"Program","native_at_floor":"408 Operation failed: Can not open network (bad interface specification"}
+{"command":"PORT REFRESH","denied_role":"Admin","denied_reply":"420 Access denied.","admitted_role":"Program","native_at_floor":"408 Operation failed: This command is not applicable.  The list of ports is automatically updated."}
+{"command":"ACCESS LIST","denied_role":"Debug","denied_reply":"420 Access denied.","admitted_role":"Clipsal","native_at_floor":"135 line=9 entry=user matrix-clipsal <redacted> Clipsal"}

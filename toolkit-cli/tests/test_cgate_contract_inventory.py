@@ -129,17 +129,20 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert document["sources"]["native_dali_handler_selector_roles"]["sha256"] == sha256(
         contract_builder.NATIVE_DALI_ROLE_PATH.read_bytes()
     ).hexdigest()
+    assert document["sources"]["native_remaining_handler_roles"]["sha256"] == sha256(
+        contract_builder.NATIVE_REMAINING_ROLE_PATH.read_bytes()
+    ).hexdigest()
     assert document["sources"]["access_handler_registry"]["sha256"] == sha256(
         contract_builder.ACCESS_PATH.read_bytes()
     ).hexdigest()
-    assert document["counts"]["native_handler_role_observations"] == 345
-    assert document["counts"]["native_handler_role_unresolved"] == 345
+    assert document["counts"]["native_handler_role_observations"] == 376
+    assert document["counts"]["native_handler_role_unresolved"] == 376
     observed = [
         row for row in document["contracts"]
         if "native_handler_entry"
         in row["axes"]["authorization"]["subaxes"]["handler_roles"].get("known", {})
     ]
-    assert len(observed) == 345
+    assert len(observed) == 376
     assert all(
         row["axes"]["authorization"]["status"] == "partial"
         and row["axes"]["authorization"]["subaxes"]["handler_roles"]["status"]
@@ -219,6 +222,21 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
         assert row["axes"]["implementation_acceptance"]["subaxes"][
             "functional_acceptance"
         ]["status"] == "unresolved"
+    for path, level in (
+        ("PORT CNISCAN2", "Program"),
+        ("ACCESS LIST", "Clipsal"),
+        ("DBGETJSON NAC_TAGMAP", "Admin"),
+        ("IDENTIFY ON", "Operate"),
+        ("NET PROJECT_IDENTIFY", "Program"),
+        ("TOPOLOGY EXPLORE", "Program"),
+    ):
+        row = contract_by_path(document, path)
+        role = row["axes"]["authorization"]["subaxes"]["handler_roles"]
+        assert role["status"] == "unresolved"
+        assert role["known"]["native_handler_entry"][
+            "minimum_access_level_at_handler_entry"
+        ] == level
+        assert contract_builder.NATIVE_REMAINING_ROLE_REF in role["source_refs"]
 
 
 def test_native_application_role_probe_weakening_cannot_rebuild(

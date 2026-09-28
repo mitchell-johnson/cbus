@@ -87,6 +87,14 @@ NATIVE_DALI_ROLE_SCRIPT_PATH = (
     REPOSITORY / "rust" / "cbus-cgate" / "research"
     / "native_dali_authorization_probe.py"
 )
+NATIVE_REMAINING_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_remaining_authorization_probe.json"
+)
+NATIVE_REMAINING_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_remaining_authorization_probe.py"
+)
 NATIVE_DALI_HELP_PATH = (
     REPOSITORY / "rust" / "testdata" / "fixtures"
     / "native_cgate_dali_help.json"
@@ -123,6 +131,7 @@ ACCESS_MEDIA_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_MEDIA_COMMA
 ACCESS_ADMIN_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS"
 ACCESS_APPLICATION_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_APPLICATION_COMMANDS"
 ACCESS_DALI_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_DALI_COMMANDS"
+ACCESS_REMAINING_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_REMAINING_COMMANDS"
 EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
 NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
@@ -144,6 +153,7 @@ NATIVE_APPLICATION_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_application_authorization_probe.json"
 )
 NATIVE_DALI_ROLE_REF = "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json"
+NATIVE_REMAINING_ROLE_REF = "rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json"
 NATIVE_CGATE_JAR_SHA256 = (
     "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
 )
@@ -173,6 +183,9 @@ NATIVE_APPLICATION_ROLE_EVIDENCE_SHA256 = (
 )
 NATIVE_DALI_ROLE_EVIDENCE_SHA256 = (
     "d2ffb8d86b296ea123b6b667d484e9c5415ec41b0db55c25f14ef6262f67af8f"
+)
+NATIVE_REMAINING_ROLE_EVIDENCE_SHA256 = (
+    "5cc108b58e15d1caca464d8c73a4b0bd5e77c587f091a2f65db38fc435207bbd"
 )
 NATIVE_ROLE_LEVELS = (
     "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal", "Max"
@@ -801,7 +814,7 @@ def _native_role_fixture_observations(
             )
         ]
         if variant_command_count is not None:
-            first_help = help_paths[path][0]
+            first_help = help_paths[path][0] if help_fixture_path is not None else ""
             expected_variants = 2 if "[mode=(auto)]" in first_help else 1
             if len(matching) != expected_variants:
                 raise ValueError(f"Native C-Gate {label} selector set changed for {path}")
@@ -848,7 +861,7 @@ def _native_role_fixture_observations(
             "scope": "exact_invocation_only; no_later_object_or_physical_success_claim",
             **(
                 {"selector_invocations": selector_invocations}
-                if variant_command_count is not None else {}
+                if help_fixture_path is not None else {}
             ),
         }
     if len(observations) != expected_commands:
@@ -933,7 +946,19 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
         help_fixture_path=NATIVE_DALI_HELP_PATH,
         label="DALI handler and selector roles",
     )
-    groups = (initial, additional, programming, media, admin, application, dali)
+    remaining = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_REMAINING_ROLE_PATH,
+        fixture_digest=NATIVE_REMAINING_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-remaining-authorization-v1",
+        script_path=NATIVE_REMAINING_ROLE_SCRIPT_PATH,
+        capture_engine_path=NATIVE_ADMIN_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_REMAINING_COMMANDS",
+        expected_commands=31,
+        variant_command_count=31,
+        label="remaining handler roles",
+    )
+    groups = (initial, additional, programming, media, admin, application, dali, remaining)
     overlap = set().union(*(
         set(left) & set(right)
         for index, left in enumerate(groups)
@@ -941,7 +966,7 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
     ))
     if overlap:
         raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
-    return initial | additional | programming | media | admin | application | dali
+    return initial | additional | programming | media | admin | application | dali | remaining
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -1198,6 +1223,9 @@ def build_row(
             NATIVE_DALI_ROLE_EVIDENCE_SHA256: (
                 NATIVE_DALI_ROLE_REF, ACCESS_DALI_ROLE_REF
             ),
+            NATIVE_REMAINING_ROLE_EVIDENCE_SHA256: (
+                NATIVE_REMAINING_ROLE_REF, ACCESS_REMAINING_ROLE_REF
+            ),
         }[observed["fixture_sha256"]]
         handler_roles = unresolved(
             (
@@ -1374,6 +1402,7 @@ def build() -> dict:
             "native_admin_handler_roles": {"sha256": digest(NATIVE_ADMIN_ROLE_PATH)},
             "native_application_handler_roles": {"sha256": digest(NATIVE_APPLICATION_ROLE_PATH)},
             "native_dali_handler_selector_roles": {"sha256": digest(NATIVE_DALI_ROLE_PATH)},
+            "native_remaining_handler_roles": {"sha256": digest(NATIVE_REMAINING_ROLE_PATH)},
         },
         "counts": {
             "paths": len(contracts),

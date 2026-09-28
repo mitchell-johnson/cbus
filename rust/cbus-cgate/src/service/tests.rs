@@ -14073,6 +14073,90 @@ async fn dali_native_handler_and_poll_floors_deny_before_dispatch_or_mutation() 
 }
 
 #[tokio::test]
+async fn remaining_native_handler_floors_deny_before_dispatch_or_mutation() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    let mut events = service.events.subscribe();
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_remaining_authorization_probe.json"
+    ))
+    .unwrap();
+
+    for (path_name, minimum) in crate::access::NATIVE_PROBED_REMAINING_COMMANDS {
+        let command = evidence["commands"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(serde_json::Value::as_str)
+            .find(|command| {
+                crate::access::NATIVE_PROBED_REMAINING_COMMANDS
+                    .iter()
+                    .filter(|(candidate, _)| {
+                        *command == *candidate || command.starts_with(&format!("{candidate} "))
+                    })
+                    .max_by_key(|(candidate, _)| candidate.len())
+                    .map(|(candidate, _)| *candidate)
+                    == Some(*path_name)
+            })
+            .unwrap();
+        for level in [
+            CgateAccessLevel::None,
+            CgateAccessLevel::Connect,
+            CgateAccessLevel::Monitor,
+            CgateAccessLevel::Operate,
+            CgateAccessLevel::Admin,
+            CgateAccessLevel::Program,
+            CgateAccessLevel::Debug,
+        ] {
+            if level >= *minimum {
+                continue;
+            }
+            let mut client = ClientState {
+                access_level: Some(level),
+                ..ClientState::default()
+            };
+            let reply = service
+                .handle(&mut client, &format!("[matrix] {command}"))
+                .await;
+            assert_eq!(
+                reply.final_text,
+                "420 Access denied.",
+                "{command} at {}: {reply:?}",
+                level.name()
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), before, "{command}");
+            assert!(events.try_recv().is_err(), "{command} emitted an event");
+            let mut byte = [0];
+            assert!(
+                tokio::time::timeout(Duration::from_millis(1), remote.read(&mut byte))
+                    .await
+                    .is_err(),
+                "{command} reached PCI"
+            );
+        }
+    }
+
+    for (level, command) in [
+        (CgateAccessLevel::Operate, "IDENTIFY ON //MISSING/254/251/1"),
+        (CgateAccessLevel::Admin, "DBGETJSON //MISSING/254"),
+        (CgateAccessLevel::Program, "PORT REFRESH"),
+        (CgateAccessLevel::Clipsal, "ACCESS LIST"),
+    ] {
+        let mut client = ClientState {
+            access_level: Some(level),
+            ..ClientState::default()
+        };
+        let reply = service
+            .handle(&mut client, &format!("[admitted] {command}"))
+            .await;
+        assert_ne!(reply.final_text, "420 Access denied.", "{command}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn expanded_native_cgl_import_floor_denies_document_before_mutation() {
     let path = state_path();
     let (pci, mut remote) = pci();

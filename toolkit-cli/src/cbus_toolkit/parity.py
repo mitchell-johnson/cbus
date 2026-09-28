@@ -452,6 +452,7 @@ def validate_cgate_contract_inventory(
         "native_admin_handler_roles",
         "native_application_handler_roles",
         "native_dali_handler_selector_roles",
+        "native_remaining_handler_roles",
     } <= set(sources):
         raise ValueError("C-Gate contract native handler role sources are missing")
     contracts = inventory.get("contracts")
@@ -517,6 +518,7 @@ def validate_cgate_contract_inventory(
                     ("native_admin_handler_roles", "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json"),
                     ("native_application_handler_roles", "rust/testdata/fixtures/native_cgate_application_authorization_probe.json"),
                     ("native_dali_handler_selector_roles", "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json"),
+                    ("native_remaining_handler_roles", "rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json"),
                 )
                 if isinstance(observation, dict)
                 and observation.get("fixture_sha256") == sources[source_name]["sha256"]
@@ -599,8 +601,8 @@ def validate_cgate_contract_inventory(
         "supplement_paths": 11,
         "declarative_argument_arities": 70,
         "public_help_syntax_hashes": 209,
-        "native_handler_role_observations": 345,
-        "native_handler_role_unresolved": 345,
+        "native_handler_role_observations": 376,
+        "native_handler_role_unresolved": 376,
     }
     if not isinstance(counts, dict) or any(
         counts.get(key) != value for key, value in expected_fixed.items()

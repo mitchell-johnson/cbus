@@ -577,6 +577,43 @@ pub(crate) const NATIVE_PROBED_DALI_COMMANDS: &[(&str, CgateAccessLevel)] = &[
     ("DALI WINK_ECG_ON", CgateAccessLevel::Program),
 ];
 
+/// Remaining native entry-role probes across PORT, ACCESS, legacy database,
+/// identification and utility selectors. The capture uses explicit loopback
+/// discovery/probe targets or an absent project, so no C-Bus send is proven.
+pub(crate) const NATIVE_PROBED_REMAINING_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("PORT CNISCAN", CgateAccessLevel::Program),
+    ("PORT CNISCAN2", CgateAccessLevel::Program),
+    ("PORT PROBE", CgateAccessLevel::Program),
+    ("PORT REFRESH", CgateAccessLevel::Program),
+    ("ACCESS LIST", CgateAccessLevel::Clipsal),
+    ("ACCESS DELETE", CgateAccessLevel::Clipsal),
+    ("ACCESS SAVE", CgateAccessLevel::Clipsal),
+    ("DBADD", CgateAccessLevel::Operate),
+    ("DBADDSAFE", CgateAccessLevel::Operate),
+    ("DBCOPYSAFE", CgateAccessLevel::Operate),
+    ("DBCREATENET", CgateAccessLevel::Admin),
+    ("DBGETJSON", CgateAccessLevel::Admin),
+    ("DBGETJSON NAC_OBJECTS_LIST", CgateAccessLevel::Admin),
+    ("DBGETJSON NAC_ROUTING_TABLE", CgateAccessLevel::Admin),
+    ("DBGETJSON NAC_TAGMAP", CgateAccessLevel::Admin),
+    ("DBRENAMENET", CgateAccessLevel::Admin),
+    ("DBRENAMENETSAFE", CgateAccessLevel::Admin),
+    ("CONVERTUNIT CHECK", CgateAccessLevel::Admin),
+    ("CONVERTUNIT CONVERT", CgateAccessLevel::Admin),
+    ("IDENTIFY OFF", CgateAccessLevel::Operate),
+    ("IDENTIFY ON", CgateAccessLevel::Operate),
+    ("IDENTIFY RAMP", CgateAccessLevel::Operate),
+    ("IDENTIFY TERMINATERAMP", CgateAccessLevel::Operate),
+    ("LIGHTING STOP", CgateAccessLevel::Operate),
+    ("NET CREATE", CgateAccessLevel::Program),
+    ("NET PROJECT_IDENTIFY", CgateAccessLevel::Program),
+    ("NETWORK LOCATE", CgateAccessLevel::Program),
+    ("PROJECT ARCHIVE", CgateAccessLevel::Admin),
+    ("TOPOLOGY EXPLORE", CgateAccessLevel::Program),
+    ("TRIGGER INDICATORKILL", CgateAccessLevel::Program),
+    ("APPLICATIONS GET_CATALOG", CgateAccessLevel::Program),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -587,6 +624,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_ADMIN_COMMANDS.iter())
         .chain(NATIVE_PROBED_APPLICATION_COMMANDS.iter())
         .chain(NATIVE_PROBED_DALI_COMMANDS.iter())
+        .chain(NATIVE_PROBED_REMAINING_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -1204,6 +1242,88 @@ mod tests {
                     .collect::<Vec<_>>();
                 assert_eq!(native_minimum_for(&upper), Some(*minimum));
             }
+        }
+    }
+
+    #[test]
+    fn remaining_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_remaining_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            evidence["format"],
+            "native-cgate-remaining-authorization-v1"
+        );
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        for (field, source) in [
+            (
+                "capture_script_sha256",
+                include_bytes!("../research/native_remaining_authorization_probe.py").as_slice(),
+            ),
+            (
+                "capture_engine_sha256",
+                include_bytes!("../research/native_admin_authorization_probe.py").as_slice(),
+            ),
+            (
+                "local_cgate_harness_sha256",
+                include_bytes!("../../../toolkit-cli/research/local_cgate.py").as_slice(),
+            ),
+        ] {
+            assert_eq!(
+                evidence[field],
+                hex::encode(auth::sha256(source)),
+                "{field}"
+            );
+        }
+
+        let commands = evidence["commands"].as_array().unwrap();
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_REMAINING_COMMANDS.len());
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_REMAINING_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| {
+                    NATIVE_PROBED_REMAINING_COMMANDS
+                        .iter()
+                        .filter(|(candidate, _)| {
+                            *command == *candidate || command.starts_with(&format!("{candidate} "))
+                        })
+                        .max_by_key(|(candidate, _)| candidate.len())
+                        .map(|(candidate, _)| *candidate)
+                        == Some(*path)
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
         }
     }
 }
