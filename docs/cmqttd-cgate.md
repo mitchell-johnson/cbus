@@ -57,6 +57,14 @@ Malformed state fails startup rather than discarding the database.
 At startup, `CONFIG event-mode=server` opens a read-only C-Gate event stream
 on the configured `event-port` (default 20024) at the command listener's bind
 IP. It sends bare CRLF event rows with no greeting and ignores incoming text.
+For a command listener using TLS, cmqttd binds this plaintext event port to
+loopback only. Each new event peer must also pass the current
+`accept-connections-from` command allowlist. These are deliberate protective
+differences: an [owned original C-Gate receipt](../rust/testdata/fixtures/native_cgate_config_event_listener_admission.json)
+shows that a newly connected plaintext event peer receives broadcasts even
+while command admission denies the same peer, including beside an mTLS command
+listener. The event port does not implement C-Gate
+ACCESS or LOGIN roles, so choose a loopback command bind for local-only use.
 `event-mode=socket` instead connects to `event-host:event-port` and streams
 events outward; an unavailable sink is retried without stopping MQTT or PCI,
 and lost events are not replayed. `CONFIG SET`/`LOAD` update readback but do

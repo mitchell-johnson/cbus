@@ -173,7 +173,19 @@ async fn main() {
                     // receive an ephemeral event port when CONFIG retains its
                     // native default. A configured nondefault port is exact.
                     let port = if port == 20024 && bind.ends_with(":0") { 0 } else { port };
-                    let address = std::net::SocketAddr::new(listener.local_addr()?.ip(), port);
+                    let command_ip = listener.local_addr()?.ip();
+                    let event_ip = if tls.is_some() {
+                        tracing::warn!(
+                            "C-Gate event server restricted to loopback because command TLS is enabled"
+                        );
+                        match command_ip {
+                            std::net::IpAddr::V4(_) => std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST),
+                            std::net::IpAddr::V6(_) => std::net::IpAddr::V6(std::net::Ipv6Addr::LOCALHOST),
+                        }
+                    } else {
+                        command_ip
+                    };
+                    let address = std::net::SocketAddr::new(event_ip, port);
                     match tokio::net::TcpListener::bind(address).await {
                         Ok(event_listener) => {
                             tracing::info!("C-Gate event service listening on {}", event_listener.local_addr()?);

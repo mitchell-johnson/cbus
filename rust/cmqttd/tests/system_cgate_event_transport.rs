@@ -82,6 +82,43 @@ fn options(state: &std::path::Path) -> Options {
 }
 
 #[tokio::test]
+async fn tls_command_listener_keeps_plaintext_event_server_on_loopback() {
+    let state = cbus_test_support::proc::temp_path("cgate-event-tls-boundary.json");
+    let cert = testdata_dir().join("fixtures/cgate-tls-test-cert.pem");
+    let key = testdata_dir().join("fixtures/cgate-tls-test-key.pem");
+    let sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "0.0.0.0:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+            "--cgate-tls-cert".into(),
+            cert.to_string_lossy().into_owned(),
+            "--cgate-tls-key".into(),
+            key.to_string_lossy().into_owned(),
+            "--cgate-tls-client-ca".into(),
+            cert.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate TLS event listener", || {
+        sys.daemon
+            .stderr()
+            .contains("C-Gate event service listening on ")
+    })
+    .await;
+    let stderr = sys.daemon.stderr();
+    assert!(stderr
+        .contains("C-Gate event server restricted to loopback because command TLS is enabled"));
+    assert!(stderr.contains("C-Gate event service listening on 127.0.0.1:"));
+    assert!(sys.broker.has_subscription("homeassistant/light/+/set"));
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn config_event_server_and_outbound_socket_stream_without_interrupting_mqtt() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_config_event_transport.json"
@@ -114,7 +151,7 @@ async fn config_event_server_and_outbound_socket_stream_without_interrupting_mqt
         .find_map(|line| line.split_once("C-Gate event service listening on "))
         .map(|(_, address)| address.trim().to_string())
         .unwrap();
-    let event_stream = TcpStream::connect(event_address).await.unwrap();
+    let event_stream = TcpStream::connect(&event_address).await.unwrap();
     let (event_reader, event_writer) = event_stream.into_split();
     let mut event_reader = BufReader::new(event_reader);
     let mut blank = String::new();
@@ -144,6 +181,66 @@ async fn config_event_server_and_outbound_socket_stream_without_interrupting_mqt
     );
     let broadcast = next_event(&mut event_reader).await;
     assert!(broadcast.ends_with(" 703 cmd3 - broadcast_event SP class server\r\n"));
+
+    // The original event port can still admit a peer denied by the command
+    // allowlist. cmqttd deliberately closes that disclosure path while the
+    // already-admitted command and event sessions continue to work.
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "deny",
+            "CONFIG SET accept-connections-from 192.0.2.55"
+        )
+        .await,
+        "[deny] 200 OK.\r\n"
+    );
+    let denied = TcpStream::connect(&event_address).await.unwrap();
+    let (denied_reader, denied_writer) = denied.into_split();
+    let mut denied_reader = BufReader::new(denied_reader);
+    let mut denied_line = String::new();
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(150),
+            denied_reader.read_line(&mut denied_line)
+        )
+        .await
+        .is_err(),
+        "denied event peer received {denied_line:?}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "while-denied",
+            "BROADCAST_EVENT SP class existing-event-session"
+        )
+        .await,
+        "[while-denied] 200 OK.\r\n"
+    );
+    assert!(next_event(&mut event_reader)
+        .await
+        .ends_with(" 703 cmd3 - broadcast_event SP class existing-event-session\r\n"));
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(150),
+            denied_reader.read_line(&mut denied_line)
+        )
+        .await
+        .is_err(),
+        "denied event peer received {denied_line:?}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "allow",
+            "CONFIG SET accept-connections-from all"
+        )
+        .await,
+        "[allow] 200 OK.\r\n"
+    );
+    drop((denied_reader, denied_writer));
 
     let sink = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let sink_port = sink.local_addr().unwrap().port();

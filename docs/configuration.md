@@ -87,7 +87,10 @@ passes `/etc/cmqttd/unitspec` automatically when that directory exists. Compose 
 `CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and loopback-only host
 ports 20023 (command) and 20024 (default event server). A saved nondefault
 `CONFIG event-port` needs a corresponding Compose port mapping; socket mode
-instead connects to its configured sink. Set `CMQTTD_CGATE_BIND=off` for MQTT
+instead connects to its configured sink. The event server applies
+`accept-connections-from`; enabling command TLS restricts the plaintext event
+server to container loopback, making the default Compose event mapping
+unreachable. Set `CMQTTD_CGATE_BIND=off` for MQTT
 only. State lives in the named
 `cmqttd_data` volume; do not delete that volume when recreating containers.
 The embedded C-Gate CONFIG catalogue/snapshots, FILE virtual filesystem, and

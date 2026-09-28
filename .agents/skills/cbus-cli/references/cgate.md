@@ -247,10 +247,14 @@ counts, `config_persistence="cmqttd-json"`,
 `config_command_admission_localhost=true`,
 `config_command_admission_hostnames=true`, `config_command_admission_tls=true`,
 `config_command_admission_ipv4_mapped=true`,
-`config_event_transport_server=true`, `config_event_transport_socket=true`, `config_event_catalogue_complete=false`,
+`config_event_transport_server=true`, `config_event_transport_socket=true`,
+`config_event_server_command_admission=true`, `config_event_server_tls_loopback=true`,
+`config_event_catalogue_complete=false`,
 `config_restart_effects=["command.show-responses","command.show-time","event-host","event-millis","event-mode","event-port","global-event-level","heartbeat-time","project.default","project.start"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
+and the original event-listener admission bypass in
+[`native_cgate_config_event_listener_admission.json`](../../../../rust/testdata/fixtures/native_cgate_config_event_listener_admission.json)
 and the separate owned restart captures
 [`native_cgate_config_command_show_time.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_time.json)
 [`native_cgate_config_command_show_responses.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_responses.json),

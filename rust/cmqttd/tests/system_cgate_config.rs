@@ -540,6 +540,8 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
         serde_json::from_str(capabilities[0].strip_prefix("200-").unwrap()).unwrap();
     assert_eq!(capabilities["config_event_transport_server"], true);
     assert_eq!(capabilities["config_event_transport_socket"], true);
+    assert_eq!(capabilities["config_event_server_command_admission"], true);
+    assert_eq!(capabilities["config_event_server_tls_loopback"], true);
     assert_eq!(capabilities["config_event_catalogue_complete"], false);
     assert_eq!(
         capabilities["config_restart_effects"],

@@ -3010,6 +3010,8 @@ impl Service {
             capabilities["config_command_admission_ipv4_mapped"] = serde_json::Value::Bool(true);
             capabilities["config_event_transport_server"] = serde_json::Value::Bool(true);
             capabilities["config_event_transport_socket"] = serde_json::Value::Bool(true);
+            capabilities["config_event_server_command_admission"] = serde_json::Value::Bool(true);
+            capabilities["config_event_server_tls_loopback"] = serde_json::Value::Bool(true);
             capabilities["config_event_catalogue_complete"] = serde_json::Value::Bool(false);
             capabilities["config_restart_effects"] = serde_json::json!([
                 "command.show-responses",
@@ -13466,9 +13468,19 @@ impl Service {
                 .await
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
+            let peer = stream.peer_addr()?.ip();
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
+                // Apply the effective command allowlist to the separate event
+                // port too. Native event-port admission is not yet captured;
+                // an event subscriber must never bypass a configured deny.
+                if !service.accepts_command_peer(peer).await {
+                    if let Err(error) = connection_admission::hold_silent(stream).await {
+                        tracing::debug!("C-Gate refused event peer disconnected: {error}");
+                    }
+                    return;
+                }
                 if let Err(error) = service.event_stream(stream, false).await {
                     tracing::debug!("C-Gate event-port client ended: {error}");
                 }
