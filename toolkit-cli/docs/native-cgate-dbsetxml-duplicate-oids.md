@@ -104,6 +104,10 @@ without opening the synthetic C-Bus Network.
 
 Rust applies final-submission selection to the captured two-, three- and
 four-Unit shapes with the same OID in one Network and no same-OID pending
-object. Cross-kind, cross-network and five-or-more Unit collision mutations
-remain guarded pending separate native evidence.
+object. A [184-request cross-kind extension](native-cgate-cross-kind-oid-mutations.md)
+establishes that one Application and one Unit sharing an OID select the Unit
+for all five mutation verbs, regardless of their XML submission order; OID
+deletion leaves the Application intact and reload makes it selectable.
+Cross-network, repeated-Application-plus-Unit and five-or-more Unit collision
+mutations remain guarded pending separate native evidence.
 Native file format and physical effects remain outside these captures.

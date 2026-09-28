@@ -10929,12 +10929,20 @@ impl Server {
         units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
     }
 
-    /// The owned native captures establish final-submission selection for
-    /// two to four Units with a shared OID in one Network. Other collision shapes
-    /// remain guarded until their native behavior is witnessed.
+    /// The owned native captures establish Unit-first selection for one Unit
+    /// sharing an OID with one Application, regardless of XML submission
+    /// order, and final-submission selection for two to four Units sharing an
+    /// OID in one Network. Other collision shapes remain guarded.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
         let project = self.current.as_deref()?;
-        if self.pending_object(project, oid).is_some() {
+        let cross_kind = self
+            .db_pending
+            .values()
+            .filter(|object| object.project == project && object.oid == oid)
+            .collect::<Vec<_>>();
+        if !cross_kind.is_empty()
+            && (cross_kind.len() != 1 || cross_kind[0].element != "Application")
+        {
             return None;
         }
         let matches = self
@@ -10950,12 +10958,23 @@ impl Server {
                     .map(move |unit| (*net, unit.address))
             })
             .collect::<Vec<_>>();
-        if !(2..=4).contains(&matches.len())
-            || matches.iter().any(|(network, _)| *network != matches[0].0)
+        if !(if cross_kind.is_empty() {
+            (2..=4).contains(&matches.len())
+        } else {
+            matches.len() == 1
+        }) || matches.iter().any(|(network, _)| *network != matches[0].0)
         {
             return None;
         }
         let net = matches[0].0;
+        if !cross_kind.is_empty()
+            && !cross_kind[0].path.as_deref().is_some_and(|path| {
+                path.strip_prefix(&format!("//{project}/{net}/"))
+                    .is_some_and(|address| address.parse::<u8>().is_ok())
+            })
+        {
+            return None;
+        }
         let network = self.projects.get(project)?.networks.get(&net)?;
         let mut order = network
             .unit_xml_order

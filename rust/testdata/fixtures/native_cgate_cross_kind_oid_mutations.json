@@ -1,0 +1,1893 @@
+{
+  "schema": "native-cgate-cross-kind-oid-mutations-v1",
+  "captured_utc": "2026-09-28T09:01:49.232952+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:49540",
+      "127.0.0.1:49541",
+      "127.0.0.1:49542",
+      "127.0.0.1:49543",
+      "127.0.0.1:49544",
+      "127.0.0.1:49545"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "b0dbc770e478215d430a6a3f4f3fa34419950f430aa898ec5a84b337ae4806db",
+  "exchange_helper_sha256": "5eab7b8f4fd70d90d61fe2356dc239415c4a1501bce285e6a0f11c6598ec466a",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "project": "XCROSS",
+  "shared_oid": "11111111-1111-4111-8111-111111111111",
+  "network_oid": "292315f0-9d49-103f-aca2-825eaa6cff3a",
+  "interface_oid": "29233d00-9d49-103f-aca3-825eaa6cff3a",
+  "setup": [
+    {
+      "tag": 700,
+      "command": "PROJECT NEW XCROSS",
+      "request": "[700] PROJECT NEW XCROSS\r\n",
+      "response_lines": [
+        "[700] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 701,
+      "command": "PROJECT USE XCROSS",
+      "request": "[701] PROJECT USE XCROSS\r\n",
+      "response_lines": [
+        "[701] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 702,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[702] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[702] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+      ]
+    },
+    {
+      "tag": 703,
+      "command": "DBGETXML //XCROSS/254",
+      "request": "[703] DBGETXML //XCROSS/254\r\n",
+      "response_lines": [
+        "[703] 343-Begin XML snippet\r\n",
+        "[703] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[703] 347-<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[703] 344 End XML snippet\r\n"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "set_safe",
+      "submission_order": "application_then_unit",
+      "reset": {
+        "tag": 704,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[704] DBSETXML //XCROSS/254 << END704\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND704\r\n",
+        "response_lines": [
+          "[704] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 705,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[705] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[705] 343-Begin XML snippet\r\n",
+            "[705] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[705] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[705] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 706,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[706] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[706] 343-Begin XML snippet\r\n",
+            "[706] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[706] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[706] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 707,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[707] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[707] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 708,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[708] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[708] 343-Begin XML snippet\r\n",
+          "[708] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[708] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[708] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 709,
+        "command": "DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[709] DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[709] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 710,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[710] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[710] 343-Begin XML snippet\r\n",
+            "[710] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[710] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[710] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 711,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[711] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[711] 343-Begin XML snippet\r\n",
+            "[711] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[711] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[711] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 712,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[712] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[712] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 713,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[713] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[713] 343-Begin XML snippet\r\n",
+          "[713] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[713] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[713] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 714,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[714] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[714] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 715,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[715] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[715] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 716,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[716] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[716] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 717,
+          "command": "PROJECT USE XCROSS",
+          "request": "[717] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[717] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 718,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[718] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[718] 343-Begin XML snippet\r\n",
+            "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[718] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[718] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 719,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[719] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[719] 343-Begin XML snippet\r\n",
+            "[719] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[719] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[719] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 720,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[720] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[720] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 721,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[721] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[721] 343-Begin XML snippet\r\n",
+          "[721] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[721] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[721] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_unsafe",
+      "submission_order": "application_then_unit",
+      "reset": {
+        "tag": 722,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[722] DBSETXML //XCROSS/254 << END722\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND722\r\n",
+        "response_lines": [
+          "[722] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 723,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[723] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[723] 343-Begin XML snippet\r\n",
+            "[723] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[723] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[723] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 724,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[724] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[724] 343-Begin XML snippet\r\n",
+            "[724] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[724] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[724] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 725,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[725] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[725] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 726,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[726] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[726] 343-Begin XML snippet\r\n",
+          "[726] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[726] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[726] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 727,
+        "command": "DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[727] DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[727] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 728,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[728] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[728] 343-Begin XML snippet\r\n",
+            "[728] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[728] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[728] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 729,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[729] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[729] 343-Begin XML snippet\r\n",
+            "[729] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[729] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[729] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 730,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[730] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[730] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 731,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[731] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[731] 343-Begin XML snippet\r\n",
+          "[731] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[731] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[731] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 732,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[732] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[732] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 733,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[733] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[733] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 734,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[734] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[734] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 735,
+          "command": "PROJECT USE XCROSS",
+          "request": "[735] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[735] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 736,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[736] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[736] 343-Begin XML snippet\r\n",
+            "[736] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[736] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[736] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 737,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[737] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[737] 343-Begin XML snippet\r\n",
+            "[737] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[737] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[737] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 738,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[738] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[738] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 739,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[739] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[739] 343-Begin XML snippet\r\n",
+          "[739] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[739] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[739] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_xml",
+      "submission_order": "application_then_unit",
+      "reset": {
+        "tag": 740,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[740] DBSETXML //XCROSS/254 << END740\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND740\r\n",
+        "response_lines": [
+          "[740] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 741,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[741] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[741] 343-Begin XML snippet\r\n",
+            "[741] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[741] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[741] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 742,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[742] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[742] 343-Begin XML snippet\r\n",
+            "[742] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[742] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[742] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 743,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[743] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[743] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 744,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[744] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[744] 343-Begin XML snippet\r\n",
+          "[744] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[744] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[744] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 745,
+        "command": "DBSETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[745] DBSETXML !11111111-1111-4111-8111-111111111111 << END745\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\nEND745\r\n",
+        "response_lines": [
+          "[745] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 746,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[746] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[746] 343-Begin XML snippet\r\n",
+            "[746] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[746] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[746] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 747,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[747] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[747] 343-Begin XML snippet\r\n",
+            "[747] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[747] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[747] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 748,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[748] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[748] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 749,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[749] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[749] 343-Begin XML snippet\r\n",
+          "[749] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[749] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[749] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 750,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[750] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[750] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 751,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[751] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[751] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 752,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[752] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[752] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 753,
+          "command": "PROJECT USE XCROSS",
+          "request": "[753] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[753] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 754,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[754] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[754] 343-Begin XML snippet\r\n",
+            "[754] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[754] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[754] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 755,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[755] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[755] 343-Begin XML snippet\r\n",
+            "[755] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[755] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[755] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 756,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[756] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[756] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 757,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[757] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[757] 343-Begin XML snippet\r\n",
+          "[757] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[757] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[757] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "copy_safe",
+      "submission_order": "application_then_unit",
+      "reset": {
+        "tag": 758,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[758] DBSETXML //XCROSS/254 << END758\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND758\r\n",
+        "response_lines": [
+          "[758] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 759,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[759] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[759] 343-Begin XML snippet\r\n",
+            "[759] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[759] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[759] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 760,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[760] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[760] 343-Begin XML snippet\r\n",
+            "[760] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[760] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[760] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 761,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[761] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[761] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 762,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[762] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[762] 343-Begin XML snippet\r\n",
+          "[762] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[762] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[762] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 763,
+        "command": "DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XCROSS/254 21 Copied",
+        "request": "[763] DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XCROSS/254 21 Copied\r\n",
+        "response_lines": [
+          "[763] 301 OID=295f82b0-9d49-103f-ad40-825eaa6cff3a\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 764,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[764] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[764] 343-Begin XML snippet\r\n",
+            "[764] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[764] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[764] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 765,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[765] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[765] 343-Begin XML snippet\r\n",
+            "[765] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[765] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[765] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 766,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[766] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[766] 343-Begin XML snippet\r\n",
+            "[766] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[766] 347-<Unit><OID>295f82b0-9d49-103f-ad40-825eaa6cff3a</OID><TagName>Copied</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[766] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 767,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[767] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[767] 343-Begin XML snippet\r\n",
+          "[767] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[767] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[767] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 768,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[768] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[768] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 769,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[769] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[769] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 770,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[770] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[770] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 771,
+          "command": "PROJECT USE XCROSS",
+          "request": "[771] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[771] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 772,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[772] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[772] 343-Begin XML snippet\r\n",
+            "[772] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[772] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[772] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 773,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[773] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[773] 343-Begin XML snippet\r\n",
+            "[773] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[773] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[773] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 774,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[774] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[774] 343-Begin XML snippet\r\n",
+            "[774] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[774] 347-<Unit><OID>295f82b0-9d49-103f-ad40-825eaa6cff3a</OID><TagName>Copied</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[774] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 775,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[775] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[775] 343-Begin XML snippet\r\n",
+          "[775] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[775] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[775] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "delete",
+      "submission_order": "application_then_unit",
+      "reset": {
+        "tag": 776,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[776] DBSETXML //XCROSS/254 << END776\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit></Network>\r\nEND776\r\n",
+        "response_lines": [
+          "[776] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 777,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[777] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[777] 343-Begin XML snippet\r\n",
+            "[777] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[777] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[777] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 778,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[778] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[778] 343-Begin XML snippet\r\n",
+            "[778] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[778] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[778] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 779,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[779] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[779] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 780,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[780] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[780] 343-Begin XML snippet\r\n",
+          "[780] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[780] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[780] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 781,
+        "command": "DBDELETE !11111111-1111-4111-8111-111111111111",
+        "request": "[781] DBDELETE !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[781] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 782,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[782] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[782] 343-Begin XML snippet\r\n",
+            "[782] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[782] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[782] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 783,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[783] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[783] 401 Bad object or device ID: Element 20 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 784,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[784] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[784] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 785,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[785] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[785] 401 Bad object or device ID: Element !11111111-1111-4111-8111-111111111111 not found.\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 786,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[786] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[786] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 787,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[787] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[787] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 788,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[788] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[788] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 789,
+          "command": "PROJECT USE XCROSS",
+          "request": "[789] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[789] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 790,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[790] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[790] 343-Begin XML snippet\r\n",
+            "[790] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[790] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[790] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 791,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[791] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[791] 401 Bad object or device ID: Element 20 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 792,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[792] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[792] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 793,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[793] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[793] 343-Begin XML snippet\r\n",
+          "[793] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[793] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+          "[793] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_safe",
+      "submission_order": "unit_then_application",
+      "reset": {
+        "tag": 794,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[794] DBSETXML //XCROSS/254 << END794\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND794\r\n",
+        "response_lines": [
+          "[794] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 795,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[795] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[795] 343-Begin XML snippet\r\n",
+            "[795] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[795] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[795] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 796,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[796] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[796] 343-Begin XML snippet\r\n",
+            "[796] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[796] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[796] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 797,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[797] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[797] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 798,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[798] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[798] 343-Begin XML snippet\r\n",
+          "[798] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[798] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[798] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 799,
+        "command": "DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[799] DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[799] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 800,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[800] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[800] 343-Begin XML snippet\r\n",
+            "[800] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[800] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[800] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 801,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[801] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[801] 343-Begin XML snippet\r\n",
+            "[801] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[801] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[801] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 802,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[802] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[802] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 803,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[803] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[803] 343-Begin XML snippet\r\n",
+          "[803] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[803] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[803] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 804,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[804] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[804] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 805,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[805] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[805] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 806,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[806] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[806] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 807,
+          "command": "PROJECT USE XCROSS",
+          "request": "[807] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[807] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 808,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[808] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[808] 343-Begin XML snippet\r\n",
+            "[808] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[808] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[808] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 809,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[809] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[809] 343-Begin XML snippet\r\n",
+            "[809] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[809] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[809] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 810,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[810] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[810] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 811,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[811] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[811] 343-Begin XML snippet\r\n",
+          "[811] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[811] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[811] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_unsafe",
+      "submission_order": "unit_then_application",
+      "reset": {
+        "tag": 812,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[812] DBSETXML //XCROSS/254 << END812\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND812\r\n",
+        "response_lines": [
+          "[812] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 813,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[813] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[813] 343-Begin XML snippet\r\n",
+            "[813] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[813] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[813] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 814,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[814] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[814] 343-Begin XML snippet\r\n",
+            "[814] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[814] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[814] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 815,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[815] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[815] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 816,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[816] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[816] 343-Begin XML snippet\r\n",
+          "[816] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[816] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[816] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 817,
+        "command": "DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[817] DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[817] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 818,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[818] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[818] 343-Begin XML snippet\r\n",
+            "[818] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[818] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[818] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 819,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[819] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[819] 343-Begin XML snippet\r\n",
+            "[819] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[819] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[819] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 820,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[820] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[820] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 821,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[821] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[821] 343-Begin XML snippet\r\n",
+          "[821] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[821] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[821] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 822,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[822] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[822] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 823,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[823] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[823] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 824,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[824] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[824] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 825,
+          "command": "PROJECT USE XCROSS",
+          "request": "[825] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[825] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 826,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[826] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[826] 343-Begin XML snippet\r\n",
+            "[826] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[826] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[826] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 827,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[827] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[827] 343-Begin XML snippet\r\n",
+            "[827] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[827] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[827] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 828,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[828] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[828] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 829,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[829] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[829] 343-Begin XML snippet\r\n",
+          "[829] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[829] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[829] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_xml",
+      "submission_order": "unit_then_application",
+      "reset": {
+        "tag": 830,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[830] DBSETXML //XCROSS/254 << END830\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND830\r\n",
+        "response_lines": [
+          "[830] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 831,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[831] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[831] 343-Begin XML snippet\r\n",
+            "[831] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[831] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[831] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 832,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[832] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[832] 343-Begin XML snippet\r\n",
+            "[832] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[832] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[832] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 833,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[833] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[833] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 834,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[834] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[834] 343-Begin XML snippet\r\n",
+          "[834] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[834] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[834] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 835,
+        "command": "DBSETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[835] DBSETXML !11111111-1111-4111-8111-111111111111 << END835\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\nEND835\r\n",
+        "response_lines": [
+          "[835] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 836,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[836] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[836] 343-Begin XML snippet\r\n",
+            "[836] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[836] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[836] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 837,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[837] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[837] 343-Begin XML snippet\r\n",
+            "[837] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[837] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[837] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 838,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[838] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[838] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 839,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[839] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[839] 343-Begin XML snippet\r\n",
+          "[839] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[839] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[839] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 840,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[840] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[840] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 841,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[841] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[841] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 842,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[842] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[842] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 843,
+          "command": "PROJECT USE XCROSS",
+          "request": "[843] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[843] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 844,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[844] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[844] 343-Begin XML snippet\r\n",
+            "[844] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[844] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[844] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 845,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[845] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[845] 343-Begin XML snippet\r\n",
+            "[845] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[845] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[845] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 846,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[846] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[846] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 847,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[847] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[847] 343-Begin XML snippet\r\n",
+          "[847] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[847] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[847] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "copy_safe",
+      "submission_order": "unit_then_application",
+      "reset": {
+        "tag": 848,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[848] DBSETXML //XCROSS/254 << END848\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND848\r\n",
+        "response_lines": [
+          "[848] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 849,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[849] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[849] 343-Begin XML snippet\r\n",
+            "[849] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[849] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[849] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 850,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[850] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[850] 343-Begin XML snippet\r\n",
+            "[850] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[850] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[850] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 851,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[851] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[851] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 852,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[852] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[852] 343-Begin XML snippet\r\n",
+          "[852] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[852] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[852] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 853,
+        "command": "DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XCROSS/254 21 Copied",
+        "request": "[853] DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XCROSS/254 21 Copied\r\n",
+        "response_lines": [
+          "[853] 301 OID=29835e60-9d49-103f-ae45-825eaa6cff3a\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 854,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[854] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[854] 343-Begin XML snippet\r\n",
+            "[854] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[854] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[854] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 855,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[855] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[855] 343-Begin XML snippet\r\n",
+            "[855] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[855] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[855] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 856,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[856] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[856] 343-Begin XML snippet\r\n",
+            "[856] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[856] 347-<Unit><OID>29835e60-9d49-103f-ae45-825eaa6cff3a</OID><TagName>Copied</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[856] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 857,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[857] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[857] 343-Begin XML snippet\r\n",
+          "[857] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[857] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[857] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 858,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[858] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[858] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 859,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[859] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[859] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 860,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[860] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[860] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 861,
+          "command": "PROJECT USE XCROSS",
+          "request": "[861] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[861] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 862,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[862] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[862] 343-Begin XML snippet\r\n",
+            "[862] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[862] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[862] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 863,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[863] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[863] 343-Begin XML snippet\r\n",
+            "[863] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[863] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[863] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 864,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[864] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[864] 343-Begin XML snippet\r\n",
+            "[864] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[864] 347-<Unit><OID>29835e60-9d49-103f-ae45-825eaa6cff3a</OID><TagName>Copied</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[864] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 865,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[865] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[865] 343-Begin XML snippet\r\n",
+          "[865] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[865] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[865] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "delete",
+      "submission_order": "unit_then_application",
+      "reset": {
+        "tag": 866,
+        "command": "DBSETXML //XCROSS/254",
+        "request": "[866] DBSETXML //XCROSS/254 << END866\r\n<Network><OID>292315f0-9d49-103f-aca2-825eaa6cff3a</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>29233d00-9d49-103f-aca3-825eaa6cff3a</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\nEND866\r\n",
+        "response_lines": [
+          "[866] 301 OID=292315f0-9d49-103f-aca2-825eaa6cff3a\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 867,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[867] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[867] 343-Begin XML snippet\r\n",
+            "[867] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[867] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[867] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 868,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[868] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[868] 343-Begin XML snippet\r\n",
+            "[868] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[868] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[868] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 869,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[869] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[869] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 870,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[870] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[870] 343-Begin XML snippet\r\n",
+          "[870] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[870] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+          "[870] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 871,
+        "command": "DBDELETE !11111111-1111-4111-8111-111111111111",
+        "request": "[871] DBDELETE !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[871] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 872,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[872] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[872] 343-Begin XML snippet\r\n",
+            "[872] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[872] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[872] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 873,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[873] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[873] 401 Bad object or device ID: Element 20 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 874,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[874] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[874] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 875,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[875] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[875] 401 Bad object or device ID: Element !11111111-1111-4111-8111-111111111111 not found.\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 876,
+          "command": "PROJECT SAVE XCROSS",
+          "request": "[876] PROJECT SAVE XCROSS\r\n",
+          "response_lines": [
+            "[876] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 877,
+          "command": "PROJECT CLOSE XCROSS",
+          "request": "[877] PROJECT CLOSE XCROSS\r\n",
+          "response_lines": [
+            "[877] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 878,
+          "command": "PROJECT LOAD XCROSS",
+          "request": "[878] PROJECT LOAD XCROSS\r\n",
+          "response_lines": [
+            "[878] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 879,
+          "command": "PROJECT USE XCROSS",
+          "request": "[879] PROJECT USE XCROSS\r\n",
+          "response_lines": [
+            "[879] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 880,
+          "command": "DBGETXML //XCROSS/254/56",
+          "request": "[880] DBGETXML //XCROSS/254/56\r\n",
+          "response_lines": [
+            "[880] 343-Begin XML snippet\r\n",
+            "[880] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[880] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+            "[880] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 881,
+          "command": "DBGETXML //XCROSS/254/p/20",
+          "request": "[881] DBGETXML //XCROSS/254/p/20\r\n",
+          "response_lines": [
+            "[881] 401 Bad object or device ID: Element 20 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 882,
+          "command": "DBGETXML //XCROSS/254/p/21",
+          "request": "[882] DBGETXML //XCROSS/254/p/21\r\n",
+          "response_lines": [
+            "[882] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 883,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[883] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[883] 343-Begin XML snippet\r\n",
+          "[883] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[883] 347-<Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\n",
+          "[883] 344 End XML snippet\r\n"
+        ]
+      }
+    }
+  ]
+}

@@ -223,7 +223,7 @@ formats remain unverified.
 An owned follow-up capture pins Application/Unit and two-Unit shared OIDs,
 distinct Unit scalar/PP readback, last-Unit OID lookup, save/reload identity,
 and path-targeted replacement of one duplicate Unit. Address-keyed Unit
-metadata retains those cases in cmqttd. A later owned
+metadata retains those cases in cmqttd. The [184-request cross-kind mutation capture](../../../../toolkit-cli/docs/native-cgate-cross-kind-oid-mutations.md) pins all five OID-targeted writes to the Unit, Application preservation, and Application fallback after reload in either XML order. A later owned
 [67-request nested-Application capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-applications.md)
 adds independent Group and NetVar children beneath repeated-OID Applications,
 with direct replacement and save/reload. Other duplicate forms still return

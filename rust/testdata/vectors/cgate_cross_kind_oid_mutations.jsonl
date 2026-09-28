@@ -1,0 +1,10 @@
+{"name":"application_then_unit_set_safe","command":"DBSETSAFE","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"application_then_unit_set_unsafe","command":"DBSET","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"application_then_unit_set_xml","command":"DBSETXML","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"application_then_unit_copy_safe","command":"DBCOPYSAFE","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"application_then_unit_delete","command":"DBDELETE","oid_before":"Unit","oid_after":401,"oid_after_reload":"Application"}
+{"name":"unit_then_application_set_safe","command":"DBSETSAFE","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"unit_then_application_set_unsafe","command":"DBSET","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"unit_then_application_set_xml","command":"DBSETXML","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"unit_then_application_copy_safe","command":"DBCOPYSAFE","oid_before":"Unit","oid_after":"Unit","oid_after_reload":"Unit"}
+{"name":"unit_then_application_delete","command":"DBDELETE","oid_before":"Unit","oid_after":401,"oid_after_reload":"Application"}
