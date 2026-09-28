@@ -15,7 +15,7 @@
     "path": "/private/tmp/cbus-parity-final-20260928/rust/target/release/cgate-mock",
     "sha256": "bcb2735f18c1f9711729cfec32737d4314f3536d55dfd9da9f4371eb19733a4b"
   },
-  "source_revision": "2e0c8e14252cdf2e6d58eaa8f3ead7e44e6ee869",
+  "source_revision": "30867e2b4be5af0b5f303f5a8ff6d77090acfff8",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "b2a2be997813cc94c43c6bc47a82055eabdfcc66aa05f919e04447f7d2312fe7",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",

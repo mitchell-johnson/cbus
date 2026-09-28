@@ -240,10 +240,11 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertEqual(report["scope_items"]["unresolved"], 22156)
         self.assertEqual(report["source_inventory"]["total_domains"], 15)
         self.assertEqual(report["source_inventory"]["resolved_domains"], 0)
-        self.assertEqual(report["evidence_records"], 1)
+        self.assertEqual(report["evidence_records"], 2)
         self.assertEqual(
             report["acceptance_by_dimension"]["original_differential"]["accepted"], 3
         )
+        self.assertEqual(report["acceptance_by_dimension"]["physical"]["not_applicable"], 3)
         self.assertEqual(report["cgate_contracts"]["paths"], 442)
         self.assertEqual(
             report["cgate_contracts"]["subaxis_status"][
@@ -272,10 +273,12 @@ class ParityRegisterTests(unittest.TestCase):
         )
         self.assertEqual(report["evidence_records"], len(evidence["records"]))
 
-    def test_session_function_pilot_has_only_scoped_differential_evidence(self):
+    def test_session_function_pilot_has_scoped_differential_and_physical_decisions(self):
         register, evidence, _, _, _, _, _ = packaged_documents()
-        self.assertEqual(len(evidence["records"]), 1)
+        self.assertEqual(len(evidence["records"]), 2)
         self.assertEqual(evidence["records"][0]["dimensions"], ["original_differential"])
+        self.assertEqual(evidence["records"][1]["dimensions"], [])
+        self.assertEqual(len(evidence["records"][1]["applicability_receipts"]), 3)
         self.assertFalse(register["census_complete"])
         functions = {
             item["source_id"]: item
@@ -292,15 +295,17 @@ class ParityRegisterTests(unittest.TestCase):
                 self.assertEqual(obligation["applicability_status"], "unresolved")
                 self.assertEqual(
                     obligation["applicability"]["physical_candidate"],
-                    "not_applicable_pending_receipt",
+                    "not_applicable_verified",
                 )
                 self.assertEqual(obligation["acceptance"]["original_differential"], "accepted")
+                self.assertEqual(obligation["acceptance"]["physical"], "not_applicable")
                 self.assertEqual(
                     {value for key, value in obligation["acceptance"].items()
-                     if key != "original_differential"}, {"unassessed"}
+                     if key not in {"original_differential", "physical"}}, {"unassessed"}
                 )
                 self.assertEqual(obligation["evidence_ids"],
-                                 ["evidence:cgate-session-id-loopback-differential-v1"])
+                                 ["evidence:cgate-session-id-loopback-differential-v1",
+                                  "evidence:cgate-session-id-physical-applicability-v1"])
                 broad = next(
                     item for item in register["obligations"]
                     if item.get("kind") == "cgate_path" and item["source_id"] == path
@@ -329,6 +334,29 @@ class ParityRegisterTests(unittest.TestCase):
             with patch.object(register_builder, "SESSION_DIFFERENTIAL_PATH", partial):
                 with self.assertRaisesRegex(ValueError, "case evidence changed"):
                     register_builder.session_differential_evidence()
+
+    def test_session_physical_applicability_rejects_stale_or_missing_receipt(self):
+        with TemporaryDirectory() as folder:
+            missing = Path(folder, "missing.json")
+            with patch.object(register_builder, "SESSION_PHYSICAL_PATH", missing):
+                with self.assertRaises(FileNotFoundError):
+                    register_builder.session_physical_applicability_evidence()
+
+            report = json.loads(register_builder.SESSION_PHYSICAL_PATH.read_text())
+            report["source_inputs"]["contract_inventory"] = "0" * 64
+            stale = Path(folder, "stale.json")
+            stale.write_text(json.dumps(report))
+            with patch.object(register_builder, "SESSION_PHYSICAL_PATH", stale):
+                with self.assertRaisesRegex(ValueError, "report is stale"):
+                    register_builder.session_physical_applicability_evidence()
+
+            report = json.loads(register_builder.SESSION_PHYSICAL_PATH.read_text())
+            report["cases"][0]["applicability_receipts"][0]["decision"] = "accepted"
+            altered = Path(folder, "altered.json")
+            altered.write_text(json.dumps(report))
+            with patch.object(register_builder, "SESSION_PHYSICAL_PATH", altered):
+                with self.assertRaisesRegex(ValueError, "report is stale"):
+                    register_builder.session_physical_applicability_evidence()
 
     def test_session_function_pilot_rejects_broken_packaged_anchors(self):
         def first_function(register):
@@ -363,7 +391,9 @@ class ParityRegisterTests(unittest.TestCase):
             evaluate_packaged_change(register)
 
         register, *_ = packaged_documents()
-        first_function(register)["acceptance"]["physical"] = "not_applicable"
+        first_function(register)["evidence_ids"].remove(
+            "evidence:cgate-session-id-physical-applicability-v1"
+        )
         with self.assertRaisesRegex(ValueError, "lacks a passed not-applicable decision"):
             evaluate_packaged_change(register)
 

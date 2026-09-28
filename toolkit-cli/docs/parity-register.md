@@ -47,9 +47,10 @@ changes no provisional source count, and supplies no physical cache readback.
   provisional scope mappings and obligation records. It contains one
   source-bound provisional obligation for each of the 442 C-Gate paths, the
   39 historical umbrella obligations, and three scoped `SESSION_ID` functions.
-- `src/cbus_toolkit/parity-evidence.json` contains one scoped, source-bound
-  `SESSION_ID` original-differential receipt. Historical paths and test
-  filenames remain outside acceptance evidence.
+- `src/cbus_toolkit/parity-evidence.json` contains a scoped, source-bound
+  `SESSION_ID` original-differential receipt and a separate physical
+  applicability decision. Historical paths and test filenames remain outside
+  acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
 - `src/cbus_toolkit/cgate-contract-inventory.json` contains one versioned,
   digest-bound contract record for each of the 431 primary and 11 supplement
@@ -68,6 +69,10 @@ changes no provisional source count, and supplies no physical cache readback.
   pre-fix mock receipt and separate green mock and production cmqttd receipts.
   The builder checks the nine-case cmqttd receipt against the current source
   fingerprint before crediting the three scoped functions.
+- `research/cgate_session_physical_applicability.py` verifies the retained
+  native loopback capture, the three pinned path contracts and their resolved
+  no-bus-I/O boundary. Its report records a separate physical
+  `not_applicable` decision for each narrow session function.
 - `docs/toolkit-executable-surface.json` is the sanitized Toolkit 1.18.0
   executable inventory. It records names and hashes for 412 parsed Delphi form
   resources, 10,102 component/control instances and 1,892 event bindings.
@@ -183,10 +188,11 @@ but native tag-prefix framing remains outside this receipt. The refreshed
 source-bound receipt compares the internal Console row and requires CRLF from
 both Rust servers; the prior external-row-only receipts are stale.
 The three implementation statuses remain `in_progress`; the
-broad path contracts remain provisional. Their physical behavior is a candidate for
-not-applicable because the observed native operations used no physical network,
-but `physical` stays `unassessed` and applicability stays `unresolved` until a
-passed, dimension-specific applicability receipt exists. TLS, non-loopback
+broad path contracts remain provisional. A second, source-bound offline report
+verifies that this owned loopback profile has no bus-I/O boundary and records
+`physical: not_applicable` for each of the three functions. This is an
+applicability decision, not a physical-device test. Broader applicability
+remains unresolved. TLS, non-loopback
 peers, ACCESS/LOGIN variants and broader response/event behavior remain open.
 The pilot raises the register to 484 obligations, with 3 defined and 0 fully
 accepted. `census_complete` and functional percentages remain false/null.
@@ -299,8 +305,10 @@ evidence.
 
 The current register has 39 provisional umbrella obligations, 442 provisional
 C-Gate path obligations and three defined `SESSION_ID` functions, with zero
-fully accepted obligations and one evidence receipt. That receipt accepts only
-the original-differential dimension of the three scoped functions. The 484 records overlap and
+fully accepted obligations and two evidence records. One accepts only
+the original-differential dimension of the three scoped functions; the other
+marks their physical dimension not applicable to the owned loopback profile.
+The 484 records overlap and
 are not a deduplicated functional denominator. All 22,156 source records and
 15 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract

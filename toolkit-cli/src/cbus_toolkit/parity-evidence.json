@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "2e0c8e14252cdf2e6d58eaa8f3ead7e44e6ee869",
+      "source_revision": "30867e2b4be5af0b5f303f5a8ff6d77090acfff8",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin ../rust/target/release/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "report_verification": {
@@ -49,11 +49,82 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "2156c0eb8f7a7b02743c804fef6b54242ecc069f27ccd334f52764b7e0f7d853"
+          "sha256": "2bdbf7d65b3dc4bb4c1dd10da1da5f32157850cfd6afa84ff19c993a79ce5a11"
         }
       ],
       "skips": [],
-      "record_sha256": "ef7d0ed4907bdcd2ff17dfb1bc110ca260055fcbaebc44f482ff7b6d7066a9d9"
+      "record_sha256": "8f1385625f680cac5c60cc47e15fe25af9c775efce9f7154df8251939a1feabf"
+    },
+    {
+      "id": "evidence:cgate-session-id-physical-applicability-v1",
+      "obligation_ids": [
+        "cgate-function:session-id-all",
+        "cgate-function:session-id-query",
+        "cgate-function:session-id-tag"
+      ],
+      "scope_disposition_receipts": [],
+      "applicability_receipts": [
+        {
+          "obligation_id": "cgate-function:session-id-query",
+          "dimension": "physical",
+          "decision": "not_applicable",
+          "reason": "The source-bound C-Gate contract classifies this query as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+        },
+        {
+          "obligation_id": "cgate-function:session-id-all",
+          "dimension": "physical",
+          "decision": "not_applicable",
+          "reason": "The source-bound C-Gate contract classifies this listing as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+        },
+        {
+          "obligation_id": "cgate-function:session-id-tag",
+          "dimension": "physical",
+          "decision": "not_applicable",
+          "reason": "The source-bound C-Gate contract classifies this tag operation as command-session-only with no bus I/O, and the native capture opened no physical network. A passed not-applicable receipt is still required."
+        }
+      ],
+      "dimensions": [],
+      "result": "passed",
+      "test_ids": [
+        "research/cgate_session_physical_applicability.py::SESSION_ID",
+        "research/cgate_session_physical_applicability.py::SESSION_ID-ALL",
+        "research/cgate_session_physical_applicability.py::SESSION_ID-TAG"
+      ],
+      "environment": {
+        "kind": "offline",
+        "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
+      },
+      "source_revision": "30867e2b4be5af0b5f303f5a8ff6d77090acfff8",
+      "command": "PYTHONPATH=src python research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
+      "exit_code": 0,
+      "report_verification": {
+        "format": "cbus-parity-test-report-v1",
+        "path": "research/fixtures/cgate-session-physical-applicability.json"
+      },
+      "artifacts": [
+        {
+          "role": "input",
+          "path": "research/experiments/2026-09-25/cgate-session-native-acceptance.json",
+          "sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
+        },
+        {
+          "role": "input",
+          "path": "research/functional-obligation-pilot.json",
+          "sha256": "fda1a42a05e5f51920dbd5e80e03179ad22e16d82b91e88417fd6462783936b5"
+        },
+        {
+          "role": "input",
+          "path": "src/cbus_toolkit/cgate-contract-inventory.json",
+          "sha256": "0b65a82d80c30e64163fa2eb4594d918e9df072650ce1260c90ade818f168a8c"
+        },
+        {
+          "role": "report",
+          "path": "research/fixtures/cgate-session-physical-applicability.json",
+          "sha256": "e24c6afe4b42bfd31418004fdce389e1314a811cc077c16db54565fb21f63fcb"
+        }
+      ],
+      "skips": [],
+      "record_sha256": "3bc3230978337a22b36aa3d9761861b7fafc4bbf38ed7d849cef682e9d85ec4d"
     }
   ]
 }

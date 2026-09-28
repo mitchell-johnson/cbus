@@ -1059,8 +1059,9 @@ def validate_register(
                 "unresolved_profiles",
             }:
                 raise ValueError(f"{obligation_id} requires independent applicability fields")
-            if applicability["physical_candidate"] != "not_applicable_pending_receipt":
-                raise ValueError(f"{obligation_id} must not accept physical N/A without evidence")
+            candidate = applicability["physical_candidate"]
+            if candidate not in {"not_applicable_pending_receipt", "not_applicable_verified"}:
+                raise ValueError(f"{obligation_id} has an unknown physical applicability decision")
             if obligation.get("applicability_status") != "unresolved":
                 raise ValueError(f"{obligation_id} applicability remains unresolved until reviewed")
             for key in ("profile", "physical_candidate_reason"):
@@ -1145,6 +1146,13 @@ def validate_register(
             ):
                 raise ValueError(
                     f"{obligation_id}.{dimension} lacks a passed not-applicable decision"
+                )
+        if obligation.get("kind") == "cgate_function":
+            candidate = obligation["applicability"]["physical_candidate"]
+            physical = acceptance["physical"]
+            if (candidate == "not_applicable_verified") != (physical == "not_applicable"):
+                raise ValueError(
+                    f"{obligation_id} physical applicability status differs from its receipt"
                 )
         obligations_by_id[obligation_id] = obligation
     for evidence_id, record in evidence_by_id.items():
