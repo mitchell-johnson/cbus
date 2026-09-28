@@ -5,13 +5,13 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "62e23d49422cbe27a1232d6580d6104ece99c684c64a8a1a3c93ed72aca8550f"
+      "sha256": "e3aca7d984e98a12d1afa0adc1aec5578918bf42518e8a6677ca6ab9b9607406"
     },
     "manual": {
       "sha256": "fdf01acf8dd3eb037c469732e4cbf36cbaef7ca19612fd9ffedebc196248758c"
     },
     "service": {
-      "sha256": "28b6dc0e161afe5cc4851c4737b45f5a736158da0162d96bde779273bafb079c"
+      "sha256": "bb7d02da1789afe34b58e40abfb39455322da9c616680e6f1d208ff95ad8af40"
     },
     "event_mode": {
       "sha256": "815d4e6a16248b656aaddc1d8cebbaff4f517b2df36d93cadb26ecd511bde0df"
@@ -12146,7 +12146,7 @@
       "id": "cgate-contract:7963ba4f1f49fd77",
       "path": "CONFIG OBSET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, performs no runtime reconfiguration or PCI I/O, and requires LOGIN when armed.",
+      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; only command.show-responses and command.show-time take effect at the next startup, and LOGIN is required when armed.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -12310,7 +12310,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, performs no runtime reconfiguration or PCI I/O, and requires LOGIN when armed."
+                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; only command.show-responses and command.show-time take effect at the next startup, and LOGIN is required when armed."
               }
             }
           }
@@ -12342,8 +12342,8 @@
           }
         }
       },
-      "axes_sha256": "8b86821e8ca48a0eb4972357d059d2bdb81416dcd80ab1435e1d442918f2499b",
-      "contract_sha256": "fbab82a61ce2b38303b430cc9cfc3e01d6f68415862f97eca81b539f5f3d8336"
+      "axes_sha256": "ddd9fa597c23533b6d01e54ec1406ea973156b314ddafec8c3de49e4592ba49f",
+      "contract_sha256": "4da9455daf79fe69b588e031170bb08b92da6cdb64e973fdf60bb8c9d059f450"
     },
     {
       "id": "cgate-contract:e90b43df5fe2f03e",
@@ -12552,7 +12552,7 @@
       "id": "cgate-contract:926bd1e76aca5431",
       "path": "CONFIG SET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; values are command data rather than cmqttd runtime settings, and mutation requires LOGIN when armed.",
+      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; only command.show-responses and command.show-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -12716,7 +12716,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; values are command data rather than cmqttd runtime settings, and mutation requires LOGIN when armed."
+                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; only command.show-responses and command.show-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed."
               }
             }
           }
@@ -12748,8 +12748,8 @@
           }
         }
       },
-      "axes_sha256": "57745d093b3fc319467c6cbb8a9b1719fd730211a74395de90ac5abbe40f09b7",
-      "contract_sha256": "026c5b75583482ec5c492ae538356c67ab70359d546fc554cc8e9aa89ffd9c6b"
+      "axes_sha256": "04bc044126de75e6c753e07ebe36b7bb9a59f8ef8e8dc5022929cdd13fc1b921",
+      "contract_sha256": "146dd5ae4042895f6c4726b0c5ee66a05128cee09ebb8c980b1e3ba7ff2a9c09"
     },
     {
       "id": "cgate-contract:8adb7edfc88fd891",
