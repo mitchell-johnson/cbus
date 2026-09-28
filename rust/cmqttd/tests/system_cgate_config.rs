@@ -538,12 +538,18 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     let capabilities = command(&mut reader, &mut writer, "caps", "CMQTT CAPABILITIES").await;
     let capabilities: serde_json::Value =
         serde_json::from_str(capabilities[0].strip_prefix("200-").unwrap()).unwrap();
+    assert_eq!(capabilities["config_event_transport_server"], true);
+    assert_eq!(capabilities["config_event_transport_socket"], true);
+    assert_eq!(capabilities["config_event_catalogue_complete"], false);
     assert_eq!(
         capabilities["config_restart_effects"],
         serde_json::json!([
             "command.show-responses",
             "command.show-time",
+            "event-host",
             "event-millis",
+            "event-mode",
+            "event-port",
             "global-event-level",
             "heartbeat-time",
             "project.default",

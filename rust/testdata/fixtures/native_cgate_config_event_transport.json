@@ -1,0 +1,141 @@
+{
+  "schema": "native-cgate-config-event-transport-v1",
+  "captured_utc": "2026-09-28T11:20:21.387453+00:00",
+  "scope": "Owned loopback event server levels 0/3/5/9 and one outbound socket at level 5; no site project or C-Bus endpoint",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "capture_script_sha256": "6134ce15c2d8276a2abaea16f43f07c007c7fa8d636bc48c7aaa4e2837a3d149",
+    "physical_endpoint": false,
+    "children": {
+      "server_0": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      },
+      "server_3": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      },
+      "server_5": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      },
+      "server_9": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      },
+      "socket": {
+        "listener_ownership_verified": true,
+        "cleanup_complete": true,
+        "process_exit_confirmed": true,
+        "work_removed": true
+      }
+    }
+  },
+  "server": {
+    "0": {
+      "level": 0,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "no_event_greeting": true,
+      "broadcast_response": [
+        "[broadcast] 200 OK."
+      ],
+      "quit_response": [
+        "[quit] 204 Closing connection."
+      ],
+      "events": [],
+      "same_process_config": {}
+    },
+    "3": {
+      "level": 3,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "no_event_greeting": true,
+      "broadcast_response": [
+        "[broadcast] 200 OK."
+      ],
+      "quit_response": [
+        "[quit] 204 Closing connection."
+      ],
+      "events": [
+        "20260929-002015.703 703 cmd3 - broadcast_event SP class level-3"
+      ],
+      "same_process_config": {}
+    },
+    "5": {
+      "level": 5,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "no_event_greeting": true,
+      "broadcast_response": [
+        "[broadcast] 200 OK."
+      ],
+      "quit_response": [
+        "[quit] 204 Closing connection."
+      ],
+      "events": [
+        "20260929-002016.993 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 53086",
+        "20260929-002017.257 703 cmd3 - broadcast_event SP class level-5",
+        "20260929-002017.514 804 cmd3 - Host:/127.0.0.1 closed command interface from port: 53086"
+      ],
+      "same_process_config": {
+        "mode_set": [
+          "[mode] 200 OK."
+        ],
+        "host_set": [
+          "[host] 200 OK."
+        ],
+        "port_set": [
+          "[port] 200 OK."
+        ],
+        "old_event_port_still_accepts": true,
+        "new_event_port_unbound": true
+      }
+    },
+    "9": {
+      "level": 9,
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "no_event_greeting": true,
+      "broadcast_response": [
+        "[broadcast] 200 OK."
+      ],
+      "quit_response": [
+        "[quit] 204 Closing connection."
+      ],
+      "events": [
+        "20260929-002018.542 766 cmd3 - Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "20260929-002018.803 761 cmd3 - Command: [broadcast] BROADCAST_EVENT SP class level-9",
+        "20260929-002018.804 703 cmd3 - broadcast_event SP class level-9",
+        "20260929-002018.804 766 cmd3 - Response: [broadcast] 200 OK.",
+        "20260929-002019.056 761 cmd3 - Command: [quit] QUIT",
+        "20260929-002019.056 766 cmd3 - Response: [quit] 204 Closing connection.",
+        "20260929-002019.056 804 cmd3 - Host:/127.0.0.1 closed command interface from port: 53103"
+      ],
+      "same_process_config": {}
+    }
+  },
+  "socket": {
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "sink_peer_ip": "127.0.0.1",
+    "broadcast_response": [
+      "[broadcast] 200 OK."
+    ],
+    "quit_response": [
+      "[quit] 204 Closing connection."
+    ],
+    "events": [
+      "20260929-002020.079 800 cgate - C-Gate started.",
+      "20260929-002020.129 803 cmd3 - Host:/127.0.0.1 opened command interface from port: 53121",
+      "20260929-002020.393 703 cmd3 - broadcast_event SP class socket",
+      "20260929-002020.652 804 cmd3 - Host:/127.0.0.1 closed command interface from port: 53121"
+    ]
+  }
+}

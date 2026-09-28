@@ -5,6 +5,7 @@ mod discover;
 mod gateway;
 mod setup;
 
+use cbus_cgate::service::StartupEventTransport;
 use cbus_transport::conn::{self};
 use cbus_transport::pci::{CBusEvent, PciClient};
 use clap::Parser;
@@ -166,6 +167,34 @@ async fn main() {
                 })?;
             let listener = tokio::net::TcpListener::bind(bind).await?;
             tracing::info!("C-Gate service listening on {}", listener.local_addr()?);
+            match service.startup_event_transport() {
+                StartupEventTransport::Server { port } => {
+                    // Test deployments with an ephemeral command bind also
+                    // receive an ephemeral event port when CONFIG retains its
+                    // native default. A configured nondefault port is exact.
+                    let port = if port == 20024 && bind.ends_with(":0") { 0 } else { port };
+                    let address = std::net::SocketAddr::new(listener.local_addr()?.ip(), port);
+                    match tokio::net::TcpListener::bind(address).await {
+                        Ok(event_listener) => {
+                            tracing::info!("C-Gate event service listening on {}", event_listener.local_addr()?);
+                            let events = service.clone();
+                            tokio::spawn(async move {
+                                if let Err(error) = events.serve_event_server(event_listener).await {
+                                    tracing::error!("C-Gate event listener failed: {error}");
+                                }
+                            });
+                        }
+                        Err(error) => tracing::error!("C-Gate event listener disabled: {error}"),
+                    }
+                }
+                StartupEventTransport::Socket { host, port } => {
+                    let events = service.clone();
+                    tokio::spawn(async move { events.serve_event_socket(host, port).await });
+                }
+                StartupEventTransport::Disabled { reason } => {
+                    tracing::error!("C-Gate event transport disabled: {reason}");
+                }
+            }
             let running = service.clone();
             tokio::spawn(async move {
                 let result = match tls {

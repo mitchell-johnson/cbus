@@ -8,6 +8,7 @@ services:
     restart: always
     ports:
       - "127.0.0.1:20023:20023"
+      - "127.0.0.1:20024:20024"
     environment:
       CMQTTD_CGATE_BIND: ${CMQTTD_CGATE_BIND:-0.0.0.0:20023}
       CMQTTD_CGATE_STATE: /var/lib/cmqttd/cgate.json

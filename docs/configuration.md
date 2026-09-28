@@ -32,7 +32,7 @@ Use `--project-file project.cbz` or a bare project XML file for human-readable l
 
 ## Docker
 
-Copy `.env.example` to `.env` and set at least `MQTT_SERVER` plus `CNI_ADDR` or `SERIAL_PORT`. `docker compose up --build` uses a private bridge network, with outbound access to the configured CNI and broker. C-Gate port 20023 is published on the host's `127.0.0.1` only. Use reachable LAN addresses for the broker and CNI; container localhost is not the host's localhost.
+Copy `.env.example` to `.env` and set at least `MQTT_SERVER` plus `CNI_ADDR` or `SERIAL_PORT`. `docker compose up --build` uses a private bridge network, with outbound access to the configured CNI and broker. C-Gate command port 20023 and default event port 20024 are published on the host's `127.0.0.1` only. Use reachable LAN addresses for the broker and CNI; container localhost is not the host's localhost.
 
 Release builds should record the exact tested Git commit in the image:
 
@@ -84,8 +84,11 @@ file. `--cgate-state FILE` selects its persistent database; the default is
 `cmqttd-data/cgate.json`. `--cgate-unitspec DIR` supplies optional private decoded
 vendor schemas for PP INFO/defaults and physical PP LOAD. The container entrypoint
 passes `/etc/cmqttd/unitspec` automatically when that directory exists. Compose enables the service when a project is present, using
-`CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and a loopback-only host
-port. Set that variable to `off` for MQTT only. State lives in the named
+`CMQTTD_CGATE_BIND=0.0.0.0:20023` inside the container and loopback-only host
+ports 20023 (command) and 20024 (default event server). A saved nondefault
+`CONFIG event-port` needs a corresponding Compose port mapping; socket mode
+instead connects to its configured sink. Set `CMQTTD_CGATE_BIND=off` for MQTT
+only. State lives in the named
 `cmqttd_data` volume; do not delete that volume when recreating containers.
 The embedded C-Gate CONFIG catalogue/snapshots, FILE virtual filesystem, and
 ACCESS rows/snapshots also live in this atomic state file. FILE paths are

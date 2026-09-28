@@ -17248,7 +17248,10 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
         serde_json::json!([
             "command.show-responses",
             "command.show-time",
+            "event-host",
             "event-millis",
+            "event-mode",
+            "event-port",
             "global-event-level",
             "heartbeat-time",
             "project.default",

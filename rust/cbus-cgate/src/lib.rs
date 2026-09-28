@@ -379,11 +379,11 @@ pub fn event_category(line: &str) -> EventCategory {
 
 /// Reporting level encoded by a native timestamped event envelope.
 ///
-/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...`. The native
-/// levels of the locally captured event forms are not always the last
-/// status-code digit: heartbeat 700 is level 5, while command traces 761,
-/// 766, and 767 are level 9. Other 7xx codes retain the existing code-digit
-/// fallback until their levels are separately established.
+/// C-Gate's event wire form is `#e# YYYYMMDD-HHMMSS.mmm 7xx ...` or a captured
+/// 8xx lifecycle row. The native levels of the locally captured event forms
+/// are not always the last status-code digit: heartbeat 700 and startup 800
+/// are level 5, while command traces 761, 766, and 767 are level 9. Other 7xx
+/// codes retain the existing code-digit fallback until separately established.
 pub fn event_reporting_level(line: &str) -> Option<u8> {
     let body = line.strip_prefix("#e# ").unwrap_or(line);
     let mut fields = body.splitn(3, ' ');
@@ -400,12 +400,13 @@ pub fn event_reporting_level(line: &str) -> Option<u8> {
     let code_bytes = code.as_bytes();
     if !(valid_timestamp
         && code_bytes.len() == 3
-        && code_bytes[0] == b'7'
+        && matches!(code_bytes[0], b'7' | b'8')
         && code_bytes[1..].iter().all(u8::is_ascii_digit))
     {
         return None;
     }
-    Some(source_captured_event_level(code, payload).unwrap_or(code_bytes[2] - b'0'))
+    source_captured_event_level(code, payload)
+        .or_else(|| (code_bytes[0] == b'7').then_some(code_bytes[2] - b'0'))
 }
 
 /// The startup global-level claim is intentionally limited to source-captured
@@ -421,6 +422,9 @@ fn captured_global_event_level(line: &str) -> Option<u8> {
 
 fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
     let (source, text) = payload.split_once(" - ")?;
+    if code == "800" && source == "cgate" && text == "C-Gate started." {
+        return Some(5);
+    }
     if code == "700" && source == "cgate" && text == "Heartbeat." {
         return Some(5);
     }
@@ -433,6 +437,18 @@ fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
         "761" if text.starts_with("Command: ") => Some(9),
         "766" if text.starts_with("Response: ") => Some(9),
         "767" if text.starts_with("commandId=") => Some(9),
+        "803"
+            if text.starts_with("Host:/")
+                && text.contains(" opened command interface from port: ") =>
+        {
+            Some(5)
+        }
+        "804"
+            if text.starts_with("Host:/")
+                && text.contains(" closed command interface from port: ") =>
+        {
+            Some(5)
+        }
         _ => None,
     }
 }

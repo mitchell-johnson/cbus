@@ -95,7 +95,7 @@ use std::{
     time::{Duration, Instant},
 };
 use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+    io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     net::{lookup_host, TcpListener, TcpStream},
     sync::{broadcast, mpsc, oneshot, Mutex, RwLock, Semaphore},
 };
@@ -680,6 +680,14 @@ pub struct ClientState {
 
 type PendingLightingRamps = HashMap<(u8, u8), (u64, oneshot::Sender<()>)>;
 
+/// Event transport selected from durable CONFIG once when the daemon starts.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum StartupEventTransport {
+    Server { port: u16 },
+    Socket { host: String, port: u16 },
+    Disabled { reason: String },
+}
+
 /// One real, explicitly selected C-Bus network, shared with the MQTT gateway.
 pub struct Service {
     model: Mutex<Server>,
@@ -689,6 +697,7 @@ pub struct Service {
     command_show_responses: bool,
     command_show_time: bool,
     event_millis: bool,
+    startup_event_transport: StartupEventTransport,
     /// The native e+ selector samples this global value at startup, despite
     /// CONFIG INFO describing the parameter as effective immediately.
     global_event_level: u8,
@@ -1792,6 +1801,36 @@ impl Service {
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let event_millis = config_parameter("event-millis")
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
+        let event_mode = config_parameter("event-mode")
+            .map(|parameter| config_global_value(&model, parameter))
+            .unwrap_or_else(|| "server".to_string());
+        let event_port = config_parameter("event-port")
+            .map(|parameter| config_global_value(&model, parameter))
+            .unwrap_or_else(|| "20024".to_string())
+            .parse::<u16>()
+            .ok()
+            .filter(|port| *port != 0);
+        let startup_event_transport = match (event_mode.as_str(), event_port) {
+            ("server", Some(port)) => StartupEventTransport::Server { port },
+            ("socket", Some(port)) => {
+                let host = config_parameter("event-host")
+                    .map(|parameter| config_global_value(&model, parameter))
+                    .unwrap_or_else(|| "localhost".to_string());
+                if host.is_empty() {
+                    StartupEventTransport::Disabled {
+                        reason: "saved CONFIG event-host is empty".to_string(),
+                    }
+                } else {
+                    StartupEventTransport::Socket { host, port }
+                }
+            }
+            (_, None) => StartupEventTransport::Disabled {
+                reason: "saved CONFIG event-port is not a valid nonzero TCP port".to_string(),
+            },
+            _ => StartupEventTransport::Disabled {
+                reason: format!("saved CONFIG event-mode is unsupported: {event_mode}"),
+            },
+        };
         // The owned startup sweep covers 0..9 and the numeric boundaries -1
         // and 10. Native startup with text or blank throws NumberFormatException
         // before opening its command listeners. Keep Service construction
@@ -1838,6 +1877,7 @@ impl Service {
             command_show_responses,
             command_show_time,
             event_millis,
+            startup_event_transport,
             global_event_level,
             global_event_level_invalid,
             heartbeat_interval,
@@ -1872,6 +1912,12 @@ impl Service {
     /// global event level is nonnumeric. The bridge may still run MQTT/PCI.
     pub fn global_event_listener_invalid(&self) -> bool {
         self.global_event_level_invalid
+    }
+
+    /// Return the CONFIG transport selected at startup. SET and LOAD update
+    /// GET immediately but do not move a running event connection or listener.
+    pub fn startup_event_transport(&self) -> StartupEventTransport {
+        self.startup_event_transport.clone()
     }
 
     async fn startup_default_for_loaded_project(&self) -> Option<String> {
@@ -2962,10 +3008,16 @@ impl Service {
             capabilities["config_command_admission_hostnames"] = serde_json::Value::Bool(true);
             capabilities["config_command_admission_tls"] = serde_json::Value::Bool(true);
             capabilities["config_command_admission_ipv4_mapped"] = serde_json::Value::Bool(true);
+            capabilities["config_event_transport_server"] = serde_json::Value::Bool(true);
+            capabilities["config_event_transport_socket"] = serde_json::Value::Bool(true);
+            capabilities["config_event_catalogue_complete"] = serde_json::Value::Bool(false);
             capabilities["config_restart_effects"] = serde_json::json!([
                 "command.show-responses",
                 "command.show-time",
+                "event-host",
                 "event-millis",
+                "event-mode",
+                "event-port",
                 "global-event-level",
                 "heartbeat-time",
                 "project.default",
@@ -13401,6 +13453,85 @@ impl Service {
         }
     }
 
+    /// Native event-port server mode: a read-only stream of bare CRLF event
+    /// rows, with no greeting or command replies. The independent connection
+    /// limit prevents unread event clients from exhausting command slots.
+    pub async fn serve_event_server(self: Arc<Self>, listener: TcpListener) -> io::Result<()> {
+        self.start_heartbeat();
+        let slots = Arc::new(Semaphore::new(64));
+        loop {
+            let permit = slots
+                .clone()
+                .acquire_owned()
+                .await
+                .map_err(io::Error::other)?;
+            let (stream, _) = listener.accept().await?;
+            let service = self.clone();
+            tokio::spawn(async move {
+                let _permit = permit;
+                if let Err(error) = service.event_stream(stream, false).await {
+                    tracing::debug!("C-Gate event-port client ended: {error}");
+                }
+            });
+        }
+    }
+
+    /// Native socket mode connects to one configured host/port and streams
+    /// events outward. Failed or lost event delivery never tears down MQTT or
+    /// the shared PCI; there is no event replay after reconnect.
+    pub async fn serve_event_socket(self: Arc<Self>, host: String, port: u16) {
+        self.start_heartbeat();
+        let mut startup_pending = true;
+        loop {
+            let connected = tokio::time::timeout(
+                Duration::from_secs(5),
+                TcpStream::connect((host.as_str(), port)),
+            )
+            .await;
+            match connected {
+                Ok(Ok(stream)) => {
+                    let result = self.clone().event_stream(stream, startup_pending).await;
+                    startup_pending = false;
+                    if let Err(error) = result {
+                        tracing::warn!("C-Gate event socket disconnected: {error}");
+                    }
+                }
+                Ok(Err(error)) => tracing::warn!("C-Gate event socket unavailable: {error}"),
+                Err(_) => tracing::warn!("C-Gate event socket connect timed out"),
+            }
+            tokio::time::sleep(Duration::from_secs(5)).await;
+        }
+    }
+
+    async fn event_stream(self: Arc<Self>, stream: TcpStream, startup: bool) -> io::Result<()> {
+        let mut events = self.events.subscribe();
+        let (mut reader, mut writer) = stream.into_split();
+        if startup && self.global_event_level >= 5 {
+            let line = format!("{} 800 cgate - C-Gate started.\r\n", self.event_timestamp());
+            writer.write_all(line.as_bytes()).await?;
+        }
+        let mut input = [0u8; 1024];
+        loop {
+            tokio::select! {
+                read = reader.read(&mut input) => {
+                    if read? == 0 { return Ok(()); }
+                    // Native event sockets ignore received command text.
+                }
+                event = events.recv() => match event {
+                    Ok(event) => {
+                        if let Some(line) = cgate_event_delivery(EventMode::DEFAULT, self.global_event_level, &event) {
+                            let line = line.strip_prefix("#e# ").unwrap_or(line);
+                            tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{line}\r\n").as_bytes()))
+                                .await.map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "C-Gate event sink is not reading"))??;
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Lagged(_)) => return Err(io::Error::other("C-Gate event queue overflow")),
+                    Err(broadcast::error::RecvError::Closed) => return Ok(()),
+                }
+            }
+        }
+    }
+
     fn event_timestamp(&self) -> String {
         let now = Local::now();
         if self.event_millis {
@@ -13519,6 +13650,7 @@ impl Service {
             origin,
             local.ip(),
             peer.ip(),
+            peer.port(),
         )
         .await
     }
@@ -13537,6 +13669,7 @@ impl Service {
             origin,
             local.ip(),
             peer.ip(),
+            peer.port(),
         )
         .await
     }
@@ -13549,6 +13682,7 @@ impl Service {
         origin: String,
         local_address: std::net::IpAddr,
         remote_address: std::net::IpAddr,
+        remote_port: u16,
     ) -> io::Result<()>
     where
         R: tokio::io::AsyncRead + Unpin,
@@ -13580,6 +13714,10 @@ impl Service {
         }
         let command_session = self.command_sessions.lock().await.register(origin);
         client.command_session = Some(command_session);
+        let _ = self.events.send(format!(
+            "#e# {} 803 cmd{command_session} - Host:/{remote_address} opened command interface from port: {remote_port}",
+            self.event_timestamp()
+        ));
         let mut pending_line = Vec::new();
         let mut graceful_close = false;
         let result = async {
@@ -13729,6 +13867,10 @@ impl Service {
             model.locks.remove(&name);
         }
         drop(model);
+        let _ = self.events.send(format!(
+            "#e# {} 804 cmd{command_session} - Host:/{remote_address} closed command interface from port: {remote_port}",
+            self.event_timestamp()
+        ));
         if graceful_close {
             tokio::time::timeout(Duration::from_secs(10), writer.shutdown())
                 .await

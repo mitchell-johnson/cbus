@@ -173,7 +173,7 @@ while cmqttd returns 408 so clients do not hang.
 CONFIG state is command compatibility data in cmqttd's atomic JSON repository.
 `LOAD` and `SAVE` retain native response ordering but use bounded internal
 snapshots; a supplied filename is only an identity and is never opened on the
-host. Seven source-captured global restart effects are implemented. The listener emits native
+host. Ten source-captured global restart effects are implemented. The listener emits native
 `761 cmdN - Command: ...` entries and, when its startup
 `command.show-responses` value is `yes` (the native default), a `766`
 entry for each reply line, including multiline replies and errors. Setting it
@@ -245,8 +245,10 @@ counts, `config_persistence="cmqttd-json"`,
 `config_runtime_reconfiguration=false`,
 `config_command_admission_numeric_ip=true`,
 `config_command_admission_localhost=true`,
-`config_command_admission_hostnames=false`,
-`config_restart_effects=["command.show-responses","command.show-time","event-millis","global-event-level","heartbeat-time","project.default","project.start"]`,
+`config_command_admission_hostnames=true`, `config_command_admission_tls=true`,
+`config_command_admission_ipv4_mapped=true`,
+`config_event_transport_server=true`, `config_event_transport_socket=true`, `config_event_catalogue_complete=false`,
+`config_restart_effects=["command.show-responses","command.show-time","event-host","event-millis","event-mode","event-port","global-event-level","heartbeat-time","project.default","project.start"]`,
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
 and the separate owned restart captures

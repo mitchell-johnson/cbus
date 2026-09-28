@@ -214,7 +214,7 @@ For Docker, copy `.env.example` to `.env`, configure your broker and C-Bus endpo
 
 ### Use cmqttd as the CLI's server
 
-Enable `--cgate-bind 127.0.0.1:20023` together with `--project-file house.cbz`. The daemon imports your project into a persistent database and serves the Toolkit CLI while continuing MQTT on the same PCI/CNI connection. Docker Compose enables this listener and stores the database in the `cmqttd_data` volume.
+Enable `--cgate-bind 127.0.0.1:20023` together with `--project-file house.cbz`. The daemon imports your project into a persistent database and serves the Toolkit CLI while continuing MQTT on the same PCI/CNI connection. The default C-Gate event server listens separately on port 20024; saved `CONFIG event-mode=socket` sends events to a configured host and port after restart. Docker Compose publishes both default ports on host loopback and stores the database in the `cmqttd_data` volume.
 
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 project list
