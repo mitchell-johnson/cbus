@@ -9,25 +9,26 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "rust_artifact": {
     "path": "/private/tmp/cbus-parity-final-20260928/rust/target/release/cgate-mock",
-    "sha256": "bc09aabe63e9e2f3aca7148bd728183bb737b87823a5ae8d021e2e4147a2109b",
+    "sha256": "a0e6a83bd6f5add96ba70e1d57f981524b06f10b44209e27906f7c8da2f1a48e",
     "provenance": "current-build"
   },
-  "source_revision": "ce9003a18594649129c909da53d42b135907c508",
+  "source_revision": "5a931d3a212e34b2df1fb23ad9f456b87e1eb892",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "b2a2be997813cc94c43c6bc47a82055eabdfcc66aa05f919e04447f7d2312fe7",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "bf4f90d80eebf9c478ff9cd1be8a25a698e5a3989f70e58f98e25b2a8db2e28a",
+    "rust/cbus-cgate/research/native_admin_authorization_probe.py": "83a8082602a9da5a3cbd0ff62d2bfd1677aa35dc4c5097ca584d95b12742cd18",
     "rust/cbus-cgate/research/native_authorization_matrix_expansion.py": "d416b1aca61bc071772cac3e32090ec67895fad7efe35cffd6cffd7d64e701d2",
     "rust/cbus-cgate/research/native_media_authorization_probe.py": "65d1ed4996caa84e78df890832d973f5bdcbbbf692e52a8df8abad03e34a8bce",
     "rust/cbus-cgate/research/native_programming_authorization_probe.py": "d678d7673045ee89361140af5f22edaec4d8922d88879e591864f23f7f75d365",
-    "rust/cbus-cgate/src/access.rs": "76c468ad8574b288787e5f39b510deffd6e826e1cdbaf28c881e9f3c3be54acf",
+    "rust/cbus-cgate/src/access.rs": "4dbd51c4688f896049af3ba049c28c886363e2624463aacccaafe926b2c0d54c",
     "rust/cbus-cgate/src/auth.rs": "292f88233343040c0453672269ac5f0d605d1f314d7fc04aab9ccf2faac135f8",
     "rust/cbus-cgate/src/capability_matrix.rs": "041c2b827315a8393b66b8e721d2919c6095104139e4b5aa73dddbaa9ab3de21",
     "rust/cbus-cgate/src/config.rs": "dc5524f5ac7a9934f92bf894fab56a972c4da3ecf9323fed4b4225332125790a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "c2c740c6faff7e48e3ac8b307860b4bc3f428494df6ae16a2ef535760c622f9c",
-    "rust/cbus-cgate/src/lib.rs": "024d9725d62318f045efe3d91b9f44493bee6bc2ffa0e108db1fe5658be07344",
+    "rust/cbus-cgate/src/lib.rs": "b74913a80d4b68092391faddd68e9475d1f985bffb8efab969ad494876872ca3",
     "rust/cbus-cgate/src/main.rs": "c283a230ade13eee06839d53f58ab4793c7afc192e9196c3ef595adc083b27b9",
     "rust/cbus-cgate/src/manual.rs": "0e95958c2f9e68ca0e618124db9b797946729fd1aa7b2ece7115981b2d7c6f15",
     "rust/cbus-cgate/src/port.rs": "44c6f3f952e6d2330a29c19616c32d5245454a7cab3327b2d895815d7ad33924",
@@ -38,7 +39,7 @@
     "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
     "rust/cbus-cgate/src/service/net_lifecycle.rs": "408434ff835df6d5cf5aa1a83133d335696dc83b17e49d618ccada665ec5bb1b",
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
-    "rust/cbus-cgate/src/service/tests.rs": "04f3a47bec56ad640008dccf8be548ad65aca36cc78c451b5eafddb9af3b1fef",
+    "rust/cbus-cgate/src/service/tests.rs": "8b3cec9aeb300a50dd607b7ea6927dac1b76a65a0558bedd85b3d5b2bdac149e",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
     "rust/cbus-cgate/src/service.rs": "b3b421596e8567b1e8054bf03ea882ef1973d8586181fd6e13a94541f903336b",
     "rust/cbus-cgate/src/show.rs": "19dc904dbe016c925c9972dc01e6423d9a2b2f0a7083bae9dbc9d12f8b7eeb5d",
@@ -95,6 +96,7 @@
     "rust/cbus-transport/src/plan.rs": "4012775d240b6484fc3b83744a1afcf6701a4aa8bcd1228cb002a63e1edebc0f",
     "rust/cbus-transport/src/serial_address.rs": "7d667f4365208d28dfed708eed6efd38ca7fd9f66c63765c1d81f00cfad01cdf",
     "rust/cbus-transport/src/verify.rs": "9dae9b0d241708b150c2d5666690794d70de795a042690fc164edb6dc7121efd",
+    "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
     "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json": "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e",
     "rust/testdata/fixtures/native_cgate_authorization_probe.json": "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0",
     "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
@@ -129,8 +131,8 @@
     "b": "201 Service ready\r\n"
   },
   "peer_ports": {
-    "a": 59617,
-    "b": 59619
+    "a": 63180,
+    "b": 63182
   },
   "cases": [
     {
@@ -184,9 +186,9 @@
         "[502] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b>\r\n"
       ],
       "rust_wire_reply": [
-        "[502] 300-sessionID=cmd1 origin=internal from=20260928-185555 tag=Console\r\n",
-        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:59617 from=20260928-185555\r\n",
-        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:59619 from=20260928-185555\r\n"
+        "[502] 300-sessionID=cmd1 origin=internal from=20260928-194015 tag=Console\r\n",
+        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:63180 from=20260928-194015\r\n",
+        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:63182 from=20260928-194015\r\n"
       ],
       "result": "passed"
     },
@@ -241,9 +243,9 @@
         "[504] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[504] 300-sessionID=cmd1 origin=internal from=20260928-185555 tag=Console\r\n",
-        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:59617 from=20260928-185555 tag=native-a\r\n",
-        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:59619 from=20260928-185555 tag=native-b\r\n"
+        "[504] 300-sessionID=cmd1 origin=internal from=20260928-194015 tag=Console\r\n",
+        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:63180 from=20260928-194015 tag=native-a\r\n",
+        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:63182 from=20260928-194015 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -264,9 +266,9 @@
         "[603] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[603] 300-sessionID=cmd1 origin=internal from=20260928-185555 tag=Console\r\n",
-        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:59617 from=20260928-185555 tag=native-a\r\n",
-        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:59619 from=20260928-185555 tag=native-b\r\n"
+        "[603] 300-sessionID=cmd1 origin=internal from=20260928-194015 tag=Console\r\n",
+        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:63180 from=20260928-194015 tag=native-a\r\n",
+        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:63182 from=20260928-194015 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -304,9 +306,9 @@
         "[604] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[604] 300-sessionID=cmd1 origin=internal from=20260928-185555 tag=Console\r\n",
-        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:59617 from=20260928-185555 tag=native-a\r\n",
-        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:59619 from=20260928-185555 tag=native-b\r\n"
+        "[604] 300-sessionID=cmd1 origin=internal from=20260928-194015 tag=Console\r\n",
+        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:63180 from=20260928-194015 tag=native-a\r\n",
+        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:63182 from=20260928-194015 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -354,5 +356,5 @@
   "offline_provision": {
     "physical_networks_opened": false
   },
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin ../rust/target/release/cgate-mock --cmqttd-bin ../rust/target/release/cmqttd --output-dir research/fixtures"
+  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /private/tmp/cbus-parity-final-20260928/rust/target/release/cgate-mock --cmqttd-bin /private/tmp/cbus-parity-final-20260928/rust/target/release/cmqttd --output-dir research/fixtures"
 }
