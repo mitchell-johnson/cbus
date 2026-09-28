@@ -94,9 +94,10 @@ as evidence for the user's 90% target. Record implementation, original
 comparison and physical acceptance separately for each functional obligation.
 Preserve wider gaps in both the backlog and the public status output.
 
-### R2 — P1, draft only: update-diagnostic provenance is not bound
+### R2 — historical draft update-diagnostic provenance defect
 
-The unmerged `toolkit_update_bundle.py` composer (lines 82–193 at review)
+At the original review, the unmerged `toolkit_update_bundle.py` composer
+(lines 82–193 at review)
 accepts four parsed objects separately from four byte strings. It hashes the
 strings without proving they decode to the supplied objects. It matches the
 selected node ID and two self-reported metadata hashes, but never matches
@@ -110,13 +111,14 @@ of serialized reports. The draft still reports trust/install claims false,
 so this is an incorrect diagnostic-linkage claim, not an observed installation
 or publisher-trust bypass.
 
-**Required action:** parse exact bounded raw documents inside the composer;
-reject duplicate keys and ambiguous identities; bind selected metadata to the
-catalogue response; explicitly verify the revocation and condition references.
-If the source reports cannot provide those links, report independent,
-unverified component provenance and keep linked completion false. Add
-cross-version same-ID, substituted bytes, mismatched source, missing receipt,
-and unrelated revocation/condition tests before merging.
+The integrated v4 composer now parses exact bounded raw documents, rejects
+duplicate keys and ambiguous identities, binds selected metadata to the
+catalogue response, and requires matching condition and revocation receipts.
+The 2026-09-28 P9.01 review and focused adversarial tests also pin condition
+source representation and the unverified revocation request-subject boundary.
+Unlinked reports keep `diagnostics_complete=false`. An integrated installed
+wheel and CI receipt is still needed before closing [#60](https://github.com/mitchell-johnson/cbus/issues/60).
+This diagnostic work does not establish publisher trust or installation parity.
 
 ### R3 — P1: primary command routing does not cover valid selectors
 
@@ -247,7 +249,7 @@ baseline merely because its focused tests passed.
 | `codex/parity-next-20260927` | Explicit row-ratio threshold, evidence-path checks | Retain arithmetic as an optional category statistic; replace the proposed completion policy. Add 35/39 versus 36/39, combined flags, NaN/infinity, empty/duplicate/unknown-status ledger tests if merging the gate |
 | `codex/promote-network-rows` | Committed `ffe7c21`: explicit routed PCI WRITE and ACK correlation | Review native command/ACK semantics, integrate focused behavior with existing reads, run full gates. Remove bulk promotions as a route to functional completion; make the acceptance command reproducible |
 | `codex/promote-offline-20260927` | Encoding audit; Unicode Description metadata; optional template project save; whole-project CSV selection; thermostat order postcondition; repair-shape draft | Split into reviewable changes, add missing repair tests and native persistence/order evidence; retain admitted profile limits |
-| `codex/ui-row-closures-20260927` | Sequential network diagnostics and SENPILL inspection | Integrate after review and full gates as bounded functions. Keep update bundle blocked on R2; neither inspector closes the broader family |
+| `codex/ui-row-closures-20260927` | Sequential network diagnostics and SENPILL inspection | Integrate after review and applicable gates as bounded functions. The R2 source fix is integrated separately; neither inspector closes the broader family |
 
 Reported focused results from the implementation agents: offline combined
 slice **129 passed, 25 skipped, 3,374 subtests**; network diagnostics
@@ -638,7 +640,7 @@ exchange remains intact after each workflow.
 **Owns:** Python preferences, Windows workers, metadata/trust/update modules.
 **Depends on:** P1; independent of most physical C-Bus work.
 
-- [ ] **P9.01** ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) — Fix R2 before integrating the diagnostic bundle.
+- [ ] **P9.01** ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) — Verify the integrated R2 diagnostic-bundle provenance fix with an installed artifact and final acceptance receipt.
 - [ ] **P9.02** ([#61](https://github.com/mitchell-johnson/cbus/issues/61)) — Validate all preference runtime effects and interactive-user registry
   behavior, including the original lazy wrapper, culture and repeated reads.
 - [ ] **P9.03** ([#62](https://github.com/mitchell-johnson/cbus/issues/62)) — Bind catalogue, signed metadata, revocation, conditions and package bytes to
@@ -770,7 +772,7 @@ this report update does not claim these changes have been implemented.
 | B1 — P0.01–P0.04 | Add the obligation register/schema and inventory reconciliation in the Python coverage/census tooling. Map all 39 rows, 431 paths, 118 dialog candidates and the undocumented/crosscutting inventory; identify unresolved source domains explicitly. | No orphaned inventory entry or duplicate obligation; no inferred hardware exclusion; all remaining functions mapped to owners, CLI/service outcomes and required cases. A partial first register must still report the census incomplete. |
 | B2 — P0.05, P11.01 | Make progress validation consume the obligation/evidence records. Extend `tests/test_coverage_require_complete.py` and `tests/test_differential_matrix.py`; keep category counts separately named. | Missing/stale/tampered evidence, required skips, unknown scope and an incomplete child case all prevent completion. Boundary and malformed-input tests cover any retained percentage option; 35/39 must fail a 90% category threshold and 36/39 pass it without implying functional parity. |
 | B3 — P1.05 | Change `.github/workflows/ci.yml` to build `cbus-cgate` **and** `cmqttd` for Python interop, add clean installed-wheel execution, and separate provisioned release gates from offline CI. | `test_rust_cgate_interop.py` and `test_cmqtt_interop.py` demonstrably execute; a missing required binary/provision fails the relevant gate. Wheel tests cannot import `src/`. Release gating preserves the direct completion command's nonzero exit. |
-| B4 — P9.01 | Repair the unmerged `toolkit_update_bundle.py` provenance composer before integrating it. Parse the exact raw inputs and verify all catalogue/metadata/revocation/condition links or retain an explicitly incomplete result. | R2 no longer reproduces; substituted raw bytes, duplicate keys, same-ID/different-version sources, missing links and unrelated reports fail linked completion. Valid linked fixtures still pass; no trust/install claim is added without its own evidence. |
+| B4 — P9.01 | Verify the integrated `toolkit_update_bundle.py` provenance composer against an installed artifact. It parses exact raw inputs and verifies catalogue/metadata/revocation/condition links or retains an explicitly incomplete result. | R2 no longer reproduces; substituted raw bytes, duplicate keys, same-ID/different-version sources, missing links and unrelated reports fail linked completion. Valid linked fixtures still pass; no trust/install claim is added without its own evidence. |
 | B5 — P3.01, P4.01 | Review and integrate routed WRITE from the network draft; expand the real Python → cmqttd → independent PCI interop seam from `direct` to the other nine admitted programming methods. | Exact route/unit/parameter/tag/count correlation, stale/foreign replies, disconnect and ambiguous send tested. All ten methods cross the real service boundary; scripted PCI results remain distinct from physical acceptance. |
 | B6 — P5.04–P5.06, P8.01/P8.02/P8.05 | Split the offline/UI drafts into bounded changes: encoding audit; template Unicode/save; whole-project CSV; thermostat ordering; repair shape validation; SENPILL inspection; network diagnostics. | Each change has its own native scope and negative tests. Add dedicated repair tests, independent project reload after template save and original report/thermostat ordering evidence. Do not include unsupported broad row promotions. |
 | B7 — P1.01–P1.04 | Create a private provision inventory and sanitized receipts for pinned native services, Windows workers, specifications and required devices/routes. Schedule native captures and missing hardware access early. | For every required case, identify the original artifact/fixture, operator prerequisites and runnable harness or explicit blocker. An unavailable fixture stays open; the house's devices do not define the supported product domain. |
