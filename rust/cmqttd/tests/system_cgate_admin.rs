@@ -203,6 +203,196 @@ async fn four_shared_unit_oids_select_last_submission_over_the_daemon_listener()
 }
 
 #[tokio::test]
+async fn ten_shared_unit_oids_select_last_submission_and_reload_prior_unit() {
+    let state = cbus_test_support::proc::temp_path("cgate-ten-shared-oids.json");
+    let options = || Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    };
+    let mut sys = start_with(options()).await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| line.split_once("C-Gate service listening on "))
+        .map(|(_, address)| address.trim().to_string())
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+    for (tag, text) in [
+        ("1", "PROJECT NEW OIDTEN"),
+        ("2", "PROJECT USE OIDTEN"),
+        ("3", "DBCREATENET 254 Local Cni 127.0.0.1:1"),
+    ] {
+        let reply = command(&mut reader, &mut writer, tag, text).await;
+        assert!(
+            reply.last().unwrap().contains("200 OK") || reply.last().unwrap().contains("301 OID="),
+            "{text}: {reply:?}"
+        );
+    }
+    let shared = "11111111-1111-4111-8111-111111111111";
+    // The owned native case submits 22 last and retains 28 immediately before it.
+    let units = [29, 27, 25, 20, 24, 21, 26, 23, 28, 22]
+        .into_iter()
+        .map(|address| {
+            format!(
+                "<Unit><OID>{shared}</OID><TagName>Unit{address}</TagName><Address>{address}</Address><UnitType>KEYE1</UnitType><UnitName>Unit{address} room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"{address}\"/></Unit>"
+            )
+        })
+        .collect::<String>();
+    let network = format!(
+        "<Network><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>{units}</Network>"
+    );
+    writer
+        .write_all(format!("[4] DBSETXML //OIDTEN/254 << END\r\n{network}\r\nEND\r\n").as_bytes())
+        .await
+        .unwrap();
+    let mut reply = String::new();
+    reader.read_line(&mut reply).await.unwrap();
+    assert_eq!(
+        reply,
+        "[4] 301 OID=22222222-2222-4222-8222-222222222222\r\n"
+    );
+    let selected = command(
+        &mut reader,
+        &mut writer,
+        "5",
+        &format!("DBGETXML !{shared}"),
+    )
+    .await;
+    assert!(
+        selected
+            .iter()
+            .any(|line| line.contains("<Address>22</Address>")),
+        "{selected:?}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "6",
+            &format!("DBSETSAFE !{shared}/UnitName ByOID")
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[6] 200 OK."
+    );
+    let prior = command(&mut reader, &mut writer, "7", "DBGETXML //OIDTEN/254/p/28").await;
+    assert!(prior
+        .iter()
+        .any(|line| line.contains("<UnitName>Unit28 room</UnitName>")));
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "8",
+            &format!("DBDELETE !{shared}")
+        )
+        .await
+        .last()
+        .unwrap(),
+        "[8] 200 OK."
+    );
+    let missing = command(
+        &mut reader,
+        &mut writer,
+        "9",
+        &format!("DBGETXML !{shared}"),
+    )
+    .await;
+    assert!(missing.last().unwrap().contains("401 "), "{missing:?}");
+    for (tag, text) in [
+        ("10", "PROJECT SAVE OIDTEN"),
+        ("11", "PROJECT CLOSE OIDTEN"),
+        ("12", "PROJECT LOAD OIDTEN"),
+        ("13", "PROJECT USE OIDTEN"),
+    ] {
+        let reply = command(&mut reader, &mut writer, tag, text).await;
+        assert!(
+            reply
+                .last()
+                .unwrap()
+                .starts_with(&format!("[{tag}] 200 OK")),
+            "{text}: {reply:?}"
+        );
+    }
+    let reloaded = command(
+        &mut reader,
+        &mut writer,
+        "14",
+        &format!("DBGETXML !{shared}"),
+    )
+    .await;
+    assert!(
+        reloaded
+            .iter()
+            .any(|line| line.contains("<Address>28</Address>")),
+        "{reloaded:?}"
+    );
+    drop(reader);
+    drop(writer);
+    drop(sys);
+
+    sys = start_with(options()).await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener after restart", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| line.split_once("C-Gate service listening on "))
+        .map(|(_, address)| address.trim().to_string())
+        .unwrap();
+    let stream = TcpStream::connect(address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert_eq!(greeting, "201 cmqttd C-Gate service ready\r\n");
+    assert_eq!(
+        command(&mut reader, &mut writer, "15", "PROJECT USE OIDTEN")
+            .await
+            .last()
+            .unwrap(),
+        "[15] 200 OK."
+    );
+    let selected = command(
+        &mut reader,
+        &mut writer,
+        "16",
+        &format!("DBGETXML !{shared}"),
+    )
+    .await;
+    assert!(
+        selected
+            .iter()
+            .any(|line| line.contains("<Address>28</Address>")),
+        "{selected:?}"
+    );
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}
+
+#[tokio::test]
 async fn application_and_unit_shared_oid_mutations_preserve_application_over_daemon_listener() {
     let state = cbus_test_support::proc::temp_path("cgate-cross-kind-oid.json");
     let mut sys = start_with(Options {

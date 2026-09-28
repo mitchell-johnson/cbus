@@ -38,3 +38,10 @@ Rust now admits the observed two-through-ten-Unit same-Network shapes. Eleven
 or more same-OID Units remain guarded. This capture does not establish wider
 cross-Network collisions, descendant collisions, physical behavior, or
 additional XML shapes.
+
+The production `cmqttd --cgate-bind` test
+`ten_shared_unit_oids_select_last_submission_and_reload_prior_unit` also
+exercises a ten-Unit replacement over TCP, OID-targeted mutation and deletion,
+the `401` gap before reload, Unit 28 selection after project reload, and that
+selection after a daemon restart using its durable JSON repository. This is a
+synthetic local service test, not independent native or hardware acceptance.
