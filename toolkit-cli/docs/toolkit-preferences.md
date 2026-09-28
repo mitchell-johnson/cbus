@@ -77,8 +77,10 @@ HKCU/HKLM precedence, the initial unnamed/default writes on load, or the
 backend construction, successful reset and save, and a second load after a
 stored value changes. The shared bounded token decoder has mocked Win32 ABI
 tests; equivalent process-token checks have separate native evidence in update
-commands. This new preference-command wiring has not yet been accepted in an
-interactive Windows session. See the [P9.02 admission receipt](../research/experiments/2026-09-28/preference-user-admission.json).
+commands. The guarded two-load command now has bounded acceptance in an
+interactive Windows session; save and reset have not received that same gate.
+See the [P9.02 admission receipt](../research/experiments/2026-09-28/preference-user-admission.json)
+and [interactive repeated-load receipt](../research/experiments/2026-09-28/preference-interactive-repeat.json).
 
 A later [owned Windows wheel run](../research/experiments/2026-09-28/preference-native-repeat.json)
 exercised `registry-load --repeat-once` under the UTM guest agent's LocalSystem
@@ -88,6 +90,16 @@ written `ShowProjectManager=True`, and removed its disposable Registry32 HKCU
 test subtree. Independent before/after reads found the fixed Toolkit keys
 unchanged. This is native command and adapter evidence for that process
 context; it does not establish interactive-user or original GUI parity.
+
+A separate [interactive wheel run](../research/experiments/2026-09-28/preference-interactive-repeat.json)
+launched the same bounded command under the active non-System Windows console
+user's primary token in session 1, on `WinSta0\Default`. It used a fresh
+hash-pinned wheel and an owned Registry32 HKCU test subtree. All 14 checks
+passed, including both 40-value fixture comparisons, first default write,
+second direct read, independent fixed-key and state-file preservation, SID
+admission and scratch-key cleanup. The original Toolkit GUI was not run under
+that account, so its startup, lazy preference wrapper, culture and runtime
+effects remain separate acceptance work.
 
 The adapter explicitly requests the 32-bit registry view. Reads retain the bytes returned by `RegQueryValueExW`. String writes require valid terminated UTF-16 before any key is opened, including two terminators for `REG_MULTI_SZ`. This follows the [Microsoft write contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw); existing malformed strings can still be observed through the raw adapter, as allowed by the [query contract](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regqueryvalueexw).
 

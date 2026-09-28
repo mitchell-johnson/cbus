@@ -113,17 +113,21 @@ interactive preferences/settings behavior from this condition-checker evidence.
 For effectful `preferences registry-load`, `registry-save`, and
 `reset-dont-ask-again`, `--expected-user-sid` optionally checks this CLI
 process's primary-token SID before the registry backend is constructed.
-`registry-load` can itself write defaults. The guard has portable tests, but
-interactive Windows preference-command acceptance and original GUI user-context
-parity remain open; it does not attest thread impersonation or a desktop session.
+`registry-load` can itself write defaults. The guard has portable tests and
+the two-load command passed a bounded interactive Windows wheel run under
+the active console user's primary token. Save/reset and original GUI
+user-context parity remain open; the guard alone does not attest thread
+impersonation or a desktop session.
 `preferences registry-load STATE.json --repeat-once` makes the original
 manager's bounded first-write/second-read case explicit: the first completed
 load supplies the second load's current values, both receipts are returned,
 and an incomplete first pass stops. This can write defaults twice and is not
 an atomic snapshot or proof of the original GUI's preference wrapper.
-An owned Windows wheel check passed both 40-value comparisons under the guest
-agent's LocalSystem session 0 with scratch-key cleanup; the original GUI was
-not run in the same interactive account.
+Owned Windows wheel checks passed both 40-value comparisons under guest-agent
+LocalSystem session 0 and then the logged-in user on `WinSta0\Default`
+session 1, each with scratch-key cleanup. See the
+[interactive receipt](../../../../toolkit-cli/research/experiments/2026-09-28/preference-interactive-repeat.json).
+The original GUI was not run in that same account.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
 once after a clean Boolean result. Keep the previous report, use a distinct fresh

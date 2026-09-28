@@ -21,7 +21,7 @@
     "observed_case": "The isolated original manager first load retained ShowProjectManager=False while writing the missing True default; its second load yielded ShowProjectManager=True.",
     "first_load_show_project_manager": false,
     "second_load_show_project_manager": true,
-    "source_provenance": "Initial implementation used the frozen original x86 Unicorn fixture. The later Windows wheel run compared against that fixture; it did not execute the original GUI in the same user context.",
+    "source_provenance": "The frozen original x86 Unicorn manager fixture supplies the original expected values. Later Windows wheel runs compared under LocalSystem and the active desktop user; neither executed the original GUI in the same account.",
     "original_interactive_gui_executed": false,
     "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857"
   },
@@ -41,21 +41,21 @@
   },
   "validation_not_run": [
     "make check and make check-interop, per the task no-full-local-suites instruction",
-    "New interactive Windows preference-command native acceptance",
-    "Whole original Toolkit GUI startup and preference runtime effects"
+    "Whole original Toolkit GUI startup and preference runtime effects",
+    "Interactive Windows save/reset acceptance"
   ],
   "remaining": [
-    "Run the new command in a disposable interactive Windows user context with independent Registry32 before/after reads and cleanup.",
-    "Compare the original preferences/settings lazy wrapper and culture behavior directly; the separate SESU condition-checker matrix is a different scope.",
+    "Compare the original Toolkit GUI preferences/settings lazy wrapper and culture behavior in the same interactive account; the separate SESU condition-checker matrix is a different scope.",
     "Establish logging, C-Gate and broader GUI runtime effects with original evidence.",
-    "Keep the broad preference/update workflow and original interactive acceptance open."
+    "Accept interactive save/reset and broader preference transitions.",
+    "Keep the broad preference/update workflow and original interactive GUI acceptance open."
   ],
   "source_sha256": {
     "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
     "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
-    "docs/toolkit-preferences.md": "99c1c39dead33bde867c2e58c3115f290f9d458c13d494e513315fd644787213",
-    "docs/toolkit-preferences-store.md": "0448cbd01f1d1ca01ee2bf13259a714b1b9a3ed062273a3cab2686671b602fba",
-    "docs/implementation-status.md": "ba42b88ebf26bffa2e1dbc7081a24754719175b6809a7daf9338298f1dc759ff",
+    "docs/toolkit-preferences.md": "184a87a99133d3613fda93542761c9658bbc956012488deeff0e8e3b6dbd34a6",
+    "docs/toolkit-preferences-store.md": "16280598dc41cd8212540f2dc456b8aa0f3c63daa77a4e10dc49dca350e3e74a",
+    "docs/implementation-status.md": "e48068f9977cb38bb5baa9c4c1788d3e9967508c5784cb34ab1003ab9cb88486",
     "src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392"
   },
   "invalidation": [
@@ -94,5 +94,10 @@
     "path": "research/experiments/2026-09-28/preference-native-repeat.json",
     "sha256": "5e8aa9c2fcc9c797918e316bd0ff35e0d430a672d8c832f626618ef7825d4822",
     "status": "passed under Windows guest-agent LocalSystem session 0; original same-user GUI comparison remains unverified"
+  },
+  "interactive_native_acceptance_supplement": {
+    "path": "research/experiments/2026-09-28/preference-interactive-repeat.json",
+    "sha256": "5170f2bdb9ddd9c30d85091c934866e0183e83dfce84776956474dac4b5cf8a7",
+    "status": "passed in active console user session 1, WinSta0/Default, non-System primary token; 14 checks passed, scratch cleanup verified; original GUI same-user comparison remains unverified"
   }
 }
