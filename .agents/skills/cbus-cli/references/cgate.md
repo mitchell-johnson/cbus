@@ -255,6 +255,8 @@ and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
 and the original event-listener admission bypass in
 [`native_cgate_config_event_listener_admission.json`](../../../../rust/testdata/fixtures/native_cgate_config_event_listener_admission.json)
+and the bounded original socket-recovery capture in
+[`native_cgate_event_socket_recovery.json`](../../../../rust/testdata/fixtures/native_cgate_event_socket_recovery.json)
 and the separate owned restart captures
 [`native_cgate_config_command_show_time.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_time.json)
 [`native_cgate_config_command_show_responses.json`](../../../../rust/testdata/fixtures/native_cgate_config_command_show_responses.json),

@@ -67,15 +67,21 @@ listener. The event port does not implement C-Gate
 ACCESS or LOGIN roles, so choose a loopback command bind for local-only use.
 `event-mode=socket` instead connects to `event-host:event-port` and streams
 events outward; an unavailable sink is retried without stopping MQTT or PCI,
-and lost events are not replayed. `CONFIG SET`/`LOAD` update readback but do
-not move the running event transport until restart. An ephemeral command bind
+and lost events are not replayed. This five-second retry is an intentional
+availability extension: an [owned original C-Gate receipt](../rust/testdata/fixtures/native_cgate_event_socket_recovery.json)
+observed no reconnect for 60 seconds after an unavailable startup sink or a
+forced disconnect, while its command listener stayed responsive. The bound
+observation does not establish that native C-Gate never retries. `CONFIG SET`
+and `CONFIG LOAD` update readback but do not move the running event transport
+until restart. An ephemeral command bind
 (`:0`) also chooses an ephemeral event port when the default 20024 is retained;
 the actual address is logged. Socket mode emits the captured startup 800 row;
 both transports reproduce owned 803/804, 703 and captured 700/761/766/767 families at their
 startup global levels. Native level-9 debug/configuration rows and the full
 event catalogue remain incomplete. See
 [`native_cgate_config_event_transport.json`](../rust/testdata/fixtures/native_cgate_config_event_transport.json)
-and the real-daemon event-transport test.
+and the real-daemon event-transport test, which also verifies cmqttd reconnect
+without replay.
 
 Docker Compose publishes the default command and event ports, 20023 and 20024,
 on the host loopback only (the container listens on its private bridge network).

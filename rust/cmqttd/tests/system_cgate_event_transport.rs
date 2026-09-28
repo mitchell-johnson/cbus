@@ -315,6 +315,48 @@ async fn config_event_server_and_outbound_socket_stream_without_interrupting_mqt
     let broadcast = next_event(&mut event_reader).await;
     assert!(broadcast.ends_with(" 703 cmd3 - broadcast_event SP class socket\r\n"));
     assert!(second.broker.has_subscription("homeassistant/light/+/set"));
-    drop((event_reader, event_writer, reader, writer, second, sink));
+
+    // cmqttd intentionally restores an outbound event connection after a
+    // sink disconnect. The retained original C-Gate probe saw no reconnect
+    // within sixty seconds; this availability extension never replays rows.
+    drop((event_reader, event_writer));
+    let (reconnected, _) = tokio::time::timeout(Duration::from_secs(8), sink.accept())
+        .await
+        .expect("cmqttd did not retry its event socket")
+        .unwrap();
+    let (reconnected_reader, reconnected_writer) = reconnected.into_split();
+    let mut reconnected_reader = BufReader::new(reconnected_reader);
+    let mut replay = String::new();
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(150),
+            reconnected_reader.read_line(&mut replay)
+        )
+        .await
+        .is_err(),
+        "event socket replayed {replay:?}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "after-reconnect",
+            "BROADCAST_EVENT SP class socket-recovered"
+        )
+        .await,
+        "[after-reconnect] 200 OK.\r\n"
+    );
+    assert!(next_event(&mut reconnected_reader)
+        .await
+        .ends_with(" 703 cmd3 - broadcast_event SP class socket-recovered\r\n"));
+    assert!(second.broker.has_subscription("homeassistant/light/+/set"));
+    drop((
+        reconnected_reader,
+        reconnected_writer,
+        reader,
+        writer,
+        second,
+        sink,
+    ));
     std::fs::remove_file(state).unwrap();
 }
