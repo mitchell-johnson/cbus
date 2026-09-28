@@ -39,6 +39,7 @@
         "src/cbus_toolkit/project_legacy_transform_cli.py",
         "tests/test_project_legacy_transform.py",
         "tests/test_project_legacy_transform_native.py",
+        "tests/test_project_legacy_transform_receipt.py",
         "docs/project-legacy-transform.md",
         "research/fixtures/project-legacy-transform-native-receipt.json",
         "tests/test_project_repair_cli.py",
