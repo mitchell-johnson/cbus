@@ -10,16 +10,18 @@
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "1f4961d581bdf32603d8c1221759f58baf51c357ec92f29f82e4f5f3784377cf",
+    "feature_ledger": "80457c171151ef2e6578bac105fc052ecd526e9c1d2c968bad5053b97eddbdb0",
     "cgate_capability_matrix": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7",
-    "cgate_contract_inventory": "4d2afa9ee71f69bf09fe02d78084126a9ab6de05e2df2c7dd04f468bf1537116",
+    "cgate_contract_inventory": "321c0e50412af907bba2f43e2fdede6eb16d920b4cd10739ca3b576b97c42929",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
-    "functional_obligation_pilot": "c1c9b2e2e1235f1dc7a49332bb3cad0189f562e14e4b8df9bf245cb811d59b43",
-    "cgate_session_differential_cmqttd": "5ca2e1e5b4e2aea2a21d0373a3af19faacc469286d1c6981402272f744988582",
-    "cgate_session_physical_applicability": "6be2163a5f645909f3b19f7e83de92b2e1f80985a7eeefd7b5e8da5469d46e30",
+    "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
+    "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
+    "cgate_session_differential_cmqttd": "664f29a3af133fe34d81553051407e99b18c6cd2d8d4cd9ba071263ef8a4f99a",
+    "cgate_tagged_session_differential_cmqttd": "d6462067dcb7107f2ebc33bfa05a1d7ccf0c40dab84544b3bb3f0570387afb12",
+    "cgate_session_physical_applicability": "2498409f51f8498c1405111a3d145fa422a0d79412cfd87d9f17bff487a50442",
     "roadmap": "bc905f9e86ee7d3f3a3a10d81c895d6a4e57a89db19bc349f439e9125906a3e3"
   },
-  "evidence_bundle_sha256": "11051c01f3680a5cfc2f9dde2deb16a49bbacb02fc51e57c1f43099329a1cd95",
+  "evidence_bundle_sha256": "3ca7577cef96e14d5e5674c19a5faeb79d3f47b38b225ca08414b83949ab9251",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -337016,7 +337018,7 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The retained native capture stores response payloads without client-tag prefixes; the differential validates Rust tag echo separately, while native tag-prefix capture remains outside this receipt.",
+      "differential_gap": "The nine-case payload capture omits client-tag prefixes; a separate eleven-case native capture and cmqttd differential now cover exact numeric-tag reply envelopes on two owned loopback sessions. Other tag forms and access-policy variants remain open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
@@ -337028,6 +337030,7 @@
       },
       "evidence_ids": [
         "evidence:cgate-session-id-loopback-differential-v1",
+        "evidence:cgate-session-id-tagged-wire-differential-v1",
         "evidence:cgate-session-id-physical-applicability-v1"
       ]
     },
@@ -337101,7 +337104,7 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The scoped payload differential now requires the internal Console cmd1 row and CRLF; native tagged-wire equivalence and broader access-policy or session variants remain open.",
+      "differential_gap": "The nine-case payload differential requires the internal Console cmd1 row and CRLF; a separate eleven-case native differential also matches numeric tags on every continuation and terminal row. Other tag forms and access-policy or session variants remain open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
@@ -337113,6 +337116,7 @@
       },
       "evidence_ids": [
         "evidence:cgate-session-id-loopback-differential-v1",
+        "evidence:cgate-session-id-tagged-wire-differential-v1",
         "evidence:cgate-session-id-physical-applicability-v1"
       ]
     },
@@ -337191,7 +337195,7 @@
         "research/experiments/2026-09-25/cgate-session-native-acceptance.json#cases",
         "rust/cbus-cgate/src/service.rs#Service::handle"
       ],
-      "differential_gap": "The scoped differential covers observed whitespace, reassignment and missing-tag cases; tag length, quoting and ACCESS/LOGIN variants remain open.",
+      "differential_gap": "The scoped payload and numeric-tag wire differentials cover the observed one-shot assignment, rejection and missing-tag cases. Tag length, quoting and ACCESS/LOGIN variants remain open.",
       "acceptance": {
         "nominal": "unassessed",
         "error": "unassessed",
@@ -337203,6 +337207,7 @@
       },
       "evidence_ids": [
         "evidence:cgate-session-id-loopback-differential-v1",
+        "evidence:cgate-session-id-tagged-wire-differential-v1",
         "evidence:cgate-session-id-physical-applicability-v1"
       ]
     }
