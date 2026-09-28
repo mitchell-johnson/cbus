@@ -20,7 +20,7 @@
       "sha256": "a3f3ce920dee91f33e30a9c1a7f32ab8f2bb1c06f8d497db29523d470a227614"
     },
     "access_handler_registry": {
-      "sha256": "76c468ad8574b288787e5f39b510deffd6e826e1cdbaf28c881e9f3c3be54acf"
+      "sha256": "4dbd51c4688f896049af3ba049c28c886363e2624463aacccaafe926b2c0d54c"
     },
     "toolkit_surface": {
       "sha256": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401"
@@ -42,6 +42,9 @@
     },
     "native_media_handler_roles": {
       "sha256": "e626683812d7b90f77de77ae502d4d0508c50329d35b73fbead24357270b851a"
+    },
+    "native_admin_handler_roles": {
+      "sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae"
     }
   },
   "counts": {
@@ -50,8 +53,8 @@
     "supplement_paths": 11,
     "declarative_argument_arities": 70,
     "public_help_syntax_hashes": 209,
-    "native_handler_role_observations": 173,
-    "native_handler_role_unresolved": 173,
+    "native_handler_role_observations": 195,
+    "native_handler_role_unresolved": 195,
     "axis_status": {
       "selector_grammar": {
         "partial": 439,
@@ -11930,11 +11933,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "CONFIG LOAD global auth-probe-missing.txt",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 408,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -12021,8 +12036,8 @@
           }
         }
       },
-      "axes_sha256": "d361b02296ad455522d7321ccba30b425f57726ebc0ff288b2398cb9a7556cf5",
-      "contract_sha256": "eb8d7c80faa48beb9764977ccd9d6e1e117b9c79400d25b2590a16b02105a64c"
+      "axes_sha256": "61d3c2ff01538dd3987b9cc5b7516895ac2002cb79f088208c86e7333fc4c156",
+      "contract_sha256": "590a2ce191437aeaef903bb6130b1fb9a0ba3c0c9ce23100a7b7756d260d4e51"
     },
     {
       "id": "cgate-contract:f23a04addc8e968c",
@@ -12348,11 +12363,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "CONFIG OBRESET TEST command.show-time",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 200,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -12439,8 +12466,8 @@
           }
         }
       },
-      "axes_sha256": "0b96d4c7218ce6b70e5a9a33330a9fa1584e283966e18fa4e380c11faed1e698",
-      "contract_sha256": "e6375ef43ada86a9b778f29c1f738e560e3ad79748a393f06e0bdbfa8d94d3cf"
+      "axes_sha256": "d69a5bb3b9e80c1d6b6fb20ac2e9a08bceb80bcbfd800dda968ef8b897d4e516",
+      "contract_sha256": "26e53f9edb9d57e19d8342af3905c9cd501bc3c09f60c7cead5975a738d4b01f"
     },
     {
       "id": "cgate-contract:7963ba4f1f49fd77",
@@ -12551,11 +12578,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "CONFIG OBSET global command.show-time yes",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 200,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -12642,8 +12681,8 @@
           }
         }
       },
-      "axes_sha256": "ddd9fa597c23533b6d01e54ec1406ea973156b314ddafec8c3de49e4592ba49f",
-      "contract_sha256": "4da9455daf79fe69b588e031170bb08b92da6cdb64e973fdf60bb8c9d059f450"
+      "axes_sha256": "37660cbaab98811ca88e31a294ddbd5f18a93a5faefc60f0c2c79b12ff2fe7e7",
+      "contract_sha256": "167f77dee19e78775d5eceb8e9595b36c2b881e1e6a7be8559f659219cbbf1a5"
     },
     {
       "id": "cgate-contract:e90b43df5fe2f03e",
@@ -12754,11 +12793,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "CONFIG SAVE global auth-probe.txt",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 200,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -12845,8 +12896,8 @@
           }
         }
       },
-      "axes_sha256": "cde7748f440fcfe4837754abeba6dc6df99732ac20a352f07ec207e27337dfb4",
-      "contract_sha256": "d3a3e12c084348fae964ee2ddff2087cf8322b7fe03542be9ca2d02390a04fdf"
+      "axes_sha256": "fb23c151592b5405b7ae0a135beb7487335efa78e850cc26092ad57aa0cb2388",
+      "contract_sha256": "9e3d307a8d7fb0449812b7368c86fed420ce4262b5d87c229e19b1d33ce55c2b"
     },
     {
       "id": "cgate-contract:926bd1e76aca5431",
@@ -47694,11 +47745,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "FILE DELETE auth-probe-missing.txt",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 408,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -47785,8 +47848,8 @@
           }
         }
       },
-      "axes_sha256": "6f5bc106f3a12b135b1372242993453946aa451b5315f867b0c40c1c1fe55932",
-      "contract_sha256": "78e2ad243a024ec761190ac3cc4fe7d6f1be4655222ecdbe97f81847ca0f955f"
+      "axes_sha256": "0b801ca945153bed57a68446aff754a425165b012c4e001f0f0a53a63fd93285",
+      "contract_sha256": "ad2f956e408c74ae4c1bbe69b3d515f0f20c8940aaf325df4918740665efc867"
     },
     {
       "id": "cgate-contract:d89eaa3d616e8f0e",
@@ -48094,11 +48157,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "FILE DOWNLOAD auth-probe-missing.txt",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 408,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -48185,8 +48260,8 @@
           }
         }
       },
-      "axes_sha256": "65299c91aedb834412ec0607554721135efd5e0bbab03d8ab7dff9026f5f7c65",
-      "contract_sha256": "7dfe7e6950e401909ff7112da8548ba0eec22233fba923f91839802e06bd36be"
+      "axes_sha256": "e418e6b8e235ebe5648419d762794a9a2b914cc629c632bcd40560318a0b0a05",
+      "contract_sha256": "f85c30047dc59b12ee8c5f7027b55a3c03d2a5c9fa38d21c3719b2c9d3a3cd8c"
     },
     {
       "id": "cgate-contract:d3cd0ec3940c21db",
@@ -50518,11 +50593,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "LABEL CLEAR //MISSING/254/56/1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -50609,8 +50696,8 @@
           }
         }
       },
-      "axes_sha256": "584473d7f6a37104c41ed060f259296f6bec52d347dec103c3f22b770a48b440",
-      "contract_sha256": "2dc7b475ff724657f43d7840149fbbbd92c7069383f9e9a7e2d68e90c33bab3e"
+      "axes_sha256": "524b7e50e46eda0e7a3e1c746d5f4e41dccc87bde7f76af728898f4dc35ad012",
+      "contract_sha256": "133d8642547ef59e14ba815ffb26e2b8e9fc4de775be0fe8e657cc5c86e14e22"
     },
     {
       "id": "cgate-contract:90227afdeafc3e21",
@@ -50712,11 +50799,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "LABEL CLEAREDLT //MISSING/254/p/1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -50803,8 +50902,8 @@
           }
         }
       },
-      "axes_sha256": "16ed73a0f3e86377d79c0d7f70255e060f18291b5fb0b23c7d85ff985f82850a",
-      "contract_sha256": "28225e63ebe5aee2a2c1ca19ab78d4a19e1498b0ad40614ef6a41a3a35c2bb00"
+      "axes_sha256": "f05aee54888790f1d5262ecc629d0b37c0ff458b48bffbda4cdf771ba757a528",
+      "contract_sha256": "33c4333796fc672de8f44c70e8473a335ac2fb85771a6e340afa7b280f8d655c"
     },
     {
       "id": "cgate-contract:6d3f93c3ad8603d8",
@@ -50906,11 +51005,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "LABEL KFIGET //MISSING/254/p/1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -50997,8 +51108,8 @@
           }
         }
       },
-      "axes_sha256": "b38add57a297c10c2b8c631fc511f13bbcc02680510d54d3a3992d7b46fa86fa",
-      "contract_sha256": "a3fa74f7293d8e902642dc99df79a0dad0e7fa31102d822af43f726835575119"
+      "axes_sha256": "6ad58922d71ade0e1a627443de367aa5caa26caa5f3b2d4f6d6070d37acda35e",
+      "contract_sha256": "662148ece51d6adcc68c87f32a5291786397dd02be2e3dbd6b3c3a5bce058eef"
     },
     {
       "id": "cgate-contract:2eb5341f787fc59b",
@@ -51100,11 +51211,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "LABEL KFISET //MISSING/254/p/1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -51191,8 +51314,8 @@
           }
         }
       },
-      "axes_sha256": "638b0aad2b6f5b0cbefed62d0dfd04f8b81b2f71610f64d92e2abc16715443a0",
-      "contract_sha256": "62d270b47647408608f030b1fafa2673da6a1a03cdf475e6e805fdbfb050b88a"
+      "axes_sha256": "5bfc41f7f75cc81f46b3ea16a5ec05728512d42b986234b1c91c99ac2bfea52f",
+      "contract_sha256": "256e0e17e7452ae5a5ff798e98f171f2329625c59aaf7deba09326445a5481a6"
     },
     {
       "id": "cgate-contract:1bc41967b7f3643a",
@@ -53756,11 +53879,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "MEASUREMENT DATA //MISSING/254/228 1 1 1 1 1",
+                  "minimum_access_level_at_handler_entry": "Operate",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -53847,8 +53982,8 @@
           }
         }
       },
-      "axes_sha256": "92344c82da49142303f2234b15e18be0f83a551e594f8e0180cebf06052f3adf",
-      "contract_sha256": "4ee838af3a8f909f090ec31f146f5055cd1e7ccc42a912b554f807d584b90ec2"
+      "axes_sha256": "0ab77a7936f9d863ba667620a969367bf3939b1430e222756d97b1b64f9524ae",
+      "contract_sha256": "fdd2f0c4b4f2a0f758d7ca580f6990434e5be778426f1b74cfe32cc32cc551c1"
     },
     {
       "id": "cgate-contract:c0e6e15a28f0b2bc",
@@ -60067,11 +60202,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET DELETE //MISSING/254",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -60158,8 +60305,8 @@
           }
         }
       },
-      "axes_sha256": "6ff44e1cb725055aa39064360e4c2f7144ae70bb1c91ef3e9617cbc0cae8aa0d",
-      "contract_sha256": "2b4c929dc8c3355b53a968e93a125f87c6b053df90b4a4994250fcca807616a4"
+      "axes_sha256": "1e70ae1a129e9075814abfdf9e14f2d1bfe7f8719ff9246eaac951fe1a13c96a",
+      "contract_sha256": "3573cd16b90dec18d9db5a34df863432ffcf8f9dbda6b7420477c10bb14b5749"
     },
     {
       "id": "cgate-contract:ffc029f29631f3b5",
@@ -60270,11 +60417,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET FLUSH //MISSING/254",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -60361,8 +60520,8 @@
           }
         }
       },
-      "axes_sha256": "d654bcf1048d3cedb3de872719ab1f49a67079553ea5edde73ab1e88e7edb940",
-      "contract_sha256": "e3c189272754897eaebe5d97b64c4cee4008150631377a7edc57f4abf4f7cacf"
+      "axes_sha256": "11d1ec40c02c1c2413ce994443fab8d51d25dba282b0824851891d8396f3e20e",
+      "contract_sha256": "b1500d7088d93b4783210118ae29690dec732c6953af2a3db937b24154a0600f"
     },
     {
       "id": "cgate-contract:6dd1ac8b4dd187fd",
@@ -60473,11 +60632,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET LEARN //MISSING/254/56 1 1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -60564,8 +60735,8 @@
           }
         }
       },
-      "axes_sha256": "9833527b7ff27b31ab3f35a60adbcfbbe858294e817f4bee21a162dab8764e5b",
-      "contract_sha256": "97cecab01c066a7448aa5a83d261f75b36bec014f4623593c8095fd72a0884cb"
+      "axes_sha256": "83af1103c8f4814ff567073f0bd4fa3ff3d05a041b5f18e6bedd89978b2eb10a",
+      "contract_sha256": "734b52b6789403e8cb21f8b570bf90e242bbb7c66393cc6e35843c5f38a4420c"
     },
     {
       "id": "cgate-contract:99c984574cbb758a",
@@ -61106,11 +61277,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET LOAD DB MISSING",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -61197,8 +61380,8 @@
           }
         }
       },
-      "axes_sha256": "73f3fedefb044121cfa0ac22cc4a6070d5dc044ef5973cae4e97c8dd2e4d69d0",
-      "contract_sha256": "65e9b7943ad89cd4635926d2a29ba8071a39b71afb94fe35b8e8a0cf9daf9cf3"
+      "axes_sha256": "94281d045bbc25e2417935e65d0d5b0a7e4e0197c70a584100980826961d950c",
+      "contract_sha256": "2ad656c9cb4528ad68cd265404f0d33aebd4c743b7fcb8f96be5bc3ea8e83fae"
     },
     {
       "id": "cgate-contract:c0ce1e9f8ef00891",
@@ -61942,11 +62125,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET RENAME //MISSING/254 //MISSING/253",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -62033,8 +62228,8 @@
           }
         }
       },
-      "axes_sha256": "6474e8c4b9da75ad75c36e0bafe46027e386f10cb0f1cec68bf487a4259a3cc2",
-      "contract_sha256": "047bf346d1c5867b81ac0c75ad92de3a8a83b53fdeab2e96fe7bc24d1dfddd07"
+      "axes_sha256": "8c4c839d6fad07a0abdc5e1969682bbb4715198b48b613d919d0ac7ccc99a627",
+      "contract_sha256": "4cb4686db7fe2251bf1f37d2f9f7174ae7d0256f8be500779660019bfb3362ce"
     },
     {
       "id": "cgate-contract:69b5f741d6e08f18",
@@ -62145,11 +62340,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET SAVE DB MISSING",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -62236,8 +62443,8 @@
           }
         }
       },
-      "axes_sha256": "8df53e5cf6bb639ecb54da78aeafc1eacdaf3b5239c4a42bd475ed1d830e7d59",
-      "contract_sha256": "171f6907343aff28eba4f102a0d8adbcd105fb04aaad542cb60d11df9874b911"
+      "axes_sha256": "bc3155ebecfbcbf4972f0fcf03fca2fd95f0f122456150212056565fe3f4f757",
+      "contract_sha256": "a722119b4a7392eff4f484a3a5a5661fc751f934e280845f3ada8068ee8ef6ee"
     },
     {
       "id": "cgate-contract:26894303578700c7",
@@ -62972,11 +63179,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET SYNCNEW //MISSING/254",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -63063,8 +63282,8 @@
           }
         }
       },
-      "axes_sha256": "d1d495d018ab2c9561c564b9894031d650e75da9e5f90eeb35a0734382482c86",
-      "contract_sha256": "ea509caa6699322611fd4c63abdc63ce927033164d69e8c1a245b90923924382"
+      "axes_sha256": "094b437b4168a4d321f75da1228f72ae94b416d7c5e429abb809c828ab169dab",
+      "contract_sha256": "866dc6d70ae89e01f4ab5e246d0969fb4123321675e5346a3a2b7ae9c122c3d8"
     },
     {
       "id": "cgate-contract:e069937c05f435bc",
@@ -63175,11 +63394,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET UNRAVEL //MISSING/254",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -63266,8 +63497,8 @@
           }
         }
       },
-      "axes_sha256": "fcab8ca300dc0ba832e1f83590e652be34b10480e7fdd06f4e194b6770ad27c5",
-      "contract_sha256": "e6d62b9019be40dc68de77b5407efd247fc34023b0165d1f8b5318a1552432dd"
+      "axes_sha256": "65c628a9a8eafcbdeb5191b56d8de56910a36fa27ef55e50856882a92855e701",
+      "contract_sha256": "5316395cab46d2a792326349a99f4ea3ba0e82805a377736a9925d4a55d0f87a"
     },
     {
       "id": "cgate-contract:254cf7fd579f8059",
@@ -63378,11 +63609,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "NET UNRAVELUNIT //MISSING/254 1",
+                  "minimum_access_level_at_handler_entry": "Program",
+                  "lower_access_status": 420,
+                  "at_floor_status": 401,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -63469,8 +63712,8 @@
           }
         }
       },
-      "axes_sha256": "d117f231fbbb40e097db50b85509ba301983eebd89eec7a82c8c8670c9b85c1c",
-      "contract_sha256": "c086a3052e6757f97680a352aa3398e8c06a9f3b87795cbc921382b980a7a6ed"
+      "axes_sha256": "3de54fdd2ba88818f605bd96fd81971f0ccd0d0e87e8d5810c3bd6ab81f7e99c",
+      "contract_sha256": "a35b6db04d859ef10e01b194f28d31070f6235d26fbfa14fdfa8dc7b8f913f14"
     },
     {
       "id": "cgate-contract:b5a9716fcd63f4a2",
@@ -74271,11 +74514,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "PROJECT CLOSE MISSING",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 408,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -74362,8 +74617,8 @@
           }
         }
       },
-      "axes_sha256": "b73c1167c4509748e44d6926890e03df65fa02802c867a5dc776b5e1cfbbe5c0",
-      "contract_sha256": "524d232f2b801b6a062e3b7e69497dc0e4e6ede9e48483b85d64c26ada54cb67"
+      "axes_sha256": "f33b8d0692dcd3b4df5afa2b2598b9fbcf4f15a502690d537016d219a3dd7b9c",
+      "contract_sha256": "eb641a890bc4540a3fae48c43c94bc049affcf405a7f90f7da79212dca93fa55"
     },
     {
       "id": "cgate-contract:77f5de3dc21c7261",
@@ -76400,11 +76655,23 @@
             },
             "handler_roles": {
               "status": "unresolved",
-              "reason": "Command-specific Clipsal/Max role filtering and object-level authorization are not yet normalized per path.",
+              "reason": "One native handler-entry invocation and its lower-role denial are captured; other selectors, object-specific checks and successful physical delivery remain unverified.",
               "source_refs": [
-                "rust/cbus-cgate/src/service.rs#Service::handle",
-                "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
-              ]
+                "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json",
+                "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS",
+                "rust/cbus-cgate/src/service.rs#Service::handle"
+              ],
+              "known": {
+                "native_handler_entry": {
+                  "invocation": "PROJECT RESTORE MISSING auth-probe-missing.zip",
+                  "minimum_access_level_at_handler_entry": "Admin",
+                  "lower_access_status": 420,
+                  "at_floor_status": 408,
+                  "observed_roles": 9,
+                  "fixture_sha256": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+                  "scope": "exact_invocation_only; no_later_object_or_physical_success_claim"
+                }
+              }
             }
           }
         },
@@ -76491,8 +76758,8 @@
           }
         }
       },
-      "axes_sha256": "074d52fe778858088ae6842739f683be922a1b0c3736b589f520397c8bc83e6b",
-      "contract_sha256": "5d12e37392946a1d663c9d2ebb32e156a496fb49853092f0f14edda15ac90950"
+      "axes_sha256": "59062ed43d2e9dfd546b27da8960a6cc55eb8779806e0c19e8738e56a4d43bec",
+      "contract_sha256": "f8001356ef34b64b9b24112da7bde815b7aff39e7bea41c22a933fb7c76d3762"
     },
     {
       "id": "cgate-contract:d16111e99c5b3c3e",

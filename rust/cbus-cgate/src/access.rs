@@ -268,6 +268,35 @@ pub(crate) const NATIVE_PROBED_MEDIA_COMMANDS: &[(&str, CgateAccessLevel)] = &[
     ("MEDIATRANSPORT TRACK_NAME", CgateAccessLevel::Operate),
 ];
 
+/// Additional configuration, file, project, network, label and measurement
+/// handler floors captured on the pinned native loopback service. Missing
+/// objects prevent physical I/O; a non-420 response at the floor proves only
+/// that this invocation reached the later parser or handler stage.
+pub(crate) const NATIVE_PROBED_ADMIN_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("CONFIG OBSET", CgateAccessLevel::Admin),
+    ("CONFIG OBRESET", CgateAccessLevel::Admin),
+    ("CONFIG LOAD", CgateAccessLevel::Admin),
+    ("CONFIG SAVE", CgateAccessLevel::Admin),
+    ("FILE DELETE", CgateAccessLevel::Program),
+    ("FILE DOWNLOAD", CgateAccessLevel::Program),
+    ("PROJECT CLOSE", CgateAccessLevel::Admin),
+    ("PROJECT RESTORE", CgateAccessLevel::Admin),
+    ("NET DELETE", CgateAccessLevel::Program),
+    ("NET FLUSH", CgateAccessLevel::Program),
+    ("NET LEARN", CgateAccessLevel::Program),
+    ("NET LOAD", CgateAccessLevel::Program),
+    ("NET RENAME", CgateAccessLevel::Program),
+    ("NET SAVE", CgateAccessLevel::Program),
+    ("NET SYNCNEW", CgateAccessLevel::Program),
+    ("NET UNRAVEL", CgateAccessLevel::Program),
+    ("NET UNRAVELUNIT", CgateAccessLevel::Program),
+    ("LABEL CLEAR", CgateAccessLevel::Program),
+    ("LABEL CLEAREDLT", CgateAccessLevel::Program),
+    ("LABEL KFIGET", CgateAccessLevel::Program),
+    ("LABEL KFISET", CgateAccessLevel::Program),
+    ("MEASUREMENT DATA", CgateAccessLevel::Operate),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -275,6 +304,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_ADDITIONAL_COMMANDS.iter())
         .chain(NATIVE_PROBED_PROGRAMMING_COMMANDS.iter())
         .chain(NATIVE_PROBED_MEDIA_COMMANDS.iter())
+        .chain(NATIVE_PROBED_ADMIN_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -639,6 +669,67 @@ mod tests {
         let roles = evidence["roles"].as_object().unwrap();
         assert_eq!(roles.len(), 9);
         for (path, minimum) in NATIVE_PROBED_MEDIA_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| *command == *path || command.starts_with(&format!("{path} ")))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn admin_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_admin_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(evidence["format"], "native-cgate-admin-authorization-v1");
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        assert_eq!(
+            evidence["capture_script_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_admin_authorization_probe.py"
+            )))
+        );
+        assert_eq!(
+            evidence["local_cgate_harness_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../../../toolkit-cli/research/local_cgate.py"
+            )))
+        );
+        let commands = evidence["commands"].as_array().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_ADMIN_COMMANDS.len());
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_ADMIN_COMMANDS {
             let matches = commands
                 .iter()
                 .filter_map(serde_json::Value::as_str)

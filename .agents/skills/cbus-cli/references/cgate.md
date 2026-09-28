@@ -1199,14 +1199,14 @@ controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 This is not exact native `access.txt` handler/access-level parity.
-`access_native_handler_probe_levels` lists 173 command entry floors captured
+`access_native_handler_probe_levels` lists 195 command entry floors captured
 against owned C-Gate 3.4 at all nine ACCESS levels. The second capture adds
 58 project, database, network, file, repository, session and application
 invocations; `TRIGGER EVENT` and `EVENT_CHANNEL LIST` enter at Program, while
 `TREE`/`TREEXML` and `GETSTATE` enter at Monitor. These checks run before
 mutation or PCI dispatch, including `DBSETXML` documents; `EVENTS` follows the
 captured `EVENT` Monitor floor. `ACCESS` retains its Clipsal/Max family check.
-All 173 initial, expansion, programming and media/security observations appear in the Toolkit
+All 195 initial, expansion, programming, media/security and administrative observations appear in the Toolkit
 CLI's C-Gate contract inventory as source-bound known facts for exact invocations; their handler-role
 subaxes remain unresolved and do not count as functional acceptance.
 A third owned native capture adds 27 PP leaves at Clipsal and all eight

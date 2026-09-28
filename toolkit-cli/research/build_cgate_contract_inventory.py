@@ -63,6 +63,14 @@ NATIVE_MEDIA_ROLE_SCRIPT_PATH = (
     REPOSITORY / "rust" / "cbus-cgate" / "research"
     / "native_media_authorization_probe.py"
 )
+NATIVE_ADMIN_ROLE_PATH = (
+    REPOSITORY / "rust" / "testdata" / "fixtures"
+    / "native_cgate_admin_authorization_probe.json"
+)
+NATIVE_ADMIN_ROLE_SCRIPT_PATH = (
+    REPOSITORY / "rust" / "cbus-cgate" / "research"
+    / "native_admin_authorization_probe.py"
+)
 LOCAL_CGATE_HARNESS_PATH = ROOT / "research" / "local_cgate.py"
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
@@ -92,6 +100,7 @@ SERVICE_SESSION_REF = "rust/cbus-cgate/src/service.rs#Service::handle"
 ACCESS_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADDITIONAL_COMMANDS"
 ACCESS_PROGRAMMING_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_PROGRAMMING_COMMANDS"
 ACCESS_MEDIA_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_MEDIA_COMMANDS"
+ACCESS_ADMIN_ROLE_REF = "rust/cbus-cgate/src/access.rs#NATIVE_PROBED_ADMIN_COMMANDS"
 EVENT_MODE_REF = "rust/cbus-cgate/src/lib.rs#EventMode::parse"
 NATIVE_SESSION_REF = (
     "toolkit-cli/research/experiments/2026-09-25/"
@@ -108,6 +117,7 @@ NATIVE_PROGRAMMING_ROLE_REF = (
     "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json"
 )
 NATIVE_MEDIA_ROLE_REF = "rust/testdata/fixtures/native_cgate_media_authorization_probe.json"
+NATIVE_ADMIN_ROLE_REF = "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json"
 NATIVE_CGATE_JAR_SHA256 = (
     "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
 )
@@ -128,6 +138,9 @@ NATIVE_PROGRAMMING_ROLE_EVIDENCE_SHA256 = (
 )
 NATIVE_MEDIA_ROLE_EVIDENCE_SHA256 = (
     "e626683812d7b90f77de77ae502d4d0508c50329d35b73fbead24357270b851a"
+)
+NATIVE_ADMIN_ROLE_EVIDENCE_SHA256 = (
+    "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae"
 )
 NATIVE_ROLE_LEVELS = (
     "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal", "Max"
@@ -811,7 +824,17 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
         expected_commands=44,
         label="media role",
     )
-    groups = (initial, additional, programming, media)
+    admin = _native_role_fixture_observations(
+        inventory_paths,
+        fixture_path=NATIVE_ADMIN_ROLE_PATH,
+        fixture_digest=NATIVE_ADMIN_ROLE_EVIDENCE_SHA256,
+        fixture_format="native-cgate-admin-authorization-v1",
+        script_path=NATIVE_ADMIN_ROLE_SCRIPT_PATH,
+        registry_marker="pub(crate) const NATIVE_PROBED_ADMIN_COMMANDS",
+        expected_commands=22,
+        label="admin role",
+    )
+    groups = (initial, additional, programming, media, admin)
     overlap = set().union(*(
         set(left) & set(right)
         for index, left in enumerate(groups)
@@ -819,7 +842,7 @@ def native_handler_role_observations(inventory_paths: set[str]) -> dict[str, dic
     ))
     if overlap:
         raise ValueError(f"Native C-Gate role probes overlap: {sorted(overlap)}")
-    return initial | additional | programming | media
+    return initial | additional | programming | media | admin
 
 
 def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
@@ -1077,6 +1100,9 @@ def build_row(
             NATIVE_MEDIA_ROLE_EVIDENCE_SHA256: (
                 NATIVE_MEDIA_ROLE_REF, ACCESS_MEDIA_ROLE_REF
             ),
+            NATIVE_ADMIN_ROLE_EVIDENCE_SHA256: (
+                NATIVE_ADMIN_ROLE_REF, ACCESS_ADMIN_ROLE_REF
+            ),
         }[observed["fixture_sha256"]]
         handler_roles = unresolved(
             "One native handler-entry invocation and its lower-role denial are "
@@ -1244,6 +1270,7 @@ def build() -> dict:
             "native_handler_role_expansion": {"sha256": digest(NATIVE_ROLE_PATH)},
             "native_programming_handler_roles": {"sha256": digest(NATIVE_PROGRAMMING_ROLE_PATH)},
             "native_media_handler_roles": {"sha256": digest(NATIVE_MEDIA_ROLE_PATH)},
+            "native_admin_handler_roles": {"sha256": digest(NATIVE_ADMIN_ROLE_PATH)},
         },
         "counts": {
             "paths": len(contracts),

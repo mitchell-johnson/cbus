@@ -840,10 +840,11 @@ state, routing/I/O class and implementation-route status for all 442 paths,
 plus 398 path-level programming-gate decisions. The separate handler-role
 subaxis is resolved as minimum `Program` for all five TELEPHONY leaves, so
 those five paths now have fully resolved authorization axes. A source-bound,
-four sanitized original C-Gate probes add 173 exact handler-entry floor
+five sanitized original C-Gate probes add 195 exact handler-entry floor
 observations across all nine ACCESS levels (31 initial, 58 expansion, 40
-programming/session/queue and 44 media/security). Each fixture, capture script,
-local harness and Rust registry is checked during generation. Those 173 rows retain unresolved
+programming/session/queue, 44 media/security and 22 administrative). Each fixture,
+capture script, local harness and Rust registry is checked during generation.
+Those 195 rows retain unresolved
 handler-role subaxes and partial authorization axes: lower-role `420` denial
 and reaching a later stage at the floor do not prove other selectors,
 object-level authorization or physical success. The inventory retains 70
@@ -855,7 +856,7 @@ variants, `EVENT` and `QUIT`. `EVENT` mode value domains and incomplete
 response/event cases remain open.
 Target forms for the other 437 paths, value domains for the other
 439, 44 argument-dependent programming-gate decisions, complete handler roles
-on the other 437 paths (including the 173 with scoped entry observations), most
+on the other 437 paths (including the 195 with scoped entry observations), most
 exact response/event envelopes and 433 command-specific
 effect contracts remain open, and no path has functional acceptance evidence.
 P0.02 and issue #14 therefore remain open.

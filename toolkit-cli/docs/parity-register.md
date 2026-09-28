@@ -231,7 +231,7 @@ for all five TELEPHONY leaves as minimum `Program`, including
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
 authorization axis.
 
-The inventory also records 173 exact native handler-entry role probes, each
+The inventory also records 195 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
 sessions. Their pinned fixtures are
 `rust/testdata/fixtures/native_cgate_authorization_probe.json` (31),
@@ -239,11 +239,13 @@ sessions. Their pinned fixtures are
 and `rust/testdata/fixtures/native_cgate_programming_authorization_probe.json`
 (40 PP, PROGRAMMER and DEPLOY_QUEUE leaves), plus
 `rust/testdata/fixtures/native_cgate_media_authorization_probe.json` (44 Audio,
-Security and Media Transport leaves).
+Security and Media Transport leaves), and
+`rust/testdata/fixtures/native_cgate_admin_authorization_probe.json` (22 CONFIG,
+FILE, PROJECT, NET, LABEL and Measurement leaves).
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks the fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 173 `handler_roles` subaxes remain
+emitting these known facts. All 195 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.
