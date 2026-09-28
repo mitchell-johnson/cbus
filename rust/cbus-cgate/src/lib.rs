@@ -7986,8 +7986,13 @@ impl Server {
             }
             let units = kinds.iter().filter(|kind| **kind == "Unit").count();
             let applications = kinds.iter().filter(|kind| **kind == "Application").count();
-            let unit_shape =
-                units > 0 && units <= 8 && applications <= 1 && units + applications == kinds.len();
+            // The nine/ten-Unit probe contains Units only; keep the existing
+            // mixed Application/Unit admission bound until separately probed.
+            let unit_limit = if applications == 0 { 10 } else { 8 };
+            let unit_shape = units > 0
+                && units <= unit_limit
+                && applications <= 1
+                && units + applications == kinds.len();
             let app_list = if object.kind == DbXmlKind::Network && kinds.len() == applications {
                 let list = object
                     .children
@@ -11085,7 +11090,7 @@ impl Server {
 
     /// The owned native captures establish Unit-first selection for one Unit
     /// sharing an OID with one Application, regardless of XML submission
-    /// order, and final-submission selection for two to eight Units sharing an
+    /// order, and final-submission selection for two to ten Units sharing an
     /// OID in one Network. Other collision shapes remain guarded.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
         if let Some(path) = self.selected_cross_network_oid_path(oid) {
@@ -11116,7 +11121,7 @@ impl Server {
             })
             .collect::<Vec<_>>();
         if !(if cross_kind.is_empty() {
-            (2..=8).contains(&matches.len())
+            (2..=10).contains(&matches.len())
         } else {
             matches.len() == 1
         }) || matches.iter().any(|(network, _)| *network != matches[0].0)

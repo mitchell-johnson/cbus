@@ -43,12 +43,13 @@ selected object. Deletion made OID lookup 401 immediately; save/close/load
 selected the survivor on Network 254. Every project lifecycle command returned
 200. The copied Unit retained its source PP `UnitAddress` with a new OID.
 
-The Rust model admits the two-through-eight-Unit same-Network cases and the
+The Rust model admits the two-through-ten-Unit same-Network cases, including
+the [later nine-/ten-Unit capture](native-cgate-nine-ten-unit-oid-mutations.md), and the
 captured two-Network Unit/Unit and leaf-Application/Unit shapes. Its
 cross-Network selector is limited to Networks 253 and 254 with one object of
 the shared OID in each; duplicate Unit addresses across Networks remain
 guarded because the addressed Unit metadata key would collide. More than
-eight same-Network Units, more than two Networks, repeated Applications in
+ten same-Network Units, more than two Networks, repeated Applications in
 one cross-Network collision, descendants, and other topology or vendor XML
 shapes still need separate native and representation evidence. These are
 database-only observations and establish no physical C-Bus side effects.

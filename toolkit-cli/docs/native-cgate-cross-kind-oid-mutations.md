@@ -40,7 +40,9 @@ Rust admits this one-Application, one-Unit, one-Network shape for those five
 OID mutations. A [separate owned capture](native-cgate-five-plus-unit-oid-mutations.md)
 covers five and six Units with one OID in a single Network. The
 [later owned extension](native-cgate-large-cross-network-oid.md) covers
-seven/eight Units and bounded cross-Network Unit/Application selection.
-Repeated Applications with a Unit, nine or more same-Network Units and wider
+seven/eight Units and bounded cross-Network Unit/Application selection. The
+[nine-/ten-Unit capture](native-cgate-nine-ten-unit-oid-mutations.md) extends
+the pure same-Network Unit shape. Repeated Applications with a Unit, eleven
+or more same-Network Units and wider
 cross-Network shapes remain guarded. These database-only observations do not
 establish any physical C-Bus side effect or broader vendor XML compatibility.

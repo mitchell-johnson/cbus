@@ -37,5 +37,7 @@ of the other four or five Units remained available and their names were
 unchanged. The Rust mock extends its final-submission OID selector through the
 [later owned seven-/eight-Unit capture](native-cgate-large-cross-network-oid.md).
 That capture also covers bounded cross-Network Unit/Unit and
-leaf-Application/Unit collisions. Nine or more Units and wider cross-Network
+leaf-Application/Unit collisions. A
+[later nine-/ten-Unit capture](native-cgate-nine-ten-unit-oid-mutations.md)
+extends the same selected-Unit behavior through ten. Eleven or more Units and wider cross-Network
 shapes remain guarded.
