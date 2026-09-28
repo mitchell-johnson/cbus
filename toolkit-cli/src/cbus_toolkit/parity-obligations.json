@@ -15,10 +15,10 @@
     "cgate_contract_inventory": "a397eafcaad64032e710e679264085253929ccde8619a90182407a220050c508",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "56c708590cbe146dc01150c98f13d437f315fdc4f4b4afe29f972a1b5b60e200",
-    "cgate_session_differential_cmqttd": "33a586e46990bb10b26d4bdc8f4e5f0ed3797feef6048094d1b3d8943a07a50f",
+    "cgate_session_differential_cmqttd": "1ff63e235f8dfc7d43aaf43150bfae9b296921db32b75ee40c7d1909204b9b5f",
     "roadmap": "bd6fb761e33627afdd1340a32da93c18e21d7dc493d0ef8f86782fb45671b1e0"
   },
-  "evidence_bundle_sha256": "521cd693f591e39658e764f53e2b9aa5465653ebc932dc997e49edf2fefd6b3d",
+  "evidence_bundle_sha256": "c9382364d682b22d1bc7adacab405c4acc3cac8923ebb606a6926ff565a6f9a1",
   "work_item_ids": [
     "P0.01",
     "P0.02",
