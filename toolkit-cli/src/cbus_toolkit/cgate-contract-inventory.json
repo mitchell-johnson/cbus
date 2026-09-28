@@ -5,16 +5,16 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "041c2b827315a8393b66b8e721d2919c6095104139e4b5aa73dddbaa9ab3de21"
+      "sha256": "cc28f30de26b180a732c3e4429cc8c02ad0628f0a4ad9a5adce7658aaf1bb4f5"
     },
     "manual": {
-      "sha256": "0e95958c2f9e68ca0e618124db9b797946729fd1aa7b2ece7115981b2d7c6f15"
+      "sha256": "920c51b233fa53d958a44f8900f427b6c575ac95118008a2a69c992cf98bb3bc"
     },
     "service": {
-      "sha256": "eda4737cac539ed8df4f622719e7792ca1fd75be4e1d9f42b5a4b401a303c1b8"
+      "sha256": "6400c6364c49fecf02656992d02228032698e61608f04d6e3e93fe49b64a6142"
     },
     "event_mode": {
-      "sha256": "f2b58dfc0a144bf3451185ad38e0e5f02e9182537e93a54f33bb76096e9164df"
+      "sha256": "b8c140a4bf4d4283bc52c1f42c3ea90737e73dfe632313e11d1dca2338462a50"
     },
     "authorization_policy": {
       "sha256": "a3f3ce920dee91f33e30a9c1a7f32ab8f2bb1c06f8d497db29523d470a227614"
@@ -12672,7 +12672,7 @@
       "id": "cgate-contract:7963ba4f1f49fd77",
       "path": "CONFIG OBSET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; only command.show-responses and command.show-time take effect at the next startup, and LOGIN is required when armed.",
+      "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis and heartbeat-time take effect at the next startup, and LOGIN is required when armed.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -12848,7 +12848,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; only command.show-responses and command.show-time take effect at the next startup, and LOGIN is required when armed."
+                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis and heartbeat-time take effect at the next startup, and LOGIN is required when armed."
               }
             }
           }
@@ -12880,8 +12880,8 @@
           }
         }
       },
-      "axes_sha256": "37660cbaab98811ca88e31a294ddbd5f18a93a5faefc60f0c2c79b12ff2fe7e7",
-      "contract_sha256": "167f77dee19e78775d5eceb8e9595b36c2b881e1e6a7be8559f659219cbbf1a5"
+      "axes_sha256": "4837384f03f62df6103e2330332fe1620b03b3dbc811628347f55db4e3e0c148",
+      "contract_sha256": "9a34e3b3b6430af0518c1f73043324d10561cee4ed0b8534ae9ec8f6959c6c1f"
     },
     {
       "id": "cgate-contract:e90b43df5fe2f03e",
@@ -13102,7 +13102,7 @@
       "id": "cgate-contract:926bd1e76aca5431",
       "path": "CONFIG SET",
       "inventory": "primary",
-      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; only command.show-responses and command.show-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed.",
+      "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis and heartbeat-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -13278,7 +13278,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; only command.show-responses and command.show-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed."
+                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis and heartbeat-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed."
               }
             }
           }
@@ -13310,8 +13310,8 @@
           }
         }
       },
-      "axes_sha256": "fd8034566526ac7d5dc8044912f258882ceecb46b139d59cffe33a08d5bd3b79",
-      "contract_sha256": "970c725d8fe3d778ecf8ee0a801183f049ff517aba0793f762e5f43cab9f0103"
+      "axes_sha256": "5827ed5df8d7ad36eacf7264b0d34de84d93a72d86ab0466a7bc0ebf79bfaf4c",
+      "contract_sha256": "5bcd65f30c349e0fcef07b25c6e6e40f8365b8037a835fd40e08fb8e9733f9b8"
     },
     {
       "id": "cgate-contract:8adb7edfc88fd891",

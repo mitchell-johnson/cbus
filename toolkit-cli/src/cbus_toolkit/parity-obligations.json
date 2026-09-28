@@ -11,14 +11,14 @@
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "722e7189797141901072f9883560ef451bde1563ab674ed96f412ccfba74e609",
-    "cgate_capability_matrix": "041c2b827315a8393b66b8e721d2919c6095104139e4b5aa73dddbaa9ab3de21",
-    "cgate_contract_inventory": "9a5928f230e4d5d31c4b49c42554e933c26ee503ebfe2110c4b918993e6bdfd1",
+    "cgate_capability_matrix": "cc28f30de26b180a732c3e4429cc8c02ad0628f0a4ad9a5adce7658aaf1bb4f5",
+    "cgate_contract_inventory": "a0a0e45ddac64187bc01410066835f58883925bd8b1029b8033a20deb143b14d",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "functional_obligation_pilot": "d717bcd9e197e1dc42ac0dd8ed84068438c15ec2a1315156f10235b5e2f85d58",
-    "cgate_session_differential_cmqttd": "615573523141c40c3d03d6294a482297db02c4fd151b599a23e254930ae996de",
+    "cgate_session_differential_cmqttd": "8a6e69369ee0bf4bf14cac6c6dbc2b5156346bb18d397487da086e1402ac2a0a",
     "roadmap": "66898089940ac38a3949560ac4c04eea906803d561354761e073c8e30cedacc8"
   },
-  "evidence_bundle_sha256": "cd883f4d3fef97a68d216b6b30528ce4b0b22ad793214790fa4709de8e05cc0f",
+  "evidence_bundle_sha256": "89847ffa02a4a1c24b6c1a06932869cfa86e8b930feb09ef5832f77ec7b120dd",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -108591,8 +108591,8 @@
       "source_id": "CONFIG OBSET",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:7963ba4f1f49fd77",
-      "contract_sha256": "167f77dee19e78775d5eceb8e9595b36c2b881e1e6a7be8559f659219cbbf1a5",
-      "contract_axes_sha256": "37660cbaab98811ca88e31a294ddbd5f18a93a5faefc60f0c2c79b12ff2fe7e7",
+      "contract_sha256": "9a34e3b3b6430af0518c1f73043324d10561cee4ed0b8534ae9ec8f6959c6c1f",
+      "contract_axes_sha256": "4837384f03f62df6103e2330332fe1620b03b3dbc811628347f55db4e3e0c148",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -108768,7 +108768,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; only command.show-responses and command.show-time take effect at the next startup, and LOGIN is required when armed."
+                "routing_evidence": "Service::config stores scoped values atomically with native duplicate-value and obsolete-parameter errors, does not reconfigure the running listener or perform PCI I/O; command.show-responses, command.show-time, event-millis and heartbeat-time take effect at the next startup, and LOGIN is required when armed."
               }
             }
           }
@@ -109033,8 +109033,8 @@
       "source_id": "CONFIG SET",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:926bd1e76aca5431",
-      "contract_sha256": "970c725d8fe3d778ecf8ee0a801183f049ff517aba0793f762e5f43cab9f0103",
-      "contract_axes_sha256": "fd8034566526ac7d5dc8044912f258882ceecb46b139d59cffe33a08d5bd3b79",
+      "contract_sha256": "5bcd65f30c349e0fcef07b25c6e6e40f8365b8037a835fd40e08fb8e9733f9b8",
+      "contract_axes_sha256": "5827ed5df8d7ad36eacf7264b0d34de84d93a72d86ab0466a7bc0ebf79bfaf4c",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -109210,7 +109210,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; only command.show-responses and command.show-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed."
+                "routing_evidence": "Service::config stores legacy scope-aware values and native dequoted multi-word/null strings in cmqttd-json; command.show-responses, command.show-time, event-millis and heartbeat-time alter the next listener startup; other values remain command data, and mutation requires LOGIN when armed."
               }
             }
           }
@@ -318645,7 +318645,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:7963ba4f1f49fd77",
       "source_id": "CONFIG OBSET",
       "contract_id": "cgate-contract:7963ba4f1f49fd77",
-      "contract_sha256": "167f77dee19e78775d5eceb8e9595b36c2b881e1e6a7be8559f659219cbbf1a5",
+      "contract_sha256": "9a34e3b3b6430af0518c1f73043324d10561cee4ed0b8534ae9ec8f6959c6c1f",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -318737,7 +318737,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:926bd1e76aca5431",
       "source_id": "CONFIG SET",
       "contract_id": "cgate-contract:926bd1e76aca5431",
-      "contract_sha256": "970c725d8fe3d778ecf8ee0a801183f049ff517aba0793f762e5f43cab9f0103",
+      "contract_sha256": "5bcd65f30c349e0fcef07b25c6e6e40f8365b8037a835fd40e08fb8e9733f9b8",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
