@@ -614,6 +614,34 @@ pub(crate) const NATIVE_PROBED_REMAINING_COMMANDS: &[(&str, CgateAccessLevel)] =
     ("APPLICATIONS GET_CATALOG", CgateAccessLevel::Program),
 ];
 
+/// Further owned native role-gradient captures. Each invocation either reads
+/// disposable local state or names a missing project/file. The floor precedes
+/// later object and physical checks, which remain unproven by these probes.
+pub(crate) const NATIVE_PROBED_UNPROBED_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("ACCESS ADD", CgateAccessLevel::Clipsal),
+    ("CALCULATOR TEST", CgateAccessLevel::Admin),
+    ("DBNEW", CgateAccessLevel::Admin),
+    ("LOG EXTRACT", CgateAccessLevel::Clipsal),
+    ("NET CHECK_UNRAVEL", CgateAccessLevel::Program),
+    ("NET STATE_INTERVAL", CgateAccessLevel::Program),
+    ("NEW", CgateAccessLevel::Operate),
+    ("OFF", CgateAccessLevel::Operate),
+    ("OID", CgateAccessLevel::Operate),
+    ("ON", CgateAccessLevel::Operate),
+    ("RAMP", CgateAccessLevel::Operate),
+    ("REPORT", CgateAccessLevel::Monitor),
+    ("RUN", CgateAccessLevel::Operate),
+    ("STOP", CgateAccessLevel::Operate),
+    ("TERMINATERAMP", CgateAccessLevel::Operate),
+    ("TEST_SPAM LIST", CgateAccessLevel::Program),
+    ("TEST_SPAM STOP", CgateAccessLevel::Program),
+    ("TRANSFORM MIGRATE_SQL", CgateAccessLevel::Admin),
+    ("TRANSFORM PROJECT", CgateAccessLevel::Admin),
+    ("TRANSFORM SQL_TO_XML", CgateAccessLevel::Admin),
+    ("TRANSFORM SQL_TO_XML_CGATE2", CgateAccessLevel::Admin),
+    ("TRANSFORM XML_TO_SQL", CgateAccessLevel::Admin),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
@@ -625,6 +653,7 @@ pub(crate) fn native_probed_commands(
         .chain(NATIVE_PROBED_APPLICATION_COMMANDS.iter())
         .chain(NATIVE_PROBED_DALI_COMMANDS.iter())
         .chain(NATIVE_PROBED_REMAINING_COMMANDS.iter())
+        .chain(NATIVE_PROBED_UNPROBED_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -1319,6 +1348,107 @@ mod tests {
                     "native {command} at {role}: {reply}"
                 );
             }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn unprobed_handler_floors_match_owned_native_role_responses_and_vectors() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_unprobed_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(evidence["format"], "native-cgate-unprobed-authorization-v1");
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        for (field, source) in [
+            (
+                "capture_script_sha256",
+                include_bytes!("../research/native_unprobed_authorization_probe.py").as_slice(),
+            ),
+            (
+                "capture_engine_sha256",
+                include_bytes!("../research/native_admin_authorization_probe.py").as_slice(),
+            ),
+            (
+                "local_cgate_harness_sha256",
+                include_bytes!("../../../toolkit-cli/research/local_cgate.py").as_slice(),
+            ),
+        ] {
+            assert_eq!(
+                evidence[field],
+                hex::encode(auth::sha256(source)),
+                "{field}"
+            );
+        }
+
+        let commands = evidence["commands"].as_array().unwrap();
+        let roles = evidence["roles"].as_object().unwrap();
+        let vectors = include_str!("../../testdata/vectors/cgate_unprobed_authorization.jsonl")
+            .lines()
+            .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(commands.len(), NATIVE_PROBED_UNPROBED_COMMANDS.len());
+        assert_eq!(vectors.len(), commands.len());
+        assert_eq!(roles.len(), 9);
+
+        for (path, minimum) in NATIVE_PROBED_UNPROBED_COMMANDS {
+            let matching = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| {
+                    NATIVE_PROBED_UNPROBED_COMMANDS
+                        .iter()
+                        .filter(|(candidate, _)| {
+                            *command == *candidate || command.starts_with(&format!("{candidate} "))
+                        })
+                        .max_by_key(|(candidate, _)| candidate.len())
+                        .map(|(candidate, _)| *candidate)
+                        == Some(*path)
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(matching.len(), 1, "native invocation for {path}");
+            let command = matching[0];
+            let vector = vectors.iter().find(|row| row["path"] == *path).unwrap();
+            assert_eq!(vector["command"], command);
+            let mut floor_seen = false;
+            let mut previous_role = "";
+            for role in [
+                "None", "Connect", "Monitor", "Operate", "Admin", "Program", "Debug", "Clipsal",
+                "Max",
+            ] {
+                let level = CgateAccessLevel::parse(role);
+                let reply = roles[role]["responses"][command].as_str().unwrap();
+                assert_eq!(roles[role]["query"], format!("210 Access level: {role}"));
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+                if level == *minimum {
+                    assert_eq!(vector["admitted_role"], role);
+                    assert_eq!(vector["native_at_floor"], reply);
+                    assert_eq!(vector["denied_role"], previous_role);
+                    assert_eq!(vector["denied_reply"], "420 Access denied.");
+                    floor_seen = true;
+                }
+                previous_role = role;
+            }
+            assert!(floor_seen, "missing floor for {command}");
             let upper = command
                 .split_whitespace()
                 .map(str::to_ascii_uppercase)

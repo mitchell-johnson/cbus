@@ -132,17 +132,20 @@ def test_native_handler_role_expansion_is_source_bound_and_stays_partial() -> No
     assert document["sources"]["native_remaining_handler_roles"]["sha256"] == sha256(
         contract_builder.NATIVE_REMAINING_ROLE_PATH.read_bytes()
     ).hexdigest()
+    assert document["sources"]["native_unprobed_handler_roles"]["sha256"] == sha256(
+        contract_builder.NATIVE_UNPROBED_ROLE_PATH.read_bytes()
+    ).hexdigest()
     assert document["sources"]["access_handler_registry"]["sha256"] == sha256(
         contract_builder.ACCESS_PATH.read_bytes()
     ).hexdigest()
-    assert document["counts"]["native_handler_role_observations"] == 376
-    assert document["counts"]["native_handler_role_unresolved"] == 376
+    assert document["counts"]["native_handler_role_observations"] == 398
+    assert document["counts"]["native_handler_role_unresolved"] == 398
     observed = [
         row for row in document["contracts"]
         if "native_handler_entry"
         in row["axes"]["authorization"]["subaxes"]["handler_roles"].get("known", {})
     ]
-    assert len(observed) == 376
+    assert len(observed) == 398
     assert all(
         row["axes"]["authorization"]["status"] == "partial"
         and row["axes"]["authorization"]["subaxes"]["handler_roles"]["status"]

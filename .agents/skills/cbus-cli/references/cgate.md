@@ -1206,14 +1206,14 @@ controls, `SHORTMESSAGE SEND`, and `EREPORT MESSAGE` while reads,
 other bus control stay open; failures answer `420 LOGIN required` / `420 LOGIN failed` (malformed
 `LOGIN` with no token is 400 and also clears the flag), never `401`.
 This is not exact native `access.txt` handler/access-level parity.
-`access_native_handler_probe_levels` lists 376 command entry floors captured
+`access_native_handler_probe_levels` lists 398 command entry floors captured
 against owned C-Gate 3.4 at all nine ACCESS levels. The second capture adds
 58 project, database, network, file, repository, session and application
 invocations; `TRIGGER EVENT` and `EVENT_CHANNEL LIST` enter at Program, while
 `TREE`/`TREEXML` and `GETSTATE` enter at Monitor. These checks run before
 mutation or PCI dispatch, including `DBSETXML` documents; `EVENTS` follows the
 captured `EVENT` Monitor floor. `ACCESS` retains its Clipsal/Max family check.
-All 376 initial, expansion, programming, media/security, administrative, application, DALI and remaining-selector observations appear in the Toolkit
+All 398 initial, expansion, programming, media/security, administrative, application, DALI, remaining-selector and utility/transform observations appear in the Toolkit
 CLI's C-Gate contract inventory as source-bound known facts for exact invocations; their handler-role
 subaxes remain unresolved and do not count as functional acceptance.
 The DALI capture adds 126 paths and repeats 66 with the native `poll` mode;
@@ -1226,6 +1226,16 @@ legacy database and DBGETJSON selectors, network/utility commands and
 an owned loopback child; absent project objects and local-only discovery do
 not establish later object permission or physical delivery. See
 `rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json`.
+The next owned capture adds 22 exact paths: ACCESS ADD and LOG EXTRACT at
+Clipsal, CALCULATOR TEST, DBNEW and all five TRANSFORM leaves at Admin, NET
+CHECK_UNRAVEL/STATE_INTERVAL and TEST_SPAM LIST/STOP at Program, REPORT at
+Monitor, and NEW, ON/OFF/RAMP/TERMINATERAMP, OID, RUN and STOP at Operate.
+It pins one useful invocation of each to all nine roles without establishing
+later object checks or physical success. See
+`rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json`.
+ACCESS LOAD needs a separate per-role child because it can replace the live
+credential table. ACCESS_CONTROL and UNIT extensions were rejected by the
+original parser before a role gate.
 A third owned native capture adds 27 PP leaves at Clipsal and all eight
 PROGRAMMER/five DEPLOY_QUEUE leaves at Program. The PP family therefore
 requires Clipsal even for its catalogues and session reads. A Program login

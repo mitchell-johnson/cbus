@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 376);
+        assert_eq!(floors.len(), 398);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),
@@ -295,6 +295,16 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
             ("ACCESS LIST", "Clipsal"),
             ("DBGETJSON NAC_TAGMAP", "Admin"),
             ("IDENTIFY ON", "Operate"),
+            ("ACCESS ADD", "Clipsal"),
+            ("CALCULATOR TEST", "Admin"),
+            ("DBNEW", "Admin"),
+            ("LOG EXTRACT", "Clipsal"),
+            ("NET CHECK_UNRAVEL", "Program"),
+            ("NEW", "Operate"),
+            ("OID", "Operate"),
+            ("REPORT", "Monitor"),
+            ("TRANSFORM XML_TO_SQL", "Admin"),
+            ("TEST_SPAM LIST", "Program"),
         ] {
             assert!(
                 floors
@@ -340,6 +350,73 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
 
     std::fs::remove_file(state).unwrap();
     std::fs::remove_file(token).unwrap();
+}
+
+#[tokio::test]
+async fn unprobed_native_floors_deny_over_real_tcp_without_pci_or_state_mutation() {
+    let state = cbus_test_support::proc::temp_path("cgate-unprobed-access.json");
+    let mut sys = start_with(options_for(&state, None, "127.0.0.1:0")).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = connect(&sys).await;
+
+    for level in ["Connect", "Monitor", "Operate", "Admin", "Program", "Debug"] {
+        let name = level.to_ascii_lowercase();
+        let reply = command(
+            &mut reader,
+            &mut writer,
+            &format!("setup-{name}"),
+            &format!("ACCESS ADD user role-{name} pw-{name} {level}"),
+        )
+        .await;
+        assert_eq!(reply, ["200 OK."]);
+    }
+    let before = std::fs::read(&state).unwrap();
+    let frames_before = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    let vectors = include_str!("../../testdata/vectors/cgate_unprobed_authorization.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 22);
+    for (index, vector) in vectors.iter().enumerate() {
+        let level = vector["denied_role"].as_str().unwrap();
+        let name = level.to_ascii_lowercase();
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                &format!("login-{index}"),
+                &format!("LOGIN role-{name} pw-{name}"),
+            )
+            .await,
+            [format!("211 Access level set to: {level}")]
+        );
+        assert_eq!(
+            command(
+                &mut reader,
+                &mut writer,
+                &format!("deny-{index}"),
+                vector["command"].as_str().unwrap(),
+            )
+            .await,
+            ["420 Access denied."]
+        );
+    }
+    assert_eq!(std::fs::read(&state).unwrap(), before);
+    let frames_after = sys
+        .pci
+        .frames()
+        .iter()
+        .filter(|frame| !is_status_request(&frame.payload))
+        .count();
+    assert_eq!(frames_after, frames_before);
+    assert!(sys.daemon.is_running());
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
 }
 
 #[tokio::test]
