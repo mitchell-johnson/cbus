@@ -1694,6 +1694,11 @@ pub struct Network {
     pub retries: u8,
     /// Database units keyed by address.
     pub units: HashMap<u8, Unit>,
+    /// Original complete-Network XML submission order. Native OID lookup
+    /// selects the final submitted Unit when two Units share one OID.
+    /// Older modeled repositories fall back to address order.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub unit_xml_order: Vec<u8>,
     /// Physical bus units keyed by address.
     ///
     /// The mock keeps native layering: `DBADDSAFE` introduces a unit on
@@ -2006,6 +2011,10 @@ pub struct Server {
     objects: std::collections::HashSet<String>,
     /// OIDs issued for `Level`/`NetVar` creation, resolvable via `!oid/OID`.
     known_oids: std::collections::HashSet<String>,
+    /// Native build 2001 invalidates an OID lookup after deleting one of two
+    /// units sharing that OID. The surviving addressed Unit remains readable;
+    /// a project reload reconstructs the OID index from the saved tree.
+    invalidated_unit_oid_lookups: HashSet<(String, String)>,
     /// Database levels by internal record key (`DBADDSAFE ... Level/NetVar
     /// ...` records). A native-style project copy can retain the same OID in
     /// more than one project, so duplicate identities use composite keys and
@@ -2117,6 +2126,7 @@ impl Server {
             db_xml_extras: HashMap::new(),
             objects: std::collections::HashSet::new(),
             known_oids: std::collections::HashSet::new(),
+            invalidated_unit_oid_lookups: HashSet::new(),
             db_levels: HashMap::new(),
             db_pending: HashMap::new(),
             locks: HashMap::new(),
@@ -2496,6 +2506,8 @@ impl Server {
                 networks: HashMap::new(),
             },
         );
+        self.invalidated_unit_oid_lookups
+            .retain(|(project, _)| project != &name);
         self.current = Some(name.clone());
         // The name travels in the event so subscribed sessions (including
         // other connections) can identify what changed without a follow-up
@@ -2546,6 +2558,8 @@ impl Server {
             // with both single and repeated Application OIDs.
             if response.status == status::OK && words.len() == 3 {
                 self.materialize_loaded_nested_level_tags(words[2]);
+                self.invalidated_unit_oid_lookups
+                    .retain(|(project, _)| project != words[2]);
             }
             return response;
         }
@@ -2564,6 +2578,8 @@ impl Server {
         self.projects.insert(words[2].to_string(), project);
         self.restore_unit_document_archive(words[3], words[2]);
         self.current = Some(words[2].to_string());
+        self.invalidated_unit_oid_lookups
+            .retain(|(project, _)| project != words[2]);
         ok(tag, vec![], "200 OK")
     }
 
@@ -2661,6 +2677,8 @@ impl Server {
             })
             .collect();
         self.delete_project_prefix(name, project_oids);
+        self.invalidated_unit_oid_lookups
+            .retain(|(project, _)| project != name);
         if self.current.as_deref() == Some(name) {
             self.current = None;
         }
@@ -3048,6 +3066,17 @@ impl Server {
         self.remap_prefix(&format!("//{src}"), &format!("//{dst}"));
         self.remap_unit_document_project(src, dst);
         self.remap_db_xml_extras_project(src, dst);
+        self.invalidated_unit_oid_lookups = self
+            .invalidated_unit_oid_lookups
+            .drain()
+            .map(|(project, oid)| {
+                if project == src {
+                    (dst.to_string(), oid)
+                } else {
+                    (project, oid)
+                }
+            })
+            .collect();
         self.push_event(format!("#e# project {dst} renamed"));
         ok(tag, vec![], "200 OK.")
     }
@@ -3367,6 +3396,7 @@ impl Server {
                 state: NetworkState::Closed,
                 retries: default_network_retries(),
                 units: HashMap::new(),
+                unit_xml_order: Vec::new(),
                 physical: HashMap::new(),
                 levels: HashMap::new(),
             },
@@ -4459,8 +4489,20 @@ impl Server {
         for application in self.db_xml_children(proj_name, &network_path, &["Application"]) {
             doc.push_str(&self.pending_db_xml_document(proj_name, application));
         }
-        let mut addrs: Vec<u8> = network.units.keys().copied().collect();
-        addrs.sort();
+        let mut addrs = network
+            .unit_xml_order
+            .iter()
+            .copied()
+            .filter(|address| network.units.contains_key(address))
+            .collect::<Vec<_>>();
+        let mut untracked = network
+            .units
+            .keys()
+            .copied()
+            .filter(|address| !addrs.contains(address))
+            .collect::<Vec<_>>();
+        untracked.sort();
+        addrs.extend(untracked);
         for addr in addrs {
             let unit = &network.units[&addr];
             doc.push_str(&self.unit_xml_document(proj_name, unit));
@@ -7526,6 +7568,13 @@ impl Server {
             if parts.len() == 4 && parts[2].eq_ignore_ascii_case("p") {
                 return self.dbsetxml_unit(tag_of(&cmd), words[1], document);
             }
+            if let Some(oid) = words[1].strip_prefix('!') {
+                if !oid.contains('/') {
+                    if let Some(path) = self.selected_duplicate_unit_path(oid) {
+                        return self.dbsetxml_unit(tag_of(&cmd), &path, document);
+                    }
+                }
+            }
             let typed_path = words[1].starts_with('!')
                 || matches!(parts.as_slice(), [network] if network.parse::<u8>().is_ok())
                 || matches!(parts.as_slice(), [_, network] if network.parse::<u8>().is_ok())
@@ -7666,6 +7715,15 @@ impl Server {
             .expect("validated DBSETXML network");
         network.units.remove(&old_address);
         network.units.insert(new_address, new_unit.clone());
+        if old_address != new_address {
+            if let Some(address) = network
+                .unit_xml_order
+                .iter_mut()
+                .find(|address| **address == old_address)
+            {
+                *address = new_address;
+            }
+        }
         let pending_key = format!("{project_name}\u{1f}{}", old_unit.oid);
         if self.db_pending.get(&pending_key).is_some_and(|pending| {
             pending.element == "Unit" && pending.path.as_deref() == Some(path)
@@ -8310,6 +8368,7 @@ impl Server {
             state,
             retries,
             units,
+            unit_xml_order: object.units.iter().map(|unit| unit.address).collect(),
             physical,
             levels,
         };
@@ -8471,6 +8530,7 @@ impl Server {
         }
         if words[1].strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+                && self.selected_duplicate_unit_path(oid).is_none()
         }) {
             return err(
                 tag,
@@ -8490,6 +8550,63 @@ impl Server {
         };
         if proj_name != self.current.clone().unwrap_or_default() {
             return err(tag, status::NOT_FOUND, "404 Project not selected");
+        }
+        if let Some(oid) = words[1].strip_prefix('!').filter(|oid| !oid.contains('/')) {
+            if let Some(source_path) = self.selected_duplicate_unit_path(oid) {
+                let (_, source_network, source_address) =
+                    Self::split_unit(&source_path).expect("selected Unit path");
+                let mut unit = self.projects[&proj_name].networks[&source_network].units
+                    [&source_address]
+                    .clone();
+                let source_key =
+                    self.stored_unit_document_key(&proj_name, &unit.oid, source_address);
+                let source_document = self.unit_documents.get(&source_key).cloned();
+                let source_pp_fields = self.unit_pp_fields.get(&source_key).cloned();
+                let address = addr as u8;
+                if self.projects[&proj_name].networks[&net]
+                    .units
+                    .contains_key(&address)
+                {
+                    return err(tag, status::CONFLICT_EXISTS, "409 Unit already exists");
+                }
+                unit.address = address;
+                unit.fields
+                    .insert("TagName".to_string(), words[4].to_string());
+                unit.oid = self.issue_oid();
+                let copied_oid = unit.oid.clone();
+                self.projects
+                    .get_mut(&proj_name)
+                    .expect("selected project")
+                    .networks
+                    .get_mut(&net)
+                    .expect("destination network")
+                    .units
+                    .insert(address, unit);
+                self.projects
+                    .get_mut(&proj_name)
+                    .expect("selected project")
+                    .networks
+                    .get_mut(&net)
+                    .expect("destination network")
+                    .unit_xml_order
+                    .push(address);
+                let destination_key =
+                    Self::addressed_unit_document_key(&proj_name, &copied_oid, address);
+                if let Some(document) = source_document {
+                    self.unit_documents
+                        .insert(destination_key.clone(), document);
+                }
+                if let Some(pp_fields) = source_pp_fields {
+                    self.unit_pp_fields.insert(destination_key, pp_fields);
+                }
+                self.objects.insert(format!("{}-unit-{address}", words[2]));
+                return Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: format!("301 OID={copied_oid}"),
+                    status: 301,
+                };
+            }
         }
         // Duplicate a known unit record when the source names one (a
         // known level source is handled below with the 301 OID flow).
@@ -8519,6 +8636,7 @@ impl Server {
                 // (no internal OID references exist to remap).
                 unit.oid = fresh_oid();
                 network.units.insert(addr, unit);
+                network.unit_xml_order.push(addr);
                 let oid = network.units[&addr].oid.clone();
                 self.known_oids.insert(oid.clone());
                 let destination_key = Self::unit_document_key(&proj_name, &oid);
@@ -8777,6 +8895,7 @@ impl Server {
         }
         if target.strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
+                && self.selected_duplicate_unit_path(oid).is_none()
         }) {
             return err(
                 tag,
@@ -8829,6 +8948,19 @@ impl Server {
                 "409 Duplicate Application deletion requires separate native evidence",
             );
         }
+        if let Some(oid) = target.strip_prefix('!').filter(|oid| !oid.contains('/')) {
+            if let Some(path) = self.selected_duplicate_unit_path(oid) {
+                let mut response = self.dbdelete(tag, &["DBDELETE", &path]);
+                if response.status == status::OK {
+                    if let Some(project) = self.current.as_deref() {
+                        self.invalidated_unit_oid_lookups
+                            .insert((project.to_string(), oid.to_string()));
+                    }
+                    response.final_text = "200 OK.".to_string();
+                }
+                return response;
+            }
+        }
         let pending_oid = self.current.as_deref().and_then(|project| {
             self.db_pending
                 .values()
@@ -8852,6 +8984,15 @@ impl Server {
                 .get_mut(&proj_name)
                 .and_then(|p| p.networks.get_mut(&net))
                 .and_then(|n| n.units.remove(&addr));
+            if removed.is_some() {
+                if let Some(network) = self
+                    .projects
+                    .get_mut(&proj_name)
+                    .and_then(|project| project.networks.get_mut(&net))
+                {
+                    network.unit_xml_order.retain(|address| *address != addr);
+                }
+            }
             // Boundary-checked prefix: `//P/252/p/20` must not wipe
             // `//P/252/p/200` or unrelated siblings.
             let prefix = format!("{target}/");
@@ -9223,6 +9364,16 @@ impl Server {
             let oid = segments.next().unwrap_or("");
             let field = segments.next();
             if self.duplicated_unit_oid_in_current_project(oid) {
+                if let (Some(path), Some(field)) = (self.selected_duplicate_unit_path(oid), field) {
+                    let resolved = format!("{path}/{field}");
+                    let mut resolved_words = words.to_vec();
+                    resolved_words[1] = &resolved;
+                    let mut response = self.dbset(tag, &resolved_words);
+                    if response.status == status::OK {
+                        response.final_text = "200 OK.".to_string();
+                    }
+                    return response;
+                }
                 return err(
                     tag,
                     status::CONFLICT_EXISTS,
@@ -9340,6 +9491,12 @@ impl Server {
                 return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
             };
             if self.duplicated_unit_oid_in_current_project(oid) {
+                if let Some(selected) = self.selected_duplicate_unit_path(oid) {
+                    let resolved = format!("{selected}/{field}");
+                    let mut resolved_words = words.to_vec();
+                    resolved_words[1] = &resolved;
+                    return self.dbset_unsafe(tag, &resolved_words);
+                }
                 return err(
                     tag,
                     status::CONFLICT_EXISTS,
@@ -10714,6 +10871,12 @@ impl Server {
         let Some(current) = self.current.as_deref() else {
             return false;
         };
+        if self
+            .invalidated_unit_oid_lookups
+            .contains(&(current.to_string(), oid.to_string()))
+        {
+            return false;
+        }
         self.pending_object(current, oid).is_some()
             || self.projects.get(current).is_some_and(|project| {
                 project.networks.values().any(|network| {
@@ -10724,6 +10887,18 @@ impl Server {
     }
 
     fn last_unit_by_oid(&self, project: &str, oid: &str) -> Option<&Unit> {
+        if self.current.as_deref() == Some(project) {
+            if let Some(path) = self.selected_duplicate_unit_path(oid) {
+                let (_, network, address) = Self::split_unit(&path)?;
+                return self
+                    .projects
+                    .get(project)?
+                    .networks
+                    .get(&network)?
+                    .units
+                    .get(&address);
+            }
+        }
         self.projects
             .get(project)?
             .networks
@@ -10752,6 +10927,47 @@ impl Server {
                 .count()
         });
         units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
+    }
+
+    /// The owned native captures establish final-submission selection only for
+    /// two Units with a shared OID in one Network. Other collision shapes
+    /// remain guarded until their native behavior is witnessed.
+    fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
+        let project = self.current.as_deref()?;
+        if self.pending_object(project, oid).is_some() {
+            return None;
+        }
+        let matches = self
+            .projects
+            .get(project)?
+            .networks
+            .iter()
+            .flat_map(|(net, network)| {
+                network
+                    .units
+                    .values()
+                    .filter(move |unit| unit.oid == oid)
+                    .map(move |unit| (*net, unit.address))
+            })
+            .collect::<Vec<_>>();
+        if matches.len() != 2 || matches[0].0 != matches[1].0 {
+            return None;
+        }
+        let net = matches[0].0;
+        let network = self.projects.get(project)?.networks.get(&net)?;
+        let mut order = network
+            .unit_xml_order
+            .iter()
+            .copied()
+            .filter(|address| matches.iter().any(|(_, matched)| matched == address));
+        let address = order.next_back()?;
+        if !matches
+            .iter()
+            .all(|(_, matched)| network.unit_xml_order.contains(matched))
+        {
+            return None;
+        }
+        Some(format!("//{project}/{net}/p/{address}"))
     }
 
     fn duplicated_application_oid(&self, project: &str, oid: &str) -> bool {
@@ -10904,6 +11120,7 @@ mod tests {
                 .iter()
                 .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
                 .collect(),
+            unit_xml_order: bridge_units.to_vec(),
             physical: HashMap::new(),
             levels: HashMap::new(),
         }

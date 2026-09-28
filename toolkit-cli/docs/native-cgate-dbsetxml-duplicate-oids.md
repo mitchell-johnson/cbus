@@ -40,11 +40,44 @@ Applications sharing one OID. Typed descendant, Interface and Network OID
 collisions remain closed with `409`; those shapes have no native evidence or
 lossless Rust representation yet.
 Project-wide collision checks also prevent two Networks from importing the
-same Unit OID and address into one project. For the Unit-containing shapes,
-ambiguous OID-based mutations
-(`DBSET`, `DBSETSAFE`, `DBSETXML`, `DBDELETE`, `DBCOPYSAFE`) return `409` and
-leave both objects unchanged; the owned capture establishes OID read
-selection, not those mutation semantics. Path-based Unit replacement and
+same Unit OID and address into one project. Path-based Unit replacement and
 deletion retain the other Unit and any same-OID Application. A project copy
 retains both identities independently of later source-project deletion.
-Native file format and physical effects remain outside this capture.
+
+## OID-targeted mutations of two Units
+
+The [89-request owned capture](../../rust/testdata/fixtures/native_cgate_duplicate_unit_oid_mutations.json)
+has SHA-256 `79010f478e9a12cb91762f2385d2c59e219033f923aad125bf52a1a161656686`.
+Its [reproducer](../research/cgate_duplicate_unit_oid_mutations.py) is pinned
+by `95d71bd2e8b3f0a1da47d7bfd5941f2ef82b81829c61713242fe39bb029e054f`
+and uses the same original JAR, Java 11 and owned loopback service harness.
+Every case resets a synthetic Network with Units 20 and 21 sharing one OID,
+captures direct and OID readback, performs one mutation, then saves, closes,
+loads and reselects the project. The CNI address `127.0.0.1:1` is never opened.
+
+Original C-Gate selected the final submitted Unit, address 21, for all five
+bare shared-OID targets:
+`DBSETSAFE !oid/UnitName`, `DBSET !oid/UnitName`, `DBSETXML !oid`,
+`DBCOPYSAFE !oid //XOIDM/254 22 Copied`, and `DBDELETE !oid`.
+The two scalar writes returned `200 OK.` and changed only Unit 21. XML
+replacement returned `301 OID=<shared OID>` and changed only Unit 21.
+Copy returned `301 OID=<new OID>`; Unit 22 inherited Unit 21's `UnitName`
+and `PP UnitAddress=21`, while gaining address 22 and `TagName=Copied`.
+Delete returned `200 OK.` and removed only Unit 21. Its OID lookup returned
+401 despite Unit 20 surviving at its direct path; after `PROJECT LOAD`, the
+OID lookup selected Unit 20. The [Rust vectors](../../rust/testdata/vectors/cgate_duplicate_unit_oid_mutations.jsonl)
+and source-bound Python test cover all five cases and reload behavior.
+
+The [21-request reversed-order capture](../../rust/testdata/fixtures/native_cgate_duplicate_unit_oid_reverse_order.json)
+has SHA-256 `6f8907860cda4c7cda51bbd2707b336741e8792e568f3a3557efd0fef13c68cc`;
+its [reproducer](../research/cgate_duplicate_unit_oid_reverse_order.py) is
+pinned by `e55d35049a3e5d8913359ecb040afae467085d925da544fe87075409e2723d7d`.
+It submits Unit 21 before Unit 20. `DBGETXML !oid` selects Unit 20,
+`DBSETSAFE !oid/UnitName Selected` changes only Unit 20, and save/load keeps
+that selection. The [reverse-order vector](../../rust/testdata/vectors/cgate_duplicate_unit_oid_reverse_order.jsonl)
+prevents accidentally treating this as highest-address selection.
+
+Rust applies final-submission selection only to exactly two Units with the same OID in
+one Network and no same-OID pending object. Cross-kind, cross-network and
+larger Unit collisions remain guarded pending separate native evidence.
+Native file format and physical effects remain outside these captures.

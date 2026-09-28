@@ -1,0 +1,5 @@
+{"name":"set_safe","command":"DBSETSAFE","selected_address":21,"expected_unit_name":"ByOID","expected_oid_after":344}
+{"name":"set_unsafe","command":"DBSET","selected_address":21,"expected_unit_name":"ByOID","expected_oid_after":344}
+{"name":"set_xml","command":"DBSETXML","selected_address":21,"expected_unit_name":"Changed room","expected_oid_after":344}
+{"name":"copy_safe","command":"DBCOPYSAFE","selected_address":21,"copied_address":22,"expected_unit_name":"Second room","expected_copy_pp_address":21,"expected_oid_after":344}
+{"name":"delete","command":"DBDELETE","selected_address":21,"survivor_address":20,"expected_oid_after":401,"expected_oid_after_reload":344}

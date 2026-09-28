@@ -1324,10 +1324,17 @@ Level `<TagsDLT/>`. Rust preserves that child across another save/load and JSON
 restart. A [nonempty Level capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-nested-levels.md#nonempty-level-labels)
 pins a generated TagDLT OID, an explicit-OID text edit, save/load and
 whole-Network XML roundtrip. Other label shapes remain unverified.
-Descendant OID collisions are not admitted by this evidence. Ambiguous
-Unit-OID mutations and unprobed duplicate-Application fields/deletes return
-409. Other duplicate shapes and cross-network Unit-OID collisions remain
-refused until their native semantics and lossless representation are known.
+Descendant OID collisions are not admitted by this evidence. An
+[owned 89-request mutation capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md#oid-targeted-mutations-of-two-units)
+establishes that `DBSETSAFE`, `DBSET`, `DBSETXML`, `DBCOPYSAFE` and `DBDELETE`
+through a shared OID select Unit 21 of two Units at addresses 20 and 21 in
+one Network. The copy receives a new OID and retains the source `UnitName`
+and PP `UnitAddress`; OID-targeted deletion invalidates the shared OID lookup
+until `PROJECT LOAD`, while the surviving addressed Unit remains readable.
+Rust admits exactly this two-Unit, one-Network shape. Unprobed
+duplicate-Application fields/deletes, other duplicate shapes and
+cross-network Unit-OID collisions remain refused until native semantics and
+lossless representation are known.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive

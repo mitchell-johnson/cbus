@@ -1,0 +1,936 @@
+{
+  "schema": "native-cgate-duplicate-unit-oid-mutations-v1",
+  "captured_utc": "2026-09-28T07:47:49.126536+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:56837",
+      "127.0.0.1:56838",
+      "127.0.0.1:56839",
+      "127.0.0.1:56840",
+      "127.0.0.1:56841",
+      "127.0.0.1:56842"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "95d71bd2e8b3f0a1da47d7bfd5941f2ef82b81829c61713242fe39bb029e054f",
+  "exchange_helper_sha256": "5eab7b8f4fd70d90d61fe2356dc239415c4a1501bce285e6a0f11c6598ec466a",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "project": "XOIDM",
+  "shared_oid": "11111111-1111-4111-8111-111111111111",
+  "network_oid": "d2b805e0-9d3e-103f-8f2d-c717d51687b5",
+  "interface_oid": "d2b82cf0-9d3e-103f-8f2e-c717d51687b5",
+  "setup": [
+    {
+      "tag": 300,
+      "command": "PROJECT NEW XOIDM",
+      "request": "[300] PROJECT NEW XOIDM\r\n",
+      "response_lines": [
+        "[300] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 301,
+      "command": "PROJECT USE XOIDM",
+      "request": "[301] PROJECT USE XOIDM\r\n",
+      "response_lines": [
+        "[301] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 302,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[302] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[302] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+      ]
+    },
+    {
+      "tag": 303,
+      "command": "DBGETXML //XOIDM/254",
+      "request": "[303] DBGETXML //XOIDM/254\r\n",
+      "response_lines": [
+        "[303] 343-Begin XML snippet\r\n",
+        "[303] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[303] 347-<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[303] 344 End XML snippet\r\n"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "set_safe",
+      "reset": {
+        "tag": 304,
+        "command": "DBSETXML //XOIDM/254",
+        "request": "[304] DBSETXML //XOIDM/254 << END304\r\n<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND304\r\n",
+        "response_lines": [
+          "[304] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 305,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[305] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[305] 343-Begin XML snippet\r\n",
+            "[305] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[305] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[305] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 306,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[306] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[306] 343-Begin XML snippet\r\n",
+            "[306] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[306] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[306] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 307,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[307] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[307] 343-Begin XML snippet\r\n",
+          "[307] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[307] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[307] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 308,
+        "command": "DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[308] DBSETSAFE !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[308] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 309,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[309] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[309] 343-Begin XML snippet\r\n",
+            "[309] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[309] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[309] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 310,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[310] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[310] 343-Begin XML snippet\r\n",
+            "[310] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[310] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[310] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 311,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[311] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[311] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 312,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[312] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[312] 343-Begin XML snippet\r\n",
+          "[312] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[312] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[312] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 313,
+          "command": "PROJECT SAVE XOIDM",
+          "request": "[313] PROJECT SAVE XOIDM\r\n",
+          "response_lines": [
+            "[313] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 314,
+          "command": "PROJECT CLOSE XOIDM",
+          "request": "[314] PROJECT CLOSE XOIDM\r\n",
+          "response_lines": [
+            "[314] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 315,
+          "command": "PROJECT LOAD XOIDM",
+          "request": "[315] PROJECT LOAD XOIDM\r\n",
+          "response_lines": [
+            "[315] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 316,
+          "command": "PROJECT USE XOIDM",
+          "request": "[316] PROJECT USE XOIDM\r\n",
+          "response_lines": [
+            "[316] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 317,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[317] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[317] 343-Begin XML snippet\r\n",
+            "[317] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[317] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[317] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 318,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[318] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[318] 343-Begin XML snippet\r\n",
+            "[318] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[318] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[318] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 319,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[319] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[319] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 320,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[320] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[320] 343-Begin XML snippet\r\n",
+          "[320] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[320] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[320] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_unsafe",
+      "reset": {
+        "tag": 321,
+        "command": "DBSETXML //XOIDM/254",
+        "request": "[321] DBSETXML //XOIDM/254 << END321\r\n<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND321\r\n",
+        "response_lines": [
+          "[321] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 322,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[322] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[322] 343-Begin XML snippet\r\n",
+            "[322] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[322] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[322] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 323,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[323] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[323] 343-Begin XML snippet\r\n",
+            "[323] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[323] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[323] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 324,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[324] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[324] 343-Begin XML snippet\r\n",
+          "[324] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[324] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[324] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 325,
+        "command": "DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID",
+        "request": "[325] DBSET !11111111-1111-4111-8111-111111111111/UnitName ByOID\r\n",
+        "response_lines": [
+          "[325] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 326,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[326] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[326] 343-Begin XML snippet\r\n",
+            "[326] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[326] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[326] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 327,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[327] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[327] 343-Begin XML snippet\r\n",
+            "[327] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[327] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[327] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 328,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[328] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[328] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 329,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[329] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[329] 343-Begin XML snippet\r\n",
+          "[329] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[329] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[329] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 330,
+          "command": "PROJECT SAVE XOIDM",
+          "request": "[330] PROJECT SAVE XOIDM\r\n",
+          "response_lines": [
+            "[330] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 331,
+          "command": "PROJECT CLOSE XOIDM",
+          "request": "[331] PROJECT CLOSE XOIDM\r\n",
+          "response_lines": [
+            "[331] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 332,
+          "command": "PROJECT LOAD XOIDM",
+          "request": "[332] PROJECT LOAD XOIDM\r\n",
+          "response_lines": [
+            "[332] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 333,
+          "command": "PROJECT USE XOIDM",
+          "request": "[333] PROJECT USE XOIDM\r\n",
+          "response_lines": [
+            "[333] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 334,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[334] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[334] 343-Begin XML snippet\r\n",
+            "[334] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[334] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[334] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 335,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[335] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[335] 343-Begin XML snippet\r\n",
+            "[335] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[335] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[335] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 336,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[336] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[336] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 337,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[337] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[337] 343-Begin XML snippet\r\n",
+          "[337] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[337] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>ByOID</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[337] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "set_xml",
+      "reset": {
+        "tag": 338,
+        "command": "DBSETXML //XOIDM/254",
+        "request": "[338] DBSETXML //XOIDM/254 << END338\r\n<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND338\r\n",
+        "response_lines": [
+          "[338] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 339,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[339] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[339] 343-Begin XML snippet\r\n",
+            "[339] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[339] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[339] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 340,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[340] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[340] 343-Begin XML snippet\r\n",
+            "[340] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[340] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[340] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 341,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[341] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[341] 343-Begin XML snippet\r\n",
+          "[341] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[341] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[341] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 342,
+        "command": "DBSETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[342] DBSETXML !11111111-1111-4111-8111-111111111111 << END342\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\nEND342\r\n",
+        "response_lines": [
+          "[342] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 343,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[343] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[343] 343-Begin XML snippet\r\n",
+            "[343] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[343] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[343] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 344,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[344] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[344] 343-Begin XML snippet\r\n",
+            "[344] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[344] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[344] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 345,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[345] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[345] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 346,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[346] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[346] 343-Begin XML snippet\r\n",
+          "[346] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[346] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[346] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 347,
+          "command": "PROJECT SAVE XOIDM",
+          "request": "[347] PROJECT SAVE XOIDM\r\n",
+          "response_lines": [
+            "[347] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 348,
+          "command": "PROJECT CLOSE XOIDM",
+          "request": "[348] PROJECT CLOSE XOIDM\r\n",
+          "response_lines": [
+            "[348] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 349,
+          "command": "PROJECT LOAD XOIDM",
+          "request": "[349] PROJECT LOAD XOIDM\r\n",
+          "response_lines": [
+            "[349] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 350,
+          "command": "PROJECT USE XOIDM",
+          "request": "[350] PROJECT USE XOIDM\r\n",
+          "response_lines": [
+            "[350] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 351,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[351] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[351] 343-Begin XML snippet\r\n",
+            "[351] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[351] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[351] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 352,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[352] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[352] 343-Begin XML snippet\r\n",
+            "[352] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[352] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[352] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 353,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[353] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[353] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 354,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[354] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[354] 343-Begin XML snippet\r\n",
+          "[354] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[354] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Changed</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Changed room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[354] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "copy_safe",
+      "reset": {
+        "tag": 355,
+        "command": "DBSETXML //XOIDM/254",
+        "request": "[355] DBSETXML //XOIDM/254 << END355\r\n<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND355\r\n",
+        "response_lines": [
+          "[355] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 356,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[356] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[356] 343-Begin XML snippet\r\n",
+            "[356] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[356] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[356] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 357,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[357] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[357] 343-Begin XML snippet\r\n",
+            "[357] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[357] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[357] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 358,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[358] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[358] 343-Begin XML snippet\r\n",
+          "[358] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[358] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[358] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 359,
+        "command": "DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XOIDM/254 22 Copied",
+        "request": "[359] DBCOPYSAFE !11111111-1111-4111-8111-111111111111 //XOIDM/254 22 Copied\r\n",
+        "response_lines": [
+          "[359] 301 OID=d2f053f0-9d3e-103f-8fcb-c717d51687b5\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 360,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[360] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[360] 343-Begin XML snippet\r\n",
+            "[360] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[360] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[360] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 361,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[361] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[361] 343-Begin XML snippet\r\n",
+            "[361] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[361] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[361] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 362,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[362] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[362] 343-Begin XML snippet\r\n",
+            "[362] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[362] 347-<Unit><OID>d2f053f0-9d3e-103f-8fcb-c717d51687b5</OID><TagName>Copied</TagName><Address>22</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[362] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 363,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[363] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[363] 343-Begin XML snippet\r\n",
+          "[363] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[363] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[363] 344 End XML snippet\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 364,
+          "command": "PROJECT SAVE XOIDM",
+          "request": "[364] PROJECT SAVE XOIDM\r\n",
+          "response_lines": [
+            "[364] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 365,
+          "command": "PROJECT CLOSE XOIDM",
+          "request": "[365] PROJECT CLOSE XOIDM\r\n",
+          "response_lines": [
+            "[365] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 366,
+          "command": "PROJECT LOAD XOIDM",
+          "request": "[366] PROJECT LOAD XOIDM\r\n",
+          "response_lines": [
+            "[366] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 367,
+          "command": "PROJECT USE XOIDM",
+          "request": "[367] PROJECT USE XOIDM\r\n",
+          "response_lines": [
+            "[367] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 368,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[368] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[368] 343-Begin XML snippet\r\n",
+            "[368] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[368] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[368] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 369,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[369] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[369] 343-Begin XML snippet\r\n",
+            "[369] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[369] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[369] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 370,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[370] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[370] 343-Begin XML snippet\r\n",
+            "[370] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[370] 347-<Unit><OID>d2f053f0-9d3e-103f-8fcb-c717d51687b5</OID><TagName>Copied</TagName><Address>22</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[370] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 371,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[371] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[371] 343-Begin XML snippet\r\n",
+          "[371] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[371] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[371] 344 End XML snippet\r\n"
+        ]
+      }
+    },
+    {
+      "name": "delete",
+      "reset": {
+        "tag": 372,
+        "command": "DBSETXML //XOIDM/254",
+        "request": "[372] DBSETXML //XOIDM/254 << END372\r\n<Network><OID>d2b805e0-9d3e-103f-8f2d-c717d51687b5</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>d2b82cf0-9d3e-103f-8f2e-c717d51687b5</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>\r\nEND372\r\n",
+        "response_lines": [
+          "[372] 301 OID=d2b805e0-9d3e-103f-8f2d-c717d51687b5\r\n"
+        ]
+      },
+      "before": [
+        {
+          "tag": 373,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[373] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[373] 343-Begin XML snippet\r\n",
+            "[373] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[373] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[373] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 374,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[374] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[374] 343-Begin XML snippet\r\n",
+            "[374] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[374] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+            "[374] 344 End XML snippet\r\n"
+          ]
+        }
+      ],
+      "oid_before": {
+        "tag": 375,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[375] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[375] 343-Begin XML snippet\r\n",
+          "[375] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[375] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit>\r\n",
+          "[375] 344 End XML snippet\r\n"
+        ]
+      },
+      "applied": {
+        "tag": 376,
+        "command": "DBDELETE !11111111-1111-4111-8111-111111111111",
+        "request": "[376] DBDELETE !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[376] 200 OK.\r\n"
+        ]
+      },
+      "after": [
+        {
+          "tag": 377,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[377] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[377] 343-Begin XML snippet\r\n",
+            "[377] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[377] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit>\r\n",
+            "[377] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 378,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[378] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[378] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 379,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[379] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[379] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_after": {
+        "tag": 380,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[380] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[380] 401 Bad object or device ID: Element !11111111-1111-4111-8111-111111111111 not found.\r\n"
+        ]
+      },
+      "lifecycle": [
+        {
+          "tag": 381,
+          "command": "PROJECT SAVE XOIDM",
+          "request": "[381] PROJECT SAVE XOIDM\r\n",
+          "response_lines": [
+            "[381] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 382,
+          "command": "PROJECT CLOSE XOIDM",
+          "request": "[382] PROJECT CLOSE XOIDM\r\n",
+          "response_lines": [
+            "[382] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 383,
+          "command": "PROJECT LOAD XOIDM",
+          "request": "[383] PROJECT LOAD XOIDM\r\n",
+          "response_lines": [
+            "[383] 200 OK.\r\n"
+          ]
+        },
+        {
+          "tag": 384,
+          "command": "PROJECT USE XOIDM",
+          "request": "[384] PROJECT USE XOIDM\r\n",
+          "response_lines": [
+            "[384] 200 OK.\r\n"
+          ]
+        }
+      ],
+      "reloaded": [
+        {
+          "tag": 385,
+          "command": "DBGETXML //XOIDM/254/p/20",
+          "request": "[385] DBGETXML //XOIDM/254/p/20\r\n",
+          "response_lines": [
+            "[385] 343-Begin XML snippet\r\n",
+            "[385] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+            "[385] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+            "[385] 344 End XML snippet\r\n"
+          ]
+        },
+        {
+          "tag": 386,
+          "command": "DBGETXML //XOIDM/254/p/21",
+          "request": "[386] DBGETXML //XOIDM/254/p/21\r\n",
+          "response_lines": [
+            "[386] 401 Bad object or device ID: Element 21 not found.\r\n"
+          ]
+        },
+        {
+          "tag": 387,
+          "command": "DBGETXML //XOIDM/254/p/22",
+          "request": "[387] DBGETXML //XOIDM/254/p/22\r\n",
+          "response_lines": [
+            "[387] 401 Bad object or device ID: Element 22 not found.\r\n"
+          ]
+        }
+      ],
+      "oid_reloaded": {
+        "tag": 388,
+        "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+        "request": "[388] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+        "response_lines": [
+          "[388] 343-Begin XML snippet\r\n",
+          "[388] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+          "[388] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+          "[388] 344 End XML snippet\r\n"
+        ]
+      }
+    }
+  ]
+}
