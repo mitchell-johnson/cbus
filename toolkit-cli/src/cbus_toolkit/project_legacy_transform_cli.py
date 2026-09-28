@@ -37,7 +37,9 @@ class LegacyProjectTransformFileOperation:
         state = {
             "operation": "project-transform-legacy", "stage": "validate", "complete": False,
             "source": None, "output": None, "dry_run": dry_run if type(dry_run) is bool else None,
-            "source_bytes": 0, "source_closed": False, "output_created": False,
+            "source_bytes": 0, "source_closed": False,
+            "output_create_attempted": False, "output_may_exist": False,
+            "output_created": False,
             "output_bytes_confirmed": 0, "output_closed": False, "output_fsync_succeeded": False,
             "output_may_be_partial": False, "source_modified": False,
             "native_load_verified": False, "physical_io_attempted": False,
@@ -92,7 +94,8 @@ class LegacyProjectTransformFileOperation:
             converted = transform_repaired_legacy_project(b"".join(chunks), max_bytes=max_bytes)
             state["transform"] = converted.as_dict()
             if not dry_run:
-                state["stage"] = "output_create"
+                state.update(stage="output_create", output_create_attempted=True,
+                             output_may_exist=True)
                 handles["output"] = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o666)
                 state["output_created"] = True
                 state["stage"] = "output_write"
@@ -121,7 +124,7 @@ class LegacyProjectTransformFileOperation:
                         if primary is None:
                             primary = error
         if primary is not None:
-            state.update(complete=False, output_may_be_partial=state["output_created"],
+            state.update(complete=False, output_may_be_partial=state["output_create_attempted"],
                          error={"type": type(primary).__name__, "message": str(primary)[:4096]})
         self.last_evidence = copy.deepcopy(state)
         if primary is not None:

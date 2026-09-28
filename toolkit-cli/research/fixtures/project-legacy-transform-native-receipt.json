@@ -11,10 +11,10 @@
       "dtd": "35e2c58d4f08ec2306b914210fa3603407f971daa76d1edbe000f21e0f48c4c7",
       "xml11": "ac0ce71275e85dec2b6f14a075d1e25b3b4142971e91239ad261f1918bcfe75f"
     },
-    "test_sha256": "24b8590dcdfa8a603089ea0812839eb4bb4707ef000076dd3e7a081f43da5a6b",
-    "portable_test_sha256": "0fc339add3e37ae9e18610c9eccbb9bff89eb7e160f6a35093bc6cd7969999d4",
+    "test_sha256": "59172bba8c9ecb555794ebef67e6bb8a2620742e33bbf452281cf3d89163a983",
+    "portable_test_sha256": "ce5b23e18be872df0fd8901df9272b517ab4e3b31c7b01261985755eda201b4f",
     "portable_module_sha256": "d5ce1b29b9473f1c81c694fda59b0c669819cd8fc86d485c5e3b758c16343ef7",
-    "cli_module_sha256": "fe5216bbd5b5c8dc84c8a581b7eaa6791b26d8940917222cb3aef10de11dc952",
+    "cli_module_sha256": "1a727950e7fb472777ed7ac744d887cfcf1319bba54455904b9bda9006b9662f",
     "native_module_sha256": "54da485b877aee14f51504020b6c6f960a75e753e4d082ce53fe57bcef03daf2",
     "cli_dispatch_sha256": "d860eb13c831689f3d4a46b161abc2de7d6cdadcc8948030f283a68b102db387",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
@@ -34,6 +34,7 @@
       "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
       "200 OK."
     ],
+    "backup_absent_before_test": true,
     "creates_backup_without_changing_xml": true
   },
   "cases": [
@@ -43,6 +44,9 @@
       "source_sha256": "92c68a8fa0eb9381ba7ae3df82fdbf1ca1e2c274fc1a1b669e6f8595c1c47ba6",
       "native_output_sha256": "eb1f52f1020f920cce0417aa517e29fce7d5cb5e827fb057782e7cff5b326b15",
       "backup_sha256": "92c68a8fa0eb9381ba7ae3df82fdbf1ca1e2c274fc1a1b669e6f8595c1c47ba6",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "--test",
       "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
       "transform_response": "200 OK.",
       "load_after": "200 OK.",
@@ -68,6 +72,9 @@
       "source_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
       "native_output_sha256": "013d8f4dffe845a564bd9de2f56231c36f2048ad906f00f519d2a53909cfb5ee",
       "backup_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
       "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
       "transform_response": "200 OK.",
       "load_after": "200 OK.",
@@ -84,6 +91,9 @@
       "source_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
       "native_output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
       "backup_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
       "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
       "transform_response": "200 OK.",
       "load_after": "200 OK.",
@@ -100,6 +110,9 @@
       "source_sha256": "8ee3552b48c3588510e1790de8437dd4a210b2d9921941ea219ef0c197b7a0fb",
       "native_output_sha256": "eafeea84196d28fb3832f3863b446bf42244c21484f30b52e56837e41e7df224",
       "backup_sha256": "8ee3552b48c3588510e1790de8437dd4a210b2d9921941ea219ef0c197b7a0fb",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
       "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
       "transform_response": "200 OK.",
       "load_after": "200 OK.",
@@ -121,8 +134,7 @@
   "physical_networks_opened": false,
   "scope": "Four generated repaired inputs; no arbitrary-project or Toolkit GUI parity claim",
   "validation": {
-    "command": "PYTHONPATH=src:. CBUS_CGATE_JAVA=<pinned-java11> CBUS_LOCAL_CGATE_VENDOR=<pinned-original-app> CBUS_PROJECT_LEGACY_TRANSFORM_REPORT=<scratch-json> python3.13 -m unittest tests.test_project_legacy_transform tests.test_project_legacy_transform_native tests.test_project_repair_native -v",
-    "result": "9 passed, 0 skipped, exit 0",
-    "secondary": "tests.test_project_repair_cli and tests.test_native: 25 run, 21 passed, 4 provision-gated skips, exit 0"
+    "command": "PYTHONPATH=src:. CBUS_CGATE_JAVA=<pinned-java11> CBUS_LOCAL_CGATE_VENDOR=<pinned-original-app> CBUS_PROJECT_LEGACY_TRANSFORM_REPORT=<scratch-json> python3.13 -m unittest tests.test_project_legacy_transform tests.test_project_legacy_transform_native -v",
+    "result": "6 passed, 0 skipped, exit 0"
   }
 }

@@ -3,15 +3,20 @@ from contextlib import redirect_stderr, redirect_stdout
 from hashlib import sha256
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from cbus_toolkit.cli import build_parser, main
 from cbus_toolkit.native import NativeProjects
 from cbus_toolkit.project_legacy_transform import (
     LegacyProjectTransformError, transform_repaired_legacy_project,
+)
+from cbus_toolkit.project_legacy_transform_cli import (
+    LegacyProjectTransformFileError, LegacyProjectTransformFileOperation,
 )
 from cbus_toolkit.project_repair import repair_project_xml, transform_project_repair_xml
 
@@ -140,6 +145,38 @@ class LegacyTransformTests(unittest.TestCase):
             with self.subTest(digest=digest(candidate)):
                 with self.assertRaises(LegacyProjectTransformError):
                     transform_repaired_legacy_project(candidate)
+
+    def test_open_error_after_exclusive_create_records_uncertain_output(self):
+        _, _, source = next(candidates())
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory) / "repaired.xml"
+            output = Path(directory) / "RPMAL.xml"
+            original.write_bytes(source)
+            actual_open = os.open
+            attempts = []
+
+            def uncertain_open(path, flags, mode=0o777):
+                if Path(path) == output:
+                    attempts.append(path)
+                    descriptor = actual_open(path, flags, mode)
+                    os.close(descriptor)
+                    raise OSError("open failed after exclusive create")
+                return actual_open(path, flags, mode)
+
+            operation = LegacyProjectTransformFileOperation()
+            with patch("cbus_toolkit.project_legacy_transform_cli.os.open", side_effect=uncertain_open):
+                with self.assertRaises(LegacyProjectTransformFileError) as caught:
+                    operation.run(original, output=output)
+            evidence = caught.exception.details
+            self.assertEqual(len(attempts), 1)
+            self.assertEqual(evidence["stage"], "output_create")
+            self.assertTrue(evidence["output_create_attempted"])
+            self.assertTrue(evidence["output_may_exist"])
+            self.assertFalse(evidence["output_created"])
+            self.assertTrue(evidence["output_may_be_partial"])
+            self.assertEqual(evidence["output_bytes_confirmed"], 0)
+            self.assertEqual(output.read_bytes(), b"")
+            self.assertEqual(original.read_bytes(), source)
 
 
 if __name__ == "__main__":

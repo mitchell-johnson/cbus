@@ -77,14 +77,19 @@ class LegacyTransformNativeTests(unittest.TestCase):
                     with self.subTest(name=name):
                         staged = projects / f"{name}.xml"
                         backup = projects / f"{name}.xml.0"
+                        self.assertFalse(backup.exists())
                         before = request(f"PROJECT LOAD {name}", 408)
                         self.assertEqual(before.final,
                             "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this")
+                        self.assertFalse(backup.exists())
                         if name == "RPMAL":
+                            self.assertFalse(backup.exists())
                             preview = typed.operation("transform", name, test=True)
                             self.assertEqual(preview.lines, TEST_PREVIEW_LINES)
                             self.assertEqual(staged.read_bytes(), source)
                             self.assertEqual(backup.read_bytes(), source)
+                        else:
+                            self.assertFalse(backup.exists())
                         converted = typed.operation("transform", name)
                         self.assertEqual(converted.lines, ("200 OK.",))
                         self.assertEqual(backup.read_bytes(), source)
@@ -120,6 +125,9 @@ class LegacyTransformNativeTests(unittest.TestCase):
                             "name": name, "source_case": case_id,
                             "source_sha256": digest(source), "native_output_sha256": digest(native_output),
                             "backup_sha256": digest(backup.read_bytes()),
+                            "backup_absent_before_load": True,
+                            "backup_absent_after_rejected_load": True,
+                            "backup_created_by": "--test" if name == "RPMAL" else "transform",
                             "load_before": before.final, "transform_response": converted.final,
                             "load_after": loaded.final, "readback_code": reply.code,
                             "readback_db_version": root.findtext("DBVersion"),
@@ -149,6 +157,7 @@ class LegacyTransformNativeTests(unittest.TestCase):
                             "cli_dispatch_sha256": digest((ROOT / "src/cbus_toolkit/cli.py").read_bytes()),
                             "owned_service_harness_sha256": digest((ROOT / "research/local_cgate.py").read_bytes())},
                 "help": help_lines, "preview": {"response": TEST_PREVIEW_LINES,
+                    "backup_absent_before_test": True,
                     "creates_backup_without_changing_xml": True},
                 "cases": findings,
                 "service": {"listener_ownership_verified": True, "listener_count": 6,
