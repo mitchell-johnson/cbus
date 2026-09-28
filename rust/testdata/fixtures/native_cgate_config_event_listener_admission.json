@@ -1,0 +1,63 @@
+{
+  "schema": "native-cgate-config-event-listener-admission-v1",
+  "captured_utc": "2026-09-28T11:40:57.530315+00:00",
+  "scope": "Owned IPv4 loopback command, event, and mutual-TLS listeners; no physical endpoint, site project, or IPv6 peer",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "source_hashes": {
+      "rust/cbus-cgate/research/native_config_event_listener_admission_probe.py": "66af3e2baea0571aa11a16dd0d0ef027a1c819dcb848da34e8e627844cb55d07",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd"
+    },
+    "source_hashes_after": {
+      "rust/cbus-cgate/research/native_config_event_listener_admission_probe.py": "66af3e2baea0571aa11a16dd0d0ef027a1c819dcb848da34e8e627844cb55d07",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd"
+    },
+    "physical_endpoint": false
+  },
+  "cases": {
+    "plain": {
+      "mtls_configured": false,
+      "command_greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "baseline_tls_greeting": null,
+      "allowlist_set": "[deny] 200 OK.",
+      "new_plain_command": "connected-silent",
+      "new_tls_command": null,
+      "new_event_peer_ip": "127.0.0.1",
+      "broadcast_response": "[broadcast] 200 OK.",
+      "event_rows": [
+        "20260929-004051.915 703 cmd3 - broadcast_event SP class event-admission-plain"
+      ],
+      "broadcast_event_row": "20260929-004051.915 703 cmd3 - broadcast_event SP class event-admission-plain",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    },
+    "mtls": {
+      "mtls_configured": true,
+      "command_greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "baseline_tls_greeting": "greeting",
+      "allowlist_set": "[deny] 200 OK.",
+      "new_plain_command": "connected-silent",
+      "new_tls_command": "handshake-timeout",
+      "new_event_peer_ip": "127.0.0.1",
+      "broadcast_response": "[broadcast] 200 OK.",
+      "event_rows": [
+        "20260929-004057.045 703 cmd3 - broadcast_event SP class event-admission-mtls"
+      ],
+      "broadcast_event_row": "20260929-004057.045 703 cmd3 - broadcast_event SP class event-admission-mtls",
+      "cleanup": {
+        "listener_ownership_verified": true,
+        "process_exit_confirmed": true,
+        "cleanup_complete": true,
+        "work_removed": true
+      }
+    }
+  }
+}
