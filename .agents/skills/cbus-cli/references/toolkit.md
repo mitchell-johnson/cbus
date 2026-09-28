@@ -121,6 +121,9 @@ manager's bounded first-write/second-read case explicit: the first completed
 load supplies the second load's current values, both receipts are returned,
 and an incomplete first pass stops. This can write defaults twice and is not
 an atomic snapshot or proof of the original GUI's preference wrapper.
+An owned Windows wheel check passed both 40-value comparisons under the guest
+agent's LocalSystem session 0 with scratch-key cleanup; the original GUI was
+not run in the same interactive account.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
 once after a clean Boolean result. Keep the previous report, use a distinct fresh

@@ -55,8 +55,8 @@
     "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
     "docs/toolkit-preferences.md": "99c1c39dead33bde867c2e58c3115f290f9d458c13d494e513315fd644787213",
     "docs/toolkit-preferences-store.md": "0448cbd01f1d1ca01ee2bf13259a714b1b9a3ed062273a3cab2686671b602fba",
-    "docs/implementation-status.md": "6b57e3887b0c3c706ccf1b469191cd5b20b1a8b03d437dcdd2fa1da2c8288764",
-    "src/cbus_toolkit/capabilities.json": "412f4d942c375adfc5780112aa351ca06ef51bb05abc6ecaf54cea110d5121f1"
+    "docs/implementation-status.md": "ba42b88ebf26bffa2e1dbc7081a24754719175b6809a7daf9338298f1dc759ff",
+    "src/cbus_toolkit/capabilities.json": "7974216efd93e0d4c8dbb9fa024baabe12dfdb0da5ed1ace572b5a69e7d52392"
   },
   "invalidation": [
     "Changed listed source hash or original fixture/executable",
@@ -92,7 +92,7 @@
   },
   "native_acceptance_supplement": {
     "path": "research/experiments/2026-09-28/preference-native-repeat.json",
-    "sha256": "48ca937f156dabbaf396a14775fc4f97a9d595c4b74b24d816d9177ae2dca7b2",
+    "sha256": "5e8aa9c2fcc9c797918e316bd0ff35e0d430a672d8c832f626618ef7825d4822",
     "status": "passed under Windows guest-agent LocalSystem session 0; original same-user GUI comparison remains unverified"
   }
 }

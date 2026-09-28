@@ -12,7 +12,6 @@
     "import_path_suffix": "\\cbus_toolkit\\cli.py"
   },
   "guest_runtime": {
-    "vm_uuid": "1107696A-3DD0-4531-9C3A-DCF798C5ACAD",
     "windows_build": 26100,
     "windows_platform": 2,
     "python_version": [
@@ -28,7 +27,8 @@
     "process_user_sid_sha256": "593347bdfcc9bfa79cc97429b11427482b25806b63f83535f56bafe845dd4229",
     "session_id": 0,
     "interactive_desktop_verified": false,
-    "transport": "UTM guest-agent file push/pull and exec; no active hash-verified bridge runner"
+    "transport": "UTM guest-agent file push/pull and exec; no active hash-verified bridge runner",
+    "vm_uuid_sha256": "d139702621510db3d0a29c460a92a9b7d4e1107cf234d261b4c05d5af60e271e"
   },
   "original_comparison": {
     "source": "frozen original x86 manager bytecode fixture; not a new original process run",
