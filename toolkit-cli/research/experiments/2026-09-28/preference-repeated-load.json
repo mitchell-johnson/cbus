@@ -1,0 +1,78 @@
+{
+  "format": "cbus-toolkit-p9-02-preference-repeated-load-v1",
+  "work_item": "P9.02 / GitHub issue #61",
+  "base_revision": "f6a272b",
+  "status": "partial",
+  "added_behavior": {
+    "command": "preferences registry-load STATE.json --repeat-once",
+    "first_input": "The explicit complete retained state file",
+    "second_input": "All 40 typed values returned by the completed first load",
+    "backend": "One explicitly constructed Windows Registry32 backend, reused for both calls",
+    "admission": "Optional current-process primary-token SID checked once before backend construction",
+    "outcome": "Both ordered load_passes and final state are reported; a noncomplete first pass prevents the second, and an interrupted second exposes both receipts",
+    "state_file_written": false,
+    "atomic_snapshot": false
+  },
+  "original_evidence": {
+    "toolkit_executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
+    "fixture_sha256": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+    "original_manager_va": "0x851AE4",
+    "observed_case": "The isolated original manager first load retained ShowProjectManager=False while writing the missing True default; its second load yielded ShowProjectManager=True.",
+    "first_load_show_project_manager": false,
+    "second_load_show_project_manager": true,
+    "source_provenance": "The frozen original x86 Unicorn fixture and its acceptance summary; no new original or Windows process was executed for this change.",
+    "original_interactive_gui_executed": false,
+    "original_matrix_sha256": "aaf86f405bde8ec0792e1a8a880a99d3fc349b7eb5e944a7a142132ee8331857"
+  },
+  "portable_acceptance": {
+    "python": "3.13.14",
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_cli_toolkit_preferences_repeated_load.py tests/test_cli_toolkit_preferences.py tests/test_cli_toolkit_preferences_user_guard.py tests/test_toolkit_preferences_store.py",
+    "exit_code": 0,
+    "passed": 42,
+    "skipped": 0,
+    "new_cases": [
+      "original empty-store two-load default transition and exact read/write receipts",
+      "incomplete first load suppresses second",
+      "second-load failure retains both receipts",
+      "second-load interruption retains both receipts",
+      "wrong process SID prevents backend construction"
+    ]
+  },
+  "validation_not_run": [
+    "make check and make check-interop, per the task no-full-local-suites instruction",
+    "New interactive Windows preference-command native acceptance",
+    "Whole original Toolkit GUI startup and preference runtime effects"
+  ],
+  "remaining": [
+    "Run the new command in a disposable interactive Windows user context with independent Registry32 before/after reads and cleanup.",
+    "Compare the original preferences/settings lazy wrapper and culture behavior directly; the separate SESU condition-checker matrix is a different scope.",
+    "Establish logging, C-Gate and broader GUI runtime effects with original evidence.",
+    "Keep the broad preference/update workflow and original interactive acceptance open."
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
+    "tests/test_cli_toolkit_preferences_repeated_load.py": "afd9bf5e609fdddb496edbdd24e74f5fe80e7dae374824f21baf50b0be6e3abc",
+    "docs/toolkit-preferences.md": "ff04aed4a2f41a0cb0af5dd8ba6b57630a58c5810dd83a78baedc33e9a8252a5",
+    "docs/toolkit-preferences-store.md": "0448cbd01f1d1ca01ee2bf13259a714b1b9a3ed062273a3cab2686671b602fba",
+    "docs/implementation-status.md": "5e151f82d1fe15a8ceff811c776e3af660cb382494f84907587efdde004f16ef",
+    "src/cbus_toolkit/capabilities.json": "b4aaa33a3ef29bda5d076191ee69e49cbde6ca68fc52699a77535669330be821"
+  },
+  "invalidation": [
+    "Changed listed source hash or original fixture/executable",
+    "Promotion from a bounded original manager two-load case to complete GUI/runtime parity"
+  ],
+  "register_consistency": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_parity_register.py",
+    "exit_code": 0,
+    "passed": 35,
+    "subtests_passed": 471,
+    "feature_ledger_digest_updated": true
+  },
+  "coverage_gate": {
+    "command": "PYTHONPATH=tests .venv/bin/python -m pytest -q tests/test_coverage_require_complete.py",
+    "exit_code": 0,
+    "passed": 2,
+    "subtests_passed": 2
+  }
+}

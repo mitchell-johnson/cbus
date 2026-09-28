@@ -40,6 +40,21 @@ cbus-toolkit preferences registry-save updated-preferences.json
 
 `registry-load` follows the original manager's copy/default behavior and **can write missing preferences and unnamed values**. It requires the full retained input state because the original loader sometimes keeps an existing in-memory value. For example, a first empty-store load can write `ShowProjectManager=True` while retaining supplied `False` until a subsequent load. Its output includes a `state` object and every attempted operation.
 
+To observe that second read in one command, use
+`preferences registry-load current-preferences.json --repeat-once`. The first
+load uses the supplied state; the second uses the first load's returned values
+and the same registry backend. It runs only when the first load is complete.
+The output's `load_passes` keeps both ordered receipts,
+`second_load_attempted` states whether the second began, and top-level `state`
+contains the final observed values. In the original empty-store fixture,
+`ShowProjectManager` is false in pass one, its `True` default is written, and
+pass two reads `True`. Other software may change registry values between the
+two passes, so this is not an atomic snapshot. An interrupted second pass
+exports both pass receipts in `toolkit_preferences_repeated_load`; no pass is
+retried automatically. The command does not save the returned state file.
+This bounded repeated-load behavior is checked against the pinned original
+manager fixture in the [P9.02 receipt](../research/experiments/2026-09-28/preference-repeated-load.json).
+
 `registry-save` writes the five display DWORDs, unnamed key values, and 35 named preference values in original order. Five preferences excluded from save remain untouched. A machine-hive write failure permits the original single user-hive fallback. The save preview shows the primary path assuming machine writes succeed and describes that conditional fallback. It accesses no registry and is available on other platforms.
 
 For an intended Windows account whose complete SID is known, add

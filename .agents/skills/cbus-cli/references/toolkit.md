@@ -112,6 +112,11 @@ process's primary-token SID before the registry backend is constructed.
 `registry-load` can itself write defaults. The guard has portable tests, but
 interactive Windows preference-command acceptance and original GUI user-context
 parity remain open; it does not attest thread impersonation or a desktop session.
+`preferences registry-load STATE.json --repeat-once` makes the original
+manager's bounded first-write/second-read case explicit: the first completed
+load supplies the second load's current values, both receipts are returned,
+and an incomplete first pass stops. This can write defaults twice and is not
+an atomic snapshot or proof of the original GUI's preference wrapper.
 For the bounded same-instance public `Evaluate` cache-reset case, the Python
 API can call `ToolkitLiveUpdateConditions.evaluate_next(..., observer=fresh)`
 once after a clean Boolean result. Keep the previous report, use a distinct fresh

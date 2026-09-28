@@ -29,6 +29,8 @@ def options(commands):
                       help='Repeat in execution order; values are JSON booleans, integers or strings')
     load = operations.add_parser('registry-load', help='Load Windows settings with original copy/default behavior; this can write missing values')
     load.add_argument('file', type=Path, help='Explicit full retained state used when values cannot be loaded')
+    load.add_argument('--repeat-once', action='store_true',
+                      help='Load a second time from the first result, observing defaults written by the first load')
     save = operations.add_parser('registry-save', help='Save explicit retained values to the Windows registry in original order')
     save.add_argument('file', type=Path)
     save.add_argument('--dry-run', action='store_true', help='Show planned writes assuming machine-hive writes succeed, without registry access')
@@ -169,10 +171,24 @@ def registry_operation(args,values,display):
     store=ToolkitPreferencesStore(registry_backend(), numeric_locale=_locale(args))
     args._preferences_store=store
     outcome=store.load(values) if args.action=='registry-load' else store.save(values,display)
+    passes = None
+    if args.action=='registry-load' and args.repeat_once:
+        first = outcome.as_dict()
+        passes = [first]
+        if outcome.complete:
+            # The original manager can retain a caller value while writing a
+            # missing default. Its next load reads that new registry value.
+            args._preferences_load_first_evidence = first
+            outcome = store.load(outcome.values)
+            passes.append(outcome.as_dict())
     result=outcome.as_dict()
     result['registry_accessed']=True
     result['backend']='windows-32bit-view'
     result['state']={'format':STATE_FORMAT,'values':dict(outcome.values),'display_values':dict(outcome.display_values)}
+    if passes is not None:
+        result['repeated_load'] = True
+        result['load_passes'] = passes
+        result['second_load_attempted'] = len(passes) == 2
     if user_context is not None:
         result['user_context'] = dict(user_context)
     return result,0 if outcome.complete else 1
@@ -203,6 +219,10 @@ def error_payload(error,args):
         store=getattr(args,'_preferences_store',None)
         if store is not None and store.last_error is error: evidence=store.last_evidence
     if isinstance(evidence,dict): payload['toolkit_preferences_evidence'] = evidence
+    first = getattr(args,'_preferences_load_first_evidence',None)
+    if isinstance(first,dict) and isinstance(evidence,dict) and evidence is not first:
+        payload['toolkit_preferences_repeated_load'] = {
+            'first':first,'second':evidence,'second_load_attempted':True,'complete':False}
     return payload
 
 

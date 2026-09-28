@@ -30,6 +30,15 @@ The original initialization table orders Kipper preferences first (four), global
 
 The caller must provide all current values. Constructor values are evidence for an isolated initialization stage, not installer or whole-application defaults. For example, an empty-store first load writes `ShowProjectManager=True` but keeps its supplied current `False` value until the next load. This original asymmetry is preserved.
 
+The CLI exposes that bounded second read with `preferences registry-load
+STATE.json --repeat-once`. It reuses one explicit backend and invokes `load`
+again with the first result's values only after a complete first pass. Both
+pass receipts remain separate; an incomplete or interrupted pass never starts
+another. The frozen original two-load vectors include the full 40-value
+first/second results, while CLI tests check the observable first-write and
+second-read sequence. This does not imply a cached preference wrapper or
+whole Toolkit startup behavior.
+
 Typed save supports booleans, signed 32-bit integers and valid Unicode strings up to 4096 characters. NUL-containing strings and unpaired surrogates are rejected before storage calls. Stored strings must have an exact UTF-16LE terminator, valid Unicode and no embedded NUL. Strings retain whitespace. ASCII boolean text matches `True` without case sensitivity; other ASCII text is false.
 
 Integer reads default to **canonical signed decimal only**. This preserves the original bounded store API. Unsupported syntax, types or encodings stop with `UnsupportedPreferenceEncoding`, without copying the unsupported value into the other hive. Initial unnamed writes may already have occurred. This rejection is a deliberate boundary, not claimed original coercion parity.
