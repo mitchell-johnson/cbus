@@ -33,6 +33,8 @@
         "src/cbus_toolkit/project_repair.py",
         "tests/test_project_repair.py",
         "tests/test_project_repair_native.py",
+        "tests/test_project_repair_native_admitted.py",
+        "research/fixtures/project-repair-admitted-native-load-receipt.json",
         "src/cbus_toolkit/project_legacy_transform.py",
         "src/cbus_toolkit/project_legacy_transform_cli.py",
         "tests/test_project_legacy_transform.py",
@@ -51,13 +53,15 @@
         "research/fixtures/project-repair-dtd-vectors.json",
         "research/fixtures/project-repair-dtd-scoped-receipt.json",
         "tests/test_project_repair_dtd.py",
+        "research/fixtures/project-repair-xml11-vectors.json",
+        "tests/test_project_repair_xml11.py",
         "research/fixtures/cli-json-output-acceptance.json",
         "research/fixtures/windows-project-repair-acceptance.json",
         "docs/cli-json-output.md",
         "tests/test_cli_json_output.py",
         "tests/test_windows_project_repair.py"
       ],
-      "limits": "Original XML repository repair verified in five generated cases; SQLite repository still rejects PROJECT REPAIR408. Historical portable lexical and transform acceptance passed13 tests bothPython, each with3036 original lexical and159 original transform executions (144 then-supported/15 then-excluded XML-version or encoding outcomes). Six unchanged original ISO-8859-1/XML1.1 cases and a fresh72-case pinned original C-Gate matrix now support bounded XML1.0/1.1, ISO-8859-1/15, US-ASCII and Windows-1252 behavior. The 72-case matrix now has53 admitted successes,13 admitted native rejections and six XML1.1 cases still excluded; a separate36-case exact original DTD matrix matches26 successful outputs and ten full-pipeline failures; the public CLI exactly writes captured XML1.1 and Windows-1252 full outputs. Fresh original replay passed72/72 cases. Separate4-test native acceptance verifies three modern Python outputs load/readback/close and legacy2.2 rejects408; all owned children clean. Separate14-test macOS CLI boundary writes new files exclusively, preserves primary errors and partial-output evidence. The historical combined31-test checkpoint passesboth on identical122 captured inputs and35loadedsources. Existing source files are not replaced; computed output hashes are not product readback. External/parameter/unparsed entities, XML1.1 restricted references/prefix undeclarations, additional encodings/failure classes, bounds overflow, arbitrary loadability and full Toolkit workflow equivalence remain outside these checkpoints. Internal general entities are bounded to256 declarations and expanded bytes/nodes before DOM allocation; external identifiers are rejected. Four generated DBVersion2.2 outputs have a bounded exact-byte portable transform and an owned original TRANSFORM/LOAD/DBGETXML receipt; arbitrary legacy conversion and Toolkit workflow acceptance remain open. Separate Windows file/CLI acceptance passes6 host tests on bothPython versions, each executing16 native cases on x86 and AMD64 Python3.13.14 on Windows11 ARM64. All4 generated scratch trees removed; exact runtime/source hashes preserved. ASCII-safe CLI JSON fixes cp1252 Unicode reporting after completed writes;17 focused tests passboth with strict cp1252/ASCII streams and decoded Unicode preservation. Native fault tests cover partial write/fsync/close/interruption, but do not establish every Windows filesystem or full GUI repair workflow."
+      "limits": "Original XML repository repair has bounded native and portable acceptance; SQLite still rejects PROJECT REPAIR 408. The historical lexical/transform checkpoint ran 3036 original lexical and 159 transform cases, and later pinned captures cover XML 1.0/1.1, ISO-8859-1/15, US-ASCII, Windows-1252, internal DTDs, restricted references and namespace prefix resets for their tested direct and full repair outcomes. Three generated current-format encoding, direct-DTD and XML 1.1 compositions matched original transform bytes and loaded with native XML readback. Four generated DBVersion 2.2 repaired outputs initially failed LOAD 408, then matched a bounded portable version transform byte-for-byte and passed original TRANSFORM PROJECT, LOAD and DBGETXML; this does not establish arbitrary legacy conversion. The portable repair and transform commands write new output files exclusively and preserve source bytes, with partial-output failure evidence. Windows x86/AMD64 file handling has separate bounded acceptance. External/parameter/unparsed entities, unprobed XML 1.1 shapes, additional encodings and failure classes, bounds overflow, arbitrary native loadability, custom native XSLT/output-name forms and full Toolkit GUI workflow equivalence remain open."
     },
     {
       "id": "cgate-command-transport",
