@@ -52,7 +52,7 @@
     "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
     "rust/cbus-cgate/src/service/net_lifecycle.rs": "408434ff835df6d5cf5aa1a83133d335696dc83b17e49d618ccada665ec5bb1b",
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
-    "rust/cbus-cgate/src/service/tests.rs": "0513716f50bfadb70613dc5b3e2788f3132de79ecd45b6a2e772d133611952f7",
+    "rust/cbus-cgate/src/service/tests.rs": "09326bc3c8b98f5867f4ab532602683aae8e8ea90ef78c7aa6d4642facde78aa",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
     "rust/cbus-cgate/src/service.rs": "1c9f54aa104758b52970964c3c3153372f121902ed4cac578773ef335e6c35bc",
     "rust/cbus-cgate/src/show.rs": "19dc904dbe016c925c9972dc01e6423d9a2b2f0a7083bae9dbc9d12f8b7eeb5d",
@@ -164,7 +164,7 @@
     "toolkit-cli/tests/test_cgate_session_differential.py": "3c54e086807909870c8bdff384b56483a604e014da803049e02eebc787868f9d",
     "toolkit-cli/tests/test_parity_register.py": "160eab9475ab342d7868aaa3ee66573f1135efc94d65fab306584e019fbddf8f"
   },
-  "source_revision": "3e3dfb2395980528575274689fb4255092206cb6",
+  "source_revision": "9acf0b28f6c1ff69b7b29388daf197e22df2ba3c",
   "normalization": [
     "map queried cmdN IDs to connection a/b; require distinct IDs",
     "validate external IPv4 loopback peer ports and stable connection timestamps, then replace only their values",
@@ -235,14 +235,14 @@
         "300 sessionID=<b> origin=/127.0.0.1:<port-b> from=<time-b>"
       ],
       "rust_reply": [
-        "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console",
-        "300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143",
-        "300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143"
+        "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540",
+        "300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540"
       ],
       "rust_wire_reply": [
-        "[d02] 300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console\r\n",
-        "[d02] 300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143\r\n",
-        "[d02] 300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143\r\n"
+        "[d02] 300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console\r\n",
+        "[d02] 300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540\r\n",
+        "[d02] 300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540\r\n"
       ],
       "client_tag_echoed": true
     },
@@ -287,14 +287,14 @@
         "300 sessionID=<b> origin=/127.0.0.1:<port-b> from=<time-b>"
       ],
       "rust_reply": [
-        "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console",
-        "300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143 tag=C-Bus Toolkit test",
-        "300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143"
+        "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540 tag=C-Bus Toolkit test",
+        "300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540"
       ],
       "rust_wire_reply": [
-        "[d04] 300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console\r\n",
-        "[d04] 300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143 tag=C-Bus Toolkit test\r\n",
-        "[d04] 300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143\r\n"
+        "[d04] 300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console\r\n",
+        "[d04] 300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540 tag=C-Bus Toolkit test\r\n",
+        "[d04] 300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540\r\n"
       ],
       "client_tag_echoed": true
     },
@@ -383,14 +383,14 @@
         "300 sessionID=<b> origin=/127.0.0.1:<port-b> from=<time-b>"
       ],
       "rust_reply": [
-        "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console",
-        "300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143 tag=C-Bus Toolkit test",
-        "300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143"
+        "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console",
+        "300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540 tag=C-Bus Toolkit test",
+        "300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540"
       ],
       "rust_wire_reply": [
-        "[d08] 300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console\r\n",
-        "[d08] 300-sessionID=cmd3 origin=/127.0.0.1:64919 from=20260928-234143 tag=C-Bus Toolkit test\r\n",
-        "[d08] 300 sessionID=cmd5 origin=/127.0.0.1:64920 from=20260928-234143\r\n"
+        "[d08] 300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console\r\n",
+        "[d08] 300-sessionID=cmd3 origin=/127.0.0.1:50206 from=20260928-235540 tag=C-Bus Toolkit test\r\n",
+        "[d08] 300 sessionID=cmd5 origin=/127.0.0.1:50207 from=20260928-235540\r\n"
       ],
       "client_tag_echoed": true
     }
@@ -401,13 +401,13 @@
     "300-sessionID=cmd1 origin=internal from=20260925-211912 tag=Console"
   ],
   "rust_console_rows": [
-    "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console",
-    "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console",
-    "300-sessionID=cmd1 origin=internal from=20260928-234143 tag=Console"
+    "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console",
+    "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console",
+    "300-sessionID=cmd1 origin=internal from=20260928-235540 tag=Console"
   ],
   "peer_ports": {
-    "a": 64919,
-    "b": 64920
+    "a": 50206,
+    "b": 50207
   },
   "result": "passed",
   "errors": [],

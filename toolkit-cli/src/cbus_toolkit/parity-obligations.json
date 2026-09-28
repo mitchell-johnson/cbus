@@ -16,12 +16,12 @@
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "664f29a3af133fe34d81553051407e99b18c6cd2d8d4cd9ba071263ef8a4f99a",
-    "cgate_tagged_session_differential_cmqttd": "d6462067dcb7107f2ebc33bfa05a1d7ccf0c40dab84544b3bb3f0570387afb12",
-    "cgate_session_physical_applicability": "2498409f51f8498c1405111a3d145fa422a0d79412cfd87d9f17bff487a50442",
+    "cgate_session_differential_cmqttd": "42a17b78772900c60d596205bcd5240768e4d518fe73438e526aadb28078d39e",
+    "cgate_tagged_session_differential_cmqttd": "291ef3b83ab7b36ca4a98b3f2cc7e70c5a734db5e4b77fb044176dfeed02e9d3",
+    "cgate_session_physical_applicability": "509f7e6b5512f08871531ab7aba9d145ca28d8d3b162118a9b06c6a3e5dda78c",
     "roadmap": "bc905f9e86ee7d3f3a3a10d81c895d6a4e57a89db19bc349f439e9125906a3e3"
   },
-  "evidence_bundle_sha256": "3ca7577cef96e14d5e5674c19a5faeb79d3f47b38b225ca08414b83949ab9251",
+  "evidence_bundle_sha256": "d6d99b683af406561aca11b221912ca3b1b37ccffb9fcd345af94c7e375a2dc0",
   "work_item_ids": [
     "P0.01",
     "P0.02",
