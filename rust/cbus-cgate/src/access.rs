@@ -215,12 +215,66 @@ pub(crate) const NATIVE_PROBED_PROGRAMMING_COMMANDS: &[(&str, CgateAccessLevel)]
     ("DEPLOY_QUEUE RETRY", CgateAccessLevel::Program),
 ];
 
+/// Entry floors captured for exact media and security invocations on the
+/// owned native loopback oracle. Each target names an absent project, so this
+/// establishes the handler gate without claiming a successful C-Bus send.
+pub(crate) const NATIVE_PROBED_MEDIA_COMMANDS: &[(&str, CgateAccessLevel)] = &[
+    ("AUDIO DYNAMIC_1", CgateAccessLevel::Operate),
+    ("AUDIO DYNAMIC_2", CgateAccessLevel::Operate),
+    ("AUDIO HIGH_PRIORITY", CgateAccessLevel::Operate),
+    ("AUDIO MUTE", CgateAccessLevel::Operate),
+    ("AUDIO NEXT_FEED", CgateAccessLevel::Operate),
+    ("AUDIO NEXT_LANGUAGE", CgateAccessLevel::Operate),
+    ("AUDIO OFF", CgateAccessLevel::Operate),
+    ("AUDIO ON", CgateAccessLevel::Operate),
+    ("AUDIO OUTPUT_COMMON_CONTROL", CgateAccessLevel::Operate),
+    (
+        "AUDIO OUTPUT_DEVICE_STATUS_REQUEST",
+        CgateAccessLevel::Operate,
+    ),
+    ("AUDIO OUTPUT_ERROR_CODE", CgateAccessLevel::Operate),
+    ("AUDIO PREVIOUS_FEED", CgateAccessLevel::Operate),
+    ("AUDIO RAMP", CgateAccessLevel::Operate),
+    ("AUDIO REQUEST_CURRENT_FEED", CgateAccessLevel::Operate),
+    ("AUDIO SET_FEED", CgateAccessLevel::Operate),
+    ("AUDIO TERMINATERAMP", CgateAccessLevel::Operate),
+    ("AUDIO ZONE_DESCRIPTOR_REQUEST", CgateAccessLevel::Operate),
+    ("AUDIO ZONE_FEED_LABEL_REQUEST", CgateAccessLevel::Operate),
+    ("SECURITY ARM", CgateAccessLevel::Operate),
+    ("SECURITY DISPLAY_MESSAGE", CgateAccessLevel::Operate),
+    ("SECURITY EMULATE_KEYPAD", CgateAccessLevel::Operate),
+    ("SECURITY RAISE_ALARM", CgateAccessLevel::Operate),
+    ("SECURITY REQUEST_ZONE_NAME", CgateAccessLevel::Operate),
+    ("SECURITY TAMPER", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT CATEGORY_NAME", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT ENUMERATE", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT ENUMERATION_SIZE", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT FORWARD", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT NEXT_CATEGORY", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT NEXT_SELECTION", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT NEXT_TRACK", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT PAUSE", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT PLAY", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT REPEAT", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT REWIND", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SELECTION_NAME", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SET_CATEGORY", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SET_SELECTION", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SET_TRACK", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SHUFFLE", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT SOURCE_POWER", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT STOP", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT TOTAL_TRACKS", CgateAccessLevel::Operate),
+    ("MEDIATRANSPORT TRACK_NAME", CgateAccessLevel::Operate),
+];
+
 pub(crate) fn native_probed_commands(
 ) -> impl Iterator<Item = &'static (&'static str, CgateAccessLevel)> {
     NATIVE_PROBED_COMMANDS
         .iter()
         .chain(NATIVE_PROBED_ADDITIONAL_COMMANDS.iter())
         .chain(NATIVE_PROBED_PROGRAMMING_COMMANDS.iter())
+        .chain(NATIVE_PROBED_MEDIA_COMMANDS.iter())
 }
 
 /// Longest matching native-observed command path. The caller supplies
@@ -524,6 +578,67 @@ mod tests {
         let roles = evidence["roles"].as_object().unwrap();
         assert_eq!(roles.len(), 9);
         for (path, minimum) in NATIVE_PROBED_PROGRAMMING_COMMANDS {
+            let matches = commands
+                .iter()
+                .filter_map(serde_json::Value::as_str)
+                .filter(|command| *command == *path || command.starts_with(&format!("{path} ")))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "native invocation for {path}");
+            let command = matches[0];
+            for (role, record) in roles {
+                let level = CgateAccessLevel::parse(role);
+                assert_eq!(record["query"], format!("210 Access level: {role}"));
+                let reply = record["responses"][command].as_str().unwrap();
+                assert_eq!(
+                    reply == "420 Access denied.",
+                    level < *minimum,
+                    "native {command} at {role}: {reply}"
+                );
+            }
+            let upper = command
+                .split_whitespace()
+                .map(str::to_ascii_uppercase)
+                .collect::<Vec<_>>();
+            assert_eq!(native_minimum_for(&upper), Some(*minimum));
+        }
+    }
+
+    #[test]
+    fn media_handler_floors_match_owned_native_role_responses() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_media_authorization_probe.json"
+        ))
+        .unwrap();
+        assert_eq!(evidence["format"], "native-cgate-media-authorization-v1");
+        assert_eq!(
+            evidence["oracle"]["jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for field in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "process_exit_confirmed",
+            "work_removed",
+        ] {
+            assert_eq!(evidence["oracle"][field], true, "{field}");
+        }
+        assert_eq!(
+            evidence["capture_script_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../research/native_media_authorization_probe.py"
+            )))
+        );
+        assert_eq!(
+            evidence["local_cgate_harness_sha256"],
+            hex::encode(auth::sha256(include_bytes!(
+                "../../../toolkit-cli/research/local_cgate.py"
+            )))
+        );
+        let commands = evidence["commands"].as_array().unwrap();
+        assert_eq!(commands.len(), NATIVE_PROBED_MEDIA_COMMANDS.len());
+        let roles = evidence["roles"].as_object().unwrap();
+        assert_eq!(roles.len(), 9);
+        for (path, minimum) in NATIVE_PROBED_MEDIA_COMMANDS {
             let matches = commands
                 .iter()
                 .filter_map(serde_json::Value::as_str)

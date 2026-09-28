@@ -268,7 +268,7 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
         let floors = caps["access_native_handler_probe_levels"]
             .as_array()
             .unwrap();
-        assert_eq!(floors.len(), 129);
+        assert_eq!(floors.len(), 173);
         for (path, level) in [
             ("TREE", "Monitor"),
             ("PROJECT DIR", "Admin"),
@@ -280,6 +280,9 @@ async fn access_family_is_redacted_sandboxed_durable_and_connection_safe() {
             ("PP RESET_TO_DEFAULTS", "Clipsal"),
             ("PROGRAMMER CREATE", "Program"),
             ("DEPLOY_QUEUE RETRY", "Program"),
+            ("AUDIO DYNAMIC_1", "Operate"),
+            ("SECURITY ARM", "Operate"),
+            ("MEDIATRANSPORT PLAY", "Operate"),
         ] {
             assert!(
                 floors

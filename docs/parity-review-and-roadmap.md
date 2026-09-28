@@ -448,8 +448,11 @@ historical evidence, not acceptance of newer code.
   concurrent sessions, reconnect and persisted admission rules.
   The 2026-09-28 programming slice adds 40 independently probed handler entry
   floors (360 native role/invocation observations), bringing the maintained
-  total to 129. All PP leaves require Clipsal; PROGRAMMER and DEPLOY_QUEUE
-  require Program. Rust denial, owner-session preservation on LOGIN downgrade,
+  total to 129. A fourth owned native probe adds 44 Audio, Security and Media
+  Transport entry floors (396 more role/invocation observations), bringing the
+  maintained total to 173. All 44 enter at Operate. All PP leaves require
+  Clipsal; PROGRAMMER and DEPLOY_QUEUE require Program. Rust denial,
+  owner-session preservation on LOGIN downgrade,
   and LOGOUT restoration are covered. Object-specific authorization and the
   remaining command matrix still prevent closing this issue. See the
   [focused validation record](../rust/cbus-cgate/research/programming-authorization-review-20260928.md).
@@ -817,10 +820,10 @@ state, routing/I/O class and implementation-route status for all 442 paths,
 plus 398 path-level programming-gate decisions. The separate handler-role
 subaxis is resolved as minimum `Program` for all five TELEPHONY leaves, so
 those five paths now have fully resolved authorization axes. A source-bound,
-three sanitized original C-Gate probes add 129 exact handler-entry floor
-observations across all nine ACCESS levels (31 initial, 58 expansion and 40
-programming/session/queue). Each fixture, capture script, local harness and
-Rust registry is checked during generation. Those 129 rows retain unresolved
+four sanitized original C-Gate probes add 173 exact handler-entry floor
+observations across all nine ACCESS levels (31 initial, 58 expansion, 40
+programming/session/queue and 44 media/security). Each fixture, capture script,
+local harness and Rust registry is checked during generation. Those 173 rows retain unresolved
 handler-role subaxes and partial authorization axes: lower-role `420` denial
 and reaching a later stage at the floor do not prove other selectors,
 object-level authorization or physical success. The inventory retains 70
@@ -832,7 +835,7 @@ variants, `EVENT` and `QUIT`. `EVENT` mode value domains and incomplete
 response/event cases remain open.
 Target forms for the other 437 paths, value domains for the other
 439, 44 argument-dependent programming-gate decisions, complete handler roles
-on the other 437 paths (including the 129 with scoped entry observations), most
+on the other 437 paths (including the 173 with scoped entry observations), most
 exact response/event envelopes and 433 command-specific
 effect contracts remain open, and no path has functional acceptance evidence.
 P0.02 and issue #14 therefore remain open.

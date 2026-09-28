@@ -56,7 +56,7 @@ changes no provisional source count, and supplies no physical cache readback.
   C-Gate paths.
 - `research/build_cgate_contract_inventory.py` derives that inventory from the
   Rust routing matrix, declarative application arities, endpoint authorization
-  policy, public-help syntax hashes and all three sanitized native handler-role
+  policy, public-help syntax hashes and all four sanitized native handler-role
   probes. It records unknown selector/state fields explicitly instead
   of deriving them from a command name.
 - `research/build_parity_register.py` regenerates the provisional register
@@ -231,17 +231,19 @@ for all five TELEPHONY leaves as minimum `Program`, including
 operation-based LOGIN gate. Those five paths therefore have a fully resolved
 authorization axis.
 
-The inventory also records 129 exact native handler-entry role probes, each
+The inventory also records 173 exact native handler-entry role probes, each
 captured at all nine ACCESS levels against owned C-Gate 3.4.0.2001 loopback
 sessions. Their pinned fixtures are
 `rust/testdata/fixtures/native_cgate_authorization_probe.json` (31),
 `rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json` (58)
 and `rust/testdata/fixtures/native_cgate_programming_authorization_probe.json`
-(40 PP, PROGRAMMER and DEPLOY_QUEUE leaves).
+(40 PP, PROGRAMMER and DEPLOY_QUEUE leaves), plus
+`rust/testdata/fixtures/native_cgate_media_authorization_probe.json` (44 Audio,
+Security and Media Transport leaves).
 Each observed lower role returned `420 Access denied.`, while the recorded
 minimum role advanced past that entry gate. The generator checks the fixture,
 capture script, local harness, Rust handler registry and role gradient before
-emitting these known facts. All 129 `handler_roles` subaxes remain
+emitting these known facts. All 173 `handler_roles` subaxes remain
 `unresolved`: one invocation does not establish other selectors, later
 object-level authorization or successful physical delivery. The corresponding
 authorization axes remain partial and none gains functional acceptance.
