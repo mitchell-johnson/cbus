@@ -1,0 +1,121 @@
+<Installation>
+  <Project>
+    <Address>XCSVSP2</Address>
+    <Network>
+      <OID>4276eaa0-9d52-103f-aae4-e0390d5d0441</OID>
+      <TagName>Local</TagName>
+      <Address>254</Address>
+      <NetworkNumber>254</NetworkNumber>
+      <Interface>
+        <OID>427711b0-9d52-103f-aae5-e0390d5d0441</OID>
+        <InterfaceType>Cni</InterfaceType>
+        <InterfaceAddress>127.0.0.1:1</InterfaceAddress>
+      </Interface>
+      <Application>
+        <OID>00000000-0000-0000-0000-000000000056</OID>
+        <TagName>Lighting</TagName>
+        <Address>56</Address>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001001</OID>
+          <TagName>Kitchen, east</TagName>
+          <Address>1</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001002</OID>
+          <TagName>Circuit 02</TagName>
+          <Address>2</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001003</OID>
+          <TagName>Circuit 03</TagName>
+          <Address>3</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001004</OID>
+          <TagName>Circuit 04</TagName>
+          <Address>4</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001005</OID>
+          <TagName>Circuit 05</TagName>
+          <Address>5</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001006</OID>
+          <TagName>Circuit 06</TagName>
+          <Address>6</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001007</OID>
+          <TagName>Circuit 07</TagName>
+          <Address>7</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001008</OID>
+          <TagName>Circuit 08</TagName>
+          <Address>8</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001009</OID>
+          <TagName>Circuit 09</TagName>
+          <Address>9</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001010</OID>
+          <TagName>Circuit 10</TagName>
+          <Address>10</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001011</OID>
+          <TagName>Circuit 11</TagName>
+          <Address>11</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001012</OID>
+          <TagName>Circuit 12</TagName>
+          <Address>12</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001013</OID>
+          <TagName>Circuit 13</TagName>
+          <Address>13</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001014</OID>
+          <TagName>Circuit 14</TagName>
+          <Address>14</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001015</OID>
+          <TagName>Circuit 15</TagName>
+          <Address>15</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001016</OID>
+          <TagName>Circuit 16</TagName>
+          <Address>16</Address>
+        </Group>
+        <Group>
+          <OID>00000000-0000-0000-0000-000000001255</OID>
+          <TagName>&lt;Unused&gt;</TagName>
+          <Address>255</Address>
+        </Group>
+      </Application>
+      <Unit>
+        <OID>00000000-0000-0000-0000-000000000509</OID>
+        <TagName>Nine relay SP</TagName>
+        <Address>9</Address>
+        <UnitType>RELDN8SP</UnitType>
+        <UnitName>DIN Relay SP Synthetic</UnitName>
+        <SerialNumber>No serial #</SerialNumber>
+        <FirmwareVersion>2.7.00</FirmwareVersion>
+        <PP Name="Application" Value="56 255" />
+        <PP Name="AreaGroupAddress" Value="255" />
+        <PP Name="GroupAddress" Value="8 1 8 4 3 2 7 6 16 15 14 13 12 11 10 9" />
+        <CatalogNumber>SYNTHETIC</CatalogNumber>
+        <DeviceName>NEWUNIT</DeviceName>
+        <GroupNumber />
+      </Unit>
+    </Network>
+  </Project>
+</Installation>

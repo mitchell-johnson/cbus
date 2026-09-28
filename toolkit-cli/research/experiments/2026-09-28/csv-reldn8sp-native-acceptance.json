@@ -1,0 +1,119 @@
+{
+  "artifacts_sha256": {
+    "research/experiments/2026-09-28/csv-reldn8sp-vm-capture.ps1": "d802a4a4ea6409232fbb1697d1af9398b86f87765a41947ec37721982ca38105",
+    "research/experiments/2026-09-28/csv-reldn8sp-vm-gui-port.ps1": "32697367f20d65f945dbee20e5a0a26fa8e8b879a25a97565ffc9131ac63cce3",
+    "research/experiments/2026-09-28/csv-reldn8sp-vm-offline.ps1": "c7e07860860e12f65b3439c2d3539578f8ea4c12fbd0ebbc29cdb4ea7b94bf48",
+    "research/experiments/2026-09-28/csv-reldn8sp-vm-route-restore.ps1": "7182427854724a3079293a028ef59f5dab97354662997fc0c86e7530ea5b16f9",
+    "research/experiments/2026-09-28/csv-reldn8sp-vm-service.ps1": "c5aa1d0f6f10ae08124d6897714c8339640b5635481c136d05aa348d4d5631d4",
+    "research/fixtures/toolkit-database-csv-reldn8sp-native-sanitized.xml": "225c0608d3665d0c182dc04197dfbabc0072bd1a1016b0fb2f0d007af8358b23",
+    "research/fixtures/toolkit-database-csv-reldn8sp-synthetic.xml": "771e0a3457848c853d2245105287da84132475f8645e2cf75be6b1184c495275"
+  },
+  "cleanup": {
+    "final_default_route_count": 1,
+    "guest_route_matches_start": true,
+    "loopback_relay_removed": true,
+    "original_cgate_process_stopped": true,
+    "original_default_route_count": 1,
+    "original_home_restored": true,
+    "route_restore_method": "already-restored-by-guest",
+    "temporary_work_removed": true
+  },
+  "executed_cli_source_sha256": {
+    "src/cbus_toolkit/toolkit_database_csv_native.py": "cdb1649438a1c902533cd08409f351125aa17643436426157916fea0cbdb9de9",
+    "src/cbus_toolkit/toolkit_database_csv_projection.py": "3a2e24d7a61bc072bbafaa4021397c5c2e03a5dab4713739103e7c76c19cf2d3"
+  },
+  "format": "cbus-csv-reldn8sp-native-acceptance-v1",
+  "limits": [
+    "Native C-Gate accepted and persisted project metadata, but PP QUICKGET returned 420 Access denied under this service configuration.",
+    "The original Toolkit GUI CSV action, cache constructor, and nine-group report row were not executed.",
+    "No CNI, PCI, broker, physical C-Bus network or real lights were contacted."
+  ],
+  "native_cgate": {
+    "command_statuses": {
+      "100": "200",
+      "101": "200",
+      "102": "301",
+      "103": "344",
+      "104": "301",
+      "105": "344",
+      "106": "344",
+      "109": "132",
+      "110": "200",
+      "111": "200",
+      "112": "200",
+      "113": "200",
+      "114": "344",
+      "115": "344",
+      "117": "131"
+    },
+    "dbsetxml_status": "301 OID=<generated network OID>",
+    "default_route_count_at_capture": 0,
+    "firmware": "2.7.00",
+    "group_record_count": 17,
+    "interface_address": "127.0.0.1:1",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "37048fe85e763554aa104d6711531b185271905a81ff7fb055978acf8eaea5f7",
+    "network_path": "//XCSVSP2/254",
+    "physical_network_opened": false,
+    "post_reload_network_state": "State=new InterfaceState=closed",
+    "post_reload_project_xml_sha256": "0357b9ca053754e835faddfb2fc470db79afe12f04c1f19195499740e66767ac",
+    "post_reload_unit_xml_sha256": "8625250c72cd03441604925c3d50f48f6b20a3e223ef471f09da842a3d19b3cd",
+    "pp_quickget_access_denied_tags": [
+      "107",
+      "108",
+      "116"
+    ],
+    "pre_save_project_xml_sha256": "a35f3c2c48377fbba6134870a58af63591b1ad68b398f2afc0189542378cfb46",
+    "pre_save_unit_xml_sha256": "9a14d49671d57110a26285317e2c269d268e9d0da341174ee0a459a6e5206d41",
+    "project": "XCSVSP2",
+    "sanitization": "The committed XML retains the post-reload native Network subtree and a minimal Installation/Project address wrapper; host-specific InstallationDetail, Config and Modified metadata are omitted.",
+    "save_close_load_use_statuses": [
+      "200",
+      "200",
+      "200",
+      "200"
+    ],
+    "service_listener_addresses": [
+      "127.0.0.1:24200",
+      "127.0.0.1:24201",
+      "127.0.0.1:24202",
+      "127.0.0.1:24203",
+      "127.0.0.1:24210",
+      "127.0.0.1:24211"
+    ],
+    "unit_path": "//XCSVSP2/254/p/9",
+    "unit_pp": {
+      "Application": "56 255",
+      "AreaGroupAddress": "255",
+      "GroupAddress": "8 1 8 4 3 2 7 6 16 15 14 13 12 11 10 9"
+    },
+    "unit_type": "RELDN8SP"
+  },
+  "private_raw_capture_retained_outside_git": true,
+  "private_raw_capture_sha256": "8dca8111b91cd4304104888ac6a6df2bd331da3e8e1a04849cc9fa525c3978ef",
+  "python_cli": {
+    "command": "PYTHONPATH=toolkit-cli/src toolkit-cli/.venv/bin/python -m cbus_toolkit --compact toolkit-database-csv POST_RELOAD_DBGETXML.xml --native-xml-unit //XCSVSP2/254/p/9 --output RESULT.csv",
+    "csv_bytes": 518,
+    "csv_sha256": "1b0face71e3a9d3e0e68afd6fa7bec85de807c9f34973e82fbddc0a945b20c1e",
+    "exit_code": 0,
+    "matches_prior_literal_fixture": true,
+    "sanitized_native_xml_replay_same_bytes": true
+  },
+  "scope": "One no-site RELDN8SP firmware 2.7.00 project cold-loaded through original C-Gate 3.4 on the owned Windows UTM guest; Python CLI CSV comparison from exact post-reload DBGETXML, with no original Toolkit CSV result.",
+  "toolkit_gui": {
+    "application_event_matches_in_preceding_25_minutes": 0,
+    "csv_export_observed": false,
+    "desktop_unlocked": true,
+    "launch_attempted_via_utm_gui": true,
+    "launcher_content": "@echo off\\r\\nstart \"\" \"C:\\Clipsal\\CBusToolkit118\\CBusToolkit.exe\"\\r\\n",
+    "launcher_path": "C:\\Users\\Public\\Desktop\\Toolkit Oracle.cmd",
+    "launcher_sha256": "300a0b39eb63f6dded9e824172fb651d3eaa18de118d066cdf6d02a97aa8d5d9",
+    "limit": "Desktop attempts did not yield a visible Toolkit window or process; no GUI CSV file or exit code was captured. This does not establish original Toolkit report behavior.",
+    "observed_error": null,
+    "observed_exit_code": null,
+    "original_exe_path": "C:\\Clipsal\\CBusToolkit118\\CBusToolkit.exe",
+    "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "process_count_after_attempts": 0,
+    "process_query": "Get-CimInstance Win32_Process -Filter \"Name='CBusToolkit.exe'\""
+  }
+}
