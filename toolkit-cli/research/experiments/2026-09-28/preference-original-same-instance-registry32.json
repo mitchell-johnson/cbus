@@ -1,0 +1,162 @@
+{
+  "base_revision": "b00c40a1e5418ae92e3b0ed0f959cef423e340a9",
+  "case": "ShowProjectManager missing in HKCU and HKLM; original manager load twice on one object and process",
+  "execution": {
+    "console_session": 1,
+    "guest": "disposable UTM Windows 11 VM",
+    "launcher_primary_token_sid_sha256": "a9168013382769381518ec3f93d5c36a708a5ada838bfcad953b355ad49e6ea6",
+    "original_gui_process": false,
+    "original_instruction_engine": "Unicorn 2.1.4 x86; original Toolkit EXE mapped with pinned SHA-256",
+    "original_manager_entry": "0x851ae4",
+    "process": "Python 3.13.14 x86 under active non-System console user",
+    "registry_boundary": "Guest Python winreg Registry32 hooks for original JCL create/read/write calls; original Delphi allocation, strings, resources, collection and exception dispatch remain research fixtures",
+    "same_manager_object_both_loads": true,
+    "same_sid_hash_as_prior_interactive_cli_receipt": false
+  },
+  "format": "cbus-p902-original-same-instance-registry32-acceptance-v1",
+  "limits": [
+    "Original Toolkit GUI manager was not directly instrumented; JCL registry boundary was supplied by the probe, and the original Delphi runtime was fixture-backed.",
+    "Only one missing-value default case was observed; broader preferences, cache wrappers, culture, GUI effects and settings lifecycle remain open.",
+    "The Python API comparison used a separate in-memory backend; previous same-user installed-wheel CLI acceptance remains a distinct scope.",
+    "No C-Gate, broker, physical C-Bus or house-network endpoint was used."
+  ],
+  "observation": {
+    "first_load_in_memory": false,
+    "hkcu_registry32_after_first": [
+      "True",
+      1
+    ],
+    "initial_in_memory": false,
+    "ordered_trace": [
+      {
+        "call": "create-key",
+        "hive": "0x80000001",
+        "key": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0",
+        "phase": "first-load",
+        "provider": "Registry32"
+      },
+      {
+        "call": "create-key",
+        "hive": "0x80000001",
+        "key": "Software\\Schneider Electric\\C-Gate\\CurrentVersion",
+        "phase": "first-load",
+        "provider": "Registry32"
+      },
+      {
+        "call": "read",
+        "hive": "0x80000001",
+        "name": "ShowProjectManager",
+        "phase": "first-load",
+        "present": false,
+        "provider": "Registry32"
+      },
+      {
+        "call": "fixture-exception-unwind",
+        "handler": "0x851ce4",
+        "original_catch": "0x851cf5",
+        "phase": "first-load"
+      },
+      {
+        "call": "read",
+        "hive": "0x80000002",
+        "name": "ShowProjectManager",
+        "phase": "first-load",
+        "present": false,
+        "provider": "Registry32"
+      },
+      {
+        "call": "fixture-exception-unwind",
+        "handler": "0x851d5f",
+        "original_catch": "0x851d70",
+        "phase": "first-load"
+      },
+      {
+        "call": "write",
+        "hive": "0x80000001",
+        "name": "ShowProjectManager",
+        "phase": "first-load",
+        "provider": "Registry32",
+        "utf16le_hex": "54007200750065000000",
+        "value": "True"
+      },
+      {
+        "call": "create-key",
+        "hive": "0x80000001",
+        "key": "Software\\Clipsal Integrated Systems\\C-Bus Installation Software\\3.0",
+        "phase": "second-load",
+        "provider": "Registry32"
+      },
+      {
+        "call": "create-key",
+        "hive": "0x80000001",
+        "key": "Software\\Schneider Electric\\C-Gate\\CurrentVersion",
+        "phase": "second-load",
+        "provider": "Registry32"
+      },
+      {
+        "call": "read",
+        "hive": "0x80000001",
+        "name": "ShowProjectManager",
+        "phase": "second-load",
+        "present": true,
+        "provider": "Registry32"
+      }
+    ],
+    "original_selected_case_passed": true,
+    "second_load_in_memory": true
+  },
+  "original_executable": {
+    "guest_manifest_sha256": "689931140e99a8366021073dd5980d2e43dbb61059eef0a488b69e8d856f69cc",
+    "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "version": "1.18.0.2754"
+  },
+  "provenance": {
+    "archived_original_instruction_probe_sha256": "1eee64c792100b6d6c02ab5d99b5acb313b039107b3857fefbcb931eb3b38e16",
+    "guest_path_adapted_initializer_sha256": "75eedd5ca0f8597a23caae20819781f5e90cd4ed52aaadc40b1eec47778cea32",
+    "guest_raw_result_sha256": "52fc51cc7501956f826e52205ec5734d47901619416edf1aefc29476fa12fc2d",
+    "guest_saved_options_shim_sha256": "635bed2cdb889ec1d816833e6942d658b6467bc1ed2ff7862be6f6d15048e831",
+    "guest_stderr_empty": true,
+    "launcher_command_sha256": "a7d1b8c87fe3eca6dba25c0162f1ed0cbb6ce970caebc7de9176fe435948c56a",
+    "launcher_executable_sha256": "0aeeb04790e9913fec356e208812da440363c2da1a65e8c28fbd6f5a30b03273",
+    "launcher_report_sha256": "eb35b56fd28510599b60e5925c4a5be25072afba67d259ac4f385a870b52f579",
+    "original_backup_source_sha256": "83650b1bb6ef9ef4ece6cb1cd9a36cb2fe23d91b748772f5cf95ed118a6b02fc",
+    "probe_sha256": "a028130c78063c18186b930a28b0caa3bb3e48e083849091f1e4ff738afa251e",
+    "probe_source": "research/windows_preferences_original_same_instance.py"
+  },
+  "python_api_differential": {
+    "existing_interactive_cli_receipt": "research/experiments/2026-09-28/preference-interactive-repeat.json",
+    "first_actions": [
+      "read",
+      "read",
+      "write-preference-default"
+    ],
+    "first_in_memory": false,
+    "fixture_sha256": "965237303fd13524707897e88f6a32c1a28176e0a9bfb9a9c3dbaf0850c97f61",
+    "initial_values_fixture": "research/fixtures/toolkit-preferences-store-vectors.json",
+    "runtime": "Python 3.13.14 on host against independent in-memory backend",
+    "second_actions": [
+      "read"
+    ],
+    "second_in_memory": true,
+    "selected_values_and_order_match": true,
+    "source": "src/cbus_toolkit/toolkit_preferences_store.py",
+    "source_sha256": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "stored_utf16le_hex": "54007200750065000000"
+  },
+  "restoration": {
+    "hkcu_value_trees_restored": true,
+    "hklm_value_trees_unchanged": true,
+    "present_private_exports": 4,
+    "private_exports_removed": true,
+    "scope_limit": "Value-tree hashes cover keys, names, decoded data/types and children; not ACLs, last-write metadata or raw registry bytes",
+    "six_fixed_registry32_trees_snapshotted": true
+  },
+  "status": "passed_bounded_original_instruction_registry32",
+  "validation": {
+    "focused_command": "PYTHONPATH=src:tests python3.13 -m unittest -q test_cli_toolkit_preferences_repeated_load test_toolkit_preferences_store",
+    "focused_failures": 0,
+    "focused_tests": 19,
+    "full_suite": "deferred per task instruction"
+  },
+  "work_item": "P9.02 / GitHub issue #61"
+}
