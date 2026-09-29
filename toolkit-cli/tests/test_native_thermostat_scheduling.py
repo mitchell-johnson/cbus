@@ -33,6 +33,11 @@ class CompositionClient:
         self.other_parameter = '0x2a'
         self.project_address = 'TEST'
         self.project_note = 'retained project data'
+        # Native C-Gate 3.4.0.2001 issues fresh Config/Property OIDs whenever
+        # PROJECT SAVE, COPY or LOAD rewrites the project.
+        self.config = [('network.source', 'db'), ('cbus-application', '56')]
+        self.config_generation = 0
+        self.regenerate_config_oids = True
         self.other_application = {'oid': oid(11), 'tag': 'Lighting',
                                   'note': 'retained application data'}
         self.application = ({'oid': oid(10), 'tag': 'Enable Control',
@@ -59,6 +64,17 @@ class CompositionClient:
                 + '</OID><Address>' + str(address) + '</Address><TagName>'
                 + escape(value['tag']) + '</TagName>' + opaque + materialized + '</Level>')
 
+    def _config(self):
+        base = 5000 + 10 * self.config_generation
+        rows = ''.join('<Property><OID>' + oid(base + index + 1) + '</OID><Name>' + escape(name)
+                       + '</Name><Value>' + escape(value) + '</Value></Property>'
+                       for index, (name, value) in enumerate(self.config))
+        return '<Config><OID>' + oid(base) + '</OID><Application>cgate</Application>' + rows + '</Config>'
+
+    def _rewrite_project(self):
+        if self.regenerate_config_oids:
+            self.config_generation += 1
+
     def xml(self):
         application = ('<Application><OID>' + self.other_application['oid']
             + '</OID><TagName>' + escape(self.other_application['tag'])
@@ -81,7 +97,7 @@ class CompositionClient:
         pp += '<PP Name="OtherParameter" Value="' + self.other_parameter + '"/>'
         return ('<Installation><Project><Address>' + escape(self.project_address)
                 + '</Address><ProjectNote>' + escape(self.project_note)
-                + '</ProjectNote><Network><Address>254</Address>'
+                + '</ProjectNote>' + self._config() + '<Network><Address>254</Address>'
                 + application + '<Unit><OID>' + oid(4) + '</OID><TagName>Thermostat</TagName>'
                 '<Address>4</Address><UnitType>' + self.unit_type + '</UnitType><FirmwareVersion>4.6.00</FirmwareVersion>'
                 + pp + '<CatalogNumber>5070THP,BK</CatalogNumber></Unit></Network></Project></Installation>')
@@ -122,20 +138,20 @@ class CompositionClient:
                           for index, (name, value) in enumerate(values.items()))
             result = CGateResponse(lines, lines[-1], 300)
         elif command == 'PROJECT SAVE TEST':
-            self.saved = deepcopy(self.application); result = reply()
+            self.saved = deepcopy(self.application); self._rewrite_project(); result = reply()
         elif command.startswith('PROJECT COPY TEST '):
             name = command.rsplit(' ', 1)[1]
             if name in self.backups:
                 result = reply(401, 'Already exists')
             else:
-                self.backups[name] = deepcopy(self.saved); result = reply()
+                self.backups[name] = deepcopy(self.saved); self._rewrite_project(); result = reply()
         elif command == 'PROJECT USE TEST':
             self.current_project = 'TEST'; result = reply()
         elif command == 'PROJECT CLOSE TEST':
             self.current_project = None; result = reply()
         elif command == 'PROJECT LOAD TEST':
             self.application = deepcopy(self.saved); self.current_project = 'TEST'
-            self.materialized = True; result = reply()
+            self.materialized = True; self._rewrite_project(); result = reply()
         elif command.startswith('DBADDSAFE //TEST/254 Application 203 '):
             if self.application is not None:
                 result = reply(401, 'Element address in use')
@@ -289,6 +305,77 @@ class NativeThermostatSchedulingTests(unittest.TestCase):
                 with self.assertRaises(NativeScheduleError):
                     manager.apply(plan)
                 self.assertFalse(any(command.startswith('PROJECT SAVE') for command in client.commands))
+
+    def test_native_config_oid_regeneration_on_backup_and_reload_is_not_staleness(self):
+        client = CompositionClient(groups={12: group(12)})
+        manager = NativeThermostatScheduling(client)
+        plan = manager.plan(UNIT, exclusive_project=True)
+        result = manager.apply(plan, backup_project='BACKUP').as_dict()
+        self.assertTrue(result['persistence_verified'])
+        # Save, copy, target save and reload each rewrote the Config identities.
+        self.assertEqual(client.config_generation, 4)
+
+    def test_genuine_change_during_backup_is_refused_before_target_mutation(self):
+        def unit_parameter(client):
+            client.other_parameter = '0x2b'
+
+        def schedule_parameter(client):
+            client.raw['RemoteScheduleEnable'] = 1
+
+        def unit_type(client):
+            client.unit_type = 'PC_TSB'
+
+        def application_tag(client):
+            client.application['tag'] = 'Concurrent edit'
+
+        def group_tag(client):
+            client.application['groups'][12]['tag'] = 'Concurrent group edit'
+
+        def level_value(client):
+            client.application['groups'][12]['levels'][1]['value'] = 99
+
+        def config_value(client):
+            client.config[0] = ('network.source', 'pci')
+
+        def config_row(client):
+            client.config.append(('project.start', 'OTHER'))
+
+        for mutation in (unit_parameter, schedule_parameter, unit_type, application_tag,
+                         group_tag, level_value, config_value, config_row):
+            with self.subTest(mutation=mutation.__name__):
+                client = CompositionClient(groups={12: group(12, {1: level(1)})})
+                manager = NativeThermostatScheduling(client)
+                plan = manager.plan(UNIT, exclusive_project=True)
+
+                def concurrent(command, client=client, mutation=mutation):
+                    if command == 'PROJECT COPY TEST BACKUP':
+                        mutation(client)
+                    return None
+
+                client.after = concurrent
+                with self.assertRaises(NativeScheduleError):
+                    manager.apply(plan, backup_project='BACKUP')
+                result = manager.last_result.as_dict()
+                self.assertTrue(result['backup_created'])
+                self.assertFalse(result['target_mutation_attempted'])
+                self.assertFalse(any(command.startswith(('DBADD', 'DBSET'))
+                                     for command in client.commands))
+                self.assertEqual(client.commands.count('PROJECT SAVE TEST'), 1)
+
+    def test_reload_still_rejects_a_changed_config_value(self):
+        client = CompositionClient(groups={12: group(12)})
+        manager = NativeThermostatScheduling(client)
+        plan = manager.plan(UNIT, exclusive_project=True)
+
+        def change(command):
+            if command == 'PROJECT LOAD TEST':
+                client.config[1] = ('cbus-application', '57')
+            return None
+
+        client.after = change
+        with self.assertRaisesRegex(NativeScheduleError, 'Unrelated native project metadata changed'):
+            manager.apply(plan, backup_project='BACKUP')
+        self.assertFalse(manager.last_result.as_dict()['persistence_verified'])
 
     def test_lost_level_value_reply_retains_backup_and_uncertain_state(self):
         client = CompositionClient(groups={12: group(12)})

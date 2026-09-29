@@ -41,7 +41,7 @@ from .edlt_parent_transaction import (
     _candidate_widget, normalize_operations,
 )
 from .native import NativeDatabase, NativeProjects, _project
-from .native_thermostat_schedule import _shape
+from .native_thermostat_schedule import _project_shape, _shape
 from .programming import Programmer, database_address, xml_text
 from .toolkit_database_csv_native import _byte, _children, _field, _oid, _path
 
@@ -342,7 +342,7 @@ def _snapshot(text, unit_path, editor, *, dltp_index=None):
             tuple(groups)))
     if len(identities) > MAX_OBJECTS:
         raise ValueError('Native eDLT metadata inventory exceeds 4096 objects')
-    project_metadata = _node_shape(project, exclude=frozenset(('Network',)))
+    project_metadata = _json(_project_shape(project))
     unit_metadata = _node_shape(unit, exclude=frozenset(('PP',)))
     network_metadata = _node_shape(
         network, exclude=frozenset(('Application', 'Unit')))

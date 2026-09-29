@@ -77,7 +77,10 @@ The XML must contain exactly the selected project, unique byte-addressed
 networks and units, and one selected unit with the exact profile identity.
 PP names, application addresses, group addresses, level addresses and native
 object IDs must be unique. Object IDs must be canonical UUIDs. Ambiguity or a
-stale PP snapshot stops before backup or mutation.
+stale PP snapshot stops before backup or mutation. The post-backup and
+post-reload checks ignore only the fresh project `Config`/`Property` OIDs that
+native C-Gate 3.4.0.2001 assigns when `PROJECT SAVE`, `COPY` or `LOAD`
+rewrites the project; Config names and values stay compared.
 
 For Applications, Corridor and Reset, every Application and Group child is
 copied in its DBGETXML child order. Each cached `name` is the exact `TagName`.

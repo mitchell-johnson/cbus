@@ -85,6 +85,21 @@ class MetadataClient:
         self.commands = []
         self.next_oid = 10000
         self.failure = None
+        # Native C-Gate 3.4.0.2001 issues fresh Config/Property OIDs whenever
+        # PROJECT SAVE, COPY or LOAD rewrites the project.
+        self.config = [('network.source', 'db')]
+        self.config_generation = 0
+
+    def _config(self):
+        base = 30000 + 10 * self.config_generation
+        # Native Config also has <Application>cgate</Application>; other
+        # tests locate network applications by that literal element text.
+        return ('<Config><OID>' + oid(base) + '</OID>'
+                + ''.join('<Property><OID>' + oid(base + index + 1) + '</OID><Name>'
+                          + escape(name) + '</Name><Value>' + escape(value)
+                          + '</Value></Property>'
+                          for index, (name, value) in enumerate(self.config))
+                + '</Config>')
 
     def _new_oid(self):
         self.next_oid += 1
@@ -134,8 +149,8 @@ class MetadataClient:
                 + '</Application>')
         pp = ''.join('<PP Name=' + quoteattr(name) + ' Value=' + quoteattr(value) + '/>'
                      for name, value in self.values.items())
-        return ('<Installation><Project><Address>TEST</Address>'
-                '<Network><Address>254</Address><InterfaceType>CNI</InterfaceType>'
+        return ('<Installation><Project><Address>TEST</Address>' + self._config()
+                + '<Network><Address>254</Address><InterfaceType>CNI</InterfaceType>'
                 + ''.join(applications)
                 + '<Unit><OID>' + oid(999) + '</OID><TagName>eDLT</TagName>'
                 '<Address>20</Address><UnitType>KEYGL5</UnitType>'
@@ -194,6 +209,8 @@ class MetadataClient:
                                 address] = value
                             return response()
             return response(401, 'Unknown OID')
+        if command in ('PROJECT SAVE TEST', 'PROJECT LOAD TEST') or command.startswith('PROJECT COPY TEST '):
+            self.config_generation += 1
         if command == 'PROJECT SAVE TEST':
             self.saved_values = deepcopy(self.values)
             self.saved_applications = deepcopy(self.applications)
@@ -437,6 +454,39 @@ class ParentMetadataTests(unittest.TestCase):
         self.assertEqual(evidence['database_persistence'], 'not-saved')
         self.assertFalse(any(command.startswith(('DBADD', 'PROJECT '))
                              for command in self.client.commands))
+
+    def test_config_change_during_backup_stops_before_mutation(self):
+        # Regenerated Config OIDs alone are admitted (every apply test above);
+        # a changed Config value or unit field during the backup is not.
+        def config_value(client):
+            client.config[0] = ('network.source', 'pci')
+
+        def unit_value(client):
+            client.values['ProximityLevel'] = '1'
+
+        for mutation in (config_value, unit_value):
+            with self.subTest(mutation=mutation.__name__):
+                self.client = MetadataClient(self.spec)
+                manager, _session, _ = self.manager()
+                plan = manager.plan(
+                    '//TEST/254/p/20', operations=self.operations,
+                    exclusive_project=True)
+
+                def concurrent(command, mutation=mutation):
+                    if command.startswith('PROJECT COPY TEST '):
+                        mutation(self.client)
+                    return None
+
+                self.client.failure = concurrent
+                with self.assertRaises(NativeEdltParentError) as caught:
+                    manager.apply(plan, backup_project='BACKUP')
+                evidence = caught.exception.details['edlt_parent_metadata_evidence']
+                self.assertTrue(evidence['backup_created'])
+                self.assertFalse(evidence['metadata_mutation_attempted'])
+                self.assertFalse(evidence['pp_mutation_attempted'])
+                self.assertEqual(len(self.client.backups), 1)
+                self.assertFalse(any(command.startswith(('DBADD', 'DBSET'))
+                                     for command in self.client.commands))
 
     def test_lost_pp_save_reply_is_partial_and_never_rolled_back(self):
         manager, session, _ = self.manager()

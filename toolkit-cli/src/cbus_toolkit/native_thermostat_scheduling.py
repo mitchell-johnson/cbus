@@ -26,6 +26,7 @@ from .native_thermostat_schedule import (
     _group,
     _json,
     _oid,
+    _project_shape,
     _shape,
 )
 from .thermostat_schedule_levels import ScheduleLevel
@@ -215,7 +216,7 @@ def _snapshot(text, project_name, network_address, unit_address):
     applications = [node for address, node in application_rows if address == 203]
     if len(applications) > 1:
         raise ValueError('Enable Control application address is duplicated')
-    project_metadata = _node_shape(project, exclude=frozenset(('Network',)))
+    project_metadata = _json(_project_shape(project))
     network_metadata = _node_shape(
         network, exclude=frozenset(('Application', 'Unit')))
     other_networks = tuple(_json(_preserved_shape(row)) for address, row in networks

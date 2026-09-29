@@ -88,6 +88,36 @@ def _shape(node, *, level=False):
     return (node.tagName, attrs, children)
 
 
+def _without_oids(node):
+    """Shape a subtree while omitting every OID field inside it."""
+    if node.nodeType != Node.ELEMENT_NODE:
+        return _shape(node)
+    attrs = sorted((node.attributes.item(i).name, node.attributes.item(i).value) for i in range(node.attributes.length))
+    children = [_without_oids(child) for child in node.childNodes
+                if not (child.nodeType == Node.ELEMENT_NODE and child.tagName == 'OID')]
+    return (node.tagName, attrs, children)
+
+
+def _project_shape(project):
+    """Shape project fields other than networks, without regenerated Config OIDs.
+
+    Native C-Gate 3.4.0.2001 gives the project's Config element and every
+    Config Property fresh OIDs whenever PROJECT SAVE, COPY or LOAD rewrites
+    the project. Those identities are not addressable by the native managers;
+    Config names, values and order remain compared, as does every other
+    project field.
+    """
+    attrs = sorted((project.attributes.item(i).name, project.attributes.item(i).value)
+                   for i in range(project.attributes.length))
+    children = []
+    for child in project.childNodes:
+        if child.nodeType == Node.ELEMENT_NODE and child.tagName == 'Network':
+            continue
+        children.append(_without_oids(child) if child.nodeType == Node.ELEMENT_NODE
+                        and child.tagName == 'Config' else _shape(child))
+    return (project.tagName, attrs, children)
+
+
 def _group(text, expected_address):
     from .thermostat_schedule_levels import ScheduleLevel
     root = _container(text, 'NetVar').documentElement
