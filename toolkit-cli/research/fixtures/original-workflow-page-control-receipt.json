@@ -1,0 +1,2547 @@
+{
+ "format": "cbus-original-workflow-receipt-v1",
+ "workflow": "edlt-page-control-database-unit",
+ "group": 42,
+ "passed": true,
+ "evidence_class": "original-model+native-cgate",
+ "physical_device_verified": false,
+ "stages": {
+  "original_open": true,
+  "original_edit_through_binding": true,
+  "original_save": true,
+  "original_reopen_after_close": true,
+  "original_reopened_page_control": true,
+  "cli_steps_saved_and_verified": true
+ },
+ "comparisons": {
+  "identical_seeded_inputs": true,
+  "original_saved_pp_equals_cgate_readback": true,
+  "cli_plan_equals_original_saved_pp": true,
+  "cli_readback_equals_original_readback": true,
+  "cli_cgate_parameters_equal_original": true,
+  "cli_crcs_equal_original": true,
+  "raw_images_identical": true,
+  "database_equal_except_original_literal_null_writes": true,
+  "network_never_opened": true
+ },
+ "inputs": {
+  "seed": [
+   [
+    "network",
+    254,
+    "Workflow_Fixture",
+    "Cni",
+    "127.0.0.1:1"
+   ],
+   [
+    "unit",
+    20,
+    "eDLT",
+    "KEYGL5",
+    "5.5.00",
+    "5055EDL"
+   ],
+   [
+    "application",
+    "",
+    56,
+    "Lighting"
+   ],
+   [
+    "group",
+    "/56",
+    1,
+    "Kitchen"
+   ],
+   [
+    "application",
+    "",
+    202,
+    "Trigger Control"
+   ],
+   [
+    "application",
+    "",
+    203,
+    "Enable"
+   ],
+   [
+    "group",
+    "/203",
+    42,
+    "Pages"
+   ]
+  ],
+  "seed_sha256": "3f04a866a8afde6ee46459e6c9616ab273a0dc105708fb5cd02fcb544b9f5f52",
+  "seeded_database_sha256": "0c995e47276bffa40e783f4f1b22b84430189db4d5dbece168018cbabfae048a",
+  "initial_raw_image_sha256": "810b1ea5fc673bbc661efc54ce18030deb9748446eba6a80c8a2a5a215f84257",
+  "initial_parameters_sha256": "de6936882d206ad498696ec1570b93280fdd9083512b5a6cd35de22a707ee24b",
+  "unit_specification_sha256": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+  "probe_source_sha256": "dd7bbbcb94e5978e0b13ba496ec5f4dcaa3a1a6ee4b0bbce339eb4bae0ba75df",
+  "harness_source_sha256": "95a5dea0c73faa2cc93733ba606a3abab31c0e0e06c8962f8016e02247eb1039"
+ },
+ "original_runtime": {
+  "mono_version": "6.12.0.206",
+  "compiled_probe_sha256": "b7a18851c570311f3c5d66573b6a1c8e357032a325663d9e34883402d22cc89f",
+  "runtime_files_sha256": "e6630bfaf670e012a807d4e27f25defe50cd79a5089c8b5f444e975f5a594a2c",
+  "platform_adaptation": "Environment.NewLine set to the Windows value \\r\\n before any original code runs"
+ },
+ "original_assemblies": {
+  "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "CustomControls.dll": "93d66a228c209d08685ad58e15bd5fdbcffa84828f8699a35c8c7c951b8de8e6",
+  "SharpCGateCommunicator.dll": "fd589789f2c40c0853c06a7d836add0f81a6afe3f397a8d6965a1a1f549a2d6e",
+  "SharpLogger.dll": "496a1434da3a592519e94b3eb025a98f0fc91d88341a28d58f33025ce043905c",
+  "log4net.dll": "1c5f3b4ed6311ca033a8d7c4d66a24b8adca38b0f7a8da096ae353bd43a551c3"
+ },
+ "native_cgate": {
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "cleanup_complete": true
+ },
+ "original": {
+  "identity": "KEYGL5:5.5.00:5055EDL",
+  "binding_before": "255:-1:2",
+  "binding_after": "42:0x2A",
+  "changed_parameters": [
+   "Application",
+   "ConfigVersionMinor",
+   "ConfigVersionMajor",
+   "OverallCRC",
+   "GlobalParameterCRC",
+   "WidgetsCRC",
+   "StaticTextCRC",
+   "ScenesCheckSum",
+   "KeySetsEnableGroup",
+   "Widget1WidgetType",
+   "Widget2WidgetType",
+   "Widget3WidgetType",
+   "Widget4WidgetType",
+   "Widget5WidgetType",
+   "Widget6WidgetType",
+   "Widget7WidgetType",
+   "Widget8WidgetType",
+   "Widget9WidgetType",
+   "Widget10WidgetType",
+   "Widget11WidgetType",
+   "Widget12WidgetType",
+   "Widget13WidgetType",
+   "Widget14WidgetType",
+   "Widget15WidgetType",
+   "Widget16WidgetType",
+   "Widget17WidgetType",
+   "Widget18WidgetType",
+   "Widget19WidgetType",
+   "Widget20WidgetType",
+   "Widget21WidgetType",
+   "SceneCount",
+   "Scene1StartAddress",
+   "Scene2StartAddress",
+   "Scene3StartAddress",
+   "Scene4StartAddress",
+   "Scene5StartAddress",
+   "Scene6StartAddress",
+   "Scene7StartAddress",
+   "Scene8StartAddress",
+   "SceneBucket"
+  ],
+  "edit_load_normalization": [
+   "ConfigVersionMajor",
+   "ConfigVersionMinor",
+   "Widget10WidgetType",
+   "Widget11WidgetType",
+   "Widget12WidgetType",
+   "Widget13WidgetType",
+   "Widget14WidgetType",
+   "Widget15WidgetType",
+   "Widget16WidgetType",
+   "Widget17WidgetType",
+   "Widget18WidgetType",
+   "Widget19WidgetType",
+   "Widget1WidgetType",
+   "Widget20WidgetType",
+   "Widget21WidgetType",
+   "Widget2WidgetType",
+   "Widget3WidgetType",
+   "Widget4WidgetType",
+   "Widget5WidgetType",
+   "Widget6WidgetType",
+   "Widget7WidgetType",
+   "Widget8WidgetType",
+   "Widget9WidgetType"
+  ],
+  "save_stage_changes": [
+   "Application",
+   "GlobalParameterCRC",
+   "OverallCRC",
+   "Scene1StartAddress",
+   "Scene2StartAddress",
+   "Scene3StartAddress",
+   "Scene4StartAddress",
+   "Scene5StartAddress",
+   "Scene6StartAddress",
+   "Scene7StartAddress",
+   "Scene8StartAddress",
+   "SceneBucket",
+   "SceneCount",
+   "ScenesCheckSum",
+   "StaticTextCRC",
+   "Widget6WidgetType",
+   "WidgetsCRC"
+  ],
+  "reopen_load_normalization": [
+   "Widget6WidgetType"
+  ],
+  "host_requests": {
+   "edit": [],
+   "reopen": [
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255",
+    "add-level:202/255/255"
+   ]
+  },
+  "saved_parameters_sha256": "0dffb5c21b80aba3910f457e872b41a447d0b945b23d40400a49775d599c6bb8",
+  "crcs": {
+   "GlobalParameterCRC": [
+    143,
+    186
+   ],
+   "WidgetsCRC": [
+    164,
+    73
+   ],
+   "StaticTextCRC": [
+    102,
+    121
+   ],
+   "ScenesCheckSum": [
+    29,
+    236
+   ],
+   "OverallCRC": [
+    201,
+    170
+   ]
+  },
+  "page_control_byte": "2a",
+  "memory_bytes": 8703,
+  "invalid_bytes": 3558,
+  "final_raw_image_sha256": "bf48d7afc9592773fd27f258e56bc4828f9f046186e7a75b27748029cf8b9c92",
+  "final_database_sha256": "fea6496c76317e610110bf98469d73383534b5cc458e1b000d6f3ab5fd3a5e62",
+  "database_differences_from_cli": {
+   "/Unit#1/Description#1": [
+    "null",
+    null
+   ],
+   "/Unit#1/SerialNumber#1": [
+    "null",
+    null
+   ]
+  },
+  "edit_transcript": [
+   {
+    "connection": 1,
+    "id": "1",
+    "command": "session_id tag CBusToolkit [Supplemental]",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 1,
+    "id": "2",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 1,
+    "id": "3",
+    "command": "dbgetxml //{PROJECT}/254",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML snippet",
+    "reply_lines": 4,
+    "reply_sha256": "9aa4236f27a7a4645d44cc294a6c4256ec82cae046028a1337e5b398f386738a"
+   },
+   {
+    "connection": 1,
+    "id": "4",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 1,
+    "id": "5",
+    "command": "dbget //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "cd1db8cb81e8030f124f1a6ed1d3760e3ab3ba5c47d99e2c8f8c1726ecc8ea0a"
+   },
+   {
+    "connection": 1,
+    "id": "6",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "fc5158ac543e1223de6363869d6980d63dc6bb2b6bf3e40b42c60ba7df55f853"
+   },
+   {
+    "connection": 1,
+    "id": "7",
+    "command": "pp list_lock",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open locks",
+    "reply_lines": 1,
+    "reply_sha256": "20ff48a7265c1c7e7d79dbb8d37929f15bfeafdbd1388c777f3075fd8d2b7300"
+   },
+   {
+    "connection": 1,
+    "id": "8",
+    "command": "pp lock TheLock_{PROJECT}_Db_Net254 /db/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "16f73dfafa050e900ef4b8c86c780372993f4a333fee0d267fa1a1e05b34fa69"
+   },
+   {
+    "connection": 1,
+    "id": "9",
+    "command": "pp units",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open sessions",
+    "reply_lines": 1,
+    "reply_sha256": "20403f7a9418b4d7f7d331685a7bfd2a4fa417b63c35c3d8c3d69116b19eb61b"
+   },
+   {
+    "connection": 1,
+    "id": "10",
+    "command": "pp start TheLockSession_{PROJECT}_Db_Net254_Unit20 TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "40490f4ed8aa6a199b41d22ae41a85f5355473daf4279f7150f25706a9ba6367"
+   },
+   {
+    "connection": 1,
+    "id": "11",
+    "command": "pp load TheLockSession_{PROJECT}_Db_Net254_Unit20 /db/254/p/20 all",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e9ca5686a9353787ba0a3a9c459697fd9d9679b2b53744f549550f2ad04b8630"
+   },
+   {
+    "connection": 1,
+    "id": "12",
+    "command": "pp get TheLockSession_{PROJECT}_Db_Net254_Unit20 *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "1bc2e832b4da034b67c893fa8dea9a9e6de16e60edc40185d0fd9b3912f48616"
+   },
+   {
+    "connection": 1,
+    "id": "13",
+    "command": "pp get_unit_spec keygl5.xml",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML Snippet",
+    "reply_lines": 4,
+    "reply_sha256": "addbc8ccc76649232a23f296a399dc4aaaf5102c8b61fca9606bb7e562c6d62a"
+   },
+   {
+    "connection": 1,
+    "id": "14",
+    "command": "pp end TheLockSession_{PROJECT}_Db_Net254_Unit20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "da5e908e9a31655277e28783fdb0ae0e4e2c5b34645a85ad9ec6a38e52ee52af"
+   },
+   {
+    "connection": 1,
+    "id": "15",
+    "command": "pp unlock TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ba4586eb378047bd3c96683537089bf50e2027c9386d69dedf701d094a8305b9"
+   },
+   {
+    "connection": 1,
+    "id": "16",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "06a92ef0a721e0196c840e14ee56914c3db3cb1ec97e5b911506cb01245cda82"
+   },
+   {
+    "connection": 1,
+    "id": "17",
+    "command": "dbget //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "35828474ef320cc59a2a744865748d3fc409bd149b3498619c599816718d08f3"
+   },
+   {
+    "connection": 1,
+    "id": "18",
+    "command": "dbset //{PROJECT}/254/p/20/Description \"null\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "0fc72409cf200e8c17464295dac4228a29152f54806da3eb664037e8353ea937"
+   },
+   {
+    "connection": 1,
+    "id": "19",
+    "command": "dbset //{PROJECT}/254/p/20/UnitName \"KEYGL5\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3cce256ca7f3fa2e89327d1c57bf642fa85b2fa2374c13f45df4934736f577e4"
+   },
+   {
+    "connection": 1,
+    "id": "20",
+    "command": "dbset //{PROJECT}/254/p/20/SerialNumber \"null\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f455c746ce82b696600b7244615937e3a1ca1145d557ebc8c968746566b00105"
+   },
+   {
+    "connection": 1,
+    "id": "21",
+    "command": "dbset //{PROJECT}/254/p/20/Serial \"null\"",
+    "codes": [
+     "401"
+    ],
+    "final": "401 Bad object or device ID: Field not found",
+    "reply_lines": 1,
+    "reply_sha256": "7fad0f380bb3c96a6644962c2e00019697c0bff8e0fa108bdea084466185f570"
+   },
+   {
+    "connection": 1,
+    "id": "22",
+    "command": "dbset //{PROJECT}/254/p/20/CatalogNumber \"5055EDL\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "67b8473295dcae264d7bf8ce8b44552eeccad866fa3adef2447f45649aee3f30"
+   },
+   {
+    "connection": 1,
+    "id": "23",
+    "command": "dbset //{PROJECT}/254/p/20/TagName \"eDLT\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3fb95b98d7d3acc95e3e57b7f6e4d2dfa013e0d7b3cc0a154ed4f3a606fc64e7"
+   },
+   {
+    "connection": 1,
+    "id": "24",
+    "command": "project save {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3b6f599b631669acf2fcc6b3f27340aaf0763b56ffcab7dac9b4469e121833ac"
+   },
+   {
+    "connection": 1,
+    "id": "25",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "11ebe66f8d6e6b504da428da9fc0341d528afd0d42e69375390bc1a8787c3c7a"
+   },
+   {
+    "connection": 1,
+    "id": "26",
+    "command": "pp list_lock",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open locks",
+    "reply_lines": 1,
+    "reply_sha256": "6f494ee8a61ec7ad21fd171d1d93e2c12494619654275b64089e0def4ebbd332"
+   },
+   {
+    "connection": 1,
+    "id": "27",
+    "command": "pp lock TheLock_{PROJECT}_Db_Net254 /db/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "97e5c7dc01c2101125a4889ce321309eadc014d9761af06b2ab5044a781c8009"
+   },
+   {
+    "connection": 1,
+    "id": "28",
+    "command": "pp units",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open sessions",
+    "reply_lines": 1,
+    "reply_sha256": "0c9e223afe9f1eb0bdf18677044fddb3031e7ab37c36cead8f5bb35cb8b45b64"
+   },
+   {
+    "connection": 1,
+    "id": "29",
+    "command": "pp start TheLockSession_{PROJECT}_Db_Net254_Unit20 TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "7338de32d962b8b0accae8e599e33355d998d05efc1874f824b1ee3d8204d1e8"
+   },
+   {
+    "connection": 1,
+    "id": "30",
+    "command": "pp load TheLockSession_{PROJECT}_Db_Net254_Unit20 /db/254/p/20 ",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "29d9f967e07a8c9305c8a190d3365c0f3490fef8e430b0fc0e4d11374bb03e63"
+   },
+   {
+    "connection": 1,
+    "id": "31",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Application \"0x38 0xff\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "8054e7af2f6d3ba13f62416fbe60ce481f7b481b1bdec64923bf9e91892c0cfe"
+   },
+   {
+    "connection": 1,
+    "id": "32",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 ConfigVersionMinor \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "327b354ca30e751167e77c48db78dfece1009c44f93a0497a9490637b805e87a"
+   },
+   {
+    "connection": 1,
+    "id": "33",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 ConfigVersionMajor \"0x1\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f949c7feb283f7afbd32f7213a8108a29c4c4c3f252c15e3603ccf32235af831"
+   },
+   {
+    "connection": 1,
+    "id": "34",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 OverallCRC \"0xc9 0xaa\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f2ada492c4d6bf24a1da024e4e268ec49138ba368d55d397d9f84b8be11b5048"
+   },
+   {
+    "connection": 1,
+    "id": "35",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 GlobalParameterCRC \"0x8f 0xba\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "c6b60c90d5f64fdd6a4d1f0750b04e7f89d21e5453a341b29f01456634699343"
+   },
+   {
+    "connection": 1,
+    "id": "36",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 WidgetsCRC \"0xa4 0x49\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "be0d979370b8f5af7118c7f5e8ce980f68395a2231fd1e851fac1f4cea980316"
+   },
+   {
+    "connection": 1,
+    "id": "37",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 StaticTextCRC \"0x66 0x79\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a27d9ef7593894a01e66b4a7b79d7f0475f1d9e0cb9c68721549f2353f3439b0"
+   },
+   {
+    "connection": 1,
+    "id": "38",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 ScenesCheckSum \"0x1d 0xec\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bba0c7d9dda94dd64ced03a2794cf927837b135989b7af41d5746fe45e47bf91"
+   },
+   {
+    "connection": 1,
+    "id": "39",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 KeySetsEnableGroup \"0x2A\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cd3637480792546455d38f590e7d8ddb78d35c1ec06595294ef636daeea8a686"
+   },
+   {
+    "connection": 1,
+    "id": "40",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget1WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "deb764a5ab494708aa272dd8e3ed3cce6be9a83f7a39a15479d702c4f95255b0"
+   },
+   {
+    "connection": 1,
+    "id": "41",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget2WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ae7c8139151f5f2cbb7675429bc06873261aba0dae44a27a61c65e31f59c3f01"
+   },
+   {
+    "connection": 1,
+    "id": "42",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget3WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e47e727faf9073422dadebcbfb999f0a9a25ec68a1ec899b79ae53811ac65c2b"
+   },
+   {
+    "connection": 1,
+    "id": "43",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget4WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "24798418d50e2b204167366ec5b3e5c6c93f862435f9b194bd639ee0fff1f934"
+   },
+   {
+    "connection": 1,
+    "id": "44",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget5WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "be37af74027ab478734497940c297ee6f8a1d345e431db3023d655903b638d99"
+   },
+   {
+    "connection": 1,
+    "id": "45",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget6WidgetType \"0xFF\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3a62d5647a81bea0677e9e4dd985bef95f84c96c61c7227d729597e7a844aaa0"
+   },
+   {
+    "connection": 1,
+    "id": "46",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget7WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a4cdb451eb74c953d1d2ced3f22070e9b95cf1d6725bba7cd585ca328a5ff450"
+   },
+   {
+    "connection": 1,
+    "id": "47",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget8WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "60156e5334820157b9a1630dc4af36143e002d2490a6274cbf86451ed2bac044"
+   },
+   {
+    "connection": 1,
+    "id": "48",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget9WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "095046211b2172c2b7034c4a25b8b9118ad5280dc0c3bb3721394fbd43d59ea5"
+   },
+   {
+    "connection": 1,
+    "id": "49",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget10WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "d8429f5174a7bdcb96a635f2f51d808bbda39e43316ccfce54600c3ddf5a157d"
+   },
+   {
+    "connection": 1,
+    "id": "50",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget11WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "0f76eb06d2d768c68226df64c9295bb77cf5c143471f64a212f023d18a37f960"
+   },
+   {
+    "connection": 1,
+    "id": "51",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget12WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "504f6b40da2d23eae194733f166461d96afeeaa46e5d71b17e425c0bbf39ee6a"
+   },
+   {
+    "connection": 1,
+    "id": "52",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget13WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a865524984a1b05e9393d3b48373cfe75cc667a304aa933b69fc0e59724f4a1d"
+   },
+   {
+    "connection": 1,
+    "id": "53",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget14WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f7ea3953f7fe8886422611bef0a5b0ccf5560af347e4f1d5dda70b969518ff6b"
+   },
+   {
+    "connection": 1,
+    "id": "54",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget15WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "5c30466a65812e470c374dd505388dcf3793d7cd09ef06b7157616ab7a8453ca"
+   },
+   {
+    "connection": 1,
+    "id": "55",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget16WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "323abc2c8e0d71bc6f3905669162b648d08a2bb8ace98bd07095dac903d30cbd"
+   },
+   {
+    "connection": 1,
+    "id": "56",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget17WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3f983011c1d7546c68d700534574c722deded5561cd49f83a125db9411ac3723"
+   },
+   {
+    "connection": 1,
+    "id": "57",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget18WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "8bfc3ce3cd191cfe5b37b20b816797477606860abc5cdf1e1cb973feda2d4604"
+   },
+   {
+    "connection": 1,
+    "id": "58",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget19WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "9cf3dc2e08ce0e1e87880581dd177f06986fd3bfeacf258bb848bc1d7e391f05"
+   },
+   {
+    "connection": 1,
+    "id": "59",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget20WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e72943c457b7524c928fa690e5c087e9b4cddae0bca8880ad96b25b5e2688e22"
+   },
+   {
+    "connection": 1,
+    "id": "60",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Widget21WidgetType \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "713b271801a83129ee16d47aa698459877f93e586fa7e1316339d2c55a8f3339"
+   },
+   {
+    "connection": 1,
+    "id": "61",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 SceneCount \"0x8\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e009eb3f41e9f74fe766eb985118726f09242f1f1ada68abea37a76ab4bb3cdf"
+   },
+   {
+    "connection": 1,
+    "id": "62",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene1StartAddress \"0x0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f1212b736d5e5fcbe13ed23797825cd280899027c1a23af19e20827fda975d54"
+   },
+   {
+    "connection": 1,
+    "id": "63",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene2StartAddress \"0x5\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "778c282be633c65db350dd6ade1b6dd583d5f119018046685aa99aed88f5734c"
+   },
+   {
+    "connection": 1,
+    "id": "64",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene3StartAddress \"0xa\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "725e2500f6e02b3d9b29cd91c21af1ae3727b832ae9c92e103627315168fe6ab"
+   },
+   {
+    "connection": 1,
+    "id": "65",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene4StartAddress \"0xf\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "5e835f06b4486465c75f4e8557c730e9e61eb266cf1e587257dbbe87d20fea89"
+   },
+   {
+    "connection": 1,
+    "id": "66",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene5StartAddress \"0x14\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a695ffcc0508201e5d198a9a6caa863d3561ede787853ee5ad3fda05d8febe13"
+   },
+   {
+    "connection": 1,
+    "id": "67",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene6StartAddress \"0x19\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "de5fa8f1062beae1494533ca01933b634694e1bf81163e9e184ba40fcba03846"
+   },
+   {
+    "connection": 1,
+    "id": "68",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene7StartAddress \"0x1e\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "78cabf04463cc73e8198eaea4fc89f064b0ae83d48d51cce6c1d856a278855db"
+   },
+   {
+    "connection": 1,
+    "id": "69",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 Scene8StartAddress \"0x23\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "325ec1e9c8c5fdcd7b594c7026c7d05d1450f706efa9c65b02dc02778365e106"
+   },
+   {
+    "connection": 1,
+    "id": "70",
+    "command": "pp set TheLockSession_{PROJECT}_Db_Net254_Unit20 SceneBucket \"0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "58530166d70bd882e92dc58eb2ec1ec2ccd23da88741e02d468f4cd16ea7914d"
+   },
+   {
+    "connection": 1,
+    "id": "71",
+    "command": "pp save TheLockSession_{PROJECT}_Db_Net254_Unit20 /db/254/p/20 ",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bdc4deadd4dd7d02011de15c90fcb6597b3922c8c6607f72c574809ff06ad3e5"
+   },
+   {
+    "connection": 1,
+    "id": "72",
+    "command": "pp end TheLockSession_{PROJECT}_Db_Net254_Unit20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ee1281a7d94908b7313d54b24de039ba1f825fc41634714654a1817ecbb94aeb"
+   },
+   {
+    "connection": 1,
+    "id": "73",
+    "command": "pp unlock TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ba9666103934747e64f268cd47c94cd433519db2ac957ed0700cf9ec18959c0a"
+   },
+   {
+    "connection": 1,
+    "id": "74",
+    "command": "project save {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ca3a612927e68969a375da847aed2787fa8002f375f6bd02c415c7b9335b22a0"
+   },
+   {
+    "connection": 1,
+    "id": "75",
+    "command": "PP CANCEL_LOCK 20",
+    "codes": [
+     "427"
+    ],
+    "final": "427 Cancel lock failed",
+    "reply_lines": 1,
+    "reply_sha256": "d87496799b59eef1e280e774f935dd5124918479e42179b0041a18c13254606b"
+   }
+  ],
+  "reopen_transcript": [
+   {
+    "connection": 2,
+    "id": "1",
+    "command": "session_id tag CBusToolkit [Supplemental]",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 2,
+    "id": "2",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "401"
+    ],
+    "final": "401 Bad object or device ID: Project not found",
+    "reply_lines": 1,
+    "reply_sha256": "a96fe5d9cc2be1ed3b311038ee6c038f327acd88b733f98744a44e1887286da1"
+   },
+   {
+    "connection": 2,
+    "id": "3",
+    "command": "project load {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 2,
+    "id": "4",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 2,
+    "id": "5",
+    "command": "dbgetxml //{PROJECT}/254",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML snippet",
+    "reply_lines": 4,
+    "reply_sha256": "190a9618d42f1e5b8dd856ca1e50c450c2e0b5dd08327eff31c127b7700b9855"
+   },
+   {
+    "connection": 2,
+    "id": "6",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "fc5158ac543e1223de6363869d6980d63dc6bb2b6bf3e40b42c60ba7df55f853"
+   },
+   {
+    "connection": 2,
+    "id": "7",
+    "command": "dbget //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "b04e223bd52634a85868f9b0e90708431663218bd412fa0a83150fc6c2c67ef7"
+   },
+   {
+    "connection": 2,
+    "id": "8",
+    "command": "project use {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "16f73dfafa050e900ef4b8c86c780372993f4a333fee0d267fa1a1e05b34fa69"
+   },
+   {
+    "connection": 2,
+    "id": "9",
+    "command": "pp list_lock",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open locks",
+    "reply_lines": 1,
+    "reply_sha256": "56642f4a54b659b5ccaba74884f3d6899fd3195977333645288881bce6ccc56d"
+   },
+   {
+    "connection": 2,
+    "id": "10",
+    "command": "pp lock TheLock_{PROJECT}_Db_Net254 /db/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "40490f4ed8aa6a199b41d22ae41a85f5355473daf4279f7150f25706a9ba6367"
+   },
+   {
+    "connection": 2,
+    "id": "11",
+    "command": "pp units",
+    "codes": [
+     "122"
+    ],
+    "final": "122 no open sessions",
+    "reply_lines": 1,
+    "reply_sha256": "b69ef2b6d2a09006776f6beab4725272c8d7dcc7898874f6d0dc4980264eb690"
+   },
+   {
+    "connection": 2,
+    "id": "12",
+    "command": "pp start TheLockSession_{PROJECT}_Db_Net254_Unit20 TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bb07f886845e8d30cd2eaa6e4e5a22bccbc6e5d5e896873a2f30dd9a09da7535"
+   },
+   {
+    "connection": 2,
+    "id": "13",
+    "command": "pp load TheLockSession_{PROJECT}_Db_Net254_Unit20 /db/254/p/20 all",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "29aae6843705f20296c7726c6fcc17bb4c89ae68dd0ce23c052223d298d624a4"
+   },
+   {
+    "connection": 2,
+    "id": "14",
+    "command": "pp get TheLockSession_{PROJECT}_Db_Net254_Unit20 *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "d205c4eeb187cad099cc5fd35aff3d7b7089bd9cd75b57671a24829c5bf70aa5"
+   },
+   {
+    "connection": 2,
+    "id": "15",
+    "command": "pp get_unit_spec keygl5.xml",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML Snippet",
+    "reply_lines": 4,
+    "reply_sha256": "9013e3c4c98e7571ff4e8379f12e49b06dc3568a8515b3f86f918bb7e747e67b"
+   },
+   {
+    "connection": 2,
+    "id": "16",
+    "command": "pp end TheLockSession_{PROJECT}_Db_Net254_Unit20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "06a92ef0a721e0196c840e14ee56914c3db3cb1ec97e5b911506cb01245cda82"
+   },
+   {
+    "connection": 2,
+    "id": "17",
+    "command": "pp unlock TheLock_{PROJECT}_Db_Net254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "344e1238f3c766b1bc0157837085b8312d176f2212027242db85e49fac22339c"
+   }
+  ],
+  "command_sequence_sha256": "9c1ca4d12ce345253c30dc8be7cd4de455dab283c64dd94817e8a17c1eb612b6",
+  "transcript_sha256": "a205303f419a9e36763cc87a7bdeb39674b56787e452cb18d132b90ec9208570"
+ },
+ "cli": {
+  "steps": [
+   {
+    "command": "edlt-lifecycle",
+    "saved": true,
+    "verified": true,
+    "cache": {
+     "format": "cbus-edlt-lifecycle-cache-v1",
+     "applications": [
+      56,
+      202,
+      203
+     ],
+     "groups": [
+      {
+       "application": 202,
+       "group": 255,
+       "exists": true
+      }
+     ]
+    },
+    "changed_parameters": [
+     "Application",
+     "ConfigVersionMajor",
+     "ConfigVersionMinor",
+     "GlobalParameterCRC",
+     "OverallCRC",
+     "Scene1StartAddress",
+     "Scene2StartAddress",
+     "Scene3StartAddress",
+     "Scene4StartAddress",
+     "Scene5StartAddress",
+     "Scene6StartAddress",
+     "Scene7StartAddress",
+     "Scene8StartAddress",
+     "SceneBucket",
+     "SceneCount",
+     "ScenesCheckSum",
+     "StaticTextCRC",
+     "Widget10WidgetType",
+     "Widget11WidgetType",
+     "Widget12WidgetType",
+     "Widget13WidgetType",
+     "Widget14WidgetType",
+     "Widget15WidgetType",
+     "Widget16WidgetType",
+     "Widget17WidgetType",
+     "Widget18WidgetType",
+     "Widget19WidgetType",
+     "Widget1WidgetType",
+     "Widget20WidgetType",
+     "Widget21WidgetType",
+     "Widget2WidgetType",
+     "Widget3WidgetType",
+     "Widget4WidgetType",
+     "Widget5WidgetType",
+     "Widget7WidgetType",
+     "Widget8WidgetType",
+     "Widget9WidgetType",
+     "WidgetsCRC"
+    ]
+   },
+   {
+    "command": "edlt-page-control",
+    "saved": true,
+    "verified": true,
+    "changed_parameters": [
+     "GlobalParameterCRC",
+     "KeySetsEnableGroup",
+     "OverallCRC"
+    ]
+   }
+  ],
+  "page_control_byte": "2a",
+  "final_raw_image_sha256": "bf48d7afc9592773fd27f258e56bc4828f9f046186e7a75b27748029cf8b9c92",
+  "final_database_sha256": "633e66b2727afb1d76ea8fa8800b582e0dba04c2b22bfd78859538441df03e7c",
+  "transcript": [
+   {
+    "connection": 3,
+    "id": "1",
+    "command": "PROJECT USE {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 3,
+    "id": "2",
+    "command": "PP LOCK cbus_cli_{SESSION}_lock //{PROJECT}/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 3,
+    "id": "3",
+    "command": "PP START cbus_cli_{SESSION} cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 3,
+    "id": "4",
+    "command": "PP LOAD cbus_cli_{SESSION} /db//{PROJECT}/254/p/20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 3,
+    "id": "5",
+    "command": "DBGET //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "023f458bcf4cfb55507dc1468776853648af41cb9cc72cf710de3df441fced4d"
+   },
+   {
+    "connection": 3,
+    "id": "6",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "28bcae727a78d503bf24d8c338e337d5edff77bf01cf7cdb321116e8737eb45c"
+   },
+   {
+    "connection": 3,
+    "id": "7",
+    "command": "PP END cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e7ad72eb4ba54d6b9ade31b7e2f213b0522340432e9824581e5591e1a6dae2fd"
+   },
+   {
+    "connection": 3,
+    "id": "8",
+    "command": "PP UNLOCK cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "16f73dfafa050e900ef4b8c86c780372993f4a333fee0d267fa1a1e05b34fa69"
+   },
+   {
+    "connection": 4,
+    "id": "1",
+    "command": "PROJECT USE {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 4,
+    "id": "2",
+    "command": "PP LOCK cbus_cli_{SESSION}_lock //{PROJECT}/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 4,
+    "id": "3",
+    "command": "PP START cbus_cli_{SESSION} cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 4,
+    "id": "4",
+    "command": "PP LOAD cbus_cli_{SESSION} /db//{PROJECT}/254/p/20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 4,
+    "id": "5",
+    "command": "DBGET //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "023f458bcf4cfb55507dc1468776853648af41cb9cc72cf710de3df441fced4d"
+   },
+   {
+    "connection": 4,
+    "id": "6",
+    "command": "DBGET //{PROJECT}/254/p/20/UnitType",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/UnitType=KEYGL5",
+    "reply_lines": 1,
+    "reply_sha256": "ae945821451b2d4645dc770a333e1255e1efcf6e17fab6601c9b84ff8dcdd763"
+   },
+   {
+    "connection": 4,
+    "id": "7",
+    "command": "DBGET //{PROJECT}/254/p/20/FirmwareVersion",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/FirmwareVersion=5.5.00",
+    "reply_lines": 1,
+    "reply_sha256": "7b3ecb40fc5b958ebf89cc8eedc3a3720ebf1a13549506b979b2ba94fa1adbbd"
+   },
+   {
+    "connection": 4,
+    "id": "8",
+    "command": "DBGET //{PROJECT}/254/p/20/CatalogNumber",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/CatalogNumber=5055EDL",
+    "reply_lines": 1,
+    "reply_sha256": "df075e050c384bed001cdd2f6ca64b75ce5b8cd1708a9f7b4f38bf32d7ddda61"
+   },
+   {
+    "connection": 4,
+    "id": "9",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "74ccb7099bfb39838b9701c834bffab017309e8e46f17fc6509f7779fe914c9c"
+   },
+   {
+    "connection": 4,
+    "id": "10",
+    "command": "DBGET //{PROJECT}/254/p/20/UnitType",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/UnitType=KEYGL5",
+    "reply_lines": 1,
+    "reply_sha256": "0a8b5c1d24f91e5824568859470914c1210953acc7638c9297528c189f429922"
+   },
+   {
+    "connection": 4,
+    "id": "11",
+    "command": "DBGET //{PROJECT}/254/p/20/FirmwareVersion",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/FirmwareVersion=5.5.00",
+    "reply_lines": 1,
+    "reply_sha256": "c46561ea695d2bd7b4e5f7513e96e2cb5a6542cb7619ca7019a8824bc7c0df69"
+   },
+   {
+    "connection": 4,
+    "id": "12",
+    "command": "DBGET //{PROJECT}/254/p/20/CatalogNumber",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/CatalogNumber=5055EDL",
+    "reply_lines": 1,
+    "reply_sha256": "1c256998be5b7a382952c3367b3ad40b7fff5fd4e2681c43fc40212f4f632ce6"
+   },
+   {
+    "connection": 4,
+    "id": "13",
+    "command": "PP INFO cbus_cli_{SESSION} *",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML snippet",
+    "reply_lines": 4,
+    "reply_sha256": "ea7e52ad71fc6e10e3572a520b6e0357369dafc295c12495b9d03a4f029f0f91"
+   },
+   {
+    "connection": 4,
+    "id": "14",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "fbec1843b0f1368fb9574ff90d32e570622d7e00fc05ac372a8401a23c069ccc"
+   },
+   {
+    "connection": 4,
+    "id": "15",
+    "command": "PP SET cbus_cli_{SESSION} Application \"56\\ 255\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ba4586eb378047bd3c96683537089bf50e2027c9386d69dedf701d094a8305b9"
+   },
+   {
+    "connection": 4,
+    "id": "16",
+    "command": "PP SET cbus_cli_{SESSION} ConfigVersionMinor \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "06a92ef0a721e0196c840e14ee56914c3db3cb1ec97e5b911506cb01245cda82"
+   },
+   {
+    "connection": 4,
+    "id": "17",
+    "command": "PP SET cbus_cli_{SESSION} ConfigVersionMajor \"1\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "344e1238f3c766b1bc0157837085b8312d176f2212027242db85e49fac22339c"
+   },
+   {
+    "connection": 4,
+    "id": "18",
+    "command": "PP SET cbus_cli_{SESSION} OverallCRC \"99\\ 233\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "0fc72409cf200e8c17464295dac4228a29152f54806da3eb664037e8353ea937"
+   },
+   {
+    "connection": 4,
+    "id": "19",
+    "command": "PP SET cbus_cli_{SESSION} GlobalParameterCRC \"253\\ 71\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3cce256ca7f3fa2e89327d1c57bf642fa85b2fa2374c13f45df4934736f577e4"
+   },
+   {
+    "connection": 4,
+    "id": "20",
+    "command": "PP SET cbus_cli_{SESSION} WidgetsCRC \"164\\ 73\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f455c746ce82b696600b7244615937e3a1ca1145d557ebc8c968746566b00105"
+   },
+   {
+    "connection": 4,
+    "id": "21",
+    "command": "PP SET cbus_cli_{SESSION} StaticTextCRC \"102\\ 121\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bd658b3bda9761d1073e56f2b51f1d725aa02de6dedee1759dfebcb16d161c53"
+   },
+   {
+    "connection": 4,
+    "id": "22",
+    "command": "PP SET cbus_cli_{SESSION} ScenesCheckSum \"29\\ 236\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "67b8473295dcae264d7bf8ce8b44552eeccad866fa3adef2447f45649aee3f30"
+   },
+   {
+    "connection": 4,
+    "id": "23",
+    "command": "PP SET cbus_cli_{SESSION} Widget1WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3fb95b98d7d3acc95e3e57b7f6e4d2dfa013e0d7b3cc0a154ed4f3a606fc64e7"
+   },
+   {
+    "connection": 4,
+    "id": "24",
+    "command": "PP SET cbus_cli_{SESSION} Widget2WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3b6f599b631669acf2fcc6b3f27340aaf0763b56ffcab7dac9b4469e121833ac"
+   },
+   {
+    "connection": 4,
+    "id": "25",
+    "command": "PP SET cbus_cli_{SESSION} Widget3WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "11ebe66f8d6e6b504da428da9fc0341d528afd0d42e69375390bc1a8787c3c7a"
+   },
+   {
+    "connection": 4,
+    "id": "26",
+    "command": "PP SET cbus_cli_{SESSION} Widget4WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bb99e7fc3a45e838101b9c8f5beec593c0229c07fce6e813fe2826265d423c54"
+   },
+   {
+    "connection": 4,
+    "id": "27",
+    "command": "PP SET cbus_cli_{SESSION} Widget5WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "97e5c7dc01c2101125a4889ce321309eadc014d9761af06b2ab5044a781c8009"
+   },
+   {
+    "connection": 4,
+    "id": "28",
+    "command": "PP SET cbus_cli_{SESSION} Widget7WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "960056b568ac9fdeb5328ed3af6bf0b18911842282381631e36471d046814aea"
+   },
+   {
+    "connection": 4,
+    "id": "29",
+    "command": "PP SET cbus_cli_{SESSION} Widget8WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "7338de32d962b8b0accae8e599e33355d998d05efc1874f824b1ee3d8204d1e8"
+   },
+   {
+    "connection": 4,
+    "id": "30",
+    "command": "PP SET cbus_cli_{SESSION} Widget9WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "29d9f967e07a8c9305c8a190d3365c0f3490fef8e430b0fc0e4d11374bb03e63"
+   },
+   {
+    "connection": 4,
+    "id": "31",
+    "command": "PP SET cbus_cli_{SESSION} Widget10WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "8054e7af2f6d3ba13f62416fbe60ce481f7b481b1bdec64923bf9e91892c0cfe"
+   },
+   {
+    "connection": 4,
+    "id": "32",
+    "command": "PP SET cbus_cli_{SESSION} Widget11WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "327b354ca30e751167e77c48db78dfece1009c44f93a0497a9490637b805e87a"
+   },
+   {
+    "connection": 4,
+    "id": "33",
+    "command": "PP SET cbus_cli_{SESSION} Widget12WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f949c7feb283f7afbd32f7213a8108a29c4c4c3f252c15e3603ccf32235af831"
+   },
+   {
+    "connection": 4,
+    "id": "34",
+    "command": "PP SET cbus_cli_{SESSION} Widget13WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f2ada492c4d6bf24a1da024e4e268ec49138ba368d55d397d9f84b8be11b5048"
+   },
+   {
+    "connection": 4,
+    "id": "35",
+    "command": "PP SET cbus_cli_{SESSION} Widget14WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "c6b60c90d5f64fdd6a4d1f0750b04e7f89d21e5453a341b29f01456634699343"
+   },
+   {
+    "connection": 4,
+    "id": "36",
+    "command": "PP SET cbus_cli_{SESSION} Widget15WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "be0d979370b8f5af7118c7f5e8ce980f68395a2231fd1e851fac1f4cea980316"
+   },
+   {
+    "connection": 4,
+    "id": "37",
+    "command": "PP SET cbus_cli_{SESSION} Widget16WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a27d9ef7593894a01e66b4a7b79d7f0475f1d9e0cb9c68721549f2353f3439b0"
+   },
+   {
+    "connection": 4,
+    "id": "38",
+    "command": "PP SET cbus_cli_{SESSION} Widget17WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bba0c7d9dda94dd64ced03a2794cf927837b135989b7af41d5746fe45e47bf91"
+   },
+   {
+    "connection": 4,
+    "id": "39",
+    "command": "PP SET cbus_cli_{SESSION} Widget18WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cd3637480792546455d38f590e7d8ddb78d35c1ec06595294ef636daeea8a686"
+   },
+   {
+    "connection": 4,
+    "id": "40",
+    "command": "PP SET cbus_cli_{SESSION} Widget19WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "deb764a5ab494708aa272dd8e3ed3cce6be9a83f7a39a15479d702c4f95255b0"
+   },
+   {
+    "connection": 4,
+    "id": "41",
+    "command": "PP SET cbus_cli_{SESSION} Widget20WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ae7c8139151f5f2cbb7675429bc06873261aba0dae44a27a61c65e31f59c3f01"
+   },
+   {
+    "connection": 4,
+    "id": "42",
+    "command": "PP SET cbus_cli_{SESSION} Widget21WidgetType \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e47e727faf9073422dadebcbfb999f0a9a25ec68a1ec899b79ae53811ac65c2b"
+   },
+   {
+    "connection": 4,
+    "id": "43",
+    "command": "PP SET cbus_cli_{SESSION} SceneCount \"8\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "24798418d50e2b204167366ec5b3e5c6c93f862435f9b194bd639ee0fff1f934"
+   },
+   {
+    "connection": 4,
+    "id": "44",
+    "command": "PP SET cbus_cli_{SESSION} Scene1StartAddress \"0\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "be37af74027ab478734497940c297ee6f8a1d345e431db3023d655903b638d99"
+   },
+   {
+    "connection": 4,
+    "id": "45",
+    "command": "PP SET cbus_cli_{SESSION} Scene2StartAddress \"5\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3a62d5647a81bea0677e9e4dd985bef95f84c96c61c7227d729597e7a844aaa0"
+   },
+   {
+    "connection": 4,
+    "id": "46",
+    "command": "PP SET cbus_cli_{SESSION} Scene3StartAddress \"10\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a4cdb451eb74c953d1d2ced3f22070e9b95cf1d6725bba7cd585ca328a5ff450"
+   },
+   {
+    "connection": 4,
+    "id": "47",
+    "command": "PP SET cbus_cli_{SESSION} Scene4StartAddress \"15\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "60156e5334820157b9a1630dc4af36143e002d2490a6274cbf86451ed2bac044"
+   },
+   {
+    "connection": 4,
+    "id": "48",
+    "command": "PP SET cbus_cli_{SESSION} Scene5StartAddress \"20\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "095046211b2172c2b7034c4a25b8b9118ad5280dc0c3bb3721394fbd43d59ea5"
+   },
+   {
+    "connection": 4,
+    "id": "49",
+    "command": "PP SET cbus_cli_{SESSION} Scene6StartAddress \"25\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "d8429f5174a7bdcb96a635f2f51d808bbda39e43316ccfce54600c3ddf5a157d"
+   },
+   {
+    "connection": 4,
+    "id": "50",
+    "command": "PP SET cbus_cli_{SESSION} Scene7StartAddress \"30\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "0f76eb06d2d768c68226df64c9295bb77cf5c143471f64a212f023d18a37f960"
+   },
+   {
+    "connection": 4,
+    "id": "51",
+    "command": "PP SET cbus_cli_{SESSION} Scene8StartAddress \"35\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "504f6b40da2d23eae194733f166461d96afeeaa46e5d71b17e425c0bbf39ee6a"
+   },
+   {
+    "connection": 4,
+    "id": "52",
+    "command": "PP SET cbus_cli_{SESSION} SceneBucket \"2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 2\\ 0\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "a865524984a1b05e9393d3b48373cfe75cc667a304aa933b69fc0e59724f4a1d"
+   },
+   {
+    "connection": 4,
+    "id": "53",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "07def1ce9a13cf0b83233b1b24c144229b27dcbc540460f063cb0a4ebe8e26c5"
+   },
+   {
+    "connection": 4,
+    "id": "54",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "2a2c45be6a5efe81796637f2f36492449f225e6f5cd69c54fdf039dc5728a1bd"
+   },
+   {
+    "connection": 4,
+    "id": "55",
+    "command": "PP SAVE_TO_SOURCE cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "323abc2c8e0d71bc6f3905669162b648d08a2bb8ace98bd07095dac903d30cbd"
+   },
+   {
+    "connection": 4,
+    "id": "56",
+    "command": "PP END cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "3f983011c1d7546c68d700534574c722deded5561cd49f83a125db9411ac3723"
+   },
+   {
+    "connection": 4,
+    "id": "57",
+    "command": "PP UNLOCK cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "8bfc3ce3cd191cfe5b37b20b816797477606860abc5cdf1e1cb973feda2d4604"
+   },
+   {
+    "connection": 5,
+    "id": "1",
+    "command": "PROJECT USE {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 5,
+    "id": "2",
+    "command": "PP LOCK cbus_cli_{SESSION}_lock //{PROJECT}/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 5,
+    "id": "3",
+    "command": "PP START cbus_cli_{SESSION} cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 5,
+    "id": "4",
+    "command": "PP LOAD cbus_cli_{SESSION} /db//{PROJECT}/254/p/20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 5,
+    "id": "5",
+    "command": "DBGET //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "023f458bcf4cfb55507dc1468776853648af41cb9cc72cf710de3df441fced4d"
+   },
+   {
+    "connection": 5,
+    "id": "6",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "c7fe6eb35fca83a16e0f4ea39206eac39b37de93494eaf2c738440873bd5cd33"
+   },
+   {
+    "connection": 5,
+    "id": "7",
+    "command": "PP END cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e7ad72eb4ba54d6b9ade31b7e2f213b0522340432e9824581e5591e1a6dae2fd"
+   },
+   {
+    "connection": 5,
+    "id": "8",
+    "command": "PP UNLOCK cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "16f73dfafa050e900ef4b8c86c780372993f4a333fee0d267fa1a1e05b34fa69"
+   },
+   {
+    "connection": 6,
+    "id": "1",
+    "command": "PROJECT USE {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 6,
+    "id": "2",
+    "command": "PP LOCK cbus_cli_{SESSION}_lock //{PROJECT}/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 6,
+    "id": "3",
+    "command": "PP START cbus_cli_{SESSION} cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 6,
+    "id": "4",
+    "command": "PP LOAD cbus_cli_{SESSION} /db//{PROJECT}/254/p/20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 6,
+    "id": "5",
+    "command": "DBGET //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "023f458bcf4cfb55507dc1468776853648af41cb9cc72cf710de3df441fced4d"
+   },
+   {
+    "connection": 6,
+    "id": "6",
+    "command": "DBGET //{PROJECT}/254/p/20/UnitType",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/UnitType=KEYGL5",
+    "reply_lines": 1,
+    "reply_sha256": "ae945821451b2d4645dc770a333e1255e1efcf6e17fab6601c9b84ff8dcdd763"
+   },
+   {
+    "connection": 6,
+    "id": "7",
+    "command": "DBGET //{PROJECT}/254/p/20/FirmwareVersion",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/FirmwareVersion=5.5.00",
+    "reply_lines": 1,
+    "reply_sha256": "7b3ecb40fc5b958ebf89cc8eedc3a3720ebf1a13549506b979b2ba94fa1adbbd"
+   },
+   {
+    "connection": 6,
+    "id": "8",
+    "command": "DBGET //{PROJECT}/254/p/20/CatalogNumber",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/CatalogNumber=5055EDL",
+    "reply_lines": 1,
+    "reply_sha256": "df075e050c384bed001cdd2f6ca64b75ce5b8cd1708a9f7b4f38bf32d7ddda61"
+   },
+   {
+    "connection": 6,
+    "id": "9",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "da7d0a4d12222de657ff3727463d9c9efe0cd1f01c7f3ee448ef651521376d1f"
+   },
+   {
+    "connection": 6,
+    "id": "10",
+    "command": "DBGET //{PROJECT}/254/p/20/UnitType",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/UnitType=KEYGL5",
+    "reply_lines": 1,
+    "reply_sha256": "0a8b5c1d24f91e5824568859470914c1210953acc7638c9297528c189f429922"
+   },
+   {
+    "connection": 6,
+    "id": "11",
+    "command": "DBGET //{PROJECT}/254/p/20/FirmwareVersion",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/FirmwareVersion=5.5.00",
+    "reply_lines": 1,
+    "reply_sha256": "c46561ea695d2bd7b4e5f7513e96e2cb5a6542cb7619ca7019a8824bc7c0df69"
+   },
+   {
+    "connection": 6,
+    "id": "12",
+    "command": "DBGET //{PROJECT}/254/p/20/CatalogNumber",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/CatalogNumber=5055EDL",
+    "reply_lines": 1,
+    "reply_sha256": "1c256998be5b7a382952c3367b3ad40b7fff5fd4e2681c43fc40212f4f632ce6"
+   },
+   {
+    "connection": 6,
+    "id": "13",
+    "command": "PP INFO cbus_cli_{SESSION} *",
+    "codes": [
+     "343",
+     "344",
+     "347"
+    ],
+    "final": "344 End XML snippet",
+    "reply_lines": 4,
+    "reply_sha256": "136cadc86b48045dfd46205892eda9091064f557ca2c6cc03254bc6af6a032ff"
+   },
+   {
+    "connection": 6,
+    "id": "14",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "18c4997fdc2d67b4a314636043cd3ab8960aa758d1f9eba1221ae5680d63cf41"
+   },
+   {
+    "connection": 6,
+    "id": "15",
+    "command": "PP SET cbus_cli_{SESSION} OverallCRC \"201\\ 170\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "ba4586eb378047bd3c96683537089bf50e2027c9386d69dedf701d094a8305b9"
+   },
+   {
+    "connection": 6,
+    "id": "16",
+    "command": "PP SET cbus_cli_{SESSION} GlobalParameterCRC \"143\\ 186\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "06a92ef0a721e0196c840e14ee56914c3db3cb1ec97e5b911506cb01245cda82"
+   },
+   {
+    "connection": 6,
+    "id": "17",
+    "command": "PP SET cbus_cli_{SESSION} KeySetsEnableGroup \"42\"",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "344e1238f3c766b1bc0157837085b8312d176f2212027242db85e49fac22339c"
+   },
+   {
+    "connection": 6,
+    "id": "18",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "2f3449bb59119c3aad79321d26d54577f45e8c8c22e7067c1624d4c166a1da59"
+   },
+   {
+    "connection": 6,
+    "id": "19",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "1a0764061afb8b90bd0ab32b492259e8986e592af136d8c1d4ade1db3562c783"
+   },
+   {
+    "connection": 6,
+    "id": "20",
+    "command": "PP SAVE_TO_SOURCE cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "f455c746ce82b696600b7244615937e3a1ca1145d557ebc8c968746566b00105"
+   },
+   {
+    "connection": 6,
+    "id": "21",
+    "command": "PP END cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "bd658b3bda9761d1073e56f2b51f1d725aa02de6dedee1759dfebcb16d161c53"
+   },
+   {
+    "connection": 6,
+    "id": "22",
+    "command": "PP UNLOCK cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "67b8473295dcae264d7bf8ce8b44552eeccad866fa3adef2447f45649aee3f30"
+   },
+   {
+    "connection": 7,
+    "id": "1",
+    "command": "PROJECT USE {PROJECT}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "cf8b2b0e9db45e9e242de1463622050261ded5fe82d99acd5dc50634c5291bc7"
+   },
+   {
+    "connection": 7,
+    "id": "2",
+    "command": "PP LOCK cbus_cli_{SESSION}_lock //{PROJECT}/254",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "2da5d6a1cb3250d7bba4df08b7e3dfa91fd80ef216b73b3c225c353926421d7b"
+   },
+   {
+    "connection": 7,
+    "id": "3",
+    "command": "PP START cbus_cli_{SESSION} cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "55a101f7107ef296ecb31ec72ed101bd7dc3cef28afa98da615f68fd479dacbb"
+   },
+   {
+    "connection": 7,
+    "id": "4",
+    "command": "PP LOAD cbus_cli_{SESSION} /db//{PROJECT}/254/p/20",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "50fa2c402837a699336c46dc7d63465770f135ae4573c034f630991e23719512"
+   },
+   {
+    "connection": 7,
+    "id": "5",
+    "command": "DBGET //{PROJECT}/254/p/20",
+    "codes": [
+     "342"
+    ],
+    "final": "342 254/p/20/NACObjectList=null",
+    "reply_lines": 28,
+    "reply_sha256": "caad4884b1752296c1d61018b075ec861a1f6ff40c0455d722a7585a732595d0"
+   },
+   {
+    "connection": 7,
+    "id": "6",
+    "command": "PP GET cbus_cli_{SESSION} *",
+    "codes": [
+     "315"
+    ],
+    "final": "315 SceneBucket=0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0x2 0x0 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff",
+    "reply_lines": 874,
+    "reply_sha256": "206f73e49aba85864aeaaed6b90909cd65f409ffed825fad8b3a89c3edf8b8b5"
+   },
+   {
+    "connection": 7,
+    "id": "7",
+    "command": "PP END cbus_cli_{SESSION}",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "e7ad72eb4ba54d6b9ade31b7e2f213b0522340432e9824581e5591e1a6dae2fd"
+   },
+   {
+    "connection": 7,
+    "id": "8",
+    "command": "PP UNLOCK cbus_cli_{SESSION}_lock",
+    "codes": [
+     "200"
+    ],
+    "final": "200 OK.",
+    "reply_lines": 1,
+    "reply_sha256": "16f73dfafa050e900ef4b8c86c780372993f4a333fee0d267fa1a1e05b34fa69"
+   }
+  ],
+  "command_sequence_sha256": "19f5d8c58dc7bda84853aa366bd393caf8fcf31b0bb8fb630743c8d16fdea699",
+  "transcript_sha256": "6f0687598aadd290b7dd0b60ca6c6fa502c862e24b43a88370c3dc2f2d905eea"
+ },
+ "cli_direct": {
+  "steps": [
+   {
+    "command": "edlt-page-control",
+    "saved": true,
+    "verified": true,
+    "changed_parameters": [
+     "Application",
+     "GlobalParameterCRC",
+     "KeySetsEnableGroup",
+     "OverallCRC",
+     "ScenesCheckSum",
+     "StaticTextCRC",
+     "WidgetsCRC"
+    ]
+   }
+  ],
+  "final_raw_image_sha256": "0887ad7b16862e768dcac2bb170cb178eb9eb4c6a6208c12ee1cbb2d11fe15b6",
+  "raw_images_identical_to_original": false,
+  "parameter_differences_from_original": [
+   "ConfigVersionMajor",
+   "ConfigVersionMinor",
+   "OverallCRC",
+   "Scene1StartAddress",
+   "Scene2StartAddress",
+   "Scene3StartAddress",
+   "Scene4StartAddress",
+   "Scene5StartAddress",
+   "Scene6StartAddress",
+   "Scene7StartAddress",
+   "Scene8StartAddress",
+   "SceneBucket",
+   "SceneCount",
+   "ScenesCheckSum",
+   "Widget10WidgetType",
+   "Widget11WidgetType",
+   "Widget12WidgetType",
+   "Widget13WidgetType",
+   "Widget14WidgetType",
+   "Widget15WidgetType",
+   "Widget16WidgetType",
+   "Widget17WidgetType",
+   "Widget18WidgetType",
+   "Widget19WidgetType",
+   "Widget1WidgetType",
+   "Widget20WidgetType",
+   "Widget21WidgetType",
+   "Widget2WidgetType",
+   "Widget3WidgetType",
+   "Widget4WidgetType",
+   "Widget5WidgetType",
+   "Widget7WidgetType",
+   "Widget8WidgetType",
+   "Widget9WidgetType",
+   "WidgetsCRC"
+  ]
+ }
+}

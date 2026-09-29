@@ -71,6 +71,8 @@ CBUS_EDLT_PAGE_CONTROL_REPORT=research/runtime/edlt-page-control-report.json \
 PYTHONPATH=src:tests python3 -m unittest tests.test_edlt_page_control tests.test_cli_edlt_page_control -v
 ```
 
+A [complete original workflow capture](original-workflow-capture.md) runs the original model's own open/edit/save/reopen C-Gate sequence for this control. On a never-opened unit, it matches the CLI only when `edlt-lifecycle` precedes this helper.
+
 The core source mapping is `EDLTUnit.cs:1377`, `PPAttributeDataSourceLogic.PPAttributeValue`, `PPAttributeLogic.IsEnabled`, `ComboBoxAddEdit.SetUpDataBindings` and `FrmBaseUnit.cs:6461..6485`. The help documents describe physical behavior separately from the configuration schema and model.
 
 The Windows backend requires the explicitly launched, owned [Windows research bridge](windows-native-oracle.md); it does not start or configure a VM automatically. The independent C-Gate instance is version 3.4.0 build 2001 and listens only on host loopback. Windows original-model execution and Mac C-Gate database execution are recorded separately from earlier Docker/Mono acceptance.
