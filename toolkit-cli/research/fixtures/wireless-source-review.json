@@ -1,0 +1,279 @@
+{
+ "format": "cbus-wireless-source-review-v1",
+ "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+ "original_execution": "None. Static DFM parsing of the listed form resources, MAP symbols and capstone disassembly of the listed routines (virtual addresses below). Help topics give captions and intent only.",
+ "inputs": {
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unit_catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+  "form_resource_sha256": {
+   "TFRMWIRELESSGATEWAY": "9efcd0379a54797c4cb9959f67b5a185ce259e2b7192a305381c0508702e6519",
+   "TFRMWIRELESSGATEWAYGLOBAL": "58c306d1e70181014a347e778d396eab9bfa24c6b21a796d805e7e26c1231542",
+   "TFRMWIRELESSGATEWAYREMOTE": "f2bf2d62ebfa2078c548bac130cf8655f5f38e05f54330c933f6b840ab434dfc",
+   "TFRMWIRELESSGATEWAYREMOTES": "f03d6f738a284c56a8331b37b3c33e3613a1db549d39d6642b12072b288ba4fe",
+   "TFRMWIRELESSGLOBALNETWORKING": "e80d0840b8a06686cab6a16306a0698f0ef2826d9c7cc53e9d63f2e699c3fb00",
+   "TFRMWIRELESSINPUTUNITGLOBAL": "94c92df096dd783a75e0ec94f7ccc0b8d04f092b3a497be9b4467f3773b813b9",
+   "TFRMWIRELESSUNITGLOBALKEYSET": "9a58645e0669474820e7d2d315b98124aa9ebb5bd2cde1096b9b5279081a9752",
+   "TFRMWIRELESSUNITGLOBALLEARN": "795c6f0508bbd6ab481c2294a5bf3be566c3e6b8a3e4f2603744a1fd4119c567"
+  },
+  "help_topic_sha256": {
+   "693.htm": "34178cb8df73a5a801d9a18b34b0a7816fb8230ca9f8fc234b47c7e7e8210b7a",
+   "12558.htm": "a13a2870da274a79ac54ec3180d1063ed2f184268974837fd36cc6092eaa2212",
+   "13871.htm": "015b74203995ed46dba08506557346060fa3b3e091c30fbafe7005265c776605",
+   "13872.htm": "3692895433363b32bc1bef2681f01a787d334719b051b9b77ecd7c887c315161",
+   "13875.htm": "828225700e8c717dd29230b311bdbd412c0497b990983e986353134593910584",
+   "13876.htm": "08a097b5304ea14faac7962670a46dd8ceac947cb3f168cca28f899b2933da7a",
+   "13877.htm": "b53a5a4cb3820122c57d9b4e2fa03645413fb206f4c1daebf72cbc7028f5ecf6",
+   "13878.htm": "5fd8b6d13a07d6acb291b348df7b115b689b76b4542595174a1a85209f3fdbcd",
+   "13885.htm": "7f4bff37da2d61e75054ae9d7557fbdbbafba4239d82ed7899597902d375f137",
+   "13886.htm": "487f17736f7ccc5557f18ea030594b1f1df21c556c0d58d68ee20786980fb8a4",
+   "13887.htm": "82855783e805c869182f6bdc79863354a44808711143d144cf0c05b73b6ab994"
+  },
+  "unitspec_sha256": {
+   "WGATE5X.xml": "27d308935b7afb95baa3db7df2e9018b7e4e8e79eaf0ecc53789e0a228a59c8a",
+   "WGATE5X_2.xml": "bae66bf3d67549d4d21283dceec7d2a308e9855222f9d9353ae5cf9a0883e1c5",
+   "I_WRM_2.xml": "1d9d0820d51ddcc6dafc56e8cd8d03b55fbe8199b91b1831539b9db4ad954ef5",
+   "WRM2D1_2.xml": "1e8ef4d362ce95567f1c2e01120207bae4203337a6decfad0dd4f2145d16f85f",
+   "WRM2R1_2.xml": "3d71b3136986bf0a425eecd0152bbdc3627e69c3835cda59cc0af8a9d29a615c",
+   "WRM4D1_2.xml": "f1750d58dc0ea2223518a5b3ae94162a9c112cc37145e5b543121dd03e42e07e",
+   "WRM4D2_2.xml": "22963104c32dbde6a35a4c6104db725cc3249ecd81ef316994387fd143857445",
+   "WRM4R1_2.xml": "4834d3a9ff82fc574bc8a509a92374405c645f2563259dae1806e05a5b220e51",
+   "WRM4R2_2.xml": "03189e60e76c4987d1985befa91700de8e8b050f498e8e3a6eb1750489ed6b53",
+   "WRM8D1_2.xml": "d2ad2adf44acd132cbc29b114e8a41b0fae5a5741a17ea4cdc56a50482817c4c",
+   "WRM8D2_2.xml": "c0ca28aa61b02e52bfb797000e3e7e4f9f930b6decaf6f15f99ff9017a7d20fe",
+   "WRM8R1_2.xml": "e5d31f56ac5a4515f3e75e3dc964122be441dc5080f070ffde1d1e50e3ef2737",
+   "WRM8R2_2.xml": "84bbc04994042a71a23f78f5d90790f740298260cbab51b55240e735db223b35"
+  }
+ },
+ "gateway": {
+  "dialog_ids": [
+   "dialog:13876.htm"
+  ],
+  "profile": {
+   "unit_type": "WGATE5F",
+   "firmware": [
+    "2.2.90",
+    "2.4.99"
+   ],
+   "spec": "WGATE5X_2.xml",
+   "unit_class": "TCBusWirelessGatewayAdvancedUnit",
+   "agent": "TCBusWirelessGatewayAdvancedCGateAgent",
+   "registration": "CIS_TCBusWirelessGatewayAdvancedUnit initialization 0x13888e8: RegisterUnitType('WGATE5F','2.2.90','2.4.99')"
+  },
+  "refused_profiles": [
+   {
+    "unit_type": "WGATE5N",
+    "firmware": "all",
+    "reason": "CIS_TCBusWirelessGatewayUnit initialization 0x1388745 registers WGATE5N 2.2.90..2.4.99 with TCBusWirelessGatewayUnit; TddCBusWirelessGateway.HandleModeChange (0x110f250) acts only when IsClass(unit, TCBusWirelessGatewayAdvancedUnit)"
+   },
+   {
+    "unit_type": "WGATE5F",
+    "firmware": "0..2.2.89",
+    "reason": "TCBusWGUnitNoSynchroniseToWired / TCBusWGUnitNoRepeatSALTransmission / TCBusWirelessGatewayUnit; catalogue selects WGATE5X.xml (30 parameters, no remote mapping)"
+   }
+  ],
+  "forms": {
+   "TFRMWIRELESSGATEWAY": "rgMode (Network Gateway, Remote Switch), Connection tab, Remotes and Scenes tabs",
+   "TFRMWIRELESSGATEWAYREMOTES": "pcRemotes with Remote 1..8 pages",
+   "TFRMWIRELESSGATEWAYREMOTE": "cmbRemote, edtRemoteSerialNo (read-only), btnAddRemote/btnEditRemote, gbKeys1 and gbKeys2 each with keys 1..5: cmbKeyNFunction, cmbKeyNGroup + btnKeyNAppSwitch, cmbKeyNScene + btnKeyNSceneDetails"
+  },
+  "attributes": {
+   "source": "TCBusWirelessGatewayAdvancedCGateAgent.InternalCreate 0x125b658",
+   "offsets": {
+    "0x120+4r": "RemoteIdentity{r+1}",
+    "0x140+4r": "GroupAddress{r+1}",
+    "0x160+4r": "KeySceneMask{r+1}",
+    "0x180+4r": "ApplicationSeconday{r+1}",
+    "0x1a0": "SceneTriggerGroup",
+    "0x1a4": "SceneTriggerLevel",
+    "0x1a8": "SceneTriggerRate",
+    "0x1ac": "SceneVectorOffset",
+    "0x1b0": "SceneVector",
+    "0x1b4": "MapWirelessRemotes"
+   }
+  },
+  "controls": [
+   {
+    "control": "rgMode",
+    "parameter": "MapWirelessRemotes",
+    "domain": "ItemIndex 0 Network Gateway, 1 Remote Switch",
+    "rule": "HandleModeChange 0x110f250: SetMapWirelessRemotes(IntToBool(ItemIndex)); entering Remote Switch with Application1 = 255 sets Application1 to the network default Lighting application (or Heating when Application2 already is the default Lighting application), then gives every group-less key group 255 of Application1; the Remotes tab is shown and the Connection tab hidden while Remote Switch is selected"
+   },
+   {
+    "control": "cmbRemote (Remote Control N)",
+    "parameter": "RemoteIdentityN",
+    "domain": "project remote-control units; serial via Get2FieldsAsSerialNumber, none = FF FF FF FF",
+    "transform": "SaveRemotes 0x125b024: bytes [s & 0xFF, s>>8 & 0xFF, s>>16 & 0xFF, s>>24]; LoadRemote 0x125a94c: GetRemoteSerial little-endian, UnitByIdentityNo or CreateRemoteControlUnit"
+   },
+   {
+    "control": "cmbKeyKFunction",
+    "parameter": "KeySceneMaskN[slot]",
+    "domain": "Group Dimmer, Scene Set, Scene Toggle (RegisterEnumerations 0xd449c0)",
+    "transform": "Group Dimmer -> mask 0; Scene Set/Toggle -> mask 1"
+   },
+   {
+    "control": "btnKeyKAppSwitch",
+    "parameter": "ApplicationSecondayN[slot]",
+    "domain": "primary/secondary application",
+    "rule": "RefreshKeyApplicationSwitchEnable 0x110cd48 enables the switch only when Application2 != 255; SaveRemotes writes not PrimaryApplication for group keys and 0 for scene keys"
+   },
+   {
+    "control": "cmbKeyKGroup",
+    "parameter": "GroupAddressN[slot]",
+    "domain": "group 0..254 of the selected application or none",
+    "transform": "SaveRemotes: group address, or 255 without a group"
+   },
+   {
+    "control": "cmbKeyKScene",
+    "parameter": "GroupAddressN[slot]",
+    "domain": "configured wireless scenes",
+    "transform": "EncodeScene 0x125aff0: (scene << 4) + (1 for Scene Set, else 6); DecodeScene 0x1259c34 and GetKeyFunction 0x1259c64 load command 1 as Scene Set and every other command as Scene Toggle; ItemByNumber(nibble + 1) asserts the scene exists"
+   }
+  ],
+  "key_map": {
+   "source": "CIS_TWTXU.cWTXUKeyMap (data 0x13b81f0) via TWTXU.GetRemoteKeyMap 0xd485d4 (virtual slot 0x160)",
+   "map": [
+    4,
+    3,
+    2,
+    1,
+    0,
+    12,
+    11,
+    10,
+    9,
+    8,
+    7,
+    6,
+    5,
+    15,
+    14,
+    13
+   ],
+   "dialog_keys": 10,
+   "rule": "SaveRemotes/LoadRemoteKeys loop over all 16 slots; with a selected remote the slot is GetRemoteKeyMap(k), without a remote it is k. TCBusRemoteControl.GetRemoteKeyMap (0xefe4a0) returns 0 for every key.",
+   "key_count": "TWTXU.GetKeyCount 0xd485bc returns 10"
+  },
+  "dependencies": [
+   "EnableKeySelection 0x110cea0: key panels 1..10 enabled only while a remote is selected",
+   "scene keys require 1 <= scene <= scene count, where LoadScenes 0x125a248 creates one scene per SceneVectorOffset entry != 255 with (v & 0x7F) < 100",
+   "AllScenesHaveGroupsAssigned 0x110fe58: scene keys on selected remotes need a scene enable (trigger) group",
+   "AllRemoteScenesKeysHaveScenes 0x111000c: scene keys on selected remotes need a scene with a non-empty vector"
+  ],
+  "save_order": "BeforeSaveProgrammingInformation 0x125b438: base TCBusWirelessGatewayCGateAgent save (Application, ApplicationConnectEnabled, SynchroniseToWired, ForwardingMode, ForwardingRoute, StatusMonitorApplication and the wireless radio parameters), then SaveUnitInfo 0x125b3bc: MapWirelessRemotes, SaveRemotes (all 8 remotes x 16 slots), SaveScenes",
+  "whole_dialog_save_effects_not_reproduced": [
+   "All eight RemoteIdentity values and all 128 key slots are rewritten on every save",
+   "Scene-key ApplicationSeconday is forced to 0 and non-1 scene commands are rewritten as 6",
+   "Slots loaded without a remote are re-saved through the WTXU map once a remote is selected",
+   "SaveScenes rewrites SceneTriggerGroup/Level/Rate, SceneVectorOffset and SceneVector",
+   "The base agent rewrites Application, ApplicationConnectEnabled, SynchroniseToWired, ForwardingMode, ForwardingRoute and StatusMonitorApplication",
+   "The Remote Switch Application1 default and the group-255 cascade in HandleModeChange",
+   "Project remote-control unit, group and scene object creation"
+  ],
+  "forwarding_route": {
+   "source": "TCBusWirelessGatewayCGateAgent.BeforeSaveProgrammingInformation 0x1258f30",
+   "rule": "ForwardingMode = bridge address 0 != 255; ForwardingRoute appends six bridge addresses (255 after the first unused one) and, when ForwardingMode is set, prefixes GetDepthAndCountByte 0x1258f08 = depth + depth * 8, where depth is the first unused bridge index + 1",
+   "editor": "shown raw only; project topology dependent"
+  },
+  "help": {
+   "13876.htm": "Network gateway mode and Remote switch mode",
+   "13886.htm": "Remote control selection, serial number and five-key rows",
+   "13887.htm": "up to 8 scenes, 100-byte scene memory, trigger group required, Scene Set and Scene Toggle"
+  }
+ },
+ "unit_globals": {
+  "profiles": {
+   "unit_types": [
+    "WRM2D1",
+    "WRM2R1",
+    "WRM4D1",
+    "WRM4D2",
+    "WRM4R1",
+    "WRM4R2",
+    "WRM8D1",
+    "WRM8D2",
+    "WRM8R1",
+    "WRM8R2"
+   ],
+   "firmware": [
+    "2.0.0",
+    "2.4.99"
+   ],
+   "spec": "<type>_2.xml (includes I_WRM_2.xml)",
+   "unit_class": "TWRM<type> (TCBusWirelessInputUnit), node manager TnmWRETMX",
+   "agent": "TCBusWirelessInputUnitCGateAgent"
+  },
+  "refused_profiles": [
+   {
+    "unit_type": "WRM*EZ",
+    "reason": "TnmWRDX / TWRM*EZ classes and separate EZ specifications"
+   },
+   {
+    "unit_type": "WRM firmware < 2.0.0",
+    "reason": "TWRM*NoKeySets/NoSceneToggle/_2Remotes classes and the 1.x specifications"
+   }
+  ],
+  "attributes": {
+   "source": "TCBusWirelessInputUnitCGateAgent.InternalCreate 0x1277cd4",
+   "offsets": {
+    "0x130": "LearnAllowed",
+    "0x134": "LearnMasterMode",
+    "0x138": "LearnNetworkAllowed",
+    "0x13c": "LearnedFlag",
+    "0x15c": "KeyMaskAllowed",
+    "0x160": "KeyMaskSave",
+    "0x164": "KeyCurrentMask",
+    "0x168-0x174": "KeyEnableMask1..4",
+    "0x178": "KeyMaskNetworkVariable",
+    "0x17c": "KeyMaskNetworkVariableLevels"
+   }
+  },
+  "controls": [
+   {
+    "control": "chkAllowLearnMode",
+    "parameters": [
+     "LearnAllowed",
+     "LearnMasterMode"
+    ],
+    "rule": "chkAllowLearnModeClick 0x10db144: unchecked -> LearnMasterMode 0, LearnAllowed 0; checked -> LearnAllowed 1, LearnMasterMode = rdoAnyApplication.Checked"
+   },
+   {
+    "control": "rdoCurrentApplication / rdoAnyApplication",
+    "parameter": "LearnMasterMode",
+    "rule": "rdoAnyApplicationClick 0x10db61c: = rdoAny.Checked; rdoCurrentApplicationClick 0x10db658: = not rdoCurrent.Checked; HandleLearnAllowedValueChange 0x10db414 enables both radios only while LearnAllowed"
+   },
+   {
+    "control": "chkAllowNetworkLearn",
+    "parameter": "LearnNetworkAllowed",
+    "rule": "chkAllowNetworkLearnClick 0x10db1cc copies the check box"
+   },
+   {
+    "control": "btnResetLearnHistory",
+    "parameter": "LearnedFlag",
+    "rule": "btnResetLearnHistoryClick 0x10db118 sets LearnedFlag 0; HandleLearnedFlagValueChange 0x10db4b8 enables Reset and shows 'Unit Has Learned: Yes' only while LearnedFlag is set"
+   },
+   {
+    "control": "edtHouseCode",
+    "parameter": "HouseCode",
+    "rule": "TcdWirelessGlobalNetworking.PopulateComponents 0x10d9758 makes the four TFlashEdit fields read-only and disables two check boxes; FourByteArrayToHexStr 0x1257750 displays Format('%2.2x%2.2x%2.2x%2.2x', [b3, b2, b1, b0]); HexStrToFourByteArray 0x1257898 parses pairs back to [b0..b3], padding a missing pair with 00"
+   }
+  ],
+  "key_masks": {
+   "rule": "SaveKeyMask 0x12855f4 writes KeyMaskAllowed 0, KeyMaskSave 0, KeyCurrentMask = 2^n - 1 over the unit key collection, KeyEnableMask1..4 = 0xFFFF, KeyMaskNetworkVariable = key-mask control group or 255 and KeyMaskNetworkVariableLevels from the four control levels; no 1.18 dialog control edits the four enable masks",
+   "key_set_control": "The Key Set Control tab (TfrmWirelessUnitGlobalKeySet) saves KeyOffset* through SaveKeySets 0x1284e74, not the key masks"
+  }
+ },
+ "unresolved": [
+  "TMulletScene field +0x78 read by SaveRemotes is assumed to be the 0-based scene position that LoadRemoteKeys decodes with ItemByNumber(nibble + 1)",
+  "Whether the remote combo offers an empty entry that clears a remote; the editor's clear follows the SaveRemotes 'no remote' encoding",
+  "The non-empty scene-vector check of AllRemoteScenesKeysHaveScenes is not reproduced (vector contents are not decoded)",
+  "Remote-control unit classes other than TWTXU/TWTXUP (the key map assumes the WTXU map)",
+  "KeyCurrentMask key count used by SaveKeyMask"
+ ],
+ "out_of_scope": [
+  "Network Gateway Connection tab edits (Application, ApplicationConnectEnabled, SynchroniseToWired, ForwardingMode, ForwardingRoute, StatusMonitorApplication)",
+  "Scenes tab / Wireless Scene Manager",
+  "Radio learn/join, house-code transfer and physical remote pairing",
+  "Decorator and other CBusWirelessIOUnit dialogs (12558.htm)"
+ ]
+}

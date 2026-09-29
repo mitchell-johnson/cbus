@@ -1787,6 +1787,8 @@ def build_parser():
     _din_options(p)
     from .dlt_cli import native_options as dlt_native_options
     dlt_native_options(unops)
+    from .wireless_cli import native_options as wireless_native_options
+    wireless_native_options(unops)
     p = unops.add_parser("edlt-lighting", help="Configure tested KEYGL5 5.5.00 / 5055EDL lighting widgets in the database")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _edlt_options(p)
@@ -2207,6 +2209,8 @@ def build_parser():
             _din_options(p)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
+    from .wireless_cli import options as wireless_options
+    wireless_options(commands)
     edlt = commands.add_parser("edlt", help="Plan tested eDLT widgets with configuration CRCs offline")
     edlt.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     eops = edlt.add_subparsers(dest="action", required=True)
@@ -3277,7 +3281,7 @@ def _network(args, client):
 def _programming(args, client):
     from .programming import Programmer
     programmer = Programmer(client)
-    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "din-settings", "dlt-labels", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
+    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "din-settings", "dlt-labels", "wireless-gateway", "wireless-globals", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -3285,6 +3289,8 @@ def _programming(args, client):
         raise ValueError("The eDLT widget workflows support database destinations only")
     if args.remote_action == "dlt-labels" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The classic DLT label-variant workflow supports database destinations only")
+    if args.remote_action in ("wireless-gateway", "wireless-globals") and destination and not destination.lower().startswith("/db//"):
+        raise ValueError("The wireless editors support database destinations only")
     if args.remote_action == "template-import" and destination and not destination.lower().startswith("/db//"):
         raise ValueError("The tested unit template workflow supports database destinations only")
     if args.remote_action == "template-copy" and args.destination is None:
@@ -3482,6 +3488,12 @@ def _programming(args, client):
         elif args.remote_action == "dlt-labels":
             from .dlt_cli import native as dlt_native
             result, edited = dlt_native(args, session)
+            if not edited:
+                return result
+            values = session.values()
+        elif args.remote_action in ("wireless-gateway", "wireless-globals"):
+            from .wireless_cli import native as wireless_native
+            result, edited = wireless_native(args, session)
             if not edited:
                 return result
             values = session.values()
@@ -3863,6 +3875,9 @@ def run(args):
     if args.area == "dlt":
         from .dlt_cli import offline as dlt_offline
         return dlt_offline(args)
+    if args.area == "wireless":
+        from .wireless_cli import offline as wireless_offline
+        return wireless_offline(args)
     if args.area == "din-settings":
         from .din_output_settings import check_profile
         identity = []

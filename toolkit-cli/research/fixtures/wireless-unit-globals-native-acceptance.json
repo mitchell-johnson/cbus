@@ -1,0 +1,292 @@
+{
+  "format": "cbus-wireless-unit-globals-acceptance-v1",
+  "backend": "local",
+  "scope": "Toolkit Learn Mode group plus spec-level house code and key-mask edits on WRM 2.x database units through native PP; no radio learn or physical unit",
+  "types": [
+    {
+      "unit_type": "WRM2D1",
+      "firmware": "2.0.0",
+      "catalog_number": "5852D2L1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM2R1",
+      "firmware": "2.4.00",
+      "catalog_number": "5852R8F1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM4D1",
+      "firmware": "2.4.00",
+      "catalog_number": "5854D2L1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM4D2",
+      "firmware": "2.4.00",
+      "catalog_number": "5854D1L2AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM4R1",
+      "firmware": "2.4.00",
+      "catalog_number": "5854R8F1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM4R2",
+      "firmware": "2.4.00",
+      "catalog_number": "5854R4F2AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM8D1",
+      "firmware": "2.4.00",
+      "catalog_number": "5858D2L1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM8D2",
+      "firmware": "2.4.00",
+      "catalog_number": "5858D1L2AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM8R1",
+      "firmware": "2.4.00",
+      "catalog_number": "5858R8F1AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WRM8R2",
+      "firmware": "2.4.99",
+      "catalog_number": "5858R4F2AA",
+      "positive": [
+        "learn-off",
+        "learn-any",
+        "learn-current-network-off",
+        "reset-learned",
+        "house-code",
+        "key-masks"
+      ],
+      "invalid": [
+        "reset-not-learned",
+        "mask-overflow",
+        "house-code-short"
+      ],
+      "boundary": [
+        "house-code-hex",
+        "mask-0-and-FFFF",
+        "key-mask-save-255"
+      ],
+      "raw_byte_assertions": 12,
+      "unrelated_parameters_preserved": 157,
+      "save_close_reload_passed": true
+    }
+  ],
+  "refused": [
+    {
+      "unit_type": "WRM2D1EZ",
+      "firmware": "2.4.00",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "WRM2D1",
+      "firmware": "1.11.0",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "WRB2D1",
+      "firmware": "2.4.00",
+      "values_unchanged": true
+    }
+  ],
+  "edits": 60,
+  "raw_byte_assertions": 120,
+  "passed": true,
+  "physical_hardware_verified": false,
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+  }
+}

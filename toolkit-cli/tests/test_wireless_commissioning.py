@@ -1,69 +1,57 @@
-"""Tests for wireless_commissioning scaffold (issue #11 box 9). Structural only."""
+"""C-Gate wireless learn and unit-action boundary: composed commands match the source fixture."""
+import json
+from pathlib import Path
 import unittest
 
 from cbus_toolkit.wireless_commissioning import (
-    plan_join,
-    validate_gateway_mapping,
-)
+    LEARN_GRADES, OP_STATS_COUNTERS, STATUS_ATTRIBUTES, decode_op_stats, net_learn_command, unit_action_commands)
+
+FIXTURE = Path(__file__).resolve().parents[1] / 'research/fixtures/wireless-cgate-boundary.json'
 
 
-class PlanJoinTests(unittest.TestCase):
-    def test_order_and_repeat(self):
-        got = plan_join("new_house", 2)
-        self.assertEqual(
-            got.steps,
-            ("enter_learn", "join_devices[0]", "join_devices[1]",
-             "assign_mapping", "exit_learn"),
-        )
-        self.assertEqual(got.physical_comparison, "unassessed")
+class BoundaryFixtureTests(unittest.TestCase):
+    def setUp(self):
+        self.fixture = json.loads(FIXTURE.read_text())
+        self.actions = {row['id']: row for row in self.fixture['actions']}
 
-    def test_modes(self):
-        for mode in ("new_house", "join_existing"):
-            with self.subTest(mode=mode):
-                self.assertEqual(plan_join(mode, 1).mode, mode)
+    def test_fixture_is_sanitized_and_every_action_needs_a_live_network(self):
+        text = FIXTURE.read_text()
+        for forbidden in ('/Volumes/', 'password', 'C:\\\\'):
+            self.assertNotIn(forbidden, text)
+        self.assertEqual(len(self.fixture['inputs']['cgate_jar_sha256']), 64)
+        self.assertIn('no bus', self.fixture['evidence'])
+        self.assertTrue(all(row['requires_live_network'] and row['why_live'] for row in self.actions.values()))
 
-    def test_bad_mode(self):
+    def test_unit_actions_reproduce_the_recorded_commands(self):
+        commands = unit_action_commands(20)
+        self.assertEqual(commands['MAISync']['commands'], [self.actions['cgate-wireless:MAISync']['example']])
+        self.assertEqual(commands['ResetOpStats']['commands'], [self.actions['cgate-wireless:ResetOpStats']['example']])
+        self.assertFalse(commands['ResetOpStats']['reply_expected'])
+        self.assertEqual(commands['RecallOpStats']['commands'], self.actions['cgate-wireless:RecallOpStats']['example'])
+        self.assertEqual(list(OP_STATS_COUNTERS), self.actions['cgate-wireless:RecallOpStats']['counters'])
+        self.assertEqual([commands['status'][name]['commands'][0] for name in STATUS_ATTRIBUTES],
+                         self.actions['cgate-wireless:status']['example'])
+        self.assertEqual(unit_action_commands(255)['ResetOpStats']['commands'], ['\\46FF0008'])
         with self.assertRaises(ValueError):
-            plan_join("auto", 1)
+            unit_action_commands(256)
 
-    def test_bad_counts(self):
-        for bad in (0, -3, True, "2", None):
-            with self.subTest(bad=repr(bad)):
-                with self.assertRaises((TypeError, ValueError)):
-                    plan_join("new_house", bad)
+    def test_net_learn_reproduces_the_recorded_command_and_grade_rules(self):
+        row = self.actions['cgate-wireless:NET LEARN']
+        self.assertEqual(net_learn_command(*row['example_arguments'])['command'], row['example'])
+        self.assertEqual({str(k): v for k, v in LEARN_GRADES.items()}, row['grades'])
+        self.assertEqual(net_learn_command(255, 0x83, 255)['command'], '\\05FF000383FF7E')
+        self.assertEqual(net_learn_command(0, 0x80, 0x80)['command'], '\\050000038080' + '00')
+        for grade in (0, 3, 127, 132, 256, True):
+            with self.subTest(grade=grade):
+                with self.assertRaises(ValueError):
+                    net_learn_command(56, grade, 1)
 
-
-class GatewayMappingTests(unittest.TestCase):
-    def test_valid_sorted(self):
-        got = validate_gateway_mapping([(9, 3), (1, 7)])
-        self.assertEqual(got.table, ((1, 7), (9, 3)))
-        self.assertEqual(got.conflicts, ())
-        self.assertEqual(got.physical_comparison, "unassessed")
-
-    def test_duplicates_conflict_first_wins(self):
-        got = validate_gateway_mapping([(1, 7), (1, 8), (2, 7)])
-        self.assertEqual(got.table, ((1, 7),))
-        self.assertEqual(len(got.conflicts), 2)
-
-    def test_bad_shapes(self):
-        for bad in ("x", [(1,)], [(1, 2, 3)], [(1, "g")], [None]):
-            with self.subTest(bad=repr(bad)[:16]):
-                with self.assertRaises((TypeError, ValueError)):
-                    validate_gateway_mapping(bad)
-
-    def test_out_of_range(self):
-        for bad in ([(256, 1)], [(1, -1)], [(True, 1)]):
-            with self.subTest(bad=repr(bad)):
-                with self.assertRaises((TypeError, ValueError)):
-                    validate_gateway_mapping(bad)
-
-    def test_extra_echo_isolated(self):
-        extra = {"n": {"v": [1]}}
-        got = validate_gateway_mapping([(1, 2)], extra)
-        self.assertEqual(got.echo, extra)
-        extra["n"]["v"].append(9)
-        self.assertEqual(got.echo, {"n": {"v": [1]}})
+    def test_op_stats_decode(self):
+        data = b''.join(i.to_bytes(4, 'little') for i in range(1, 13))
+        self.assertEqual(decode_op_stats(data)['TransmissionsNAKd'], 12)
+        with self.assertRaisesRegex(ValueError, 'recall failed'):
+            decode_op_stats(data[:47])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

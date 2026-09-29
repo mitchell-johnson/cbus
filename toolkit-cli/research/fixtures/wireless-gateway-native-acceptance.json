@@ -1,0 +1,99 @@
+{
+  "format": "cbus-wireless-gateway-acceptance-v1",
+  "backend": "local",
+  "scope": "Toolkit source-grounded WGATE5F Mode and Remote Control pages through native PP and a closed database; no radio, remote pairing or physical gateway",
+  "types": [
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.2.90",
+      "catalog_number": "5800WCGA",
+      "positive": [
+        "mode-remote-switch",
+        "remote-1-serial-and-keys",
+        "remote-8-boundary",
+        "remote-8-clear",
+        "mode-network-gateway"
+      ],
+      "boundary": [
+        "serial-FFFFFFFE",
+        "group-0-254-none",
+        "remote-8",
+        "slot-16",
+        "key-10"
+      ],
+      "invalid": [
+        "remotes-in-gateway-mode",
+        "keys-without-remote",
+        "scene-without-trigger",
+        "scene-not-configured",
+        "serial-none-value",
+        "secondary-disabled"
+      ],
+      "raw_byte_assertions": 18,
+      "unrelated_parameters_preserved": 35,
+      "save_close_reload_passed": true
+    },
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.4.00",
+      "catalog_number": "SLC5800WCGD",
+      "positive": [
+        "mode-remote-switch",
+        "remote-1-serial-and-keys",
+        "remote-8-boundary",
+        "remote-8-clear",
+        "mode-network-gateway"
+      ],
+      "boundary": [
+        "serial-FFFFFFFE",
+        "group-0-254-none",
+        "remote-8",
+        "slot-16",
+        "key-10"
+      ],
+      "invalid": [
+        "remotes-in-gateway-mode",
+        "keys-without-remote",
+        "scene-without-trigger",
+        "scene-not-configured",
+        "serial-none-value",
+        "secondary-disabled"
+      ],
+      "raw_byte_assertions": 18,
+      "unrelated_parameters_preserved": 35,
+      "save_close_reload_passed": true
+    }
+  ],
+  "refused": [
+    {
+      "unit_type": "WGATE5N",
+      "firmware": "2.4.00",
+      "parameters": 68,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.2.89",
+      "parameters": 30,
+      "values_unchanged": true
+    }
+  ],
+  "edits": 10,
+  "raw_byte_assertions": 36,
+  "passed": true,
+  "physical_hardware_verified": false,
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+    "listener_ownership_verified": true,
+    "listeners": [
+      "127.0.0.1:62739",
+      "127.0.0.1:62740",
+      "127.0.0.1:62741",
+      "127.0.0.1:62742",
+      "127.0.0.1:62743",
+      "127.0.0.1:62744"
+    ]
+  }
+}

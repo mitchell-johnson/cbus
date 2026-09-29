@@ -1,0 +1,162 @@
+{
+ "format": "cbus-wireless-cgate-boundary-v1",
+ "target": "C-Gate 3.4.0.2001",
+ "evidence": "Static bytecode review (CFR 0.152 of individual classes read from the jar; case-sensitive class names such as ci/CI and kI/ki collide in the unpacked tree). No C-Gate command was executed and no bus, network or radio I/O was performed.",
+ "inputs": {
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "class_sha256": {
+   "kI.class": "8437e76dfe781bfec48a137c273e0aefa9920488f172c9916d52b56868d5b2ba",
+   "bC.class": "e9f679a95ff5fac13204b70d02a367ed8b080e8998955c0116b8fccd4a03efa2",
+   "bB.class": "e88b42824ab1d928f46bcb048140c4045ff43b400e8f2b57f5b0ae56b79481a7",
+   "ci.class": "f8dcfac9c5f70f83bf68f586a939649df4dc5257e3177491b941b64939dde50d",
+   "bp.class": "6e2ce9b27fc29ebb60599f5030d6949bba7d15449440f5cec56f3df27c4f62b6",
+   "aW.class": "a083758468278319e94af30bd60b69a222efb4c6f3298c8847d2b6feda2b594d",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessUnit.class": "a308d822df321955e4585f18ae4691caa54362448ce4caa568fe070439c6e3f9",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$MAISyncExposer.class": "a605cabb3adef68d9baa26f8624da9e80e81edc3223cdd63f636f88ed4b6cfab",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$ResetOpStatsExposer.class": "8b7006aaca9427d9b20c4c418a6836758c9bc67fd09c77092422070505ad62c8",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$RecallOpStatsExposer.class": "1e4f9507905575efaeee2ca2090bcbf4b894d2a9bc93ffcfe260a51ce96f05c2",
+   "com/clipsal/cgate/cbus/dev/CBusNGUnit.class": "6d2e9cc21b9c40e2db2a2907a1fe387b76fad1ba28d59a077a265a8b8caadf6f",
+   "com/clipsal/cgate/cbus/dev/WirelessCBusGateway.class": "d3d2f3d788ec15a49ef59e6ca97d9fb43ffb6bc6b28e0723a3ea8e9db271c5a1",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessIOUnit.class": "bda5562e79acb5cfb48314fce1861cd1d81034913ebe1c24e3ed98bab74d452d",
+   "com/clipsal/cgate/cbus/dev/CBusWirelessPCI.class": "ff4051cdb1a4aec5e9b45b99f80c2537b56ab504ca8c2faa5ffd830440226f62",
+   "com/clipsal/cgate/cbus/net/NetCommand.class": "96c87692e2abaef9e9f3d08b9a2c60702f6cc3e76c5e3704f6b0b6dd753ba418"
+  }
+ },
+ "command_encoding": "aW.c(int): two uppercase hex digits, values above 0xFF render as FF. The strings below are the aW.e command bodies before PCI framing and checksum.",
+ "unit_classes": {
+  "CBusWirelessUnit and subclasses": [
+   "CBusWirelessUnit",
+   "WirelessCBusGateway",
+   "CBusWirelessIOUnit",
+   "CBusWirelessPCI",
+   "CBusWirelessPCILocal"
+  ],
+  "catalogue_class_prefixes": {
+   "WirelessCBusGateway": [
+    "WGATE5N",
+    "WGATE5F"
+   ],
+   "CBusWirelessIOUnit": [
+    "WPA",
+    "WPAD",
+    "WPAP",
+    "WRB",
+    "WRD",
+    "WRM",
+    "WRP"
+   ],
+   "CBusWirelessUnit": [
+    "WRD"
+   ],
+   "CBusWirelessPCI": [
+    "WPCI"
+   ],
+   "CBusWirelessPCILocal": [
+    "WPCL"
+   ]
+  }
+ },
+ "actions": [
+  {
+   "id": "cgate-wireless:MAISync",
+   "cgate": "DO <unit> MAISync",
+   "source": "CBusWirelessUnit$MAISyncExposer -> CBusWirelessUnit.t(aX) -> bB.b(aX, network, unit, 254)",
+   "command_template": "\\46{unit:02X}0021FE",
+   "example_unit": 20,
+   "example": "\\46140021FE",
+   "reply": "IDENTIFY reply of exactly 8 bytes; each byte replaces CBusWirelessUnit.an[i] and a change fires D()",
+   "failure": "Ci(false) when the reply is missing or not 8 bytes",
+   "requires_live_network": true,
+   "why_live": "IDENTIFY attribute 0xFE is answered only by the physical wireless unit; the database holds no MAI value"
+  },
+  {
+   "id": "cgate-wireless:ResetOpStats",
+   "cgate": "DO <unit> ResetOpStats",
+   "source": "CBusWirelessUnit$ResetOpStatsExposer -> CBusWirelessUnit.v(aX) -> ci.a(unit)",
+   "command_template": "\\46{unit:02X}0008",
+   "example_unit": 20,
+   "example": "\\46140008",
+   "reply": "none (ci.k=false, ci.i=0); success means the send completed",
+   "failure": "Ci(false) on CBusCommandException",
+   "requires_live_network": true,
+   "why_live": "The CAL 0x08 command resets counters held in the physical unit"
+  },
+  {
+   "id": "cgate-wireless:RecallOpStats",
+   "cgate": "DO <unit> RecallOpStats",
+   "source": "CBusWirelessUnit$RecallOpStatsExposer -> CBusNGUnit.a(aX, 0, 48, false) -> bp.a(unit, address, count<=12)",
+   "command_template": "\\46{unit:02X}002A{address:02X}0C for address 0, 12, 24, 36",
+   "example_unit": 20,
+   "example": [
+    "\\4614002A000C",
+    "\\4614002A0C0C",
+    "\\4614002A180C",
+    "\\4614002A240C"
+   ],
+   "reply": "bp accepts replies starting with hex(128+count+1)+hex(address); 48 bytes become twelve little-endian 32-bit counters exposed by the OpStats property",
+   "counters": [
+    "PacketsReceived",
+    "PacketsReceivedWithError",
+    "PacketsNAKd",
+    "PacketsNCAd",
+    "CollisionsDetected",
+    "TransmitAttempts",
+    "TransmitCancellations",
+    "CollisionsDetectedinTAP",
+    "CollisionsNotifiedDetected",
+    "TransmissionsDropped",
+    "SuccessfulTransmissions",
+    "TransmissionsNAKd"
+   ],
+   "failure": "Ci('Op stats recall failed') when any chunk is missing or short",
+   "requires_live_network": true,
+   "why_live": "The counters live in the physical unit's memory, outside the PP database image"
+  },
+  {
+   "id": "cgate-wireless:status",
+   "cgate": "GET <unit> UnitTemperature|UnitSupplyVoltage|BackgroundSignalPower|LastPacketReceivedPower",
+   "source": "CBusWirelessUnit.u(aX) -> bB.q/r/s/t",
+   "command_template": "\\46{unit:02X}0021{attribute:02X} for attributes 50, 51, 52, 53",
+   "example_unit": 20,
+   "example": [
+    "\\4614002150",
+    "\\4614002151",
+    "\\4614002152",
+    "\\4614002153"
+   ],
+   "reply": "text fields of 3, 6, 4 and 4 bytes; 'unknown' on failure",
+   "requires_live_network": true,
+   "why_live": "Measured radio and supply values are reported only by the physical unit"
+  },
+  {
+   "id": "cgate-wireless:NET LEARN",
+   "cgate": "NET LEARN <net> <app> <grade> <group>",
+   "source": "NetCommand 'learn' -> kI.runCommand -> bC.a(app, grade, group)",
+   "grades": {
+    "1": "init relay",
+    "2": "init dim",
+    "128": "cancel",
+    "129": "exit relay",
+    "130": "exit dim",
+    "131": "exit area"
+   },
+   "argument_rules": "app 0..255, group 0..255; grade <= 0, 3..127 or > 131 is a syntax error; access level Cb(4)",
+   "command_template": "\\05{app:02X}0003{grade:02X}{group:02X}{check:02X} where check = (((grade + group) & 0xFF) ^ 0xFF) + 1 & 0xFF",
+   "example_arguments": [
+    56,
+    1,
+    10
+   ],
+   "example": "\\05380003010AF5",
+   "reply": "none (bC.i=0); 200 OK even after a 408 'Learn command failed' line",
+   "requires_live_network": true,
+   "why_live": "The broadcast puts the network's wireless units into or out of learn mode; pairing results exist only on the radio network and in unit memory"
+  }
+ ],
+ "open": [
+  "Physical wireless learn/join outcomes and timing",
+  "Radio acceptance of the composed commands",
+  "PCI framing and checksum of these bodies on a real interface",
+  "cmqttd (Rust) has no wireless unit actions or NET LEARN implementation"
+ ]
+}
