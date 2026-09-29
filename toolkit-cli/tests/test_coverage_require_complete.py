@@ -52,7 +52,7 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         )
         self.assertEqual(physical["unavailable_fixtures"], progress["hardware_fixtures"]["total"])
         self.assertEqual(progress["hardware_fixtures"]["provisioned"], 0)
-        self.assertEqual(progress["blocked_obligations"], 263)
+        self.assertEqual(progress["blocked_obligations"], 264)
         for dimension, counts in progress["acceptance_by_dimension"].items():
             with self.subTest(dimension=dimension):
                 self.assertIn("blocked", counts)
