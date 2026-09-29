@@ -11,10 +11,10 @@
       "sha256": "149e04c014518a956437917286b8c806012591954b879fa7bea7cf50a6b53218"
     },
     "service": {
-      "sha256": "07e18da036cf216f98733bb63b4728029894312daf33889a1984d9f5b6595000"
+      "sha256": "b1eb690b12ac83bf547abcfbf072c9b642ac9beb2c755e4e2feb2ee1a32812d8"
     },
     "event_mode": {
-      "sha256": "058d9df1309605c1a7f5b8eb532b5b24cb899b351c68d7099db59ce27e143ff4"
+      "sha256": "ce78a7a069fae735f1c2b160bbf0a1150a18769a1be1eb961813f4da37298195"
     },
     "authorization_policy": {
       "sha256": "f108a1b4bbdab7f123c4460feffc511a6fb7ba5c82d6547cff422505a766295e"
@@ -80,7 +80,7 @@
       "sha256": "42c34c046d6fc7773540e3be2c57adbbcd1779eb760e96b7714841f0f3e1b6ef"
     },
     "native_deploy_queue_contract": {
-      "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+      "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
     },
     "native_file_contract": {
       "sha256": "ffe617d02e687834253f7bd54dfa3863f03528d0f67748652a35c25f9afa84ef"
@@ -289,7 +289,7 @@
       },
       "DEPLOY_QUEUE": {
         "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-        "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1",
+        "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674",
         "source": "native_deploy_queue_contract",
         "observations": 16,
         "paths": 5
@@ -48955,7 +48955,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "argument_counting": "whitespace_words_after_subcommand_including_target",
@@ -48986,7 +48986,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49101,7 +49101,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49192,8 +49192,8 @@
           }
         }
       },
-      "axes_sha256": "c02dac218f8d91768a40e6d7422d5d5cd7e39823d1377c90fa1f084af36519f6",
-      "contract_sha256": "b9064568e513fbd86672398b20115b202c8311dfee0d59299a1b11e86dcdc1cc"
+      "axes_sha256": "281c4ad3b40ec2b68868c62a39e32afd272f59e8adc600cba464771482d6a263",
+      "contract_sha256": "f9c79175b1e6cc398f00d9c61aa67cccf004ba91da1b5fb740e62a7b73ae316e"
     },
     {
       "id": "cgate-contract:24d0ec52c0ddca3d",
@@ -49219,7 +49219,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "argument_counting": "whitespace_words_after_subcommand_including_target",
@@ -49250,7 +49250,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49365,7 +49365,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49452,8 +49452,8 @@
           }
         }
       },
-      "axes_sha256": "926f26791de962ae212887fe71e11d8ec2d6384fd0f824c6e07c6bf60f3db6c0",
-      "contract_sha256": "ca6c74674887c7c89333566d056def42b0ce4649f2bf31d3d762c2bb44063e50"
+      "axes_sha256": "2173186efc47e228ff182f53d6f0fd49f81c78a4a2447a84268c1384df353153",
+      "contract_sha256": "ce2d2a9d184100d1f20ee9b89af645911c9ad2bbaecf6c6f0b4474a66a4dbf30"
     },
     {
       "id": "cgate-contract:e4281bc36efc9777",
@@ -49479,7 +49479,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "argument_counting": "whitespace_words_after_subcommand_including_target",
@@ -49510,7 +49510,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49637,7 +49637,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49724,8 +49724,8 @@
           }
         }
       },
-      "axes_sha256": "30a4af6832da573cdd5d6f27d68bf65a4611d75561de73abd2dd10d131a3b4d7",
-      "contract_sha256": "d4347a8f1caf1f2cb6f23c443095f6997b0344fe87786425719d664dbe0b4d96"
+      "axes_sha256": "5ddca4c9ae612ad094219696937ef3333bc364fc3a603e298215753f3b8689ab",
+      "contract_sha256": "d71f076e01205c5da561193c285de2a0cdadd21eede26709c603f10b82f5ec70"
     },
     {
       "id": "cgate-contract:67bdf58f4ac1d65f",
@@ -49755,7 +49755,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "argument_counting": "whitespace_words_after_subcommand_including_target",
@@ -49777,7 +49777,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49896,7 +49896,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -49971,8 +49971,8 @@
           }
         }
       },
-      "axes_sha256": "8457e0638d3d549417adc3cc361d083dfd0e08f21860e5341b0b7562a3c1b6dc",
-      "contract_sha256": "7a42b107cff82863d704208aeb3902920b7dd5adfd2ee9fd9315cb2c19448c8f"
+      "axes_sha256": "27090c463390cf3f48099a2f382cf656834e5cc075709efb069e24396a2984a6",
+      "contract_sha256": "62cd0cec39ca51a1ce0a7e2ba5fd4cdc4f1bac42cf26f50f1300363db7877559"
     },
     {
       "id": "cgate-contract:67e4a9f15462652e",
@@ -49998,7 +49998,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "argument_counting": "whitespace_words_after_subcommand_including_target",
@@ -50029,7 +50029,7 @@
               "known": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -50144,7 +50144,7 @@
               "value": {
                 "native_fixture": {
                   "path": "rust/testdata/fixtures/native_cgate_deploy_queue.json",
-                  "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1"
+                  "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674"
                 },
                 "attribution": "fixture shape keys and retained subcommand_help syntax",
                 "accepted": [
@@ -50235,8 +50235,8 @@
           }
         }
       },
-      "axes_sha256": "8baf68650b3b3f221931069ef89c5755263f32256a05e81f3ebfbc5e641665f2",
-      "contract_sha256": "ab100f9be5ca040eac31561fdc033d021e0d36f6baaa94d5fbe18b85891f3517"
+      "axes_sha256": "6ad4c3168c1f819e55e4e7e16db28d75569e0546472f3eaf40c04bf540046da6",
+      "contract_sha256": "12ae19071718873cef643bfe38ccd711065e2ca13c3e80dde06564afef04ea88"
     },
     {
       "id": "cgate-contract:d7d2c4b2da7a6478",
