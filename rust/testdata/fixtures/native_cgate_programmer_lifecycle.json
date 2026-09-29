@@ -1,0 +1,1567 @@
+{
+  "format": "cbus-native-programmer-lifecycle-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "environment": "Owned loopback-only child with Clipsal interface access; one disposable project whose only CNI endpoint was the loopback synthetic KEY4 simulator; no site project, hardware or LAN endpoint.",
+    "cleanup_complete": true
+  },
+  "capture_script_sha256": "dae3856fb374a762db5b31dc047db61d0cbed0f3d58317fa9c1eb262650b354b",
+  "simulator_fixture_sha256": "500fe5fab64aa298035244426c3ec22518feebd58d35d8d739d5888b10ee25be",
+  "raw_report_sha256": "012cb1767bddb3fd5e1f827e0e638dbb878f2cbd11217a3ed2ea3ea4aa10e7df",
+  "comparison": "Steps are compared exactly after <project>, <oid> and <timestamp> normalization; volatile replies race native worker ticks, so only their programmer states and final code are kept. Unsolicited lines and EVENT_CHANNEL events are per-scenario multisets.",
+  "native_facts": {
+    "instruction_reply_echo": "Each executed PP instruction's reply lines are sent to the connection that issued its ADD_INSTRUCTION, under that command's tag; TEST and cancelled instructions echo nothing.",
+    "failed_instruction_counts": "A failed instruction leaves queueCount and remainingSeconds; later queued instructions stay counted while the programmer is ERROR.",
+    "partial_outcome": "A no-reply on the second PP_SAVE leaves the first save durable in the unit; the session holds the unsaved later value.",
+    "retry_replays_everything": "RETRY reinitializes every instruction, including completed and cancelled ones, and re-executes the whole task group; it emits removeTaskGroup then addTaskGroup.",
+    "retry_admission": "RETRY needs a STOPPED/ERROR programmer in the failed/completed collections: INIT is 502 illegal state, an unqueued terminal programmer is 501 failed: could not retry programmer.",
+    "serial_queue": "One task group is active at a time; later entries stay INIT with startedTime null.",
+    "pending_delete": "DELETE removes a pending entry and its programmer; the active entry returns 502.",
+    "delete_all": "ALL removes pending, failed and completed entries but never the active one.",
+    "terminal_add": "ADD of a STOPPED or ERROR programmer files it at once (ended event, no started) without execution.",
+    "late_instruction": "ADD_INSTRUCTION while RUNNING is accepted and executed.",
+    "registry_delete_while_running": "PROGRAMMER DELETE leaves the running entry executing; only DELETE_ALL removes the orphan and reports 501-failed: could not delete programmer.",
+    "cancel": "CANCEL_INSTRUCTION of a running TEST ends it; repeating it returns 200; an unknown id is 402 Operation not supported by: failed: command not found.",
+    "transition_errors": "Refused transitions are 400 Syntax Error: failed: transition of X is not allowed on STATE.",
+    "terminal_add_instruction": "ADD_INSTRUCTION on a terminal programmer is 402 Operation not supported by: failed: programmer in unsupported state; PROGRAMMER TEST is still accepted.",
+    "init_pause_resume": "PAUSE then RESUME before START reaches RUNNING with no worker; nothing executes.",
+    "started_pause_resume_deadlock": "RESUME of a started, paused programmer never replies (the worker parks holding the pause monitor that RESUME needs); later triggers also block.",
+    "restart": "A daemon restart discards PROGRAMMER, DEPLOY_QUEUE, PP locks and sessions; unit memory is unaffected.",
+    "timing": "Instruction pacing, 500 ms queue polling and roughly 20 s unit no-reply failure are timing, not compared."
+  },
+  "sanitization": {
+    "site_project_retained": false,
+    "network_identifiers_retained": false,
+    "credentials_retained": false,
+    "vendor_source_retained": false
+  },
+  "scenarios": [
+    {
+      "name": "setup",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROJECT NEW <project>",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROJECT USE <project>",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DBCREATENET 254 PCI_Oracle Cni <simulator>",
+          "reply": {
+            "volatile": true,
+            "states": [],
+            "final_code": "301"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROJECT SAVE <project>",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "NET LOAD DB <project>",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "NET OPEN //<project>/254",
+          "reply": {
+            "volatile": true,
+            "states": [],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "GET //<project>/254 state",
+          "until": "network ok",
+          "reply": [
+            "300 //<project>/254: state=ok"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        }
+      ],
+      "unsolicited": {},
+      "events": {
+        "{\"msg\": \"enter run\", \"name\": \"deploy-queue.debug\"}": 1
+      }
+    },
+    {
+      "name": "direct_completion",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROJECT USE <project>",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP LOCK L //<project>/254",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP START S L",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP LOAD S //<project>/254/p/4",
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP GET S UnitName",
+          "reply": [
+            "120-read 12/12",
+            "315 UnitName=SIMKEY4 "
+          ]
+        },
+        {
+          "simulator_unit_name_bytes": "before",
+          "hex": "ca8b2a9384de"
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE P1 Task1 Route1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P1 PP_SET S UnitName PQA1",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P1 PP_SAVE S //<project>/254/p/4",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS P1",
+          "reply": [
+            "130-{\"progState\":\"INIT\",\"queueCount\":2,\"totalCount\":2,\"remainingSeconds\":2}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER LIST",
+          "reply": [
+            "130-{\"progName\":\"P1\",\"progState\":\"INIT\",\"taskName\":\"Task1\",\"taskRoute\":\"Route1\",\"remainingSeconds\":2,\"queueCount\":2}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER TRIGGER P1 START",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER STATUS P1",
+          "until": "P1 STOPPED",
+          "reply": [
+            "130-{\"progState\":\"STOPPED\",\"queueCount\":0,\"totalCount\":2,\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER LIST",
+          "reply": [
+            "130-{\"progName\":\"P1\",\"progState\":\"STOPPED\",\"taskName\":\"Task1\",\"taskRoute\":\"Route1\",\"remainingSeconds\":0,\"queueCount\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        },
+        {
+          "simulator_unit_name_bytes": "after_P1",
+          "hex": "bf081079e79e"
+        }
+      ],
+      "unsolicited": {
+        "A": [
+          "[a7] 200 OK.",
+          "[a8] 120-saved 6/6",
+          "[a8] 200 OK."
+        ]
+      },
+      "events": {}
+    },
+    {
+      "name": "deploy_fault_partial_and_retry",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE P2 Task2 Route2",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P2 PP_SET S UnitName PQB2",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P2 PP_SAVE S //<project>/254/p/4",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P2 PP_SET S UnitName PQC3",
+          "reply": [
+            "200 OK: id: 3"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P2 PP_SAVE S //<project>/254/p/4",
+          "reply": [
+            "200 OK: id: 4"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION P2 PP_SET S UnitName PQD4",
+          "reply": [
+            "200 OK: id: 5"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD P2",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "P2 ERROR",
+          "reply": [
+            "130-{\"progName\":\"P2\",\"progState\":\"ERROR\",\"taskName\":\"Task2\",\"taskRoute\":\"Route2\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS P2",
+          "reply": [
+            "130-{\"progState\":\"ERROR\",\"queueCount\":1,\"totalCount\":5,\"remainingSeconds\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER LIST",
+          "reply": [
+            "130-{\"progName\":\"P1\",\"progState\":\"STOPPED\",\"taskName\":\"Task1\",\"taskRoute\":\"Route1\",\"remainingSeconds\":0,\"queueCount\":0}",
+            "130-{\"progName\":\"P2\",\"progState\":\"ERROR\",\"taskName\":\"Task2\",\"taskRoute\":\"Route2\",\"remainingSeconds\":1,\"queueCount\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP GET S UnitName",
+          "reply": [
+            "315 UnitName=PQC3    "
+          ]
+        },
+        {
+          "simulator_unit_name_bytes": "after_partial_P2",
+          "hex": "bf085179e79e"
+        },
+        {
+          "connection": "B",
+          "command": "DEPLOY_QUEUE RETRY P2",
+          "reply": [
+            "200 OK: retry added"
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "P2 STOPPED",
+          "reply": [
+            "130-{\"progName\":\"P2\",\"progState\":\"STOPPED\",\"taskName\":\"Task2\",\"taskRoute\":\"Route2\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER STATUS P2",
+          "reply": [
+            "130-{\"progState\":\"STOPPED\",\"queueCount\":0,\"totalCount\":5,\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "simulator_unit_name_bytes": "after_retry_P2",
+          "hex": "bf089279e79e"
+        },
+        {
+          "connection": "B",
+          "command": "DEPLOY_QUEUE RETRY P2",
+          "reply": [
+            "200 OK: retry added"
+          ]
+        },
+        {
+          "connection": "B",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "P2 STOPPED again",
+          "reply": [
+            "130-{\"progName\":\"P2\",\"progState\":\"STOPPED\",\"taskName\":\"Task2\",\"taskRoute\":\"Route2\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        }
+      ],
+      "unsolicited": {
+        "A": [
+          "[a1] 200 OK.",
+          "[a1] 200 OK.",
+          "[a1] 200 OK.",
+          "[a2] 120-saved 6/6",
+          "[a2] 120-saved 6/6",
+          "[a2] 120-saved 6/6",
+          "[a2] 200 OK.",
+          "[a2] 200 OK.",
+          "[a2] 200 OK.",
+          "[a3] 200 OK.",
+          "[a3] 200 OK.",
+          "[a3] 200 OK.",
+          "[a4] 120-saved 6/6",
+          "[a4] 120-saved 6/6",
+          "[a4] 200 OK.",
+          "[a4] 200 OK.",
+          "[a4] 408 Operation failed: Unit save failed (no response from unit)",
+          "[a5] 200 OK.",
+          "[a5] 200 OK."
+        ]
+      },
+      "events": {
+        "{\"msg\": \"addTaskGroup: P2\", \"name\": \"deploy-queue.updated-entries\"}": 3,
+        "{\"msg\": \"removeTaskGroup: P2\", \"name\": \"deploy-queue.updated-entries\"}": 2,
+        "{\"msg\": {\"name\": \"P2\", \"status\": \"ERROR\", \"task\": \"Task2\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"P2\", \"status\": \"STOPPED\", \"task\": \"Task2\"}, \"name\": \"deploy-queue.ended\"}": 2,
+        "{\"msg\": {\"name\": \"P2\", \"task\": \"Task2\"}, \"name\": \"deploy-queue.started\"}": 3
+      },
+      "injected_no_reply_stores": 2
+    },
+    {
+      "name": "serial_queue_pending_delete",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL",
+          "reply": [
+            "120-deleted: P2",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE Q1 TQ1 RQ1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST Q1 step0",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST Q1 step1",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE Q2 TQ2 RQ2",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST Q2 step0",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE Q3 TQ3 RQ3",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST Q3 step0",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD Q1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD Q2",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD Q3",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS Q1",
+          "until": "Q1 RUNNING",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS Q2",
+          "reply": [
+            "130-{\"progState\":\"INIT\",\"queueCount\":1,\"totalCount\":1,\"remainingSeconds\":3}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": "Q1",
+                "progState": "RUNNING",
+                "endedTime": null
+              },
+              {
+                "progName": "Q2",
+                "progState": "INIT",
+                "endedTime": null
+              },
+              {
+                "progName": "Q3",
+                "progState": "INIT",
+                "endedTime": null
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE Q1",
+          "reply": [
+            "502 failed: could not remove programmer"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE Q3",
+          "reply": [
+            "200 OK: deleted"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY Q2",
+          "reply": [
+            "502 illegal state: INIT"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD Q2",
+          "reply": [
+            "501 can't add programmer into queue if it already exists."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL PENDING",
+          "reply": [
+            "120-deleted: Q2",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS Q3",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: Q3"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "Q1 STOPPED",
+          "reply": [
+            "130-{\"progName\":\"Q1\",\"progState\":\"STOPPED\",\"taskName\":\"TQ1\",\"taskRoute\":\"RQ1\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS Q1",
+          "reply": [
+            "130-{\"progState\":\"STOPPED\",\"queueCount\":0,\"totalCount\":2,\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL COMPLETED",
+          "reply": [
+            "120-deleted: Q1",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        }
+      ],
+      "unsolicited": {},
+      "events": {
+        "{\"msg\": \"addTaskGroup: Q1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"addTaskGroup: Q2\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"addTaskGroup: Q3\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllCompletedTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllPendingTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeTaskGroup: Q3\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": {\"name\": \"Q1\", \"status\": \"STOPPED\", \"task\": \"TQ1\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"Q1\", \"task\": \"TQ1\"}, \"name\": \"deploy-queue.started\"}": 1
+      }
+    },
+    {
+      "name": "cancel_stop_and_retry_reinit",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE C1 TC1 RC1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST C1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST C1 b",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST C1 c",
+          "reply": [
+            "200 OK: id: 3"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CANCEL_INSTRUCTION C1 3",
+          "reply": [
+            "200 OK: cancelled"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD C1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS C1",
+          "until": "C1 running instruction 1",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CANCEL_INSTRUCTION C1 1",
+          "reply": [
+            "200 OK: cancelled"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS C1",
+          "until": "C1 advanced to instruction 2",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CANCEL_INSTRUCTION C1 1",
+          "reply": [
+            "200 OK: cancelled"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CANCEL_INSTRUCTION C1 9",
+          "reply": [
+            "402 Operation not supported by: failed: command not found"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER C1 STOP",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS C1",
+          "until": "C1 STOPPED",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "STOPPED",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "C1 completed",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": "C1",
+                "progState": "STOPPED",
+                "endedTime": "<timestamp>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER C1 STOP",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER C1 START",
+          "reply": [
+            "400 Syntax Error: failed: transition of START is not allowed on STOPPED"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER C1 RESUME",
+          "reply": [
+            "400 Syntax Error: failed: transition of RESUME is not allowed on STOPPED"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION C1 PP_END S",
+          "reply": [
+            "402 Operation not supported by: failed: programmer in unsupported state"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST C1 d",
+          "reply": [
+            "200 OK: id: 4"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CANCEL_INSTRUCTION C1 2",
+          "reply": [
+            "200 OK: cancelled"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY C1",
+          "reply": [
+            "200 OK: retry added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS C1",
+          "until": "C1 retried with all four TEST instructions queued",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER C1 STOP",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "C1 completed again",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": "C1",
+                "progState": "STOPPED",
+                "endedTime": "<timestamp>"
+              }
+            ],
+            "final_code": "200"
+          }
+        }
+      ],
+      "unsolicited": {},
+      "events": {
+        "{\"msg\": \"addTaskGroup: C1\", \"name\": \"deploy-queue.updated-entries\"}": 2,
+        "{\"msg\": \"removeTaskGroup: C1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": {\"name\": \"C1\", \"status\": \"STOPPED\", \"task\": \"TC1\"}, \"name\": \"deploy-queue.ended\"}": 2,
+        "{\"msg\": {\"name\": \"C1\", \"task\": \"TC1\"}, \"name\": \"deploy-queue.started\"}": 2
+      }
+    },
+    {
+      "name": "terminal_add_and_retry_admission",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL",
+          "reply": [
+            "120-deleted: C1",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE T1 TT1 RT1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER T1 START",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS T1",
+          "until": "T1 STOPPED",
+          "reply": [
+            "130-{\"progState\":\"STOPPED\",\"queueCount\":0,\"totalCount\":0,\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE E1 TE1 RE1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION E1 PP_SET S UnitName PQE5",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION E1 PP_SET S NoSuchParam 1",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION E1 PP_SET S UnitName PQE6",
+          "reply": [
+            "200 OK: id: 3"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER E1 START",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS E1",
+          "until": "E1 ERROR",
+          "reply": [
+            "130-{\"progState\":\"ERROR\",\"queueCount\":1,\"totalCount\":3,\"remainingSeconds\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS E1",
+          "reply": [
+            "130-{\"progState\":\"ERROR\",\"queueCount\":1,\"totalCount\":3,\"remainingSeconds\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP GET S UnitName",
+          "reply": [
+            "315 UnitName=PQE5    "
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY T1",
+          "reply": [
+            "501 failed: could not retry programmer"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY E1",
+          "reply": [
+            "501 failed: could not retry programmer"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD T1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD E1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "T1 completed and E1 failed",
+          "reply": [
+            "130-{\"progName\":\"E1\",\"progState\":\"ERROR\",\"taskName\":\"TE1\",\"taskRoute\":\"RE1\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":1}",
+            "130-{\"progName\":\"T1\",\"progState\":\"STOPPED\",\"taskName\":\"TT1\",\"taskRoute\":\"RT1\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS E1",
+          "reply": [
+            "130-{\"progState\":\"ERROR\",\"queueCount\":1,\"totalCount\":3,\"remainingSeconds\":1}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL FAILED",
+          "reply": [
+            "120-deleted: E1",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE T1",
+          "reply": [
+            "200 OK: deleted"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        }
+      ],
+      "unsolicited": {
+        "A": [
+          "[a5] 200 OK.",
+          "[a6] 460 No such parameter: NoSuchParam"
+        ]
+      },
+      "events": {
+        "{\"msg\": \"addTaskGroup: E1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"addTaskGroup: T1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllFailedTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeTaskGroup: T1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": {\"name\": \"E1\", \"status\": \"ERROR\", \"task\": \"TE1\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"T1\", \"status\": \"STOPPED\", \"task\": \"TT1\"}, \"name\": \"deploy-queue.ended\"}": 1
+      }
+    },
+    {
+      "name": "delete_running_and_late_instruction",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE D1 TD1 RD1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST D1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD D1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS D1",
+          "until": "D1 RUNNING",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER ADD_INSTRUCTION D1 PP_END Missing",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER DELETE D1",
+          "reply": [
+            "200 OK: deleted"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS D1",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: D1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "orphan D1 ERROR",
+          "reply": [
+            "130-{\"progName\":\"D1\",\"progState\":\"ERROR\",\"taskName\":\"TD1\",\"taskRoute\":\"RD1\",\"createdTime\":\"<timestamp>\",\"startedTime\":\"<timestamp>\",\"endedTime\":\"<timestamp>\",\"remainingSeconds\":0}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE D1",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: D1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY D1",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: D1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE DELETE_ALL",
+          "reply": [
+            "501-failed: could not delete programmer: D1",
+            "200 OK: done"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        }
+      ],
+      "unsolicited": {
+        "A": [
+          "[a4] 408 Operation failed: PP END failed"
+        ]
+      },
+      "events": {
+        "{\"msg\": \"addTaskGroup: D1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"removeAllTaskGroups: 1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": {\"name\": \"D1\", \"status\": \"ERROR\", \"task\": \"TD1\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"D1\", \"task\": \"TD1\"}, \"name\": \"deploy-queue.started\"}": 1
+      }
+    },
+    {
+      "name": "error_and_pause_stop",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE R1 TR1 RR1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST R1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST R1 b",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD R1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS R1",
+          "until": "R1 RUNNING",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER R1 ERROR",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "R1 failed",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": "R1",
+                "progState": "ERROR",
+                "endedTime": "<timestamp>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE S1 TS1 RS1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST S1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST S1 b",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE ADD S1",
+          "reply": [
+            "200 OK: added"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS S1",
+          "until": "S1 RUNNING",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER S1 PAUSE",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER S1 PAUSE",
+          "reply": [
+            "400 Syntax Error: failed: transition of PAUSE is not allowed on PAUSED"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS S1",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "PAUSED",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER S1 STOP",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "until": "S1 completed",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": "R1",
+                "progState": "ERROR",
+                "endedTime": "<timestamp>"
+              },
+              {
+                "progName": "S1",
+                "progState": "STOPPED",
+                "endedTime": "<timestamp>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS S1",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "STOPPED",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE I1 TI1 RI1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST I1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER I1 PAUSE",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER I1 RESUME",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS I1",
+          "reply": [
+            "130-{\"progState\":\"RUNNING\",\"queueCount\":1,\"totalCount\":1,\"remainingSeconds\":3}",
+            "200 OK."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER I1 bogus",
+          "reply": [
+            "400 Syntax Error: failed parse <trigger-type>: bogus"
+          ]
+        }
+      ],
+      "unsolicited": {},
+      "events": {
+        "{\"msg\": \"addTaskGroup: R1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": \"addTaskGroup: S1\", \"name\": \"deploy-queue.updated-entries\"}": 1,
+        "{\"msg\": {\"name\": \"R1\", \"status\": \"ERROR\", \"task\": \"TR1\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"R1\", \"task\": \"TR1\"}, \"name\": \"deploy-queue.started\"}": 1,
+        "{\"msg\": {\"name\": \"S1\", \"status\": \"STOPPED\", \"task\": \"TS1\"}, \"name\": \"deploy-queue.ended\"}": 1,
+        "{\"msg\": {\"name\": \"S1\", \"task\": \"TS1\"}, \"name\": \"deploy-queue.started\"}": 1
+      }
+    },
+    {
+      "name": "started_pause_resume_deadlock",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER CREATE W1 TW1 RW1",
+          "reply": [
+            "200 OK: created"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST W1 a",
+          "reply": [
+            "200 OK: id: 1"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TEST W1 b",
+          "reply": [
+            "200 OK: id: 2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER W1 START",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS W1",
+          "until": "W1 RUNNING",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "RUNNING",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER W1 PAUSE",
+          "reply": [
+            "200 OK: triggered"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER TRIGGER W1 RESUME",
+          "reply": [],
+          "no_reply_within_seconds": 8
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER STATUS W1",
+          "reply": {
+            "volatile": true,
+            "states": [
+              {
+                "progName": null,
+                "progState": "PAUSED",
+                "endedTime": "<absent>"
+              }
+            ],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "B",
+          "command": "PROGRAMMER TRIGGER W1 STOP",
+          "reply": [],
+          "no_reply_within_seconds": 5
+        }
+      ],
+      "unsolicited": {},
+      "events": {}
+    },
+    {
+      "name": "restart_volatility",
+      "steps": [
+        {
+          "connection": "A",
+          "command": "PROGRAMMER LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE LIST",
+          "reply": [
+            "450 no programmers registered."
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP UNITS",
+          "reply": [
+            "122 no open sessions"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PP LIST_LOCK",
+          "reply": [
+            "122 no open locks"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "PROGRAMMER STATUS P2",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: P2"
+          ]
+        },
+        {
+          "connection": "A",
+          "command": "DEPLOY_QUEUE RETRY P2",
+          "reply": [
+            "451-programmer does not exist.",
+            "400 Syntax Error: Invalid parameter for <programmer-name>: P2"
+          ]
+        },
+        {
+          "simulator_unit_name_bytes": "after_restart",
+          "hex": "bf089279e79e"
+        },
+        {
+          "connection": "A",
+          "command": "PROJECT LOAD <project>",
+          "reply": {
+            "volatile": true,
+            "states": [],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROJECT CLOSE <project>",
+          "reply": {
+            "volatile": true,
+            "states": [],
+            "final_code": "200"
+          }
+        },
+        {
+          "connection": "A",
+          "command": "PROJECT DELETE <project>",
+          "reply": {
+            "volatile": true,
+            "states": [],
+            "final_code": "200"
+          }
+        }
+      ],
+      "unsolicited": {},
+      "events": {
+        "{\"msg\": \"enter run\", \"name\": \"deploy-queue.debug\"}": 1
+      }
+    }
+  ]
+}
