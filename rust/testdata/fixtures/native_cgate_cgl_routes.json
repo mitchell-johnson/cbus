@@ -8,8 +8,8 @@
     "environment": "Owned loopback-only child with Clipsal interface access; disposable database-only projects; the only opened CNI endpoint was a loopback synthetic PCI simulator; no site project, hardware or LAN endpoint.",
     "cleanup_complete": true
   },
-  "capture_script_sha256": "911ff3edeb02ccdab7884d6bf90cd1127535a8c96869142af9b4f71b3c441972",
-  "raw_report_sha256": "aa8d302b13dbecbe0b15246cb10316bbf2e7972a27727a84a162e85d16a0871c",
+  "capture_script_sha256": "2d685c61dbab6d1b9414a8b6d0f85777eab3d8a541e036e605b126edde5dcbbc",
+  "raw_report_sha256": "d374f1f85482ab2ff385acbf6d64419be68c50eaeb6d2f497fa87e91fee7edab",
   "comparison": "Replies are exact after <oid>, <timestamp> and <simulator> normalization. Steps marked setup build state and are not compared across servers.",
   "native_facts": {
     "route_graph": "A route edge N->A exists when database network N holds a Unit at address A whose UnitType starts with BRIDGE or contains GATE (case-sensitive) and network A exists. Network InterfaceType/InterfaceAddress are not consulted. Edges are directional.",
@@ -34,7 +34,7 @@
   },
   "pci": {
     "network": "//CGLP/254 opened to the loopback synthetic simulator before the import_routes scenario and closed before the reload in runtime_layer",
-    "total_wire_records": 121
+    "total_wire_records": 85
   },
   "scenarios": [
     {
@@ -511,14 +511,14 @@
       "description": "Existing tag names are preserved while progress lines echo the document name; network names, application types and duplicate entries do not replace state.",
       "steps": [
         {
-          "command": "DBADDSAFE //CGLP/251 Application 56 Existing Lighting",
+          "command": "DBADDSAFE //CGLP/251 Application 56 ExistingLighting",
           "setup": true,
           "reply": [
             "301 OID=<oid>"
           ]
         },
         {
-          "command": "DBADDSAFE //CGLP/251/56 Group 5 Existing Group",
+          "command": "DBADDSAFE //CGLP/251/56 Group 5 ExistingGroup",
           "setup": true,
           "reply": [
             "301 OID=<oid>"
@@ -555,7 +555,7 @@
           "command": "CGL EXPORT CGLP 254 56,63",
           "reply": [
             "343-Begin CGL snippet",
-            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\"}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Existing Lighting\",\"groups\":[{\"address\":5,\"name\":\"Existing Group\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]},{\"address\":63,\"type\":56,\"name\":\"7\",\"groups\":[{\"address\":2,\"name\":\"true\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\"}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"ExistingLighting\",\"groups\":[{\"address\":5,\"name\":\"ExistingGroup\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]},{\"address\":63,\"type\":56,\"name\":\"7\",\"groups\":[{\"address\":2,\"name\":\"true\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
             "344 End CGL snippet [numberOfExportedObjects:12]"
           ]
         }
@@ -1082,7 +1082,7 @@
           "command": "CGL EXPORT CGLP 254 56",
           "reply": [
             "343-Begin CGL snippet",
-            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Existing Lighting\",\"groups\":[{\"address\":5,\"name\":\"Existing Group\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"ExistingLighting\",\"groups\":[{\"address\":5,\"name\":\"ExistingGroup\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
             "344 End CGL snippet [numberOfExportedObjects:11]"
           ]
         }

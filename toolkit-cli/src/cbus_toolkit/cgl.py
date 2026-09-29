@@ -1,4 +1,11 @@
-"""CGL 1.1 exchange through the vendor's native routing/import rules."""
+"""CGL 1.1 exchange through the vendor's native routing/import rules.
+
+CGL moves only a project's network/application/group/level labels. Native
+C-Gate derives routes from database bridge Units, ignores supplied routes,
+network names and application types, preserves existing names and sends no
+PCI traffic. Programming an automation controller is the controller
+software's job, not an import side effect.
+"""
 from __future__ import annotations
 
 import json
@@ -15,14 +22,36 @@ def _pairs(pairs):
     return result
 
 
-def parse_document(text: str) -> dict:
-    """Validate JSON structure before import; C-Gate validates route semantics."""
+FIELDS = {"root": {"cglVersion", "createdBy", "createdTime", "localNetwork", "networks"},
+          "networks": {"address", "name", "route", "applications"},
+          "applications": {"address", "type", "name", "groups"},
+          "groups": {"address", "name", "levels"},
+          "levels": {"address", "name"}}
+
+
+def _known(item, kind):
+    # Native Jackson binding rejects every unknown property with 400.
+    unknown = sorted(set(item) - FIELDS[kind])
+    if unknown:
+        raise ValueError(f"Unknown CGL {kind} field: {unknown[0]}")
+
+
+def parse_document(text: str, *, require_names: bool = False) -> dict:
+    """Validate JSON structure before import; C-Gate validates route semantics.
+
+    ``require_names`` rejects nameless applications, groups and levels: native
+    import accepts them but the project can then never be saved.
+    """
     def invalid(value):
         raise ValueError(f"Invalid JSON number: {value}")
     document = json.loads(text, object_pairs_hook=_pairs, parse_constant=invalid)
     if not isinstance(document, dict) or document.get("cglVersion") != "1.1":
         raise ValueError("Expected a CGL 1.1 JSON document")
+    _known(document, "root")
     _address(document.get("localNetwork"))
+    for field in ("createdBy", "createdTime"):
+        if field in document and not isinstance(document[field], (str, int, type(None))):
+            raise ValueError(f"CGL {field} must be text")
 
     def entities(items, kind):
         if not isinstance(items, list):
@@ -32,11 +61,14 @@ def parse_document(text: str) -> dict:
         for item in items:
             if not isinstance(item, dict):
                 raise ValueError(f"CGL {kind} entries must be objects")
+            _known(item, kind)
+            if require_names and kind != "networks" and not isinstance(item.get("name"), str):
+                raise ValueError(f"CGL {kind} entries need a name")
             address = _address(item.get("address"))
             if address in seen:
                 raise ValueError(f"Duplicate CGL {kind} address: {address}")
             seen.add(address)
-            if "name" in item and not isinstance(item["name"], str):
+            if item.get("name") is not None and not isinstance(item["name"], str):
                 raise ValueError("CGL names must be strings")
             if kind == "networks" and "route" in item:
                 if not isinstance(item["route"], list):
@@ -47,7 +79,7 @@ def parse_document(text: str) -> dict:
                 _address(item["type"])
             if child:
                 entities(item.get(child, []), child)
-    entities(document.get("networks"), "networks")
+    entities(document.get("networks", []), "networks")
     return document
 
 
@@ -93,7 +125,7 @@ class NativeCGL:
 
     def import_document(self, project, text, *, backup_project=None) -> dict:
         project = _project(project)
-        document = parse_document(text)
+        document = parse_document(text, require_names=True)
         if backup_project is not None:
             backup_project = _project(backup_project)
             if backup_project.upper() == project.upper():

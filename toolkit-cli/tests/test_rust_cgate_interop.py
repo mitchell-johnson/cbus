@@ -547,6 +547,76 @@ class RustInteropTests(unittest.TestCase):
             "DBSETXML //TEST/254/p/20/UnitName", "LOUNGE\n")
         self.assertEqual(stored.code, 200)
 
+    def test_cgl_route_vectors_match_native_capture(self):
+        """Every native-derived CGL vector through a fresh mock per group."""
+        from research import native_cgl_routes as routes
+        from cbus_toolkit.cgl import NativeCGL
+        vectors_path = Path(__file__).resolve().parents[2] / "rust/testdata/vectors/cgate_cgl_routes.jsonl"
+        rows = [json.loads(line) for line in vectors_path.read_text().splitlines()]
+        groups = {}
+        for row in rows:
+            groups.setdefault(row["group"], []).append(row)
+        for group, members in groups.items():
+            port = self.port if group == rows[0]["group"] else self._spawn_mock()
+            with socket.create_connection(("127.0.0.1", port), timeout=30) as sock, \
+                    sock.makefile("rb") as reader:
+                reader.readline()
+                for index, row in enumerate(members):
+                    document = row.get("document")
+                    if "document_generator" in row:
+                        document = routes.large_document()
+                    command = row["command"].replace("<simulator>", "127.0.0.2:29999")
+                    request = f"[{index}] {command}"
+                    if document is not None:
+                        request += f" << END{index}\r\n{document}\r\nEND{index}"
+                    sock.sendall((request + "\r\n").encode())
+                    reply = []
+                    while True:
+                        line = reader.readline().decode().rstrip("\r\n")
+                        self.assertTrue(line, row["id"])
+                        if not line.startswith(f"[{index}] "):
+                            continue
+                        reply.append(re.sub(r"OID=[0-9a-fA-F-]{36}", "OID=<oid>", line[len(f"[{index}] "):]))
+                        if re.match(r"\d{3} ", reply[-1]):
+                            break
+                    with self.subTest(vector=row["id"]):
+                        if row.get("setup"):
+                            self.assertLess(int(reply[-1][:3]), 400, reply)
+                        elif "expect" in row:
+                            self.assertEqual(reply, row["expect"])
+                        elif "expect_prefix" in row:
+                            self.assertTrue(reply[-1].startswith(row["expect_prefix"]), reply)
+                        elif "expect_export" in row:
+                            expected = row["expect_export"]
+                            self.assertEqual((reply[0], reply[-1]), (expected["first"], expected["final"]))
+                            self.assertEqual(routes.canonical_export(reply[1]), expected["document"])
+                        else:
+                            expected = row["expect_summary"]
+                            self.assertEqual((len(reply), reply[-1][:160]), (expected["lines"], expected["last"]))
+        # The typed Python client reads the Rust export of the routed chain.
+        port = self._spawn_mock()
+        with CGateClient("127.0.0.1", port, timeout=10.0) as client:
+            for row in groups["chain"]:
+                if row.get("setup") and not row["command"].startswith("NET "):
+                    client.command(row["command"].replace("<simulator>", "127.0.0.2:29999"))
+            exported = NativeCGL(client).export("CGLP", networks=[254])
+        self.assertEqual([network.get("route", []) for network in exported["networks"]][-1],
+                         [253, 252, 251, 250, 249, 248])
+
+    def _spawn_mock(self):
+        process = subprocess.Popen([MOCK_BIN, "--bind", "127.0.0.1:0"], stdout=subprocess.PIPE,
+                                   stderr=subprocess.DEVNULL, text=True)
+
+        def stop():
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=5.0)
+            process.stdout.close()
+        self.addCleanup(stop)
+        match = re.fullmatch(r"cgate-mock listening on 127\.0\.0\.1:(\d+)\s*", process.stdout.readline(512))
+        self.assertIsNotNone(match)
+        return int(match[1])
+
     def test_typed_unit_document_drops_unmodeled_markup_like_native_mapper(self):
         from cbus_toolkit.native import NativeDatabase
         from cbus_toolkit.programming import xml_text

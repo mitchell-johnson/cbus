@@ -7725,9 +7725,10 @@ async fn capabilities_report_observation_without_device_readback() {
     assert_eq!(document["cgl_export"], true);
     assert_eq!(
         document["cgl_scope"],
-        "bounded-cgl-1.1-database-labels-and-known-routes"
+        "native-cgl-1.1-label-graph-bridge-unit-routes"
     );
     assert_eq!(document["cgl_controller_side_effects"], false);
+    assert_eq!(document["cgl_pci_traffic"], false);
     assert_eq!(
         document["applications_catalog"],
         "configured-unitspec-directory-applications.xml"
@@ -15309,6 +15310,69 @@ async fn expanded_native_cgl_import_floor_denies_document_before_mutation() {
     std::fs::remove_file(path).unwrap();
 }
 
+/// cmqttd's C-Gate service replays the owned native CGL capture, persists
+/// the imported label graph and never writes to the PCI.
+#[tokio::test]
+async fn cmqttd_replays_native_cgl_capture_without_pci_traffic() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState {
+        access_level: Some(CgateAccessLevel::Clipsal),
+        ..ClientState::default()
+    };
+    let mut failures = Vec::new();
+    let mut nameless = Vec::new();
+    for (index, step) in cgl::replay::steps().into_iter().enumerate() {
+        let line = format!("[{index}] {}", step.command);
+        let response = match &step.document {
+            Some(document) => service.handle_document(&mut client, &line, document).await,
+            None => service.handle(&mut client, &line).await,
+        };
+        if step.scenario == "nameless" {
+            nameless.push((step.command.clone(), response));
+            continue;
+        }
+        // cmqttd networks are always loaded (NET LOAD DB has no network
+        // definitions file to read) and every session defaults to the
+        // configured durable project, so a bare CGL EXPORT exports it.
+        if step.command == "NET LOAD DB" {
+            continue;
+        }
+        if step.command == "CGL EXPORT" {
+            assert_eq!(response.status, 344, "{response:?}");
+            continue;
+        }
+        if let Err(error) = cgl::replay::check(&step, &response) {
+            failures.push(format!("{} / {}: {error}", step.scenario, step.command));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Native accepts nameless new objects and then cannot PROJECT SAVE;
+    // cmqttd refuses the whole document before mutation instead.
+    let (_, import) = nameless
+        .iter()
+        .find(|(command, _)| command == "CGL IMPORT CGLN")
+        .unwrap();
+    assert_eq!(import.status, 408);
+    assert!(import.final_text.contains("needs a name"), "{import:?}");
+    let (_, export) = nameless
+        .iter()
+        .find(|(command, _)| command == "CGL EXPORT CGLN 254")
+        .unwrap();
+    assert!(!export.lines[1].contains("applications"), "{export:?}");
+    let durable = std::fs::read_to_string(&path).unwrap();
+    assert!(durable.contains("Existing") && durable.contains("A255") && durable.contains("L39"));
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read(&mut byte))
+            .await
+            .is_err(),
+        "CGL exchange reached the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
 #[tokio::test]
 async fn dbsetxml_native_admin_floor_and_recovery_admission_precede_document_mutation() {
     let path = state_path();
@@ -16295,7 +16359,7 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
         .handle_document(&mut client, "[cgl] CGL IMPORT HARNESS", "opaque\n")
         .await;
     assert_eq!(invalid.status, 400, "{invalid:?}");
-    assert!(invalid.final_text.contains("Invalid CGL"));
+    assert!(invalid.final_text.contains("CGL validation failed"));
     assert_eq!(
         service.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields["TagName"],
         "Document eDLT"

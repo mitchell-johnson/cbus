@@ -1869,15 +1869,13 @@ fn bounded_cgl_json_import_export_filters_and_skip_boundaries() {
     assert_eq!(groups[0]["name"], "Lounge");
     assert_eq!(groups[1]["name"], "Hall");
 
-    // An application filter keeps the selected network shell.
+    // An application filter keeps the selected network shell; native omits
+    // the then-empty applications array.
     let filtered = server.handle("[8] CGL EXPORT TEST 254 57");
     let filtered_json: serde_json::Value =
         serde_json::from_str(filtered.lines[1].strip_prefix("347-").unwrap()).unwrap();
     assert_eq!(filtered_json["networks"].as_array().unwrap().len(), 1);
-    assert!(filtered_json["networks"][0]["applications"]
-        .as_array()
-        .unwrap()
-        .is_empty());
+    assert!(filtered_json["networks"][0].get("applications").is_none());
 
     // Unknown/non-routable networks produce the retained incomplete 380
     // result and do not create a network shell.
@@ -2020,7 +2018,7 @@ fn document_store_mirror_import_and_rejects() {
             400,
             "requires a path",
         ),
-        ("[7] CGL IMPORT", "", 400, "Syntax Error"),
+        ("[7] CGL IMPORT", "", 401, "No project specified"),
         (
             "[8] CGL IMPORT NOPE",
             r#"{"cglVersion":"1.1","localNetwork":254,"networks":[]}"#,
@@ -2075,7 +2073,7 @@ fn document_store_mirror_import_and_rejects() {
     // Invalid CGL is rejected without treating arbitrary text as an import.
     let import = s.handle_document("[14] CGL IMPORT TEST", "a\n\nb\nc\n");
     assert_eq!(import.status, 400);
-    assert!(import.final_text.contains("Invalid CGL"));
+    assert!(import.final_text.contains("CGL validation failed"));
     // Config-level access refuses documents outright.
     let mut config = Server::new(AccessLevel::Config);
     let refused = config.handle_document("[1] DBSETXML //TEST/254/p/20/UnitName", "X");

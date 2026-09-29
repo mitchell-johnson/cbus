@@ -3387,9 +3387,12 @@ impl Service {
             capabilities["cgl_import"] = serde_json::Value::Bool(true);
             capabilities["cgl_export"] = serde_json::Value::Bool(true);
             capabilities["cgl_scope"] = serde_json::Value::String(
-                "bounded-cgl-1.1-database-labels-and-known-routes".to_string(),
+                "native-cgl-1.1-label-graph-bridge-unit-routes".to_string(),
             );
+            // CGL moves project labels only; programming a controller is the
+            // controller software's job and the native import sends no PCI traffic.
             capabilities["cgl_controller_side_effects"] = serde_json::Value::Bool(false);
+            capabilities["cgl_pci_traffic"] = serde_json::Value::Bool(false);
             capabilities["applications_catalog"] = serde_json::Value::String(
                 "configured-unitspec-directory-applications.xml".to_string(),
             );
@@ -3905,7 +3908,15 @@ impl Service {
         }
         if verb == "CGL" && sub == "EXPORT" {
             let model = self.model.lock().await;
-            return cgl::export(&model, tag, &words, self.network);
+            let current = client
+                .current
+                .clone()
+                .or_else(|| Some(self.project.clone()));
+            return cgl::export(&model, tag, &words, current.as_deref());
+        }
+        if verb == "CGL" && sub == "IMPORT" {
+            let model = self.model.lock().await;
+            return cgl::import_without_document(&model, tag, &words);
         }
         if verb == "MEASUREMENT" {
             if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
@@ -4778,7 +4789,9 @@ impl Service {
             let before = model.clone();
             let before_db = Database::from_server(&model);
             let response = cgl::import(&mut model, tag, &words, document);
-            if response.status >= 400 {
+            // Native keeps changes made before a 408 import failure; every
+            // other refusal leaves the model untouched.
+            if response.status >= 400 && response.status != 408 {
                 *model = before;
                 return response;
             }

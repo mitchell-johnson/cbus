@@ -203,8 +203,8 @@ def scenarios(cap):
 
     cap.scenario("conflicts", "Existing tag names are preserved while progress lines echo the document "
                  "name; network names, application types and duplicate entries do not replace state.")
-    for command in ("DBADDSAFE //CGLP/251 Application 56 Existing Lighting",
-                    "DBADDSAFE //CGLP/251/56 Group 5 Existing Group"):
+    for command in ("DBADDSAFE //CGLP/251 Application 56 ExistingLighting",
+                    "DBADDSAFE //CGLP/251/56 Group 5 ExistingGroup"):
         cap.run(command, setup=True)
     cap.run("CGL IMPORT CGLP", cgl(254, [
         {"address": 251, "name": "Other", "applications": [
@@ -414,12 +414,89 @@ def fixture(report, source_report_sha256):
     }
 
 
+PARSE_FAILED = "400 Syntax Error: CGL validation failed: Import Failed: "
+NAMELESS_REFUSAL = ("408 Operation failed: CGL import failed: a new application, group or level "
+                    "needs a name")
+
+
+def canonical_export(line):
+    """Export JSON with generated metadata masked and siblings in address order."""
+    document = json.loads(line[4:])
+    document["createdBy"], document["createdTime"] = "<creator>", "<timestamp>"
+
+    def sort(items, children):
+        items.sort(key=lambda item: item["address"])
+        for item in items:
+            if children and children[0] in item:
+                sort(item[children[0]], children[1:])
+    for network in document["networks"]:
+        if "applications" in network:
+            sort(network["applications"], ("groups", "levels"))
+    return document
+
+
+def vectors(fixture):
+    """Ordered wire cases shared by cgate-mock, cmqttd and the Python client.
+
+    Each group starts from an empty server and runs in order. Expectations
+    are the native replies except the documented nameless-object refusal;
+    setup rows need only succeed, parse failures keep the native prefix, and
+    exports compare canonical JSON.
+    """
+    rows = []
+    group = {"no_project": "session", "nameless": "nameless", "topology": "topology"}
+    for scenario in fixture["scenarios"]:
+        for index, step in enumerate(scenario["steps"]):
+            command = step["command"]
+            if command.startswith(("NET OPEN", "NET CLOSE", "DBGETXML", "PROJECT SAVE CGLN")):
+                continue
+            row = {"id": f"cgl-{scenario['name']}-{index}", "group": group.get(scenario["name"], "chain"),
+                   "command": command}
+            for key in ("document", "document_generator"):
+                if key in step:
+                    row[key] = step[key]
+            if step.get("setup"):
+                row["setup"] = True
+            elif scenario["name"] == "nameless" and command.startswith("CGL IMPORT"):
+                row["expect"] = [NAMELESS_REFUSAL]
+                row["native_differs"] = ("native imports the nameless objects and then fails PROJECT SAVE; "
+                                         "cmqttd refuses before mutation")
+            elif scenario["name"] == "nameless":
+                row["expect_export"] = {"first": "343-Begin CGL snippet", "document": {
+                    "cglVersion": "1.1", "createdBy": "<creator>", "createdTime": "<timestamp>",
+                    "localNetwork": 254, "networks": [{"address": 254, "name": "Local"}]},
+                    "final": "344 End CGL snippet [numberOfExportedObjects:0]"}
+                row["native_differs"] = "the refused import left nothing to export"
+            elif "reply_summary" in step:
+                summary = step["reply_summary"]
+                row["expect_summary"] = {"lines": summary["lines"], "last": summary["last"][-1]}
+                if command.startswith("CGL IMPORT"):
+                    row["expect_summary"]["sha256"] = summary["sha256"]
+            else:
+                reply = step["reply"]
+                if len(reply) == 1 and reply[0].startswith(PARSE_FAILED):
+                    row["expect_prefix"] = PARSE_FAILED
+                elif len(reply) == 3 and reply[1].startswith('347-{"cglVersion"'):
+                    row["expect_export"] = {"first": reply[0], "document": canonical_export(reply[1]),
+                                            "final": reply[2]}
+                else:
+                    row["expect"] = reply
+            rows.append(row)
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--vendor", type=Path)
     parser.add_argument("--fixture", type=Path, help="Write the sanitized committed fixture here")
+    parser.add_argument("--vectors", type=Path, help="Derive the wire vectors from --fixture (no capture)")
     args = parser.parse_args()
+    if args.vectors:
+        rows = vectors(json.loads(args.fixture.read_text()))
+        args.vectors.write_text("".join(json.dumps(row, separators=(",", ":")) + "\n" for row in rows))
+        print(json.dumps({"vectors": len(rows)}))
+        return
     output = args.output_dir or Path(tempfile.mkdtemp(prefix="cbus-cgl-capture-"))
     report = capture(output_dir=output, vendor=args.vendor)
     if args.fixture:

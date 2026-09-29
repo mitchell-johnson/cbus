@@ -1487,9 +1487,10 @@ secondary project while protecting the configured hardware project,
 `repository_list: true` and `repository_type: "cmqttd-json"` denote the one
 read-only repository descriptor,
 `cgl_import: true`, `cgl_export: true`, and
-`cgl_scope: "modeled-labels-known-routes"` denote the bounded CGL 1.1 label
-graph while `cgl_controller_side_effects: false` preserves the vendor-control
-boundary,
+`cgl_scope: "native-cgl-1.1-label-graph-bridge-unit-routes"` denote the CGL
+1.1 label graph over database bridge-Unit routes while
+`cgl_controller_side_effects: false` and `cgl_pci_traffic: false` record that
+an import neither programs a controller nor sends PCI traffic,
 `applications_catalog: "configured-unitspec-directory-applications.xml"`
 denotes the operator-supplied XML source,
 `network_calculator: "configured-cbusunits-database-records"` and

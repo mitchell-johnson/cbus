@@ -689,9 +689,10 @@
       "status": "implemented",
       "evidence": [
         "tests/test_cgl.py",
-        "tests/test_cli.py"
+        "tests/test_cli.py",
+        "tests/test_rust_cgate_interop.py"
       ],
-      "limits": "Native CGL 1.1 import/export/filter/backup/skip behavior tested; multi-bridge route and controller differential acceptance pending."
+      "limits": "Owned native C-Gate 3.4.0.2001 capture (rust/testdata/fixtures/native_cgate_cgl_routes.json, 158 derived vectors) pins bridge-Unit routes up to six hops, last-selected localNetwork export, ignored document routes, skip/unroutable diagnostics, name preservation, Jackson binding, partial 408 failures, runtime-layer reload reporting and 10,456-object imports; cgate-mock and cmqttd replay it. CGL imports only a label graph: the capture shows no PCI traffic, and programming an automation controller is the controller software's job (external, not an import effect). cmqttd refuses nameless new objects that native accepts but cannot save, exports siblings in address order and does not reproduce Jackson exception detail."
     },
     {
       "id": "network-calculator-diagnostics",

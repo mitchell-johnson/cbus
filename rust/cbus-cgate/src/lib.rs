@@ -2268,6 +2268,11 @@ pub struct Server {
     /// existed. Native C-Gate exposes these object trees as `error`; freshly
     /// created, never reselected local objects remain `new` until activation.
     activated_networks: HashSet<(String, u8)>,
+    /// Volatile runtime application/group objects created by `CGL IMPORT`,
+    /// keyed by `//PROJECT/net/app[/group]`. Native import reports an object
+    /// as created when either this layer or the tag database lacked it, so a
+    /// project reload makes existing objects reportable again.
+    pub(crate) cgl_runtime: HashSet<String>,
     /// Command-session number used only in native timestamped event
     /// envelopes. TCP frontends set and clear it around each dispatch.
     command_session: Option<u64>,
@@ -2411,6 +2416,7 @@ impl Server {
             projects: HashMap::new(),
             current: None,
             activated_networks: HashSet::new(),
+            cgl_runtime: HashSet::new(),
             command_session: None,
             events: VecDeque::new(),
             events_lost: false,
@@ -3026,6 +3032,8 @@ impl Server {
             .or_else(|| self.current.clone())
         {
             self.revert_project_to_saved(&name);
+            let prefix = format!("//{name}/");
+            self.cgl_runtime.retain(|path| !path.starts_with(&prefix));
         }
         self.current = None;
         ok(tag, vec![], "200 OK")
@@ -10978,8 +10986,7 @@ impl Server {
 
     /// Native `CGL IMPORT project` requires here-document framing.
     fn cgl_import(&mut self, tag: &str, words: &[&str]) -> Response {
-        let _ = words;
-        err(tag, status::BAD_REQUEST, "400 Syntax Error.")
+        service::cgl::import_without_document(self, tag, words)
     }
 
     /// Native `CGL EXPORT project networks applications`.
@@ -10987,18 +10994,8 @@ impl Server {
     /// The reply carries a bounded CGL 1.1 JSON document in the native
     /// 343/347/344 envelope.
     fn cgl_export(&mut self, tag: &str, words: &[&str]) -> Response {
-        let local_network = words
-            .get(2)
-            .and_then(|name| self.projects.get(*name))
-            .and_then(|project| {
-                project
-                    .networks
-                    .contains_key(&254)
-                    .then_some(254)
-                    .or_else(|| project.networks.keys().copied().min())
-            })
-            .unwrap_or(254);
-        service::cgl::export(self, tag, words, local_network)
+        let current = self.current.clone();
+        service::cgl::export(self, tag, words, current.as_deref())
     }
 
     /// Native `GET address attribute` reads.
