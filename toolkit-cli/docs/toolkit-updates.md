@@ -134,6 +134,35 @@ confirms that order with missing-entry persistence witnesses. All clock,
 platform and stored-cohort facts remain caller-supplied; no host, publisher,
 availability or install claim is added.
 
+`update-download --catalogue-report R --catalogue-response RAW --package ID
+--file-id ID --output DIR` fetches one file whose URL, size and SHA-1 are bound
+to a report that reproduces from the exact raw response. It uses verified TLS
+(system trust or only an explicit `--ca-file`) and follows same-origin redirects
+only. The download goes to a new exclusive temporary file within a hard size
+bound. SHA-1 and size are checked while streaming and again on re-read. The file
+is published by a no-overwrite rename only if both checks pass. Failed bytes are
+retained with a JSON failure record. See the
+[download contract](toolkit-update-download.md) and the
+[static review of the original `DownloadChannel`](../research/fixtures/toolkit-update-download-source-review.json).
+The downloaded file stays untrusted and is never executed.
+
+**Installation and restart are not implemented.** No command opens, runs or
+elevates an installer, closes Toolkit, or restarts or resumes after an update.
+Static review shows that the original SESU client performs its own integrity
+check before a further step, but it does not establish that this step is the
+installer launch. The installer command line, elevation and exit-code
+interpretation, reboot and restart handling, and recovery after cancellation or
+failure also remain unproven. Implementing them requires original Windows
+evidence:
+
+- an owned disposable Windows guest running the pinned Toolkit 1.18.0.2754/SESU
+  3.0.7 client;
+- captured process-creation, elevation and exit-code records for success,
+  user cancellation, installer failure and "restart required";
+- preserved-state checks for Toolkit settings, projects and C-Gate
+  configuration;
+- the retained `.partial` and failed-integrity file states after interruption.
+
 Evidence: [original vectors](../research/fixtures/toolkit-updates-vectors.json),
 [acceptance](../research/fixtures/toolkit-updates-acceptance.json).
 Primary vendor context: [Toolkit1.18 release](https://www.se.com/au/en/download/document/C-Bus_Toolkit_V1_18_0/)

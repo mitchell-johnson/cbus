@@ -74,20 +74,17 @@ class UpdatePackageFileReceipt:
         }
 
 
-def inspect_update_package_file(
+def select_package_descriptor(
     catalogue_response: bytes,
     *,
     node_id: str,
     file_id: str,
-    package_path: str | os.PathLike[str],
     max_package_bytes: int = MAX_PACKAGE_BYTES,
-) -> UpdatePackageFileReceipt:
-    """Read one local file and compare it with its exact raw-catalogue entry.
+) -> tuple[bytes, bytes, int, str]:
+    """Select one exact raw-catalogue file descriptor without reading a package.
 
-    A malformed, ambiguous, missing-security or unsafe-file input raises.
-    A complete read with a wrong size or digest returns a negative receipt.
-    The selected node is canonicalized with the same bounded model as the
-    existing metadata diagnostic, but its JWT is not verified here.
+    Returns the normalized selected node, its canonical metadata bytes, the
+    declared size and the lowercase declared SHA-1. Both claims remain untrusted.
     """
     validate_node_id(node_id)
     if type(file_id) is not str or not 0 < len(file_id) <= 256 or "\0" in file_id:
@@ -121,6 +118,28 @@ def inspect_update_package_file(
     sha1 = security.get("sha1") if type(security) is dict else None
     if type(sha1) is not str or _SHA1.fullmatch(sha1) is None:
         raise ValueError("selected file has no exact 40-digit security.sha1")
+    return selected, canonical, size, sha1.lower()
+
+
+def inspect_update_package_file(
+    catalogue_response: bytes,
+    *,
+    node_id: str,
+    file_id: str,
+    package_path: str | os.PathLike[str],
+    max_package_bytes: int = MAX_PACKAGE_BYTES,
+) -> UpdatePackageFileReceipt:
+    """Read one local file and compare it with its exact raw-catalogue entry.
+
+    A malformed, ambiguous, missing-security or unsafe-file input raises.
+    A complete read with a wrong size or digest returns a negative receipt.
+    The selected node is canonicalized with the same bounded model as the
+    existing metadata diagnostic, but its JWT is not verified here.
+    """
+    selected, canonical, size, sha1 = select_package_descriptor(
+        catalogue_response, node_id=node_id, file_id=file_id,
+        max_package_bytes=max_package_bytes,
+    )
 
     path = os.fspath(package_path)
     if type(path) is not str or not path or "\0" in path:
@@ -140,7 +159,7 @@ def inspect_update_package_file(
         node_id=node_id,
         file_id=file_id,
         declared_size=size,
-        declared_sha1=sha1.lower(),
+        declared_sha1=sha1,
         observed_size=observed,
         observed_sha1=observed_sha1,
         observed_sha256=observed_sha256,

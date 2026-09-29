@@ -277,6 +277,12 @@ diagnostic stage can leave the independent package link intact; the joined
 completion remains false. See the [exact-source join contract](docs/toolkit-update-package-bundle.md).
 This receipt is not publisher trust or permission to install.
 
+`update-download --catalogue-report R --catalogue-response RAW --package ID
+--file-id ID --output DIR` downloads that one catalogue-bound file over
+verified TLS. It checks size and SHA-1 before publishing to a new name and keeps
+failed bytes with a JSON record. It never installs or runs the file. See the
+[download contract](docs/toolkit-update-download.md).
+
 `toolkit-about path/to/CBusToolkit.exe` reads an explicit executable and emits
 the original About text, using the current local year. `--year 2026` supplies
 a reproducible year; `--context captured-context.json` adds explicitly supplied

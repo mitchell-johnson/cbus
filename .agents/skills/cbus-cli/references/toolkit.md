@@ -197,6 +197,11 @@ file hash; a network-mounted path may involve filesystem network transport. See
 `toolkit-cli/docs/toolkit-update-package-bundle.md`. A source-to-package link
 can be true while a diagnostic stage is failed or unsupported. The joined
 completion then remains false.
+`update-download` fetches one file whose URL is bound to a complete catalogue
+report and its exact raw response. It uses verified TLS and same-origin
+redirects, and checks size and SHA-1 before a no-overwrite publish. Failed bytes
+are kept as `*.failed.partial` with a `*.failed.json` record. It never
+installs; see `toolkit-cli/docs/toolkit-update-download.md`.
 Windows uses a checked Win32 disk-file handle; POSIX uses
 no-follow/nonblocking/close-on-exec flags. An isolated SESU 3.0.7 oracle
 accepted a wrong digest when its security-dictionary folder key did not match
