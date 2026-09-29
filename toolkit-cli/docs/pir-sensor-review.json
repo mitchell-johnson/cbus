@@ -1,0 +1,418 @@
+{
+  "format": "cbus-pir-sensor-review-v1",
+  "original_execution": false,
+  "inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "save": {
+    "pir_before_save": {
+      "calls": [
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.PrepareForcedParameters",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.CBusUnit"
+      ],
+      "sha256": "6d1384f386c0998f0b7be71f20b2ce80b4699110898fa074bf4bf015d31d7d92",
+      "after_load_sha256": "657ab2f034e7b8677a757962c4682838e05edae5ae48d1299ceffc03cfff4b6a",
+      "conditional_write": {
+        "parameter": "IndicatorBlockAssignment",
+        "value": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flag_offset": "0x351",
+        "flag_loaded_from": "IndicatorBlockAssignment[0] == 7",
+        "flag_edited_by": [
+          "TcdKeyInputBlocks4.HandleDisableIndicatorOnChange"
+        ]
+      }
+    },
+    "prepare_forced_parameters": {
+      "sha256": "5d5d39b7bd6d06dc50eb8aa54726f39f78bca8939b0c05afeea3b29490c22d77",
+      "writes": [
+        {
+          "parameter": "PIRLightMovement",
+          "value": 9,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRDarkMovement",
+          "value": 10,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRDark",
+          "value": 4,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "IRBank",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DisableIR",
+          "value": 1,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "IRBankKeyOffset",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkOfficeBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "BroadcastBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "IndicatorControl",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "SingleJoinEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "SingleJoinEnablerControlGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DualJoinEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DualJoinEnablerControlGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "ControlAppGroupAddress",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "SceneKeySelector",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionIRKey",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionIRActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRFunctionIRKey",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRFunctionIRActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECLevelStore",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECEnablerGroupLogic",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerAFunction",
+          "value": 1,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerBFunction",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerATimerBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerBTimerBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 4,
+          "value": 0,
+          "write": "SetArrayInteger"
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 5,
+          "value": 0,
+          "write": "SetArrayInteger"
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 6,
+          "value": 0,
+          "write": "SetArrayInteger"
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 7,
+          "value": 0,
+          "write": "SetArrayInteger"
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 9,
+          "value": 0,
+          "write": "SetArrayInteger"
+        },
+        {
+          "parameter": "IndicatorFunction",
+          "programmable": false
+        },
+        {
+          "parameter": "PrimaryColour",
+          "programmable": false
+        }
+      ]
+    },
+    "multisensor_before_save": {
+      "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a",
+      "after_load_sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1",
+      "unconditional_writes": [
+        {
+          "parameter": "PotentiometerBBankSwitchEnable",
+          "value": 0
+        }
+      ],
+      "broadcast_active": {
+        "loaded_active_when": "1 <= BroadcastActive <= 6",
+        "saved_active": 4,
+        "saved_inactive": 0
+      },
+      "margin": {
+        "loaded_percent": "ROUND(ext(PECMarginLux / PECTargetLux) * 100.0), 0 when target is 0",
+        "saved_margin": "ROUND(PECTargetLux * ext(percent / 100.0))",
+        "round": "System.@ROUND, x87 extended precision, ties to even"
+      }
+    },
+    "power_fail": {
+      "save_sha256": "7187571b7da10c70d19b5fa0c519cb011addebaba6c848902198cab93d8816e0",
+      "load_sha256": "4dc8b2868bb23faaade864131f0c8f1ac42ad6bf35ad76ed83f0d7c866d143be",
+      "occupancy_level_index": 8,
+      "states": [
+        "disabled",
+        "enabled",
+        "resume"
+      ],
+      "load": "PIRLevelStore -> resume; else disabled when (LightLevel[8] == 255) == PIREnablerGroupLogic, otherwise enabled",
+      "save": "resume -> PIRLevelStore=1, LightLevel[8] kept; disabled -> LightLevel[8]=255 if PIREnablerGroupLogic else 0; enabled -> LightLevel[8]=0 if PIREnablerGroupLogic else 255; both clear PIRLevelStore"
+    },
+    "pp_set_gate": {
+      "sha256": "f43f1bff2e8120c902a37e03802780742fc6ff11ec80bc4c5ea06dfe78312654",
+      "rule": "PP SET is sent only for attributes with +0x58 (programmable) and +0x38 (changed) set",
+      "string_array_setvalue": "TStringAttribute.SetValue stores the variant text, so an integer 0 is sent as \"0\""
+    }
+  },
+  "unit": {
+    "MaximumBlockCount": 4,
+    "MaximumIndicatorCount": 1,
+    "IsCorridorLinkingSupported": false,
+    "IsInfraredNECSupported": false,
+    "classes": {
+      "TST7SENPIRSS": {
+        "MaximumKeyCount": 4,
+        "GetMaximumVirtualKeyCount": 4,
+        "IsJoinModeSupported": false,
+        "IsDualJoinModeSupported": false
+      },
+      "TST7SENPIROA": {
+        "MaximumKeyCount": 4,
+        "GetMaximumVirtualKeyCount": 4,
+        "IsJoinModeSupported": false,
+        "IsDualJoinModeSupported": false
+      }
+    },
+    "macro_function_fixed_on_every_key": true
+  },
+  "key_templates": {
+    "1": {
+      "handler": "HandleDayMoveChange",
+      "template": "0x1f",
+      "sha256": "f3355d626cf2f1650f9c9bf0d41d7cda5e330cc93b9361684fb6951b53203ef5",
+      "prompt_message": "0x5208",
+      "micro_function_group": "0x3d",
+      "jp_sr_lp_lr": [
+        7,
+        0,
+        0,
+        0
+      ]
+    },
+    "2": {
+      "handler": "HandleNightMoveChange",
+      "template": "0x20",
+      "sha256": "046c9733d6f48d2f121f796fc42767bc48149be0c46062ff9f673fba3a6746a9",
+      "prompt_message": "0x5208",
+      "micro_function_group": "0x3e",
+      "jp_sr_lp_lr": [
+        13,
+        7,
+        7,
+        0
+      ]
+    },
+    "3": {
+      "handler": "HandleSunsetChange",
+      "template": "0x22",
+      "sha256": "5632472a2faaed20b9f8b7dd210262bad8fc75628121f06fd17f4ebcfd573f0f",
+      "prompt_message": "0x5208",
+      "micro_function_group": "0x40",
+      "jp_sr_lp_lr": [
+        13,
+        15,
+        7,
+        15
+      ]
+    },
+    "4": {
+      "handler": "HandleAnyMoveChange",
+      "template": "0x21",
+      "sha256": "303b3cf66d595e8fdc2b008d68cbda394f944cdfa15dbbf053e09a71b547181e",
+      "prompt_message": "0x5208",
+      "micro_function_group": "0x3f",
+      "jp_sr_lp_lr": [
+        13,
+        7,
+        0,
+        7
+      ]
+    }
+  },
+  "micro_function_defaults": {
+    "sha256": "5710e836f75fcc8aacfe011052c4f1b2a8908295114cdc683b1038bed3a28c9e",
+    "firmware_split": "2.4.00",
+    "keys": {
+      "1": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "2": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "3": [
+        13,
+        15,
+        7,
+        15
+      ]
+    },
+    "key4_firmware_at_least_split": [
+      13,
+      7,
+      0,
+      7
+    ],
+    "key4_firmware_below_split": [
+      13,
+      15,
+      0,
+      15
+    ],
+    "note": "Defaults/reset only; the dialog applies the fixed key templates instead."
+  },
+  "dialog": {
+    "initialise_sha256": "a34283936c8a5a241b8441df02c0852b79c1690a87d4805407f8d5f5b80ae950",
+    "hidden_tabs": [
+      "tsBankSwitch",
+      "tsEnvironment",
+      "tsLightLevel",
+      "tsScenes"
+    ],
+    "empty_subforms": [
+      "InitialiseSubFormLightLevel",
+      "InitialiseSubFormBankSwitch",
+      "InitialiseSubFormEnvironment"
+    ],
+    "disabled_block_grid_key_columns": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "link_calls": [
+      "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.SetDayMovementSameAsNight",
+      "CIS_TInputKey.TInputKey.CompareBlocks"
+    ],
+    "motion_in_darkness_link": {
+      "checkbox_initial": "InputKeys[0].CompareBlocks(InputKeys[1])",
+      "copy": "InputKeys[1].CopyBlocks(InputKeys[0]) on link and on every key-1 change",
+      "sha256": "d80f5a824cf1866412a6ae28d094ca73d3750677000822e367f141c0abd618e5"
+    }
+  },
+  "limits": [
+    "Static EXE/MAP/DFM analysis only; no Toolkit dialog or save was executed.",
+    "Base Neo/NeoPro key, block, timer and scale serialization is assumed to round-trip loaded values; only the save steps named here are source-recovered.",
+    "The C-Gate effect of a one-value array write (SceneKeySelector \"0\") is established natively, not statically."
+  ]
+}
