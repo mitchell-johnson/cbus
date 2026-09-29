@@ -165,7 +165,20 @@ state_hash() {
 
 cgate_banner() {
     [ "$DRY_RUN" = 1 ] && return 0
-    dc exec -T cmqttd sh -c 'printf "quit\r\n" | nc -w 3 127.0.0.1 20023' | grep -q '^201 '
+    # Wait for the greeting before sending QUIT, and allow for listener
+    # startup after a (re)start.
+    local deadline=$((SECONDS + 30))
+    while [ $SECONDS -lt $deadline ]; do
+        # Capture first: `grep -q` exiting early would SIGPIPE the exec
+        # and fail the pipeline under pipefail.
+        local greeting
+        greeting="$(dc exec -T cmqttd sh -c '(sleep 1; printf "quit\r\n") | nc -w 3 127.0.0.1 20023' 2>/dev/null || true)"
+        if printf '%s\n' "$greeting" | grep '^201 ' >/dev/null; then
+            return 0
+        fi
+        sleep 2
+    done
+    return 1
 }
 
 baseline_checks() {

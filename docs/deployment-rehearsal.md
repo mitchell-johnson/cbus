@@ -17,9 +17,10 @@ the in-process mini broker and scripted fake PCI:
 | `cni_tcp_drop_exits_and_supervisor_restart_recovers` | Plain `-t` CNI mode has no in-process reconnect. When TCP is lost, cmqttd retains bridge state `OFF` and exits 0. The Docker `restart: always` policy supplies recovery. A fresh process with the same arguments re-initializes the PCI, repeats the configured sweep and retains `ON`. Discovery is unchanged, and commands resume. ESP32 discovery modes reconnect in-process; `esp32_wifi_mode_reconnects_and_reinitialises` covers that path. |
 | `two_client_mqtt_fanout_under_event_burst` | Two independent MQTT subscribers each receive all 120 light-state publishes from a back-to-back burst of 120 bus events, in bus order and identical to the daemon's publish sequence. The events are 60 instant ramps of one group, interleaved with 60 ON/OFF toggles of another. |
 
-`MiniBroker::stop` and `MiniBroker::restart` in `cbus-test-support` simulate
-the crash. They drop client sockets without DISCONNECT, discard retained
-messages and subscriptions, and rebind the same port.
+`MiniBroker::restart` in `cbus-test-support` simulates the crash. It reuses
+`disconnect_clients` to drop client sockets without DISCONNECT, then discards
+retained messages and subscriptions while the listener stays on the same
+port.
 
 After an MQTT reconnect, light state is refreshed only from new bus evidence:
 the next observation, or the periodic `-S` status resync (300 s by default in
@@ -93,5 +94,12 @@ arrives while the echo is still buffered would be lost there as well.
 
 | Date (UTC) | Revision | Mode | Result |
 |---|---|---|---|
-| 2026-09-29 | worktree `work/resilience-staging` on `8f128b21` | `--dry-run` | 25 check lines printed, 4 of them expected `XFAIL`s. Nothing was executed. The Docker daemon on the rehearsal Mac was unresponsive (`_ping`: "Docker Desktop is unable to start"). Docker was not started or restarted because the production stack shares that daemon. |
-| 2026-09-29 | same | in-process system tests | 25/25 `system_resilience` tests passed, including the three tests above, which passed in 3 consecutive runs. |
+| 2026-09-29 | worktree `work/resilience-staging` on `8f128b21` | `--dry-run` | 25 check lines printed, 4 of them expected `XFAIL`s. Docker was unavailable at the time. |
+| 2026-09-29 | candidate `fd1d6e6b`, previous `a901ff0a` | Docker 29.6.1 (aarch64), Compose v5.3.0 | 21 `PASS`, 4 `XFAIL` (the known confirmation gap), 0 `FAIL`, exit 0. The broker kill republished discovery and bridge state without fabricating light state, and the command wildcard was live. The simulator restart raised cmqttd's Docker restart count from 0 to 1 and recovered. The rollback container ran the previous image ID, and the roll forward ran the candidate. The `cgate.json` SHA-256 was the same after first start, rollback and roll forward. Teardown left no `cbus-staging-*` containers, networks, volumes or `cmqttd-staging` tags. Other containers on the host kept running. |
+
+Two earlier real runs on the same day failed only the C-Gate banner check. The
+cause was a script bug: `grep -q` closed the pipe early, and under `pipefail`
+the resulting SIGPIPE failed the `docker exec` pipeline. The check now captures
+the greeting before matching it. The in-process tests passed 25/25 in
+`system_resilience`, and the three new tests passed three consecutive runs
+after rebasing onto `a901ff0a`.
