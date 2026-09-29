@@ -21,6 +21,7 @@ REPOSITORY = ROOT.parent
 PACKAGE = ROOT / "src" / "cbus_toolkit"
 SURFACE_PATH = ROOT / "docs" / "toolkit-surface.json"
 EXECUTABLE_SURFACE_PATH = ROOT / "docs" / "toolkit-executable-surface.json"
+DIALOG_MAP_PATH = ROOT / "docs" / "toolkit-dialog-map.json"
 CGATE_CONTRACT_PATH = PACKAGE / "cgate-contract-inventory.json"
 LEDGER_PATH = PACKAGE / "capabilities.json"
 MATRIX_PATH = REPOSITORY / "rust" / "cbus-cgate" / "src" / "capability_matrix.rs"
@@ -801,7 +802,9 @@ def build() -> tuple[dict, dict]:
     work_items, ledger_packages = roadmap_maps()
     ledger_ids = {feature["id"] for feature in ledger["features"]}
     sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, str(ROOT))
     from cbus_toolkit.device_dialogs import list_dialogs
+    from research.map_dialog_candidates import load_committed as load_dialog_map
     from cbus_toolkit.parity import (
         CGATE_SESSION_PILOT_IDS,
         WORK_ITEM_IDS,
@@ -821,6 +824,24 @@ def build() -> tuple[dict, dict]:
     dialog_ledger = {
         row["dialog_id"]: row["ledger_id"] for row in list_dialogs()
     }
+    # The validated dialog map supplies the most specific ledger rows. Its
+    # unresolved rows keep their fallback routing and are flagged below; only
+    # resolved dialogs move their form resources off the census row.
+    try:
+        dialog_rows = load_dialog_map(DIALOG_MAP_PATH)["dialogs"]
+    except ValueError as exc:
+        raise ValueError(
+            f"{exc}; run research/map_dialog_candidates.py --refresh (offline inputs) "
+            "or regenerate it from the original inputs"
+        ) from exc
+    dialog_map = {row["dialog_id"]: row for row in dialog_rows}
+    if set(dialog_map) != set(dialog_ledger):
+        raise ValueError("Dialog map roster differs from the device-dialog registry")
+    form_dialogs: dict[str, list[str]] = {}
+    for row in dialog_map.values():
+        if row["status"] == "resolved":
+            for resource_name in row["form_resources"]:
+                form_dialogs.setdefault(resource_name, []).append(row["dialog_id"])
     primary_paths, supplement_paths = capability_paths()
     cgate_contracts = cgate_contract_inventory(primary_paths, supplement_paths)
     contract_by_path = {
@@ -874,15 +895,20 @@ def build() -> tuple[dict, dict]:
                 }
             )
     for dialog in surface["device_dialog_candidates"]:
-        scope_items.append(
-            {
-                "id": f"scope:dialog:{dialog['id']}",
-                "kind": "dialog",
-                "source_id": dialog["id"],
-                "obligation_ids": obligation_ids([dialog_ledger[dialog["id"]]]),
-                "disposition": "provisional_obligation",
-            }
-        )
+        mapped = dialog_map[dialog["id"]]
+        scope = {
+            "id": f"scope:dialog:{dialog['id']}",
+            "kind": "dialog",
+            "source_id": dialog["id"],
+            "obligation_ids": obligation_ids(mapped["ledger_ids"]),
+            "dialog_map_status": mapped["status"],
+            "disposition": "provisional_obligation",
+        }
+        if mapped["unresolved_reasons"]:
+            scope["dialog_map_unresolved"] = [
+                reason["code"] for reason in mapped["unresolved_reasons"]
+            ]
+        scope_items.append(scope)
     for topic_id in surface["macro_reference"]["leaf_topic_ids"]:
         scope_items.append(
             {
@@ -951,17 +977,26 @@ def build() -> tuple[dict, dict]:
     for resource in executable["resources"]:
         resource_name = resource["resource_name"]
         resource_key = sha256(resource_name.encode("utf-8")).hexdigest()[:16]
-        resource_obligations = obligation_ids(["toolkit-surface-census"])
-        scope_items.append(
-            {
-                "id": f"scope:executable-form:{resource_key}",
-                "kind": "executable_form",
-                "source_id": resource_name,
-                "source_sha256": resource["resource_sha256"],
-                "obligation_ids": resource_obligations,
-                "disposition": "provisional_obligation",
-            }
+        mapped_dialogs = sorted(form_dialogs.get(resource_name, []))
+        resource_obligations = obligation_ids(
+            sorted({
+                ledger_id
+                for dialog_id in mapped_dialogs
+                for ledger_id in dialog_map[dialog_id]["ledger_ids"]
+            })
+            or ["toolkit-surface-census"]
         )
+        form_scope = {
+            "id": f"scope:executable-form:{resource_key}",
+            "kind": "executable_form",
+            "source_id": resource_name,
+            "source_sha256": resource["resource_sha256"],
+            "obligation_ids": resource_obligations,
+            "disposition": "provisional_obligation",
+        }
+        if mapped_dialogs:
+            form_scope["dialog_ids"] = mapped_dialogs
+        scope_items.append(form_scope)
         for component in resource["components"]:
             source_id = f"{resource_name}/{component['path']}"
             item_key = sha256(source_id.encode("utf-8")).hexdigest()[:20]
@@ -1130,7 +1165,14 @@ def build() -> tuple[dict, dict]:
         {"id": "indexed_topics", "scope_kind": "topic", "count": by_kind["topic"], "resolved": False},
         {"id": "page_headings", "scope_kind": "heading", "count": by_kind["heading"], "resolved": False},
         {"id": "page_anchors", "scope_kind": "anchor", "count": by_kind["anchor"], "resolved": False},
-        {"id": "device_dialog_candidates", "scope_kind": "dialog", "count": by_kind["dialog"], "resolved": False},
+        {
+            "id": "device_dialog_candidates",
+            "scope_kind": "dialog",
+            "count": by_kind["dialog"],
+            "resolved": False,
+            "dialog_map_resolved": sum(row["status"] == "resolved" for row in dialog_map.values()),
+            "dialog_map_unresolved": sum(row["status"] == "unresolved" for row in dialog_map.values()),
+        },
         {"id": "macro_reference_leaves", "scope_kind": "macro_leaf", "count": by_kind["macro_leaf"], "resolved": False},
         {"id": "unindexed_html", "scope_kind": "unindexed_html", "count": by_kind["unindexed_html"], "resolved": False},
         {"id": "public_command_blocks", "scope_kind": "public_command", "count": by_kind["public_command"], "resolved": False},
@@ -1168,6 +1210,7 @@ def build() -> tuple[dict, dict]:
                 json.dumps(surface["unindexed_html"], ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
             ).hexdigest(),
             "toolkit_executable_surface": digest(EXECUTABLE_SURFACE_PATH),
+            "toolkit_dialog_map": digest(DIALOG_MAP_PATH),
             "toolkit_executable_binary": executable["sources"]["executable"]["sha256"],
             "toolkit_map": executable["sources"]["map"]["sha256"],
             "feature_ledger": digest(LEDGER_PATH),
