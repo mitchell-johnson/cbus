@@ -2,14 +2,14 @@
 
 Updated **28 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
-The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **39 areas: 18 implemented, 19 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
+The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **42 areas: 18 implemented, 21 in progress and 3 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
 The [functional parity register](parity-register.md) now owns the completion
 decision. Its current generated revision accounts for 22,156 source records,
 including 412 parsed Toolkit forms, 10,102 controls and 1,892 event bindings,
-and 39 provisional umbrella obligations plus 442 provisional C-Gate path
+and 42 provisional umbrella obligations plus 442 provisional C-Gate path
 obligations. Three narrow `SESSION_ID` functions are defined separately,
-giving 484 registered obligations, zero fully accepted obligations and one
+giving 487 registered obligations, zero fully accepted obligations and one
 scoped original-differential evidence receipt. The three `SESSION_ID` functions
 have accepted original-differential evidence for an owned IPv4 loopback
 profile that now includes the internal Console row and native CRLF framing;
@@ -40,7 +40,7 @@ parity register. This narrows the documentation census without making a
 functionality percentage available.
 
 The [27 September implementation review and path to 100%](../../docs/parity-review-and-roadmap.md)
-maps all 39 rows to 59 tracked work items, a first delivery batch, dependencies
+maps all 40 rows to 59 tracked work items, a first delivery batch, dependencies
 and acceptance gates through 100%. Work item counts are not functionality
 percentages.
 It retains the published ledger baseline and rejects category reclassification
@@ -169,6 +169,7 @@ Other feature-specific acceptance, including Windows, native C-Gate, transport c
 | Thermostat configuration — `thermostat-configuration` | Fourteen scalar conversions; retained inner and outer scheduling models; offline CLI load planning for twelve original programmable-unit outcomes; combined offline load/level creation; native unit XML and six scheduling-byte reads; unit-to-application/group/level preview/apply with backup, exactly one target save, full unit/metadata preservation and reload verification; fresh manager and public CLI execution against owned C-Gate 3.4.0.2001; existing-group level-only CLI with prior native acceptance. [Temperature](thermostat-temperature.md), [scheduling](thermostat-scheduling.md), [native scheduling](native-thermostat-schedule.md). | Inherited original loader and service factories; remaining dialog events and complete settings; native collection-order equivalence and physical behavior. |
 | Topology navigation — `topology-navigation` | Offline `project topology` for legacy XML/CBZ: statically recovered Toolkit 1.18 map rules for local interfaces (PCI/CNI/CNI2/CBTI), near/far bridge and wireless-gateway pairing, traversal, grid rows, circular joins and orphan warnings; Navigate to network, Near side and Far side resolution to unit paths plus a routed-command route; bridge-address diagnostics; deterministic DOT/SVG export. A pinned receipt verifies the reproduced constants against the original EXE/MAP. [Topology](topology.md). | Original execution and network-manager order, ExpressFlowChart layout/visual/pixel parity, printing, clipboard bitmap copy, unit-form opening, native C-Gate 3 projects and live topology. |
 | Project documentation — `project-documentation` | Pending. | Project/database documentation and print outputs with native comparison. |
+| DALI commissioning — `dali-commissioning` | cmqttd dispatches all 128 DALI paths; core/emergency/gateway/memory commands, `EXT_ONLY` extraction/deployment and four read-only typed extraction plans run against scripted fake PCI peers. [DALI guide](../../docs/cgate-dali.md). | `COND_QUICK`, `COND_EXTENDED`, `RESCAN_FAULT` and typed `DALI_ONLY`/`FULL` deployment (source-recovered, not implemented); Python typed workflows; gateway and downstream device state, persistence and hardware acceptance. |
 
 ## Detailed completed eDLT functions
 
@@ -239,7 +240,7 @@ The next acceptance work is the unfinished work itself:
 3. Run the physical acceptance matrix for programming, display/control behavior, protection, persistence, recovery, network topology, USB and firmware effects. The current eDLT label audit supplies a repeatable configuration-drift check, but it does not prove rendering, dynamic-label cache state, power-cycle persistence or atomic multi-device state.
 4. Build a fresh wheel from the resulting tree and rerun the Python 3.13 acceptance with every required native gate provisioned and no skips, retaining failed runs and separate focused evidence.
 
-`cbus-toolkit coverage --require-complete` intentionally returns nonzero while this work remains. The **46.15%** implemented-row ratio is simple ledger arithmetic, not an estimated completion percentage; the executable-level functionality census and its acceptance mapping are still incomplete.
+`cbus-toolkit coverage --require-complete` intentionally returns nonzero while this work remains. The **42.86%** implemented-row ratio is simple ledger arithmetic, not an estimated completion percentage; the executable-level functionality census and its acceptance mapping are still incomplete.
 
 Completion-gate note: `coverage` validates the packaged parity register and
 evidence bundle; `--evidence-root` additionally reopens, hashes and checks
@@ -247,7 +248,7 @@ the executed cases in every attached passed report. Full completion requires tha
 complete census, defined and applicable
 functional obligations, implementation, and passed evidence for every required
 acceptance dimension. Historical ledger labels are reported separately and
-cannot make the gate pass. The census remains incomplete: the 39 broad and 442
+cannot make the gate pass. The census remains incomplete: the 40 broad and 442
 C-Gate path obligations are provisional, three `SESSION_ID` functions are
 defined, and none is fully accepted, so `--require-complete` returns nonzero.
 The parity-register and coverage tests guard this behavior.

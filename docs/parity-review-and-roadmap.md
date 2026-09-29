@@ -964,6 +964,7 @@ The detailed retained test/profile boundaries remain in
 | `thermostat-configuration` | W | Full settings/zones/loader/factories/order and physical scheduling | P5 |
 | `topology-navigation` | W | Original map/order/layout, print, clipboard image, unit-form opening and live topology comparison | P8 |
 | `project-documentation` | P | Project/database documentation and print outputs with native comparison and reference integrity | P8 |
+| `dali-commissioning` | W | Conditional extraction, typed deployment, Python typed workflows and gateway/device state and persistence | P7 |
 
 Crosscutting census obligations must also include wireless, scanner input,
 print/image/report export, relay/dimmer logic and external-editor integration.

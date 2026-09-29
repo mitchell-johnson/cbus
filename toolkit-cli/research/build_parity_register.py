@@ -91,6 +91,7 @@ UMBRELLA_PHYSICAL_FIXTURE_FAMILIES = {
     "pci-command-transport": ("interface", "bridge_topology", "reference_network", "power_cycle_rig"),
     "interface-discovery-and-setup": ("interface", "pc_interface", "wireless_gateway"),
     "network-scan-unravel-routing": ("interface", "bridge", "bridge_topology", "reference_network"),
+    "dali-commissioning": ("interface", "dali_gateway", "dali_ballast"),
     "all-unit-parameter-encoding": ("programming_method", "power_cycle_rig"),
     "native-unit-defaults-and-database-editing": ("programming_method",),
     "unit-read-write-verify": ("programming_method", "bridge_topology", "power_cycle_rig"),

@@ -8,7 +8,7 @@ The maintained applications are the Python Toolkit CLI in `toolkit-cli/` and the
 
 `cbus-toolkit` targets Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. It provides offline XML/CBZ project editing, C-Gate and PCI clients, native project and unit workflows, commissioning, scenes, and supported keypad, sensor, and eDLT configuration. It also includes JSON output, compatibility evidence, and a feature ledger.
 
-Full Toolkit parity remains unfinished. The ledger records 39 feature areas: 18 implemented, 19 in progress, and 2 pending. The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate of Toolkit functionality. The machine-readable report still has `complete: false` and `census_complete: false`. See [Toolkit implementation status](../toolkit-cli/docs/implementation-status.md) for per-feature behavior and limits. `cbus-toolkit coverage --require-complete` returns nonzero while completion requirements remain unmet.
+Full Toolkit parity remains unfinished. The ledger records 42 feature areas: 18 implemented, 21 in progress, and 3 pending. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. The machine-readable report still has `complete: false` and `census_complete: false`. See [Toolkit implementation status](../toolkit-cli/docs/implementation-status.md) for per-feature behavior and limits. `cbus-toolkit coverage --require-complete` returns nonzero while completion requirements remain unmet.
 
 ## Rust functionality
 

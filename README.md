@@ -13,7 +13,7 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 | Product | Compatibility measure | Current state |
 | --- | --- | --- |
-| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The evidence register has **22,156 provisional source records**, a scoped original-differential receipt and three source-bound physical-applicability decisions for `SESSION_ID`, and **zero fully accepted obligations**. Its functional denominator is incomplete, so the functionality percentage is unavailable. The older 39-area ledger records 18 implemented, 19 in progress and 2 pending; **18/39 = 46.15%** measures only those broad rows. |
+| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The evidence register has **22,156 provisional source records**, a scoped original-differential receipt and three source-bound physical-applicability decisions for `SESSION_ID`, and **zero fully accepted obligations**. Its functional denominator is incomplete, so the functionality percentage is unavailable. The older 39-area ledger records 18 implemented, 19 in progress and 2 pending; **18/42 = 42.86%** measures only those broad rows. |
 | `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All **429/429 non-obsolete** primary paths are routed (100% command-path routing) and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
 | `cgate-mock` | In-memory C-Gate command surface | All **431** maintained paths parse and dispatch with deterministic protocol-shaped behavior. It does not provide persistent vendor storage, physical C-Bus effects, or device timing. |
 
@@ -162,7 +162,7 @@ display/sort preferences, complete original combined
 parent/SceneManager controls, original interactive Reset/multi-panel execution and
 physical acceptance remain outstanding.
 
-**Full Toolkit parity is not complete.** The feature ledger currently records 39 areas: 18 implemented, 19 in progress, and 2 pending. The simple implemented-row ratio is **18/39 = 46.15%**; it is not a percentage of Toolkit functionality. Check the current machine-readable status with:
+**Full Toolkit parity is not complete.** The feature ledger currently records 42 areas: 18 implemented, 21 in progress, and 3 pending. The simple implemented-row ratio is **18/42 = 42.86%**; it is not a percentage of Toolkit functionality. Check the current machine-readable status with:
 
 ```sh
 cbus-toolkit coverage --require-complete

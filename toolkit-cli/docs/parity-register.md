@@ -345,13 +345,13 @@ the original-differential dimension of the three scoped functions: the
 nine-case payload comparison and the eleven-case exact numeric-tag wire
 comparison. The third marks their physical dimension not applicable to the
 owned loopback profile.
-The 484 records overlap and
+The 487 records overlap and
 are not a deduplicated functional denominator. All 22,156 source records and
 15 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract
 inventory and a one-to-one obligation mapping, while the unresolved subaxes
 above, functional deduplication,
 undocumented Toolkit branches and catalogue firmware profiles remain open.
-The legacy ledger still reports 18 implemented, 19 in
-progress and 2 pending rows, or 46.15% of category labels. That value is
+The legacy ledger still reports 18 implemented, 21 in
+progress and 3 pending rows, or 42.86% of category labels. That value is
 explicitly marked as not being a functionality estimate.

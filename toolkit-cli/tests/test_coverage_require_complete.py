@@ -123,13 +123,13 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertIsNone(progress["obligations"]["accepted_percent"])
         self.assertEqual(progress["legacy_category_summary"]["implemented"], 18)
         self.assertEqual(
-            progress["legacy_category_summary"]["implemented_percent"], 43.9
+            progress["legacy_category_summary"]["implemented_percent"], 42.86
         )
         self.assertFalse(
             progress["legacy_category_summary"]["functionality_estimate"]
         )
         self.assertGreater(progress["scope_items"]["unresolved"], 0)
-        self.assertEqual(len(payload["features"]), 41)
+        self.assertEqual(len(payload["features"]), 42)
         self.assertTrue(
             any(feature["status"] != "implemented" for feature in payload["features"])
         )

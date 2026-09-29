@@ -2,8 +2,8 @@
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
-current ledger has **39 areas: 18 implemented, 19 in progress and 2 pending**.
-The simple implemented-row ratio is **18/39 = 46.15%**; it is not an estimate
+current ledger has **42 areas: 18 implemented, 21 in progress and 3 pending**.
+The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate
 of Toolkit functionality. The new [functional parity register](docs/parity-register.md)
 accounts for 22,156 committed source-surface records. That inventory now
 includes 412 parsed Toolkit forms, 10,102 executable controls and 1,892 event
