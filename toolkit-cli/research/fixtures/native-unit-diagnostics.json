@@ -1,0 +1,814 @@
+{
+ "cleanup_errors": [],
+ "fixture_sha256": "63f0301fbc5f16efeadd7005a2c5e569af79f5d81b9c234eb61c38f7fd8a321f",
+ "native": {
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "cleanup_complete": true,
+  "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+ },
+ "passes": [
+  {
+   "errors": "",
+   "exit_status": 1,
+   "label": "all-present",
+   "result": {
+    "absent_units_queried": false,
+    "all_units_not_found": false,
+    "commands": [
+     {
+      "command": "DBGETXML //DIAGNOSE/254",
+      "lines": [
+       "343-Begin XML snippet",
+       "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+       "347-<Network><OID>00000000-0000-4000-8000-000000000000</OID><TagName>Diag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-4000-8000-000000000000</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:0</InterfaceAddress></Interface><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U4</TagName><Address>4</Address><UnitType>KEYE1</UnitType><UnitName>U4</UnitName><FirmwareVersion>2.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U5</TagName><Address>5</Address><UnitType>KEYGL5</UnitType><UnitName>U5</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U16</TagName><Address>16</Address><UnitType>PC_CNIED</UnitType><UnitName>U16</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U17</TagName><Address>17</Address><UnitType>PC_CNICD</UnitType><UnitName>U17</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U99</TagName><Address>99</Address><UnitType>KEYE1</UnitType><UnitName>U99</UnitName><FirmwareVersion>2.5.00</FirmwareVersion></Unit></Network>",
+       "344 End XML snippet"
+      ]
+     },
+     {
+      "command": "NET PINGU //DIAGNOSE/254",
+      "lines": [
+       "302-Units=4, 5, 16, 17",
+       "200 OK."
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/4 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/4: NetVoltage=31.0"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/5 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/5: NetVoltage=31.5"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/16 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/16: NetVoltage=31.8"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/17 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/17: NetVoltage=30.7"
+      ]
+     },
+     {
+      "command": "DO //DIAGNOSE/254/p/4 Psync",
+      "lines": [
+       "202 Done: //DIAGNOSE/254/p/4"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/4 BurdenActive",
+      "lines": [
+       "300 //DIAGNOSE/254/p/4: BurdenActive=no"
+      ]
+     },
+     {
+      "command": "DO //DIAGNOSE/254/p/16 Psync",
+      "lines": [
+       "202 Done: //DIAGNOSE/254/p/16"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/16 BurdenActive",
+      "lines": [
+       "300 //DIAGNOSE/254/p/16: BurdenActive=no"
+      ]
+     },
+     {
+      "command": "DO //DIAGNOSE/254/p/17 Psync",
+      "lines": [
+       "202 Done: //DIAGNOSE/254/p/17"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/17 BurdenActive",
+      "lines": [
+       "300 //DIAGNOSE/254/p/17: BurdenActive=yes"
+      ]
+     },
+     {
+      "command": "PROJECT USE DIAGNOSE",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOCK <session>_lock //DIAGNOSE/254",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP START <session> <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOAD <session> //DIAGNOSE/254/p/4",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP GET <session> ClockGenEnable",
+      "lines": [
+       "460 No such parameter: ClockGenEnable"
+      ]
+     },
+     {
+      "command": "PP END <session>",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP UNLOCK <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PROJECT USE DIAGNOSE",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOCK <session>_lock //DIAGNOSE/254",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP START <session> <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOAD <session> //DIAGNOSE/254/p/16",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP GET <session> ClockGenEnable",
+      "lines": [
+       "120-read 12/12",
+       "315 ClockGenEnable=1"
+      ]
+     },
+     {
+      "command": "PP END <session>",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP UNLOCK <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PROJECT USE DIAGNOSE",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOCK <session>_lock //DIAGNOSE/254",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP START <session> <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOAD <session> //DIAGNOSE/254/p/17",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP GET <session> ClockGenEnable",
+      "lines": [
+       "120-read 12/12",
+       "315 ClockGenEnable=0"
+      ]
+     },
+     {
+      "command": "PP END <session>",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP UNLOCK <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     }
+    ],
+    "complete": false,
+    "database_unit_count": 5,
+    "device_verified": false,
+    "electrical_measurement_verified": false,
+    "format": "cbus-network-unit-diagnostics-v1",
+    "network": "//DIAGNOSE/254",
+    "pingu_addresses": [
+     4,
+     5,
+     16,
+     17
+    ],
+    "requested": {
+     "burden": true,
+     "clock": true,
+     "voltage": true
+    },
+    "rescan_network": [],
+    "units": [
+     {
+      "address": 4,
+      "burden": "not-enabled",
+      "burden_basis": "native-burdenactive",
+      "clock": "not-enabled",
+      "clock_basis": "no-clockgenenable-parameter",
+      "errors": [],
+      "found": "present",
+      "unit_type": "KEYE1",
+      "voltage": 31.0,
+      "voltage_text": "31.0"
+     },
+     {
+      "address": 5,
+      "burden": "not-enabled",
+      "burden_basis": "toolkit-unit-type-rule",
+      "clock": "not-enabled",
+      "clock_basis": "toolkit-unit-type-rule",
+      "errors": [],
+      "found": "present",
+      "unit_type": "KEYGL5",
+      "voltage": 31.5,
+      "voltage_text": "31.5"
+     },
+     {
+      "address": 16,
+      "burden": "not-enabled",
+      "burden_basis": "native-burdenactive",
+      "clock": "enabled",
+      "clock_basis": "native-pp-clockgenenable",
+      "errors": [],
+      "found": "present",
+      "unit_type": "PC_CNIED",
+      "voltage": 31.8,
+      "voltage_text": "31.8"
+     },
+     {
+      "address": 17,
+      "burden": "enabled",
+      "burden_basis": "native-burdenactive",
+      "clock": "not-enabled",
+      "clock_basis": "native-pp-clockgenenable",
+      "errors": [],
+      "found": "present",
+      "unit_type": "PC_CNICD",
+      "voltage": 30.7,
+      "voltage_text": "30.7"
+     },
+     {
+      "address": 99,
+      "burden": "unknown",
+      "burden_basis": null,
+      "clock": "unknown",
+      "clock_basis": null,
+      "errors": [],
+      "found": "not-found",
+      "unit_type": "KEYE1",
+      "voltage": "unknown",
+      "voltage_text": null
+     }
+    ],
+    "voltage_source": "cgate-cached-netvoltage"
+   }
+  },
+  {
+   "errors": "",
+   "exit_status": 1,
+   "label": "unit-17-detached",
+   "result": {
+    "absent_units_queried": false,
+    "all_units_not_found": false,
+    "commands": [
+     {
+      "command": "DBGETXML //DIAGNOSE/254",
+      "lines": [
+       "343-Begin XML snippet",
+       "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+       "347-<Network><OID>00000000-0000-4000-8000-000000000000</OID><TagName>Diag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-4000-8000-000000000000</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:0</InterfaceAddress></Interface><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U4</TagName><Address>4</Address><UnitType>KEYE1</UnitType><UnitName>U4</UnitName><FirmwareVersion>2.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U5</TagName><Address>5</Address><UnitType>KEYGL5</UnitType><UnitName>U5</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U16</TagName><Address>16</Address><UnitType>PC_CNIED</UnitType><UnitName>U16</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U17</TagName><Address>17</Address><UnitType>PC_CNICD</UnitType><UnitName>U17</UnitName><FirmwareVersion>5.5.00</FirmwareVersion></Unit><Unit><OID>00000000-0000-4000-8000-000000000000</OID><TagName>U99</TagName><Address>99</Address><UnitType>KEYE1</UnitType><UnitName>U99</UnitName><FirmwareVersion>2.5.00</FirmwareVersion></Unit></Network>",
+       "344 End XML snippet"
+      ]
+     },
+     {
+      "command": "NET PINGU //DIAGNOSE/254",
+      "lines": [
+       "302-Units=4, 5, 16",
+       "200 OK."
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/4 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/4: NetVoltage=31.0"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/5 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/5: NetVoltage=31.5"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/16 NetVoltage",
+      "lines": [
+       "300 //DIAGNOSE/254/p/16: NetVoltage=31.8"
+      ]
+     },
+     {
+      "command": "DO //DIAGNOSE/254/p/4 Psync",
+      "lines": [
+       "202 Done: //DIAGNOSE/254/p/4"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/4 BurdenActive",
+      "lines": [
+       "300 //DIAGNOSE/254/p/4: BurdenActive=no"
+      ]
+     },
+     {
+      "command": "DO //DIAGNOSE/254/p/16 Psync",
+      "lines": [
+       "202 Done: //DIAGNOSE/254/p/16"
+      ]
+     },
+     {
+      "command": "GET //DIAGNOSE/254/p/16 BurdenActive",
+      "lines": [
+       "300 //DIAGNOSE/254/p/16: BurdenActive=no"
+      ]
+     },
+     {
+      "command": "PROJECT USE DIAGNOSE",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOCK <session>_lock //DIAGNOSE/254",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP START <session> <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOAD <session> //DIAGNOSE/254/p/4",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP GET <session> ClockGenEnable",
+      "lines": [
+       "460 No such parameter: ClockGenEnable"
+      ]
+     },
+     {
+      "command": "PP END <session>",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP UNLOCK <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PROJECT USE DIAGNOSE",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOCK <session>_lock //DIAGNOSE/254",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP START <session> <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP LOAD <session> //DIAGNOSE/254/p/16",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP GET <session> ClockGenEnable",
+      "lines": [
+       "120-read 12/12",
+       "315 ClockGenEnable=1"
+      ]
+     },
+     {
+      "command": "PP END <session>",
+      "lines": [
+       "200 OK."
+      ]
+     },
+     {
+      "command": "PP UNLOCK <session>_lock",
+      "lines": [
+       "200 OK."
+      ]
+     }
+    ],
+    "complete": false,
+    "database_unit_count": 5,
+    "device_verified": false,
+    "electrical_measurement_verified": false,
+    "format": "cbus-network-unit-diagnostics-v1",
+    "network": "//DIAGNOSE/254",
+    "pingu_addresses": [
+     4,
+     5,
+     16
+    ],
+    "requested": {
+     "burden": true,
+     "clock": true,
+     "voltage": true
+    },
+    "rescan_network": [],
+    "units": [
+     {
+      "address": 4,
+      "burden": "not-enabled",
+      "burden_basis": "native-burdenactive",
+      "clock": "not-enabled",
+      "clock_basis": "no-clockgenenable-parameter",
+      "errors": [],
+      "found": "present",
+      "unit_type": "KEYE1",
+      "voltage": 31.0,
+      "voltage_text": "31.0"
+     },
+     {
+      "address": 5,
+      "burden": "not-enabled",
+      "burden_basis": "toolkit-unit-type-rule",
+      "clock": "not-enabled",
+      "clock_basis": "toolkit-unit-type-rule",
+      "errors": [],
+      "found": "present",
+      "unit_type": "KEYGL5",
+      "voltage": 31.5,
+      "voltage_text": "31.5"
+     },
+     {
+      "address": 16,
+      "burden": "not-enabled",
+      "burden_basis": "native-burdenactive",
+      "clock": "enabled",
+      "clock_basis": "native-pp-clockgenenable",
+      "errors": [],
+      "found": "present",
+      "unit_type": "PC_CNIED",
+      "voltage": 31.8,
+      "voltage_text": "31.8"
+     },
+     {
+      "address": 17,
+      "burden": "unknown",
+      "burden_basis": null,
+      "clock": "unknown",
+      "clock_basis": null,
+      "errors": [],
+      "found": "not-found",
+      "unit_type": "PC_CNICD",
+      "voltage": "unknown",
+      "voltage_text": null
+     },
+     {
+      "address": 99,
+      "burden": "unknown",
+      "burden_basis": null,
+      "clock": "unknown",
+      "clock_basis": null,
+      "errors": [],
+      "found": "not-found",
+      "unit_type": "KEYE1",
+      "voltage": "unknown",
+      "voltage_text": null
+     }
+    ],
+    "voltage_source": "cgate-cached-netvoltage"
+   }
+  }
+ ],
+ "probes": [
+  {
+   "command": "GET //DIAGNOSE/254/p/16 NetVoltage",
+   "lines": [
+    "300 //DIAGNOSE/254/p/16: NetVoltage=31.8"
+   ]
+  },
+  {
+   "command": "DO //DIAGNOSE/254/p/16 Psync",
+   "lines": [
+    "202 Done: //DIAGNOSE/254/p/16"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/16 BurdenActive",
+   "lines": [
+    "300 //DIAGNOSE/254/p/16: BurdenActive=no"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/99 NetVoltage",
+   "lines": [
+    "401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"
+   ]
+  },
+  {
+   "command": "DO //DIAGNOSE/254/p/99 Psync",
+   "lines": [
+    "401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/99 BurdenActive",
+   "lines": [
+    "401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/17 NetVoltage",
+   "lines": [
+    "300 //DIAGNOSE/254/p/17: NetVoltage=30.7"
+   ]
+  },
+  {
+   "command": "DO //DIAGNOSE/254/p/17 Psync",
+   "lines": [
+    "408 Operation failed: //DIAGNOSE/254/p/17 ()"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/17 BurdenActive",
+   "lines": [
+    "300 //DIAGNOSE/254/p/17: BurdenActive=yes"
+   ]
+  },
+  {
+   "command": "GET //DIAGNOSE/254/p/17 NetVoltage",
+   "lines": [
+    "300 //DIAGNOSE/254/p/17: NetVoltage=30.7"
+   ]
+  }
+ ],
+ "project": "DIAGNOSE",
+ "scope": "Owned native C-Gate + synthetic PCI; no physical electrical claim",
+ "setup": [
+  {
+   "command": "PROJECT NEW DIAGNOSE",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT USE DIAGNOSE",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBCREATENET 254 Diag Cni 127.0.0.1:0",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBADDSAFE //DIAGNOSE/254 Unit 4 U4",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/4/UnitType KEYE1",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/4/FirmwareVersion 2.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/4/UnitName U4",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBADDSAFE //DIAGNOSE/254 Unit 5 U5",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/5/UnitType KEYGL5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/5/FirmwareVersion 5.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/5/UnitName U5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBADDSAFE //DIAGNOSE/254 Unit 16 U16",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/16/UnitType PC_CNIED",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/16/FirmwareVersion 5.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/16/UnitName U16",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBADDSAFE //DIAGNOSE/254 Unit 17 U17",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/17/UnitType PC_CNICD",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/17/FirmwareVersion 5.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/17/UnitName U17",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBADDSAFE //DIAGNOSE/254 Unit 99 U99",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/99/UnitType KEYE1",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/99/FirmwareVersion 2.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //DIAGNOSE/254/p/99/UnitName U99",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT SAVE DIAGNOSE",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET LOAD DB DIAGNOSE",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET OPEN //DIAGNOSE/254",
+   "lines": [
+    "120-initializing",
+    "120-opening port",
+    "120-starting network threads",
+    "120-pci reset",
+    "120-checking connection",
+    "120-relinking to bridged networks",
+    "120-open complete",
+    "200 OK: //DIAGNOSE/254"
+   ]
+  }
+ ],
+ "wire_rejections": [
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "7623",
+   "reason": "Unknown unit",
+   "sequence": 160
+  },
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "7723",
+   "reason": "Unknown unit",
+   "sequence": 164
+  },
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "7823",
+   "reason": "Unknown unit",
+   "sequence": 168
+  },
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "7923",
+   "reason": "Unknown unit",
+   "sequence": 170
+  },
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "7a23",
+   "reason": "Unknown unit",
+   "sequence": 174
+  },
+  {
+   "connection": 0,
+   "direction": "tx",
+   "hex": "6723",
+   "reason": "Unknown unit",
+   "sequence": 178
+  }
+ ]
+}

@@ -101,6 +101,32 @@ def default_units() -> list[UnitState]:
     ]
 
 
+NET_VOLTAGE_BYTE = 9
+
+
+def net_voltage_text(summary: bytes) -> str:
+    """Native C-Gate 3.4.0.2001 NetVoltage text for one IDENTIFY4 reply.
+
+    CBus2Unit.x() accepts exactly twelve extended-diagnostic-summary bytes
+    and stores byte 9. CBus2Unit.a() formats it as the one-decimal truncation
+    of ``raw * 0.15904 + 0.55`` volts. Unit replies and this formula are the
+    only inputs; no electrical load, cable drop or supply model is implied.
+    """
+    summary = bytes(summary)
+    if len(summary) != 12:
+        raise ValueError("IDENTIFY4 extended diagnostic summary must contain twelve bytes")
+    tenths = int((summary[NET_VOLTAGE_BYTE] * 0.15904 + 0.5 + 0.05) * 10.0)
+    return f"{tenths // 10}.{tenths % 10}"
+
+
+def with_net_voltage(summary: bytes, raw: int) -> bytes:
+    """Return IDENTIFY4 with an explicitly chosen raw network-voltage byte."""
+    summary = bytes(summary)
+    if len(summary) != 12:
+        raise ValueError("IDENTIFY4 extended diagnostic summary must contain twelve bytes")
+    return summary[:NET_VOLTAGE_BYTE] + bytes([_byte(raw, "network voltage byte")]) + summary[NET_VOLTAGE_BYTE + 1:]
+
+
 def synthetic_units() -> list[UnitState]:
     """Named SIMTEST fixture: captured identities plus deliberately chosen state.
 
@@ -409,6 +435,22 @@ class PCISimulator:
                              if "lighting" in document else LightingState(self._fixture_lighting_groups(), clock=self._lighting_clock))
         except (KeyError, TypeError, AttributeError) as error:
             raise ValueError("Invalid simulator state file") from error
+
+    def detach_unit(self, address):
+        """Remove one non-interface unit, as when it is pulled from the bus.
+
+        Later MMI replies omit it and requests addressed to it are rejected as
+        an unknown unit. This is explicit test state, not a model of physical
+        disconnection timing, retries or the unit's retained memory.
+        """
+        address = _byte(address, "unit address")
+        with self._lock:
+            if address == self.local_unit:
+                raise ValueError("The local interface unit cannot be detached")
+            if address not in self.units:
+                raise ValueError("No simulated unit is configured at that address")
+            del self.units[address]
+            self._persist()
 
     def _persist(self):
         if self.state_path is None:

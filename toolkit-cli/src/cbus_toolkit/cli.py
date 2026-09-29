@@ -1640,6 +1640,16 @@ def build_parser():
         help="Native decimal-dot serial, e.g. 12345.67",
     )
     p.add_argument("mode", type=_locate_mode)
+    p = netops.add_parser(
+        "diagnose",
+        help="Toolkit Diagnostics dialog: per-unit presence, voltage, burden and clock status",
+    )
+    p.add_argument("address", type=_direct_network)
+    p.add_argument("--unit", type=_byte, action="append",
+                   help="Restrict per-unit reads to these database units (default: all)")
+    p.add_argument("--no-voltage", action="store_true", help="Clear Get Network Voltage")
+    p.add_argument("--no-burden", action="store_true", help="Clear Get Network Burden")
+    p.add_argument("--no-clock", action="store_true", help="Clear Get Network Clock")
     for action in ("state", "open", "close", "sync", "sync-new", "discover", "check-units", "unravel", "clocks", "tree", "rename", "set-project", "wait-ready", "calculate"):
         p = netops.add_parser(action)
         p.add_argument("address")
@@ -2616,7 +2626,8 @@ def _cgate(args):
     # Native C-Gate and cmqttd return the network document in one potentially
     # large 347 row after the short XML declaration. Leave room for the 4 MiB
     # document bound plus its status envelope.
-    large_xml = args.action == "database" and args.remote_action in ("get-xml", "set-xml")
+    large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml"))
+                 or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
@@ -2893,7 +2904,7 @@ def _cgate(args):
             if hasattr(result, "successful") and not result.successful:
                 raise RuntimeError("Network command did not complete: " + result.final)
             return result, int((args.remote_action == "calculate" and not result["passed"])
-                               or (args.remote_action == "clocks" and not result["complete"]))
+                               or (args.remote_action in ("clocks", "diagnose") and not result["complete"]))
         if args.action == "scene":
             from .scenes import NativeScenes, SceneExecutor, SceneFile
             if args.remote_action in ("execute", "record-file"):
@@ -3224,6 +3235,12 @@ def _network(args, client):
         return network.check_units(args.address, args.unit)
     if action == "unravel":
         return network.unravel(args.address, units=args.unit, match_database=args.match_database)
+    if action == "diagnose":
+        from .unit_diagnostics import NetworkDiagnostics
+        return NetworkDiagnostics(client).diagnose(
+            args.address, units=args.unit, voltage=not args.no_voltage,
+            burden=not args.no_burden, clock=not args.no_clock,
+        ).as_dict()
     if action == "clocks":
         from .clocks import NativeClocks
         clocks = NativeClocks(client)

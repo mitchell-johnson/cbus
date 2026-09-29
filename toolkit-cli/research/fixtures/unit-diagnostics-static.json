@@ -1,0 +1,504 @@
+{
+  "dialog": {
+    "class": "TfrmPingUnits",
+    "entry": "TfrmUnitsNode.actPingExecute -> TfrmPingUnits.SetNetwork",
+    "help_topics": [
+      20132,
+      20136
+    ]
+  },
+  "display_rules": {
+    "absent_unit_value": "Unknown",
+    "burden_clock": "Enabled or -",
+    "per_unit_get_failures": "Voltage and burden agent reads swallow the listed C-Gate exceptions, leaving the previous cached value",
+    "values_only_for_unit_present": true,
+    "voltage": "firmware \"1.00\" or wireless network -> N/A; exactly 0 -> unknown; else FormatFloat 0.0V",
+    "voltage_parse": "text after \"=\" (20 characters) as float; default -1.0; negative -> 0"
+  },
+  "format": "cbus-toolkit-unit-diagnostics-static-v1",
+  "limit": "This verifies one pinned original source chain, not interactive Toolkit execution, the exact PP session naming/load-all flags, error-dialog text selection for IDs 0xEAB..0xEAD, or physical electrical measurements.",
+  "method_spans": {
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad": {
+      "bytes": 5552,
+      "end": "0xcb72bc",
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5",
+      "start": "0xcb5d0c"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadBurden": {
+      "bytes": 956,
+      "end": "0xcbf374",
+      "sha256": "59f4a064965ec75361c8dafe021b0cd0597d2ed60dfbd458afddd72a098bcbb7",
+      "start": "0xcbefb8"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadClockGenEnabled": {
+      "bytes": 464,
+      "end": "0xcbf7e8",
+      "sha256": "b388f6fabf01df57aa74e721bdc1d4ce0b385216ccabd0f2a2ec4ce7cd2826db",
+      "start": "0xcbf618"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.PhysicalUnitGetVoltage": {
+      "bytes": 576,
+      "end": "0xcbefb8",
+      "sha256": "b0cb9ecb3fedccf272e8671bf9f31d1aba3c899ed954602bf33074ca24c4d7ef",
+      "start": "0xcbed78"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.DisplayableNetVoltage": {
+      "bytes": 240,
+      "end": "0xf33c78",
+      "sha256": "1d1f8a38956b15c738d165536d194d074a3514d75470024e0a635ad41117b232",
+      "start": "0xf33b88"
+    },
+    "CIS_TcgcDoPsync.TcgcDoPsync.GenerateCommandText": {
+      "bytes": 104,
+      "end": "0xcb3100",
+      "sha256": "c30f70ca512b472d81c8aa883e71975163bec538f3f2545fd0a3e10b1ab3fa89",
+      "start": "0xcb3098"
+    },
+    "CIS_TcgcGet.TcgcGet.GenerateCommandText": {
+      "bytes": 104,
+      "end": "0x846d8c",
+      "sha256": "21064f208efcb9cf666e1007a31e79449f52ffffdbde9513ecb59139d7b573a1",
+      "start": "0x846d24"
+    },
+    "CIS_TcgcGetVoltage.TcgcGetVoltage.GenerateCommandText": {
+      "bytes": 120,
+      "end": "0xcb2dac",
+      "sha256": "f61a94234ac13300af710cfc138047428aa642fb653f3caf7a660127ab64ade3",
+      "start": "0xcb2d34"
+    },
+    "CIS_TcgcGetVoltage.TcgcGetVoltage.GetVoltage": {
+      "bytes": 204,
+      "end": "0xcb2e78",
+      "sha256": "fb63f411c152bc03c2c45998db1e6c2f1e185f7033e21281587055a244b47efb",
+      "start": "0xcb2dac"
+    },
+    "CIS_TcgcNetPingU.TcgcNetPingU.GenerateCommandText": {
+      "bytes": 80,
+      "end": "0xdcd978",
+      "sha256": "99686113aa44915e654a5bf912f1fd11c65a9a8bb1e7bb88e502f83bb93258ab",
+      "start": "0xdcd928"
+    },
+    "CIS_TcgcPPGet.TcgcPPGet.GenerateCommandText": {
+      "bytes": 176,
+      "end": "0xcb1ccc",
+      "sha256": "00e2ace19a2f145b85c5998c6fd95772307d1f81f5fb8cf3ba7583138fc6b4cd",
+      "start": "0xcb1c1c"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.AddUnscannedUnit": {
+      "bytes": 464,
+      "end": "0xea3900",
+      "sha256": "e64552fefcbbdef161c71f05cc683e340efba1dd12805d20302149c8a8cac865",
+      "start": "0xea3730"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.AllUnitsFailed": {
+      "bytes": 196,
+      "end": "0xea413c",
+      "sha256": "44778a69c5f4ca974ff08d82fa8c132c9291294bb00ec74b161b1a9824a575a8",
+      "start": "0xea4078"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.GetBurden": {
+      "bytes": 240,
+      "end": "0xea3ae0",
+      "sha256": "b863f6ba7d2e9f0d9621e20d452d198231143ca112f924e657429e7fc6718907",
+      "start": "0xea39f0"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.GetClock": {
+      "bytes": 256,
+      "end": "0xea3be0",
+      "sha256": "b6206be4d908aa67646bfc151e508da1fc686ac503b8119a85518ceb0e4fae39",
+      "start": "0xea3ae0"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.GetVolts": {
+      "bytes": 240,
+      "end": "0xea39f0",
+      "sha256": "2f71dab16fda0df2fcba99f394583cd0b1d5514d694a2704e517fc8f5d134dcd",
+      "start": "0xea3900"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.PopulateUnits": {
+      "bytes": 440,
+      "end": "0xea3514",
+      "sha256": "5b306f308677571eb37de1ee026b6e064fcebc01c91613360319ecde72a4e186",
+      "start": "0xea335c"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.ProcessResult": {
+      "bytes": 244,
+      "end": "0xea3608",
+      "sha256": "4be3c679d7aa431773e2b7d0ce79a4602dd14ac963b63e163a595b62bfb0433c",
+      "start": "0xea3514"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.ProcessSingleResult": {
+      "bytes": 296,
+      "end": "0xea3730",
+      "sha256": "e9f94a578f1db9b3320eba4893a70bfe04b6c438b71c36ebd91302d03dc4d105",
+      "start": "0xea3608"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.UpdateUnitBurden": {
+      "bytes": 412,
+      "end": "0xea3edc",
+      "sha256": "d130cb7d534c84d5f01cc6f60dd7a0bc06456a6c1e93d07d4f7a41880cb8467a",
+      "start": "0xea3d40"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.UpdateUnitClock": {
+      "bytes": 412,
+      "end": "0xea4078",
+      "sha256": "ab565083c2ddac6dd05acca344ae7ccf926cf4d496cc53830d2a1898392654ed",
+      "start": "0xea3edc"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.UpdateUnitVolts": {
+      "bytes": 352,
+      "end": "0xea3d40",
+      "sha256": "8cee5b45c293b34e2b6dace78dd455e94e1db8be6a475f2412dc0131a8771c3e",
+      "start": "0xea3be0"
+    },
+    "CIS_TfrmPingUnits.TfrmPingUnits.WizardPage1NextButtonClick": {
+      "bytes": 1516,
+      "end": "0xea32b0",
+      "sha256": "f84b4218751d6a06d7c77fc3ea14f1e30734c53432b61fea7c21a7fbfee4aa77",
+      "start": "0xea2cc4"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "recovered_sequence": [
+    "Rebuild rows from the network unit manager (custom address-ascending order); Unit Found=Not Found, Voltage/Burden/Clock blank",
+    "net pingu <network>; each listed database address -> Unit Present; each other address -> new row Unknown/Rescan Network with Unknown for every checked option",
+    "Get Network Voltage: for every database unit, agent verb NetVoltage -> get <unit>  NetVoltage (skips wireless and non-units)",
+    "Get Network Burden: for every database unit, agent verb LoadBurden -> KEYGL5/SENTEMP4 set no burden; otherwise do <unit> Psync then get <unit> BurdenActive; \"yes\" means enabled",
+    "Get Network Clock: for every database unit, agent verb LoadClockGenEnabled -> KEYGL5/SENTEMP4 set clock disabled; otherwise PP lock/start/load/get ClockGenEnable/end/unlock; \"1\" means enabled",
+    "If every row still reads Not Found, show error 0xEAB"
+  ],
+  "verified_exception_tables": {
+    "0xcbee9e": [
+      "CIS_TcgcGet..EcgcGetParameterNotFound",
+      "CIS_TcgcGet..EcgcGetBadObject",
+      "CIS_TCGateCommand..ECGateCommandTimeOut",
+      "CIS_TcgcGet..EcgcGetUnitNotFound",
+      "CIS_TcgcGet..EcgcGetNetworkNotFound"
+    ],
+    "0xcbf1b1": [
+      "CIS_TcgcGet..EcgcGetParameterNotFound",
+      "CIS_TcgcGet..EcgcGetBadObject",
+      "CIS_TcgcGet..EcgcGetNetworkNotFound",
+      "CIS_TcgcGet..EcgcGetUnitNotFound",
+      "CIS_TcgcGet..EcgcGetApplicationNotFound",
+      "CIS_TCGateCommand..EcgcGetSyntaxError",
+      "CIS_TcgcGet..EcgcAccessDenied",
+      "CIS_TcgcDoQSync..ECGateErrorPSyncUnitNotFound"
+    ],
+    "0xea2ee2": [
+      "CIS_TCBusObject..ECGateObjectException",
+      "CIS_TCGateCommand..ECGateCommand",
+      "CIS_TCBusObject..ECGateSessionAlreadyOpen",
+      "SysUtils..Exception"
+    ]
+  },
+  "verified_instructions": {
+    "0x846d33": {
+      "mnemonic": "push",
+      "operands": "0x846d70"
+    },
+    "0xcb1c5d": {
+      "mnemonic": "push",
+      "operands": "0xcb1c98"
+    },
+    "0xcb2d43": {
+      "mnemonic": "push",
+      "operands": "0xcb2d78"
+    },
+    "0xcb2d51": {
+      "mnemonic": "push",
+      "operands": "0xcb2d90"
+    },
+    "0xcb2dd3": {
+      "mnemonic": "mov",
+      "operands": "dword ptr [ebp - 0xc], 0x80000000"
+    },
+    "0xcb2dda": {
+      "mnemonic": "mov",
+      "operands": "word ptr [ebp - 8], 0xbfff"
+    },
+    "0xcb2e24": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0x14"
+    },
+    "0xcb2e34": {
+      "mnemonic": "call",
+      "operands": "0x842214"
+    },
+    "0xcb30a7": {
+      "mnemonic": "push",
+      "operands": "0xcb30dc"
+    },
+    "0xcb30b5": {
+      "mnemonic": "push",
+      "operands": "0xcb30f0"
+    },
+    "0xcb64a8": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcb7040"
+    },
+    "0xcb64bc": {
+      "mnemonic": "call",
+      "operands": "0xcbed78"
+    },
+    "0xcb64c8": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcb7064"
+    },
+    "0xcb64dc": {
+      "mnemonic": "call",
+      "operands": "0xcbefb8"
+    },
+    "0xcb6508": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcb70bc"
+    },
+    "0xcb651c": {
+      "mnemonic": "call",
+      "operands": "0xcbf618"
+    },
+    "0xcbef26": {
+      "mnemonic": "call",
+      "operands": "0xcb2dac"
+    },
+    "0xcbef32": {
+      "mnemonic": "fcomp",
+      "operands": "dword ptr [0xcbefb4]"
+    },
+    "0xcbf041": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf308"
+    },
+    "0xcbf060": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf324"
+    },
+    "0xcbf076": {
+      "mnemonic": "call",
+      "operands": "0xf30190"
+    },
+    "0xcbf091": {
+      "mnemonic": "call",
+      "operands": "0xcb3010"
+    },
+    "0xcbf18d": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf344"
+    },
+    "0xcbf293": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf36c"
+    },
+    "0xcbf687": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf77c"
+    },
+    "0xcbf6a6": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf798"
+    },
+    "0xcbf6cb": {
+      "mnemonic": "call",
+      "operands": "0xcb9884"
+    },
+    "0xcbf6d9": {
+      "mnemonic": "call",
+      "operands": "0xcb9d54"
+    },
+    "0xcbf6e7": {
+      "mnemonic": "call",
+      "operands": "0xcba510"
+    },
+    "0xcbf6f2": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xcbf7b8"
+    },
+    "0xcbf6fc": {
+      "mnemonic": "call",
+      "operands": "0xcbb0e0"
+    },
+    "0xcbf70a": {
+      "mnemonic": "call",
+      "operands": "0xcbbd24"
+    },
+    "0xcbf714": {
+      "mnemonic": "call",
+      "operands": "0xcbbf04"
+    },
+    "0xcbf71c": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xcbf7e4"
+    },
+    "0xdcd946": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xdcd960"
+    },
+    "0xea2d10": {
+      "mnemonic": "call",
+      "operands": "0xea335c"
+    },
+    "0xea2d56": {
+      "mnemonic": "mov",
+      "operands": "eax, dword ptr [0x13c3c8c]"
+    },
+    "0xea2dfd": {
+      "mnemonic": "call",
+      "operands": "0xdcd8ac"
+    },
+    "0xea2e37": {
+      "mnemonic": "call",
+      "operands": "0x843860"
+    },
+    "0xea2e48": {
+      "mnemonic": "call",
+      "operands": "0xea3514"
+    },
+    "0xea2e65": {
+      "mnemonic": "call",
+      "operands": "0xea3900"
+    },
+    "0xea2e82": {
+      "mnemonic": "call",
+      "operands": "0xea39f0"
+    },
+    "0xea2e9f": {
+      "mnemonic": "call",
+      "operands": "0xea3ae0"
+    },
+    "0xea316a": {
+      "mnemonic": "call",
+      "operands": "0xea4078"
+    },
+    "0xea3181": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xeab"
+    },
+    "0xea36bb": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea2b18"
+    },
+    "0xea36e9": {
+      "mnemonic": "call",
+      "operands": "0xea3730"
+    },
+    "0xea376c": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xea38d8"
+    },
+    "0xea37ab": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea2b10"
+    },
+    "0xea3964": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea39d8"
+    },
+    "0xea3974": {
+      "mnemonic": "call",
+      "operands": "dword ptr [ebx + 0x88]"
+    },
+    "0xea3a54": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea3ac8"
+    },
+    "0xea3b44": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea3bb8"
+    },
+    "0xea3c85": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xea2b18"
+    },
+    "0xea3ca2": {
+      "mnemonic": "call",
+      "operands": "dword ptr [ecx + 0xe8]"
+    },
+    "0xea3cba": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xea3d30"
+    },
+    "0xea3dfa": {
+      "mnemonic": "call",
+      "operands": "0xf2ed30"
+    },
+    "0xea3e03": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xea3ea0"
+    },
+    "0xea3e17": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xea3ebc"
+    },
+    "0xea3e2b": {
+      "mnemonic": "mov",
+      "operands": "ecx, 0xea3ecc"
+    },
+    "0xea3f96": {
+      "mnemonic": "call",
+      "operands": "0xf2ec20"
+    },
+    "0xea40f0": {
+      "mnemonic": "mov",
+      "operands": "eax, dword ptr [0x13c3c8c]"
+    },
+    "0xf33bb5": {
+      "mnemonic": "mov",
+      "operands": "edx, 0xf33c50"
+    },
+    "0xf33bd5": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xf2110c"
+    },
+    "0xf33bea": {
+      "mnemonic": "fcomp",
+      "operands": "dword ptr [0xf33c5c]"
+    },
+    "0xf33bf9": {
+      "mnemonic": "mov",
+      "operands": "eax, dword ptr [0x13c1f64]"
+    },
+    "0xf33c18": {
+      "mnemonic": "mov",
+      "operands": "eax, 0xf33c6c"
+    }
+  },
+  "verified_literals": {
+    "0x846d70": "get ",
+    "0xcb1c98": "pp get ",
+    "0xcb2d78": "get ",
+    "0xcb2d90": "  NetVoltage",
+    "0xcb30dc": "do ",
+    "0xcb30f0": " Psync",
+    "0xcb7040": "NetVoltage",
+    "0xcb7064": "LoadBurden",
+    "0xcb70bc": "LoadClockGenEnabled",
+    "0xcbf308": "KEYGL5",
+    "0xcbf324": "SENTEMP4",
+    "0xcbf344": "BurdenActive",
+    "0xcbf36c": "yes",
+    "0xcbf77c": "KEYGL5",
+    "0xcbf798": "SENTEMP4",
+    "0xcbf7b8": "ClockGenEnable",
+    "0xcbf7e4": "1",
+    "0xdcd960": "net pingu ",
+    "0xea38d8": "Unknown",
+    "0xea39d8": "NetVoltage",
+    "0xea3ac8": "LoadBurden",
+    "0xea3bb8": "LoadClockGenEnabled",
+    "0xea3d30": "Unknown",
+    "0xea3ea0": "Enabled",
+    "0xea3ebc": "-",
+    "0xea3ecc": "Unknown",
+    "0xf33c50": "1.00",
+    "0xf33c6c": "0.0V"
+  },
+  "verified_resource_strings": {
+    "62307": "N/A",
+    "62325": "Not Found",
+    "62516": "Ready to Run",
+    "62517": "Rescan Network",
+    "62518": "Unit Present",
+    "64571": "unknown"
+  }
+}
