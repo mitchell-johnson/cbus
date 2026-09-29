@@ -50,12 +50,13 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 448,
-    "modules_without_skip_sites": 242,
-    "modules_with_skip_sites": 206,
+    "test_modules": 450,
+    "modules_without_skip_sites": 243,
+    "modules_with_skip_sites": 207,
     "modules_by_category": {
       "cgate_test_host": 119,
       "external_cgate_project": 1,
+      "hardware": 1,
       "host_platform": 16,
       "host_tool": 6,
       "native_cgate_local": 46,
@@ -74,7 +75,7 @@
     "native_modules": {
       "all": 110,
       "partial": 18,
-      "none": 78
+      "none": 79
     },
     "native_runnable_tests": 207,
     "native_selected_required_tests": 207,
@@ -7452,6 +7453,43 @@
           "tests": [
             "UnitTemplateSourceTest::test_original_constructor_template_flags_order_and_duplicate_header_writes",
             "UnitTemplateSourceTest::test_original_executable_checksum_and_template_reader"
+          ]
+        }
+      ]
+    },
+    "tests/test_usb_dfu_physical.py": {
+      "categories": [
+        "hardware"
+      ],
+      "native": "none",
+      "gated_tests": 3,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_usb_dfu_physical.py::PhysicalUSBDFUTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_HARDWARE_ACCEPTANCE') == '1'",
+          "reason": "physical eDLT USB DFU acceptance is not provisioned",
+          "environment": [
+            "CBUS_HARDWARE_ACCEPTANCE"
+          ],
+          "categories": [
+            "hardware"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "hardware"
+          ],
+          "tests": [
+            "PhysicalUSBDFUTests::test_01_read_only_identity_matches_the_provisioned_unit",
+            "PhysicalUSBDFUTests::test_02_journaled_update_then_fresh_session_readback",
+            "PhysicalUSBDFUTests::test_03_host_abort_mid_write_then_explicit_resume"
           ]
         }
       ]
