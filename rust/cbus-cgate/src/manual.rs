@@ -4347,7 +4347,18 @@ impl Server {
         }
     }
 
+    /// Native `CONVERTUNIT CHECK|CONVERT` for catalogue (1) and move (2)
+    /// database conversions. PP values are rebuilt from the operator-supplied
+    /// mapping table and unit specifications; the PCI is never written.
     fn convert_unit(&mut self, tag: &str, words: &[&str]) -> Response {
+        use crate::convertunit::{self, MappingTable};
+        let reply = |code: u16, lines: Vec<String>, text: &str| Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: text.to_string(),
+            status: code,
+        };
+        let no = |text: &str| reply(301, vec![], text);
         if words.len() < 4 || !matches!(words[1].to_ascii_uppercase().as_str(), "CHECK" | "CONVERT")
         {
             return err(
@@ -4356,60 +4367,75 @@ impl Server {
                 "400 CONVERTUNIT requires CHECK or CONVERT and a mode",
             );
         }
-        let mode = words[2].parse::<u8>().ok();
-        if !matches!(mode, Some(1..=3)) {
-            return err(tag, status::BAD_REQUEST, "405 Conversion mode out of range");
+        let check = words[1].eq_ignore_ascii_case("CHECK");
+        let arity = match words[2] {
+            "1" => 6,
+            "2" => 5,
+            "3" => 4,
+            _ => usize::MAX,
+        };
+        if words.len() < arity || arity == usize::MAX {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
         }
         let Some(old_path) = self.qualify_unit(words[3]) else {
             return err(tag, status::BAD_REQUEST, "400 Invalid unit address");
         };
-        let Some((project, net, old_address)) = self.unit_of(&old_path) else {
-            return Response {
-                tag: tag.to_string(),
-                lines: vec![],
-                final_text: "301 no".to_string(),
-                status: 301,
-            };
+        let missing = |path: &str| {
+            let element = path.rsplit('/').next().unwrap_or(path);
+            err(
+                tag,
+                status::ABSENT,
+                &format!("401 Bad object or device ID: Element {element} not found."),
+            )
         };
-        let exists = self
+        let Some((project, net, old_address)) = self.unit_of(&old_path) else {
+            return missing(&old_path);
+        };
+        let Some(source) = self
             .projects
             .get(&project)
             .and_then(|p| p.networks.get(&net))
-            .is_some_and(|n| n.units.contains_key(&old_address));
-        if !exists {
-            return Response {
-                tag: tag.to_string(),
-                lines: vec![],
-                final_text: "301 no".to_string(),
-                status: 301,
-            };
+            .and_then(|n| n.units.get(&old_address))
+            .cloned()
+        else {
+            return missing(&old_path);
+        };
+        if words[2] == "3" {
+            // Physical replacement discovery is not modeled here.
+            return ok(tag, vec![], "200 OK");
         }
-        if words[1].eq_ignore_ascii_case("CHECK") {
-            return ok(tag, vec![], "200 yes");
-        }
-        match mode.expect("validated") {
-            1 if words.len() == 6 => {
-                let network = self
-                    .projects
-                    .get_mut(&project)
-                    .and_then(|p| p.networks.get_mut(&net))
-                    .expect("unit resolved");
-                for unit in [
-                    network.units.get_mut(&old_address),
-                    network.physical.get_mut(&old_address),
-                ]
-                .into_iter()
-                .flatten()
-                {
-                    unit.unit_type = words[4].trim_matches('"').to_string();
-                    unit.fields.insert(
-                        "CatalogNumber".to_string(),
-                        words[5].trim_matches('"').to_string(),
-                    );
-                }
-                ok(tag, vec![], "200 OK")
-            }
-            2 if words.len() == 5 => {
+        let source_type = source.field("UnitType");
+        let (target_address, target_type, firmware, catalog_number, destination) =
+            if words[2] == "1" {
+                let target_type = words[4].trim_matches('"').to_string();
+                let catalog_number = words[5].trim_matches('"').to_string();
+                let revision = self.catalog().ok().and_then(|catalog| {
+                    let defaults = catalog
+                        .entries
+                        .iter()
+                        .filter(|entry| {
+                            entry.is_default
+                                && entry.catalog_number.eq_ignore_ascii_case(&catalog_number)
+                        })
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    defaults
+                        .iter()
+                        .find(|entry| entry.unit_type.eq_ignore_ascii_case(&target_type))
+                        .or_else(|| defaults.first())
+                        .cloned()
+                });
+                let Some(revision) = revision else {
+                    return no("301 no:Unexpected Catalog number");
+                };
+                (
+                    old_address,
+                    target_type,
+                    revision.min_version.clone(),
+                    catalog_number,
+                    None,
+                )
+            } else {
                 let Some(new_path) = self.qualify_unit(words[4]) else {
                     return err(
                         tag,
@@ -4417,44 +4443,189 @@ impl Server {
                         "400 Invalid destination unit address",
                     );
                 };
-                let Some((new_project, new_net, new_address)) = self.unit_of(&new_path) else {
-                    return Response {
-                        tag: tag.to_string(),
-                        lines: vec![],
-                        final_text: "301 no".to_string(),
-                        status: 301,
-                    };
+                let destination = self.unit_of(&new_path).and_then(|(p, n, a)| {
+                    (p == project && n == net)
+                        .then(|| {
+                            self.projects
+                                .get(&p)?
+                                .networks
+                                .get(&n)?
+                                .units
+                                .get(&a)
+                                .cloned()
+                        })
+                        .flatten()
+                });
+                let Some(destination) = destination else {
+                    if check {
+                        return no("301 no");
+                    }
+                    let element = new_path.rsplit('/').next().unwrap_or(&new_path);
+                    return reply(
+                        301,
+                        vec!["301-no".to_string()],
+                        &format!("301 no:Unable to read data from DBElement {element} not found."),
+                    );
                 };
-                let source = self
-                    .projects
-                    .get(&project)
-                    .and_then(|p| p.networks.get(&net))
-                    .and_then(|n| n.units.get(&old_address))
-                    .cloned()
-                    .expect("unit resolved");
-                let Some(destination) = self
-                    .projects
-                    .get_mut(&new_project)
-                    .and_then(|p| p.networks.get_mut(&new_net))
-                    .and_then(|n| n.units.get_mut(&new_address))
-                else {
-                    return Response {
-                        tag: tag.to_string(),
-                        lines: vec![],
-                        final_text: "301 no".to_string(),
-                        status: 301,
-                    };
-                };
-                destination.fields.extend(source.fields);
-                ok(tag, vec![], "200 OK")
-            }
-            3 if words.len() == 4 => ok(tag, vec![], "200 OK"),
-            _ => err(
-                tag,
-                status::BAD_REQUEST,
-                "400 Invalid arguments for conversion mode",
-            ),
+                (
+                    destination.address,
+                    destination.field("UnitType"),
+                    destination.field("FirmwareVersion"),
+                    destination.field("CatalogNumber"),
+                    Some(destination),
+                )
+            };
+        if !convertunit::compatible(&source_type, &target_type) {
+            return no("301 no");
         }
+        if check {
+            return ok(tag, vec![], "200 OK: yes");
+        }
+        // Native CHECK admits an unchanged identity, but CONVERT refuses it.
+        if source.field("FirmwareVersion") == firmware
+            && source_type.eq_ignore_ascii_case(&target_type)
+        {
+            return no("301 no");
+        }
+        let spec_name = self.catalog().ok().and_then(|catalog| {
+            catalog
+                .matching(&target_type, &firmware)
+                .into_iter()
+                .find(|entry| entry.catalog_number.eq_ignore_ascii_case(&catalog_number))
+                .map(|entry| entry.unit_spec_name.clone())
+        });
+        let spec_stem = spec_name
+            .as_deref()
+            .and_then(|name| name.strip_suffix(".xml"))
+            .unwrap_or(&target_type)
+            .to_string();
+        let Some(target_spec) = self.spec_for(&spec_stem) else {
+            return no("301 no:Unable to read Unit spec");
+        };
+        let Some(table) = self
+            .unitspec_dir
+            .as_deref()
+            .and_then(|dir| MappingTable::load(dir).ok())
+        else {
+            return no(&format!(
+                "301 no:Convert Unit mapping table {} not found",
+                convertunit::MAPPING_TABLE
+            ));
+        };
+        let source_key = self.stored_unit_document_key(&project, &source.oid, old_address);
+        let mut source_pp = self
+            .unit_pp_fields
+            .get(&source_key)
+            .into_iter()
+            .flatten()
+            .filter_map(|name| Some((name.clone(), source.fields.get(name)?.clone())))
+            .collect::<Vec<_>>();
+        // Native stores rendered PP strings, which the rules parse. Sessions
+        // here retain the caller's spelling, so render through the source spec.
+        let source_catalog = source.field("CatalogNumber");
+        let source_stem = self
+            .catalog()
+            .ok()
+            .and_then(|catalog| {
+                catalog
+                    .matching(&source_type, &source.field("FirmwareVersion"))
+                    .into_iter()
+                    .find(|entry| entry.catalog_number.eq_ignore_ascii_case(&source_catalog))
+                    .and_then(|entry| {
+                        entry
+                            .unit_spec_name
+                            .strip_suffix(".xml")
+                            .map(str::to_string)
+                    })
+            })
+            .unwrap_or_else(|| source_type.clone());
+        if let Some(source_spec) = self.spec_for(&source_stem) {
+            source_pp = convertunit::render_parameters(&source_spec, &source_pp);
+        }
+        let Ok(converted) = convertunit::convert_parameters(
+            &table,
+            &source_type,
+            &source_pp,
+            &target_spec,
+            &target_type,
+        ) else {
+            return no("301 Unable to convert PP data");
+        };
+
+        // Rebuild the destination record's PP list and conversion identity.
+        let target = destination.as_ref().unwrap_or(&source).clone();
+        let target_key = self.stored_unit_document_key(&project, &target.oid, target_address);
+        let prefix = format!("//{project}/{net}/p/{target_address}");
+        let old_names = self.unit_pp_fields.remove(&target_key).unwrap_or_default();
+        // This model shares one field map between PP values and database
+        // scalars. Keep the database TagName and identity out of PP reach.
+        let tag_name = target
+            .fields
+            .get("TagName")
+            .cloned()
+            .unwrap_or_else(|| target.fields.get("UnitName").cloned().unwrap_or_default());
+        let converted = converted
+            .into_iter()
+            .filter(|(name, _)| {
+                !matches!(
+                    name.as_str(),
+                    "UnitType"
+                        | "Type"
+                        | "FirmwareVersion"
+                        | "Version"
+                        | "CatalogNumber"
+                        | "TagName"
+                )
+            })
+            .collect::<Vec<_>>();
+        let unit = self
+            .projects
+            .get_mut(&project)
+            .and_then(|p| p.networks.get_mut(&net))
+            .and_then(|n| n.units.get_mut(&target_address))
+            .expect("conversion target resolved");
+        for name in &old_names {
+            unit.fields.remove(name);
+            self.db_fields.remove(&format!("{prefix}/{name}"));
+        }
+        let mut identity = vec![
+            ("TagName", tag_name),
+            ("UnitType", target_type.clone()),
+            ("FirmwareVersion", firmware.clone()),
+            ("CatalogNumber", catalog_number.clone()),
+        ];
+        if destination.is_none() {
+            identity.push((
+                "SerialNumber",
+                convertunit::CATALOG_SERIAL_NUMBER.to_string(),
+            ));
+            unit.serial = convertunit::CATALOG_SERIAL_NUMBER.to_string();
+            unit.serial_alternates.clear();
+        }
+        unit.unit_type = target_type.clone();
+        unit.firmware = firmware.clone();
+        for (name, value) in identity {
+            unit.fields.insert(name.to_string(), value.clone());
+            self.db_fields.insert(format!("{prefix}/{name}"), value);
+        }
+        for (name, value) in &converted {
+            unit.fields.insert(name.clone(), value.clone());
+            self.db_fields
+                .insert(format!("{prefix}/{name}"), value.clone());
+        }
+        self.unit_pp_fields.insert(
+            target_key,
+            converted.iter().map(|(name, _)| name.clone()).collect(),
+        );
+        if destination.is_none() {
+            return ok(tag, vec![], "200 OK.");
+        }
+        // Mode 2 removes the source after replacing the destination.
+        let deleted = self.dbdelete(tag, &["DBDELETE", old_path.as_str()]);
+        if deleted.status != status::OK {
+            return deleted;
+        }
+        ok(tag, vec!["200-OK.".to_string()], "200 OK.")
     }
 
     fn qualify_unit(&self, raw: &str) -> Option<String> {

@@ -28,6 +28,7 @@ mod access;
 pub mod auth;
 pub mod capability_matrix;
 mod config;
+mod convertunit;
 mod etherlite;
 mod file;
 pub mod manual;
@@ -2264,7 +2265,21 @@ impl Server {
         if let Some(cached) = self.spec_cache.get(unit_type) {
             return cached.clone();
         }
-        let parsed = unitspec::load_spec(&dir, unit_type).ok();
+        // Catalogue aliases such as DIMDN4F have no `<type>.xml`; use the
+        // specification every catalogue revision of that type names.
+        let parsed = unitspec::load_spec(&dir, unit_type).ok().or_else(|| {
+            let catalog = self.catalog().ok()?;
+            let names = catalog
+                .entries
+                .iter()
+                .filter(|entry| entry.unit_type.eq_ignore_ascii_case(unit_type))
+                .map(|entry| entry.unit_spec_name.as_str())
+                .collect::<BTreeSet<_>>();
+            let [name] = names.into_iter().collect::<Vec<_>>()[..] else {
+                return None;
+            };
+            unitspec::load_spec(&dir, name.strip_suffix(".xml")?).ok()
+        });
         self.spec_cache
             .insert(unit_type.to_string(), parsed.clone());
         parsed
@@ -6855,6 +6870,24 @@ impl Server {
     /// scans until then (this asymmetry with the mirroring `DBSETSAFE`
     /// path is intentional, not a missing sync).
     fn pp_persist(&mut self, session: &PpSession) -> Result<(), Response> {
+        // C-Bus 3 specifications declare a `UnitType` parameter. It is device
+        // memory, not the database identity, so never let it rename the unit.
+        let identity_params = session
+            .unit_type
+            .clone()
+            .and_then(|unit_type| self.spec_for(&unit_type))
+            .map(|spec| {
+                spec.into_iter()
+                    .map(|param| param.name)
+                    .filter(|name| {
+                        matches!(
+                            name.as_str(),
+                            "UnitType" | "Type" | "FirmwareVersion" | "Version" | "CatalogNumber"
+                        )
+                    })
+                    .collect::<HashSet<_>>()
+            })
+            .unwrap_or_default();
         let empty = String::new();
         let dest = session.source.as_ref().unwrap_or(&empty);
         let path = dest.strip_prefix("/db").unwrap_or(dest);
@@ -6874,7 +6907,11 @@ impl Server {
         else {
             return Err(err("", status::NOT_FOUND, "404 Unit not found"));
         };
-        for (key, value) in &session.params {
+        for (key, value) in session
+            .params
+            .iter()
+            .filter(|(key, _)| !identity_params.contains(*key))
+        {
             unit.fields.insert(key.clone(), value.clone());
             // Keep the dedicated struct fields in step with the map so
             // direct struct readers never diverge from field reads.
@@ -6894,10 +6931,13 @@ impl Server {
         }
         let oid = unit.oid.clone();
         let metadata_key = self.stored_unit_document_key(&proj_name, &oid, addr);
-        self.unit_pp_fields
-            .entry(metadata_key)
-            .or_default()
-            .extend(session.params.keys().cloned());
+        self.unit_pp_fields.entry(metadata_key).or_default().extend(
+            session
+                .params
+                .keys()
+                .filter(|key| !identity_params.contains(*key))
+                .cloned(),
+        );
         Ok(())
     }
 

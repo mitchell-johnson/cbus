@@ -19073,7 +19073,8 @@ async fn administrative_runtime_commands_are_stateful_durable_and_redact_secrets
             )
             .await
             .final_text,
-        "200 yes"
+        // No catalogue is configured, so the native catalogue check refuses.
+        "301 no:Unexpected Catalog number"
     );
     assert_eq!(
         service
@@ -19083,7 +19084,7 @@ async fn administrative_runtime_commands_are_stateful_durable_and_redact_secrets
             )
             .await
             .status,
-        200
+        301
     );
 
     let uploaded = service
@@ -19181,14 +19182,17 @@ async fn administrative_runtime_commands_are_stateful_durable_and_redact_secrets
 
     let (replacement, _replacement_remote) = pci();
     let restarted = Service::new(&fixture(), None, path.clone(), replacement, None).unwrap();
+    // The refused (non-admitted) conversion left the durable unit unchanged.
     assert_eq!(
         restarted.model.lock().await.projects["HARNESS"].networks[&254].units[&5].unit_type,
-        "KEYE1"
+        "KEYGL5"
     );
-    assert_eq!(
-        restarted.model.lock().await.projects["HARNESS"].networks[&254].units[&5].fields
-            ["CatalogNumber"],
-        "5031NMM"
+    assert_ne!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254].units[&5]
+            .fields
+            .get("CatalogNumber")
+            .map(String::as_str),
+        Some("5031NMM")
     );
     {
         let model = restarted.model.lock().await;

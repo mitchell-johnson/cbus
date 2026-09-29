@@ -38,6 +38,8 @@ pub struct CatalogEntry {
     pub min_version: String,
     pub max_version: String,
     pub unit_spec_name: String,
+    /// Revision marked `IsDefault`, used for catalogue-selected firmware.
+    pub is_default: bool,
 }
 
 /// Bounded, validated catalogue document plus the fields PP queries expose.
@@ -156,6 +158,7 @@ pub fn load_catalog(dir: &Path) -> Result<Catalog, String> {
                 min_version: child_text(revision, "MinVersion"),
                 max_version: child_text(revision, "MaxVersion"),
                 unit_spec_name: child_text(revision, "UnitSpecName"),
+                is_default: child_text(revision, "IsDefault").eq_ignore_ascii_case("true"),
             });
         }
     }
@@ -311,7 +314,7 @@ impl SpecParam {
 
 /// Parse an integer in the specification grammar: optional sign, then
 /// `$`-hex, `0x`-hex or decimal.
-fn parse_integer(raw: &str) -> Option<i64> {
+pub(crate) fn parse_integer(raw: &str) -> Option<i64> {
     let text = raw.trim();
     // The grammar is ASCII. Reject before slicing at byte offsets so
     // malformed Unicode metadata is an error, never a process panic.
