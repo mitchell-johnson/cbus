@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 437,
-    "modules_without_skip_sites": 240,
-    "modules_with_skip_sites": 197,
+    "test_modules": 441,
+    "modules_without_skip_sites": 243,
+    "modules_with_skip_sites": 198,
     "modules_by_category": {
       "cgate_test_host": 118,
       "external_cgate_project": 1,
       "host_platform": 15,
       "host_tool": 6,
-      "native_cgate_local": 41,
+      "native_cgate_local": 42,
       "native_opt_in": 2,
       "original_model_runtime": 3,
       "original_toolkit": 61,
@@ -72,14 +72,14 @@
       "windows": 12
     },
     "native_modules": {
-      "all": 106,
+      "all": 107,
       "partial": 17,
       "none": 74
     },
-    "native_runnable_tests": 201,
-    "native_selected_required_tests": 201,
+    "native_runnable_tests": 202,
+    "native_selected_required_tests": 202,
     "native_excluded": 0,
-    "native_selection_selectors": 126
+    "native_selection_selectors": 127
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5190,6 +5190,32 @@
           "kind": "decorator.skipUnless",
           "condition": "os.environ.get('CBUS_CGATE_JAVA') and os.environ.get('CBUS_LOCAL_CGATE_VENDOR')",
           "reason": "Set Java and original vendor directory for owned local network acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_native_programmer_lifecycle.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 5,
+      "sites": [
+        {
+          "scope": "tests/test_native_programmer_lifecycle.py::NativeProgrammerLifecycleTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_JAVA') and os.environ.get('CBUS_LOCAL_CGATE_VENDOR')",
+          "reason": "Set Java and original vendor directory for owned local programmer lifecycle acceptance",
           "environment": [
             "CBUS_CGATE_JAVA",
             "CBUS_LOCAL_CGATE_VENDOR"
