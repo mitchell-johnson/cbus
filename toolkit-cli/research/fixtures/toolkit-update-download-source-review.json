@@ -1,0 +1,252 @@
+{
+  "format": "cbus-toolkit-update-download-source-review-v1",
+  "recorded_at_utc": "2026-09-30T00:00:00Z",
+  "scope": "Static IL review of the original SESU 3.0.7 package download path; no original code was executed, no vendor host was contacted and nothing was installed",
+  "method": {
+    "disassembler": "ikdasm.exe from owned Mono 6.12.0 (sha256 696dfe5544d38343175c0dbce1ec9f6b823cf1309e1dfd4ad2b73e6ca57841d3) under mono-sgen64 (sha256 91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49); monodis64 from the same package for RVAs",
+    "string_decoder": "research/decode_sesu_download_brick.py (static XOR index^170 table, pinned slices); all 107 obfuscated string accessors were resolved in the private annotated listing",
+    "private_listing_sha256": {
+      "downloadbrick_ikdasm_il": "36ada8914d608e2f36323fcc0569ff7ea831d9ca45e1a2a59a0a26d2001844b4",
+      "sesubrick_monodis_il_v2": "bf56e8db8d983e4b9864376792596fe893a6510581749726678800b483f06eb1",
+      "decoded_string_list_json_sha256": "f309f2efe565f4e6a1dda5780bc37e5b9bbb27c936c591009c63ef3701139a66"
+    },
+    "method_text_sha256_note": "Per-method hashes are of the exact ikdasm method block bytes (from '.method' to 'end of method') in the private listing"
+  },
+  "retained_private_artifacts": {
+    "toolkit_1_18_0_2754_setup_sha256": "34811c4837ab484061760ebe8b02d059c59b57d8a40a8324391aa1bdd12f9c41",
+    "sesu_static_inputs_archive_sha256": "2c0248edcbbb9dc859e1813fd8dec99f98eab09433beabb938c9fc4a4ce1bf33",
+    "download_brick_assembly_sha256": "1971a76d143d3e7c1afa2a27cb99f15afca81de195530d4b4e72dae201cc0d3f",
+    "download_brick_string_blob_sha256": "9e83c68df7566cd188f094e2eebd9d37ff905f2986f234c387774a4a80c5d7cf",
+    "sesu_brick_assembly_sha256": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c"
+  },
+  "original_methods": [
+    {
+      "id": "DL-CTOR",
+      "method": "DownloadChannel..ctor",
+      "rva": "0x2ec0",
+      "code_size": 69,
+      "il_text_sha256": "2b490c95b0ca12b4294cff6d63071f39df00ce93520610a83497fe4919d7861a"
+    },
+    {
+      "id": "DL-START",
+      "method": "DownloadChannel.StartDownload(Uri, string)",
+      "rva": "0x31ec",
+      "code_size": 664,
+      "il_text_sha256": "799a63dd0b82800e7d8a28621ff3d4ea467a68d19533284a4fe4a5f121753281"
+    },
+    {
+      "id": "DL-WORK",
+      "method": "DownloadChannel HandlerPerformDownload (DoWork, obfuscated name)",
+      "rva": "0x3540",
+      "code_size": 516,
+      "il_text_sha256": "a41cec9e2e7f47388c2566d1a5b6484a7bbf04cccb898af09aaf5d4dcb2117fc"
+    },
+    {
+      "id": "DL-HIBERNATE",
+      "method": "DownloadChannel ShouldRetryAfterHibernate",
+      "rva": "0x3750",
+      "code_size": 132,
+      "il_text_sha256": "d22d0ae34ec76570bc5c6d7d70f16306030c06cb4ef757823275a06b4333de78"
+    },
+    {
+      "id": "DL-DO",
+      "method": "DownloadChannel DoTheDownload",
+      "rva": "0x3874",
+      "code_size": 1177,
+      "il_text_sha256": "37e314869c56cce444e6674ce4c57a58b949f07df64830dc7ff15d0892aab652"
+    },
+    {
+      "id": "DL-DELETE",
+      "method": "DownloadChannel delete destination after integrity failure",
+      "rva": "0x3d50",
+      "code_size": 67,
+      "il_text_sha256": "ef96268065074b2ce22812e98eadb821d2d0d5c5fdf3ffbfed8ade634ce9b638"
+    },
+    {
+      "id": "DL-INTEGRITY",
+      "method": "DownloadChannel.IntegrityCheck(string)",
+      "rva": "0x3db0",
+      "code_size": 103,
+      "il_text_sha256": "adc82c331489dce5dea9b59a1c8fdb6fec537af40d1a07a10c5c7c7f4db568c3"
+    },
+    {
+      "id": "DL-CHECKSUMS",
+      "method": "DownloadChannel.ComputeCheckSums(string)",
+      "rva": "0x3e34",
+      "code_size": 312,
+      "il_text_sha256": "3f3122007731b5855278ed556e0dc681d7cf8302e11367b0aa778ac9f17604ed"
+    },
+    {
+      "id": "DL-COMPARE",
+      "method": "DownloadChannel compare expected/computed checksums",
+      "rva": "0x3f94",
+      "code_size": 116,
+      "il_text_sha256": "6549b9b0b531d40e7451bfb176b8019a739630a59e832b21b6a2ce77cc93a316"
+    },
+    {
+      "id": "DL-WRITE",
+      "method": "DownloadChannel WriteFromNetworkToFile",
+      "rva": "0x4080",
+      "code_size": 358,
+      "il_text_sha256": "3d3a5da44a7881e036d2adf025e17b03dcf4209d309b01d183207a3bf1565f59"
+    },
+    {
+      "id": "DL-RENAME",
+      "method": "DownloadChannel RenamePartialFile",
+      "rva": "0x4288",
+      "code_size": 92,
+      "il_text_sha256": "0c32fde1c1941a88acef2cab13f880c85ba9e6159fa5a08ccb2ca4cdb28a9f3b"
+    },
+    {
+      "id": "DL-REDATE",
+      "method": "DownloadChannel RedatePartialFile",
+      "rva": "0x4300",
+      "code_size": 50,
+      "il_text_sha256": "9374ddc0bb8ee566704ce4217f19265346d247ac0eab8a6d77a3bc56cf96f6f8"
+    },
+    {
+      "id": "DL-HOST",
+      "method": "DownloadChannel.IsUriOnSesuProductionHostUnSafe(Uri)",
+      "rva": "0x439c",
+      "code_size": 36,
+      "il_text_sha256": "b575d2821a053c6dd1e097a7d856b6d4a5a95809e631a94e139e788f2faa69af"
+    },
+    {
+      "id": "DL-EXISTING",
+      "method": "ExistingLocalFileChecker.MustFileBeDownloaded and IsLocalSizeAndTimeCorrect",
+      "rva": "0x4644 / 0x46c8",
+      "code_size": "101 / 228"
+    },
+    {
+      "id": "DL-TLS12",
+      "method": "RemoteFileExplorer.EnableTls12",
+      "rva": "0x4df0",
+      "code_size": 124
+    },
+    {
+      "id": "SESU-OVERRIDE",
+      "method": "SesuBrick private DownloadChannel subclass IsUriOnSesuProductionHostUnSafe",
+      "rva": "0x33e8",
+      "code_size": 2
+    },
+    {
+      "id": "SESU-CTOR",
+      "method": "MultiPlatformUpdate constructor",
+      "rva": "0x35b8"
+    },
+    {
+      "id": "SESU-SECURITY",
+      "method": "MultiPlatformUpdate DownloadChannel.SecurityType population",
+      "rva": "0x3edc"
+    },
+    {
+      "id": "SESU-START",
+      "method": "MultiPlatformUpdate.StartDownload",
+      "rva": "0x46b0",
+      "code_size": 237
+    },
+    {
+      "id": "SESU-FINISHED",
+      "method": "MultiPlatformUpdate download-finished handler",
+      "rva": "0x4908"
+    }
+  ],
+  "findings": {
+    "url_source": {
+      "status": "static",
+      "evidence": [
+        "SESU-START",
+        "DL-START"
+      ],
+      "observation": "The URI passed to StartDownload is a MultiPlatformUpdate field (DownloadAddress) set from the selected catalogue file; StartDownload requires an absolute URI. SESU overrides IsUriOnSesuProductionHostUnSafe to false, so the production-host rule requiring a detached .signature is bypassed while MustCheckSignatureAfterDownload is false. A proxy credential, when present, is sent as request Credentials."
+    },
+    "tls_and_certificates": {
+      "status": "static; runtime .NET behavior unproven",
+      "evidence": [
+        "DL-CTOR",
+        "DL-TLS12"
+      ],
+      "observation": "The constructor ORs Tls12 (0xC00) into the process-wide ServicePointManager.SecurityProtocol. No ServerCertificateValidationCallback or ServerCertificateCustomValidationCallback member is referenced by any retained SESU assembly, so .NET Framework default certificate and hostname validation is expected. No certificate pinning or explicit revocation-check setting was found."
+    },
+    "redirects": {
+      "status": "static inference; unresolved at runtime",
+      "evidence": [
+        "DL-START",
+        "DL-DO"
+      ],
+      "observation": "HttpWebRequest.AllowAutoRedirect is never set, so the .NET Framework default (follow, including to another host) applies. Exact scheme-downgrade and hop-limit behavior was not observed."
+    },
+    "preflight_request": {
+      "status": "static",
+      "evidence": [
+        "DL-START"
+      ],
+      "observation": "StartDownload performs a full GetResponse on the URI and closes it before the worker starts, only to read Content-Disposition. The final file name is Path.GetFileName(uri.LocalPath) unless Content-Disposition supplies a UrlDecode'd name, whose invalid file-name characters are replaced by '_'. The destination is Path.Combine(callerDirectory, name); the directory is created if missing."
+    },
+    "existing_file": {
+      "status": "static",
+      "evidence": [
+        "SESU-CTOR",
+        "DL-EXISTING",
+        "DL-WORK"
+      ],
+      "observation": "SESU sets HowToReactOnExistingFile=OverrideOnSizeOrTimeConflict. If the destination exists and a remote info request reports the same length and Last-Modified as the local file, no download occurs and the file is marked ready without running IntegrityCheck in DownloadChannel. Otherwise an existing destination is deleted before writing."
+    },
+    "resume_and_partial": {
+      "status": "static",
+      "evidence": [
+        "DL-DO",
+        "DL-WRITE",
+        "DL-REDATE"
+      ],
+      "observation": "Bytes are written to destination + '.partial'. A partial larger than Content-Length, or older than the server Last-Modified, is deleted. A smaller partial is resumed with a second request carrying AddRange(offset) and opened with FileMode.Append; the 206 status and Content-Range are not checked in these methods. After a failed transfer the partial is retained and re-dated to the server Last-Modified for a later resume."
+    },
+    "size_bound": {
+      "status": "static",
+      "evidence": [
+        "DL-DO",
+        "DL-WRITE"
+      ],
+      "observation": "Negative Content-Length is rejected. The total size is the server Content-Length, not the catalogue size. The copy loop ends when Read returns zero or a stop is requested; the byte count is not compared with Content-Length before success is reported. Whether a premature close throws or returns zero in .NET Framework was not observed."
+    },
+    "verification_order": {
+      "status": "static",
+      "evidence": [
+        "DL-DO",
+        "DL-INTEGRITY",
+        "DL-COMPARE",
+        "DL-CHECKSUMS",
+        "SESU-SECURITY",
+        "SESU-FINISHED"
+      ],
+      "observation": "The partial is first renamed over the destination (deleting any existing file) and re-dated; only then, if the SecurityType dictionary is nonempty, IntegrityCheck(destination) runs. It applies only entries whose dictionary key equals the destination directory name; SESU keys the dictionary by node ID and merges the first value per security type across all files in the node. Computed values are Blake2b, SHA-1, SHA-256 and the embedded Authenticode signer name/thumbprint from X509Certificate.CreateFromSignedFile (no chain validation in this method); comparison is trimmed and case-insensitive. A mismatch deletes the destination file. No file size is compared. When a flag set from its StartDownload argument is true, SESU's finished handler repeats IntegrityCheck on LastTriedDownloadPath and calls a further unresolved step only if it passes."
+    },
+    "failure_handling": {
+      "status": "static",
+      "evidence": [
+        "DL-WORK",
+        "DL-HIBERNATE",
+        "DL-DO",
+        "DL-RENAME"
+      ],
+      "observation": "Exceptions are caught and stored as ExceptionCaughtDuringLastDownload; the worker raises FinishedEvent. The only automatic retry is up to ten repeats after a detected hibernate/resume. Integrity exceptions become DownloadFileHasFailedIntegrityCheckException. There is no retained failure record other than logs and the .partial file."
+    }
+  },
+  "cli_policy_differences": [
+    "URL must be the https URL of one explicitly selected file in an exact raw response that reproduces a complete catalogue report; no Content-Disposition naming, no automatic file selection",
+    "TLS 1.2 minimum with system trust or only an explicit CA file; certificate and hostname verification cannot be disabled",
+    "Same-origin redirects only (at most five); cross-origin and scheme changes are refused",
+    "Declared catalogue size is a hard bound; Content-Length must equal it; truncation and oversize fail",
+    "SHA-1 and size are verified before publication, and a fresh update-package-file re-read must reproduce them",
+    "New exclusive temporary file; no resume; existing outputs are never overwritten or deleted",
+    "Failed bytes are retained as *.failed.partial with a *.failed.json record instead of deletion",
+    "No Authenticode, Blake2b or SHA-256 catalogue entries are evaluated; no execution or installation"
+  ],
+  "unresolved": [
+    "Runtime .NET Framework certificate, redirect, proxy and premature-close behavior of the original download",
+    "The SESU UI caller's destination directory and the meaning of the StartDownload install flag",
+    "Whether the original ever receives catalogue security types other than sha1 (the captured catalogue has only sha1)",
+    "Original installer launch, elevation, exit-code interpretation, restart and post-install recovery (Windows evidence required)"
+  ],
+  "acceptance_limit": "Static review only. It establishes what the retained IL does on the reviewed paths, not observed original download, integrity, installation or restart outcomes."
+}
