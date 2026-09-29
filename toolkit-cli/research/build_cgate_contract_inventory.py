@@ -163,7 +163,7 @@ NATIVE_APPLICATION_FIXTURES: dict[str, dict[str, str | None]] = {
 NATIVE_SHAPE_FIXTURES: dict[str, dict] = {
     "DEPLOY_QUEUE": {
         "file": "native_cgate_deploy_queue.json",
-        "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1",
+        "sha256": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674",
         "oracle": {"version": "3.4.0.2001"},
         "attribution": "fixture shape keys and retained subcommand_help syntax",
         "paths": {
