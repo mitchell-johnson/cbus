@@ -1943,6 +1943,17 @@ def build_parser():
     selection = p.add_mutually_exclusive_group(required=True)
     selection.add_argument("--plan", type=Path, help="Read the expected change from a saved plan")
     selection.add_argument("--recovery", type=Path, help="Read the plan from a recovery journal")
+    p = serial_ops.add_parser("reconcile", help="Move the database unit of a verified observed_expected_change journal; dry run unless --apply")
+    p.add_argument("--journal", type=Path, required=True, help="Completed serial-address apply journal")
+    p.add_argument("--project", type=Path, help="Legacy XML or CBZ project file")
+    p.add_argument("--cgate", help="C-Gate HOST:PORT whose loaded project is reconciled")
+    p.add_argument("--project-name", help="C-Gate project name (with --cgate)")
+    p.add_argument("--network", type=_byte, help="Restrict the serial match to one database network")
+    p.add_argument("--unit-type", help="Require this database unit type")
+    p.add_argument("--firmware", help="Require this database firmware version")
+    p.add_argument("--record", type=Path, help="Reconciliation record; defaults to JOURNAL.reconcile.json")
+    p.add_argument("--timeout", type=_positive, default=60, help="C-Gate command timeout")
+    p.add_argument("--apply", action="store_true", help="Back up, move, save and verify; otherwise only plan")
 
     pci = commands.add_parser("pci", help="Direct CNI/PCI operations with source and parameter correlation")
     pci.add_argument("--host", default="127.0.0.1")
@@ -2855,6 +2866,9 @@ def _pci(args):
 
 
 def _serial_address(args):
+    if args.action == "reconcile":
+        from .serial_reconcile import run_cli
+        return run_cli(args)
     if args.action in ("plan", "apply", "verify"):
         return _selected_serial_cli(args)
     from .pci_serial_address import encode_serial_address, decode_serial_address_receipt

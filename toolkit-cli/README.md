@@ -702,6 +702,7 @@ cbus-toolkit serial-address plan 101136.1558 6 --host 127.0.0.1 \
   --local-unit 16 --expected-local-serial 100966.1187 --output new-plan.json
 cbus-toolkit serial-address apply new-plan.json --recovery new-recovery.json
 cbus-toolkit serial-address verify --recovery new-recovery.json
+cbus-toolkit serial-address reconcile --journal new-recovery.json --project site.xml --apply
 ```
 
 The accepted fixture contains exactly two known identities at address 255.

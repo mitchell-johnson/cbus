@@ -67,6 +67,36 @@ Import validates the format, source/destination, supported identity, complete un
 
 The tests deliberately lose a reply after a real native mutation: the simulator has moved, the helper reports uncertainty, and an explicitly reconnected observation establishes the outcome without another address write.
 
+## Reconciling a selected-serial move with the database
+
+`serial-address apply` changes only the bus and records `database_updated: false`. `serial-address reconcile` then moves the database unit that carries the moved serial from the journal's source address to its destination:
+
+```sh
+cbus-toolkit serial-address reconcile --journal new-recovery.json --project site.xml
+cbus-toolkit serial-address reconcile --journal new-recovery.json --project site.xml --apply
+cbus-toolkit serial-address reconcile --journal new-recovery.json \
+  --cgate 127.0.0.1:20023 --project-name PROJECT --apply
+```
+
+The library entry point is `cbus_toolkit.serial_reconcile.reconcile(journal, database, apply=...)` with `ProjectFileDatabase(path)` or `CGateDatabase(client, project)`. The command performs no PCI, CNI or C-Bus I/O.
+
+**Journal admission.** Only a completed apply journal (`state: after_observed`) whose outcome is `observed_expected_change` is accepted. Journal outcome fields are not authenticated, so the command reparses all captured bytes: the fresh before inventory must equal the plan's, local PCI identity and option byte must hold, the exchange must be the plan's single clean request, and the after inventory must reparse to exactly the plan's expected map with no unexpected changes. The shared attempt marker named by the journal must still exist, embed the same plan and name the same journal. A deleted marker is the operator's replay authorization, so the journal is then stale and refused. Unchanged, unexpected, uncertain, in-progress, pre-marker, marker-only and tampered journals are refused before the database is opened.
+
+**Matching.** The journal names no C-Bus network, so the moved serial must match exactly one database unit across the project (native decimal-dot comparison; `--network` restricts the search). Ambiguous or missing serials, units without a valid OID, bridge/wireless-gateway units and a destination occupied by another unit are refused. `--unit-type` and `--firmware` add explicit pins; the journal carries no type or firmware, so without them physical compatibility remains unverified. A database unit at the destination is reported as `database_already_matches` and is not changed. A unit at any other address means the journal or the database is stale, and the command stops.
+
+**Database move.** A C-Gate project uses the verified [database unit move](addressing.md#database-unit-moves), including its `B`-prefixed backup project, native PP `UnitAddress` encoding, save and post-save verification. A legacy XML or CBZ file is changed in memory: its Address field and stored PP `UnitAddress` are rewritten in the existing decimal or `0x` form, and everything else is kept, including the OID, metadata, other programming, opaque extensions, archive members and OID references. The command refuses projects with bridge interfaces and textual unit-path references, as the database workflow does. `--apply` writes an exclusive `.pre-reconcile-<id>` backup next to the file, saves it atomically and reloads it. The reload must match the planned content. After the two edited fields are reverted, the reloaded document must equal the original.
+
+**Reconciliation record.** Without `--apply`, nothing is written. With `--apply`, an exclusive record, by default `JOURNAL.reconcile.json` (`--record` selects another path), binds the journal SHA-256 and attempt ID, the database identity, unit OID, and the before/expected digests. The record moves through `physical_done`, `db_pending` (written before any database write, with the backup name), and `db_done`. It keeps a history, `database_changed`, and any `last_error` and `rollback_errors` values. Updates use checked atomic replacement and fsync. A rerun behaves as follows:
+
+* after `db_done`: returns `already_reconciled` without writing and reports whether the database still matches;
+* after `db_pending` with the unit already at its planned destination content, for example after an interruption between save and the record update: completes the record as `resumed_complete`;
+* after `db_pending` with the unit unchanged at its source: repeats the move under the explicit rerun;
+* after `db_pending` with any other change: reports a conflict and leaves the database and record unchanged.
+
+If the journal changes after a record exists, or a record is reused for another database, the command refuses.
+
+Tests: `tests/test_serial_reconcile.py` drives the existing simulator fixture through `serial-address` plan/apply and uses the journals it writes. It covers offline XML and CBZ projects in these cases: positive, dry-run, ambiguous, not found, occupied destination, stale address and type pin. It also covers every rejected journal class, a deleted marker, a changed journal, an interruption between save and record update, an interruption before save, a pending conflict, rerun idempotence and a CLI chain from the simulator to the project. An owned native C-Gate 3.4 test runs when `CBUS_CGATE_JAVA` and `CBUS_LOCAL_CGATE_VENDOR` are set. It moves a KEYE1 database unit from 255 to 6 and checks the unit and project after save, close and reload. The OID, metadata and an OID reference from another unit are retained. Every PP value except `UnitAddress` is retained, and a second run is a no-op. Physical persistence, power cycling, multi-unit moves and occupied-address displacement remain outside this workflow.
+
 ## Exact protocol evidence
 
 Toolkit's `TfrmSerialReaddress.MatchToSerial` (MAP 008A46C0 / VA 00EA56C0) obtains the unit's cached serial, finds the corresponding database unit using `UnitBySerialNumber`, calls `EnsureTargetAddressClear`, sets `MoveToAddress` and invokes the move action. `EnsureTargetAddressClear` (MAP 008A4850) can displace an existing physical occupant to another free address. That displacement branch is outside this implementation; an occupied destination is rejected.

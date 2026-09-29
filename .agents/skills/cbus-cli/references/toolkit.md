@@ -71,6 +71,10 @@ exclusive commissioning ownership against cmqttd, C-Gate, other hosts and other
 controllers. After an uncertain attempt, use `serial-address verify --recovery`
 for read-only recovery; never replay from the lease or journal alone. See
 `toolkit-cli/docs/pci-selected-serial.md` for the exact fixture and limits.
+After an `observed_expected_change` journal, `serial-address reconcile --journal J
+(--project FILE | --cgate HOST:PORT --project-name P)` plans the matching database
+unit move (dry run by default; `--apply` backs up, moves, saves and verifies a
+reload). It never touches the bus; see `toolkit-cli/docs/physical-addressing.md`.
 
 `update-diagnostic-bundle` needs the four generated report files plus the exact
 raw catalogue response, revocation input, condition input, context input,
