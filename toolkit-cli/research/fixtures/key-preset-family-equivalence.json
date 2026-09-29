@@ -99,6 +99,146 @@
     "trigger1": 14,
     "trigger2": 15
   },
+  "preset_micro_function_groups": {
+    "stage_order": ["JPCommand", "SRCommand", "LPCommand", "LRCommand"],
+    "classic_function_types_equal_cbus_values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "template_assignment": {
+      "selection_path": ["CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromFunctionType", "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_Microfunctions", "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.GetMicroFunctionGroupDefault"],
+      "default_group_index": 0,
+      "default_group_exception_template_type": 48
+    },
+    "presets": {
+      "unused": {
+        "template_type": 16,
+        "template_groups": [56],
+        "group_index": 0,
+        "group_type": 56,
+        "stages": [0, 0, 0, 0]
+      },
+      "on": {
+        "template_type": 0,
+        "template_groups": [1],
+        "group_index": 0,
+        "group_type": 1,
+        "stages": [13, 0, 0, 0]
+      },
+      "off": {
+        "template_type": 1,
+        "template_groups": [2],
+        "group_index": 0,
+        "group_type": 2,
+        "stages": [15, 0, 0, 0]
+      },
+      "toggle": {
+        "template_type": 2,
+        "template_groups": [3],
+        "group_index": 0,
+        "group_type": 3,
+        "stages": [11, 0, 0, 0]
+      },
+      "dimmer": {
+        "template_type": 3,
+        "template_groups": [4, 5],
+        "group_index": 0,
+        "group_type": 4,
+        "stages": [0, 11, 2, 14]
+      },
+      "dimmer_memory": {
+        "template_type": 3,
+        "template_groups": [4, 5],
+        "group_index": 1,
+        "group_type": 5,
+        "stages": [0, 3, 2, 14]
+      },
+      "on_up": {
+        "template_type": 4,
+        "template_groups": [6],
+        "group_index": 0,
+        "group_type": 6,
+        "stages": [0, 3, 5, 14]
+      },
+      "off_down": {
+        "template_type": 5,
+        "template_groups": [7],
+        "group_index": 0,
+        "group_type": 7,
+        "stages": [0, 3, 4, 14]
+      },
+      "timer": {
+        "template_type": 6,
+        "template_groups": [8, 9, 10, 11, 12, 35, 36, 37, 38, 39, 40],
+        "group_index": 0,
+        "group_type": 8,
+        "stages": [11, 7, 0, 7]
+      },
+      "bellpress": {
+        "template_type": 7,
+        "template_groups": [41],
+        "group_index": 0,
+        "group_type": 41,
+        "stages": [13, 15, 0, 15],
+        "help_table_stages": [13, 15, 13, 15]
+      },
+      "dimmer_up": {
+        "template_type": 8,
+        "template_groups": [42],
+        "group_index": 0,
+        "group_type": 42,
+        "stages": [0, 13, 5, 14]
+      },
+      "dimmer_down": {
+        "template_type": 9,
+        "template_groups": [43],
+        "group_index": 0,
+        "group_type": 43,
+        "stages": [0, 15, 4, 14]
+      },
+      "soft_up": {
+        "template_type": 10,
+        "template_groups": [44],
+        "group_index": 0,
+        "group_type": 44,
+        "stages": [0, 10, 5, 14],
+        "help_table_stages": [14, 10, 5, 14]
+      },
+      "soft_down": {
+        "template_type": 11,
+        "template_groups": [45],
+        "group_index": 0,
+        "group_type": 45,
+        "stages": [0, 9, 4, 14],
+        "help_table_stages": [14, 9, 4, 14]
+      },
+      "preset1": {
+        "template_type": 12,
+        "template_groups": [46],
+        "group_index": 0,
+        "group_type": 46,
+        "stages": [0, 12, 9, 0]
+      },
+      "preset2": {
+        "template_type": 13,
+        "template_groups": [47],
+        "group_index": 0,
+        "group_type": 47,
+        "stages": [0, 6, 9, 0]
+      },
+      "trigger1": {
+        "template_type": 14,
+        "template_groups": [48],
+        "group_index": 0,
+        "group_type": 48,
+        "stages": [12, 0, 0, 0]
+      },
+      "trigger2": {
+        "template_type": 15,
+        "template_groups": [49],
+        "group_index": 0,
+        "group_type": 49,
+        "stages": [6, 0, 0, 0]
+      }
+    }
+  },
   "catalog_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
   "macro_function_subsets": {
     "AUX": {

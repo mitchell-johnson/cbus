@@ -8,7 +8,7 @@ import unittest
 from uuid import uuid4
 
 from cbus_toolkit.extended_macros import ExtendedKeys, LAYOUTS, PROFILES, REFUSED_PROFILES
-from cbus_toolkit.macros import MacroError, MacroApplyError, PRESETS, STAGES
+from cbus_toolkit.macros import MacroError, MacroApplyError, PRESETS, STAGES, TRIGGER_PRESETS
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 import test_macros as classic_tests
@@ -42,12 +42,31 @@ class ExtendedMacroTest(unittest.TestCase):
     def test_all_eighteen_literal_stage_vectors_and_packed_bytes(self):
         for preset, vector in classic_tests.VECTORS.items():
             with self.subTest(preset=preset):
-                plan = self.keys.plan(self.spec.defaults(), key=3, preset=preset, **({'timer_seconds':300} if preset=='timer' else {}))
+                current = self.spec.defaults()
+                if preset in TRIGGER_PRESETS:
+                    current['Application'] = '202 57'
+                plan = self.keys.plan(current, key=3, preset=preset, **classic_tests.options_for(preset))
                 updated = dict(plan.expected); updated.update(plan.changes)
                 self.assertEqual(tuple(updated[name][2] for name in STAGES), vector)
                 packed = self.keys.codec.encode_many({name:updated[name] for name in STAGES}).apply(MemoryImage.from_bytes(b'\xa5'*256))
                 self.assertEqual(packed.read(108,2),bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])))
                 self.assertEqual(packed.read(106,2),b'\x00\x00')
+
+    def test_trigger_presets_follow_the_key_block_application(self):
+        current = self.spec.defaults()
+        current['Application'] = '56 202'
+        for preset in sorted(TRIGGER_PRESETS):
+            with self.subTest(preset=preset):
+                with self.assertRaisesRegex(MacroError, r'Trigger Control \(202\)'):
+                    self.keys.plan(current, key=2, preset=preset)
+                plan = self.keys.plan(current, key=2, preset=preset, application='secondary', group=5)
+                self.assertEqual(plan.changes['SecondApplicationBlocks'], (2,))
+                self.assertEqual(plan.changes['GroupAddress'][1], 5)
+        shared = dict(current, BlockAllocation='3 0 4 8 16 32 64 128')
+        with self.assertRaisesRegex(MacroError, 'Specify block'):
+            self.keys.plan(shared, key=2, preset='trigger1')
+        with self.assertRaisesRegex(MacroError, 'Lighting Type'):
+            self.keys.plan(current, key=2, preset='on', application='secondary', group=5)
 
     def test_standard_macro_clears_only_selected_scene_selector_bit(self):
         current = self.spec.defaults(); current['SceneKeySelector']='1 1 1 1 1 1 1 1'
@@ -205,7 +224,8 @@ class ExtendedNativeTest(unittest.TestCase):
                     baseline=session.values()
                     for preset,vector in classic_tests.VECTORS.items():
                         with self.subTest(unit_type=unit_type,preset=preset):
-                            opts={'timer_seconds':300} if preset=='timer' else {}
+                            opts=classic_tests.options_for(preset)
+                            application=classic_tests.trigger_ready(self,keys,session,preset,key,group=17,**opts)
                             self.assertTrue(keys.configure(session,key=key,preset=preset,group=17,**opts)['verified'])
                             actual=session.values()
                             self.assertEqual(tuple(int(actual[name].split()[key-1],0) for name in STAGES),vector)
@@ -213,6 +233,8 @@ class ExtendedNativeTest(unittest.TestCase):
                             self.assertEqual(raw,bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])).hex())
                             # SceneTable and every other non-preset parameter stay unchanged.
                             self.assertEqual(classic_tests.unrelated(actual,LAYOUTS),classic_tests.unrelated(baseline,LAYOUTS))
+                            if application is not None:
+                                session.set('Application',application)
                     keys.configure(session,key=key,preset='timer',group=31,application='secondary',timer_seconds=300,expiry='ramp_off',
                                    recall1=64,recall2=128,indicator_block=8)
                     self.assertEqual(int(session.get_raw_data(69,1).lines[-1].split('RawData=',1)[1],16),1<<(key-1))

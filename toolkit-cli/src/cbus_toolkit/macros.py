@@ -54,6 +54,12 @@ class Preset:
                 "codes": dict(zip(STAGES, self.codes)), "help_topic": self.help_topic}
 
 
+# Stage vectors are the micro-function groups Toolkit assigns when the template
+# is selected (TKeyMacroFunction.RefreshFromFunctionType -> the template's first
+# group; Dimmer's second group is the Memory variant). Three original help event
+# tables differ from those groups; HELP_TABLE_EVENTS keeps them for reference.
+# Toolkit's reverse lookup matches exact groups, so it shows a help-table
+# vector as a custom function. research/key_preset_families.py records both.
 PRESETS = MappingProxyType({p.name: p for p in (
     Preset("on", ("on", "idle", "idle", "idle"), "958.htm"),
     Preset("off", ("off", "idle", "idle", "idle"), "959.htm"),
@@ -65,15 +71,26 @@ PRESETS = MappingProxyType({p.name: p for p in (
     Preset("on_up", ("idle", "memory_toggle2", "up", "end_ramp"), "962.htm"),
     Preset("off_down", ("idle", "memory_toggle2", "down", "end_ramp"), "963.htm"),
     Preset("timer", ("toggle", "retrigger_timer", "idle", "retrigger_timer"), "964.htm"),
-    Preset("bellpress", ("on", "off", "on", "off"), "965.htm"),
-    Preset("soft_up", ("end_ramp", "ramp_recall1", "up", "end_ramp"), "968.htm"),
-    Preset("soft_down", ("end_ramp", "ramp_off", "down", "end_ramp"), "969.htm"),
+    Preset("bellpress", ("on", "off", "idle", "off"), "965.htm"),
+    Preset("soft_up", ("idle", "ramp_recall1", "up", "end_ramp"), "968.htm"),
+    Preset("soft_down", ("idle", "ramp_off", "down", "end_ramp"), "969.htm"),
     Preset("preset1", ("idle", "recall1", "ramp_off", "idle"), "970.htm"),
     Preset("preset2", ("idle", "recall2", "ramp_off", "idle"), "971.htm"),
     Preset("trigger1", ("recall1", "idle", "idle", "idle"), "972.htm"),
     Preset("trigger2", ("recall2", "idle", "idle", "idle"), "973.htm"),
     Preset("unused", ("idle", "idle", "idle", "idle"), "976.htm"),
 )})
+
+HELP_TABLE_EVENTS = MappingProxyType({
+    "bellpress": ("on", "off", "on", "off"),
+    "soft_up": ("end_ramp", "ramp_recall1", "up", "end_ramp"),
+    "soft_down": ("end_ramp", "ramp_off", "down", "end_ramp"),
+})
+# Toolkit offers Trigger 1/2 only when the key's block uses Trigger Control:
+# TKeyMacroFunctionSubsetFactory.GetKeyMacroFunctionSubset falls back from the
+# block application to the application-0 list, which omits both templates.
+TRIGGER_PRESETS = frozenset({"trigger1", "trigger2"})
+TRIGGER_APPLICATION = 202
 
 # Key counts are Toolkit's MaximumKeyCount for each registered unit class.
 SUPPORTED_UNITS = MappingProxyType({"KEY1": 1, "KEY2": 2, "KEY4": 4, "KEYIR1": 4, "KEYIR4": 4,
@@ -188,6 +205,9 @@ class ClassicKeys:
         if preset in self.excluded_presets:
             raise MacroError(f"Toolkit does not offer the {preset} preset on {self.unit_type} (AUX subset)")
         original = self._snapshot(current)
+        # These classic units use the primary application for every block.
+        if preset in TRIGGER_PRESETS and original["Application"][0] != TRIGGER_APPLICATION:
+            raise MacroError(f"Toolkit offers {preset} only on Trigger Control ({TRIGGER_APPLICATION}) blocks")
         updates = {name: list(values) for name, values in original.items()}
         for name, code in zip(STAGES, PRESETS[preset].codes):
             updates[name][key - 1] = code
@@ -215,7 +235,7 @@ class ClassicKeys:
                     raise MacroError("Group must be in 0..254; 255 is the unassigned sentinel")
                 # These classic units use the primary application for the four
                 # supported blocks. No secondary-application mapping is inferred.
-                if not 48 <= original["Application"][0] <= 95:
+                if not (48 <= original["Application"][0] <= 95 or preset in TRIGGER_PRESETS):
                     raise MacroError("Group assignment requires a Lighting Type primary application in 48..95")
                 updates["GroupAddress"][block - 1] = group
             if timer_seconds is not None:

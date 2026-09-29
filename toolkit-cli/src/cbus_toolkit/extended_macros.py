@@ -12,7 +12,8 @@ from dataclasses import dataclass
 from types import MappingProxyType
 import xml.etree.ElementTree as ET
 
-from .macros import MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, _int, _numbers
+from .macros import (MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, TRIGGER_APPLICATION,
+                     TRIGGER_PRESETS, _int, _numbers)
 from .memory import MemoryCodec
 from .programming import xml_text
 
@@ -145,7 +146,8 @@ class ExtendedKeys:
         # writes zero to SceneKeySelector before serializing all four stages.
         updates['SceneKeySelector'][key - 1] = 0
         selected, shared = None, ()
-        needs_block = preset == 'timer' or any(value is not None for value in (group, block, application, timer_seconds, recall1, recall2))
+        # Trigger presets need the block to resolve the key's application.
+        needs_block = preset in ('timer', *TRIGGER_PRESETS) or any(value is not None for value in (group, block, application, timer_seconds, recall1, recall2))
         if needs_block:
             if block is None:
                 mask = original['BlockAllocation'][key - 1]
@@ -163,10 +165,12 @@ class ExtendedKeys:
             updates['BlockAllocation'][key - 1] = mask
             if application is not None:
                 updates['SecondApplicationBlocks'][0] = ((original['SecondApplicationBlocks'][0] | mask) if application == 'secondary' else (original['SecondApplicationBlocks'][0] & ~mask))
-            if group is not None or application is not None:
-                app_index = int(bool(updates['SecondApplicationBlocks'][0] & mask))
-                if not 48 <= original['Application'][app_index] <= 95:
-                    raise MacroError('Selected block application must be Lighting Type 48..95')
+            app_index = int(bool(updates['SecondApplicationBlocks'][0] & mask))
+            if preset in TRIGGER_PRESETS:
+                if original['Application'][app_index] != TRIGGER_APPLICATION:
+                    raise MacroError(f'Toolkit offers {preset} only on Trigger Control ({TRIGGER_APPLICATION}) blocks')
+            elif (group is not None or application is not None) and not 48 <= original['Application'][app_index] <= 95:
+                raise MacroError('Selected block application must be Lighting Type 48..95')
             if group is not None:
                 group = _int(group, 'Group')
                 if not 0 <= group <= 254:

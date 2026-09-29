@@ -291,7 +291,7 @@ class CLITests(unittest.TestCase):
         presets = {item["name"]: item for item in self.cli("keys", "presets")}
         self.assertEqual(len(presets), 18)
         self.assertEqual(presets["bellpress"]["codes"],
-                         {"JPCommand": 13, "SRCommand": 15, "LPCommand": 13, "LRCommand": 15})
+                         {"JPCommand": 13, "SRCommand": 15, "LPCommand": 0, "LRCommand": 15})
 
     @unittest.skipUnless(os.environ.get("CBUS_UNITSPEC_DIR"), "set CBUS_UNITSPEC_DIR for vendor classic key schema")
     def test_offline_classic_key_plan_and_identity_guard(self):

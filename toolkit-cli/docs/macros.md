@@ -74,14 +74,26 @@ The event order is **short press, short release, long press, long release**, cor
 | on_up | 0 | 3 | 5 | 14 | [962](../research/vendor/toolkit-help/962.htm) |
 | off_down | 0 | 3 | 4 | 14 | [963](../research/vendor/toolkit-help/963.htm) |
 | timer | 11 | 7 | 0 | 7 | [964](../research/vendor/toolkit-help/964.htm) |
-| bellpress | 13 | 15 | 13 | 15 | [965](../research/vendor/toolkit-help/965.htm) |
-| soft_up | 14 | 10 | 5 | 14 | [968](../research/vendor/toolkit-help/968.htm) |
-| soft_down | 14 | 9 | 4 | 14 | [969](../research/vendor/toolkit-help/969.htm) |
+| bellpress | 13 | 15 | 0 | 15 | [965](../research/vendor/toolkit-help/965.htm) |
+| soft_up | 0 | 10 | 5 | 14 | [968](../research/vendor/toolkit-help/968.htm) |
+| soft_down | 0 | 9 | 4 | 14 | [969](../research/vendor/toolkit-help/969.htm) |
 | preset1 | 0 | 12 | 9 | 0 | [970](../research/vendor/toolkit-help/970.htm) |
 | preset2 | 0 | 6 | 9 | 0 | [971](../research/vendor/toolkit-help/971.htm) |
 | trigger1 | 12 | 0 | 0 | 0 | [972](../research/vendor/toolkit-help/972.htm) |
 | trigger2 | 6 | 0 | 0 | 0 | [973](../research/vendor/toolkit-help/973.htm) |
 | unused | 0 | 0 | 0 | 0 | [976](../research/vendor/toolkit-help/976.htm) |
+
+The vectors are the micro-function groups that Toolkit assigns when the template is selected. `TKeyMacroFunction.SetFunctionType` calls `RefreshFromFunctionType`, which calls `AssignTemplate_Microfunctions` with `TKeyMacroFunctionTemplate.GetMicroFunctionGroupDefault`. That returns the template's first registered group (template type `0x30` excepted). Dimmer's second group is the Memory variant. `InitialiseKeyMicroFunctionGroupFactory` registers each group's four stages, and `InitialiseKeyMacroFunctionFactory` binds templates to groups.
+
+Three help event tables disagree with those groups. Toolkit writes the group, so the presets follow the executable:
+
+| Preset | Help topic JP/SR/LP/LR | Toolkit group | Group JP/SR/LP/LR |
+| --- | --- | ---: | --- |
+| bellpress | 13/15/13/15 (965) | 41 | 13/15/0/15 |
+| soft_up | 14/10/5/14 (968) | 44 | 0/10/5/14 |
+| soft_down | 14/9/4/14 (969) | 45 | 0/9/4/14 |
+
+Toolkit maps loaded stage values back to a template with exact group matches (`TKeyMacroFunctionFactory.GetTemplateAndGroup`). A help-table vector therefore appears as a custom function in Toolkit, not as Bell Press or Soft Up/Down. `HELP_TABLE_EVENTS` retains the help rows, and the vendor help test checks them. Earlier releases of this module wrote the help vectors; reapply the preset to units configured with them.
 
 The names alone were not used to infer their numbers. The original executable's `CIS_TKeyMicroFunction.InitialiseKeyMicroFunctionFactory` registers the classic values below. Its `RegisterKeyMicroFunction` implementation sends the EDX argument to `TKeyMicroFunction.SetCBusValue`; a separate argument holds the newer encoding. This distinction matters because newer values do not fit the classic nibble fields.
 
@@ -133,7 +145,7 @@ python research/key_preset_families.py --unitspec-dir "$CBUS_UNITSPEC_DIR" \
   --output research/fixtures/key-preset-family-equivalence.json
 ```
 
-In every subset, Toolkit offers Trigger 1 and Trigger 2 only on Trigger Control (202) blocks. `macros.py` does not enforce that application choice. The receipt keeps the per-application template sets for review.
+In every subset, Toolkit offers Trigger 1 and Trigger 2 only on Trigger Control (202) blocks. `TKeyMacroFunctionSubsetFactory.GetKeyMacroFunctionSubset` looks up the subset by the key's application and falls back to the application-0 list, which omits both templates. If the application changes, `RefreshMacroFunctionsFromApplication` resets a template that is no longer offered to Unused. `macros.py` therefore refuses `trigger1` and `trigger2` unless the primary application is 202. On such a key, `--group` sets the trigger group; other presets still require a Lighting application for group edits. The receipt keeps the per-application template sets and the group vectors (`preset_micro_function_groups`).
 
 Inspected source hashes:
 

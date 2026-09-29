@@ -1,8 +1,9 @@
 # Neo-core key presets
 
 `extended_macros.py` implements the 18 standard wired presets for 31 explicit
-Neo-core profiles. The mapping comes from Toolkit 1.18's help event tables,
-its executable's Neo save path, and the original unit specifications. Native
+Neo-core profiles. The mapping comes from Toolkit 1.18's micro-function
+groups and help event tables, its executable's Neo save path, and the original
+unit specifications. Native
 acceptance verifies 558 preset applications and project close/reload with
 C-Gate 3.4.0 build 2001. Every profile was tested at firmware 2.5.00.
 
@@ -114,6 +115,8 @@ fields. The 18 event vectors are the [source-defined classic vectors](macros.md#
 on, off, toggle, dimmer, dimmer_memory, dimmer_up, dimmer_down, on_up, off_down,
 timer, bellpress, soft_up, soft_down, preset1, preset2, trigger1, trigger2 and
 unused. A preset is supported only through this proven four-event mapping.
+Bell Press and Soft Up/Down use Toolkit's micro-function groups rather than
+their help event tables; see [the classic comparison](macros.md#source-defined-vectors).
 
 | Parameter | Logical PP address | Shape |
 | --- | --- | --- |
@@ -135,8 +138,8 @@ and KEYE1 in 9965/9966. Topics 4863 and 4891 link these families to standard
 wired macro functions; 4878 and 4891 describe the four key events. Topics
 4844, 4853 and 4879 describe block groups, primary/secondary application,
 recall values, timers and independent LED assignment. The help tables in
-958–976 supply the preset event combinations, including the dimmer memory
-variant. The catalog's Reflection number is R5063NL; help displays 5063NL.
+958–976 describe the preset event combinations, including the dimmer memory
+variant; where three of them differ, the executable's groups decide. The catalog's Reflection number is R5063NL; help displays 5063NL.
 
 Binary checks are pinned to the original Toolkit 1.18 executable and map file.
 The image base is 0x00600000, and MAP section-1 offsets add 0x00601000 to obtain
@@ -182,8 +185,9 @@ default. It also follows these executable facts:
   (`NEOPRO`). The Classic Neo classes resolve to
   `TCBusNeoProClassicInputUnit` (`NEOPRO_CLASSIC`). Both subsets offer all 18
   preset templates, but Trigger 1 and Trigger 2 appear only for Trigger
-  Control (202) blocks. `extended_macros.py` does not enforce that
-  application choice.
+  Control (202) blocks. `extended_macros.py` resolves the key's block and its
+  primary/secondary application (after any `application` option) and refuses
+  both trigger presets unless that application is 202.
 - The C-Gate catalogue selects each admitted specification, not its `_A`
   predecessor, at firmware 2.5.00.
 

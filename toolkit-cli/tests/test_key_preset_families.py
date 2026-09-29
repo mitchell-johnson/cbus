@@ -5,8 +5,9 @@ from pathlib import Path
 import unittest
 
 from cbus_toolkit.extended_macros import LAYOUTS, PROFILES, REFUSED_PROFILES
-from cbus_toolkit.macros import (EXCLUDED_PRESETS, GUARDED_PARAMETERS, PRESETS, REFUSED_UNITS,
-                                 SUPPORTED_UNITS, _READ_FIELDS)
+from cbus_toolkit.macros import (EXCLUDED_PRESETS, GUARDED_PARAMETERS, HELP_TABLE_EVENTS, MICRO_FUNCTIONS,
+                                 PRESETS, REFUSED_UNITS, SUPPORTED_UNITS, TRIGGER_APPLICATION, TRIGGER_PRESETS,
+                                 _READ_FIELDS)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,6 +77,31 @@ class ReceiptTableTests(unittest.TestCase):
         self.assertEqual(set(data['preset_template_types']), set(PRESETS))
         self.assertEqual(data['aux_template_override']['replaced_template_types'], [27, 7])
         self.assertNotIn(data['preset_template_types']['bellpress'], data['macro_function_subsets']['AUX']['0'])
+
+    def test_presets_are_the_micro_function_groups_toolkit_assigns(self):
+        data = receipt()['preset_micro_function_groups']
+        self.assertEqual(data['stage_order'], ['JPCommand', 'SRCommand', 'LPCommand', 'LRCommand'])
+        self.assertEqual(data['template_assignment']['default_group_index'], 0)
+        self.assertEqual(set(data['presets']), set(PRESETS))
+        for name, preset in PRESETS.items():
+            row = data['presets'][name]
+            with self.subTest(preset=name):
+                self.assertEqual(list(preset.codes), row['stages'])
+                self.assertEqual(row['template_type'], receipt()['preset_template_types'][name])
+                self.assertEqual(row['group_type'], row['template_groups'][row['group_index']])
+                help_events = HELP_TABLE_EVENTS.get(name)
+                self.assertEqual(row.get('help_table_stages'),
+                                 None if help_events is None else [MICRO_FUNCTIONS[e] for e in help_events])
+        self.assertEqual(set(HELP_TABLE_EVENTS), {'bellpress', 'soft_up', 'soft_down'})
+
+    def test_trigger_templates_only_in_trigger_control_subsets(self):
+        data = receipt()
+        self.assertEqual(TRIGGER_APPLICATION, 202)
+        types = {data['preset_template_types'][name] for name in TRIGGER_PRESETS}
+        for subset, applications in data['macro_function_subsets'].items():
+            with self.subTest(subset=subset):
+                self.assertLessEqual(types, set(applications[str(TRIGGER_APPLICATION)]))
+                self.assertFalse(types & set(applications['0']))
 
 
 @unittest.skipUnless(os.environ.get('CBUS_UNITSPEC_DIR') and os.environ.get('CBUS_TOOLKIT_EXE')

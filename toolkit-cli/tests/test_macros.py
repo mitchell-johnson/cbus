@@ -11,23 +11,41 @@ import unittest
 from uuid import uuid4
 import xml.etree.ElementTree as ET
 
-from cbus_toolkit.macros import (ClassicKeys, EXCLUDED_PRESETS, GUARDED_PARAMETERS, KeyPlan, MacroApplyError,
-                                 MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, SUPPORTED_UNITS, _READ_FIELDS,
-                                 _numbers)
+from cbus_toolkit.macros import (ClassicKeys, EXCLUDED_PRESETS, GUARDED_PARAMETERS, HELP_TABLE_EVENTS, KeyPlan,
+                                 MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, SUPPORTED_UNITS,
+                                 TRIGGER_PRESETS, _READ_FIELDS, _numbers)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 
 
-# Independent vectors transcribed from the help's event tables and the original
-# binary's classic micro-function registration arguments (see docs/macros.md).
+# Independent vectors transcribed from the original binary's micro-function
+# group registrations (see docs/macros.md). Bell Press and Soft Up/Down differ
+# from their help event tables; HELP_VECTORS keeps the help rows.
 VECTORS = {"on": (13, 0, 0, 0), "off": (15, 0, 0, 0), "toggle": (11, 0, 0, 0),
            "dimmer": (0, 11, 2, 14), "dimmer_memory": (0, 3, 2, 14),
            "dimmer_up": (0, 13, 5, 14), "dimmer_down": (0, 15, 4, 14),
            "on_up": (0, 3, 5, 14), "off_down": (0, 3, 4, 14),
-           "timer": (11, 7, 0, 7), "bellpress": (13, 15, 13, 15),
-           "soft_up": (14, 10, 5, 14), "soft_down": (14, 9, 4, 14),
+           "timer": (11, 7, 0, 7), "bellpress": (13, 15, 0, 15),
+           "soft_up": (0, 10, 5, 14), "soft_down": (0, 9, 4, 14),
            "preset1": (0, 12, 9, 0), "preset2": (0, 6, 9, 0),
            "trigger1": (12, 0, 0, 0), "trigger2": (6, 0, 0, 0), "unused": (0, 0, 0, 0)}
+HELP_VECTORS = {"bellpress": (13, 15, 13, 15), "soft_up": (14, 10, 5, 14), "soft_down": (14, 9, 4, 14)}
+
+
+def options_for(preset):
+    return {"timer_seconds": 300} if preset == "timer" else {}
+
+
+def trigger_ready(test, keys, session, preset, key, **options):
+    """Prove a trigger preset is refused off application 202, then select 202."""
+    if preset not in TRIGGER_PRESETS:
+        return None
+    before = session.values()
+    with test.assertRaisesRegex(MacroError, "Trigger Control"):
+        keys.configure(session, key=key, preset=preset, **options)
+    test.assertEqual(session.values(), before)
+    session.set("Application", "202 " + " ".join(before["Application"].split()[1:]))
+    return before["Application"]
 
 
 def fixture(unit_type="KEY4", extra=()):
@@ -98,8 +116,10 @@ class MacroTests(unittest.TestCase):
         self.assertEqual(set(PRESETS), set(VECTORS))
         for preset, vector in VECTORS.items():
             with self.subTest(preset=preset):
-                options = {"timer_seconds": 300} if preset == "timer" else {}
-                plan = self.keys.plan(self.spec.defaults(), key=2, preset=preset, **options)
+                current = self.spec.defaults()
+                if preset in TRIGGER_PRESETS:
+                    current["Application"] = "202 255"
+                plan = self.keys.plan(current, key=2, preset=preset, **options_for(preset))
                 updated = dict(plan.expected); updated.update(plan.changes)
                 self.assertEqual(tuple(updated[name][1] for name in STAGES), vector)
                 before = MemoryImage.from_bytes(b"\xa5" * 128)
@@ -111,6 +131,23 @@ class MacroTests(unittest.TestCase):
                 data = self.keys.codec.encode_many({name: updated[name] for name in STAGES}).apply(before)
                 self.assertEqual(data.read(0x34, 2), bytes([expected_first, expected_second]))
                 self.assertEqual(tuple(updated[name][0] for name in STAGES), (11, 0, 0, 0))
+
+    def test_trigger_presets_require_trigger_control_application(self):
+        for preset in sorted(TRIGGER_PRESETS):
+            with self.subTest(preset=preset):
+                with self.assertRaisesRegex(MacroError, r"Trigger Control \(202\)"):
+                    self.keys.plan(self.spec.defaults(), key=1, preset=preset)
+                current = self.spec.defaults()
+                current["Application"] = "202 255"
+                plan = self.keys.plan(current, key=1, preset=preset, group=9)
+                self.assertEqual(plan.changes["GroupAddress"][0], 9)
+        # Other presets remain available on Trigger Control; group edits there
+        # still require a Lighting Type application.
+        current = self.spec.defaults()
+        current["Application"] = "202 255"
+        self.assertEqual(self.keys.plan(current, key=1, preset="on").changes["JPCommand"][0], 13)
+        with self.assertRaisesRegex(MacroError, "Lighting Type"):
+            self.keys.plan(current, key=1, preset="on", group=9)
 
     def test_timer_group_and_recall_split_are_grounded_and_local(self):
         plan = self.keys.plan(self.spec.defaults(), key=3, preset="timer", group=17,
@@ -295,7 +332,9 @@ class VendorHelpTests(unittest.TestCase):
         for name, preset in PRESETS.items():
             parser = TableParser()
             parser.feed((Path(os.environ["CBUS_TOOLKIT_HELP_DIR"]) / preset.help_topic).read_text(encoding="cp1252"))
-            row = [labels[event] for event in preset.events]
+            # Three help tables differ from Toolkit's assigned group; they are
+            # retained separately and compared here against their help rows.
+            row = [labels[event] for event in HELP_TABLE_EVENTS.get(name, preset.events)]
             candidates = [[cell.lower() for cell in r] for r in parser.rows]
             if name in ("dimmer", "dimmer_memory"):
                 row.insert(0, "memory" if name == "dimmer_memory" else "toggle")
@@ -426,13 +465,16 @@ class NativeMacroTests(unittest.TestCase):
                 with programmer.new(f"//{project}/254", "KEY4", "1.2.67", catalog_number="5034N", name="MACRO_" + uuid4().hex[:8]) as session:
                     for preset, vector in VECTORS.items():
                         with self.subTest(preset=preset):
-                            options = {"timer_seconds": 300} if preset == "timer" else {}
+                            options = options_for(preset)
+                            application = trigger_ready(self, keys, session, preset, 2, group=17, **options)
                             result = keys.configure(session, key=2, preset=preset, group=17, **options)
                             self.assertTrue(result["verified"])
                             actual = session.values()
                             self.assertEqual(tuple(int(actual[name].split()[1], 0) for name in STAGES), vector)
                             raw = session.get_raw_data(0x34, 2).lines[-1].split("RawData=", 1)[1]
                             self.assertEqual(raw, bytes([vector[0] << 4 | vector[1], vector[2] << 4 | vector[3]]).hex())
+                            if application is not None:
+                                session.set("Application", application)
                     result = keys.configure(session, key=2, preset="timer", group=17, timer_seconds=300)
                     session.save("/db" + path)
                 # Loading a fresh database session also verifies type discovery.
@@ -482,19 +524,22 @@ class NativeMacroTests(unittest.TestCase):
                     for preset, vector in VECTORS.items():
                         with self.subTest(unit_type=unit_type, preset=preset):
                             before = session.values()
-                            options = {"timer_seconds": 300} if preset == "timer" else {}
+                            options = options_for(preset)
                             if preset in keys.excluded_presets:
                                 with self.assertRaisesRegex(MacroError, "AUX subset"):
                                     keys.configure(session, key=key, preset=preset, group=17, **options)
                                 self.assertEqual(session.values(), before)
                                 refused += 1
                                 continue
+                            application = trigger_ready(self, keys, session, preset, key, group=17, **options)
                             self.assertTrue(keys.configure(session, key=key, preset=preset, group=17, **options)["verified"])
                             actual = session.values()
                             self.assertEqual(tuple(int(actual[name].split()[key - 1], 0) for name in STAGES), vector)
                             raw = session.get_raw_data(0x32 + 2 * (key - 1), 2).lines[-1].split("RawData=", 1)[1]
                             self.assertEqual(raw, bytes([vector[0] << 4 | vector[1], vector[2] << 4 | vector[3]]).hex())
                             self.assertEqual(unrelated(actual, _READ_FIELDS), unrelated(baseline, _READ_FIELDS))
+                            if application is not None:
+                                session.set("Application", application)
                             passed += 1
                     keys.configure(session, key=key, preset="timer", group=31, timer_seconds=300, expiry="ramp_off",
                                    recall1=64, recall2=128)

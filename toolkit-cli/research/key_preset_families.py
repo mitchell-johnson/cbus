@@ -42,6 +42,20 @@ KEY_COUNT_SLOT_OWNER = ('CIS_TKey4..TKey4', 'CIS_TKey4.TKey4.MaximumKeyCount')
 BCNC4_SAVE = 'CIS_TBCNC4CGateAgent.TBCNC4CGateAgent.BeforeSaveProgrammingInformation'
 BCNC4_DEFAULTS = 'CIS_TBCNC.TBCNC4.ApplyMicroFunctionDefaults'
 AUX_RECONCILE = 'CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup'
+MICRO_FACTORY = 'CIS_TKeyMicroFunction.InitialiseKeyMicroFunctionFactory'
+REGISTER_MICRO = 'CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.RegisterKeyMicroFunction'
+GROUP_FACTORY = 'CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory'
+REGISTER_GROUP = 'CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.RegisterKeyMicroFunctionGroup'
+GROUP_CLASS = 'CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.'
+TEMPLATE_FACTORY = 'CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory'
+REGISTER_TEMPLATE = 'CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.RegisterTemplate'
+TEMPLATE_DEFAULT = 'CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.GetMicroFunctionGroupDefault'
+ASSIGN_MICROFUNCTIONS = 'CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_Microfunctions'
+REFRESH_FROM_TYPE = 'CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromFunctionType'
+# Original help event tables (topics 965, 968, 969) that differ from the
+# micro-function group Toolkit assigns when the template is selected.
+HELP_TABLE_VECTORS = {'bellpress': [13, 15, 13, 15], 'soft_up': [14, 10, 5, 14],
+                      'soft_down': [14, 9, 4, 14]}
 # Delphi 32-bit VMT offsets relative to the class pointer.
 VMT_SELF, VMT_CLASS_NAME, VMT_PARENT = -88, -56, -48
 
@@ -313,6 +327,154 @@ def verify_aux_override(image: Image) -> dict:
             'replaced_template_types': [0x1B, 7], 'replacement_template_type': 0x1C}
 
 
+def _immediate(operand: str) -> int | None:
+    return int(operand, 0) if re.fullmatch(r'0x[0-9a-f]+|\d+', operand) else None
+
+
+def micro_function_types(image: Image) -> dict[int, int]:
+    """Map micro-function FunctionType to the classic CBusValue it registers."""
+    _, instructions = image.function(image.address(MICRO_FACTORY), 0x1000)
+    register, pushes, edx, result = image.address(REGISTER_MICRO), [], None, {}
+    for instruction in instructions:
+        mnemonic, operands = instruction.mnemonic, instruction.op_str
+        if mnemonic == 'push' and _immediate(operands) is not None:
+            pushes.append(_immediate(operands))
+        elif mnemonic == 'mov' and operands.startswith('edx, ') and _immediate(operands[5:]) is not None:
+            edx = _immediate(operands[5:])
+        elif mnemonic == 'xor' and operands == 'edx, edx':
+            edx = 0
+        elif mnemonic == 'call' and operands == hex(register):
+            # push FunctionType; push new-device value; push family; EDX = CBusValue.
+            result[pushes[-3]] = edx
+            pushes, edx = [], None
+    return result
+
+
+def _stage_setters(image: Image) -> dict[str, int]:
+    """Prove which group setter writes which JP/SR/LP/LR stage slot."""
+    by_stage = {}
+    _, instructions = image.function(image.address(GROUP_CLASS + 'GetMicroFunctionByStage'), 0x100)
+    order = [int(i.op_str.split('+ ')[1].rstrip(']'), 0) for i in instructions
+             if i.mnemonic == 'mov' and i.op_str.startswith('eax, dword ptr [eax + ')]
+    # The switch tests stage 0, 1, 2, 3 and branches in that source order.
+    for stage, offset in zip((0, 1, 2, 3), order):
+        by_stage[offset] = stage
+    # Sensor-command setters dispatch through a six-entry jump table.
+    _, sensor = image.function(image.address(GROUP_CLASS + 'SetMicroFunctionBySensorCommand'), 0x200)
+    table = next(int(i.op_str.split('+ ')[1].rstrip(']'), 0) for i in sensor
+                 if i.mnemonic == 'jmp' and i.op_str.startswith('dword ptr [eax*4 + '))
+    command_field = {}
+    for command in range(6):
+        target = image.u32(table + 4 * command)
+        loads = [i for i in image.decoder.disasm(image.data(target, 0x20), target)]
+        field_load = next(i for i in loads if i.op_str.startswith('eax, dword ptr [eax + '))
+        command_field[command] = int(field_load.op_str.split('+ ')[1].rstrip(']'), 0)
+    result = {}
+    for name in ('SetJP', 'SetSR', 'SetLP', 'SetLR', 'SetMC', 'SetMT', 'SetOC', 'SetOT'):
+        _, instructions = image.function(image.address(GROUP_CLASS + name), 0x40)
+        selector = 0
+        for i in instructions:
+            if i.mnemonic == 'mov' and i.op_str.startswith('dl, '):
+                selector = int(i.op_str[4:], 0)
+        target = image.name(int(next(i.op_str for i in instructions if i.mnemonic == 'call'), 16))
+        offset = command_field[selector] if target.endswith('BySensorCommand') else order[selector]
+        result[name] = by_stage[offset]
+    if [result[n] for n in ('SetJP', 'SetSR', 'SetLP', 'SetLR')] != [0, 1, 2, 3] or \
+            [result[n] for n in ('SetMC', 'SetMT', 'SetOC', 'SetOT')] != [0, 1, 2, 3]:
+        raise ValueError('Micro-function group stage setters changed')
+    return result
+
+
+def micro_function_groups(image: Image) -> dict[int, list[int]]:
+    """Return the JP/SR/LP/LR FunctionTypes of every registered group."""
+    _stage_setters(image)
+    registers = image._by_name[REGISTER_GROUP]
+    if len(registers) != 2:
+        raise ValueError('Expected the two RegisterKeyMicroFunctionGroup overloads')
+    _, instructions = image.function(image.address(GROUP_FACTORY), 0x4000)
+    pushes, dl, result = [], None, {}
+    for instruction in instructions:
+        mnemonic, operands = instruction.mnemonic, instruction.op_str
+        if mnemonic == 'push':
+            pushes.append(_immediate(operands))
+        elif mnemonic == 'mov' and operands.startswith('dl, '):
+            dl = int(operands[4:], 0)
+        elif mnemonic == 'call' and operands.startswith('0x') and int(operands, 16) in registers:
+            # Arguments after the description are JP, SR, LP, LR (MC, MT, OC,
+            # OT in the six-command overload), then VC and VT.
+            stages = pushes[1:5]
+            if dl in result or None in stages:
+                raise ValueError('Unexpected micro-function group registration')
+            result[dl] = stages
+            pushes, dl = [], None
+        elif mnemonic == 'call':
+            pushes = []
+    return result
+
+
+def template_groups(image: Image) -> dict[int, list[int]]:
+    """Return every template FunctionType's ordered micro-function groups."""
+    _, instructions = image.function(image.address(TEMPLATE_FACTORY), 0x2000)
+    register, stack, array, pushes, dl, result = image.address(REGISTER_TEMPLATE), {}, None, [], None, {}
+    for instruction in instructions:
+        mnemonic, operands = instruction.mnemonic, instruction.op_str
+        byte = re.fullmatch(r'byte ptr \[ebp - (0x[0-9a-f]+|\d+)\], (0x[0-9a-f]+|\d+)', operands)
+        if mnemonic == 'mov' and byte:
+            stack[int(byte[1], 0)] = int(byte[2], 0)
+        elif mnemonic == 'lea' and operands.startswith('eax, [ebp - '):
+            array = int(operands.rsplit(' ', 1)[1].rstrip(']'), 0)
+        elif mnemonic == 'push':
+            pushes.append(_immediate(operands))
+        elif mnemonic == 'mov' and operands.startswith('dl, '):
+            dl = int(operands[4:], 0)
+        elif mnemonic == 'xor' and operands == 'edx, edx':
+            dl = 0
+        elif mnemonic == 'call' and operands == hex(register):
+            # push description; push open-array pointer; push high index.
+            result[dl] = [stack[array - index] for index in range(pushes[-1] + 1)]
+            pushes, dl = [], None
+    return result
+
+
+def verify_template_assignment(image: Image) -> dict:
+    """Selecting a template assigns its first group (type 0x30 excepted)."""
+    _, refresh = image.function(image.address(REFRESH_FROM_TYPE), 0x100)
+    _, assign = image.function(image.address(ASSIGN_MICROFUNCTIONS), 0x100)
+    _, default = image.function(image.address(TEMPLATE_DEFAULT), 0x100)
+    called = lambda instructions: [image.name(int(i.op_str, 16)) for i in instructions
+                                   if i.mnemonic == 'call' and i.op_str.startswith('0x')]
+    if ASSIGN_MICROFUNCTIONS not in called(refresh) or TEMPLATE_DEFAULT not in called(assign):
+        raise ValueError('Template selection no longer assigns the default group')
+    text = [(i.mnemonic, i.op_str) for i in default]
+    if ('cmp', 'al, 0x30') not in text or ('xor', 'edx, edx') not in text or \
+            'CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupReferenceCollection.GetItem' not in called(default):
+        raise ValueError('GetMicroFunctionGroupDefault changed')
+    return {'selection_path': [REFRESH_FROM_TYPE, ASSIGN_MICROFUNCTIONS, TEMPLATE_DEFAULT],
+            'default_group_index': 0, 'default_group_exception_template_type': 0x30}
+
+
+def preset_micro_function_groups(image: Image) -> dict:
+    types = micro_function_types(image)
+    if any(types.get(value) != value for value in range(16)):
+        raise ValueError('Classic FunctionTypes 0-15 no longer equal their CBusValues')
+    groups, templates = micro_function_groups(image), template_groups(image)
+    presets = {}
+    for preset, template_type in PRESET_TEMPLATE_TYPES.items():
+        choices = templates[template_type]
+        # Dimmer's second group is the Memory variant, selectable in the dialog.
+        index = 1 if preset == 'dimmer_memory' else 0
+        group = choices[index]
+        row = {'template_type': template_type, 'template_groups': choices,
+               'group_index': index, 'group_type': group, 'stages': groups[group]}
+        if preset in HELP_TABLE_VECTORS:
+            row['help_table_stages'] = HELP_TABLE_VECTORS[preset]
+        presets[preset] = row
+    return {'stage_order': ['JPCommand', 'SRCommand', 'LPCommand', 'LRCommand'],
+            'classic_function_types_equal_cbus_values': list(range(16)),
+            'template_assignment': verify_template_assignment(image),
+            'presets': presets}
+
+
 def inspect(spec_dir: Path, exe: Path, map_file: Path, catalog_path: Path) -> dict:
     image = Image(exe, map_file)
     store = UnitSpecStore(spec_dir)
@@ -417,6 +579,7 @@ def inspect(spec_dir: Path, exe: Path, map_file: Path, catalog_path: Path) -> di
         'spec_sha256': dict(sorted(hashes.items())),
         'virtual_slots': {'MacroFunctionSubsetName': hex(subset_slot), 'MaximumKeyCount': hex(count_slot)},
         'preset_template_types': PRESET_TEMPLATE_TYPES,
+        'preset_micro_function_groups': preset_micro_function_groups(image),
         'catalog_sha256': _sha(catalog_path.read_bytes()),
         'macro_function_subsets': {name: subset_table[name] for name in sorted(used_subsets)},
         'bcnc4_forced_defaults': verify_bcnc4_forced_defaults(image),
