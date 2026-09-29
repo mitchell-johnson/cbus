@@ -1,0 +1,7476 @@
+{
+  "format": "cbus-native-unravel-cases-v1",
+  "scope": "Owned loopback native C-Gate 3.4.0 build 2001 against the research-only UnravelBusFixture. Synthetic KEYE1 2.5.00 nodes; fixture move policies are choices, not firmware claims. No hardware, bridge or power-cycle claim.",
+  "captured_at": "2026-09-29T14:10:53+00:00",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "oracle": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "version": "3.4.0 build 2001",
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "d90e2a7eccbb219166d8d4b7e81320168ce6e1b8ba6e475b24915ee4c2f1e7e2",
+  "fixture_sha256": "a3435d62b5910eee904cda296e0dc5625a7d14fba566e449a4439b4e5ccd5de0",
+  "cases": {
+    "n3_at_255_matchdb": {
+      "case": "n3_at_255_matchdb",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 255 (0xFF) to address 8 (0x08).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 8 (0x08)",
+        "120-Unravel: Unit object  address=8 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 255,
+        "101136.1559": 255,
+        "101136.1560": 255
+      },
+      "after_topology": {
+        "101136.1558": 6,
+        "101136.1559": 7,
+        "101136.1560": 8
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 6,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 7,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1560",
+            "address": 8,
+            "parameter32": "ff"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        },
+        {
+          "address": 8,
+          "serial": "101136.1560"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        },
+        {
+          "address": 8,
+          "serial": "101136.1560"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1560",
+          "requested": 8,
+          "payload": "05ff000f0018b106180811",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86081000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 7,
+          "payload": "05ff000f0018b106170713",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "101136.1558",
+          "requested": 6,
+          "payload": "05ff000f0018b106160615",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86061000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [
+        {
+          "address": 8,
+          "responders": []
+        },
+        {
+          "address": 7,
+          "responders": []
+        },
+        {
+          "address": 6,
+          "responders": []
+        }
+      ],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "\\4608001120w",
+          "reply": "w."
+        },
+        {
+          "request": "A3429705y",
+          "reply": "y.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106180811z",
+          "reply": "z.86081000870018B106180000F4\r\n"
+        },
+        {
+          "request": "\\4607001120g",
+          "reply": "g."
+        },
+        {
+          "request": "\\05FF000F0018B106170713h",
+          "reply": "h.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120i",
+          "reply": "i."
+        },
+        {
+          "request": "\\05FF000F0018B106160615j",
+          "reply": "j.86061000870018B106160000F8\r\n"
+        },
+        {
+          "request": "A3429707m",
+          "reply": "m.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B10616A200051A\r\n86FF10008D0438FFFFFFFF18B10617A2000519\r\n86FF10008D0438FFFFFFFF18B10618A2000518\r\n"
+        ],
+        [
+          "rx",
+          "\\4608001120w\r"
+        ],
+        [
+          "tx",
+          "w."
+        ],
+        [
+          "rx",
+          "\\4610001A4201x\r"
+        ],
+        [
+          "tx",
+          "x.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705y\r"
+        ],
+        [
+          "tx",
+          "y.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180811z\r"
+        ],
+        [
+          "tx",
+          "z.86081000870018B106180000F4\r\n"
+        ],
+        [
+          "rx",
+          "\\4607001120g\r"
+        ],
+        [
+          "tx",
+          "g."
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106170713h\r"
+        ],
+        [
+          "tx",
+          "h.86071000870018B106170000F6\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120i\r"
+        ],
+        [
+          "tx",
+          "i."
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106160615j\r"
+        ],
+        [
+          "tx",
+          "j.86061000870018B106160000F8\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00k\r"
+        ],
+        [
+          "tx",
+          "k.D8FF0000A0020001000000000000000000000000000000000086\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201l\r"
+        ],
+        [
+          "tx",
+          "l.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707m\r"
+        ],
+        [
+          "tx",
+          "m.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4608002101n\r"
+        ],
+        [
+          "tx",
+          "n.8608100089014B4559453120202019\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102o\r"
+        ],
+        [
+          "tx",
+          "o.860810008902322E352E30302020832138FF99\r\n"
+        ],
+        [
+          "rx",
+          "2104p\r"
+        ],
+        [
+          "tx",
+          "p.860810008D0438FFFFFFFF18B10618A200050F\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06q\r"
+        ],
+        [
+          "tx",
+          "q.86081000872ACA8B2A93841EFD\r\n"
+        ],
+        [
+          "rx",
+          "1A2306r\r"
+        ],
+        [
+          "tx",
+          "r.860810008723CA8B33932CDE93\r\n"
+        ],
+        [
+          "rx",
+          "1A5009s\r"
+        ],
+        [
+          "tx",
+          "s.860810008A500CFFFFFFFFFFFFFFFF84\r\n"
+        ],
+        [
+          "rx",
+          "1A4501t\r"
+        ],
+        [
+          "tx",
+          "t.860810008245009B\r\n"
+        ],
+        [
+          "rx",
+          "2108u\r"
+        ],
+        [
+          "tx",
+          "u.860810008A08000000000000000000D0\r\n"
+        ],
+        [
+          "rx",
+          "1AF201v\r"
+        ],
+        [
+          "tx",
+          "v.8608100082F2FFEF\r\n"
+        ],
+        [
+          "rx",
+          "\\4607002101w\r"
+        ],
+        [
+          "tx",
+          "w.8607100089014B455945312020201A\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102x\r"
+        ],
+        [
+          "tx",
+          "x.860710008902322E352E30302020832138FF9A\r\n"
+        ],
+        [
+          "rx",
+          "2104y\r"
+        ],
+        [
+          "tx",
+          "y.860710008D0438FFFFFFFF18B10617A2000511\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06z\r"
+        ],
+        [
+          "tx",
+          "z.86071000872ACA8B2A93841EFE\r\n"
+        ],
+        [
+          "rx",
+          "1A2306g\r"
+        ],
+        [
+          "tx",
+          "g.860710008723CA8B33932CDE94\r\n"
+        ],
+        [
+          "rx",
+          "1A5009h\r"
+        ],
+        [
+          "tx",
+          "h.860710008A500CFFFFFFFFFFFFFFFF85\r\n"
+        ],
+        [
+          "rx",
+          "1A4501i\r"
+        ],
+        [
+          "tx",
+          "i.860710008245009C\r\n"
+        ],
+        [
+          "rx",
+          "2108j\r"
+        ],
+        [
+          "tx",
+          "j.860710008A08000000000000000000D1\r\n"
+        ],
+        [
+          "rx",
+          "1AF201k\r"
+        ],
+        [
+          "tx",
+          "k.8607100082F2FFF0\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002101l\r"
+        ],
+        [
+          "tx",
+          "l.8606100089014B455945312020201B\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102m\r"
+        ],
+        [
+          "tx",
+          "m.860610008902322E352E30302020832138FF9B\r\n"
+        ],
+        [
+          "rx",
+          "2104n\r"
+        ],
+        [
+          "tx",
+          "n.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06o\r"
+        ],
+        [
+          "tx",
+          "o.86061000872ACA8B2A93841EFF\r\n"
+        ],
+        [
+          "rx",
+          "1A2306p\r"
+        ],
+        [
+          "tx",
+          "p.860610008723CA8B33932CDE95\r\n"
+        ],
+        [
+          "rx",
+          "1A5009q\r"
+        ],
+        [
+          "tx",
+          "q.860610008A500CFFFFFFFFFFFFFFFF86\r\n"
+        ],
+        [
+          "rx",
+          "1A4501r\r"
+        ],
+        [
+          "tx",
+          "r.860610008245009D\r\n"
+        ],
+        [
+          "rx",
+          "2108s\r"
+        ],
+        [
+          "tx",
+          "s.860610008A08000000000000000000D2\r\n"
+        ],
+        [
+          "rx",
+          "1AF201t\r"
+        ],
+        [
+          "tx",
+          "t.8606100082F2FFF1\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=6,7,8,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=6,7,8,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n3_at_255_matchdb.json",
+      "raw_artifact_sha256": "7bddd9230b7cacfd504881c22a7cd69325bbe956670a1da31c6b7f2acaddba78",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1559"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1560"
+          }
+        ],
+        "database": {
+          "6": "101136.1558",
+          "7": "101136.1559",
+          "8": "101136.1560"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "n4_at_255_partial_db": {
+      "case": "n4_at_255_partial_db",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1561 from address 255 (0xFF) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 255 (0xFF) to address 3 (0x03).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 7 (0x07).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 7 (0x07)",
+        "120-Unravel: Unit object  address=7 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1561 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 255,
+        "101136.1559": 255,
+        "101136.1560": 255,
+        "101136.1561": 255
+      },
+      "after_topology": {
+        "101136.1558": 6,
+        "101136.1559": 7,
+        "101136.1560": 3,
+        "101136.1561": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 6,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 7,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1560",
+            "address": 3,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1561",
+            "address": 2,
+            "parameter32": "ff"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1561",
+          "requested": 2,
+          "payload": "05ff000f0018b106190216",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106190000"
+        },
+        {
+          "serial": "101136.1560",
+          "requested": 3,
+          "payload": "05ff000f0018b106180316",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 7,
+          "payload": "05ff000f0018b106170713",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86071000870018b106170000"
+        },
+        {
+          "serial": "101136.1558",
+          "requested": 6,
+          "payload": "05ff000f0018b106160615",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86061000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [
+        {
+          "address": 7,
+          "responders": []
+        },
+        {
+          "address": 6,
+          "responders": []
+        }
+      ],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106190216y",
+          "reply": "y.86021000870018B106190000F9\r\n"
+        },
+        {
+          "request": "0F0018B106180316z",
+          "reply": "z.86031000870018B106180000F9\r\n"
+        },
+        {
+          "request": "\\4607001120g",
+          "reply": "g."
+        },
+        {
+          "request": "\\05FF000F0018B106170713h",
+          "reply": "h.86071000870018B106170000F6\r\n"
+        },
+        {
+          "request": "\\4606001120i",
+          "reply": "i."
+        },
+        {
+          "request": "\\05FF000F0018B106160615j",
+          "reply": "j.86061000870018B106160000F8\r\n"
+        },
+        {
+          "request": "A3429707m",
+          "reply": "m.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B10616A200051A\r\n86FF10008D0438FFFFFFFF18B10617A2000519\r\n86FF10008D0438FFFFFFFF18B10618A2000518\r\n86FF10008D0438FFFFFFFF18B10619A2000517\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106190216y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106190000F9\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106180316z\r"
+        ],
+        [
+          "tx",
+          "z.86031000870018B106180000F9\r\n"
+        ],
+        [
+          "rx",
+          "\\4607001120g\r"
+        ],
+        [
+          "tx",
+          "g."
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106170713h\r"
+        ],
+        [
+          "tx",
+          "h.86071000870018B106170000F6\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120i\r"
+        ],
+        [
+          "tx",
+          "i."
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106160615j\r"
+        ],
+        [
+          "tx",
+          "j.86061000870018B106160000F8\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00k\r"
+        ],
+        [
+          "tx",
+          "k.D8FF00A0A00000010000000000000000000000000000000000E8\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201l\r"
+        ],
+        [
+          "tx",
+          "l.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707m\r"
+        ],
+        [
+          "tx",
+          "m.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4607002101n\r"
+        ],
+        [
+          "tx",
+          "n.8607100089014B455945312020201A\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102o\r"
+        ],
+        [
+          "tx",
+          "o.860710008902322E352E30302020832138FF9A\r\n"
+        ],
+        [
+          "rx",
+          "2104p\r"
+        ],
+        [
+          "tx",
+          "p.860710008D0438FFFFFFFF18B10617A2000511\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06q\r"
+        ],
+        [
+          "tx",
+          "q.86071000872ACA8B2A93841EFE\r\n"
+        ],
+        [
+          "rx",
+          "1A2306r\r"
+        ],
+        [
+          "tx",
+          "r.860710008723CA8B33932CDE94\r\n"
+        ],
+        [
+          "rx",
+          "1A5009s\r"
+        ],
+        [
+          "tx",
+          "s.860710008A500CFFFFFFFFFFFFFFFF85\r\n"
+        ],
+        [
+          "rx",
+          "1A4501t\r"
+        ],
+        [
+          "tx",
+          "t.860710008245009C\r\n"
+        ],
+        [
+          "rx",
+          "2108u\r"
+        ],
+        [
+          "tx",
+          "u.860710008A08000000000000000000D1\r\n"
+        ],
+        [
+          "rx",
+          "1AF201v\r"
+        ],
+        [
+          "tx",
+          "v.8607100082F2FFF0\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002101w\r"
+        ],
+        [
+          "tx",
+          "w.8606100089014B455945312020201B\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102x\r"
+        ],
+        [
+          "tx",
+          "x.860610008902322E352E30302020832138FF9B\r\n"
+        ],
+        [
+          "rx",
+          "2104y\r"
+        ],
+        [
+          "tx",
+          "y.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06z\r"
+        ],
+        [
+          "tx",
+          "z.86061000872ACA8B2A93841EFF\r\n"
+        ],
+        [
+          "rx",
+          "1A2306g\r"
+        ],
+        [
+          "tx",
+          "g.860610008723CA8B33932CDE95\r\n"
+        ],
+        [
+          "rx",
+          "1A5009h\r"
+        ],
+        [
+          "tx",
+          "h.860610008A500CFFFFFFFFFFFFFFFF86\r\n"
+        ],
+        [
+          "rx",
+          "1A4501i\r"
+        ],
+        [
+          "tx",
+          "i.860610008245009D\r\n"
+        ],
+        [
+          "rx",
+          "2108j\r"
+        ],
+        [
+          "tx",
+          "j.860610008A08000000000000000000D2\r\n"
+        ],
+        [
+          "rx",
+          "1AF201k\r"
+        ],
+        [
+          "tx",
+          "k.8606100082F2FFF1\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101l\r"
+        ],
+        [
+          "tx",
+          "l.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102m\r"
+        ],
+        [
+          "tx",
+          "m.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104n\r"
+        ],
+        [
+          "tx",
+          "n.860310008D0438FFFFFFFF18B10618A2000514\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06o\r"
+        ],
+        [
+          "tx",
+          "o.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306p\r"
+        ],
+        [
+          "tx",
+          "p.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009q\r"
+        ],
+        [
+          "tx",
+          "q.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501r\r"
+        ],
+        [
+          "tx",
+          "r.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108s\r"
+        ],
+        [
+          "tx",
+          "s.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201t\r"
+        ],
+        [
+          "tx",
+          "t.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101u\r"
+        ],
+        [
+          "tx",
+          "u.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102v\r"
+        ],
+        [
+          "tx",
+          "v.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104w\r"
+        ],
+        [
+          "tx",
+          "w.860210008D0438FFFFFFFF18B10619A2000514\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06x\r"
+        ],
+        [
+          "tx",
+          "x.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306y\r"
+        ],
+        [
+          "tx",
+          "y.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009z\r"
+        ],
+        [
+          "tx",
+          "z.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501g\r"
+        ],
+        [
+          "tx",
+          "g.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108h\r"
+        ],
+        [
+          "tx",
+          "h.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201i\r"
+        ],
+        [
+          "tx",
+          "i.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,6,7,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,6,7,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n4_at_255_partial_db.json",
+      "raw_artifact_sha256": "059c20d6d0c6c83fb1b0fe81e0420a4213e4134b31a965efa60d148a210886dc",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1559"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1560"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1561"
+          }
+        ],
+        "database": {
+          "6": "101136.1558",
+          "7": "101136.1559"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "n3_ordinary_no_matchdb": {
+      "case": "n3_ordinary_no_matchdb",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 20",
+        "120-Unravel: Scanning unit 1 of 2 at address 20 (0x14).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 20 (0x14) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 20 (0x14) to address 3 (0x03).",
+        "120-Unravel: Unit at address 20 (0x14) with serial number 101136.1558 left in place.",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 20 (0x14)",
+        "120-Unravel: Unit object  address=20 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 20,
+        "101136.1559": 20,
+        "101136.1560": 20
+      },
+      "after_topology": {
+        "101136.1558": 20,
+        "101136.1559": 3,
+        "101136.1560": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 20,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 3,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1560",
+            "address": 2,
+            "parameter32": "14"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 20,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 20,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1560",
+          "requested": 2,
+          "payload": "05ff000f0018b106180217",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 3,
+          "payload": "05ff000f0018b106170317",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106170000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106180217y",
+          "reply": "y.86021000870018B106180000FA\r\n"
+        },
+        {
+          "request": "0F0018B106170317z",
+          "reply": "z.86031000870018B106170000FA\r\n"
+        },
+        {
+          "request": "A3429707i",
+          "reply": "i.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002104v\r"
+        ],
+        [
+          "tx",
+          "v.861410008D0438FFFFFFFF18B10616A2000505\r\n861410008D0438FFFFFFFF18B10617A2000504\r\n861410008D0438FFFFFFFF18B10618A2000503\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180217y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106180000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106170317z\r"
+        ],
+        [
+          "tx",
+          "z.86031000870018B106170000FA\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00g\r"
+        ],
+        [
+          "tx",
+          "g.D8FF00A000000001020000000000000000000000000000000086\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201h\r"
+        ],
+        [
+          "tx",
+          "h.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707i\r"
+        ],
+        [
+          "tx",
+          "i.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002101j\r"
+        ],
+        [
+          "tx",
+          "j.8614100089014B455945312020200D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102k\r"
+        ],
+        [
+          "tx",
+          "k.861410008902322E352E30302020832138FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2104l\r"
+        ],
+        [
+          "tx",
+          "l.861410008D0438FFFFFFFF18B10616A2000505\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06m\r"
+        ],
+        [
+          "tx",
+          "m.86141000872ACA8B2A93841EF1\r\n"
+        ],
+        [
+          "rx",
+          "1A2306n\r"
+        ],
+        [
+          "tx",
+          "n.861410008723CA8B33932CDE87\r\n"
+        ],
+        [
+          "rx",
+          "1A5009o\r"
+        ],
+        [
+          "tx",
+          "o.861410008A500CFFFFFFFFFFFFFFFF78\r\n"
+        ],
+        [
+          "rx",
+          "1A4501p\r"
+        ],
+        [
+          "tx",
+          "p.861410008245008F\r\n"
+        ],
+        [
+          "rx",
+          "2108q\r"
+        ],
+        [
+          "tx",
+          "q.861410008A08000000000000000000C4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201r\r"
+        ],
+        [
+          "tx",
+          "r.8614100082F2FFE3\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101s\r"
+        ],
+        [
+          "tx",
+          "s.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102t\r"
+        ],
+        [
+          "tx",
+          "t.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104u\r"
+        ],
+        [
+          "tx",
+          "u.860310008D0438FFFFFFFF18B10617A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06v\r"
+        ],
+        [
+          "tx",
+          "v.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306w\r"
+        ],
+        [
+          "tx",
+          "w.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009x\r"
+        ],
+        [
+          "tx",
+          "x.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501y\r"
+        ],
+        [
+          "tx",
+          "y.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108z\r"
+        ],
+        [
+          "tx",
+          "z.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201g\r"
+        ],
+        [
+          "tx",
+          "g.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101h\r"
+        ],
+        [
+          "tx",
+          "h.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102i\r"
+        ],
+        [
+          "tx",
+          "i.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104j\r"
+        ],
+        [
+          "tx",
+          "j.860210008D0438FFFFFFFF18B10618A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06k\r"
+        ],
+        [
+          "tx",
+          "k.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306l\r"
+        ],
+        [
+          "tx",
+          "l.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009m\r"
+        ],
+        [
+          "tx",
+          "m.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501n\r"
+        ],
+        [
+          "tx",
+          "n.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108o\r"
+        ],
+        [
+          "tx",
+          "o.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201p\r"
+        ],
+        [
+          "tx",
+          "p.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,16,20"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 200,
+          "reply": [
+            "120-Net Sync: started at Wed Sep 30 03:09:12 NZDT 2026",
+            "120-Net Sync: synchronising PCIs",
+            "120-Net Sync: starting network discovery",
+            "120-Net Sync: MMI unit count: 4",
+            "120-Net Sync: MMI units at: 2, 3, 16, 20",
+            "120-Net Sync: MMI error count: 0",
+            "120-Net Sync: MMI errors at: ",
+            "120-Net Sync: Serials found at address 16: 100966.1187",
+            "120-Net Sync: Serials found at address 2: 101136.1560",
+            "120-Net Sync: Serials found at address 3: 101136.1559",
+            "120-Net Sync: Serials found at address 20: 101136.1558",
+            "120-Net Sync: Unit count: 4",
+            "120-Net Sync: Unit error count: 0",
+            "120-Net Sync: Units at: 2, 3, 16, 20",
+            "120-Net Sync: Unit errors at: ",
+            "120-Net Sync: address=2 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+            "120-Net Sync: address=3 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+            "120-Net Sync: address=16 type=PC_CNIED version=5.5.00 serial=100966.1187 catalog=5500CN2",
+            "120-Net Sync: address=20 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+            "120-Net Sync: synchronising bridges",
+            "120-Net Sync: synchronizing unit 1 of 4 at address 2",
+            "120-Net Sync: address 2 type KEYE1 version 2.5.00 catalog 5031NMML",
+            "120-Net Sync: synchronizing unit 2 of 4 at address 3",
+            "120-Net Sync: address 3 type KEYE1 version 2.5.00 catalog 5031NMML",
+            "120-Net Sync: synchronizing unit 3 of 4 at address 16",
+            "120-Net Sync: address 16 type PC_CNIED version 5.5.00 catalog 5500CN2",
+            "120-Net Sync: synchronizing unit 4 of 4 at address 20",
+            "120-Net Sync: address 20 type KEYE1 version 2.5.00 catalog 5031NMML",
+            "120-Net Sync: finished at Wed Sep 30 03:09:17 NZDT 2026",
+            "120-Net Sync: Next Sync scheduled for Wed Sep 30 04:09:17 NZDT 2026",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,16,20"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n3_ordinary_no_matchdb.json",
+      "raw_artifact_sha256": "5b59f10d309f92ae0ad01193e6796cff19ebb77b546ad1f3f5ec81572deefb66",
+      "setup": {
+        "nodes": [
+          {
+            "address": 20,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1559"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1560"
+          }
+        ],
+        "database": {
+          "20": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 20"
+      }
+    },
+    "n4_ordinary_matchdb": {
+      "case": "n4_ordinary_matchdb",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 20",
+        "120-Unravel: Scanning unit 1 of 2 at address 20 (0x14).",
+        "120-Unravel: Readdressed unit with serial number 101136.1561 from address 20 (0x14) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 20 (0x14) to address 9 (0x09).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 20 (0x14) to address 3 (0x03).",
+        "120-Unravel: Unit at address 20 (0x14) with serial number 101136.1559 left in place.",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 20 (0x14)",
+        "120-Unravel: Unit object  address=20 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 9 (0x09)",
+        "120-Unravel: Unit object  address=9 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1561 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 20,
+        "101136.1559": 20,
+        "101136.1560": 20,
+        "101136.1561": 20
+      },
+      "after_topology": {
+        "101136.1558": 3,
+        "101136.1559": 20,
+        "101136.1560": 9,
+        "101136.1561": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 3,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 20,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1560",
+            "address": 9,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1561",
+            "address": 2,
+            "parameter32": "14"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 9,
+          "serial": "101136.1560"
+        },
+        {
+          "address": 20,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 9,
+          "serial": "101136.1560"
+        },
+        {
+          "address": 20,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1561",
+          "requested": 2,
+          "payload": "05ff000f0018b106190216",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106190000"
+        },
+        {
+          "serial": "101136.1560",
+          "requested": 9,
+          "payload": "05ff000f0018b106180910",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86091000870018b106180000"
+        },
+        {
+          "serial": "101136.1558",
+          "requested": 3,
+          "payload": "05ff000f0018b106160318",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [
+        {
+          "address": 9,
+          "responders": []
+        }
+      ],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106190216y",
+          "reply": "y.86021000870018B106190000F9\r\n"
+        },
+        {
+          "request": "\\4609001120z",
+          "reply": "z."
+        },
+        {
+          "request": "\\05FF000F0018B106180910g",
+          "reply": "g.86091000870018B106180000F3\r\n"
+        },
+        {
+          "request": "0F0018B106160318h",
+          "reply": "h.86031000870018B106160000FB\r\n"
+        },
+        {
+          "request": "A3429707k",
+          "reply": "k.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002104v\r"
+        ],
+        [
+          "tx",
+          "v.861410008D0438FFFFFFFF18B10616A2000505\r\n861410008D0438FFFFFFFF18B10617A2000504\r\n861410008D0438FFFFFFFF18B10618A2000503\r\n861410008D0438FFFFFFFF18B10619A2000502\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106190216y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106190000F9\r\n"
+        ],
+        [
+          "rx",
+          "\\4609001120z\r"
+        ],
+        [
+          "tx",
+          "z."
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180910g\r"
+        ],
+        [
+          "tx",
+          "g.86091000870018B106180000F3\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106160318h\r"
+        ],
+        [
+          "tx",
+          "h.86031000870018B106160000FB\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00i\r"
+        ],
+        [
+          "tx",
+          "i.D8FF00A00008000102000000000000000000000000000000007E\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201j\r"
+        ],
+        [
+          "tx",
+          "j.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707k\r"
+        ],
+        [
+          "tx",
+          "k.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002101l\r"
+        ],
+        [
+          "tx",
+          "l.8614100089014B455945312020200D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102m\r"
+        ],
+        [
+          "tx",
+          "m.861410008902322E352E30302020832138FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2104n\r"
+        ],
+        [
+          "tx",
+          "n.861410008D0438FFFFFFFF18B10617A2000504\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06o\r"
+        ],
+        [
+          "tx",
+          "o.86141000872ACA8B2A93841EF1\r\n"
+        ],
+        [
+          "rx",
+          "1A2306p\r"
+        ],
+        [
+          "tx",
+          "p.861410008723CA8B33932CDE87\r\n"
+        ],
+        [
+          "rx",
+          "1A5009q\r"
+        ],
+        [
+          "tx",
+          "q.861410008A500CFFFFFFFFFFFFFFFF78\r\n"
+        ],
+        [
+          "rx",
+          "1A4501r\r"
+        ],
+        [
+          "tx",
+          "r.861410008245008F\r\n"
+        ],
+        [
+          "rx",
+          "2108s\r"
+        ],
+        [
+          "tx",
+          "s.861410008A08000000000000000000C4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201t\r"
+        ],
+        [
+          "tx",
+          "t.8614100082F2FFE3\r\n"
+        ],
+        [
+          "rx",
+          "\\4609002101u\r"
+        ],
+        [
+          "tx",
+          "u.8609100089014B4559453120202018\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102v\r"
+        ],
+        [
+          "tx",
+          "v.860910008902322E352E30302020832138FF98\r\n"
+        ],
+        [
+          "rx",
+          "2104w\r"
+        ],
+        [
+          "tx",
+          "w.860910008D0438FFFFFFFF18B10618A200050E\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06x\r"
+        ],
+        [
+          "tx",
+          "x.86091000872ACA8B2A93841EFC\r\n"
+        ],
+        [
+          "rx",
+          "1A2306y\r"
+        ],
+        [
+          "tx",
+          "y.860910008723CA8B33932CDE92\r\n"
+        ],
+        [
+          "rx",
+          "1A5009z\r"
+        ],
+        [
+          "tx",
+          "z.860910008A500CFFFFFFFFFFFFFFFF83\r\n"
+        ],
+        [
+          "rx",
+          "1A4501g\r"
+        ],
+        [
+          "tx",
+          "g.860910008245009A\r\n"
+        ],
+        [
+          "rx",
+          "2108h\r"
+        ],
+        [
+          "tx",
+          "h.860910008A08000000000000000000CF\r\n"
+        ],
+        [
+          "rx",
+          "1AF201i\r"
+        ],
+        [
+          "tx",
+          "i.8609100082F2FFEE\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101j\r"
+        ],
+        [
+          "tx",
+          "j.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102k\r"
+        ],
+        [
+          "tx",
+          "k.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104l\r"
+        ],
+        [
+          "tx",
+          "l.860310008D0438FFFFFFFF18B10616A2000516\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06m\r"
+        ],
+        [
+          "tx",
+          "m.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306n\r"
+        ],
+        [
+          "tx",
+          "n.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009o\r"
+        ],
+        [
+          "tx",
+          "o.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501p\r"
+        ],
+        [
+          "tx",
+          "p.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108q\r"
+        ],
+        [
+          "tx",
+          "q.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201r\r"
+        ],
+        [
+          "tx",
+          "r.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101s\r"
+        ],
+        [
+          "tx",
+          "s.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102t\r"
+        ],
+        [
+          "tx",
+          "t.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104u\r"
+        ],
+        [
+          "tx",
+          "u.860210008D0438FFFFFFFF18B10619A2000514\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06v\r"
+        ],
+        [
+          "tx",
+          "v.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306w\r"
+        ],
+        [
+          "tx",
+          "w.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009x\r"
+        ],
+        [
+          "tx",
+          "x.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501y\r"
+        ],
+        [
+          "tx",
+          "y.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108z\r"
+        ],
+        [
+          "tx",
+          "z.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201g\r"
+        ],
+        [
+          "tx",
+          "g.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,9,16,20"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,9,16,20"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n4_ordinary_matchdb.json",
+      "raw_artifact_sha256": "be1626885594108840f7c8f58869c218cf18ed27daaee8f37eacd6038a016bc7",
+      "setup": {
+        "nodes": [
+          {
+            "address": 20,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1559"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1560"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1561"
+          }
+        ],
+        "database": {
+          "9": "101136.1560",
+          "20": "101136.1559"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 20 MATCHDB"
+      }
+    },
+    "matchdb_target_occupied_unknown": {
+      "case": "matchdb_target_occupied_unknown",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 3",
+        "120-Unravel: Units at: 6, 16, 255",
+        "120-Unravel: Scanning unit 1 of 3 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit  from address 6 (0x06) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit  from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1562 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 255,
+        "101136.1562": 6
+      },
+      "after_topology": {
+        "101136.1558": 6,
+        "101136.1562": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 6,
+            "parameter32": "06"
+          },
+          {
+            "serial": "101136.1562",
+            "address": 2,
+            "parameter32": "02"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [
+        {
+          "old": 6,
+          "new": 2,
+          "payload": "460600a3204e025a",
+          "movers": [
+            "101136.1562"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        },
+        {
+          "old": 255,
+          "new": 6,
+          "payload": "46ff00a3204e065a",
+          "movers": [
+            "101136.1558"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        }
+      ],
+      "unlock_operations": [
+        {
+          "address": 6,
+          "responders": [
+            "101136.1562"
+          ]
+        },
+        {
+          "address": 2,
+          "responders": [
+            "101136.1562"
+          ]
+        },
+        {
+          "address": 6,
+          "responders": []
+        },
+        {
+          "address": 255,
+          "responders": [
+            "101136.1558"
+          ]
+        }
+      ],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "\\4606001120x",
+          "reply": "x.8606100082205A68\r\n"
+        },
+        {
+          "request": "A3204E025Ay",
+          "reply": "y.8602100032204EC8\r\n"
+        },
+        {
+          "request": "\\4602001120z",
+          "reply": "z.8602100082205A6C\r\n"
+        },
+        {
+          "request": "\\4606001120g",
+          "reply": "g."
+        },
+        {
+          "request": "\\46FF001120h",
+          "reply": "h.86FF100082205A6F\r\n"
+        },
+        {
+          "request": "A3204E065Ai",
+          "reply": "i.8606100032204EC4\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000020000001000000000000000000000000000000000008\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201u\r"
+        ],
+        [
+          "tx",
+          "u.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101v\r"
+        ],
+        [
+          "tx",
+          "v.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104w\r"
+        ],
+        [
+          "tx",
+          "w.86FF10008D0438FFFFFFFF18B10616A200051A\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120x\r"
+        ],
+        [
+          "tx",
+          "x.8606100082205A68\r\n"
+        ],
+        [
+          "rx",
+          "A3204E025Ay\r"
+        ],
+        [
+          "tx",
+          "y.8602100032204EC8\r\n"
+        ],
+        [
+          "rx",
+          "\\4602001120z\r"
+        ],
+        [
+          "tx",
+          "z.8602100082205A6C\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120g\r"
+        ],
+        [
+          "tx",
+          "g."
+        ],
+        [
+          "rx",
+          "\\46FF001120h\r"
+        ],
+        [
+          "tx",
+          "h.86FF100082205A6F\r\n"
+        ],
+        [
+          "rx",
+          "A3204E065Ai\r"
+        ],
+        [
+          "tx",
+          "i.8606100032204EC4\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00j\r"
+        ],
+        [
+          "tx",
+          "j.D8FF0020200000010000000000000000000000000000000000E8\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002101k\r"
+        ],
+        [
+          "tx",
+          "k.8606100089014B455945312020201B\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102l\r"
+        ],
+        [
+          "tx",
+          "l.860610008902322E352E30302020832138FF9B\r\n"
+        ],
+        [
+          "rx",
+          "2104m\r"
+        ],
+        [
+          "tx",
+          "m.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06n\r"
+        ],
+        [
+          "tx",
+          "n.86061000872ACA8B2A93841EFF\r\n"
+        ],
+        [
+          "rx",
+          "1A2306o\r"
+        ],
+        [
+          "tx",
+          "o.860610008723CA8B33932CDE95\r\n"
+        ],
+        [
+          "rx",
+          "1A5009p\r"
+        ],
+        [
+          "tx",
+          "p.860610008A500CFFFFFFFFFFFFFFFF86\r\n"
+        ],
+        [
+          "rx",
+          "1A4501q\r"
+        ],
+        [
+          "tx",
+          "q.860610008245009D\r\n"
+        ],
+        [
+          "rx",
+          "2108r\r"
+        ],
+        [
+          "tx",
+          "r.860610008A08000000000000000000D2\r\n"
+        ],
+        [
+          "rx",
+          "1AF201s\r"
+        ],
+        [
+          "tx",
+          "s.8606100082F2FFF1\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101t\r"
+        ],
+        [
+          "tx",
+          "t.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102u\r"
+        ],
+        [
+          "tx",
+          "u.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104v\r"
+        ],
+        [
+          "tx",
+          "v.860210008D0438FFFFFFFF18B1061AA2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06w\r"
+        ],
+        [
+          "tx",
+          "w.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306x\r"
+        ],
+        [
+          "tx",
+          "x.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009y\r"
+        ],
+        [
+          "tx",
+          "y.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501z\r"
+        ],
+        [
+          "tx",
+          "z.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108g\r"
+        ],
+        [
+          "tx",
+          "g.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201h\r"
+        ],
+        [
+          "tx",
+          "h.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,6,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,6,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-matchdb_target_occupied_unknown.json",
+      "raw_artifact_sha256": "b6082f2750c2ef4b0a7a377a314135b9345b37b0a63e3c2faf1b5c9e8e1c46a1",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 6,
+            "serial": "101136.1562"
+          }
+        ],
+        "database": {
+          "6": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "matchdb_target_occupied_known": {
+      "case": "matchdb_target_occupied_known",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 3",
+        "120-Unravel: Units at: 6, 16, 255",
+        "120-Unravel: Scanning unit 1 of 3 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit  from address 6 (0x06) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit  from address 255 (0xFF) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1562 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 255,
+        "101136.1562": 6
+      },
+      "after_topology": {
+        "101136.1558": 6,
+        "101136.1562": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 6,
+            "parameter32": "06"
+          },
+          {
+            "serial": "101136.1562",
+            "address": 2,
+            "parameter32": "02"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 9,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 9,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [
+        {
+          "old": 6,
+          "new": 2,
+          "payload": "460600a3204e025a",
+          "movers": [
+            "101136.1562"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        },
+        {
+          "old": 255,
+          "new": 6,
+          "payload": "46ff00a3204e065a",
+          "movers": [
+            "101136.1558"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        }
+      ],
+      "unlock_operations": [
+        {
+          "address": 6,
+          "responders": [
+            "101136.1562"
+          ]
+        },
+        {
+          "address": 2,
+          "responders": [
+            "101136.1562"
+          ]
+        },
+        {
+          "address": 6,
+          "responders": []
+        },
+        {
+          "address": 255,
+          "responders": [
+            "101136.1558"
+          ]
+        }
+      ],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "\\4606001120w",
+          "reply": "w.8606100082205A68\r\n"
+        },
+        {
+          "request": "A3204E025Ax",
+          "reply": "x.8602100032204EC8\r\n"
+        },
+        {
+          "request": "\\4602001120y",
+          "reply": "y.8602100082205A6C\r\n"
+        },
+        {
+          "request": "\\4606001120z",
+          "reply": "z."
+        },
+        {
+          "request": "\\46FF001120g",
+          "reply": "g.86FF100082205A6F\r\n"
+        },
+        {
+          "request": "A3204E065Ah",
+          "reply": "h.8606100032204EC4\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000020000001000000000000000000000000000000000008\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B10616A200051A\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120w\r"
+        ],
+        [
+          "tx",
+          "w.8606100082205A68\r\n"
+        ],
+        [
+          "rx",
+          "A3204E025Ax\r"
+        ],
+        [
+          "tx",
+          "x.8602100032204EC8\r\n"
+        ],
+        [
+          "rx",
+          "\\4602001120y\r"
+        ],
+        [
+          "tx",
+          "y.8602100082205A6C\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120z\r"
+        ],
+        [
+          "tx",
+          "z."
+        ],
+        [
+          "rx",
+          "\\46FF001120g\r"
+        ],
+        [
+          "tx",
+          "g.86FF100082205A6F\r\n"
+        ],
+        [
+          "rx",
+          "A3204E065Ah\r"
+        ],
+        [
+          "tx",
+          "h.8606100032204EC4\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00i\r"
+        ],
+        [
+          "tx",
+          "i.D8FF0020200000010000000000000000000000000000000000E8\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002101j\r"
+        ],
+        [
+          "tx",
+          "j.8606100089014B455945312020201B\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102k\r"
+        ],
+        [
+          "tx",
+          "k.860610008902322E352E30302020832138FF9B\r\n"
+        ],
+        [
+          "rx",
+          "2104l\r"
+        ],
+        [
+          "tx",
+          "l.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06m\r"
+        ],
+        [
+          "tx",
+          "m.86061000872ACA8B2A93841EFF\r\n"
+        ],
+        [
+          "rx",
+          "1A2306n\r"
+        ],
+        [
+          "tx",
+          "n.860610008723CA8B33932CDE95\r\n"
+        ],
+        [
+          "rx",
+          "1A5009o\r"
+        ],
+        [
+          "tx",
+          "o.860610008A500CFFFFFFFFFFFFFFFF86\r\n"
+        ],
+        [
+          "rx",
+          "1A4501p\r"
+        ],
+        [
+          "tx",
+          "p.860610008245009D\r\n"
+        ],
+        [
+          "rx",
+          "2108q\r"
+        ],
+        [
+          "tx",
+          "q.860610008A08000000000000000000D2\r\n"
+        ],
+        [
+          "rx",
+          "1AF201r\r"
+        ],
+        [
+          "tx",
+          "r.8606100082F2FFF1\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101s\r"
+        ],
+        [
+          "tx",
+          "s.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102t\r"
+        ],
+        [
+          "tx",
+          "t.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104u\r"
+        ],
+        [
+          "tx",
+          "u.860210008D0438FFFFFFFF18B1061AA2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06v\r"
+        ],
+        [
+          "tx",
+          "v.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306w\r"
+        ],
+        [
+          "tx",
+          "w.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009x\r"
+        ],
+        [
+          "tx",
+          "x.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501y\r"
+        ],
+        [
+          "tx",
+          "y.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108z\r"
+        ],
+        [
+          "tx",
+          "z.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201g\r"
+        ],
+        [
+          "tx",
+          "g.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,6,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,6,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-matchdb_target_occupied_known.json",
+      "raw_artifact_sha256": "c3dbf3dce23090f76eb2cc2545a5e9a62cf9b716b2c09ec279e65e18d38cf621",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 6,
+            "serial": "101136.1562"
+          }
+        ],
+        "database": {
+          "6": "101136.1558",
+          "9": "101136.1562"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "swap_cycle": {
+      "case": "swap_cycle",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 3",
+        "120-Unravel: Units at: 6, 7, 16",
+        "120-Unravel: Scanning unit 1 of 3 at address 6 (0x06).",
+        "120-Unravel: Scanning unit 2 of 3 at address 7 (0x07).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 7,
+        "101136.1559": 6
+      },
+      "after_topology": {
+        "101136.1558": 7,
+        "101136.1559": 6
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 7,
+            "parameter32": "07"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 6,
+            "parameter32": "06"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 7,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF0000A0000001000000000000000000000000000000000088\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002104v\r"
+        ],
+        [
+          "tx",
+          "v.860610008D0438FFFFFFFF18B10617A2000512\r\n"
+        ],
+        [
+          "rx",
+          "\\4607002104w\r"
+        ],
+        [
+          "tx",
+          "w.860710008D0438FFFFFFFF18B10616A2000512\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00x\r"
+        ],
+        [
+          "tx",
+          "x.D8FF0000A0000001000000000000000000000000000000000088\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-swap_cycle.json",
+      "raw_artifact_sha256": "ba568ca050e074bc0b6ffd1781916b778e3950566853e3495d0f6fdd0e07e5e8",
+      "setup": {
+        "nodes": [
+          {
+            "address": 7,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 6,
+            "serial": "101136.1559"
+          }
+        ],
+        "database": {
+          "6": "101136.1558",
+          "7": "101136.1559"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 6,7 MATCHDB"
+      }
+    },
+    "unknown_serial_255": {
+      "case": "unknown_serial_255",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit  from address 255 (0xFF) to address 2 (0x02).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1562 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1562": 255
+      },
+      "after_topology": {
+        "101136.1562": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1562",
+            "address": 2,
+            "parameter32": "02"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [
+        {
+          "old": 255,
+          "new": 2,
+          "payload": "46ff00a3204e025a",
+          "movers": [
+            "101136.1562"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        }
+      ],
+      "unlock_operations": [
+        {
+          "address": 255,
+          "responders": [
+            "101136.1562"
+          ]
+        }
+      ],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "1120w",
+          "reply": "w.86FF100082205A6F\r\n"
+        },
+        {
+          "request": "A3204E025Ax",
+          "reply": "x.8602100032204EC8\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B1061AA2000516\r\n"
+        ],
+        [
+          "rx",
+          "1120w\r"
+        ],
+        [
+          "tx",
+          "w.86FF100082205A6F\r\n"
+        ],
+        [
+          "rx",
+          "A3204E025Ax\r"
+        ],
+        [
+          "tx",
+          "x.8602100032204EC8\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00y\r"
+        ],
+        [
+          "tx",
+          "y.D8FF002000000001000000000000000000000000000000000008\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101z\r"
+        ],
+        [
+          "tx",
+          "z.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102g\r"
+        ],
+        [
+          "tx",
+          "g.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104h\r"
+        ],
+        [
+          "tx",
+          "h.860210008D0438FFFFFFFF18B1061AA2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06i\r"
+        ],
+        [
+          "tx",
+          "i.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306j\r"
+        ],
+        [
+          "tx",
+          "j.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009k\r"
+        ],
+        [
+          "tx",
+          "k.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501l\r"
+        ],
+        [
+          "tx",
+          "l.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108m\r"
+        ],
+        [
+          "tx",
+          "m.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201n\r"
+        ],
+        [
+          "tx",
+          "n.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-unknown_serial_255.json",
+      "raw_artifact_sha256": "8e5089647dc566f01120d8c1a86517df1764c9bcb7c65f0716c1493e837f4b40",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1562"
+          }
+        ],
+        "database": {
+          "6": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "unknown_serial_ordinary": {
+      "case": "unknown_serial_ordinary",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 20",
+        "120-Unravel: Scanning unit 1 of 2 at address 20 (0x14).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1562": 20
+      },
+      "after_topology": {
+        "101136.1562": 20
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1562",
+            "address": 20,
+            "parameter32": "14"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002104v\r"
+        ],
+        [
+          "tx",
+          "v.861410008D0438FFFFFFFF18B1061AA2000501\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00w\r"
+        ],
+        [
+          "tx",
+          "w.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-unknown_serial_ordinary.json",
+      "raw_artifact_sha256": "f4a4ebc575b356855ec7d31d95c1567feea19fe3aa2fcab6b109e82aee15ae12",
+      "setup": {
+        "nodes": [
+          {
+            "address": 20,
+            "serial": "101136.1562"
+          }
+        ],
+        "database": {
+          "6": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 20 MATCHDB"
+      }
+    },
+    "pci_address_duplicate": {
+      "case": "pci_address_duplicate",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 1",
+        "120-Unravel: Units at: 16",
+        "120-Unravel: Unravelling gateway units...",
+        "120-Unravel: Gateway Unit at address 16 (0x10) is not obscuring any other units.",
+        "120-Unravel: Scanning unit 1 of 1 at address 16 (0x10).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 16 (0x10) to address 6 (0x06).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 16 (0x10)",
+        "120-Unravel: Unit object  address=16 type=PC_CNIED version=5.5.00 serial=100966.1187 catalog=5500CN2",
+        "120-Unravel: Updating network model at address 6 (0x06)",
+        "120-Unravel: Unit object  address=6 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 16
+      },
+      "after_topology": {
+        "101136.1558": 6
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "05",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 6,
+            "parameter32": "10"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 6,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1558",
+          "requested": 6,
+          "payload": "05ff000f0018b106160615",
+          "old": [
+            16
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86061000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [
+        {
+          "address": 6,
+          "responders": []
+        },
+        {
+          "address": 16,
+          "responders": [
+            "100966.1187"
+          ]
+        }
+      ],
+      "pci_operations": [
+        "461000a3429705"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [
+        {
+          "address": 16,
+          "serial": "101136.1558",
+          "request": "4610002110",
+          "reason": "Unknown IDENTIFY attribute"
+        },
+        {
+          "address": 16,
+          "serial": "101136.1558",
+          "request": "4610001a4201",
+          "reason": "RECALL exceeds a configured parameter block"
+        },
+        {
+          "address": 16,
+          "serial": "101136.1558",
+          "request": "4610001a4201",
+          "reason": "RECALL exceeds a configured parameter block"
+        }
+      ],
+      "address_wire": [
+        {
+          "request": "\\4606001120x",
+          "reply": "x."
+        },
+        {
+          "request": "A3429705z",
+          "reply": "z.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106160615g",
+          "reply": "g.86061000870018B106160000F8\r\n"
+        },
+        {
+          "request": "\\4610001120h",
+          "reply": "h."
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n8610100089014B4559453120202011\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n861010008902322E352E30302020832138FF91\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n861010008D0438FFFFFFFF18B10616A2000509\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n86101000872ACA8B2A93841EF5\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n861010008723CA8B33932CDE8B\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n861010008902322E352E303020206C\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n8610100082F2FFE7\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n861010008D0438FFFFFFFF18B10616A2000509\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n861010008902322E352E303020206C\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n86101000823003A5\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n861010008221387F\r\n"
+        ],
+        [
+          "rx",
+          "2104v\r"
+        ],
+        [
+          "tx",
+          "v.8D04FFFFFF000018A664A3B10005F7\r\n861010008D0438FFFFFFFF18B10616A2000509\r\n"
+        ],
+        [
+          "rx",
+          "2104w\r"
+        ],
+        [
+          "tx",
+          "w.8D04FFFFFF000018A664A3B10005F7\r\n861010008D0438FFFFFFFF18B10616A2000509\r\n"
+        ],
+        [
+          "rx",
+          "\\4606001120x\r"
+        ],
+        [
+          "tx",
+          "x."
+        ],
+        [
+          "rx",
+          "\\4610001A4201y\r"
+        ],
+        [
+          "tx",
+          "y.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705z\r"
+        ],
+        [
+          "tx",
+          "z.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106160615g\r"
+        ],
+        [
+          "tx",
+          "g.86061000870018B106160000F8\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001120h\r"
+        ],
+        [
+          "tx",
+          "h."
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00i\r"
+        ],
+        [
+          "tx",
+          "i.D8FF000020000001000000000000000000000000000000000008\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101j\r"
+        ],
+        [
+          "tx",
+          "j.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102k\r"
+        ],
+        [
+          "tx",
+          "k.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104l\r"
+        ],
+        [
+          "tx",
+          "l.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06m\r"
+        ],
+        [
+          "tx",
+          "m.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306n\r"
+        ],
+        [
+          "tx",
+          "n.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102o\r"
+        ],
+        [
+          "tx",
+          "o.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201p\r"
+        ],
+        [
+          "tx",
+          "p.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "\\4606002101q\r"
+        ],
+        [
+          "tx",
+          "q.8606100089014B455945312020201B\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102r\r"
+        ],
+        [
+          "tx",
+          "r.860610008902322E352E30302020832138FF9B\r\n"
+        ],
+        [
+          "rx",
+          "2104s\r"
+        ],
+        [
+          "tx",
+          "s.860610008D0438FFFFFFFF18B10616A2000513\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06t\r"
+        ],
+        [
+          "tx",
+          "t.86061000872ACA8B2A93841EFF\r\n"
+        ],
+        [
+          "rx",
+          "1A2306u\r"
+        ],
+        [
+          "tx",
+          "u.860610008723CA8B33932CDE95\r\n"
+        ],
+        [
+          "rx",
+          "1A5009v\r"
+        ],
+        [
+          "tx",
+          "v.860610008A500CFFFFFFFFFFFFFFFF86\r\n"
+        ],
+        [
+          "rx",
+          "1A4501w\r"
+        ],
+        [
+          "tx",
+          "w.860610008245009D\r\n"
+        ],
+        [
+          "rx",
+          "2108x\r"
+        ],
+        [
+          "tx",
+          "x.860610008A08000000000000000000D2\r\n"
+        ],
+        [
+          "rx",
+          "1AF201y\r"
+        ],
+        [
+          "tx",
+          "y.8606100082F2FFF1\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=6,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=6,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-pci_address_duplicate.json",
+      "raw_artifact_sha256": "46e1f6f054c8540cde3a1880bfeec5da499012dbb69b331e56a02ca8ce5730fb",
+      "setup": {
+        "nodes": [
+          {
+            "address": 16,
+            "serial": "101136.1558"
+          }
+        ],
+        "database": {
+          "6": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 16 MATCHDB"
+      }
+    },
+    "free_address_skips_database": {
+      "case": "free_address_skips_database",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit  from address 255 (0xFF) to address 4 (0x04).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 4 (0x04)",
+        "120-Unravel: Unit object  address=4 type=KEYE1 version=2.5.00 serial=101136.1562 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1562": 255
+      },
+      "after_topology": {
+        "101136.1562": 4
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1562",
+            "address": 4,
+            "parameter32": "04"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 2,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 3,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 2,
+          "serial": "101136.1558"
+        },
+        {
+          "address": 3,
+          "serial": "101136.1559"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [],
+      "store_operations": [
+        {
+          "old": 255,
+          "new": 4,
+          "payload": "46ff00a3204e045a",
+          "movers": [
+            "101136.1562"
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved"
+        }
+      ],
+      "unlock_operations": [
+        {
+          "address": 255,
+          "responders": [
+            "101136.1562"
+          ]
+        }
+      ],
+      "pci_operations": [],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "1120w",
+          "reply": "w.86FF100082205A6F\r\n"
+        },
+        {
+          "request": "A3204E045Ax",
+          "reply": "x.8604100032204EC6\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B1061AA2000516\r\n"
+        ],
+        [
+          "rx",
+          "1120w\r"
+        ],
+        [
+          "tx",
+          "w.86FF100082205A6F\r\n"
+        ],
+        [
+          "rx",
+          "A3204E045Ax\r"
+        ],
+        [
+          "tx",
+          "x.8604100032204EC6\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF00FAFF00y\r"
+        ],
+        [
+          "tx",
+          "y.D8FF000002000001000000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4604002101z\r"
+        ],
+        [
+          "tx",
+          "z.8604100089014B455945312020201D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102g\r"
+        ],
+        [
+          "tx",
+          "g.860410008902322E352E30302020832138FF9D\r\n"
+        ],
+        [
+          "rx",
+          "2104h\r"
+        ],
+        [
+          "tx",
+          "h.860410008D0438FFFFFFFF18B1061AA2000511\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06i\r"
+        ],
+        [
+          "tx",
+          "i.86041000872ACA8B2A93841E01\r\n"
+        ],
+        [
+          "rx",
+          "1A2306j\r"
+        ],
+        [
+          "tx",
+          "j.860410008723CA8B33932CDE97\r\n"
+        ],
+        [
+          "rx",
+          "1A5009k\r"
+        ],
+        [
+          "tx",
+          "k.860410008A500CFFFFFFFFFFFFFFFF88\r\n"
+        ],
+        [
+          "rx",
+          "1A4501l\r"
+        ],
+        [
+          "tx",
+          "l.860410008245009F\r\n"
+        ],
+        [
+          "rx",
+          "2108m\r"
+        ],
+        [
+          "tx",
+          "m.860410008A08000000000000000000D4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201n\r"
+        ],
+        [
+          "tx",
+          "n.8604100082F2FFF3\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=4,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=4,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-free_address_skips_database.json",
+      "raw_artifact_sha256": "4981fcebfb2b5d88aea629ac155ce78d9c1ba3c66ff4c4ae0b162a8ba512c513",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1562"
+          }
+        ],
+        "database": {
+          "2": "101136.1558",
+          "3": "101136.1559"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "n3_at_255_reordered_no_db": {
+      "case": "n3_at_255_reordered_no_db",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 255",
+        "120-Unravel: Scanning unit 1 of 2 at address 255 (0xFF).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 255 (0xFF) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 255 (0xFF) to address 3 (0x03).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 4 (0x04).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 255 (0xFF)",
+        "120-Unravel: No unit objects at address 255",
+        "120-Unravel: Updating network model at address 4 (0x04)",
+        "120-Unravel: Unit object  address=4 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1560": 255,
+        "101136.1558": 255,
+        "101136.1559": 255
+      },
+      "after_topology": {
+        "101136.1560": 2,
+        "101136.1558": 4,
+        "101136.1559": 3
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1560",
+            "address": 2,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1558",
+            "address": 4,
+            "parameter32": "ff"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 3,
+            "parameter32": "ff"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 30,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 30,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1560",
+          "requested": 2,
+          "payload": "05ff000f0018b106180217",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 3,
+          "payload": "05ff000f0018b106170317",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106170000"
+        },
+        {
+          "serial": "101136.1558",
+          "requested": 4,
+          "payload": "05ff000f0018b106160417",
+          "old": [
+            255
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86041000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106180217y",
+          "reply": "y.86021000870018B106180000FA\r\n"
+        },
+        {
+          "request": "0F0018B106170317z",
+          "reply": "z.86031000870018B106170000FA\r\n"
+        },
+        {
+          "request": "0F0018B106160417g",
+          "reply": "g.86041000870018B106160000FA\r\n"
+        },
+        {
+          "request": "A3429707j",
+          "reply": "j.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001000000000000000000000000000000000028\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB00000000000000000000000000000000000000080FB\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\46FF002104v\r"
+        ],
+        [
+          "tx",
+          "v.86FF10008D0438FFFFFFFF18B10618A2000518\r\n86FF10008D0438FFFFFFFF18B10616A200051A\r\n86FF10008D0438FFFFFFFF18B10617A2000519\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180217y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106180000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106170317z\r"
+        ],
+        [
+          "tx",
+          "z.86031000870018B106170000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106160417g\r"
+        ],
+        [
+          "tx",
+          "g.86041000870018B106160000FA\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF00A002000001000000000000000000000000000000000086\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201i\r"
+        ],
+        [
+          "tx",
+          "i.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707j\r"
+        ],
+        [
+          "tx",
+          "j.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4604002101k\r"
+        ],
+        [
+          "tx",
+          "k.8604100089014B455945312020201D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102l\r"
+        ],
+        [
+          "tx",
+          "l.860410008902322E352E30302020832138FF9D\r\n"
+        ],
+        [
+          "rx",
+          "2104m\r"
+        ],
+        [
+          "tx",
+          "m.860410008D0438FFFFFFFF18B10616A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06n\r"
+        ],
+        [
+          "tx",
+          "n.86041000872ACA8B2A93841E01\r\n"
+        ],
+        [
+          "rx",
+          "1A2306o\r"
+        ],
+        [
+          "tx",
+          "o.860410008723CA8B33932CDE97\r\n"
+        ],
+        [
+          "rx",
+          "1A5009p\r"
+        ],
+        [
+          "tx",
+          "p.860410008A500CFFFFFFFFFFFFFFFF88\r\n"
+        ],
+        [
+          "rx",
+          "1A4501q\r"
+        ],
+        [
+          "tx",
+          "q.860410008245009F\r\n"
+        ],
+        [
+          "rx",
+          "2108r\r"
+        ],
+        [
+          "tx",
+          "r.860410008A08000000000000000000D4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201s\r"
+        ],
+        [
+          "tx",
+          "s.8604100082F2FFF3\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101t\r"
+        ],
+        [
+          "tx",
+          "t.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102u\r"
+        ],
+        [
+          "tx",
+          "u.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104v\r"
+        ],
+        [
+          "tx",
+          "v.860310008D0438FFFFFFFF18B10617A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06w\r"
+        ],
+        [
+          "tx",
+          "w.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306x\r"
+        ],
+        [
+          "tx",
+          "x.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009y\r"
+        ],
+        [
+          "tx",
+          "y.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501z\r"
+        ],
+        [
+          "tx",
+          "z.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108g\r"
+        ],
+        [
+          "tx",
+          "g.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201h\r"
+        ],
+        [
+          "tx",
+          "h.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101i\r"
+        ],
+        [
+          "tx",
+          "i.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.860210008D0438FFFFFFFF18B10618A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009n\r"
+        ],
+        [
+          "tx",
+          "n.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501o\r"
+        ],
+        [
+          "tx",
+          "o.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108p\r"
+        ],
+        [
+          "tx",
+          "p.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201q\r"
+        ],
+        [
+          "tx",
+          "q.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,4,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,4,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n3_at_255_reordered_no_db.json",
+      "raw_artifact_sha256": "8b8a5ee633920f8c0b9200b6e9318ec4cec5f54dbdbd04733616e612358fedfe",
+      "setup": {
+        "nodes": [
+          {
+            "address": 255,
+            "serial": "101136.1560"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 255,
+            "serial": "101136.1559"
+          }
+        ],
+        "database": {
+          "30": "101136.1562"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 255 MATCHDB"
+      }
+    },
+    "n3_ordinary_reordered_no_matchdb": {
+      "case": "n3_ordinary_reordered_no_matchdb",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 20",
+        "120-Unravel: Scanning unit 1 of 2 at address 20 (0x14).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 20 (0x14) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 20 (0x14) to address 3 (0x03).",
+        "120-Unravel: Unit at address 20 (0x14) with serial number 101136.1558 left in place.",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 20 (0x14)",
+        "120-Unravel: Unit object  address=20 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1560": 20,
+        "101136.1558": 20,
+        "101136.1559": 20
+      },
+      "after_topology": {
+        "101136.1560": 2,
+        "101136.1558": 20,
+        "101136.1559": 3
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1560",
+            "address": 2,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1558",
+            "address": 20,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 3,
+            "parameter32": "14"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 20,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 20,
+          "serial": "101136.1558"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1560",
+          "requested": 2,
+          "payload": "05ff000f0018b106180217",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 3,
+          "payload": "05ff000f0018b106170317",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106170000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106180217y",
+          "reply": "y.86021000870018B106180000FA\r\n"
+        },
+        {
+          "request": "0F0018B106170317z",
+          "reply": "z.86031000870018B106170000FA\r\n"
+        },
+        {
+          "request": "A3429707i",
+          "reply": "i.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002104v\r"
+        ],
+        [
+          "tx",
+          "v.861410008D0438FFFFFFFF18B10618A2000503\r\n861410008D0438FFFFFFFF18B10616A2000505\r\n861410008D0438FFFFFFFF18B10617A2000504\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180217y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106180000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106170317z\r"
+        ],
+        [
+          "tx",
+          "z.86031000870018B106170000FA\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00g\r"
+        ],
+        [
+          "tx",
+          "g.D8FF00A000000001020000000000000000000000000000000086\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201h\r"
+        ],
+        [
+          "tx",
+          "h.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707i\r"
+        ],
+        [
+          "tx",
+          "i.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002101j\r"
+        ],
+        [
+          "tx",
+          "j.8614100089014B455945312020200D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102k\r"
+        ],
+        [
+          "tx",
+          "k.861410008902322E352E30302020832138FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2104l\r"
+        ],
+        [
+          "tx",
+          "l.861410008D0438FFFFFFFF18B10616A2000505\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06m\r"
+        ],
+        [
+          "tx",
+          "m.86141000872ACA8B2A93841EF1\r\n"
+        ],
+        [
+          "rx",
+          "1A2306n\r"
+        ],
+        [
+          "tx",
+          "n.861410008723CA8B33932CDE87\r\n"
+        ],
+        [
+          "rx",
+          "1A5009o\r"
+        ],
+        [
+          "tx",
+          "o.861410008A500CFFFFFFFFFFFFFFFF78\r\n"
+        ],
+        [
+          "rx",
+          "1A4501p\r"
+        ],
+        [
+          "tx",
+          "p.861410008245008F\r\n"
+        ],
+        [
+          "rx",
+          "2108q\r"
+        ],
+        [
+          "tx",
+          "q.861410008A08000000000000000000C4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201r\r"
+        ],
+        [
+          "tx",
+          "r.8614100082F2FFE3\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101s\r"
+        ],
+        [
+          "tx",
+          "s.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102t\r"
+        ],
+        [
+          "tx",
+          "t.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104u\r"
+        ],
+        [
+          "tx",
+          "u.860310008D0438FFFFFFFF18B10617A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06v\r"
+        ],
+        [
+          "tx",
+          "v.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306w\r"
+        ],
+        [
+          "tx",
+          "w.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009x\r"
+        ],
+        [
+          "tx",
+          "x.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501y\r"
+        ],
+        [
+          "tx",
+          "y.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108z\r"
+        ],
+        [
+          "tx",
+          "z.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201g\r"
+        ],
+        [
+          "tx",
+          "g.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101h\r"
+        ],
+        [
+          "tx",
+          "h.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102i\r"
+        ],
+        [
+          "tx",
+          "i.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104j\r"
+        ],
+        [
+          "tx",
+          "j.860210008D0438FFFFFFFF18B10618A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06k\r"
+        ],
+        [
+          "tx",
+          "k.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306l\r"
+        ],
+        [
+          "tx",
+          "l.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009m\r"
+        ],
+        [
+          "tx",
+          "m.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501n\r"
+        ],
+        [
+          "tx",
+          "n.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108o\r"
+        ],
+        [
+          "tx",
+          "o.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201p\r"
+        ],
+        [
+          "tx",
+          "p.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,16,20"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,16,20"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n3_ordinary_reordered_no_matchdb.json",
+      "raw_artifact_sha256": "4ee76bae245f3f349b07fe6101e8371ba4b7406e616d5d0412132b6743da2995",
+      "setup": {
+        "nodes": [
+          {
+            "address": 20,
+            "serial": "101136.1560"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1559"
+          }
+        ],
+        "database": {
+          "20": "101136.1558"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 20"
+      }
+    },
+    "n3_ordinary_matchdb_no_keeper": {
+      "case": "n3_ordinary_matchdb_no_keeper",
+      "passed": true,
+      "status": 200,
+      "reply": [
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Unit count: 2",
+        "120-Unravel: Units at: 16, 20",
+        "120-Unravel: Scanning unit 1 of 2 at address 20 (0x14).",
+        "120-Unravel: Readdressed unit with serial number 101136.1560 from address 20 (0x14) to address 2 (0x02).",
+        "120-Unravel: Readdressed unit with serial number 101136.1559 from address 20 (0x14) to address 3 (0x03).",
+        "120-Unravel: Readdressed unit with serial number 101136.1558 from address 20 (0x14) to address 4 (0x04).",
+        "120-completed MMI 1 of 1.",
+        "120-Unravel: Complete.",
+        "120-Unravel: Updating network model at address 20 (0x14)",
+        "120-Unravel: No unit objects at address 20",
+        "120-Unravel: Updating network model at address 4 (0x04)",
+        "120-Unravel: Unit object  address=4 type=KEYE1 version=2.5.00 serial=101136.1558 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 3 (0x03)",
+        "120-Unravel: Unit object  address=3 type=KEYE1 version=2.5.00 serial=101136.1559 catalog=5031NMML",
+        "120-Unravel: Updating network model at address 2 (0x02)",
+        "120-Unravel: Unit object  address=2 type=KEYE1 version=2.5.00 serial=101136.1560 catalog=5031NMML",
+        "200 OK."
+      ],
+      "before_topology": {
+        "101136.1558": 20,
+        "101136.1559": 20,
+        "101136.1560": 20
+      },
+      "after_topology": {
+        "101136.1558": 4,
+        "101136.1559": 3,
+        "101136.1560": 2
+      },
+      "after_fixture": {
+        "format": "cbus-unravel-bus-fixture-v1",
+        "fixture_only": true,
+        "local_unit": 16,
+        "pci_serial": "100966.1187",
+        "pci_parameter66": "07",
+        "nodes": [
+          {
+            "serial": "101136.1558",
+            "address": 4,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1559",
+            "address": 3,
+            "parameter32": "14"
+          },
+          {
+            "serial": "101136.1560",
+            "address": 2,
+            "parameter32": "14"
+          }
+        ],
+        "policies": {
+          "co": "moves every matching serial regardless of occupancy; parameter32 unchanged",
+          "protected_store": "moves every unlocked node regardless of occupancy; parameter32 updated",
+          "collisions": "separate complete frames in node order"
+        }
+      },
+      "database_before": [
+        {
+          "address": 30,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_after": [
+        {
+          "address": 30,
+          "serial": "101136.1562"
+        }
+      ],
+      "database_unchanged": true,
+      "co_operations": [
+        {
+          "serial": "101136.1560",
+          "requested": 2,
+          "payload": "05ff000f0018b106180217",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86021000870018b106180000"
+        },
+        {
+          "serial": "101136.1559",
+          "requested": 3,
+          "payload": "05ff000f0018b106170317",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86031000870018b106170000"
+        },
+        {
+          "serial": "101136.1558",
+          "requested": 4,
+          "payload": "05ff000f0018b106160417",
+          "old": [
+            20
+          ],
+          "destination_occupants_before": [],
+          "outcome": "moved",
+          "reply": "86041000870018b106160000"
+        }
+      ],
+      "store_operations": [],
+      "unlock_operations": [],
+      "pci_operations": [
+        "461000a3429705",
+        "461000a3429707"
+      ],
+      "rejected_writes": [],
+      "silent_reads": [],
+      "address_wire": [
+        {
+          "request": "A3429705x",
+          "reply": "x.324297F5\r\n"
+        },
+        {
+          "request": "\\05FF000F0018B106180217y",
+          "reply": "y.86021000870018B106180000FA\r\n"
+        },
+        {
+          "request": "0F0018B106170317z",
+          "reply": "z.86031000870018B106170000FA\r\n"
+        },
+        {
+          "request": "0F0018B106160417g",
+          "reply": "g.86041000870018B106160000FA\r\n"
+        },
+        {
+          "request": "A3429707j",
+          "reply": "j.324297F5\r\n"
+        }
+      ],
+      "unravel_wire": [
+        [
+          "rx",
+          "\\05FF00FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF000000000001020000000000000000000000000000000026\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\r"
+        ],
+        [
+          "rx",
+          "||\r"
+        ],
+        [
+          "rx",
+          "@1A2001\r"
+        ],
+        [
+          "tx",
+          "8220104E\r\n"
+        ],
+        [
+          "rx",
+          "\\4610002101i\r"
+        ],
+        [
+          "tx",
+          "i.890150435F434E49454421\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.8902352E352E303020208321FFFF6D\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.872AB64CF6BB1A9EE4\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.87239B192D8229E4E6\r\n"
+        ],
+        [
+          "rx",
+          "2102n\r"
+        ],
+        [
+          "tx",
+          "n.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1AF201o\r"
+        ],
+        [
+          "tx",
+          "o.82F2FF8D\r\n"
+        ],
+        [
+          "rx",
+          "2110p\r"
+        ],
+        [
+          "tx",
+          "p.8510030000FF69\r\n"
+        ],
+        [
+          "rx",
+          "2104q\r"
+        ],
+        [
+          "tx",
+          "q.8D04FFFFFF000018A664A3B10005F7\r\n"
+        ],
+        [
+          "rx",
+          "2102r\r"
+        ],
+        [
+          "tx",
+          "r.8902352E352E303020200F\r\n"
+        ],
+        [
+          "rx",
+          "1A3001s\r"
+        ],
+        [
+          "tx",
+          "s.823055F9\r\n"
+        ],
+        [
+          "rx",
+          "1A4201t\r"
+        ],
+        [
+          "tx",
+          "t.82420735\r\n"
+        ],
+        [
+          "rx",
+          "1A2101u\r"
+        ],
+        [
+          "tx",
+          "u.8221FF5E\r\n"
+        ],
+        [
+          "rx",
+          "\\4614002104v\r"
+        ],
+        [
+          "tx",
+          "v.861410008D0438FFFFFFFF18B10616A2000505\r\n861410008D0438FFFFFFFF18B10617A2000504\r\n861410008D0438FFFFFFFF18B10618A2000503\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201w\r"
+        ],
+        [
+          "tx",
+          "w.82420735\r\n"
+        ],
+        [
+          "rx",
+          "A3429705x\r"
+        ],
+        [
+          "tx",
+          "x.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\05FF000F0018B106180217y\r"
+        ],
+        [
+          "tx",
+          "y.86021000870018B106180000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106170317z\r"
+        ],
+        [
+          "tx",
+          "z.86031000870018B106170000FA\r\n"
+        ],
+        [
+          "rx",
+          "0F0018B106160417g\r"
+        ],
+        [
+          "tx",
+          "g.86041000870018B106160000FA\r\n"
+        ],
+        [
+          "rx",
+          "FAFF00h\r"
+        ],
+        [
+          "tx",
+          "h.D8FF00A002000001000000000000000000000000000000000086\r\nD8FF5800000000000000000000000000000000000000000000D1\r\nD6FFB000000000000000000000000000000000000000007B\r\n"
+        ],
+        [
+          "rx",
+          "\\4610001A4201i\r"
+        ],
+        [
+          "tx",
+          "i.82420537\r\n"
+        ],
+        [
+          "rx",
+          "A3429707j\r"
+        ],
+        [
+          "tx",
+          "j.324297F5\r\n"
+        ],
+        [
+          "rx",
+          "\\4604002101k\r"
+        ],
+        [
+          "tx",
+          "k.8604100089014B455945312020201D\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102l\r"
+        ],
+        [
+          "tx",
+          "l.860410008902322E352E30302020832138FF9D\r\n"
+        ],
+        [
+          "rx",
+          "2104m\r"
+        ],
+        [
+          "tx",
+          "m.860410008D0438FFFFFFFF18B10616A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06n\r"
+        ],
+        [
+          "tx",
+          "n.86041000872ACA8B2A93841E01\r\n"
+        ],
+        [
+          "rx",
+          "1A2306o\r"
+        ],
+        [
+          "tx",
+          "o.860410008723CA8B33932CDE97\r\n"
+        ],
+        [
+          "rx",
+          "1A5009p\r"
+        ],
+        [
+          "tx",
+          "p.860410008A500CFFFFFFFFFFFFFFFF88\r\n"
+        ],
+        [
+          "rx",
+          "1A4501q\r"
+        ],
+        [
+          "tx",
+          "q.860410008245009F\r\n"
+        ],
+        [
+          "rx",
+          "2108r\r"
+        ],
+        [
+          "tx",
+          "r.860410008A08000000000000000000D4\r\n"
+        ],
+        [
+          "rx",
+          "1AF201s\r"
+        ],
+        [
+          "tx",
+          "s.8604100082F2FFF3\r\n"
+        ],
+        [
+          "rx",
+          "\\4603002101t\r"
+        ],
+        [
+          "tx",
+          "t.8603100089014B455945312020201E\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102u\r"
+        ],
+        [
+          "tx",
+          "u.860310008902322E352E30302020832138FF9E\r\n"
+        ],
+        [
+          "rx",
+          "2104v\r"
+        ],
+        [
+          "tx",
+          "v.860310008D0438FFFFFFFF18B10617A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06w\r"
+        ],
+        [
+          "tx",
+          "w.86031000872ACA8B2A93841E02\r\n"
+        ],
+        [
+          "rx",
+          "1A2306x\r"
+        ],
+        [
+          "tx",
+          "x.860310008723CA8B33932CDE98\r\n"
+        ],
+        [
+          "rx",
+          "1A5009y\r"
+        ],
+        [
+          "tx",
+          "y.860310008A500CFFFFFFFFFFFFFFFF89\r\n"
+        ],
+        [
+          "rx",
+          "1A4501z\r"
+        ],
+        [
+          "tx",
+          "z.86031000824500A0\r\n"
+        ],
+        [
+          "rx",
+          "2108g\r"
+        ],
+        [
+          "tx",
+          "g.860310008A08000000000000000000D5\r\n"
+        ],
+        [
+          "rx",
+          "1AF201h\r"
+        ],
+        [
+          "tx",
+          "h.8603100082F2FFF4\r\n"
+        ],
+        [
+          "rx",
+          "\\4602002101i\r"
+        ],
+        [
+          "tx",
+          "i.8602100089014B455945312020201F\r\n"
+        ],
+        [
+          "rx",
+          "21021A2102j\r"
+        ],
+        [
+          "tx",
+          "j.860210008902322E352E30302020832138FF9F\r\n"
+        ],
+        [
+          "rx",
+          "2104k\r"
+        ],
+        [
+          "tx",
+          "k.860210008D0438FFFFFFFF18B10618A2000515\r\n"
+        ],
+        [
+          "rx",
+          "1A2A06l\r"
+        ],
+        [
+          "tx",
+          "l.86021000872ACA8B2A93841E03\r\n"
+        ],
+        [
+          "rx",
+          "1A2306m\r"
+        ],
+        [
+          "tx",
+          "m.860210008723CA8B33932CDE99\r\n"
+        ],
+        [
+          "rx",
+          "1A5009n\r"
+        ],
+        [
+          "tx",
+          "n.860210008A500CFFFFFFFFFFFFFFFF8A\r\n"
+        ],
+        [
+          "rx",
+          "1A4501o\r"
+        ],
+        [
+          "tx",
+          "o.86021000824500A1\r\n"
+        ],
+        [
+          "rx",
+          "2108p\r"
+        ],
+        [
+          "tx",
+          "p.860210008A08000000000000000000D6\r\n"
+        ],
+        [
+          "rx",
+          "1AF201q\r"
+        ],
+        [
+          "tx",
+          "q.8602100082F2FFF5\r\n"
+        ]
+      ],
+      "post_commands": [
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,4,16"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 SyncState",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: SyncState=idle"
+          ]
+        },
+        {
+          "command": "NET SYNC //UNRAVEL/254 fast",
+          "status": 408,
+          "reply": [
+            "408 Operation failed: sync failed"
+          ]
+        },
+        {
+          "command": "GET //UNRAVEL/254 Units",
+          "status": 300,
+          "reply": [
+            "300 //UNRAVEL/254: Units=2,3,4,16"
+          ]
+        }
+      ],
+      "cleanup_errors": [],
+      "raw_artifact": "research/runtime/native-unravel-n3_ordinary_matchdb_no_keeper.json",
+      "raw_artifact_sha256": "09e476459e794f04fa492ba3b16cb51e6205b8caac03a1e867b8a3fa1f19d83d",
+      "setup": {
+        "nodes": [
+          {
+            "address": 20,
+            "serial": "101136.1558"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1559"
+          },
+          {
+            "address": 20,
+            "serial": "101136.1560"
+          }
+        ],
+        "database": {
+          "30": "101136.1562"
+        },
+        "command": "NET UNRAVELUNIT //UNRAVEL/254 20 MATCHDB"
+      }
+    }
+  }
+}
