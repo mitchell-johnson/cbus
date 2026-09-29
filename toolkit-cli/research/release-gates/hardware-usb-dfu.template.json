@@ -1,0 +1,22 @@
+{
+  "format": "cbus-provisioned-release-gate-v1",
+  "gate": "hardware",
+  "template": "Copy to a private path, keep values in the protected cbus-hardware runner environment, and point CBUS_HARDWARE_GATE_MANIFEST at the copy. See docs/usb-dfu-hardware-runbook.md.",
+  "fixture_ids": ["fixture:usb:edlt-dfu-bootloader"],
+  "work_items": ["P10.02", "P10.03"],
+  "systems": ["Darwin", "Linux"],
+  "required_environment": {
+    "CBUS_HARDWARE_ACCEPTANCE": {"kind": "flag"},
+    "CBUS_USB_DFU_BUS": {"kind": "value"},
+    "CBUS_USB_DFU_ADDRESS": {"kind": "value"},
+    "CBUS_USB_DFU_SERIAL": {"kind": "value"},
+    "CBUS_USB_DFU_DEVICE_DESCRIPTOR": {"kind": "file"},
+    "CBUS_USB_DFU_CONFIGURATION_DESCRIPTOR": {"kind": "file"},
+    "CBUS_USB_DFU_VARIANT": {"kind": "value"},
+    "CBUS_USB_DFU_FLASH_SIZE": {"kind": "value"},
+    "CBUS_USB_DFU_EXTERNAL_SIZE": {"kind": "value"},
+    "CBUS_EDLT_FIRMWARE_PACKAGE": {"kind": "file"},
+    "CBUS_EDLT_PACKAGE_PASSWORD_FILE": {"kind": "file"}
+  },
+  "tests": ["tests/test_usb_dfu_physical.py"]
+}

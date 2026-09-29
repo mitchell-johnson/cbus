@@ -100,3 +100,7 @@ sent, and every write is read back, unlike the original. The first failed step
 stops execution. Tests use synthetic images only. This is development evidence:
 DETACH, reset, bootloader auto-erase, re-enumeration and the NCC serial path are
 unmodeled, and no physical device or vendor payload has been installed.
+
+The journaled, resumable execution over an explicit DFU device and its
+fault-injection matrix are described in
+[firmware-update-recovery.md](firmware-update-recovery.md).

@@ -1798,7 +1798,10 @@ matches the unchanged original methods run under Mono for all four Toolkit
 1.18 packages. Reading image contents needs the package password from a
 private file and, for AES entries, the `firmware` extra. `update-simulate` runs
 a plan against the memory DFU simulator only. See
-[firmware-update-plan.md](docs/firmware-update-plan.md).
+[firmware-update-plan.md](docs/firmware-update-plan.md). `update-run` and
+`update-resume --journal` add a durable journal and restart interrupted stages
+from erase after fresh re-inspection. Only fake-USB evidence exists. See
+[firmware-update-recovery.md](docs/firmware-update-recovery.md).
 
 ## Stored unit scenes
 

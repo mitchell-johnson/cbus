@@ -146,7 +146,7 @@ class DFUOutcome:
     close_error: str | None = None
 
     def as_dict(self):
-        readback_verified=(self.operation in ('program','erase') and self.length is not None
+        readback_verified=(self.operation in ('program','erase','verify') and self.length is not None
             and self.readback_bytes==self.length and self.first_mismatch is None
             and self.expected_sha256 is not None and self.expected_sha256==self.readback_sha256)
         return {**asdict(self),'trace':list(self.trace),'peer_verified':readback_verified,
@@ -406,6 +406,12 @@ class DFUClient:
             self.stage='program-terminate';self._download(b'',allowed=(2,))
             self._readback(address,len(data),data)
         return self._run('program',address,len(data),action)
+
+    def verify(self,data: bytes,*,address:int):
+        """Read an explicit range back and compare it; flash is never modified."""
+        self._program_plan(data,address)
+        def action():self._readback(address,len(data),data)
+        return self._run('verify',address,len(data),action)
 
     def erase(self,*,address:int,length:int):
         self._erase_plan(address,length)

@@ -28,7 +28,7 @@ assert result.as_dict()["peer_verified"]
 assert bytes(peer.internal[8192:8448]) == bytes(range(256))
 ```
 
-The public operations are `inspect()`, `program(data, address=...)` and `erase(address=..., length=...)`. Constructor options include explicit `flash_size`, `application_start`, `external`, an overall `timeout`, and a per-command `poll_limit`. Clock and sleep functions may be injected for deterministic tests.
+The public operations are `inspect()`, `program(data, address=...)`, `erase(address=..., length=...)` and the read-only `verify(data, address=...)`, which performs the same readback without modifying flash. Constructor options include explicit `flash_size`, `application_start`, `external`, an overall `timeout`, and a per-command `poll_limit`. Clock and sleep functions may be injected for deterministic tests.
 
 `DFUClient.preflight(descriptor, *, operation, flash_size, application_start, external=False, timeout=30, poll_limit=256, data=None, address=None, length=None)` validates the entire requested operation before a transport is acquired. It uses pure constructor validation and the same program/erase planning methods as execution, including sequence limits. It returns compact geometry/operation/chunk metadata and an optional payload hash, without any Endpoint0 call. Acquisition or device compatibility is not implied by that result.
 

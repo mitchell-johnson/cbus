@@ -680,9 +680,13 @@
         "tests/test_firmware_update_plan.py",
         "tests/test_firmware_update_oracle.py",
         "research/firmware_update_oracle.py",
-        "research/fixtures/original-oracle-firmware-update-plan.json"
+        "research/fixtures/original-oracle-firmware-update-plan.json",
+        "docs/firmware-update-recovery.md",
+        "tests/test_firmware_update_faults.py",
+        "docs/usb-dfu-hardware-runbook.md",
+        "research/release-gates/hardware-usb-dfu.template.json"
       ],
-      "limits": "Offline DFU records, descriptors, container CRC/identity checks and binary plans implemented. Original x86 DLL programs, verifies and erases synthetic bytes against an independent memory simulator. The DFU client and claimed PyUSB transport validate selected identity, active configuration/alternate and geometry; bound transfer polling; program/erase explicit ranges; and verify whole readback. CLI preserves acquisition, transfer and release outcomes, including partial writes and cancellation. Actual PyUSB with an independent fake backend is tested. A non-executing vendor update plan matches the unchanged original updater's recorded dfuprog argv in 29 Mono cases across all four Toolkit 1.18 packages, and a private package reader matches the original's extracted-image hashes; plans also run against the memory simulator. Vendor payload compatibility, nonzero external-address acceptance, the NCC post-check beyond the first id (static evidence only), NCC update and physical firmware acceptance remain incomplete."
+      "limits": "Offline DFU records, descriptors, container CRC/identity checks and binary plans implemented. Original x86 DLL programs, verifies and erases synthetic bytes against an independent memory simulator. The DFU client and claimed PyUSB transport validate selected identity, active configuration/alternate and geometry; bound transfer polling; program/erase explicit ranges; and verify whole readback. CLI preserves acquisition, transfer and release outcomes, including partial writes and cancellation. Actual PyUSB with an independent fake backend is tested. A non-executing vendor update plan matches the unchanged original updater's recorded dfuprog argv in 29 Mono cases across all four Toolkit 1.18 packages, and a private package reader matches the original's extracted-image hashes; plans also run against the memory simulator. A journaled update-run/update-resume erases each stage before programming. Its fault-injection matrix (wrong variant, interrupted erase/write/readback, disconnect and re-enumeration, bootloader hang, host death and changed identity) is development evidence only: memory peer and fake PyUSB. A physical hardware-gate template and runbook exist, but no run has taken place. Vendor payload compatibility, nonzero external-address acceptance, the NCC post-check beyond the first id (static evidence only), NCC update and physical firmware acceptance remain incomplete."
     },
     {
       "id": "cgl-import-export",

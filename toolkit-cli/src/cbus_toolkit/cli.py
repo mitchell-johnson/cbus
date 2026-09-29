@@ -1250,6 +1250,42 @@ def _firmware(args):
             status = 0
         return {"format": "cbus-" + args.action + "-v1", **result, "read_only": True,
                 "firmware_written": False}, status
+    if args.action in ("update-run", "update-resume"):
+        from . import firmware_update_plan as updater
+        from . import firmware_update_run as runner
+        from .dfu_transport import parse_descriptors
+        password, _ = updater.read_password_file(args.package_password_file)
+        if password is None:
+            raise ValueError(args.action + " requires --package-password-file or " + updater.PASSWORD_FILE_ENV)
+        with args.device_descriptor.open("rb") as source:
+            device = source.read(19)
+        with args.configuration_descriptor.open("rb") as source:
+            configuration = source.read(65536)
+        descriptor = parse_descriptors(device, configuration)
+        if args.action == "update-run":
+            plan = updater.update_plan(args.file, variant=args.variant, hardware_version=args.hardware_version,
+                                       force_font=args.force_font)
+            serial = args.expected_serial
+        else:
+            doc, _ = runner.load_journal(args.journal)
+            selection = runner.journal_plan_options(doc)
+            serial = args.expected_serial or selection["identity"]["usb_serial"]
+            plan = updater.update_plan(args.file, variant=selection["variant"], force_font=selection["force_font"])
+        if not plan["supported"]:
+            return {"format": runner.RESULT_FORMAT, "operation": args.action.removeprefix("update-"),
+                    "complete": False, "refused": True, "refusal_kind": "plan", "plan": plan,
+                    "physical_device_verified": False}, 1
+        images = updater.load_selected_images(args.file, plan, password)
+        opener = runner.USBDeviceOpener(bus=args.bus, address=args.address, expected_serial=serial,
+                                        descriptor=descriptor, release_policy=args.release_policy,
+                                        inspection_timeout=args.inspection_timeout)
+        options = {"timeout": args.timeout, "poll_limit": args.poll_limit}
+        if args.action == "update-run":
+            result = runner.run_update(plan, images, opener=opener, journal_path=args.journal,
+                                       flash_size=args.flash_size, external_size=args.external_size, **options)
+        else:
+            result = runner.resume_update(args.journal, plan, images, opener=opener, **options)
+        return result, int(not result["complete"])
     if args.action in ("update-plan", "update-simulate", "inspect-images"):
         from . import firmware_update_plan as updater
         password, source = updater.read_password_file(args.package_password_file)
@@ -2392,6 +2428,32 @@ def build_parser():
         if action == "update-simulate":
             p.add_argument("--flash-size", type=_number, default=1024 * 1024, help="Simulated internal flash bytes")
             p.add_argument("--external-size", type=_number, help="Simulated external flash bytes")
+    for action, text in (("update-run", "Journal, then erase/program/verify each plan stage on an eDLT already in DFU mode; never retries"),
+                         ("update-resume", "Re-inspect the device and restart the first unverified journal stage from erase")):
+        p = fwops.add_parser(action, help=text)
+        p.add_argument("file", type=Path, help="eDLTFirmware_<version>.zip package")
+        p.add_argument("--journal", type=Path, required=True,
+                       help="Durable update journal; update-run creates it exclusively before the first erase")
+        p.add_argument("--package-password-file", type=Path,
+                       help="File holding the archive password (default: $CBUS_EDLT_PACKAGE_PASSWORD_FILE); never printed")
+        if action == "update-run":
+            selector = p.add_mutually_exclusive_group(required=True)
+            selector.add_argument("--variant", choices=("StellarisPCI", "TivaPCI", "TivaNCC"))
+            selector.add_argument("--hardware-version", help="Unit HW Version text mapped exactly as the original updater")
+            p.add_argument("--force-font", action="store_true", help="Original 'Force font data installation' option")
+            p.add_argument("--flash-size", type=_number, required=True, help="Expected internal flash bytes reported by INFO")
+            p.add_argument("--external-size", type=_number, help="Expected external flash bytes; required when fonts are installed")
+        p.add_argument("--bus", type=_number, required=True)
+        p.add_argument("--address", type=_number, required=True, help="USB device address (may change after re-enumeration)")
+        p.add_argument("--expected-serial", required=action == "update-run",
+                       help="Exact USB serial; update-resume defaults to, and must match, the journal's serial")
+        p.add_argument("--device-descriptor", type=Path, required=True, help="Expected eighteen-byte device descriptor")
+        p.add_argument("--configuration-descriptor", type=Path, required=True, help="Expected complete configuration descriptor")
+        p.add_argument("--release-policy", choices=("reset-first-alternate",), required=True,
+                       help="Explicitly allow USB release to reset the interface to its first alternate")
+        p.add_argument("--timeout", type=_positive, default=30, help="Deadline for each DFU operation")
+        p.add_argument("--inspection-timeout", type=_positive, default=5, help="Per-transfer timeout during USB acquisition")
+        p.add_argument("--poll-limit", type=_number, default=256)
     for action in ("dfu-status", "dfu-command"):
         p = fwops.add_parser(action, help="Decode a captured DFU record without hardware access")
         p.add_argument("hex", help="Hexadecimal byte pairs, optionally separated by spaces")
