@@ -560,6 +560,31 @@ pub(crate) fn read_bytes(model: &Server, requested: &str) -> Result<Vec<u8>, Str
         .ok_or_else(|| format!("{} (No such file or directory)", virtual_name(&path)))
 }
 
+/// Whether one controlled path names an existing regular file.
+pub(crate) fn regular_file_exists(model: &Server, requested: &str) -> Result<bool, String> {
+    let path = controlled_path(model, requested)?;
+    Ok(!path.key.ends_with('/') && model.file_store.contains_key(&path.key))
+}
+
+/// Create every missing directory above one regular-file path, as native
+/// PROJECT ARCHIVE does with `mkdirs` for its archive folder.
+pub(crate) fn create_parent_directories(model: &mut Server, requested: &str) -> Result<(), String> {
+    let path = controlled_path(model, requested)?;
+    let parent = parent_dir(&path.key, &path.root);
+    let now = Utc::now().timestamp();
+    for directory in directory_chain(&parent, &path.root) {
+        if model
+            .file_store
+            .contains_key(directory.trim_end_matches('/'))
+        {
+            return Err("Unable to create project archive folder".to_string());
+        }
+        model.file_store.entry(directory.clone()).or_default();
+        model.file_modified.entry(directory).or_insert(now);
+    }
+    Ok(())
+}
+
 /// Atomically replace one regular file in the controlled virtual root.
 ///
 /// The parent must already exist, matching `FILE UPLOAD`; replacement keeps

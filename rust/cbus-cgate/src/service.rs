@@ -1797,6 +1797,7 @@ impl Service {
         if let Some(dir) = unitspec {
             model = model.with_unitspec_dir(dir);
         }
+        model = model.with_native_project_archives();
         match std::fs::read(&state_path) {
             Ok(data) => {
                 if data.len() > MAX_STATE {
@@ -4133,16 +4134,15 @@ impl Service {
         {
             return self.lighting(client, line, tag).await;
         }
+        // Other names select native Schneider archive containers in the
+        // controlled FILE namespace (`crate::native_archive`).
         if verb == "PROJECT"
             && matches!(sub, "ARCHIVE" | "RESTORE")
             && words.len() == 4
+            && words[3].starts_with("cmqttd:")
             && !valid_internal_archive_key(words[3])
         {
-            return err(
-                tag,
-                408,
-                "408 Schneider archive files are not supported; use a cmqttd: archive key",
-            );
+            return err(tag, 408, "408 Invalid cmqttd: archive key");
         }
         // The selected project names the network bound to the shared PCI and
         // MQTT gateway for this Service instance. Renaming it would leave the

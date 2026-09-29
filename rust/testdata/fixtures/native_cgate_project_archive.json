@@ -1,0 +1,2749 @@
+{
+  "schema": "native-cgate-project-archive-v1",
+  "captured_utc": "2026-09-29T14:07:31.071148+00:00",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "capture_script_sha256": "9adde6facd589d273c93e96a4713f52b4812ebd153dbeea85b225d4e57785857",
+    "physical_endpoint": false,
+    "listeners_owned": true,
+    "process_exit_confirmed": true,
+    "cleanup_complete": true,
+    "work_removed": true
+  },
+  "scope": "Owned loopback C-Gate; synthetic two-network project; sqlite-file and file repositories. Private SQLite bytes and DDL are not committed.",
+  "source_setup": {
+    "sqlite_file": {
+      "readback_before_save": {
+        "254": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:254</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222254</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333254</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444254</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111254</OID><TagName>Bedroom 254</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XARC\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>",
+        "253": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Second</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:253</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222253</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333253</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444253</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111253</OID><TagName>Bedroom 253</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XARC\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>"
+      },
+      "unknown_namespaced_unit_metadata_retained": false
+    },
+    "file": {
+      "readback_before_save": {
+        "254": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:254</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222254</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333254</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444254</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111254</OID><TagName>Bedroom 254</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>",
+        "253": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Second</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:253</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222253</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333253</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444253</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111253</OID><TagName>Bedroom 253</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>"
+      },
+      "unknown_namespaced_unit_metadata_retained": false
+    }
+  },
+  "archive_directory": {
+    "config_key": "project.default.archive-dir",
+    "relative_root": "Projects/archived/",
+    "subdirectories_created": true,
+    "suffix_rule": "case-insensitive trailing .zip selects ZIP, .gz selects GZIP, anything else is a raw copy"
+  },
+  "tag_use_zip": {
+    "default_reply": [
+      "303 tag-use-zip=no"
+    ],
+    "project_file_after_yes_and_save": "sqlite",
+    "archive_payload_identical": {
+      "zip": true,
+      "gz": true,
+      "db": true
+    },
+    "disposition": "No observable effect on PROJECT SAVE or PROJECT ARCHIVE containers or payloads."
+  },
+  "sqlite_file_repository": {
+    "project_file_magic": "sqlite",
+    "project_file_bytes": 737280,
+    "zip": {
+      "archive_bytes": 19634,
+      "comment_length": 0,
+      "entries": [
+        {
+          "name": "tagdb.db",
+          "compress_type": "deflated",
+          "compressed_size": 19504,
+          "uncompressed_size": 737280,
+          "data_descriptor_flag": true,
+          "encrypted": false,
+          "create_system": 0,
+          "create_version": 20,
+          "extract_version": 20,
+          "extra_length": 0,
+          "comment_length": 0,
+          "crc_verified": true,
+          "payload_magic": "sqlite",
+          "payload_sha256": "fbb6f3b15c6a5d63d64c924e25db66d84a5a174e75d6ae35c2f59ec5fd635fe6"
+        }
+      ]
+    },
+    "gzip": {
+      "archive_bytes": 19522,
+      "header_hex": "1f8b0800000000000000",
+      "magic": "1f8b",
+      "method": 8,
+      "flags": 0,
+      "mtime": 0,
+      "xfl": 0,
+      "os": 0,
+      "isize": 737280,
+      "members": 1,
+      "payload_magic": "sqlite",
+      "payload_sha256": "fbb6f3b15c6a5d63d64c924e25db66d84a5a174e75d6ae35c2f59ec5fd635fe6"
+    },
+    "raw": {
+      "payload_magic": "sqlite",
+      "identical_to_project_file": true
+    },
+    "uppercase_zip_suffix_is_zip": true,
+    "nested_directory_zip_identical": true,
+    "other_suffix_is_raw_copy": true,
+    "payload_sha256_matches_project_file": true,
+    "restored_project_files_identical": {
+      "XR1": true,
+      "XR2": true,
+      "XR3": true
+    },
+    "restored_readback": {
+      "254": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:254</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222254</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333254</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444254</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111254</OID><TagName>Bedroom 254</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XARC\"/><CatalogNumber>5031N</CatalogNumber><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>",
+      "253": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Second</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:253</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222253</OID><TagName>Lighting</TagName><Address>56</Address><Group><OID>33333333-3333-4333-8333-333333333253</OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID>44444444-4444-4444-8444-444444444253</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID>11111111-1111-4111-8111-111111111253</OID><TagName>Bedroom 253</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XARC\"/><CatalogNumber>5031N</CatalogNumber><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>"
+    },
+    "restored_oids_preserved": true,
+    "schema": {
+      "sqlite_magic": true,
+      "user_version": 0,
+      "application_id": 0,
+      "page_size": 4096,
+      "encoding": "UTF-8",
+      "journal_mode": "delete",
+      "migrations": [
+        {
+          "version": 14,
+          "filename": "0014-squashed-shared-application.sql",
+          "hash": "67d9090193d9d5bddc6b7b256c7802e5770b5fc2e9110cfe6d5d02402b946796"
+        }
+      ],
+      "object_counts": {
+        "table": 67,
+        "index": 100,
+        "trigger": 0,
+        "view": 0
+      },
+      "schema_sql_sha256": "04e34a5bb2ca46be050dc4527fc907e17bcc0d2a6f2a2c3f041d862538a9e1dc",
+      "schema_sql_committed": false,
+      "tables": {
+        "APP_GP": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "application_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "APP_GP_SUBGP": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "app_gp_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "APP_GP_SUBGP_LV": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "app_gp_subgp_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "_group": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "application_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "area",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "phantom",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "snapshot_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tags_dlt_list_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "nac_dali_duration_test_timeout",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "_language": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "string_id",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "tag_value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "_location": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tag_name",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "location_tree_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "_schema": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "filename",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "hash",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "migrated",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "_trigger": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "raw_level",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "application": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "channel": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "device_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "time_out_period",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "units_type",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "company_detail": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "company",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "address",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "city",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "state",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "postal_code",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "country",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "voice_phone",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "mobile_phone",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "fax_phone",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "email",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "webpage",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "config": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "application",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "config_properties": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "property_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "config_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "control_point": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "element",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "installation_detail_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "custom_properties": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "property_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_catalog": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "type_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_catalog_type": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "display_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "table_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_channel": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "dali_device_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "is_reconciled",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "dali_oid",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "short_address",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "sch_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "sch_version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_device": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "dali_line_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "sch_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "sch_version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_ecg_property": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "dali_channel_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_ext_property": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "dali_session_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "line_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_line": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "dali_session_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "line_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_non_device_param": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "type_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "parent_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "sch_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "sch_version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_non_device_param_type": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "display_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "table_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "dali_session": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "unit_oid",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "serial_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "catalog_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "last_modified",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "version",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "device": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "application_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "display": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "display_properties": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "property_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "display_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "group_level_tags": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "level_tag_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "group_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "input": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "circuit",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "switch_position_row",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "switch_position_col",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "snapshot_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "installation": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "db_version",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "version",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "modified",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "installation_detail_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "installation_detail": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "system_location",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "hardware_platform",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "hostname",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "os_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "os_version",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "hardware_location",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "maintenance_email",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "note_oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "installer_company_detail_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "consultant_company_detail_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "architect_company_detail_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "owner_company_detail_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "interface": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "interface_type",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "interface_address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "interface_properties": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "property_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "interface_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "level_tag": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "tags_dlt_list_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "library_channel_name": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "code",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "library_location": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "code",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "location_parent_child": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "parent_location_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "child_location_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "location_references": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "location_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "location_tree": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "labels",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "nac_object": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "application_address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "group_address",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "device_address",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "channel_address",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "dali_line",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "dali_object_id",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "export_flag",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "log_flag",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "comment",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "keywords",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "high_priority_log_flag",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "object_list_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "nac_object_list": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "net_var": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "application_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "net_var_level_tags": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "level_tag_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "net_var_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "network": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "network_signature",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "last_verified",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "_external",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "network_configs": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "config_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "network_languages": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "language_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "note_content": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "installation_detail_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "output": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "supply_circuit",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "controlled_circuit",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "controlled_power",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "snapshot_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "output_channel": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "location_code",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "channel_name_code",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "play_trigger": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "trigger_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "scene_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "pp_properties": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "property_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "program_block": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "unit_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "type",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "start",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "bytes",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "project": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "project_configs": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "config_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "property": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "record_trigger": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "trigger_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "scene_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "route": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "provider",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "from_address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "to_address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "scene": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tag_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "project_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "display_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "scene_item": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "address",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "raw_level",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "percent_level",
+            "type": "REAL",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "ramp_time",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "scene_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "snapshot": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "raw_level",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "percent_level",
+            "type": "REAL",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "sense_level",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "valid_time",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "units",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "quality",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "sub_channel": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "channel_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ],
+        "tag_dlt": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tags_dlt_list_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "language_id",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "flavour_id",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tag_type",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tag_value",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "tagged_entity": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "tag_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "address",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "display_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "tags_dlt_list": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          }
+        ],
+        "unit": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_type",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "unit_name",
+            "type": "TEXT",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "serial_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "firmware_version",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "firmware_version2",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "last_modified",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "firmware_checksum",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "parameter_checksum",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "catalog_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "burden_enabled",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "switchable_power_supply_enabled",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "patch_version",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "snapshot_id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "device_name",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "group_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          }
+        ],
+        "units_group": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": false,
+            "primary_key": true
+          },
+          {
+            "name": "oid",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "tagged_entity_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          },
+          {
+            "name": "group_number",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "device_name",
+            "type": "TEXT",
+            "not_null": false,
+            "primary_key": false
+          },
+          {
+            "name": "network_id",
+            "type": "INTEGER",
+            "not_null": true,
+            "primary_key": false
+          }
+        ]
+      },
+      "nonempty_tables": {
+        "_group": 2,
+        "_schema": 1,
+        "application": 2,
+        "company_detail": 1,
+        "config": 1,
+        "config_properties": 51,
+        "dali_catalog_type": 3,
+        "dali_non_device_param_type": 4,
+        "installation": 1,
+        "installation_detail": 1,
+        "interface": 2,
+        "network": 2,
+        "pp_properties": 4,
+        "project": 1,
+        "project_configs": 1,
+        "property": 55,
+        "tag_dlt": 2,
+        "tagged_entity": 9,
+        "tags_dlt_list": 2,
+        "unit": 2
+      }
+    }
+  },
+  "file_repository": {
+    "project_file_magic": "xml",
+    "zip": {
+      "archive_bytes": 1465,
+      "comment_length": 0,
+      "entries": [
+        {
+          "name": "tagdb.xml",
+          "compress_type": "deflated",
+          "compressed_size": 1333,
+          "uncompressed_size": 5921,
+          "data_descriptor_flag": true,
+          "encrypted": false,
+          "create_system": 0,
+          "create_version": 20,
+          "extract_version": 20,
+          "extra_length": 0,
+          "comment_length": 0,
+          "crc_verified": true,
+          "payload_magic": "xml",
+          "payload_sha256": "34ba6ea8c128969e4229870abc0998554825373e10945406f2ce0082e8f5d89a"
+        }
+      ]
+    },
+    "gzip": {
+      "archive_bytes": 1351,
+      "header_hex": "1f8b0800000000000000",
+      "magic": "1f8b",
+      "method": 8,
+      "flags": 0,
+      "mtime": 0,
+      "xfl": 0,
+      "os": 0,
+      "isize": 5921,
+      "members": 1,
+      "payload_magic": "xml",
+      "payload_sha256": "34ba6ea8c128969e4229870abc0998554825373e10945406f2ce0082e8f5d89a"
+    },
+    "raw": {
+      "payload_magic": "xml",
+      "identical_to_project_file": true
+    },
+    "payload_xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified><timestamp></Modified>\n<Project><TagName>XFILE</TagName><Address>XFILE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description>\n<Network><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:254</InterfaceAddress></Interface>\n<Application><TagName>Lighting</TagName><Address>56</Address><Group><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application>\n<Unit><TagName>Bedroom 254</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>\n<Network><TagName>Second</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:253</InterfaceAddress></Interface>\n<Application><TagName>Lighting</TagName><Address>56</Address><Group><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application>\n<Unit><TagName>Bedroom 253</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network><Config>\n<Application>cgate</Application><Property><Name>allow-fast-start</Name><Value>no</Value></Property><Property><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><Name>auto-reopen</Name><Value>no</Value></Property><Property><Name>cbus-application</Name><Value>56</Value></Property><Property><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><Name>clock.master</Name><Value>no</Value></Property><Property><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><Name>clock.update-interval</Name><Value>30</Value></Property><Property><Name>comms-debug</Name><Value>no</Value></Property><Property><Name>enable.save-state</Name><Value>no</Value></Property><Property><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><Name>local-flow-control</Name><Value>no</Value></Property><Property><Name>network.application-connect</Name><Value>yes</Value></Property><Property><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><Name>network.retries</Name><Value>2</Value></Property><Property><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><Name>network.source</Name><Value>db</Value></Property><Property><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><Name>reopen-delay</Name><Value>15000</Value></Property><Property><Name>report-new-objects</Name><Value>no</Value></Property><Property><Name>response-delay</Name><Value>5500</Value></Property><Property><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><Name>speed-write</Name><Value>yes</Value></Property><Property><Name>startup-delay</Name><Value>0</Value></Property><Property><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><Name>sync-time</Name><Value>3600</Value></Property><Property><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><Name>use-cgroups</Name><Value>no</Value></Property><Property><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project>\n<InstallationDetail><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname><host></Hostname><OSName><host></OSName><OSVersion><host></OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+    "restored_readback": {
+      "254": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:254</InterfaceAddress></Interface><Application><OID><generated-oid-3></OID><TagName>Lighting</TagName><Address>56</Address><Group><OID><generated-oid-4></OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID><generated-oid-5></OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID><generated-oid-6></OID><TagName>Bedroom 254</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>",
+      "253": "<?xml version=\"1.0\" encoding=\"utf-8\"?><Network><OID><generated-oid-1></OID><TagName>Second</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID><generated-oid-2></OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:253</InterfaceAddress></Interface><Application><OID><generated-oid-3></OID><TagName>Lighting</TagName><Address>56</Address><Group><OID><generated-oid-4></OID><TagName>Kitchen</TagName><Address>1</Address><TagsDLT><TagDLT><OID><generated-oid-5></OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Synthetic label</TagValue></TagDLT></TagsDLT></Group></Application><Unit><OID><generated-oid-6></OID><TagName>Bedroom 253</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><SerialNumber>123.4</SerialNumber><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/><PP Name=\"Project\" Value=\"XFILE\"/><CatalogNumber>5031N</CatalogNumber></Unit></Network>"
+    }
+  },
+  "exchanges": [
+    {
+      "command": "PROJECT NEW XARC",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE XARC",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:254",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBSETXML //XARC/254",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBCREATENET 253 Second Cni 127.0.0.1:253",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBSETXML //XARC/253",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XARC",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "CONFIG GET tag-use-zip",
+      "response": [
+        "303 tag-use-zip=no"
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC no.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC no.gz",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC no.db",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC case.Zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC sub/nested.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC no.ZIP2",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "CONFIG SET tag-use-zip yes",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC yes.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC yes.gz",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC yes.db",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XARC",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "DBSAVE",
+      "response": [
+        "441 Error writing tag database: null"
+      ]
+    },
+    {
+      "command": "CONFIG SET tag-use-zip no",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XARC no.zip",
+      "response": [
+        "408 Operation failed: Archive failed: Destination file exists"
+      ]
+    },
+    {
+      "command": "FILE SHA256 Projects/archived/no.zip",
+      "response": [
+        "302 File=Projects/archived/no.zip SHA256Hash=<archive-sha256>"
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XR1 no.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XR2 no.gz",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XR3 no.db",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XR1 no.zip",
+      "response": [
+        "408 Operation failed: Archive failed: Destination file exists"
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XARC no.zip",
+      "response": [
+        "408 Operation failed: Archive failed: Destination file exists"
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XR9 missing.zip",
+      "response": [
+        "408 Operation failed: Archive failed: <owned-work>/Projects/archived/missing.zip (No such file or directory)"
+      ]
+    },
+    {
+      "command": "PROJECT LOAD XR1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE XR1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT CLOSE XR1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT CLOSE XARC",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "REPOSITORY USE 2",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "REPOSITORY LIST",
+      "response": [
+        "123-index=1 type=sqlite-file path=Projects/ current=no",
+        "123-index=2 type=file path=Projects/ current=yes",
+        "123 index=3 type=db path=blah blah blah current=no"
+      ]
+    },
+    {
+      "command": "PROJECT NEW XFILE",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE XFILE",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:254",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBSETXML //XFILE/254",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBCREATENET 253 Second Cni 127.0.0.1:253",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "DBSETXML //XFILE/253",
+      "response": [
+        "301 OID=<generated>"
+      ]
+    },
+    {
+      "command": "PROJECT SAVE XFILE",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XFILE f.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XFILE f.gz",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT ARCHIVE XFILE f.xml",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XF1 f.zip",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XF2 f.gz",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XS1 no.zip",
+      "response": [
+        "408 Operation failed: Archive failed: Zip entry tagdb.xml not found"
+      ]
+    },
+    {
+      "command": "PROJECT LOAD XF1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT USE XF1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT CLOSE XF1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT CLOSE XFILE",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "REPOSITORY USE 1",
+      "response": [
+        "200 OK."
+      ]
+    },
+    {
+      "command": "PROJECT RESTORE XS2 f.zip",
+      "response": [
+        "408 Operation failed: Archive failed: Zip entry tagdb.db not found"
+      ]
+    }
+  ]
+}

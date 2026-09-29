@@ -6067,3 +6067,294 @@ fn legacy_database_create_update_verify_and_new_track_physical_inventory() {
     assert!(tags.contains("LIFE/TagName=LIFE"));
     assert!(!tags.contains("254/TagName="));
 }
+
+mod native_project_archive {
+    use super::*;
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+    use std::io::{Cursor, Read, Write};
+
+    fn vectors() -> Vec<serde_json::Value> {
+        include_str!("../../testdata/vectors/cgate_native_project_archive.jsonl")
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect()
+    }
+
+    fn sqlite_available() -> bool {
+        std::process::Command::new("sqlite3")
+            .arg("-version")
+            .output()
+            .is_ok_and(|output| output.status.success())
+    }
+
+    fn sqlite_payload(base: &serde_json::Value, extra: &str) -> Vec<u8> {
+        static ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let path = std::env::temp_dir().join(format!(
+            "cbus-native-archive-vector-{}-{}.db",
+            std::process::id(),
+            ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+        ));
+        let sql = format!(
+            "{}{}{}",
+            base["schema_sql"].as_str().unwrap(),
+            base["rows_sql"].as_str().unwrap(),
+            extra
+        );
+        let status = std::process::Command::new("sqlite3")
+            .arg(&path)
+            .arg(sql)
+            .status()
+            .unwrap();
+        assert!(status.success());
+        let bytes = std::fs::read(&path).unwrap();
+        std::fs::remove_file(&path).unwrap();
+        bytes
+    }
+
+    fn container(vector: &serde_json::Value, payload: &[u8]) -> Vec<u8> {
+        match vector["container"].as_str().unwrap() {
+            "raw" => payload.to_vec(),
+            "gzip" => {
+                let mut encoder =
+                    flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+                encoder.write_all(payload).unwrap();
+                encoder.finish().unwrap()
+            }
+            "zip" => {
+                let mut writer = zip::ZipWriter::new(Cursor::new(Vec::new()));
+                let options = zip::write::SimpleFileOptions::default()
+                    .compression_method(zip::CompressionMethod::Deflated);
+                writer
+                    .start_file(vector["entry"].as_str().unwrap(), options)
+                    .unwrap();
+                writer.write_all(payload).unwrap();
+                for extra in vector["extra_entries"].as_array().into_iter().flatten() {
+                    writer.start_file(extra.as_str().unwrap(), options).unwrap();
+                    writer.write_all(b"extra").unwrap();
+                }
+                writer.finish().unwrap().into_inner()
+            }
+            other => panic!("unknown container {other}"),
+        }
+    }
+
+    fn server() -> Server {
+        let mut server = Server::new(AccessLevel::Program)
+            .with_programming(true)
+            .with_native_project_archives();
+        assert_eq!(server.handle("[mk] FILE MKDIR Projects/archived").status, 200);
+        server
+    }
+
+    fn upload(server: &mut Server, name: &str, bytes: &[u8]) {
+        let reply = server.handle_document(
+            &format!("[up] FILE UPLOAD Projects/archived/{name}"),
+            &STANDARD.encode(bytes),
+        );
+        assert_eq!(reply.final_text, "200 OK.", "{name}");
+    }
+
+    fn download(server: &mut Server, name: &str) -> Vec<u8> {
+        let reply = server.handle(&format!("[down] FILE DOWNLOAD Projects/archived/{name}"));
+        STANDARD
+            .decode(
+                reply
+                    .lines
+                    .iter()
+                    .filter_map(|line| line.strip_prefix("347-"))
+                    .collect::<String>(),
+            )
+            .unwrap()
+    }
+
+    fn network(server: &mut Server, project: &str, address: &str) -> String {
+        server.handle(&format!("[use] PROJECT USE {project}"));
+        let reply = server.handle(&format!("[get] DBGETXML //{project}/{address}"));
+        assert_eq!(reply.status, 200, "{reply:?}");
+        reply.lines[0].strip_prefix("347-").unwrap().to_string()
+    }
+
+    /// cmqttd-issued OIDs replace the native `file` repository's missing ones.
+    fn generated(xml: &str) -> String {
+        let mut output = String::new();
+        let mut rest = xml;
+        while let Some(index) = rest.find("<OID>00000000-0000-0000-0000-") {
+            output.push_str(&rest[..index]);
+            output.push_str("<OID><generated></OID>");
+            rest = &rest[index + "<OID>00000000-0000-0000-0000-000000000000</OID>".len()..];
+        }
+        output.push_str(rest);
+        output
+    }
+
+    fn without_oids(xml: &str) -> String {
+        let mut output = String::new();
+        let mut rest = xml.rsplit_once("?>").map_or(xml, |(_, tail)| tail);
+        while let Some(start) = rest.find("<OID>") {
+            output.push_str(&rest[..start]);
+            let end = rest[start..].find("</OID>").unwrap() + start + "</OID>".len();
+            rest = &rest[end..];
+        }
+        output.push_str(rest);
+        output
+    }
+
+    #[test]
+    fn sqlite_readback_vector_matches_native_restore_evidence() {
+        let evidence: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/fixtures/native_cgate_project_archive.json"
+        ))
+        .unwrap();
+        let vector = vectors()
+            .into_iter()
+            .find(|vector| vector["name"] == "native_sqlite_zip")
+            .unwrap();
+        for address in ["254", "253"] {
+            let native = evidence["sqlite_file_repository"]["restored_readback"][address]
+                .as_str()
+                .unwrap();
+            assert_eq!(
+                without_oids(vector["readback"][address].as_str().unwrap()),
+                without_oids(native)
+            );
+        }
+        let entry = &evidence["sqlite_file_repository"]["zip"]["entries"][0];
+        assert_eq!(entry["name"], "tagdb.db");
+        assert_eq!(
+            evidence["file_repository"]["zip"]["entries"][0]["name"],
+            "tagdb.xml"
+        );
+        assert_eq!(
+            evidence["sqlite_file_repository"]["schema"]["migrations"][0]["version"],
+            14
+        );
+    }
+
+    #[test]
+    fn restore_and_archive_vectors() {
+        let vectors = vectors();
+        let base = vectors
+            .iter()
+            .find(|vector| vector["kind"] == "sqlite_base")
+            .unwrap();
+        let sqlite = sqlite_available();
+        for vector in vectors.iter().filter(|vector| vector["kind"] != "sqlite_base") {
+            let name = vector["name"].as_str().unwrap();
+            let mut server = server();
+            let archive = vector["archive"].as_str().unwrap();
+            if vector["kind"] == "archive" {
+                server.handle("[new] PROJECT NEW XSRC");
+                let reply = server.handle(&format!("[arc] PROJECT ARCHIVE XSRC {archive}"));
+                assert_eq!(reply.final_text, vector["final"], "{name}");
+                continue;
+            }
+            let payload = if let Some(xml) = vector["payload"]["xml"].as_str() {
+                xml.as_bytes().to_vec()
+            } else if sqlite {
+                sqlite_payload(base, vector["payload"]["extra_sql"].as_str().unwrap_or(""))
+            } else {
+                eprintln!("skipping {name}: sqlite3 is not installed");
+                continue;
+            };
+            if vector["upload"] != false {
+                upload(&mut server, archive, &container(vector, &payload));
+            }
+            let before = server.current_project();
+            let reply = server.handle(&format!("[res] PROJECT RESTORE XR {archive}"));
+            assert_eq!(reply.final_text, vector["final"], "{name}");
+            assert_eq!(server.current_project(), before, "{name}");
+            let Some(readback) = vector["readback"].as_object() else {
+                assert!(
+                    !format_response(&server.handle("[list] PROJECT LIST")).contains("XR"),
+                    "{name} left a partial project"
+                );
+                continue;
+            };
+            for (address, expected) in readback {
+                assert_eq!(
+                    generated(&network(&mut server, "XR", address)),
+                    expected.as_str().unwrap(),
+                    "{name} {address}"
+                );
+            }
+            assert_eq!(
+                server.handle(&format!("[again] PROJECT RESTORE XR {archive}")).final_text,
+                "408 Operation failed: Archive failed: Destination file exists"
+            );
+
+            // cmqttd writes the native `file` repository layout and reads it
+            // back with every OID intact.
+            for (out, entry, copy) in [
+                ("out.zip", Some("tagdb.xml"), "XCZIP"),
+                ("out.gz", None, "XCGZ"),
+                ("out.xml", None, "XCRAW"),
+            ] {
+                assert_eq!(
+                    server.handle(&format!("[arc] PROJECT ARCHIVE XR {out}")).final_text,
+                    "200 OK.",
+                    "{name} {out}"
+                );
+                let bytes = download(&mut server, out);
+                let document = match entry {
+                    Some(entry) => {
+                        let mut archive = zip::ZipArchive::new(Cursor::new(bytes)).unwrap();
+                        assert_eq!(archive.len(), 1);
+                        let mut file = archive.by_name(entry).unwrap();
+                        let mut text = String::new();
+                        file.read_to_string(&mut text).unwrap();
+                        text
+                    }
+                    None if out.ends_with(".gz") => {
+                        assert_eq!(&bytes[..10], b"\x1f\x8b\x08\0\0\0\0\0\0\0");
+                        let mut text = String::new();
+                        flate2::read::GzDecoder::new(&bytes[..])
+                            .read_to_string(&mut text)
+                            .unwrap();
+                        text
+                    }
+                    None => String::from_utf8(bytes).unwrap(),
+                };
+                assert!(document.starts_with("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation>"));
+                assert!(document.contains("<DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>"));
+                assert!(document.contains("<Project>") && document.contains("<InstallationDetail>"));
+                for expected in vector["archive_contains"].as_array().into_iter().flatten() {
+                    assert!(document.contains(expected.as_str().unwrap()), "{name} {expected}");
+                }
+                assert_eq!(
+                    server.handle(&format!("[rt] PROJECT RESTORE {copy} {out}")).final_text,
+                    "200 OK.",
+                    "{name} {out}"
+                );
+                for address in readback.keys() {
+                    assert_eq!(
+                        network(&mut server, copy, address),
+                        network(&mut server, "XR", address),
+                        "{name} {out} {address}"
+                    );
+                }
+            }
+            assert_eq!(
+                server.handle("[dup] PROJECT ARCHIVE XR out.zip").final_text,
+                "408 Operation failed: Archive failed: Destination file exists"
+            );
+        }
+    }
+
+    #[test]
+    fn internal_snapshot_keys_and_mock_behavior_are_unchanged() {
+        let mut native = server();
+        native.handle("[new] PROJECT NEW XSRC");
+        assert_eq!(
+            native.handle("[arc] PROJECT ARCHIVE XSRC cmqttd:slot").final_text,
+            "200 OK."
+        );
+        assert_eq!(
+            native.handle("[res] PROJECT RESTORE XDST cmqttd:slot").final_text,
+            "200 OK."
+        );
+        let mut mock = Server::new(AccessLevel::Program);
+        mock.handle("[new] PROJECT NEW XSRC");
+        assert_eq!(mock.handle("[arc] PROJECT ARCHIVE XSRC /tmp/x.zip").status, 200);
+        assert_eq!(mock.handle("[res] PROJECT RESTORE XDST /tmp/x.zip").status, 200);
+    }
+}

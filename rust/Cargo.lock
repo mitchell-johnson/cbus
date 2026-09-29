@@ -144,6 +144,7 @@ dependencies = [
  "cbus-protocol",
  "cbus-transport",
  "chrono",
+ "flate2",
  "hex",
  "if-addrs",
  "roxmltree",
@@ -156,6 +157,7 @@ dependencies = [
  "tokio-rustls",
  "tokio-serial",
  "tracing",
+ "zip",
 ]
 
 [[package]]

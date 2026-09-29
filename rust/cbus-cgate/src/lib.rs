@@ -31,6 +31,7 @@ mod config;
 mod convertunit;
 mod etherlite;
 mod file;
+mod native_archive;
 pub mod manual;
 mod port;
 pub mod service;
@@ -2200,6 +2201,10 @@ pub struct Server {
     access_snapshots: HashMap<String, Vec<access::AccessEntry>>,
     /// Address-admission mode captured alongside each ACCESS snapshot.
     access_snapshot_admission: HashMap<String, bool>,
+    /// cmqttd routes non-`cmqttd:` PROJECT ARCHIVE/RESTORE names to native
+    /// Schneider containers in its FILE namespace. The mock keeps its
+    /// process-local snapshot store for every name.
+    native_project_archives: bool,
 }
 
 impl Server {
@@ -2263,7 +2268,16 @@ impl Server {
             access_admission_enforced: false,
             access_snapshots: HashMap::new(),
             access_snapshot_admission: HashMap::new(),
+            native_project_archives: false,
         }
+    }
+
+    /// Serve native `.zip`/`.gz`/raw PROJECT ARCHIVE and RESTORE names from
+    /// the controlled FILE namespace (see `native_archive`). `cmqttd:` names
+    /// keep the internal snapshot store.
+    pub fn with_native_project_archives(mut self) -> Self {
+        self.native_project_archives = true;
+        self
     }
 
     /// Point sessions at a unit-specification directory (mirrors native
@@ -3228,6 +3242,9 @@ impl Server {
                 "400 PROJECT ARCHIVE requires a project and server path",
             );
         }
+        if self.native_project_archives && !words[3].starts_with("cmqttd:") {
+            return native_archive::archive(self, tag, words[2], words[3]);
+        }
         let Some(mut project) = self.projects.get(words[2]).cloned() else {
             return err(tag, status::NOT_FOUND, "404 Project not found");
         };
@@ -3247,6 +3264,9 @@ impl Server {
                 status::BAD_REQUEST,
                 "400 PROJECT RESTORE requires a project and server path",
             );
+        }
+        if self.native_project_archives && !words[3].starts_with("cmqttd:") {
+            return native_archive::restore(self, tag, words[2], words[3]);
         }
         if self.projects.contains_key(words[2]) {
             return err(tag, status::CONFLICT_EXISTS, "409 Project already exists");
