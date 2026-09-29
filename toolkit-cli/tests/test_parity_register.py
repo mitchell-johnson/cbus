@@ -793,9 +793,9 @@ class ParityRegisterTests(unittest.TestCase):
         for ledger_id in register_builder.UMBRELLA_PHYSICAL_UNDECIDED:
             self.assertEqual(by_id[f"ledger:{ledger_id}"]["acceptance"]["physical"], "unassessed")
         report = evaluate_packaged_change(register)
-        self.assertEqual(report["physical_acceptance"]["blocked"], 234 + 29)
+        self.assertEqual(report["physical_acceptance"]["blocked"], 234 + 30)
         self.assertEqual(report["physical_acceptance"]["accepted"], 0)
-        self.assertEqual(report["blocked_obligations"], 263)
+        self.assertEqual(report["blocked_obligations"], 264)
         self.assertEqual(report["hardware_fixtures"]["provisioned"], 0)
         self.assertEqual(report["hardware_fixtures"]["unavailable"], len(matrix_ids))
 

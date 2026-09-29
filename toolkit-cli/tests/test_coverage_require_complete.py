@@ -43,7 +43,7 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         progress = json.loads(proc.stdout)["progress"]
         physical = progress["physical_acceptance"]
-        self.assertEqual(physical["blocked"], 263)
+        self.assertEqual(physical["blocked"], 264)
         self.assertEqual(physical["accepted"], 0)
         self.assertEqual(physical["not_applicable"], 3)
         self.assertEqual(
