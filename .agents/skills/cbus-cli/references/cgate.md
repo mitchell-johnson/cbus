@@ -1843,9 +1843,13 @@ disappear on restart.
 START validates INIT, returns `200 OK: triggered` after registration, and runs
 asynchronously. TEST uses the retained three-second countdown. PP and DALI
 instructions enter the same owned-session and physical backends as interactive
-commands; PP_COPY owns and cleans up one temporary session. STATUS excludes the
-active instruction from `queueCount`, retains it in `totalCount`, and reports
-the current remaining estimate. PAUSE/RESUME/STOP/ERROR are observed between
+commands, using the PP ownership of the connection that added each instruction;
+PP_COPY owns and cleans up one temporary session. The next instruction is taken
+from the live queue, so work added while RUNNING executes. As in native C-Gate,
+each executed PP/DALI reply is echoed to the ADD_INSTRUCTION connection under
+that command's tag; clients must tolerate those unsolicited tagged lines.
+STATUS excludes the active and failed instructions from `queueCount` and the
+remaining estimate and retains them in `totalCount`. PAUSE/RESUME/STOP/ERROR are observed between
 instructions and during TEST. The first failed receipt leaves ERROR and stops
 the worker. START cannot replay terminal work, and an uncertain physical
 command is never automatically retried. With the optional LOGIN gate, PP
@@ -1864,26 +1868,35 @@ DEPLOY_QUEUE RETRY NAME
 
 LIST returns native status-130 TaskGroupSummary JSON with `progName`,
 `progState`, `taskName`, `taskRoute`, `createdTime`, `startedTime`, `endedTime`,
-and `remainingSeconds` in that order. DELETE removes a terminal queue entry and
-its PROGRAMMER registry entry. DELETE_ALL defaults to ALL and emits ordered
-120/501 per-entry rows followed by `200 OK: done`. These operations are local
-and never access PCI.
+and `remainingSeconds` in that order, listing failed, completed, active and
+pending entries. DELETE removes a pending or finished entry (the active one
+returns 502) and its PROGRAMMER registry entry. DELETE_ALL defaults to ALL
+(pending, failed, completed; never active) and emits ordered 120/501 per-entry
+rows followed by `200 OK: done`. These operations are local and never access
+PCI.
 
-ADD validates an INIT programmer, registers it, returns `200 OK: added`, emits
-updated/started, and executes asynchronously. Completion emits ended with
-STOPPED. The first fault emits one structured cmqttd debug receipt and ended
-with ERROR; the worker does not claim native diagnostic-string equivalence.
-RETRY is accepted only for a queued STOPPED/ERROR programmer, reinitializes its
-created/start time and instruction countdown, returns `200 OK: retry added`,
-and deliberately executes it again. RETRY is the only replay operation; a
+ADD registers a pending entry, returns `200 OK: added` and emits updated. One
+queue worker runs task groups in order: it emits started and executes an INIT
+entry, waits for a directly started one, and files an already STOPPED/ERROR
+programmer without execution. Completion emits ended with STOPPED. The first
+fault emits one structured cmqttd debug receipt and ended with ERROR; the
+worker does not claim native diagnostic-string equivalence. RETRY is accepted
+only for a STOPPED/ERROR programmer in the failed/completed collections (INIT
+is `502 illegal state`, unqueued is `501 failed: could not retry programmer`),
+emits removeTaskGroup/addTaskGroup, reinitializes every instruction including
+cancelled ones, returns `200 OK: retry added`, and deliberately executes the
+whole task group again. RETRY is the only replay operation; a
 fault never causes an automatic retry. ADD, DELETE, DELETE_ALL and RETRY require
 LOGIN when the optional gate is armed; LIST and help remain open. PROGRAMMER
 and DEPLOY_QUEUE state is process-local and empty after restart.
 
 Ground exact claims in
-`rust/testdata/fixtures/native_cgate_pp_programmer.json` and
-`rust/testdata/fixtures/native_cgate_deploy_queue.json`; the real-daemon
-regression is `rust/cmqttd/tests/system_cgate_pp_programmer.rs`.
+`rust/testdata/fixtures/native_cgate_pp_programmer.json`,
+`rust/testdata/fixtures/native_cgate_deploy_queue.json` and
+`rust/testdata/fixtures/native_cgate_programmer_lifecycle.json`; the real-daemon
+regressions are `rust/cmqttd/tests/system_cgate_pp_programmer.rs` and the
+native differential `rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs`.
+Its deliberate deviations are listed in `docs/cmqttd-cgate.md`.
 
 `PP RESET_TO_DEFAULTS SESSION` replaces the loaded session values with exactly
 the `DefaultValue` fields from its decoded unit specification. The change is

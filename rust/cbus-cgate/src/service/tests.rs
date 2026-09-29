@@ -4526,6 +4526,8 @@ async fn programmer_dali_instruction_grammar_reuses_public_dispatch() {
             completed: false,
             active: false,
             remaining_seconds: 1,
+            failed: false,
+            origin: None,
         };
         let response = service
             .execute_programmer_instruction(&mut client, "grammar", &instruction)

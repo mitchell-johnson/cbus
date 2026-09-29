@@ -824,6 +824,7 @@ pub struct Service {
     /// PROGRAMMER instruction. These resources remain volatile like the
     /// native PROGRAMMER registry and are never written to the database.
     next_programmer_identity: AtomicU64,
+    deploy_worker: std::sync::Mutex<DeployWorker>,
     // Serialize command intents without preventing readback/event processing.
     commands: Mutex<()>,
     /// One cancellable final read per direct Lighting group. A later command
@@ -881,11 +882,26 @@ struct ObservedLabels {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum ProgrammerRunMode {
-    Direct,
-    DeployAdd,
-    DeployRetry,
+enum InstructionOutcome {
+    Completed,
+    Failed,
+    Interrupted,
 }
+
+/// The single native-style deployment worker and the connection snapshot
+/// (PP lock/session ownership) captured when each task group was queued.
+#[derive(Default)]
+struct DeployWorker {
+    running: bool,
+    clients: HashMap<u64, ClientState>,
+    /// The connection that issued each ADD_INSTRUCTION, by (programmer
+    /// serial, instruction id).
+    instruction_clients: HashMap<(u64, u64), ClientState>,
+}
+
+/// Prefix of a private broadcast carrying one PROGRAMMER instruction reply
+/// line for exactly one command session. It is never delivered verbatim.
+const PROGRAMMER_REPLY_MARKER: &str = "\u{0}programmer-reply ";
 
 #[derive(Clone, Copy)]
 struct MeasurementObservation {
@@ -1992,6 +2008,7 @@ impl Service {
             advisory_locks: Mutex::new(HashMap::new()),
             next_advisory_identity: AtomicU64::new(1),
             next_programmer_identity: AtomicU64::new(1),
+            deploy_worker: std::sync::Mutex::new(DeployWorker::default()),
             commands: Mutex::new(()),
             pending_lighting_ramps: Mutex::new(HashMap::new()),
             next_lighting_ramp_timer: AtomicU64::new(1),
@@ -3057,6 +3074,11 @@ impl Service {
                 "deploy-queue.ended"
             ]);
             capabilities["deploy_queue_debug_events"] = serde_json::Value::Bool(true);
+            // Native C-Gate 3.4.0.2001 runs one task group at a time and
+            // echoes instruction replies to the ADD_INSTRUCTION connection
+            // (native_cgate_programmer_lifecycle.json).
+            capabilities["deploy_queue_serial_execution"] = serde_json::Value::Bool(true);
+            capabilities["programmer_instruction_reply_echo"] = serde_json::Value::Bool(true);
             capabilities["broadcast_event"] = serde_json::Value::Bool(true);
             capabilities["broadcast_event_code"] = serde_json::Value::from(703);
             capabilities["broadcast_event_level"] = serde_json::Value::from(3);
@@ -3909,6 +3931,9 @@ impl Service {
         // worker one place to enforce its no-automatic-replay rule.
         if verb == "PROGRAMMER" && sub == "TRIGGER" && upper.get(3).is_some_and(|v| v == "START") {
             return self.programmer_start(client, tag, &words).await;
+        }
+        if verb == "PROGRAMMER" && sub == "ADD_INSTRUCTION" {
+            return self.programmer_add_instruction(client, line, &words).await;
         }
         if verb == "DEPLOY_QUEUE" && sub == "ADD" {
             return self.deploy_queue_add(client, tag, &words).await;
@@ -10790,10 +10815,85 @@ impl Service {
         if words.len() != 4 {
             return err(tag, 400, "400 Syntax Error: Invalid number of parameters");
         }
-        self.execute_programmer(client, tag, words[2], ProgrammerRunMode::Direct)
-            .await
+        let key = Server::programmer_key(words[2]);
+        let serial = {
+            let mut model = self.model.lock().await;
+            if !model.allow_programming
+                || matches!(model.access, AccessLevel::Admin | AccessLevel::Monitor)
+            {
+                return err(tag, status::ACCESS_DENIED, "420 Access denied");
+            }
+            let Some(programmer) = model.programmers.get_mut(&key) else {
+                return Server::programmer_not_found(tag, words[2]);
+            };
+            if programmer.state != ProgrammerState::Init {
+                return Server::programmer_transition_refused(tag, "START", programmer.state);
+            }
+            programmer.state = ProgrammerState::Running;
+            programmer.started_time = Some(Server::deployment_timestamp());
+            programmer.serial
+        };
+        // C-Gate acknowledges START once the transition is accepted and runs
+        // the queue on its own thread; the command connection stays free.
+        let worker_client = client.clone();
+        self.spawn_blocking_worker(move |service| {
+            Box::pin(service.run_programmer(worker_client, key, serial, false))
+        });
+        ok(tag, vec![], "200 OK: triggered")
     }
 
+    /// Register an instruction through the compatibility model and remember
+    /// the issuing connection. Its PP lock/session ownership is what the
+    /// worker later uses, so a task started or queued from another connection
+    /// can still run the instruction, as native C-Gate allows.
+    async fn programmer_add_instruction(
+        self: &Arc<Self>,
+        client: &mut ClientState,
+        line: &str,
+        words: &[&str],
+    ) -> Response {
+        let mut model = self.model.lock().await;
+        model.set_command_session(client.command_session);
+        let response = model.handle(line);
+        model.set_command_session(None);
+        let id = response
+            .final_text
+            .strip_prefix("200 OK: id: ")
+            .and_then(|id| id.parse::<u64>().ok());
+        let serial = words
+            .get(2)
+            .and_then(|name| model.programmers.get(&Server::programmer_key(name)))
+            .map(|programmer| programmer.serial);
+        if let (Some(id), Some(serial)) = (id, serial) {
+            let live = model
+                .programmers
+                .values()
+                .map(|programmer| programmer.serial)
+                .chain(
+                    model
+                        .deploy_queue
+                        .iter()
+                        .map(|entry| entry.programmer.serial),
+                )
+                .collect::<HashSet<_>>();
+            let mut worker = self
+                .deploy_worker
+                .lock()
+                .unwrap_or_else(|poison| poison.into_inner());
+            // Forget connections of programmers that no longer exist anywhere.
+            worker
+                .instruction_clients
+                .retain(|(owner, _), _| live.contains(owner));
+            worker
+                .instruction_clients
+                .insert((serial, id), client.clone());
+        }
+        response
+    }
+
+    /// Native DEPLOY_QUEUE ADD only registers the task group as pending. One
+    /// queue worker starts entries in order, so a later task group waits
+    /// until the active one has finished.
     async fn deploy_queue_add(
         self: &Arc<Self>,
         client: &mut ClientState,
@@ -10803,288 +10903,328 @@ impl Service {
         if words.len() != 3 {
             return err(tag, 400, "400 Syntax Error: Invalid number of parameters");
         }
-        self.execute_programmer(client, tag, words[2], ProgrammerRunMode::DeployAdd)
-            .await
-    }
-
-    async fn deploy_queue_retry(
-        self: &Arc<Self>,
-        client: &mut ClientState,
-        tag: &str,
-        words: &[&str],
-    ) -> Response {
-        if words.len() != 3 {
-            return err(tag, 400, "400 Syntax Error: Invalid number of parameters");
-        }
-        self.execute_programmer(client, tag, words[2], ProgrammerRunMode::DeployRetry)
-            .await
-    }
-
-    /// Run one volatile PROGRAMMER exactly once through the real service
-    /// dispatch. A failed instruction stops the queue and moves it to ERROR;
-    /// START is never accepted again for that task group. RETRY is the sole
-    /// explicit replay operation and first reinitializes completed markers.
-    async fn execute_programmer(
-        self: &Arc<Self>,
-        client: &mut ClientState,
-        tag: &str,
-        name: &str,
-        mode: ProgrammerRunMode,
-    ) -> Response {
-        let key = Server::programmer_key(name);
-        let initial_events = {
+        let key = Server::programmer_key(words[2]);
+        let (serial, events) = {
             let mut model = self.model.lock().await;
             if !model.allow_programming
                 || matches!(model.access, AccessLevel::Admin | AccessLevel::Monitor)
             {
                 return err(tag, status::ACCESS_DENIED, "420 Access denied");
             }
-            let Some(existing) = model.programmers.get(&key) else {
-                return Server::programmer_not_found(tag, name);
+            let Some(programmer) = model.programmers.get(&key) else {
+                return Server::programmer_not_found(tag, words[2]);
             };
-            if mode == ProgrammerRunMode::DeployAdd
-                && model.deploy_queue.iter().any(|entry| entry.key == key)
-            {
+            let serial = programmer.serial;
+            if model.deployment_index(serial).is_some() {
                 return err(
                     tag,
                     501,
                     "501 can't add programmer into queue if it already exists.",
                 );
             }
-            match mode {
-                ProgrammerRunMode::Direct | ProgrammerRunMode::DeployAdd
-                    if existing.state != ProgrammerState::Init =>
-                {
-                    return err(tag, 400, "400 failed: unsupported programmer transition");
-                }
-                ProgrammerRunMode::DeployRetry
-                    if !matches!(
-                        existing.state,
-                        ProgrammerState::Stopped | ProgrammerState::Error
-                    ) =>
-                {
-                    return err(
-                        tag,
-                        502,
-                        &format!("502 illegal state: {}", existing.state.as_str()),
-                    );
-                }
-                _ => {}
-            }
-            if mode == ProgrammerRunMode::DeployRetry
-                && !model.deploy_queue.iter().any(|entry| entry.key == key)
-            {
-                return err(
-                    tag,
-                    502,
-                    "502 failed: programmer is not in deployment queue",
-                );
-            }
-
-            let started_time = Server::deployment_timestamp();
-            let programmer = model
-                .programmers
-                .get_mut(&key)
-                .expect("programmer existence was checked");
-            if mode == ProgrammerRunMode::DeployRetry {
-                for instruction in &mut programmer.instructions {
-                    instruction.completed = false;
-                    instruction.active = false;
-                    instruction.remaining_seconds = instruction.seconds;
-                }
-                // Native RETRY reinits the task group. Its LIST row receives
-                // a fresh createdTime as well as a fresh startedTime.
-                programmer.created_time = started_time.clone();
-            }
-            programmer.state = ProgrammerState::Running;
             let snapshot = programmer.clone();
-
-            match mode {
-                ProgrammerRunMode::Direct => {}
-                ProgrammerRunMode::DeployAdd => {
-                    model.deploy_queue.push(DeploymentEntry {
-                        key: key.clone(),
-                        programmer: snapshot.clone(),
-                        started_time: Some(started_time),
-                        ended_time: None,
-                    });
-                    model.deployment_updated_event(&format!("addTaskGroup: {}", snapshot.name));
-                    model.deployment_started_event(&snapshot);
-                }
-                ProgrammerRunMode::DeployRetry => {
-                    let entry = model
-                        .deploy_queue
-                        .iter_mut()
-                        .find(|entry| entry.key == key)
-                        .expect("retry queue presence was checked");
-                    entry.programmer = snapshot.clone();
-                    entry.started_time = Some(started_time);
-                    entry.ended_time = None;
-                    model.deployment_started_event(&snapshot);
-                }
-            }
-            model.drain_events()
+            model.deploy_queue.push(DeploymentEntry {
+                key,
+                programmer: snapshot.clone(),
+                phase: DeploymentPhase::Pending,
+            });
+            model.deployment_updated_event(&format!("addTaskGroup: {}", snapshot.name));
+            (serial, model.drain_events())
         };
-        for event in initial_events {
+        for event in events {
             let _ = self.events.send(event);
         }
+        self.enqueue_deployment(serial, client);
+        ok(tag, vec![], "200 OK: added")
+    }
 
-        // C-Gate acknowledges START/ADD once the task group is registered and
-        // performs the queue in the background. Keep the initiating session's
-        // ownership snapshot for PP instructions, but never hold the socket or
-        // replay an uncertain physical command automatically.
+    /// Native RETRY admits only a STOPPED/ERROR programmer that is in the
+    /// failed or completed collection. It removes that entry, reinitializes
+    /// every instruction (including cancelled ones) and re-adds the task group
+    /// as pending. This is the only path that re-executes an instruction.
+    async fn deploy_queue_retry(
+        self: &Arc<Self>,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+    ) -> Response {
+        let (serial, events) = {
+            let mut model = self.model.lock().await;
+            if !model.allow_programming
+                || matches!(model.access, AccessLevel::Admin | AccessLevel::Monitor)
+            {
+                return err(tag, status::ACCESS_DENIED, "420 Access denied");
+            }
+            match model.deploy_queue_requeue(tag, words) {
+                Ok(serial) => (serial, model.drain_events()),
+                Err(response) => return response,
+            }
+        };
+        for event in events {
+            let _ = self.events.send(event);
+        }
+        self.enqueue_deployment(serial, client);
+        ok(tag, vec![], "200 OK: retry added")
+    }
+
+    /// Run `work` on a detached blocking-pool thread pinned to this runtime.
+    /// Internal PP/DALI dispatch recursively enters `handle`, whose future is
+    /// intentionally not Send; timers and I/O still run on this runtime.
+    fn spawn_blocking_worker(
+        self: &Arc<Self>,
+        work: impl FnOnce(Arc<Self>) -> std::pin::Pin<Box<dyn std::future::Future<Output = ()>>>
+            + Send
+            + 'static,
+    ) {
         let service = Arc::clone(self);
-        let worker_client = client.clone();
         let runtime = tokio::runtime::Handle::current();
-        // Internal PP/DALI dispatch recursively enters `handle`, whose future
-        // is intentionally not Send. A detached blocking-pool task pins that
-        // future to one worker thread while all timers and I/O still run on
-        // this runtime; the command connection remains free immediately.
         std::mem::drop(tokio::task::spawn_blocking(move || {
-            runtime.block_on(service.run_programmer(worker_client, key, mode));
+            runtime.block_on(work(service));
         }));
+    }
 
-        match mode {
-            ProgrammerRunMode::Direct => ok(tag, vec![], "200 OK: triggered"),
-            ProgrammerRunMode::DeployAdd => ok(tag, vec![], "200 OK: added"),
-            ProgrammerRunMode::DeployRetry => ok(tag, vec![], "200 OK: retry added"),
+    /// Remember the connection whose PP ownership a pending task group uses
+    /// and make sure the single deployment worker is running.
+    fn enqueue_deployment(self: &Arc<Self>, serial: u64, client: &ClientState) {
+        let start = {
+            let mut worker = self
+                .deploy_worker
+                .lock()
+                .unwrap_or_else(|poison| poison.into_inner());
+            worker.clients.insert(serial, client.clone());
+            !std::mem::replace(&mut worker.running, true)
+        };
+        if start {
+            self.spawn_blocking_worker(|service| Box::pin(service.run_deployment_queue()));
         }
     }
 
+    /// The native deployment thread: take the oldest pending entry, start it
+    /// when INIT, wait for a directly started one, or file a terminal one
+    /// without execution. Exactly one task group is active at a time.
+    async fn run_deployment_queue(self: Arc<Self>) {
+        enum Next {
+            Run(String, u64),
+            Await(String, u64),
+            Filed,
+        }
+        loop {
+            let (next, events) = {
+                let mut model = self.model.lock().await;
+                let Some(index) = model
+                    .deploy_queue
+                    .iter()
+                    .position(|entry| entry.phase == DeploymentPhase::Pending)
+                else {
+                    // Checked and cleared under the model lock: an ADD that
+                    // pushes afterwards observes `running == false`.
+                    self.deploy_worker
+                        .lock()
+                        .unwrap_or_else(|poison| poison.into_inner())
+                        .running = false;
+                    return;
+                };
+                model.deploy_queue[index].phase = DeploymentPhase::Active;
+                let key = model.deploy_queue[index].key.clone();
+                let serial = model.deploy_queue[index].programmer.serial;
+                let started_time = Server::deployment_timestamp();
+                let programmer = model
+                    .programmer_by_serial(&key, serial)
+                    .expect("a queue entry always carries its programmer");
+                let next = match programmer.state {
+                    ProgrammerState::Init => {
+                        programmer.state = ProgrammerState::Running;
+                        programmer.started_time = Some(started_time);
+                        let started = programmer.clone();
+                        model.deployment_started_event(&started);
+                        Next::Run(key, serial)
+                    }
+                    ProgrammerState::Running | ProgrammerState::Paused => Next::Await(key, serial),
+                    ProgrammerState::Stopped | ProgrammerState::Error => {
+                        model.file_deployment_entry(serial);
+                        Next::Filed
+                    }
+                };
+                (next, model.drain_events())
+            };
+            for event in events {
+                let _ = self.events.send(event);
+            }
+            match next {
+                Next::Filed => {}
+                Next::Run(key, serial) => {
+                    let client = self
+                        .deploy_worker
+                        .lock()
+                        .unwrap_or_else(|poison| poison.into_inner())
+                        .clients
+                        .remove(&serial)
+                        .unwrap_or_default();
+                    Arc::clone(&self)
+                        .run_programmer(client, key, serial, true)
+                        .await;
+                }
+                Next::Await(key, serial) => {
+                    // A directly started programmer finishes on its own
+                    // worker; the queue only records its terminal state.
+                    loop {
+                        let mut model = self.model.lock().await;
+                        let terminal =
+                            model
+                                .programmer_by_serial(&key, serial)
+                                .is_none_or(|programmer| {
+                                    matches!(
+                                        programmer.state,
+                                        ProgrammerState::Stopped | ProgrammerState::Error
+                                    )
+                                });
+                        if terminal {
+                            model.file_deployment_entry(serial);
+                            for event in model.drain_events() {
+                                let _ = self.events.send(event);
+                            }
+                            break;
+                        }
+                        drop(model);
+                        tokio::time::sleep(Duration::from_millis(100)).await;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Run one PROGRAMMER's instructions exactly once through the real
+    /// service dispatch. The next instruction is chosen from the live queue
+    /// each time, so work added while RUNNING is executed. A failed instruction
+    /// stops the queue in ERROR; nothing is replayed automatically.
     async fn run_programmer(
         self: Arc<Self>,
         mut client: ClientState,
         key: String,
-        mode: ProgrammerRunMode,
+        serial: u64,
+        queued: bool,
     ) {
-        let instructions = {
-            let model = self.model.lock().await;
-            model
-                .programmers
-                .get(&key)
-                .map(|programmer| programmer.instructions.clone())
-                .or_else(|| {
-                    model
-                        .deploy_queue
-                        .iter()
-                        .find(|entry| entry.key == key)
-                        .map(|entry| entry.programmer.instructions.clone())
-                })
-                .unwrap_or_default()
-        };
         let mut failure = None;
-
-        for instruction in instructions {
-            if instruction.cancelled
-                || self
-                    .programmer_instruction_cancelled(&key, mode, instruction.id)
-                    .await
-            {
-                self.finish_programmer_instruction(&key, mode, instruction.id, true)
-                    .await;
-                continue;
-            }
-            if !self.wait_for_programmer(&key, mode).await {
-                break;
-            }
-            // CANCEL_INSTRUCTION can race a paused worker. Observe it again
-            // immediately before the physical acceptance boundary. Once an
-            // operation has entered its PP/DALI backend it is never aborted
-            // or replayed because its remote outcome could be uncertain.
-            if self
-                .programmer_instruction_cancelled(&key, mode, instruction.id)
-                .await
-            {
-                self.finish_programmer_instruction(&key, mode, instruction.id, true)
-                    .await;
-                continue;
-            }
-            self.start_programmer_instruction(&key, mode, instruction.id)
-                .await;
+        loop {
+            let instruction = {
+                let mut model = self.model.lock().await;
+                let Some(programmer) = model.programmer_by_serial(&key, serial) else {
+                    break;
+                };
+                match programmer.state {
+                    ProgrammerState::Running => {}
+                    ProgrammerState::Paused => {
+                        drop(model);
+                        tokio::time::sleep(Duration::from_millis(25)).await;
+                        continue;
+                    }
+                    _ => break,
+                }
+                let Some(instruction) = programmer
+                    .instructions
+                    .iter_mut()
+                    .find(|instruction| !instruction.completed && !instruction.failed)
+                else {
+                    break;
+                };
+                if instruction.cancelled {
+                    // A cancelled instruction is polled and skipped.
+                    instruction.completed = true;
+                    continue;
+                }
+                // Once an operation has entered its PP/DALI backend it is
+                // never aborted or replayed because its remote outcome could
+                // be uncertain.
+                instruction.active = true;
+                instruction.clone()
+            };
 
             let response = if instruction.kind == "TEST" {
                 match self
-                    .run_programmer_test(&key, mode, instruction.id, instruction.seconds)
+                    .run_programmer_test(&key, serial, instruction.id, instruction.seconds)
                     .await
                 {
                     Ok(()) => ok("programmer-test", vec![], "200 OK"),
-                    Err(()) => break,
+                    Err(()) => {
+                        // STOP/ERROR interrupted the countdown: the instruction
+                        // keeps its remaining estimate, as in native STATUS.
+                        self.finish_programmer_instruction(
+                            &key,
+                            serial,
+                            instruction.id,
+                            InstructionOutcome::Interrupted,
+                        )
+                        .await;
+                        break;
+                    }
                 }
             } else {
-                self.execute_programmer_instruction(&mut client, &key, &instruction)
-                    .await
+                let origin = self
+                    .deploy_worker
+                    .lock()
+                    .unwrap_or_else(|poison| poison.into_inner())
+                    .instruction_clients
+                    .get(&(serial, instruction.id))
+                    .cloned();
+                let response = match origin {
+                    Some(mut origin) => {
+                        self.execute_programmer_instruction(&mut origin, &key, &instruction)
+                            .await
+                    }
+                    None => {
+                        self.execute_programmer_instruction(&mut client, &key, &instruction)
+                            .await
+                    }
+                };
+                self.echo_instruction_reply(&instruction, &response);
+                response
             };
-            if response.status >= 400 {
-                self.finish_programmer_instruction(&key, mode, instruction.id, false)
-                    .await;
+            let failed = response.status >= 400;
+            let outcome = if failed {
+                InstructionOutcome::Failed
+            } else {
+                InstructionOutcome::Completed
+            };
+            self.finish_programmer_instruction(&key, serial, instruction.id, outcome)
+                .await;
+            if failed {
                 failure = Some((instruction, response));
                 break;
             }
-            self.finish_programmer_instruction(&key, mode, instruction.id, true)
-                .await;
         }
 
         let final_events = {
             let mut model = self.model.lock().await;
-            let observed_state = model
-                .programmers
-                .get(&key)
-                .map(|programmer| programmer.state)
-                .or_else(|| {
-                    model
-                        .deploy_queue
-                        .iter()
-                        .find(|entry| entry.key == key)
-                        .map(|entry| entry.programmer.state)
-                });
-            let final_state = match observed_state {
-                Some(ProgrammerState::Stopped) => ProgrammerState::Stopped,
-                Some(ProgrammerState::Error) => ProgrammerState::Error,
-                _ if failure.is_some() => ProgrammerState::Error,
-                _ => ProgrammerState::Stopped,
-            };
-            if let Some(programmer) = model.programmers.get_mut(&key) {
-                programmer.state = final_state;
+            let ended_time = Server::deployment_timestamp();
+            let snapshot = model.programmer_by_serial(&key, serial).map(|programmer| {
+                programmer.state = match programmer.state {
+                    ProgrammerState::Stopped => ProgrammerState::Stopped,
+                    ProgrammerState::Error => ProgrammerState::Error,
+                    _ if failure.is_some() => ProgrammerState::Error,
+                    _ => ProgrammerState::Stopped,
+                };
                 for instruction in &mut programmer.instructions {
                     instruction.active = false;
                 }
-            }
-            let snapshot = model.programmers.get(&key).cloned().or_else(|| {
-                model
-                    .deploy_queue
-                    .iter()
-                    .find(|entry| entry.key == key)
-                    .map(|entry| {
-                        let mut programmer = entry.programmer.clone();
-                        programmer.state = final_state;
-                        programmer
-                    })
+                programmer.ended_time = Some(ended_time);
+                programmer.clone()
             });
-            if mode != ProgrammerRunMode::Direct {
-                if let Some(snapshot) = snapshot.as_ref() {
-                    if let Some(entry) =
-                        model.deploy_queue.iter_mut().find(|entry| entry.key == key)
-                    {
-                        entry.programmer = snapshot.clone();
-                        entry.ended_time = Some(Server::deployment_timestamp());
-                    }
-                    if let Some((instruction, response)) = &failure {
-                        model.push_event(Server::deployment_event(
-                            "deploy-queue.debug",
-                            &serde_json::json!({
-                                "name": snapshot.name,
-                                "instructionId": instruction.id,
-                                "instructionType": instruction.kind,
-                                "status": response.status,
-                                "error": response.final_text,
-                                "replayed": mode == ProgrammerRunMode::DeployRetry,
-                                "automaticReplay": false,
-                            })
-                            .to_string(),
-                        ));
-                    }
-                    model.deployment_ended_event(snapshot);
+            if let (true, Some(snapshot)) = (queued, snapshot) {
+                if let Some((instruction, response)) = &failure {
+                    model.push_event(Server::deployment_event(
+                        "deploy-queue.debug",
+                        &serde_json::json!({
+                            "name": snapshot.name,
+                            "instructionId": instruction.id,
+                            "instructionType": instruction.kind,
+                            "status": response.status,
+                            "error": response.final_text,
+                            "automaticReplay": false,
+                        })
+                        .to_string(),
+                    ));
                 }
+                model.file_deployment_entry(serial);
             }
             model.drain_events()
         };
@@ -11093,199 +11233,84 @@ impl Service {
         }
     }
 
-    async fn programmer_instruction_cancelled(
-        &self,
-        key: &str,
-        mode: ProgrammerRunMode,
-        id: u64,
-    ) -> bool {
-        let model = self.model.lock().await;
-        model
-            .programmers
-            .get(key)
-            .and_then(|programmer| {
-                programmer
-                    .instructions
-                    .iter()
-                    .find(|instruction| instruction.id == id)
-            })
-            .or_else(|| {
-                (mode != ProgrammerRunMode::Direct)
-                    .then(|| {
-                        model
-                            .deploy_queue
-                            .iter()
-                            .find(|entry| entry.key == key)
-                            .and_then(|entry| {
-                                entry
-                                    .programmer
-                                    .instructions
-                                    .iter()
-                                    .find(|instruction| instruction.id == id)
-                            })
-                    })
-                    .flatten()
-            })
-            .is_some_and(|instruction| instruction.cancelled)
-    }
-
-    async fn wait_for_programmer(&self, key: &str, mode: ProgrammerRunMode) -> bool {
-        loop {
-            let state = {
-                let model = self.model.lock().await;
-                model
-                    .programmers
-                    .get(key)
-                    .map(|programmer| programmer.state)
-                    .or_else(|| {
-                        (mode != ProgrammerRunMode::Direct)
-                            .then(|| {
-                                model
-                                    .deploy_queue
-                                    .iter()
-                                    .find(|entry| entry.key == key)
-                                    .map(|entry| entry.programmer.state)
-                            })
-                            .flatten()
-                    })
-            };
-            match state {
-                Some(ProgrammerState::Running) => return true,
-                Some(ProgrammerState::Paused) => {
-                    tokio::time::sleep(Duration::from_millis(25)).await;
-                }
-                _ => return false,
-            }
-        }
-    }
-
-    async fn start_programmer_instruction(&self, key: &str, mode: ProgrammerRunMode, id: u64) {
-        let mut model = self.model.lock().await;
-        if let Some(programmer) = model.programmers.get_mut(key) {
-            if let Some(instruction) = programmer
-                .instructions
-                .iter_mut()
-                .find(|instruction| instruction.id == id)
-            {
-                instruction.active = true;
-            }
-        }
-        if mode != ProgrammerRunMode::Direct {
-            if let Some(programmer) = model.programmers.get(key).cloned() {
-                if let Some(entry) = model.deploy_queue.iter_mut().find(|entry| entry.key == key) {
-                    entry.programmer = programmer;
-                }
-            } else if let Some(instruction) = model
-                .deploy_queue
-                .iter_mut()
-                .find(|entry| entry.key == key)
-                .and_then(|entry| {
-                    entry
-                        .programmer
-                        .instructions
-                        .iter_mut()
-                        .find(|instruction| instruction.id == id)
-                })
-            {
-                instruction.active = true;
-            }
+    /// Native C-Gate forwards an executed instruction's reply lines to the
+    /// connection that issued its ADD_INSTRUCTION, under that command's tag.
+    /// The private marker keeps the lines away from every other subscriber.
+    fn echo_instruction_reply(&self, instruction: &ProgrammerInstruction, response: &Response) {
+        let Some((session, tag)) = &instruction.origin else {
+            return;
+        };
+        let mut reply = response.clone();
+        reply.tag = tag.clone();
+        for line in format_response(&reply).lines() {
+            let _ = self
+                .events
+                .send(format!("{PROGRAMMER_REPLY_MARKER}{session} {line}"));
         }
     }
 
     async fn finish_programmer_instruction(
         &self,
         key: &str,
-        mode: ProgrammerRunMode,
+        serial: u64,
         id: u64,
-        completed: bool,
+        outcome: InstructionOutcome,
     ) {
         let mut model = self.model.lock().await;
-        if let Some(programmer) = model.programmers.get_mut(key) {
-            if let Some(instruction) = programmer
-                .instructions
-                .iter_mut()
-                .find(|instruction| instruction.id == id)
-            {
-                instruction.active = false;
-                instruction.completed = completed;
-                if completed {
+        if let Some(instruction) = model
+            .programmer_by_serial(key, serial)
+            .and_then(|programmer| {
+                programmer
+                    .instructions
+                    .iter_mut()
+                    .find(|instruction| instruction.id == id)
+            })
+        {
+            instruction.active = false;
+            match outcome {
+                InstructionOutcome::Completed => {
+                    instruction.completed = true;
                     instruction.remaining_seconds = 0;
                 }
-            }
-        }
-        if mode != ProgrammerRunMode::Direct {
-            if let Some(programmer) = model.programmers.get(key).cloned() {
-                if let Some(entry) = model.deploy_queue.iter_mut().find(|entry| entry.key == key) {
-                    entry.programmer = programmer;
-                }
-            } else if let Some(instruction) = model
-                .deploy_queue
-                .iter_mut()
-                .find(|entry| entry.key == key)
-                .and_then(|entry| {
-                    entry
-                        .programmer
-                        .instructions
-                        .iter_mut()
-                        .find(|instruction| instruction.id == id)
-                })
-            {
-                instruction.active = false;
-                instruction.completed = completed;
-                if completed {
-                    instruction.remaining_seconds = 0;
-                }
+                InstructionOutcome::Failed => instruction.failed = true,
+                InstructionOutcome::Interrupted => {}
             }
         }
     }
 
+    /// Count a TEST instruction down once per second while RUNNING. PAUSED
+    /// holds the countdown; STOP/ERROR ends it; cancellation completes it.
     async fn run_programmer_test(
         &self,
         key: &str,
-        mode: ProgrammerRunMode,
+        serial: u64,
         id: u64,
         seconds: u64,
     ) -> Result<(), ()> {
-        for remaining in (0..seconds).rev() {
+        let mut remaining = seconds;
+        while remaining > 0 {
             tokio::time::sleep(Duration::from_secs(1)).await;
-            if !self.wait_for_programmer(key, mode).await {
+            let mut model = self.model.lock().await;
+            let Some(programmer) = model.programmer_by_serial(key, serial) else {
                 return Err(());
+            };
+            match programmer.state {
+                ProgrammerState::Running => {}
+                ProgrammerState::Paused => continue,
+                _ => return Err(()),
             }
-            if self.programmer_instruction_cancelled(key, mode, id).await {
+            let Some(instruction) = programmer
+                .instructions
+                .iter_mut()
+                .find(|instruction| instruction.id == id)
+            else {
+                return Err(());
+            };
+            if instruction.cancelled {
                 return Ok(());
             }
-            let mut model = self.model.lock().await;
-            if let Some(programmer) = model.programmers.get_mut(key) {
-                if let Some(instruction) = programmer
-                    .instructions
-                    .iter_mut()
-                    .find(|instruction| instruction.id == id)
-                {
-                    instruction.remaining_seconds = remaining;
-                }
-            }
-            if mode != ProgrammerRunMode::Direct {
-                if let Some(programmer) = model.programmers.get(key).cloned() {
-                    if let Some(entry) =
-                        model.deploy_queue.iter_mut().find(|entry| entry.key == key)
-                    {
-                        entry.programmer = programmer;
-                    }
-                } else if let Some(instruction) = model
-                    .deploy_queue
-                    .iter_mut()
-                    .find(|entry| entry.key == key)
-                    .and_then(|entry| {
-                        entry
-                            .programmer
-                            .instructions
-                            .iter_mut()
-                            .find(|instruction| instruction.id == id)
-                    })
-                {
-                    instruction.remaining_seconds = remaining;
-                }
-            }
+            remaining -= 1;
+            instruction.remaining_seconds = remaining;
         }
         Ok(())
     }
@@ -14118,6 +14143,9 @@ impl Service {
                 }
                 event = events.recv() => match event {
                     Ok(event) => {
+                        if event.starts_with(PROGRAMMER_REPLY_MARKER) {
+                            continue;
+                        }
                         if let Some(line) = cgate_event_delivery(EventMode::DEFAULT, self.global_event_level, &event) {
                             let line = line.strip_prefix("#e# ").unwrap_or(line);
                             let line = event_oid_column(line, self.event_display_oids);
@@ -14491,6 +14519,15 @@ impl Service {
                     }
                     event = events.recv() => match event {
                         Ok(event) => {
+                            if let Some(reply) = event.strip_prefix(PROGRAMMER_REPLY_MARKER) {
+                                if let Some((session, line)) = reply.split_once(' ') {
+                                    if session.parse::<u64>().ok() == Some(command_session) {
+                                        tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{line}\r\n").as_bytes())).await
+                                            .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
+                                    }
+                                }
+                                continue;
+                            }
                             if is_own_command_trace(&event, command_session) {
                                 continue;
                             }

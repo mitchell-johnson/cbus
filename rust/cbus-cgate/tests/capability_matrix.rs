@@ -477,7 +477,7 @@ fn programmer_execution_vectors_pin_receipts_faults_and_replay_policy() {
     assert_eq!(vectors[0]["expect_terminal"]["remainingSeconds"], 0);
     assert_eq!(vectors[1]["expect_receipts"][2], "200 OK: added");
     assert_eq!(vectors[2]["expect_terminal"], "ERROR");
-    assert_eq!(vectors[2]["remainingSeconds"], 1);
+    assert_eq!(vectors[2]["remainingSeconds"], 0);
     assert!(vectors[..4]
         .iter()
         .all(|vector| vector["automatic_replay"] == false));

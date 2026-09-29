@@ -1799,10 +1799,21 @@ struct ProgrammerInstruction {
     /// Runtime countdown used by TEST and exposed by STATUS/LIST. Physical
     /// instructions retain their one-second estimate until terminal receipt.
     remaining_seconds: u64,
+    /// The instruction returned a fault. Native C-Gate has already polled it
+    /// from the priority queue, so it no longer contributes to queueCount or
+    /// remainingSeconds even though the task group stops in ERROR.
+    failed: bool,
+    /// Native C-Gate echoes each executed instruction's reply lines to the
+    /// command connection that issued ADD_INSTRUCTION, under that command's
+    /// tag. Direct model callers have no command session and receive none.
+    origin: Option<(u64, String)>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Programmer {
+    /// Process-unique identity. A queue entry orphaned by PROGRAMMER DELETE
+    /// must never be confused with a later programmer of the same name.
+    serial: u64,
     name: String,
     task_name: String,
     task_route: String,
@@ -1810,13 +1821,19 @@ struct Programmer {
     instructions: Vec<ProgrammerInstruction>,
     next_id: u64,
     created_time: String,
+    /// Native task-group timestamps live on the programmer, so a directly
+    /// started programmer later added to the deployment queue keeps them.
+    started_time: Option<String>,
+    ended_time: Option<String>,
 }
 
 impl Programmer {
     fn remaining_seconds(&self) -> u64 {
         self.instructions
             .iter()
-            .filter(|instruction| !instruction.cancelled && !instruction.completed)
+            .filter(|instruction| {
+                !instruction.cancelled && !instruction.completed && !instruction.failed
+            })
             .map(|instruction| instruction.remaining_seconds)
             .sum()
     }
@@ -1824,21 +1841,48 @@ impl Programmer {
     fn queue_count(&self) -> usize {
         self.instructions
             .iter()
-            .filter(|instruction| !instruction.completed && !instruction.active)
+            .filter(|instruction| {
+                !instruction.completed && !instruction.active && !instruction.failed
+            })
             .count()
     }
+
+    /// Native DEPLOY_QUEUE RETRY reinitializes every instruction, including
+    /// cancelled ones, and the task group's created/started/ended times.
+    fn reinitialize(&mut self, created_time: String) {
+        for instruction in &mut self.instructions {
+            instruction.cancelled = false;
+            instruction.completed = false;
+            instruction.failed = false;
+            instruction.active = false;
+            instruction.remaining_seconds = instruction.seconds;
+        }
+        self.state = ProgrammerState::Init;
+        self.created_time = created_time;
+        self.started_time = None;
+        self.ended_time = None;
+    }
+}
+
+/// Native deployment-queue membership. C-Gate keeps separate pending,
+/// active, failed and completed collections and lists them failed first.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DeploymentPhase {
+    Pending,
+    Active,
+    Failed,
+    Completed,
 }
 
 /// Runtime-only deployment-queue entry. Native C-Gate retains the queued task
 /// group independently of its PROGRAMMER name registry (PROGRAMMER DELETE can
-/// therefore leave a still-listable entry), so this is deliberately a
-/// snapshot rather than a flag on `Programmer`.
+/// therefore leave a still-listable entry), so the entry keeps a snapshot
+/// that is used only once the registry no longer holds the same programmer.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct DeploymentEntry {
     key: String,
     programmer: Programmer,
-    started_time: Option<String>,
-    ended_time: Option<String>,
+    phase: DeploymentPhase,
 }
 
 /// One project network.
@@ -2263,6 +2307,8 @@ pub struct Server {
     /// for its case-insensitive name matching while each record retains the
     /// caller's spelling for JSON output.
     programmer_order: Vec<String>,
+    /// Next process-unique PROGRAMMER identity.
+    next_programmer_serial: u64,
     /// Volatile native-style deployment queue. This never enters cmqttd's
     /// durable JSON database and is empty after daemon restart.
     deploy_queue: Vec<DeploymentEntry>,
@@ -2371,6 +2417,7 @@ impl Server {
             programmers: HashMap::new(),
             programmer_order: Vec::new(),
             deploy_queue: Vec::new(),
+            next_programmer_serial: 1,
             unitspec_dir: None,
             spec_cache: HashMap::new(),
             catalog_cache: None,
@@ -6224,9 +6271,12 @@ impl Server {
         if self.programmers.contains_key(&key) {
             return err(tag, 452, "452 unique programmer name required.");
         }
+        let serial = self.next_programmer_serial;
+        self.next_programmer_serial += 1;
         self.programmers.insert(
             key.clone(),
             Programmer {
+                serial,
                 name: name.clone(),
                 task_name: arguments[3].clone(),
                 task_route: arguments[4].clone(),
@@ -6234,6 +6284,8 @@ impl Server {
                 instructions: Vec::new(),
                 next_id: 1,
                 created_time: Self::deployment_timestamp(),
+                started_time: None,
+                ended_time: None,
             },
         );
         self.programmer_order.push(key);
@@ -6249,10 +6301,20 @@ impl Server {
             );
         }
         let key = Self::programmer_key(&arguments[2]);
-        if self.programmers.remove(&key).is_none() {
+        let Some(programmer) = self.programmers.remove(&key) else {
             return err(tag, 451, "451 programmer does not exist.");
-        }
+        };
         self.programmer_order.retain(|candidate| candidate != &key);
+        // Native registry deletion leaves any queued task group in place,
+        // still running if active. From here the entry's own copy is the
+        // task group, so bring it up to date with the last registry state.
+        if let Some(entry) = self
+            .deploy_queue
+            .iter_mut()
+            .find(|entry| entry.programmer.serial == programmer.serial)
+        {
+            entry.programmer = programmer;
+        }
         ok(tag, vec![], "200 OK: deleted")
     }
 
@@ -6328,6 +6390,7 @@ impl Server {
         arguments: Vec<String>,
         priority: i32,
         seconds: u64,
+        origin: Option<(u64, String)>,
     ) -> u64 {
         let id = programmer.next_id;
         programmer.next_id += 1;
@@ -6341,6 +6404,8 @@ impl Server {
             completed: false,
             active: false,
             remaining_seconds: seconds,
+            failed: false,
+            origin,
         };
         let position = programmer
             .instructions
@@ -6369,6 +6434,7 @@ impl Server {
             arguments[3..].to_vec(),
             0,
             3,
+            None,
         );
         ok(tag, vec![], &format!("200 OK: id: {id}"))
     }
@@ -6460,17 +6526,25 @@ impl Server {
             programmer.state,
             ProgrammerState::Stopped | ProgrammerState::Error
         ) {
-            return err(tag, 402, "402 failed: programmer in unsupported state");
+            return err(
+                tag,
+                402,
+                "402 Operation not supported by: failed: programmer in unsupported state",
+            );
         }
         // Every native queued instruction uses mT's one-second default;
         // PROGRAMMER TEST is the sole observed three-second instruction.
         let seconds = 1;
+        let origin = self
+            .command_session
+            .map(|session| (session, tag.to_string()));
         let id = Self::programmer_queue(
             programmer,
             kind,
             instruction_arguments.to_vec(),
             priority,
             seconds,
+            origin,
         );
         ok(tag, vec![], &format!("200 OK: id: {id}"))
     }
@@ -6506,10 +6580,22 @@ impl Server {
             .iter_mut()
             .find(|item| item.id == id)
         else {
-            return err(tag, 402, "402 failed: command not found");
+            return err(
+                tag,
+                402,
+                "402 Operation not supported by: failed: command not found",
+            );
         };
-        if instruction.cancelled {
-            return err(tag, 403, "403 failed: command state could not be changed");
+        // Native cancellation is idempotent: an already-cancelled
+        // instruction reports success again. Completed and failed
+        // instructions cannot change state (403 uses the native Response
+        // prefix table, whose 403 label is unrelated to programmers).
+        if instruction.completed && !instruction.cancelled || instruction.failed {
+            return err(
+                tag,
+                403,
+                "403 Unsupported ramp level: failed: command state could not be changed",
+            );
         }
         instruction.cancelled = true;
         ok(tag, vec![], "200 OK: cancelled")
@@ -6528,7 +6614,20 @@ impl Server {
             return Self::programmer_not_found(tag, &arguments[2]);
         };
         let trigger = arguments[3].to_ascii_uppercase();
-        if trigger == "START" {
+        if !matches!(
+            trigger.as_str(),
+            "START" | "STOP" | "PAUSE" | "RESUME" | "ERROR"
+        ) {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                &format!(
+                    "400 Syntax Error: failed parse <trigger-type>: {}",
+                    arguments[3]
+                ),
+            );
+        }
+        if trigger == "START" && programmer.state == ProgrammerState::Init {
             return err(
                 tag,
                 502,
@@ -6543,23 +6642,22 @@ impl Server {
                 "STOP",
             ) => ProgrammerState::Stopped,
             (_, "ERROR") => ProgrammerState::Error,
-            (_, "PAUSE" | "RESUME" | "STOP") => {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 failed: unsupported programmer transition",
-                )
-            }
-            _ => {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    &format!("400 failed parse <trigger-type>: {trigger}"),
-                )
-            }
+            (state, _) => return Self::programmer_transition_refused(tag, &trigger, state),
         };
         programmer.state = next;
         ok(tag, vec![], "200 OK: triggered")
+    }
+
+    /// Native ProgrammerTransitionStateException text behind the 400 prefix.
+    fn programmer_transition_refused(tag: &str, trigger: &str, state: ProgrammerState) -> Response {
+        err(
+            tag,
+            status::BAD_REQUEST,
+            &format!(
+                "400 Syntax Error: failed: transition of {trigger} is not allowed on {}",
+                state.as_str()
+            ),
+        )
     }
 
     fn deployment_timestamp() -> String {
@@ -6641,6 +6739,60 @@ impl Server {
         )
     }
 
+    /// The task group a queue entry represents: the live registry programmer
+    /// while it still exists, otherwise the entry's orphaned copy.
+    fn deployment_programmer<'a>(&'a self, entry: &'a DeploymentEntry) -> &'a Programmer {
+        self.programmers
+            .get(&entry.key)
+            .filter(|programmer| programmer.serial == entry.programmer.serial)
+            .unwrap_or(&entry.programmer)
+    }
+
+    /// Mutable view of the task group identified by `serial`, preferring the
+    /// registry and falling back to an orphaned queue entry.
+    fn programmer_by_serial(&mut self, key: &str, serial: u64) -> Option<&mut Programmer> {
+        if self
+            .programmers
+            .get(key)
+            .is_some_and(|programmer| programmer.serial == serial)
+        {
+            return self.programmers.get_mut(key);
+        }
+        self.deploy_queue
+            .iter_mut()
+            .find(|entry| entry.programmer.serial == serial)
+            .map(|entry| &mut entry.programmer)
+    }
+
+    fn deployment_index(&self, serial: u64) -> Option<usize> {
+        self.deploy_queue
+            .iter()
+            .position(|entry| entry.programmer.serial == serial)
+    }
+
+    /// Move a finished active or admitted-terminal entry into native's failed
+    /// or completed collection, in completion order, and publish `ended`.
+    fn file_deployment_entry(&mut self, serial: u64) {
+        let Some(index) = self.deployment_index(serial) else {
+            return;
+        };
+        let mut entry = self.deploy_queue.remove(index);
+        let programmer = self.deployment_programmer(&entry).clone();
+        entry.phase = if programmer.state == ProgrammerState::Error {
+            DeploymentPhase::Failed
+        } else {
+            DeploymentPhase::Completed
+        };
+        entry.programmer = programmer.clone();
+        self.deploy_queue.push(entry);
+        self.deployment_ended_event(&programmer);
+    }
+
+    /// Native ADD only registers the task group as pending. A single queue
+    /// worker then starts INIT entries in order; an entry that is already
+    /// STOPPED or ERROR is filed immediately without execution. This model
+    /// has no execution backend: only a task group without runnable work is
+    /// admitted here (cmqttd's service owns the physical worker).
     fn deploy_queue_add(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() != 3 {
             return err(
@@ -6653,21 +6805,24 @@ impl Server {
         let Some(programmer) = self.programmers.get(&key) else {
             return Self::programmer_not_found(tag, words[2]);
         };
-        if self.deploy_queue.iter().any(|entry| entry.key == key) {
+        let serial = programmer.serial;
+        if self.deployment_index(serial).is_some() {
             return err(
                 tag,
                 501,
                 "501 can't add programmer into queue if it already exists.",
             );
         }
-        // Adding any executable instruction starts native's physical
-        // deployment worker. cmqttd has no evidenced executor, so refuse
-        // before changing state or publishing an event. An empty/all-cancelled
-        // task group is a local no-op and can complete without bus I/O.
-        if programmer
-            .instructions
-            .iter()
-            .any(|instruction| !instruction.cancelled)
+        let runnable = programmer.state == ProgrammerState::Init
+            && programmer
+                .instructions
+                .iter()
+                .any(|instruction| !instruction.cancelled);
+        if runnable
+            || matches!(
+                programmer.state,
+                ProgrammerState::Running | ProgrammerState::Paused
+            )
         {
             return err(
                 tag,
@@ -6675,23 +6830,26 @@ impl Server {
                 "502 Programmer execution backend is not implemented; deployment queue remains unchanged",
             );
         }
-        let started_time = Self::deployment_timestamp();
-        let ended_time = Self::deployment_timestamp();
-        let programmer = self
-            .programmers
-            .get_mut(&key)
-            .expect("programmer presence was validated");
-        programmer.state = ProgrammerState::Stopped;
         let snapshot = programmer.clone();
         self.deploy_queue.push(DeploymentEntry {
-            key,
+            key: key.clone(),
             programmer: snapshot.clone(),
-            started_time: Some(started_time),
-            ended_time: Some(ended_time),
+            phase: DeploymentPhase::Pending,
         });
         self.deployment_updated_event(&format!("addTaskGroup: {}", snapshot.name));
-        self.deployment_started_event(&snapshot);
-        self.deployment_ended_event(&snapshot);
+        if snapshot.state == ProgrammerState::Init {
+            let now = Self::deployment_timestamp();
+            let programmer = self
+                .programmers
+                .get_mut(&key)
+                .expect("programmer presence was validated");
+            programmer.state = ProgrammerState::Stopped;
+            programmer.started_time = Some(now.clone());
+            programmer.ended_time = Some(now);
+            let started = programmer.clone();
+            self.deployment_started_event(&started);
+        }
+        self.file_deployment_entry(serial);
         ok(tag, vec![], "200 OK: added")
     }
 
@@ -6707,20 +6865,18 @@ impl Server {
         let Some(programmer) = self.programmers.get(&key) else {
             return Self::programmer_not_found(tag, words[2]);
         };
-        let name = programmer.name.clone();
-        let Some(index) = self.deploy_queue.iter().position(|entry| entry.key == key) else {
+        let (name, serial) = (programmer.name.clone(), programmer.serial);
+        // The active task group is not in any removable collection.
+        let Some(index) = self
+            .deployment_index(serial)
+            .filter(|index| self.deploy_queue[*index].phase != DeploymentPhase::Active)
+        else {
             return err(tag, 502, "502 failed: could not remove programmer");
         };
-        if !matches!(
-            self.deploy_queue[index].programmer.state,
-            ProgrammerState::Stopped | ProgrammerState::Error
-        ) {
-            return err(tag, 502, "502 failed: could not remove programmer");
-        }
         self.deploy_queue.remove(index);
+        self.deployment_updated_event(&format!("removeTaskGroup: {name}"));
         self.programmers.remove(&key);
         self.programmer_order.retain(|candidate| candidate != &key);
-        self.deployment_updated_event(&format!("removeTaskGroup: {name}"));
         ok(tag, vec![], "200 OK: deleted")
     }
 
@@ -6736,50 +6892,59 @@ impl Server {
             .get(2)
             .map(|value| value.to_ascii_uppercase())
             .unwrap_or_else(|| "ALL".to_string());
-        if !matches!(
-            delete_type.as_str(),
-            "ALL" | "PENDING" | "FAILED" | "COMPLETED"
-        ) {
-            return err(
-                tag,
-                status::BAD_REQUEST,
-                &format!("400 Syntax Error: failed parse [delete-type]: {}", words[2]),
-            );
-        }
-        let matches_type = |entry: &DeploymentEntry| match delete_type.as_str() {
-            "ALL" => true,
-            "PENDING" => matches!(
-                entry.programmer.state,
-                ProgrammerState::Init | ProgrammerState::Running | ProgrammerState::Paused
+        // Native drains pending, then failed, then completed; the active task
+        // group is never bulk-deleted.
+        let (phases, event_verb): (&[DeploymentPhase], &str) = match delete_type.as_str() {
+            "ALL" => (
+                &[
+                    DeploymentPhase::Pending,
+                    DeploymentPhase::Failed,
+                    DeploymentPhase::Completed,
+                ],
+                "removeAllTaskGroups",
             ),
-            "FAILED" => entry.programmer.state == ProgrammerState::Error,
-            "COMPLETED" => entry.programmer.state == ProgrammerState::Stopped,
-            _ => unreachable!("delete type was validated"),
+            "PENDING" => (&[DeploymentPhase::Pending], "removeAllPendingTaskGroups"),
+            "FAILED" => (&[DeploymentPhase::Failed], "removeAllFailedTaskGroups"),
+            "COMPLETED" => (
+                &[DeploymentPhase::Completed],
+                "removeAllCompletedTaskGroups",
+            ),
+            _ => {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    &format!("400 Syntax Error: failed parse [delete-type]: {}", words[2]),
+                )
+            }
         };
         let mut removed = Vec::new();
-        self.deploy_queue.retain(|entry| {
-            if matches_type(entry) {
-                removed.push((entry.key.clone(), entry.programmer.name.clone()));
-                false
-            } else {
-                true
+        for phase in phases {
+            let mut index = 0;
+            while index < self.deploy_queue.len() {
+                if self.deploy_queue[index].phase == *phase {
+                    removed.push(self.deploy_queue.remove(index));
+                } else {
+                    index += 1;
+                }
             }
-        });
-        let event_verb = match delete_type.as_str() {
-            "ALL" => "removeAllTaskGroups",
-            "PENDING" => "removeAllPendingTaskGroups",
-            "FAILED" => "removeAllFailedTaskGroups",
-            "COMPLETED" => "removeAllCompletedTaskGroups",
-            _ => unreachable!("delete type was validated"),
-        };
+        }
         self.deployment_updated_event(&format!("{event_verb}: {}", removed.len()));
         let mut lines = Vec::new();
-        for (key, name) in removed {
-            if self.programmers.remove(&key).is_some() {
-                self.programmer_order.retain(|candidate| candidate != &key);
-                lines.push(format!("120-deleted: {name}"));
+        for entry in removed {
+            let registered = self
+                .programmers
+                .get(&entry.key)
+                .is_some_and(|programmer| programmer.serial == entry.programmer.serial);
+            if registered {
+                self.programmers.remove(&entry.key);
+                self.programmer_order
+                    .retain(|candidate| candidate != &entry.key);
+                lines.push(format!("120-deleted: {}", entry.programmer.name));
             } else {
-                lines.push(format!("501-failed: could not delete programmer: {name}"));
+                lines.push(format!(
+                    "501-failed: could not delete programmer: {}",
+                    entry.programmer.name
+                ));
             }
         }
         Response {
@@ -6790,17 +6955,17 @@ impl Server {
         }
     }
 
-    fn deployment_summary(entry: &DeploymentEntry) -> String {
+    fn deployment_summary(programmer: &Programmer) -> String {
         format!(
             "{{\"progName\":{},\"progState\":{},\"taskName\":{},\"taskRoute\":{},\"createdTime\":{},\"startedTime\":{},\"endedTime\":{},\"remainingSeconds\":{}}}",
-            serde_json::to_string(&entry.programmer.name).expect("programmer name serializes"),
-            serde_json::to_string(entry.programmer.state.as_str()).expect("state serializes"),
-            serde_json::to_string(&entry.programmer.task_name).expect("task name serializes"),
-            serde_json::to_string(&entry.programmer.task_route).expect("task route serializes"),
-            serde_json::to_string(&entry.programmer.created_time).expect("timestamp serializes"),
-            serde_json::to_string(&entry.started_time).expect("timestamp serializes"),
-            serde_json::to_string(&entry.ended_time).expect("timestamp serializes"),
-            entry.programmer.remaining_seconds(),
+            serde_json::to_string(&programmer.name).expect("programmer name serializes"),
+            serde_json::to_string(programmer.state.as_str()).expect("state serializes"),
+            serde_json::to_string(&programmer.task_name).expect("task name serializes"),
+            serde_json::to_string(&programmer.task_route).expect("task route serializes"),
+            serde_json::to_string(&programmer.created_time).expect("timestamp serializes"),
+            serde_json::to_string(&programmer.started_time).expect("timestamp serializes"),
+            serde_json::to_string(&programmer.ended_time).expect("timestamp serializes"),
+            programmer.remaining_seconds(),
         )
     }
 
@@ -6816,49 +6981,112 @@ impl Server {
             return err(tag, 450, "450 no programmers registered.");
         }
         let mut rows = Vec::new();
-        for states in [
-            &[ProgrammerState::Error][..],
-            &[ProgrammerState::Stopped][..],
-            &[ProgrammerState::Running][..],
-            &[ProgrammerState::Init, ProgrammerState::Paused][..],
+        for phase in [
+            DeploymentPhase::Failed,
+            DeploymentPhase::Completed,
+            DeploymentPhase::Active,
+            DeploymentPhase::Pending,
         ] {
             rows.extend(
                 self.deploy_queue
                     .iter()
-                    .filter(|entry| states.contains(&entry.programmer.state))
-                    .map(Self::deployment_summary),
+                    .filter(|entry| entry.phase == phase)
+                    .map(|entry| Self::deployment_summary(self.deployment_programmer(entry))),
             );
         }
         Self::programmer_json_reply(tag, rows)
     }
 
-    fn deploy_queue_retry(&mut self, tag: &str, words: &[&str]) -> Response {
+    /// Validate native DEPLOY_QUEUE RETRY admission. On success the finished
+    /// entry has been removed (publishing `removeTaskGroup`), the programmer
+    /// reinitialized and a new pending entry appended (`addTaskGroup`); the
+    /// caller then owns execution. Returns the programmer serial.
+    fn deploy_queue_requeue(&mut self, tag: &str, words: &[&str]) -> Result<u64, Response> {
         if words.len() != 3 {
-            return err(
+            return Err(err(
                 tag,
                 status::BAD_REQUEST,
                 "400 Syntax Error: Invalid number of parameters",
-            );
+            ));
         }
         let key = Self::programmer_key(words[2]);
         let Some(programmer) = self.programmers.get(&key) else {
-            return Self::programmer_not_found(tag, words[2]);
+            return Err(Self::programmer_not_found(tag, words[2]));
         };
         if !matches!(
             programmer.state,
             ProgrammerState::Stopped | ProgrammerState::Error
         ) {
-            return err(
+            return Err(err(
                 tag,
                 502,
                 &format!("502 illegal state: {}", programmer.state.as_str()),
-            );
+            ));
         }
-        err(
-            tag,
-            502,
-            "502 Programmer retry backend is not implemented; deployment queue remains unchanged",
-        )
+        let serial = programmer.serial;
+        let Some(index) = self.deployment_index(serial).filter(|index| {
+            matches!(
+                self.deploy_queue[*index].phase,
+                DeploymentPhase::Failed | DeploymentPhase::Completed
+            )
+        }) else {
+            return Err(err(tag, 501, "501 failed: could not retry programmer"));
+        };
+        let name = programmer.name.clone();
+        self.deploy_queue.remove(index);
+        self.deployment_updated_event(&format!("removeTaskGroup: {name}"));
+        let programmer = self
+            .programmers
+            .get_mut(&key)
+            .expect("programmer presence was validated");
+        programmer.reinitialize(Self::deployment_timestamp());
+        let snapshot = programmer.clone();
+        self.deploy_queue.push(DeploymentEntry {
+            key,
+            programmer: snapshot,
+            phase: DeploymentPhase::Pending,
+        });
+        self.deployment_updated_event(&format!("addTaskGroup: {name}"));
+        Ok(serial)
+    }
+
+    fn deploy_queue_retry(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Validate without mutating: this model has no execution backend for
+        // the instructions a retry would re-queue.
+        let key = Self::programmer_key(words.get(2).copied().unwrap_or_default());
+        if words.len() == 3 {
+            if let Some(programmer) = self.programmers.get(&key) {
+                let retryable = matches!(
+                    programmer.state,
+                    ProgrammerState::Stopped | ProgrammerState::Error
+                ) && self.deployment_index(programmer.serial).is_some_and(
+                    |index| self.deploy_queue[index].phase != DeploymentPhase::Pending,
+                );
+                if retryable && !programmer.instructions.is_empty() {
+                    return err(
+                        tag,
+                        502,
+                        "502 Programmer retry backend is not implemented; deployment queue remains unchanged",
+                    );
+                }
+            }
+        }
+        match self.deploy_queue_requeue(tag, words) {
+            Err(response) => response,
+            Ok(serial) => {
+                // An empty task group completes without bus I/O.
+                let now = Self::deployment_timestamp();
+                if let Some(programmer) = self.programmer_by_serial(&key, serial) {
+                    programmer.state = ProgrammerState::Stopped;
+                    programmer.started_time = Some(now.clone());
+                    programmer.ended_time = Some(now);
+                    let started = programmer.clone();
+                    self.deployment_started_event(&started);
+                }
+                self.file_deployment_entry(serial);
+                ok(tag, vec![], "200 OK: retry added")
+            }
+        }
     }
 
     /// Native `PP LOCK name address`.
@@ -13574,7 +13802,12 @@ mod tests {
             200
         );
         let before = format_response(&server.handle("[12] PROGRAMMER STATUS P"));
-        assert_eq!(server.handle("[13] PROGRAMMER TRIGGER P START").status, 502);
+        // INIT -> PAUSED -> RESUME reaches RUNNING without a worker, exactly
+        // as native C-Gate does; START is then an illegal transition.
+        assert_eq!(
+            server.handle("[13] PROGRAMMER TRIGGER P START").final_text,
+            "400 Syntax Error: failed: transition of START is not allowed on RUNNING"
+        );
         let after = format_response(&server.handle("[14] PROGRAMMER STATUS P"));
         assert_eq!(before.replace("[12]", "[x]"), after.replace("[14]", "[x]"));
         assert_eq!(server.handle("[15] PROGRAMMER TRIGGER P STOP").status, 200);
@@ -13679,8 +13912,10 @@ mod tests {
         assert_eq!(server.handle("[9] DEPLOY_QUEUE ADD Done").status, 200);
         server.drain_events();
         let queue_before = format_response(&server.handle("[10] DEPLOY_QUEUE LIST"));
+        // Native RETRY reinitializes cancelled instructions too, so the
+        // model cannot retry Work without an execution backend.
         assert_eq!(
-            server.handle("[11] DEPLOY_QUEUE RETRY Done").final_text,
+            server.handle("[11] DEPLOY_QUEUE RETRY Work").final_text,
             "502 Programmer retry backend is not implemented; deployment queue remains unchanged"
         );
         assert!(server.drain_events().is_empty());
@@ -13689,6 +13924,21 @@ mod tests {
             queue_before.replace("[10]", "[x]"),
             queue_after.replace("[12]", "[x]")
         );
+        // An empty task group is re-queued and completes without bus I/O.
+        assert_eq!(
+            server.handle("[13] DEPLOY_QUEUE RETRY Done").final_text,
+            "200 OK: retry added"
+        );
+        assert_eq!(
+            server.drain_events(),
+            [
+                "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeTaskGroup: Done\"}",
+                "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: Done\"}",
+                "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"Done\",\"task\":\"No work\"}}",
+                "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"Done\",\"task\":\"No work\",\"status\":\"STOPPED\"}}",
+            ]
+        );
+        assert_eq!(server.handle("[14] DEPLOY_QUEUE RETRY Missing").status, 400);
     }
 
     #[test]

@@ -142,9 +142,9 @@
     "explicit_retry": "RETRY returned 200, refreshed createdTime/startedTime and re-ran the completed TEST-only task asynchronously."
   },
   "cmqttd_boundaries": {
-    "ADD": "Validates and registers an INIT task group, acknowledges immediately, then runs TEST and retained PP/DALI instructions through the shared service backends; the first fault ends the task in ERROR and is never replayed automatically.",
-    "DELETE": "Terminal local queue entries can be removed without PCI I/O.",
-    "DELETE_ALL": "Volatile queue entries can be selected and removed without PCI I/O.",
+    "ADD": "Registers the task group as pending and acknowledges immediately; one queue worker then starts INIT entries in order (filing an already STOPPED/ERROR programmer without execution) and runs TEST and retained PP/DALI instructions through the shared service backends; the first fault ends the task in ERROR and is never replayed automatically. See native_cgate_programmer_lifecycle.json.",
+    "DELETE": "Pending and terminal local queue entries can be removed without PCI I/O; the active entry returns 502.",
+    "DELETE_ALL": "Pending, failed and completed entries (never the active one) can be selected and removed without PCI I/O.",
     "LIST": "Returns the volatile queue only; PROGRAMMER registry entries outside the queue are not listed.",
     "RETRY": "Validates queued terminal state, reinits the task group and re-executes only after the explicit RETRY request; no automatic retry occurs after a fault.",
     "events": "updated-entries, started and ended are emitted for queue transitions; debug carries a structured cmqttd first-fault receipt without claiming native message text.",

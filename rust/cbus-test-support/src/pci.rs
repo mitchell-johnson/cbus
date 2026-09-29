@@ -82,7 +82,9 @@ struct State {
     writer_abort: Option<tokio::task::AbortHandle>,
 }
 
-/// The fake PCI server; `start()` binds an ephemeral port.
+/// The fake PCI server; `start()` binds an ephemeral port. Clones share
+/// the same recorded frames and injection channel (for scripted peers).
+#[derive(Clone)]
 pub struct FakePci {
     state: Arc<Mutex<State>>,
     port: u16,

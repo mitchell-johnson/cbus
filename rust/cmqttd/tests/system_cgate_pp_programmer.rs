@@ -29,6 +29,12 @@ async fn command(
         let mut line = String::new();
         assert_ne!(reader.read_line(&mut line).await.unwrap(), 0);
         let line = line.trim_end_matches(['\r', '\n']);
+        // Native C-Gate echoes each executed PROGRAMMER instruction's reply
+        // to the ADD_INSTRUCTION connection under that command's own tag;
+        // system_cgate_programmer_lifecycle.rs asserts those lines.
+        if !line.starts_with(&prefix) && line.starts_with('[') {
+            continue;
+        }
         let payload = line
             .strip_prefix(&prefix)
             .unwrap_or_else(|| panic!("expected {prefix:?}, got {line:?}"));
@@ -382,7 +388,7 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
             "PROGRAMMER TRIGGER P START",
         )
         .await,
-        ["400 failed: unsupported programmer transition"]
+        ["400 Syntax Error: failed: transition of START is not allowed on STOPPED"]
     );
     assert_eq!(
         command(
@@ -522,7 +528,7 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         ["200 OK: retry added"]
     );
     let mut retry_events = Vec::new();
-    for _ in 0..2 {
+    for _ in 0..4 {
         let mut event = String::new();
         tokio::time::timeout(STARTUP, event_reader.read_line(&mut event))
             .await
@@ -533,6 +539,8 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
     assert_eq!(
         retry_events,
         [
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"removeTaskGroup: QUEUED\"}",
+            "#event {\"name\":\"deploy-queue.updated-entries\",\"msg\":\"addTaskGroup: QUEUED\"}",
             "#event {\"name\":\"deploy-queue.started\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\"}}",
             "#event {\"name\":\"deploy-queue.ended\",\"msg\":{\"name\":\"QUEUED\",\"task\":\"Timed work\",\"status\":\"STOPPED\"}}",
         ]
@@ -588,7 +596,9 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         "\"progState\":\"ERROR\"",
     )
     .await;
-    assert!(failed[0].contains("\"remainingSeconds\":1"));
+    // Native C-Gate has already polled the failed instruction: it no longer
+    // counts toward remainingSeconds (native_cgate_programmer_lifecycle.json).
+    assert!(failed[0].contains("\"remainingSeconds\":0"));
     let mut unexpected_event = String::new();
     assert!(
         tokio::time::timeout(
@@ -607,7 +617,8 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
             "DEPLOY_QUEUE DELETE_ALL all",
         )
         .await,
-        ["120-deleted: QUEUED", "120-deleted: FAIL", "200 OK: done"]
+        // Native DELETE_ALL drains pending, then failed, then completed.
+        ["120-deleted: FAIL", "120-deleted: QUEUED", "200 OK: done"]
     );
     let mut delete_event = String::new();
     tokio::time::timeout(STARTUP, event_reader.read_line(&mut delete_event))
