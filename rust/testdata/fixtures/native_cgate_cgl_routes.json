@@ -1,0 +1,1419 @@
+{
+  "format": "cbus-native-cgl-routes-v1",
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "environment": "Owned loopback-only child with Clipsal interface access; disposable database-only projects; the only opened CNI endpoint was a loopback synthetic PCI simulator; no site project, hardware or LAN endpoint.",
+    "cleanup_complete": true
+  },
+  "capture_script_sha256": "911ff3edeb02ccdab7884d6bf90cd1127535a8c96869142af9b4f71b3c441972",
+  "raw_report_sha256": "aa8d302b13dbecbe0b15246cb10316bbf2e7972a27727a84a162e85d16a0871c",
+  "comparison": "Replies are exact after <oid>, <timestamp> and <simulator> normalization. Steps marked setup build state and are not compared across servers.",
+  "native_facts": {
+    "route_graph": "A route edge N->A exists when database network N holds a Unit at address A whose UnitType starts with BRIDGE or contains GATE (case-sensitive) and network A exists. Network InterfaceType/InterfaceAddress are not consulted. Edges are directional.",
+    "route_bound": "A route holds at most six networks after the local one; the first shortest path in database Unit enumeration order wins.",
+    "export_local": "CGL EXPORT's network list only selects localNetwork: the last project network (project order) in the list. All networks reachable from it are exported in project order, with their route unless local. An empty selection is 408 Local address is missing.",
+    "export_shape": "Applications 0..254 and groups 0..254 are exported; levels 0..255. type keeps 25, 172, 173, 192, 202, 203, 205, 206, 208, 213, 223, 224, 228 and 251; every other application exports as 56. Empty arrays are omitted, null names are written as null, and numberOfExportedObjects counts applications, groups and levels but not networks.",
+    "import_routes_ignored": "Document routes are never compared with C-Gate's route; they are only echoed after the local network in the unroutable diagnostic.",
+    "import_skip": "A network absent from the project is SKIPPED as not existing; an existing network not reachable from localNetwork is SKIPPED as not routable; either makes the final reply 380 CGL import not completed. localNetwork need not exist.",
+    "import_names": "Only missing tag objects receive the document name. Network names and application types are never imported. Progress lines echo the document name even for preserved objects.",
+    "import_runtime_layer": "Created lines follow the union of a volatile runtime layer and the tag database: after a project load, applications and groups are reported again.",
+    "import_levels": "Levels are created with Value equal to their address.",
+    "import_coercion": "JSON follows Jackson defaults: unknown properties are 400, duplicate keys keep the last value, trailing text is ignored, numeric strings and floats coerce to integers, null integers are 0 and scalars coerce to name strings.",
+    "import_failures": "Address, null-entry and null-list failures are 408 and keep every earlier change; version and JSON failures are 400 before any change.",
+    "nameless": "A nameless new tag object imports but makes PROJECT SAVE fail its NOT NULL constraint.",
+    "configuration": "CglImportConfiguration is constructed with defaults for every import; its setters are private and no command syntax reaches them.",
+    "no_pci": "CGL IMPORT and EXPORT change or read only the project label graph and send nothing to the PCI."
+  },
+  "sanitization": {
+    "site_project_retained": false,
+    "credentials_retained": false,
+    "vendor_source_retained": false
+  },
+  "pci": {
+    "network": "//CGLP/254 opened to the loopback synthetic simulator before the import_routes scenario and closed before the reload in runtime_layer",
+    "total_wire_records": 121
+  },
+  "scenarios": [
+    {
+      "name": "no_project",
+      "description": "A fresh session has no project in use.",
+      "steps": [
+        {
+          "command": "CGL EXPORT",
+          "reply": [
+            "400 Syntax Error: No project in use"
+          ]
+        },
+        {
+          "command": "CGL IMPORT",
+          "reply": [
+            "401 Bad object or device ID: No project specified"
+          ]
+        },
+        {
+          "command": "CGL IMPORT NOPE",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "401 Bad object or device ID: Project not found"
+          ]
+        },
+        {
+          "command": "CGL IMPORT NOPE",
+          "reply": [
+            "401 Bad object or device ID: Project not found"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chain_setup",
+      "description": "Bridge Units whose unit address names the far network form the route graph.",
+      "steps": [
+        {
+          "command": "PROJECT NEW CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT USE CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBCREATENET 254 Local Cni <simulator>",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 253 Hop1 Bridge 254/p/253",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 252 Hop2 Bridge 253/p/252",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 251 Hop3 Bridge 252/p/251",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 250 Hop4 Bridge 251/p/250",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 249 Hop5 Bridge 250/p/249",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 248 Hop6 Bridge 249/p/248",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 247 Hop7 Bridge 248/p/247",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 240 Island Cni 127.0.0.2:29998",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/254 Unit 253 Bridge253",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/254/p/253/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/254/p/253/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/253 Unit 252 Bridge252",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/253/p/252/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/253/p/252/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/252 Unit 251 Bridge251",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/252/p/251/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/252/p/251/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/251 Unit 250 Bridge250",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/251/p/250/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/251/p/250/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/250 Unit 249 Bridge249",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/250/p/249/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/250/p/249/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Unit 248 Bridge248",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/249/p/248/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/249/p/248/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/248 Unit 247 Bridge247",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/248/p/247/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLP/248/p/247/UnitName BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "NET LOAD DB",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "NET OPEN //CGLP/254",
+          "setup": true,
+          "reply": [
+            "120-initializing",
+            "120-opening port",
+            "120-starting network threads",
+            "120-pci reset",
+            "120-checking connection",
+            "120-relinking to bridged networks",
+            "120-open complete",
+            "200 OK: //CGLP/254"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "export_routes",
+      "description": "The last selected project network is localNetwork; every network reachable from it through at most six bridge Units is exported with its route.",
+      "steps": [
+        {
+          "command": "CGL EXPORT CGLP 254",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\"},{\"address\":253,\"name\":\"Hop1\",\"route\":[253]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 250",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":250,\"networks\":[{\"address\":250,\"name\":\"Hop4\"},{\"address\":249,\"name\":\"Hop5\",\"route\":[249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[249,248]},{\"address\":247,\"name\":\"Hop7\",\"route\":[249,248,247]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":240,\"networks\":[{\"address\":240,\"name\":\"Island\"}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 253,254",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":253,\"networks\":[{\"address\":253,\"name\":\"Hop1\"},{\"address\":252,\"name\":\"Hop2\",\"route\":[252]},{\"address\":251,\"name\":\"Hop3\",\"route\":[252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[252,251,250,249,248]},{\"address\":247,\"name\":\"Hop7\",\"route\":[252,251,250,249,248,247]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254,254 56",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\"},{\"address\":253,\"name\":\"Hop1\",\"route\":[253]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP ,",
+          "reply": [
+            "343-Begin CGL snippet",
+            "408 Operation failed: CGL export failed: Export failed.  Exception: com.clipsal.cgate.cgl.CglException: Local address is missing."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 256",
+          "reply": [
+            "400 Syntax Error: Integer parameter is out of range : <network list>"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP a",
+          "reply": [
+            "400 Syntax Error: Invalid integer parameter : <network list>"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 1-2",
+          "reply": [
+            "400 Syntax Error: Invalid integer parameter : <network list>"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 1",
+          "reply": [
+            "343-Begin CGL snippet",
+            "408 Operation failed: CGL export failed: Export failed.  Exception: com.clipsal.cgate.cgl.CglException: Local address is missing."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 56 extra",
+          "reply": [
+            "400 Syntax Error: Too many parameters"
+          ]
+        },
+        {
+          "command": "CGL EXPORT NOPE",
+          "reply": [
+            "401 Bad object or device ID: NOPE (Network not found)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "import_routes",
+      "description": "Supplied routes are never validated: correct, wrong and empty routes import when C-Gate can route the network; unroutable and absent networks are skipped.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Renamed\",\"applications\":[{\"address\":56,\"type\":202,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]},{\"address\":202,\"type\":56,\"name\":\"Trigger\",\"groups\":[{\"address\":3,\"name\":\"Scene\"}]}]},{\"address\":253,\"route\":[253],\"applications\":[{\"address\":56,\"name\":\"Correct\"}]},{\"address\":252,\"route\":[9,9],\"applications\":[{\"address\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":248,\"applications\":[{\"address\":57,\"name\":\"Empty route\"}]},{\"address\":247,\"route\":[253,252,251,250,249,248,247],\"applications\":[{\"address\":56}]},{\"address\":240,\"applications\":[{\"address\":56}]},{\"address\":99,\"route\":[99]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 254",
+            "380-  Created new application 254/56 ('Lighting')",
+            "380-    Created new group 254/56/1 ('Lounge')",
+            "380-      Created new level 254/56/1/255 ('On')",
+            "380-  Created new application 254/202 ('Trigger')",
+            "380-    Created new group 254/202/3 ('Scene')",
+            "380-Importing Network 253",
+            "380-  Created new application 253/56 ('Correct')",
+            "380-Importing Network 252",
+            "380-  Created new application 252/56 ('Wrong')",
+            "380-    Created new group 252/56/4 ('G4')",
+            "380-Importing Network 248",
+            "380-  Created new application 248/57 ('Empty route')",
+            "380-SKIPPED - Network 247 is not routable to the local network (254)",
+            "380-        - Please create network 247 and try the import again with this route: ",
+            "380-          254 - 253 - 252 - 251 - 250 - 249 - 248 - 247",
+            "380-SKIPPED - Network 240 is not routable to the local network (254)",
+            "380-        - Please create network 240 and try the import again with this route: ",
+            "380-          254",
+            "380-SKIPPED - Network 99 does not exist. Please create it and try the import again.",
+            "380-Imported 9 object(s) of 7 network(s): 5 application(s), 3 group(s), 1 level(s) ",
+            "380 CGL import not completed: Skipped 3 network(s). "
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]},{\"address\":202,\"type\":202,\"name\":\"Trigger\",\"groups\":[{\"address\":3,\"name\":\"Scene\"}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\"}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248],\"applications\":[{\"address\":57,\"type\":56,\"name\":\"Empty route\"}]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:9]"
+          ]
+        }
+      ],
+      "pci_inbound_records_during_import_and_export": 0
+    },
+    {
+      "name": "local_network_variants",
+      "description": "localNetwork need not be in the project; routing is evaluated from it and is directional.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":99,\"networks\":[{\"address\":254,\"applications\":[{\"address\":60,\"name\":\"A60\"}]},{\"address\":253}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 99 ...",
+            "380-SKIPPED - Network 254 is not routable to the local network (99)",
+            "380-        - Please create network 254 and try the import again with this route: ",
+            "380-          99",
+            "380-SKIPPED - Network 253 is not routable to the local network (99)",
+            "380-        - Please create network 253 and try the import again with this route: ",
+            "380-          99",
+            "380-Imported 0 object(s) of 2 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "380 CGL import not completed: Skipped 2 network(s). "
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":250,\"networks\":[{\"address\":254},{\"address\":247,\"applications\":[{\"address\":61,\"name\":\"A61\"}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 250 ...",
+            "380-SKIPPED - Network 254 is not routable to the local network (250)",
+            "380-        - Please create network 254 and try the import again with this route: ",
+            "380-          250",
+            "380-Importing Network 247",
+            "380-  Created new application 247/61 ('A61')",
+            "380-Imported 1 object(s) of 2 network(s): 1 application(s), 0 group(s), 0 level(s) ",
+            "380 CGL import not completed: Skipped 1 network(s). "
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conflicts",
+      "description": "Existing tag names are preserved while progress lines echo the document name; network names, application types and duplicate entries do not replace state.",
+      "steps": [
+        {
+          "command": "DBADDSAFE //CGLP/251 Application 56 Existing Lighting",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/251/56 Group 5 Existing Group",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":251,\"name\":\"Other\",\"applications\":[{\"address\":56,\"type\":203,\"name\":\"Different\",\"groups\":[{\"address\":5,\"name\":\"Also different\"},{\"address\":6,\"name\":\"Six\"},{\"address\":6,\"name\":\"Duplicate six\"}]},{\"address\":56,\"name\":\"Duplicate app\",\"groups\":[{\"address\":7,\"name\":\"Seven\"}]}]},{\"address\":251,\"applications\":[{\"address\":63,\"type\":\"56\",\"name\":7,\"groups\":[{\"address\":\"2\",\"name\":true}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 251",
+            "380-  Created new application 251/56 ('Different')",
+            "380-    Created new group 251/56/5 ('Also different')",
+            "380-    Created new group 251/56/6 ('Six')",
+            "380-    Created new group 251/56/7 ('Seven')",
+            "380-Importing Network 251",
+            "380-  Created new application 251/63 ('7')",
+            "380-    Created new group 251/63/2 ('true')",
+            "380-Imported 6 object(s) of 2 network(s): 2 application(s), 4 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":251,\"applications\":[{\"address\":56,\"name\":\"Again\",\"groups\":[{\"address\":6,\"name\":\"Again\"}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 251",
+            "380-Imported 0 object(s) of 1 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 56,63",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\"}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Existing Lighting\",\"groups\":[{\"address\":5,\"name\":\"Existing Group\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]},{\"address\":63,\"type\":56,\"name\":\"7\",\"groups\":[{\"address\":2,\"name\":\"true\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:12]"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "metadata",
+      "description": "createdBy/createdTime are accepted then discarded; export always regenerates them. Unknown fields, including numberOfExportedObjects, are rejected.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdBy\":\"Someone\",\"createdTime\":\"2020-01-02T03:04:05.678+00:00\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdBy\":5,\"createdTime\":\"2020-01-02T03:04:05Z\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdBy\":null,\"createdTime\":\"2020-01-02\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdTime\":\"2020-01-02T03:04:05\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdTime\":1600000000000,\"localNetwork\":\"254\",\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdTime\":null,\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"createdTime\":\"yesterday\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `java.util.Date` from String \"yesterday\": not a valid representation (error: Failed to parse Date value 'yesterday': Cannot parse date \"yesterday\": not compatible with any of standard forms (\"yyyy-MM-dd'T'HH:mm:ss.SSSX\", \"yyyy-MM-dd'T'HH:mm:ss.SSS\", \"EEE, dd MMM yyyy HH:mm:ss zzz\", \"yyyy-MM-dd\"))  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[]} \"; line: 1, column: 35] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"createdTime\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[],\"numberOfExportedObjects\":3}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"numberOfExportedObjects\" (class com.clipsal.cgate.cgl.model.Root), not marked as ignorable (5 known properties: \"cglVersion\", \"localNetwork\", \"createdTime\", \"createdBy\", \"networks\"])  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[],\"numberOfExportedObjects\":3} \"; line: 1, column: 81] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"numberOfExportedObjects\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"bogus\":1,\"networks\":[]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"bogus\" (class com.clipsal.cgate.cgl.model.Root), not marked as ignorable (5 known properties: \"cglVersion\", \"localNetwork\", \"createdTime\", \"createdBy\", \"networks\"])  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"bogus\":1,\"networks\":[]} \"; line: 1, column: 49] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"bogus\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"extra\":true}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"extra\" (class com.clipsal.cgate.cgl.model.Network), not marked as ignorable (4 known properties: \"route\", \"name\", \"address\", \"applications\"])  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"extra\":true}]} \"; line: 1, column: 79] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"extra\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":1,\"name\":\"x\",\"extra\":1}]}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"extra\" (class com.clipsal.cgate.cgl.model.Application), not marked as ignorable (4 known properties: \"type\", \"name\", \"address\", \"groups\"])  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":1,\"name\":\"x\",\"extra\":1}]}]} \"; line: 1, column: 116] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"applications\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Application[\"extra\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":1,\"name\":\"x\",\"groups\":[{\"address\":1,\"name\":\"g\",\"levels\":[{\"address\":1,\"name\":\"l\",\"extra\":1}]}]}]}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"extra\" (class com.clipsal.cgate.cgl.model.Level), not marked as ignorable (2 known properties: \"name\", \"address\"])  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":1,\"name\":\"x\",\"groups\":[{\"address\":1,\"name\":\"g\",\"levels\":[{\"address\":1,\"name\":\"l\",\"extra\":1}]}]}]}]} \"; line: 1, column: 184] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"applications\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Application[\"groups\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Group[\"levels\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Level[\"extra\"])"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "validation",
+      "description": "Version, JSON shape and address failures; later failures are not rolled back.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.0\",\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Validation failed.  Exception: java.lang.IllegalArgumentException: Unsupported CGL version."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":1.1,\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"localNetwork\":254,\"networks\":[]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Validation failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"networks\":[]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":null,\"networks\":[]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":null}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[null]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":256}]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: com.clipsal.cgate.cgl.CglException: Invalid address 256 for network 'null'."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"localNetwork\":253,\"networks\":[{\"address\":252,\"applications\":[{\"address\":70,\"name\":\"A\",\"name\":\"B\"}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 253 ...",
+            "380-Importing Network 252",
+            "380-  Created new application 252/70 ('B')",
+            "380-Imported 1 object(s) of 1 network(s): 1 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[]} trailing",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Imported 0 object(s) of 0 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"route\":\"x\"}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `java.util.ArrayList<java.lang.Integer>` from String value (token `JsonToken.VALUE_STRING`)  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"route\":\"x\"}]} \"; line: 1, column: 75] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"route\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":240,\"route\":[999,-5,\"7\"]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-SKIPPED - Network 240 is not routable to the local network (254)",
+            "380-        - Please create network 240 and try the import again with this route: ",
+            "380-          254 - 999 - -5 - 7",
+            "380-Imported 0 object(s) of 1 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "380 CGL import not completed: Skipped 1 network(s). "
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":62,\"type\":\"lighting\",\"name\":\"A62\"}]}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String \"lighting\": not a valid `int` value  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":62,\"type\":\"lighting\",\"name\":\"A62\"}]}]} \"; line: 1, column: 104] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"applications\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Application[\"type\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":72.9,\"name\":\"A72\"},{\"address\":null,\"name\":\"Zero\"}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 254",
+            "380-  Created new application 254/72 ('A72')",
+            "380-  Created new application 254/0 ('Zero')",
+            "380-Imported 2 object(s) of 1 network(s): 2 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":true,\"name\":\"T\"}]}]}",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `int` from Boolean value (token `JsonToken.VALUE_TRUE`)  at [Source: (String)\"{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":true,\"name\":\"T\"}]}]} \"; line: 1, column: 94] (through reference chain: com.clipsal.cgate.cgl.model.Root[\"networks\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Network[\"applications\"]->java.util.ArrayList[0]->com.clipsal.cgate.cgl.model.Application[\"address\"])"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":71,\"name\":\"A71\"}]},{\"address\":253,\"applications\":null}]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: java.lang.NullPointerException"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":300,\"name\":\"Big\"}]}]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: com.clipsal.cgate.cgl.CglException: Invalid address 300 for application 'Big'."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":255,\"name\":\"A255\",\"groups\":[{\"address\":255,\"name\":\"G255\",\"levels\":[{\"address\":256,\"name\":\"L\"}]}]}]}]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: com.clipsal.cgate.cgl.CglException: Invalid address 256 for level 'L'."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":66,\"name\":\"A66\",\"groups\":[{\"address\":1,\"name\":\"G\",\"levels\":[{\"address\":-1,\"name\":\"L\"}]}]}]}]}",
+          "reply": [
+            "408 Operation failed: CGL import failed: Import failed.  Exception: com.clipsal.cgate.cgl.CglException: Invalid address -1 for level 'L'."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "[]",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `com.clipsal.cgate.cgl.model.Root` from Array value (token `JsonToken.START_ARRAY`)  at [Source: (String)\"[] \"; line: 1, column: 1]"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "not json",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'not': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')  at [Source: (String)\"not json \"; line: 1, column: 4]"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "",
+          "reply": [
+            "400 Syntax Error: CGL validation failed: Import Failed: com.fasterxml.jackson.databind.exc.MismatchedInputException: No content to map due to end-of-input  at [Source: (String)\" \"; line: 1, column: 0]"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "reply": [
+            "400 Syntax Error: No CGL data supplied"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 0,66,70,71,72,255",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":72,\"type\":56,\"name\":\"A72\"},{\"address\":0,\"type\":56,\"name\":\"Zero\"},{\"address\":71,\"type\":56,\"name\":\"A71\"},{\"address\":66,\"type\":56,\"name\":\"A66\",\"groups\":[{\"address\":1,\"name\":\"G\"}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":70,\"type\":56,\"name\":\"B\"}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:6]"
+          ]
+        },
+        {
+          "command": "DBGETXML //CGLP/254/255",
+          "reply": [
+            "343-Begin XML snippet",
+            "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+            "347-<Application><TagName>A255</TagName><Address>255</Address><Group><TagName>G255</TagName><Address>255</Address></Group></Application>",
+            "344 End XML snippet"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "export_types",
+      "description": "Exported type keeps retained special applications and maps every other application to 56; application 255 and group 255 are not exported.",
+      "steps": [
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 0 App0",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 25 App25",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 38 App38",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 136 App136",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 203 App203",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 228 App228",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249 Application 254 App254",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249/228 Group 255 Top",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLP/249/228 Group 254 High",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 0,25,38,136,203,228,254,255",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":0,\"type\":56,\"name\":\"Zero\"}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249],\"applications\":[{\"address\":0,\"type\":56,\"name\":\"App0\"},{\"address\":25,\"type\":25,\"name\":\"App25\"},{\"address\":38,\"type\":56,\"name\":\"App38\"},{\"address\":136,\"type\":56,\"name\":\"App136\"},{\"address\":203,\"type\":203,\"name\":\"App203\"},{\"address\":228,\"type\":228,\"name\":\"App228\",\"groups\":[{\"address\":254,\"name\":\"High\"}]},{\"address\":254,\"type\":56,\"name\":\"App254\"}]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:9]"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "large",
+      "description": "A 10,455-object import and export have no object limit.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document_generator": {
+            "function": "large_document",
+            "localNetwork": 254,
+            "network": 250,
+            "application": 100,
+            "groups": 255,
+            "levels_per_group": 40
+          },
+          "reply_summary": {
+            "lines": 10460,
+            "first": [
+              "380-Importing routable networks from local Network 254 ...",
+              "380-Importing Network 250",
+              "380-  Created new application 250/100 ('Large')"
+            ],
+            "last": [
+              "380-      Created new level 250/100/254/39 ('L39')",
+              "380-Imported 10456 object(s) of 1 network(s): 1 application(s), 255 group(s), 10200 level(s) ",
+              "200 OK."
+            ],
+            "sha256": "3976b51f86e81e9b990d3942011ce47065b397cb97cf3991999c37bb3cb36e72"
+          }
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 100",
+          "reply_summary": {
+            "lines": 3,
+            "first": [
+              "343-Begin CGL snippet",
+              "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\"},{\"add",
+              "344 End CGL snippet [numberOfExportedObjects:10456]"
+            ],
+            "last": [
+              "343-Begin CGL snippet",
+              "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\"},{\"add",
+              "344 End CGL snippet [numberOfExportedObjects:10456]"
+            ],
+            "sha256": "2edd1c366c52fe40ecd0d01f3bc818acb318080c2a4533573e52e03e00d9a09e"
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtime_layer",
+      "description": "After a project reload every application and group in a document is reported as created again although stored names are kept; a repeat in the same load is silent.",
+      "steps": [
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":253,\"applications\":[{\"address\":56,\"name\":\"Renamed again\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 253",
+            "380-    Created new group 253/56/9 ('Nine')",
+            "380-Imported 1 object(s) of 1 network(s): 0 application(s), 1 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":253,\"applications\":[{\"address\":56,\"name\":\"Renamed again\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 253",
+            "380-Imported 0 object(s) of 1 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "NET CLOSE //CGLP/254",
+          "setup": true,
+          "reply": [
+            "200 OK: //CGLP/254"
+          ]
+        },
+        {
+          "command": "PROJECT SAVE CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT CLOSE CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT LOAD CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT USE CGLP",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "NET LOAD DB",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":253,\"applications\":[{\"address\":56,\"name\":\"Renamed again\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 253",
+            "380-  Created new application 253/56 ('Renamed again')",
+            "380-    Created new group 253/56/9 ('Nine')",
+            "380-Imported 2 object(s) of 1 network(s): 1 application(s), 1 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLP",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":253,\"applications\":[{\"address\":56,\"name\":\"Renamed again\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 253",
+            "380-Imported 0 object(s) of 1 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLP 254 56",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Lighting\",\"groups\":[{\"address\":1,\"name\":\"Lounge\",\"levels\":[{\"address\":255,\"name\":\"On\"}]}]}]},{\"address\":253,\"name\":\"Hop1\",\"route\":[253],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Correct\",\"groups\":[{\"address\":9,\"name\":\"Nine\"}]}]},{\"address\":252,\"name\":\"Hop2\",\"route\":[253,252],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Wrong\",\"groups\":[{\"address\":4,\"name\":\"G4\"}]}]},{\"address\":251,\"name\":\"Hop3\",\"route\":[253,252,251],\"applications\":[{\"address\":56,\"type\":56,\"name\":\"Existing Lighting\",\"groups\":[{\"address\":5,\"name\":\"Existing Group\"},{\"address\":6,\"name\":\"Six\"},{\"address\":7,\"name\":\"Seven\"}]}]},{\"address\":250,\"name\":\"Hop4\",\"route\":[253,252,251,250]},{\"address\":249,\"name\":\"Hop5\",\"route\":[253,252,251,250,249]},{\"address\":248,\"name\":\"Hop6\",\"route\":[253,252,251,250,249,248]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:11]"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "topology",
+      "description": "Route discovery walks database Units whose UnitType starts with BRIDGE or contains GATE; the unit address names the next network; the first shortest path wins.",
+      "steps": [
+        {
+          "command": "PROJECT NEW CGLT",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT USE CGLT",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBCREATENET 254 Local Cni 127.0.0.2:29999",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 10 A Bridge 254/p/10",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 20 B Bridge 254/p/20",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 30 C Bridge 10/p/30",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 40 D Cni 127.0.0.2:29997",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 50 E Cni 127.0.0.2:29996",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBCREATENET 60 F Cni 127.0.0.2:29995",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/254 Unit 20 U254x20",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/254/p/20/UnitType BRIDGEX",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/254 Unit 10 U254x10",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/254/p/10/UnitType PCGATEWAY",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/10 Unit 30 U10x30",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/10/p/30/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/20 Unit 30 U20x30",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/20/p/30/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/30 Unit 254 U30x254",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/30/p/254/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/30 Unit 40 U30x40",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/30/p/40/UnitType bridge",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/30 Unit 50 U30x50",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/30/p/50/UnitType RELDN12",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/30 Unit 99 U30x99",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/30/p/99/UnitType BRIDGE",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBADDSAFE //CGLT/254 Unit 60 U254x60",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "DBSETSAFE //CGLT/254/p/60/UnitType XGATEY",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "NET LOAD DB",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLT 254",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\"},{\"address\":10,\"name\":\"A\",\"route\":[10]},{\"address\":20,\"name\":\"B\",\"route\":[20]},{\"address\":30,\"name\":\"C\",\"route\":[20,30]},{\"address\":60,\"name\":\"F\",\"route\":[60]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLT 30",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":30,\"networks\":[{\"address\":254,\"name\":\"Local\",\"route\":[254]},{\"address\":10,\"name\":\"A\",\"route\":[254,10]},{\"address\":20,\"name\":\"B\",\"route\":[254,20]},{\"address\":30,\"name\":\"C\"},{\"address\":60,\"name\":\"F\",\"route\":[254,60]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLT 20",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":20,\"networks\":[{\"address\":254,\"name\":\"Local\",\"route\":[30,254]},{\"address\":10,\"name\":\"A\",\"route\":[30,254,10]},{\"address\":20,\"name\":\"B\"},{\"address\":30,\"name\":\"C\",\"route\":[30]},{\"address\":60,\"name\":\"F\",\"route\":[30,254,60]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLT 40",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":40,\"networks\":[{\"address\":40,\"name\":\"D\"}]}",
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLT",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":30,\"route\":[10,30]},{\"address\":40},{\"address\":50},{\"address\":60}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 30",
+            "380-SKIPPED - Network 40 is not routable to the local network (254)",
+            "380-        - Please create network 40 and try the import again with this route: ",
+            "380-          254",
+            "380-SKIPPED - Network 50 is not routable to the local network (254)",
+            "380-        - Please create network 50 and try the import again with this route: ",
+            "380-          254",
+            "380-Importing Network 60",
+            "380-Imported 0 object(s) of 4 network(s): 0 application(s), 0 group(s), 0 level(s) ",
+            "380 CGL import not completed: Skipped 2 network(s). "
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nameless",
+      "description": "A nameless new object imports (reported as 'null') but leaves the project unable to save or render that object as XML.",
+      "steps": [
+        {
+          "command": "PROJECT NEW CGLN",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "PROJECT USE CGLN",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "DBCREATENET 254 Local Cni 127.0.0.2:29999",
+          "setup": true,
+          "reply": [
+            "301 OID=<oid>"
+          ]
+        },
+        {
+          "command": "NET LOAD DB",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL IMPORT CGLN",
+          "document": "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"applications\":[{\"address\":56,\"name\":\"L\",\"groups\":[{\"address\":1,\"name\":\"G\",\"levels\":[{\"address\":7}]},{\"address\":2}]}]}]}",
+          "reply": [
+            "380-Importing routable networks from local Network 254 ...",
+            "380-Importing Network 254",
+            "380-  Created new application 254/56 ('L')",
+            "380-    Created new group 254/56/1 ('G')",
+            "380-      Created new level 254/56/1/7 ('null')",
+            "380-    Created new group 254/56/2 ('null')",
+            "380-Imported 4 object(s) of 1 network(s): 1 application(s), 2 group(s), 1 level(s) ",
+            "200 OK."
+          ]
+        },
+        {
+          "command": "CGL EXPORT CGLN 254",
+          "reply": [
+            "343-Begin CGL snippet",
+            "347-{\"cglVersion\":\"1.1\",\"createdBy\":\"C-Gate v3.4.0 (build 2001)\",\"createdTime\":\"<timestamp>\",\"localNetwork\":254,\"networks\":[{\"address\":254,\"name\":\"Local\",\"applications\":[{\"address\":56,\"type\":56,\"name\":\"L\",\"groups\":[{\"address\":1,\"name\":\"G\",\"levels\":[{\"address\":7,\"name\":null}]},{\"address\":2,\"name\":null}]}]}]}",
+            "344 End CGL snippet [numberOfExportedObjects:4]"
+          ]
+        },
+        {
+          "command": "DBGETXML //CGLN/254/56/1",
+          "reply": [
+            "343-Begin XML snippet",
+            "444 XML creation failed: The following exception occured while validating field '_levelList' of class 'com.clipsal.cgate.tag.model.Group'"
+          ]
+        },
+        {
+          "command": "PROJECT SAVE CGLN",
+          "reply": [
+            "408 Operation failed: Project save failed: SQL error writing project db file: [SQLITE_CONSTRAINT_NOTNULL] A NOT NULL constraint failed (NOT NULL constraint failed: tagged_entity.tag_name)"
+          ]
+        },
+        {
+          "command": "PROJECT CLOSE CGLN",
+          "setup": true,
+          "reply": [
+            "200 OK."
+          ]
+        }
+      ]
+    }
+  ]
+}
