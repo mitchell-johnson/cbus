@@ -1,0 +1,336 @@
+{
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "checks": {
+    "agent_verbs": true,
+    "class:TPC_TSA": true,
+    "class:TPC_TSA5": true,
+    "class:TPC_TSB": true,
+    "class:TPC_TSB5": true,
+    "class_guard": true,
+    "damper_clear_four_fields": true,
+    "evap_adjustment": true,
+    "installation_indexes": true,
+    "installation_numbering": true,
+    "load_click_order": true,
+    "load_click_verb": true,
+    "load_from_template_sequence": true,
+    "native_command_text": true,
+    "no_reset_verb_in_dialog": true,
+    "offered:basic": true,
+    "offered:programmable": true,
+    "programmable_only": true
+  },
+  "class_chains": {
+    "TPC_TSA": [
+      "TPC_TSA",
+      "TProgrammableThermostat",
+      "TThermostat",
+      "TPCI4"
+    ],
+    "TPC_TSA5": [
+      "TPC_TSA5",
+      "TPC_TSA",
+      "TProgrammableThermostat",
+      "TThermostat"
+    ],
+    "TPC_TSB": [
+      "TPC_TSB",
+      "TBasicThermostat",
+      "TThermostat",
+      "TPCI4"
+    ],
+    "TPC_TSB5": [
+      "TPC_TSB5",
+      "TPC_TSB",
+      "TBasicThermostat",
+      "TThermostat"
+    ]
+  },
+  "format": "cbus-toolkit-thermostat-template-static-v1",
+  "help": {
+    "load_template_documented": false,
+    "topics": {
+      "2770": {
+        "mentions_load_template": false,
+        "sha256": "5d93af57e7a9a5b3fac5d31ebebd7a063ce901e3e8c7632f7a3b63c0841b5662"
+      },
+      "2919": {
+        "mentions_load_template": false,
+        "sha256": "4955ff4ac44185a92a6eccc79d91529693c576d8e2153c649d7d6453e9cfd3e4"
+      },
+      "2975": {
+        "mentions_load_template": false,
+        "sha256": "d7b1e3ac790581818ae3957f600c392bef79da3d5b09c4932154389f85a160b6"
+      },
+      "2982": {
+        "mentions_load_template": false,
+        "sha256": "2b068accd785b55a2a0edb4c7b09d79852460beab478a546ccec6ff2a3c594a8"
+      },
+      "2990": {
+        "mentions_load_template": false,
+        "sha256": "07ed91c1a06c2e7cd36aeba7e5c98c2b6f68886f001ab374eee9d80242514c80"
+      },
+      "2995": {
+        "mentions_load_template": false,
+        "sha256": "e33e5a24b4f522e1837a11034100966491c440869483f1b5e1df7270e0f745a1"
+      },
+      "3054": {
+        "mentions_load_template": false,
+        "sha256": "b58e8fca432b7f912368e99988ce884fe0d9ef6179155453e5ee904c063f7bbd"
+      },
+      "3813": {
+        "mentions_load_template": false,
+        "sha256": "8ea4960614442025d331c5c6b482dee89a34c3b0610b2548a3aed5c0373d531d"
+      },
+      "3850": {
+        "mentions_load_template": false,
+        "sha256": "346bc8b0fe2940a8e46b129f43604ef4148fa895e24b969103d983165f02b062"
+      }
+    }
+  },
+  "installation_table": {
+    "1": {
+      "basic": "THERMOSTAT_TEMPLATE01.xml",
+      "programmable": "THERMOSTATA_TEMPLATE01.xml"
+    },
+    "2": {
+      "programmable": "THERMOSTATA_TEMPLATE02.xml"
+    },
+    "3": {
+      "programmable": "THERMOSTATA_TEMPLATE03.xml"
+    },
+    "4": {
+      "basic": "THERMOSTAT_TEMPLATE04.xml",
+      "programmable": "THERMOSTATA_TEMPLATE04.xml"
+    },
+    "5": {
+      "basic": "THERMOSTAT_TEMPLATE05.xml",
+      "programmable": "THERMOSTATA_TEMPLATE05.xml"
+    },
+    "6": {
+      "basic": "THERMOSTAT_TEMPLATE06.xml",
+      "programmable": "THERMOSTATA_TEMPLATE06.xml"
+    },
+    "7": {
+      "programmable": "THERMOSTATA_TEMPLATE07.xml"
+    },
+    "8": {
+      "basic": "THERMOSTAT_TEMPLATE08.xml",
+      "programmable": "THERMOSTATA_TEMPLATE08.xml"
+    },
+    "9": {
+      "basic": "THERMOSTAT_TEMPLATE09.xml",
+      "programmable": "THERMOSTATA_TEMPLATE09.xml"
+    }
+  },
+  "limit": "Static source evidence only. Resource-string captions, UpdateParametersForPlantType's per-plant group reassignment, AfterLoad/BeforeSave model round-trips and form save are not reproduced; the Toolkit was not executed.",
+  "load_click_order": [
+    "CIS_TfrmThermostatLoadTemplate.LoadTypicalInstallation",
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.ClearOriginalDamperGroups",
+    "CIS_TThermostat.TZoneManagerService.SetZoneManagerMasterSlave",
+    "CIS_TThermostat.TThermostatInstallation.GetTemplateFileName",
+    "CIS_TThermostat.TThermostatInstallations.SetCurrentInstallation",
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions",
+    "CIS_TThermostat.TPlantControlService.UpdateParametersForPlantType",
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateEvapProgramParameters"
+  ],
+  "load_from_template_order": [
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ExecuteCommandPPResetToDefaults",
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ExecuteCommandPPLoadFromFile",
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingGetAll",
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.EnsureTagNameIsNotBlank",
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetUnitEditedState",
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveBurdenOriginalState"
+  ],
+  "method_spans": {
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.LoadThermostatInstallations": {
+      "bytes": 5048,
+      "sha256": "1850b34b1602349f1e4d3806f7c3d1ddc4fb72030af7aeed4edb24899d2d20ad",
+      "start": "0x1292de4"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad": {
+      "bytes": 5552,
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5",
+      "start": "0xcb5d0c"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingLoadFromTemplate": {
+      "bytes": 100,
+      "sha256": "48fa6efff9aca5d3205616638d6aa9427dbe3e5fc81f27a583774b3abaa30ed9",
+      "start": "0xcc43b4"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.ClearOriginalDamperGroups": {
+      "bytes": 88,
+      "sha256": "35b33b2fa008856ad4dfee724a6f6b9f5e6a98759d922281358da0e3f939df35",
+      "start": "0x111d60c"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleBtnLoadClick": {
+      "bytes": 912,
+      "sha256": "259f5544f591bcc46dfb6adb0766a767215c3568abb814ef8be89f64e5d2f4aa",
+      "start": "0x111d27c"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateEvapProgramParameters": {
+      "bytes": 92,
+      "sha256": "120281f5502efc3b4ac83e351ed04e4cc038706e2dd95c3b41751b8d4a3c66bb",
+      "start": "0x111d6b8"
+    },
+    "CIS_TcgcPPLoadFromFile.TcgcPPLoadFromFile.GenerateCommandText": {
+      "bytes": 132,
+      "sha256": "6a306e7dc77c05805e2287e6b5beb27ab79f20c541e79851615afc024110869f",
+      "start": "0xcb02cc"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleBeforeLoadTemplate": {
+      "bytes": 52,
+      "sha256": "f5ed50f4e679d655acb0a17f51e18d816ce560a52a58c48432d438d61b1bebbc",
+      "start": "0x1132fc4"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleLoadTemplate": {
+      "bytes": 68,
+      "sha256": "968f432fe43ee5ee75db7b811b2d0b9e3db77d5a74b321ff4d7b11bfacfc6474",
+      "start": "0x1132ff8"
+    }
+  },
+  "model_module_sha256": "920351fdb9be93e3d0d558ba78c6fc25441de176bde39ea9f1e85bb1ce4f71c7",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "template_specifications": [
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE01.xml",
+      "number": 1,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "ecef87305440cd65ee39e727616ca2944ef5b614090e73467e1b4103d08d2568"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE02.xml",
+      "number": 2,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "715cea5ebf1d3113c3e0f2323ef01e4ff17a4accfbc764168c4fda9625153f8c"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE03.xml",
+      "number": 3,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "59a85d1b4c04d76791883cc5f80c1bf2679177da77856d72e2aaf205016f649b"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE04.xml",
+      "number": 4,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "f97ead394e3d12a4166b8210e4a7144346bac7be33638dc2fcb1fc11a33d8510"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE05.xml",
+      "number": 5,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "b3067055ea992a97e13cf1ac68438bc5ecb37a64236e53a57cc64d625edec3e9"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE06.xml",
+      "number": 6,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "94ddf4c0d8c865510c30cf6b708087aa12646da0e7b72bb65c792dedda88abb4"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE07.xml",
+      "number": 7,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "15c4ac7503efc57582a139ebd063fd75112b5c27872e1d1d246c893ea2d08eed"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE08.xml",
+      "number": 8,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "074c8edb84d8d7f8f804129c5cd023783b8072f8dc0877c87845b82798f29244"
+    },
+    {
+      "family": "programmable",
+      "filename": "THERMOSTATA_TEMPLATE09.xml",
+      "number": 9,
+      "offered_by_original": true,
+      "parameter_count": 61,
+      "specification_sha256": "6c86c3929611cef2f75681d715941001dd115179c9dceffe33375682cb58d570"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE01.xml",
+      "number": 1,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "9c72db47a484aafbf94808a9a5a85b2009d584fc7b3a2efa0e7478eb8e4950f0"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE02.xml",
+      "number": 2,
+      "offered_by_original": false
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE03.xml",
+      "number": 3,
+      "offered_by_original": false
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE04.xml",
+      "number": 4,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "64317dcdfd8d8f2024e9e0fbcb591b7ad6a35ade143c870d08634f20d1e63ccc"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE05.xml",
+      "number": 5,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "1612ac6b10feb27b5e81cb286b24fa2ffca18c485a56395f46c48ad707e75bcb"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE06.xml",
+      "number": 6,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "504f8e6c8402ca2d5a9c14c3f2b97377300612fba8ce8c0fb7a2211907142308"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE07.xml",
+      "number": 7,
+      "offered_by_original": false
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE08.xml",
+      "number": 8,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "a4b15e0106d9d2ebb5cfa769c75cd92e2fc1f799110fa8face28fa5a7a753146"
+    },
+    {
+      "family": "basic",
+      "filename": "THERMOSTAT_TEMPLATE09.xml",
+      "number": 9,
+      "offered_by_original": true,
+      "parameter_count": 59,
+      "specification_sha256": "c62fb300e3d06b477fbdd84153f5d252cafdb14bf6c16e4d24735d481e22844a"
+    }
+  ]
+}

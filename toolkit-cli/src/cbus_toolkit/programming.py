@@ -347,10 +347,16 @@ class ProgrammingSession:
             self.catalog_number = fields.get("CatalogNumber") or None
         return reply
 
-    def load_from_file(self, filename: str) -> Any:
-        """Load defaults from a server-side unit-spec file, not a saved session."""
+    def load_from_file(self, filename: str, *, overlay: bool = False) -> Any:
+        """Load defaults from a server-side unit-spec file, not a saved session.
+
+        With ``overlay=True`` the session keeps its loaded source and identity:
+        native LOAD_FROM_FILE writes only the file's declared parameter bytes
+        into the existing session (the original thermostat Load Template path).
+        """
         reply = self._run("LOAD_FROM_FILE", _token(filename, "unit specification filename"))
-        self.source = self.unit_type = self.firmware = self.catalog_number = None
+        if not overlay:
+            self.source = self.unit_type = self.firmware = self.catalog_number = None
         return reply
 
     def save(self, destination: str, *, tags: Iterable[str] = ()) -> Any:

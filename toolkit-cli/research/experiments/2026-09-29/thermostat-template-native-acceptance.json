@@ -1,0 +1,211 @@
+{
+  "applies": [
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/10",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 1,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/11",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 2,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/12",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 3,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/13",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 4,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/14",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 5,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/15",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 6,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA5"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/16",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 7,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA5"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/17",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 8,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA5"
+    },
+    {
+      "changed": 61,
+      "path": "//<owned>/254/p/18",
+      "preserved_parameters": 62,
+      "result_state": "verified_saved",
+      "template": 9,
+      "template_parameters": 61,
+      "unit_type": "PC_TSA5"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/19",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 1,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/20",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 4,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/21",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 5,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/22",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 6,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB5"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/23",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 8,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB5"
+    },
+    {
+      "changed": 59,
+      "path": "//<owned>/254/p/24",
+      "preserved_parameters": 60,
+      "result_state": "verified_saved",
+      "template": 9,
+      "template_parameters": 59,
+      "unit_type": "PC_TSB5"
+    }
+  ],
+  "cli": {
+    "apply_state": "verified_saved",
+    "preview_changed": 61
+  },
+  "cni_connections": [],
+  "command": "CBUS_CGATE_JAVA=... CBUS_LOCAL_CGATE_VENDOR=... CBUS_UNITSPEC_DIR=... PYTHONPATH=src:tests:. python -m pytest -q tests/test_thermostat_templates_native.py",
+  "date": "2026-09-30",
+  "expected_values": "computed by the test from raw decoded template XML (include first, then file), independent of the module",
+  "format": "cbus-thermostat-template-native-acceptance-v1",
+  "issue": "#42 (P5.05)",
+  "limit": "Owned native C-Gate database PP sessions only. Each apply used a distinct backup project, PP LOAD_FROM_FILE, one PP SAVE_TO_SOURCE, one target PROJECT SAVE, close/load and fresh-session verification. Toolkit object-model post-load adjustments were not executed; no physical thermostat or original GUI was used.",
+  "outcome": {
+    "failed": 0,
+    "passed": 3,
+    "skipped": 0
+  },
+  "physical_devices_accessed": false,
+  "refusals": [
+    {
+      "error": "Template 2 is not offered by the original Toolkit for PC_TSB/PC_TSB5 units",
+      "path": "//<owned>/254/p/30",
+      "template": 2
+    },
+    {
+      "error": "Template 3 is not offered by the original Toolkit for PC_TSB/PC_TSB5 units",
+      "path": "//<owned>/254/p/30",
+      "template": 3
+    },
+    {
+      "error": "Template 7 is not offered by the original Toolkit for PC_TSB/PC_TSB5 units",
+      "path": "//<owned>/254/p/30",
+      "template": 7
+    },
+    {
+      "error": "Load Template is available only for PC_TSA/PC_TSA5 and PC_TSB/PC_TSB5 thermostats; got 'KEY4'",
+      "path": "//<owned>/254/p/31",
+      "template": 1
+    }
+  ],
+  "service": {
+    "backend": "local",
+    "cleanup_complete": true,
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "work_removed": true
+  },
+  "service_listeners_loopback": true,
+  "source_sha256": {
+    "src/cbus_toolkit/programming.py": "d55effc91e0e8c0530a6886b717ba3ebf81827dbf814d608855100cce7c4a7bc",
+    "src/cbus_toolkit/thermostat_templates.py": "920351fdb9be93e3d0d558ba78c6fc25441de176bde39ea9f1e85bb1ce4f71c7",
+    "src/cbus_toolkit/thermostat_templates_cli.py": "2c87a64177e81a4ed4937f9b84aca7072a0f7f44d44173c26f5f1c064b060ae6",
+    "tests/test_thermostat_templates_native.py": "134a6c84e95ebe4198492b430910b9ba966e4df848e1d89f5c39467312ab8c81"
+  },
+  "template_specification_sha256": {
+    "THERMOSTATA_TEMPLATE01.xml": "ecef87305440cd65ee39e727616ca2944ef5b614090e73467e1b4103d08d2568",
+    "THERMOSTATA_TEMPLATE02.xml": "715cea5ebf1d3113c3e0f2323ef01e4ff17a4accfbc764168c4fda9625153f8c",
+    "THERMOSTATA_TEMPLATE03.xml": "59a85d1b4c04d76791883cc5f80c1bf2679177da77856d72e2aaf205016f649b",
+    "THERMOSTATA_TEMPLATE04.xml": "f97ead394e3d12a4166b8210e4a7144346bac7be33638dc2fcb1fc11a33d8510",
+    "THERMOSTATA_TEMPLATE05.xml": "b3067055ea992a97e13cf1ac68438bc5ecb37a64236e53a57cc64d625edec3e9",
+    "THERMOSTATA_TEMPLATE06.xml": "94ddf4c0d8c865510c30cf6b708087aa12646da0e7b72bb65c792dedda88abb4",
+    "THERMOSTATA_TEMPLATE07.xml": "15c4ac7503efc57582a139ebd063fd75112b5c27872e1d1d246c893ea2d08eed",
+    "THERMOSTATA_TEMPLATE08.xml": "074c8edb84d8d7f8f804129c5cd023783b8072f8dc0877c87845b82798f29244",
+    "THERMOSTATA_TEMPLATE09.xml": "6c86c3929611cef2f75681d715941001dd115179c9dceffe33375682cb58d570",
+    "THERMOSTAT_TEMPLATE01.xml": "9c72db47a484aafbf94808a9a5a85b2009d584fc7b3a2efa0e7478eb8e4950f0",
+    "THERMOSTAT_TEMPLATE04.xml": "64317dcdfd8d8f2024e9e0fbcb591b7ad6a35ade143c870d08634f20d1e63ccc",
+    "THERMOSTAT_TEMPLATE05.xml": "1612ac6b10feb27b5e81cb286b24fa2ffca18c485a56395f46c48ad707e75bcb",
+    "THERMOSTAT_TEMPLATE06.xml": "504f8e6c8402ca2d5a9c14c3f2b97377300612fba8ce8c0fb7a2211907142308",
+    "THERMOSTAT_TEMPLATE08.xml": "a4b15e0106d9d2ebb5cfa769c75cd92e2fc1f799110fa8face28fa5a7a753146",
+    "THERMOSTAT_TEMPLATE09.xml": "c62fb300e3d06b477fbdd84153f5d252cafdb14bf6c16e4d24735d481e22844a"
+  }
+}

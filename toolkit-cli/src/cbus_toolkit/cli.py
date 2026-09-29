@@ -1266,6 +1266,8 @@ def build_parser():
     thermostat_temperature_options(commands)
     from .thermostat_scheduling_cli import options as thermostat_scheduling_options
     thermostat_scheduling_options(commands)
+    from .thermostat_templates_cli import options as thermostat_template_options
+    thermostat_template_options(commands)
 
     interface = commands.add_parser(
         "interface", help="Discover CNI network interfaces without opening their TCP service"
@@ -3509,6 +3511,10 @@ def run(args):
     if args.area == "thermostat-scheduling":
         from .thermostat_scheduling_cli import run as run_thermostat_scheduling
         return run_thermostat_scheduling(args)
+    if args.area == "thermostat":
+        from .cgate import CGateClient
+        from .thermostat_templates_cli import run as run_thermostat_templates
+        return run_thermostat_templates(args, CGateClient)
     if args.area == "pci" and args.action == "routed-recall":
         from .pci_routed_recall_cli import run as routed_recall_run
         return routed_recall_run(args)
