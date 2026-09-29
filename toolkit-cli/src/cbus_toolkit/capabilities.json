@@ -789,7 +789,8 @@
     {
       "id": "toolkit-differential-acceptance",
       "status": "pending",
-      "evidence": []
+      "evidence": [],
+      "limits": "Barcode family: scanner grammar, Units-view add/select and unit-dialog serial rules are pinned to original Toolkit instructions (docs/barcode.md); offline project add-unit --barcode covers legacy XML/CBZ only. No GUI-run differential, native database add path or physical scanner acceptance."
     },
     {
       "id": "unit-hardware-acceptance",

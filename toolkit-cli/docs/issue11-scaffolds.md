@@ -18,7 +18,7 @@ plus (where noted) hardware or vendor-gated acceptance.
 | 7 project/docs/export/CGL | cbus-9me | `cgl_differential.py`; topology scaffold replaced by `project_topology.py` ([topology.md](topology.md)) | `test_cgl_differential.py`, `test_project_topology.py` | vendor backup/restore equivalence, original topology/print/image fidelity, project documentation, live routes |
 | 8 thermostat/scheduling | cbus-9zz | `thermostat_settings_guard.py` | `test_thermostat_settings_guard.py` | dialog events, native order equivalence, physical behavior |
 | 9 wireless learn/join | cbus-9zz | `wireless_commissioning.py` | `test_wireless_commissioning.py` | on-device learn/join, gateway transfer effects |
-| 11 barcode scanner | cbus-9zz | `barcode_scanner.py` | `test_barcode_scanner.py` | vendor payload comparison, selection/creation acceptance |
+| 11 barcode scanner | cbus-9zz | `barcode_scanner.py` (original-derived, [barcode.md](barcode.md)) | `test_barcode_scanner.py`, `test_cli_barcode.py` | GUI/physical scanner acceptance, native-database add path, sibling KEYGL5/Hydra scan routines |
 | P-D auto-creation/bulk/labels | cbus-8w7 | `label_transfer_plan.py`, `scene_binding_plan.py` | `test_label_transfer_plan.py`, `test_scene_binding_plan.py` | bulk/global programming, physical transfer/invocation |
 | P-E DLT variants | cbus-kxo | `dlt_variant_guard.py` | `test_dlt_variant_guard.py` | variant behavior, reset/factory physical, updater payloads |
 | 10 C-Gate commands/events | cbus-pix | `event_stream.py` (offline filter/route/dedup) + Rust `cbus-cgate` (concurrent) | `test_event_stream.py` | remaining app/config commands, live monitoring streams |

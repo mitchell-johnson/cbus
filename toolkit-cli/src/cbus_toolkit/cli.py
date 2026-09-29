@@ -1370,6 +1370,8 @@ def build_parser():
     project_legacy_transform_options(ops)
     from .project_topology import options as project_topology_options
     project_topology_options(ops)
+    from .barcode_cli import project_options as barcode_project_options
+    barcode_project_options(ops)
     create = ops.add_parser("new")
     create.add_argument("file", type=Path)
     create.add_argument("--name", required=True)
@@ -2125,6 +2127,8 @@ def build_parser():
         if action == "remap":
             p.add_argument("--direction", choices=("physical_to_logical", "logical_to_physical"), required=True)
 
+    from .barcode_cli import options as barcode_options
+    barcode_options(commands)
     calculator = commands.add_parser("calculator", help="Offline native-compatible network current and impedance calculation")
     calculator.add_argument("--catalog", type=Path, default=os.environ.get("CBUS_UNIT_CATALOG"))
     calculator.add_argument("file", type=Path, help="JSON array of catalogue/type/burden/switchable-supply records")
@@ -2395,6 +2399,9 @@ def _project(args):
     if args.action == "topology":
         from .project_topology import run as project_topology_run
         return project_topology_run(args)
+    if args.action == "add-unit":
+        from .barcode_cli import run_add_unit
+        return run_add_unit(args)
     from .project import ProjectDocument
     if args.action == "new":
         if args.file.exists():
@@ -3899,6 +3906,9 @@ def run(args):
         if args.action == "inspect":
             return scenes.inspect(values), 0
         return scenes.plan(values, **_device_scene_settings(args)).as_dict(), 0
+    if args.area == "barcode":
+        from .barcode_cli import run as run_barcode
+        return run_barcode(args)
     if args.area == "calculator":
         from .calculator import CalculatorCatalog
         if args.catalog is None:

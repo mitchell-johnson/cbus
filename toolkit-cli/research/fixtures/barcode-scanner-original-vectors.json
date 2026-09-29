@@ -1,0 +1,1363 @@
+{
+  "format": "cbus-toolkit-barcode-scanner-original-v1",
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "probe_sha256": "c85ef94f8a191f0932979755c416c43f8b2ac9f2c88a9b69dd1f8b5e7c85c109",
+  "methods": {
+    "CIS_tfrmBarcode.TfrmBarcode.FormKeyPress": {
+      "start": "0x8aff78",
+      "end": "0x8afff8",
+      "sha256": "66bb6bc410d9815b946fb9f8740756479da38d6becee56e5bf9310cdea0d8918"
+    },
+    "CIS_tfrmBarcode.TfrmBarcode.FormKeyDown": {
+      "start": "0x8afff8",
+      "end": "0x8b0020",
+      "sha256": "1a68d4fb96bd3c95c1aaf30837b1ed9716aa93dd2ae588f0a13a9141427af9fb"
+    },
+    "CIS_tfrmBarcode.TfrmBarcode.Timer1Timer": {
+      "start": "0x8aff3c",
+      "end": "0x8aff78",
+      "sha256": "86c93d7c07132fbf5ceaf5c522d986e5ea374bed026e1628975ab28cf86ef7c4"
+    },
+    "CIS_tfrmBarcode.TfrmBarcode.UserAfterShow": {
+      "start": "0x8b0048",
+      "end": "0x8b0098",
+      "sha256": "f835023a3d7cd3d48412737ea9157c105a623f63f1676525c9b0ec4df0784de0"
+    },
+    "CIS_TApplicationManager.TApplicationManager.AcquireBarCode": {
+      "start": "0xf107ac",
+      "end": "0xf10824",
+      "sha256": "dfc5231bac463daee9da866edc27729836c15807da9074c80ea8e15384604ed7"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.FormKeyDown": {
+      "start": "0xea0a6c",
+      "end": "0xea0bc0",
+      "sha256": "116d78acad669139778508d0a9126963193d50fc0456ae2637b633eee9d3f19f"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.AcquireBarcodeFromScanner": {
+      "start": "0xea1208",
+      "end": "0xea1268",
+      "sha256": "c179ffb2f350aea22d4a0cfad6f45127278d2ec9edb34f9b7a8869ede80c40ce"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.ProcessBarCode": {
+      "start": "0xea15b0",
+      "end": "0xea165c",
+      "sha256": "2f4c2d10e619bbd526ca3b9c015aaf1596e0997038bd68bfe4f4c6b8e117cbcb"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode": {
+      "start": "0xea165c",
+      "end": "0xea1a6c",
+      "sha256": "37c3f6c9939cae629349e0dfda87601383482ef1a32adc4f8f3605e3fe8e2162"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.HandleScannedSerialNumber": {
+      "start": "0xea1ff4",
+      "end": "0xea20c8",
+      "sha256": "2d54622458956b572abaff7d0b2624908323a6261de16e8652add5ad03352748"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit": {
+      "start": "0xea1a6c",
+      "end": "0xea1eec",
+      "sha256": "7f2d7d29711595186868fabac4fea0b22d5e7c02bdffa4889a2adf7fa5ee56e9"
+    },
+    "CIS_TfrmKipperMain.TfrmKipperMain.SetupUnitData": {
+      "start": "0xea1f60",
+      "end": "0xea1ff4",
+      "sha256": "3ede3a7df67b54652e6be93c90925fa26ec7a89debc7cadd09a85dea793964bb"
+    },
+    "CIS_TfrmSoftwareLabel.IsSerialNumber": {
+      "start": "0xd90780",
+      "end": "0xd909a8",
+      "sha256": "b95f5c43613092d14c3d08fc214ab2c93f983bd4ebdc1cfb412660e12e572311"
+    },
+    "CIS_TfrmSoftwareLabel.ShowWrongBarCodeForm": {
+      "start": "0xd90710",
+      "end": "0xd90780",
+      "sha256": "29bff7d509120cce1a06660fee7b4ee0087718ee14913726a5cae34dd019809d"
+    },
+    "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.FormKeyDown": {
+      "start": "0xd8f59c",
+      "end": "0xd8f5fc",
+      "sha256": "60af4e1f90e816de0ba50fe12514c993a24366f5af21c1a6b5555a77584ebef4"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.StartBarcodeScan": {
+      "start": "0xd91b10",
+      "end": "0xd91ba0",
+      "sha256": "417e969d334f738c565326b26ad8b00127aab7f566dfab84b8c20bcf8a5bb38f"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.ProcessScannedBarCode": {
+      "start": "0xd91ba0",
+      "end": "0xd91c74",
+      "sha256": "9034987d20b30616724cc1b740cb8378b3b4247dda73545bdbc804b638570f85"
+    },
+    "CIS_TddCBusUnit.TddCBusUnit.StartBarCodeScan": {
+      "start": "0xecab58",
+      "end": "0xecac38",
+      "sha256": "fdf9ad9b181a45c3ec66e340e758d0fa7429d1a3c65175e4d1ae4ee4ab925cd7"
+    },
+    "CIS_TddCBusUnit.TddCBusUnit.ProcessScannedBarCode": {
+      "start": "0xecac4c",
+      "end": "0xecad98",
+      "sha256": "788503a8fdf89106e14ea022666db97bb0d7314b61e0f0454c92919be44f7d8b"
+    },
+    "CIS_TfrmGetTagName.TfrmGetTagName.FormActivate": {
+      "start": "0xde1ca8",
+      "end": "0xde1e64",
+      "sha256": "a4bd5cf788bcf46ac416dc235fcc763c190657570a4db575a549c62bd3bbed5c"
+    },
+    "CIS_TfrmGetTagName.TfrmGetTagName.btnOKClick": {
+      "start": "0xde1e9c",
+      "end": "0xde1f78",
+      "sha256": "2ce4f22ebef90219f57136e7448c0bb73202f67ed428275878f14a62c553dfeb"
+    },
+    "CIS_TUnitType.TUnitTypeManager.FindUnitByCatalogCode": {
+      "start": "0xf3ffe4",
+      "end": "0xf40204",
+      "sha256": "4b582de63c4c1d64a2fbdd36eec0f734c257d50039c18a0e7ce989e896150522"
+    },
+    "CIS_TUnitType.TUnitType.HasCatalogNumberInAlternates": {
+      "start": "0xf3ef80",
+      "end": "0xf3f2b4",
+      "sha256": "1c70ef68ef15b1b03d46fa1505173fc4831b1d6f5e22aedcecb896bf42c73a5f"
+    },
+    "CIS_TUnitType.TUnitTypeManager.AddAlternativeCatalogNumberUnits": {
+      "start": "0xf403d8",
+      "end": "0xf40590",
+      "sha256": "2e1891cee3f2088cc6ecbc7c081c8c16928dd90587345811c381c9c10f2db596"
+    },
+    "CIS_TUnitType.TUnitTypeManager.GetDefaultFirmwareForType": {
+      "start": "0xf426c8",
+      "end": "0xf42838",
+      "sha256": "a5f5a0a4ddbfb76334bc408464fcd77121207ae9f71e4184999efa2b7bec39bc"
+    },
+    "CIS_TUnitType.TUnitType.CalcCategoryAndFamilyName": {
+      "start": "0xf3ebe4",
+      "end": "0xf3ee80",
+      "sha256": "d91bd975b9c12bcb008474d76ce913ac729fef365fb33907948c62660c3d067f"
+    },
+    "CIS_TCommonCBus.TCBUSUnitManager.GetNextAvailableAddress": {
+      "start": "0xf2e0cc",
+      "end": "0xf2e118",
+      "sha256": "211a2c92ec1ceff12dd3666c64e011c83d09f8a2c9d5a1827ec361c187700255"
+    },
+    "CIS_TCommonCBus.TCBUSUnitManager.GetMaximumPossibleAddress": {
+      "start": "0xf2e118",
+      "end": "0xf2e130",
+      "sha256": "888b08f51bc21bc3930a2dd947aad7c78de3efae2145b709123f01eec9a1e479"
+    },
+    "CIS_TCommonCBus.TCBUSUnitManager.UnitBySerialNumber": {
+      "start": "0xf2e630",
+      "end": "0xf2e714",
+      "sha256": "e353233c56e3075adb05517683563da055386a543dc8b9b2a80751d44714f7dd"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.SetSerialNumber": {
+      "start": "0xf303fc",
+      "end": "0xf304d0",
+      "sha256": "3f4313f3080a8409c6dba355cd09554873dc6288b4fafda12e1bb93efd5535c3"
+    },
+    "CIS_CBus.GetDisplayableSerialNumber": {
+      "start": "0x7f30a4",
+      "end": "0x7f3140",
+      "sha256": "65293f0a6753d39b971a657673e830bc78c36b4833f3ced976d351393d7c07c3"
+    },
+    "CIS_CBus.FormatSerialNumber": {
+      "start": "0x7f3140",
+      "end": "0x7f33cc",
+      "sha256": "0eab457ef12326e0b375eb7078509e30d23509b48835b774f611791490667726"
+    }
+  },
+  "markers": [
+    [
+      "CIS_tfrmBarcode.TfrmBarcode.FormKeyPress",
+      "cmp",
+      "ax, 0xd"
+    ],
+    [
+      "CIS_tfrmBarcode.TfrmBarcode.FormKeyDown",
+      "cmp",
+      "word ptr [eax], 0xd"
+    ],
+    [
+      "CIS_tfrmBarcode.TfrmBarcode.Timer1Timer",
+      "cmp",
+      "eax, 0x4b"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.FormKeyDown",
+      "cmp",
+      "word ptr [eax], 0x79"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.FormKeyDown",
+      "mov",
+      "edx, 0x8fc"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.ProcessBarCode",
+      "cmp",
+      "dword ptr [ebp - 0xc], 0x1c"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "ecx, 0x10"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "edx, 0x11"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "cmp",
+      "eax, 0xff"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "edx, 0x833"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "edx, 0x812"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "edx, 0xb05f"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode",
+      "mov",
+      "edx, 0xb060"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.HandleScannedSerialNumber",
+      "mov",
+      "edx, 0x830"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit",
+      "cmp",
+      "eax, 0x64"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit",
+      "mov",
+      "edx, 0x8df"
+    ],
+    [
+      "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit",
+      "mov",
+      "edx, 0x832"
+    ],
+    [
+      "CIS_TfrmSoftwareLabel.IsSerialNumber",
+      "cmp",
+      "dword ptr [ebp - 0x10], 0xa"
+    ],
+    [
+      "CIS_TfrmSoftwareLabel.IsSerialNumber",
+      "cmp",
+      "dword ptr [ebp - 0x20], 0xc"
+    ],
+    [
+      "CIS_TfrmSoftwareLabel.IsSerialNumber",
+      "cmp",
+      "dword ptr [ebp - 0x24], 0x1c"
+    ],
+    [
+      "CIS_TfrmSoftwareLabel.IsSerialNumber",
+      "mov",
+      "edx, 0x866"
+    ],
+    [
+      "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.FormKeyDown",
+      "cmp",
+      "word ptr [eax], 0x79"
+    ],
+    [
+      "CIS_TfrmGetTagName.TfrmGetTagName.FormActivate",
+      "cmp",
+      "dword ptr [ebp - 8], 0xff"
+    ],
+    [
+      "CIS_TCommonCBus.TCBUSUnitManager.GetNextAvailableAddress",
+      "mov",
+      "dword ptr [ebp - 0xc], 1"
+    ],
+    [
+      "CIS_TCommonCBus.TCBUSUnitManager.GetMaximumPossibleAddress",
+      "mov",
+      "dword ptr [ebp - 8], 0xff"
+    ]
+  ],
+  "literals": {
+    "CIS_TfrmSoftwareLabel.IsSerialNumber": [
+      "93",
+      " ",
+      "OK"
+    ],
+    "CIS_TfrmKipperMain.TfrmKipperMain.ProcessBarCode": [
+      "0"
+    ],
+    "CIS_TfrmKipperMain.TfrmKipperMain.AddUnitByCatalogCode": [
+      ",",
+      "\u00bc",
+      "-",
+      "-",
+      ",",
+      ",",
+      " ",
+      " ",
+      "wireless",
+      "wireless",
+      "Cannot add a new Unit as there are already 255 Units in the Database."
+    ],
+    "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit": [
+      "New",
+      "NEWUNIT",
+      "NEWUNIT",
+      "Database",
+      "ProjectSave",
+      "Unit"
+    ],
+    "CIS_CBus.GetDisplayableSerialNumber": [
+      "000000000000",
+      "010485754095"
+    ],
+    "CIS_TUnitType.TUnitTypeManager.GetDefaultFirmwareForType": [
+      "1.00"
+    ]
+  },
+  "registered_messages": {
+    "2066": "%1",
+    "2095": "Unable to add or select a Unit, no Project selected",
+    "2096": "Unit not found in this Project. Add the unit or select the correct Project and try again.",
+    "2097": "Wrong barcode scanned, please scan the \"Software Config Code\"",
+    "2098": "Unable to add a Unit, Network not selected, please select a Network within a Project",
+    "2099": "Scanned Unit Type not known",
+    "2150": "Serial Number was successfully scanned",
+    "2271": "Cannot create a new %1.  All available addresses are in use.",
+    "2300": "Barcode scanning is supported only on the Units node",
+    "45141": "The Network \"%1\" has more than the recommended maximum of 100 Units. C-Bus Network errors are likely to occur.",
+    "45151": "Cannot add Wired Unit to the Wireless C-Bus Network",
+    "45152": "Cannot add Wireless Unit to the Wired C-Bus Network"
+  },
+  "piced_negative_search": {
+    "map_symbol_matches": 0,
+    "exe_ascii_matches": 0,
+    "exe_utf16_matches": 3,
+    "resource_strings": [
+      64325,
+      64347,
+      64349
+    ]
+  },
+  "fixtures": {
+    "runtime": [
+      "GetTickCount",
+      "IsClass",
+      "LoadResString",
+      "Pos",
+      "StrBefore",
+      "StringReplace",
+      "Trim",
+      "UStrAddRef",
+      "UStrArrayClr",
+      "UStrAsg",
+      "UStrCat",
+      "UStrCat3",
+      "UStrCatN",
+      "UStrClr",
+      "UStrCopy",
+      "UStrEqual",
+      "UStrFromWChar",
+      "UStrLAsg",
+      "UStrLen",
+      "VarClr",
+      "VarFromUStr"
+    ],
+    "dialogs": [
+      "ShowWrongBarCodeForm",
+      "TErrorManager.CISError"
+    ],
+    "objects": [
+      "IsSiteOpen",
+      "HandleScannedSerialNumber",
+      "FindUnitByCatalogCode",
+      "GetSelectedFlashElement",
+      "TCBUSUnitManager.GetNetwork/GetItem/Count",
+      "TCBusNetwork.GetIsWireless/GetIsWired",
+      "TStringAttribute get/set/asLowerCaseString",
+      "AddUnit",
+      "RefreshNodeDialog"
+    ]
+  },
+  "vectors": {
+    "keystrokes": [
+      {
+        "events": [
+          [
+            "key",
+            "A",
+            0
+          ],
+          [
+            "key",
+            "B",
+            10
+          ],
+          [
+            "timer",
+            null,
+            80
+          ],
+          [
+            "timer",
+            null,
+            86
+          ]
+        ],
+        "buffer": "AB",
+        "last_tick": 10,
+        "modal_result": 1
+      },
+      {
+        "events": [
+          [
+            "key",
+            "1",
+            0
+          ],
+          [
+            "key",
+            "\r",
+            30
+          ],
+          [
+            "timer",
+            null,
+            100
+          ],
+          [
+            "timer",
+            null,
+            106
+          ]
+        ],
+        "buffer": "1",
+        "last_tick": 30,
+        "modal_result": 1
+      },
+      {
+        "events": [
+          [
+            "timer",
+            null,
+            500
+          ]
+        ],
+        "buffer": "",
+        "last_tick": 0,
+        "modal_result": 0
+      },
+      {
+        "events": [
+          [
+            "key",
+            "\r",
+            0
+          ],
+          [
+            "timer",
+            null,
+            1000
+          ]
+        ],
+        "buffer": "",
+        "last_tick": 0,
+        "modal_result": 0
+      },
+      {
+        "events": [
+          [
+            "key",
+            "X",
+            0
+          ],
+          [
+            "key",
+            "\r",
+            10
+          ],
+          [
+            "key",
+            "Y",
+            20
+          ],
+          [
+            "timer",
+            null,
+            95
+          ],
+          [
+            "timer",
+            null,
+            96
+          ]
+        ],
+        "buffer": "XY",
+        "last_tick": 20,
+        "modal_result": 1
+      }
+    ],
+    "is_serial_number": [
+      {
+        "input": "123456789012",
+        "accepted": true,
+        "serial": "123456789012",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      },
+      {
+        "input": "12345678901",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "1234567890123",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "1234 5678 90",
+        "accepted": true,
+        "serial": "1234567890",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      },
+      {
+        "input": "93123456789012",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "9312345678",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "931234567890",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "accepted": true,
+        "serial": "123456789012",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      },
+      {
+        "input": "5031NL          1234 5678 90",
+        "accepted": true,
+        "serial": "1234567890",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      },
+      {
+        "input": "93xxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          1234567890123",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "0",
+        "accepted": false,
+        "serial": "",
+        "wrong_barcode_form": [
+          "To enter the Serial Number using scanner, please locate and scan the barcode pictured below. If the box does not have this barcode, please enter the Serial Number manually."
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "000000000000",
+        "accepted": true,
+        "serial": "000000000000",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      },
+      {
+        "input": "            ",
+        "accepted": true,
+        "serial": "",
+        "wrong_barcode_form": [],
+        "message_ids": [
+          2150
+        ]
+      }
+    ],
+    "process_barcode": [
+      {
+        "input": "0123",
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "0123",
+            "report_missing": true
+          }
+        ]
+      },
+      {
+        "input": "5031NL          123456789012",
+        "calls": [
+          {
+            "call": "AddUnitByCatalogCode",
+            "text": "5031NL          123456789012"
+          }
+        ]
+      },
+      {
+        "input": "0000000000000000000000000000",
+        "calls": [
+          {
+            "call": "AddUnitByCatalogCode",
+            "text": "0000000000000000000000000000"
+          },
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "0000000000000000000000000000",
+            "report_missing": true
+          }
+        ]
+      },
+      {
+        "input": "111111111111111111111111111",
+        "calls": []
+      },
+      {
+        "input": "0",
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "0",
+            "report_missing": true
+          }
+        ]
+      },
+      {
+        "input": "",
+        "calls": []
+      },
+      {
+        "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "calls": [
+          {
+            "call": "AddUnitByCatalogCode",
+            "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        ]
+      }
+    ],
+    "add_by_catalog_code": [
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "  5031NL-XX     000123456789 ",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "000123456789",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "000123456789",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL-XX"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "L5504D1A,B      1",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "1",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "L5504D1A"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "1",
+            "unit_type": "UNITCODE",
+            "catalog_number": "L5504D1A,B"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "E3031D\u00bcX       000000000007",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "00000000007",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "E3031D"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "00000000007",
+            "unit_type": "UNITCODE",
+            "catalog_number": "E3031D,X       0"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "AB CD           999",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "999",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "AB"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "999",
+            "unit_type": "UNITCODE",
+            "catalog_number": "AB CD"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "                123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": ""
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": ""
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": false,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": true,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": false,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          }
+        ],
+        "message_ids": [
+          2099
+        ]
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": false,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 254,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 255,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          }
+        ],
+        "message_ids": [
+          2066
+        ]
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": true,
+          "network_wired": false,
+          "family": "Wired"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          }
+        ],
+        "message_ids": [
+          45151
+        ]
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": true,
+          "network_wired": false,
+          "family": "Wireless"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": true,
+          "family": "Wireless"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          }
+        ],
+        "message_ids": [
+          45152
+        ]
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": true,
+          "network_wired": true,
+          "family": "Wireless"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL"
+          }
+        ],
+        "message_ids": []
+      },
+      {
+        "input": "5031NL          123456789012",
+        "fixtures": {
+          "site_open": true,
+          "serial_found": false,
+          "type_known": true,
+          "units_node": true,
+          "unit_count": 0,
+          "network_wireless": false,
+          "network_wired": false,
+          "family": "Wireless"
+        },
+        "calls": [
+          {
+            "call": "HandleScannedSerialNumber",
+            "serial": "123456789012",
+            "report_missing": false
+          },
+          {
+            "call": "FindUnitByCatalogCode",
+            "catalog": "5031NL"
+          },
+          {
+            "call": "AddUnit",
+            "serial": "123456789012",
+            "unit_type": "UNITCODE",
+            "catalog_number": "5031NL"
+          }
+        ],
+        "message_ids": []
+      }
+    ],
+    "displayable_serial": [
+      {
+        "input": "1234.5",
+        "displayable": "000012340005"
+      },
+      {
+        "input": "123456789012",
+        "displayable": "123456789012"
+      },
+      {
+        "input": "0",
+        "displayable": "No serial #"
+      },
+      {
+        "input": "000000000000",
+        "displayable": "No serial #"
+      },
+      {
+        "input": "1048575.4095",
+        "displayable": "No serial #"
+      },
+      {
+        "input": "12.34.56",
+        "displayable": "0000001234.56"
+      },
+      {
+        "input": "abc12x",
+        "displayable": "000000000012"
+      },
+      {
+        "input": "",
+        "displayable": "No serial #"
+      },
+      {
+        "input": "12345678901234",
+        "displayable": "12345678901234"
+      },
+      {
+        "input": "123456789.12345",
+        "displayable": "12345678912345"
+      },
+      {
+        "input": ".",
+        "displayable": "No serial #"
+      },
+      {
+        "input": "00000000.0000",
+        "displayable": "No serial #"
+      }
+    ],
+    "set_serial_number": [
+      {
+        "input": "1234.5",
+        "stored": [
+          "1234.5"
+        ]
+      },
+      {
+        "input": "123456789012",
+        "stored": [
+          "12345678.9012"
+        ]
+      },
+      {
+        "input": "0",
+        "stored": [
+          "00000000.0000"
+        ]
+      },
+      {
+        "input": "000000000000",
+        "stored": [
+          "00000000.0000"
+        ]
+      },
+      {
+        "input": "1048575.4095",
+        "stored": [
+          "1048575.4095"
+        ]
+      },
+      {
+        "input": "12.34.56",
+        "stored": [
+          "12.34.56"
+        ]
+      },
+      {
+        "input": "abc12x",
+        "stored": [
+          "00000000.0012"
+        ]
+      },
+      {
+        "input": "",
+        "stored": [
+          ""
+        ]
+      },
+      {
+        "input": "12345678901234",
+        "stored": [
+          "1234567890.1234"
+        ]
+      },
+      {
+        "input": "123456789.12345",
+        "stored": [
+          "123456789.12345"
+        ]
+      },
+      {
+        "input": ".",
+        "stored": [
+          "."
+        ]
+      },
+      {
+        "input": "00000000.0000",
+        "stored": [
+          "00000000.0000"
+        ]
+      }
+    ],
+    "unit_by_serial_number": [
+      {
+        "input": "123456789012",
+        "existing": [
+          "1.2",
+          "12345678.9012",
+          "123456789012"
+        ],
+        "match_index": 1
+      },
+      {
+        "input": "000012340005",
+        "existing": [
+          "1234.5"
+        ],
+        "match_index": 0
+      },
+      {
+        "input": "000000000000",
+        "existing": [
+          "0.0",
+          ""
+        ],
+        "match_index": null
+      },
+      {
+        "input": "1048575.4095",
+        "existing": [
+          "010485754095"
+        ],
+        "match_index": null
+      },
+      {
+        "input": "7",
+        "existing": [
+          "",
+          "7.0",
+          "0.7",
+          "7"
+        ],
+        "match_index": 2
+      }
+    ]
+  }
+}
