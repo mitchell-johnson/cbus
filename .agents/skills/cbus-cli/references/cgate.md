@@ -1439,12 +1439,17 @@ deletion, reload selects the surviving Application. The later cross-Network
 capture admits one shared-OID object in each of Networks 253 and 254: Unit/Unit
 with either address order, or a Unit and leaf Application in either Network.
 OID reads and all five mutations select Network 253's object, independent of
-the two Networks' insertion order. Delete returns 401 for the OID until load,
+the two Networks' document insertion order; 253 was created after 254, and the
+general rule selects the later-created Network. Delete returns 401 for the OID until load,
 when the Network 254 survivor resolves. Rust retains both addressed records and
 guards same-address Units across Networks because their metadata keys would
-collide. Eleven-or-more same-Network Units, wider cross-Network collisions,
-duplicate-Application fields/deletes and repeated-Application-plus-Unit
-shapes remain refused until native semantics and lossless representation are known.
+collide. The general native rule (last registered object wins; Applications
+and descendants before Units, per Network in creation order) lets any number of
+same-Network Units, with at most one leaf Application, share an OID; see
+`toolkit-cli/docs/native-cgate-oid-index-rule.md`. Wider cross-Network and
+Group/Level descendant collisions, duplicate-Application fields/deletes and
+repeated-Application-plus-Unit shapes remain refused until their lossless
+representation exists.
 `database_document_network_units: true` denotes the composed complete Network
 and Unit tree. `database_document_configured_network:
 "same-address-same-interface-binding"` means the running Network can receive

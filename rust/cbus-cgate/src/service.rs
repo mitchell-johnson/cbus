@@ -17035,6 +17035,8 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 retries: 2,
                 units,
                 unit_xml_order: Vec::new(),
+                // The project file lists Networks in native list order.
+                created_seq: networks.len() as u64 + 1,
                 physical: HashMap::new(),
                 levels: HashMap::new(),
             },

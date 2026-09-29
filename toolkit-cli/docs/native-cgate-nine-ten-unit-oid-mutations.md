@@ -34,8 +34,9 @@ surviving Units remained independently readable after load.
 | `DBCOPYSAFE !oid //XUNINE/254 30 Copied` | `301 OID=<new OID>`; Unit 30 retains source Unit 22's name and `PP UnitAddress=22`, with new address and tag. |
 | `DBDELETE !oid` | `200 OK.`; only Unit 22 is removed. Shared-OID lookup returns 401 immediately and selects preceding submitted Unit 28 after load. |
 
-Rust now admits the observed two-through-ten-Unit same-Network shapes. Eleven
-or more same-OID Units remain guarded. This capture does not establish wider
+Rust admitted the observed two-through-ten-Unit same-Network shapes. The
+later [OID index rule](native-cgate-oid-index-rule.md) replaced that count
+bound with the general native rule. This capture does not establish wider
 cross-Network collisions, descendant collisions, physical behavior, or
 additional XML shapes.
 

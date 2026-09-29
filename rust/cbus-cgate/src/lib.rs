@@ -1879,6 +1879,11 @@ pub struct Network {
     /// Older modeled repositories fall back to address order.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unit_xml_order: Vec<u8>,
+    /// One-based position in the project's native Network list (creation
+    /// order); zero when unknown, as in older repositories. Native OID lookup
+    /// walks Networks in this order, so a later Network's object wins.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub created_seq: u64,
     /// Physical bus units keyed by address.
     ///
     /// The mock keeps native layering: `DBADDSAFE` introduces a unit on
@@ -1903,6 +1908,21 @@ pub struct Network {
 
 fn default_network_retries() -> u8 {
     2
+}
+
+fn is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
+/// Next one-based native Network list position in `project`.
+pub(crate) fn next_network_seq(project: &Project) -> u64 {
+    project
+        .networks
+        .values()
+        .map(|network| network.created_seq)
+        .max()
+        .unwrap_or(0)
+        + 1
 }
 
 /// One project.
@@ -2552,6 +2572,46 @@ impl Server {
     /// A tagless line yields an untagged `400` reply (see
     /// [`format_response`]); every other reply echoes the client tag.
     pub fn handle(&mut self, line: &str) -> Response {
+        let response = self.handle_command(line);
+        if response.status < 400 {
+            self.rebuild_oid_index_after(line);
+        }
+        response
+    }
+
+    /// Native C-Gate keeps one OID index per project. Decompiled build 2001
+    /// rebuilds it after DBSET, DBSETSAFE, DBSETXML, DBCOPY, DBCOPYSAFE,
+    /// DBCREATENET, PROJECT SAVE and project load; DBDELETE only removes the
+    /// deleted object's key. The seeded owned probe confirms that an
+    /// unrelated DBSET restores OID lookup after a delete.
+    fn rebuild_oid_index_after(&mut self, line: &str) {
+        let Ok(cmd) = parse_command(line) else {
+            return;
+        };
+        let words = cmd
+            .body
+            .split_whitespace()
+            .map(str::to_ascii_uppercase)
+            .collect::<Vec<_>>();
+        let project = match words.first().map(String::as_str) {
+            Some("DBSET" | "DBSETSAFE" | "DBSETXML" | "DBCOPY" | "DBCOPYSAFE" | "DBCREATENET") => {
+                self.current.clone()
+            }
+            Some("PROJECT") if words.get(1).map(String::as_str) == Some("SAVE") => cmd
+                .body
+                .split_whitespace()
+                .nth(2)
+                .map(str::to_string)
+                .or_else(|| self.current.clone()),
+            _ => None,
+        };
+        if let Some(project) = project {
+            self.invalidated_unit_oid_lookups
+                .retain(|(invalidated, _)| invalidated != &project);
+        }
+    }
+
+    fn handle_command(&mut self, line: &str) -> Response {
         let cmd = match parse_command(line) {
             Ok(c) => c,
             Err(e) => {
@@ -3809,6 +3869,7 @@ impl Server {
             return err(tag, status::CONFLICT_EXISTS, "409 Network already exists");
         }
         let oid = fresh_oid();
+        let created_seq = next_network_seq(proj);
         proj.networks.insert(
             net,
             Network {
@@ -3822,6 +3883,7 @@ impl Server {
                 retries: default_network_retries(),
                 units: HashMap::new(),
                 unit_xml_order: Vec::new(),
+                created_seq,
                 physical: HashMap::new(),
                 levels: HashMap::new(),
             },
@@ -7981,6 +8043,14 @@ impl Server {
     /// Supports scalar and evidenced complete typed-object `DBSETXML path`
     /// plus bounded CGL 1.1 `CGL IMPORT project` label-graph documents.
     pub fn handle_document(&mut self, line: &str, document: &str) -> Response {
+        let response = self.handle_document_command(line, document);
+        if response.status < 400 {
+            self.rebuild_oid_index_after(line);
+        }
+        response
+    }
+
+    fn handle_document_command(&mut self, line: &str, document: &str) -> Response {
         let cmd = match parse_command(line) {
             Ok(c) => c,
             Err(e) => {
@@ -8441,13 +8511,11 @@ impl Server {
             }
             let units = kinds.iter().filter(|kind| **kind == "Unit").count();
             let applications = kinds.iter().filter(|kind| **kind == "Application").count();
-            // The nine/ten-Unit probe contains Units only; keep the existing
-            // mixed Application/Unit admission bound until separately probed.
-            let unit_limit = if applications == 0 { 10 } else { 8 };
-            let unit_shape = units > 0
-                && units <= unit_limit
-                && applications <= 1
-                && units + applications == kinds.len();
+            // Native keeps one OID index in which the object registered last
+            // wins, walking Applications (and descendants) before Units in
+            // each Network. Any number of same-OID Units, optionally with one
+            // leaf Application, is therefore losslessly selectable.
+            let unit_shape = units > 0 && applications <= 1 && units + applications == kinds.len();
             let app_list = if object.kind == DbXmlKind::Network && kinds.len() == applications {
                 let list = object
                     .children
@@ -8551,22 +8619,37 @@ impl Server {
         let Some(record) = self.projects.get(&target.project) else {
             return false;
         };
-        if record.networks.len() != 2
-            || !record.networks.contains_key(&253)
-            || !record.networks.contains_key(&254)
-            || !matches!(object.address, 253 | 254)
+        if record.networks.len() != 2 || !record.networks.contains_key(&object.address) {
+            return false;
+        }
+        let Some(other) = record
+            .networks
+            .keys()
+            .copied()
+            .find(|address| *address != object.address)
+        else {
+            return false;
+        };
+        // Exactly one object in the submitted Network carries this OID;
+        // unrelated siblings do not affect the shared identity.
+        let mut submitted = Vec::new();
+        db_xml_object_oids(object, &mut submitted);
+        if submitted
+            .iter()
+            .filter(|(candidate, _)| candidate == oid)
+            .count()
+            != 1
         {
             return false;
         }
-        let other = if object.address == 253 { 254 } else { 253 };
-        let new_unit =
-            object.units.len() == 1 && object.children.is_empty() && object.units[0].oid == oid;
-        let new_application = object.children.len() == 1
-            && object.units.is_empty()
-            && object.children[0].kind == DbXmlKind::Application
-            && object.children[0].oid == oid
-            && object.children[0].children.is_empty()
-            && object.children[0].extras == DbXmlExtras::default();
+        let new_unit_record = object.units.iter().find(|unit| unit.oid == oid);
+        let new_unit = new_unit_record.is_some();
+        let new_application = object.children.iter().any(|child| {
+            child.kind == DbXmlKind::Application
+                && child.oid == oid
+                && child.children.is_empty()
+                && child.extras == DbXmlExtras::default()
+        });
         if !new_unit && !new_application {
             return false;
         }
@@ -8594,8 +8677,11 @@ impl Server {
         {
             return false;
         }
-        if new_unit && !other_units.is_empty() && object.units[0].address == other_units[0].address
-        {
+        if new_unit_record.is_some_and(|unit| {
+            other_units
+                .first()
+                .is_some_and(|other| other.address == unit.address)
+        }) {
             return false;
         }
         // Both captured shapes use undecorated leaf Applications; the XML
@@ -8892,6 +8978,10 @@ impl Server {
                 )
             })
             .collect::<HashMap<_, _>>();
+        let created_seq = previous.map_or_else(
+            || self.projects.get(project).map_or(1, next_network_seq),
+            |network| network.created_seq,
+        );
         let network = Network {
             oid: object.oid.clone(),
             interface_oid: interface.oid.clone(),
@@ -8903,6 +8993,8 @@ impl Server {
             retries,
             units,
             unit_xml_order: object.units.iter().map(|unit| unit.address).collect(),
+            // Native replaces the Network at its existing list position.
+            created_seq,
             physical,
             levels,
         };
@@ -9522,7 +9614,10 @@ impl Server {
             );
         }
         if let Some(oid) = target.strip_prefix('!').filter(|oid| !oid.contains('/')) {
-            if let Some(path) = self.selected_duplicate_unit_path(oid) {
+            if let Some(path) = self
+                .selected_duplicate_unit_path(oid)
+                .or_else(|| self.unique_unit_path_by_oid(oid))
+            {
                 let mut response = self.dbdelete(tag, &["DBDELETE", &path]);
                 if response.status == status::OK {
                     if let Some(project) = self.current.as_deref() {
@@ -9532,6 +9627,13 @@ impl Server {
                     response.final_text = "200 OK.".to_string();
                 }
                 return response;
+            }
+            // Native answers an OID absent from the index (never issued,
+            // already deleted, or invalidated since) with 401.
+            if !self.oid_in_current_project(oid)
+                && self.selected_cross_network_oid_path(oid).is_none()
+            {
+                return err(tag, status::ABSENT, "401 Object not found");
             }
             if let Some(path) = self
                 .selected_cross_network_oid_path(oid)
@@ -11507,12 +11609,20 @@ impl Server {
     }
 
     fn last_unit_by_oid(&self, project: &str, oid: &str) -> Option<&Unit> {
+        // A deleted key stays absent until the next index rebuild, even
+        // when a single same-OID survivor remains.
+        if self
+            .invalidated_unit_oid_lookups
+            .contains(&(project.to_string(), oid.to_string()))
+        {
+            return None;
+        }
         if self.current.as_deref() == Some(project) {
             if self
                 .selected_cross_network_oid_path(oid)
                 .is_some_and(|path| Self::split_unit(&path).is_none())
             {
-                // In the captured two-Network shape the lower Network's
+                // In the captured two-Network shape the winning Network's
                 // Application wins over the other Network's Unit.
                 return None;
             }
@@ -11584,10 +11694,11 @@ impl Server {
         units > 0 && units + usize::from(self.pending_object(project, oid).is_some()) > 1
     }
 
-    /// The owned native captures establish Unit-first selection for one Unit
-    /// sharing an OID with one Application, regardless of XML submission
-    /// order, and final-submission selection for two to ten Units sharing an
-    /// OID in one Network. Other collision shapes remain guarded.
+    /// Native OID lookup returns the object registered last while walking
+    /// each Network's Applications (with descendants) and then its Units in
+    /// submission order. One Unit therefore beats one Application in either
+    /// XML order, and the final submitted Unit wins among any number of
+    /// same-OID Units in one Network. Other collision shapes remain guarded.
     fn selected_duplicate_unit_path(&self, oid: &str) -> Option<String> {
         if let Some(path) = self.selected_cross_network_oid_path(oid) {
             return Self::split_unit(&path).map(|_| path);
@@ -11617,9 +11728,9 @@ impl Server {
             })
             .collect::<Vec<_>>();
         if !(if cross_kind.is_empty() {
-            (2..=10).contains(&matches.len())
+            matches.len() >= 2
         } else {
-            matches.len() == 1
+            !matches.is_empty()
         }) || matches.iter().any(|(network, _)| *network != matches[0].0)
         {
             return None;
@@ -11650,23 +11761,37 @@ impl Server {
     }
 
     /// Owned build-2001 probes cover exactly one shared-OID object in each
-    /// of two Networks, 253 and 254. The lower Network wins independently of
-    /// insertion order, Unit address and whether its object is a Unit or a
-    /// leaf Application. Distinct Unit addresses keep our addressed metadata
-    /// keys lossless; wider network and mixed-object shapes remain guarded.
+    /// of two Networks. Native walks Networks in list (creation) order and
+    /// the object registered last wins, independently of document insertion
+    /// order, Unit address and whether it is a Unit or a leaf Application.
+    /// The first captures created 254 before 253, so repositories without a
+    /// recorded creation order keep that observed lower-address winner.
+    /// Distinct Unit addresses keep our addressed metadata keys lossless;
+    /// wider network and mixed-object shapes remain guarded.
     fn selected_cross_network_oid_path(&self, oid: &str) -> Option<String> {
         let project = self.current.as_deref()?;
         let record = self.projects.get(project)?;
-        if record.networks.len() != 2
-            || !record.networks.contains_key(&253)
-            || !record.networks.contains_key(&254)
-        {
+        if record.networks.len() != 2 {
             return None;
         }
+        let mut order = record
+            .networks
+            .values()
+            .map(|network| (network.created_seq, network.address))
+            .collect::<Vec<_>>();
+        order.sort_unstable();
+        let order = if order.iter().all(|(seq, _)| *seq > 0) {
+            // Later list position first: it is the winner.
+            [order[1].1, order[0].1]
+        } else {
+            let mut addresses = [order[0].1, order[1].1];
+            addresses.sort_unstable();
+            addresses
+        };
         let mut paths = Vec::new();
         let mut unit_addresses = Vec::new();
         let mut unit_count = 0;
-        for network in [253, 254] {
+        for network in order {
             let units = record.networks[&network]
                 .units
                 .values()
@@ -11714,7 +11839,7 @@ impl Server {
         if unit_count == 0 || (unit_count == 2 && unit_addresses[0] == unit_addresses[1]) {
             return None;
         }
-        // The first entry is Network 253.
+        // The first entry is the winning Network's object.
         Some(paths.remove(0))
     }
 
@@ -11869,6 +11994,7 @@ mod tests {
                 .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
                 .collect(),
             unit_xml_order: bridge_units.to_vec(),
+            created_seq: 0,
             physical: HashMap::new(),
             levels: HashMap::new(),
         }

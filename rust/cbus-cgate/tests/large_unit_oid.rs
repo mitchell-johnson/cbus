@@ -435,7 +435,7 @@ fn two_network_unit_and_application_oid_mutations_match_owned_native_capture() {
 }
 
 #[test]
-fn uncaptured_eleven_unit_and_same_address_cross_network_shapes_are_rejected_atomically() {
+fn unbounded_unit_counts_follow_the_general_rule_and_same_address_cross_network_is_rejected() {
     const OID: &str = "11111111-1111-4111-8111-111111111111";
     let mut server = Server::new(AccessLevel::Program);
     let created = server.handle("[guard] PROJECT NEW XGUARD");
@@ -476,6 +476,21 @@ fn uncaptured_eleven_unit_and_same_address_cross_network_shapes_are_rejected_ato
         )
     };
     let network254 = prefix(&mut server, 254);
+    let selected = |server: &mut Server| {
+        let read = server.handle(&format!("[guard] DBGETXML !{OID}"));
+        assert_eq!(read.status, 200, "{read:?}");
+        let xml = roxmltree::Document::parse(read.lines[0].strip_prefix("347-").unwrap())
+            .unwrap()
+            .root_element()
+            .children()
+            .find(|node| node.has_tag_name("TagName"))
+            .and_then(|node| node.text())
+            .unwrap()
+            .to_string();
+        xml
+    };
+    // The general native rule (last registered wins; Units after
+    // Applications) has no count bound: eleven Units select the final one.
     let eleven = format!(
         "{}{}{}",
         network254,
@@ -486,14 +501,11 @@ fn uncaptured_eleven_unit_and_same_address_cross_network_shapes_are_rejected_ato
         server
             .handle_document("[guard] DBSETXML //XGUARD/254", &eleven)
             .status,
-        409
+        301
     );
-    assert_eq!(
-        server.handle("[guard] DBGETXML //XGUARD/254/p/20").status,
-        401
-    );
+    assert_eq!(selected(&mut server), "Unit30");
 
-    // The larger pure-Unit capture does not admit a new mixed shape.
+    // A leaf Application with nine Units still yields the final Unit.
     let mixed_nine = format!(
         "{}<Application><OID>{OID}</OID><TagName>Lighting</TagName><Address>56</Address></Application>{}</Network>",
         network254,
@@ -503,10 +515,11 @@ fn uncaptured_eleven_unit_and_same_address_cross_network_shapes_are_rejected_ato
         server
             .handle_document("[guard] DBSETXML //XGUARD/254", &mixed_nine)
             .status,
-        409
+        301
     );
+    assert_eq!(selected(&mut server), "Unit28");
     assert_eq!(
-        server.handle("[guard] DBGETXML //XGUARD/254/p/20").status,
+        server.handle("[guard] DBGETXML //XGUARD/254/p/29").status,
         401
     );
 

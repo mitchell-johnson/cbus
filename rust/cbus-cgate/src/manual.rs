@@ -2584,6 +2584,7 @@ impl Server {
             );
         };
         let oid = super::fresh_oid();
+        let created_seq = super::next_network_seq(project);
         project.networks.insert(
             address,
             Network {
@@ -2597,6 +2598,7 @@ impl Server {
                 retries: 2,
                 units: Default::default(),
                 unit_xml_order: Vec::new(),
+                created_seq,
                 physical: Default::default(),
                 levels: Default::default(),
             },
@@ -2862,6 +2864,7 @@ impl Server {
                     retries: 2,
                     units,
                     unit_xml_order: Vec::new(),
+                    created_seq: old.created_seq,
                     physical: old.physical,
                     levels: old.levels,
                 },
@@ -3242,6 +3245,7 @@ impl Server {
                 if record.networks.contains_key(&address) {
                     return Err("Network Address is already in use".to_string());
                 }
+                let created_seq = super::next_network_seq(record);
                 record.networks.insert(
                     address,
                     Network {
@@ -3263,6 +3267,7 @@ impl Server {
                         retries: 2,
                         units: Default::default(),
                         unit_xml_order: Vec::new(),
+                        created_seq,
                         physical: Default::default(),
                         levels: Default::default(),
                     },

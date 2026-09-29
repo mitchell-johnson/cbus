@@ -16602,6 +16602,94 @@ async fn dbsetxml_error_matrix_refuses_without_mutation_or_pci_io() {
 }
 
 #[tokio::test]
+async fn cross_network_oid_winner_follows_creation_order_through_restart() {
+    const SHARED: &str = "11111111-1111-4111-8111-111111111111";
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] PROJECT NEW XORDER",
+        "[2] PROJECT USE XORDER",
+        // Native walks Networks in creation order: 254 is created last.
+        "[3] DBCREATENET 253 Local253 Cni 127.0.0.1:1",
+        "[4] DBCREATENET 254 Local254 Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    for (network, unit) in [(254, 21), (253, 20)] {
+        let base = service
+            .handle(&mut client, &format!("[g] DBGETXML //XORDER/{network}"))
+            .await;
+        let parsed =
+            roxmltree::Document::parse(base.lines[0].strip_prefix("347-").unwrap()).unwrap();
+        let oid = |node: roxmltree::Node<'_, '_>| {
+            node.children()
+                .find(|child| child.has_tag_name("OID"))
+                .unwrap()
+                .text()
+                .unwrap()
+                .to_string()
+        };
+        let network_oid = oid(parsed.root_element());
+        let interface_oid = oid(parsed
+            .descendants()
+            .find(|node| node.has_tag_name("Interface"))
+            .unwrap());
+        let document = format!(
+            "<Network><OID>{network_oid}</OID><TagName>Local{network}</TagName><Address>{network}</Address><NetworkNumber>{network}</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Unit><OID>{SHARED}</OID><TagName>N{network}</TagName><Address>{unit}</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>"
+        );
+        let set = service
+            .handle_document(
+                &mut client,
+                &format!("[s] DBSETXML //XORDER/{network}"),
+                &document,
+            )
+            .await;
+        assert_eq!(set.status, 301, "{set:?}");
+    }
+    let selected = |response: Response| response.lines[0].contains("<TagName>N254</TagName>");
+    assert!(selected(
+        service
+            .handle(&mut client, &format!("[r] DBGETXML !{SHARED}"))
+            .await
+    ));
+    assert_eq!(
+        service
+            .handle(&mut client, "[save] PROJECT SAVE XORDER")
+            .await
+            .status,
+        200
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(service);
+    let (restart_pci, _restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut client, "[u] PROJECT USE XORDER")
+            .await
+            .status,
+        200
+    );
+    assert!(selected(
+        restarted
+            .handle(&mut client, &format!("[r] DBGETXML !{SHARED}"))
+            .await
+    ));
+    let _ = std::fs::remove_file(path);
+}
+
+#[tokio::test]
 async fn duplicate_oid_units_keep_independent_documents_through_service_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

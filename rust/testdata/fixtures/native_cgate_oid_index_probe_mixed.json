@@ -1,0 +1,2771 @@
+{
+ "schema": "cgate-oid-index-probe-v1",
+ "product": "native",
+ "profile": "mixed",
+ "captured_utc": "2026-09-29T19:54:32.890674+00:00",
+ "probe_script_sha256": "ad6361fc89558746ac6c7187c43f9e0bf9081dd91f149da4ed7366d8d309c661",
+ "shared_oids": [
+  "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+ ],
+ "physical_endpoint": false,
+ "seeds": [
+  {
+   "seed": 1,
+   "project": "XOID001",
+   "plan": {
+    "seed": 1,
+    "project": "XOID001",
+    "create_order": [
+     254,
+     252
+    ],
+    "submit_order": [
+     252,
+     254
+    ],
+    "networks": {
+     "254": {
+      "applications": [],
+      "units": [
+       {
+        "address": 53,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254u53"
+       },
+       {
+        "address": 39,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254u39"
+       },
+       {
+        "address": 55,
+        "oid": "a648a7dd-0683-4eb9-85b6-e6e307d4bedc",
+        "tag": "n254u55"
+       },
+       {
+        "address": 56,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254u56"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 62,
+        "oid": "552b82f6-be3e-4c0a-8ef2-a4f04be03db0",
+        "tag": "n252a62",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a62g1",
+          "levels": [
+           {
+            "address": 2,
+            "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            "tag": "n252a62g1l2"
+           }
+          ]
+         },
+         {
+          "address": 2,
+          "oid": "fe175330-a11d-459a-8f97-8d8719999e3f",
+          "tag": "n252a62g2",
+          "levels": [
+           {
+            "address": 2,
+            "oid": "8e73ca47-ea90-48f0-866b-829e6a8ac4ba",
+            "tag": "n252a62g2l2"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 21,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u21"
+       },
+       {
+        "address": 59,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252u59"
+       },
+       {
+        "address": 26,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252u26"
+       },
+       {
+        "address": 33,
+        "oid": "da711448-96c8-4a19-84b2-d2bc815a47c5",
+        "tag": "n252u33"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u26"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u21"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u26"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u21"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u39"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u59"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u39"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u59"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 2,
+   "project": "XOID002",
+   "plan": {
+    "seed": 2,
+    "project": "XOID002",
+    "create_order": [
+     252,
+     254
+    ],
+    "submit_order": [
+     254,
+     252
+    ],
+    "networks": {
+     "252": {
+      "applications": [
+       {
+        "address": 56,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252a56",
+        "groups": []
+       },
+       {
+        "address": 62,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n252a62",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a62g4",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 34,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u34"
+       },
+       {
+        "address": 49,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u49"
+       },
+       {
+        "address": 37,
+        "oid": "72154e76-e4c1-4ab2-8ec3-f6b32e8d4b8a",
+        "tag": "n252u37"
+       }
+      ]
+     },
+     "254": {
+      "applications": [
+       {
+        "address": 61,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254a61",
+        "groups": [
+         {
+          "address": 3,
+          "oid": "ecc1cb63-4773-4e84-8d71-8d733ff98ff3",
+          "tag": "n254a61g3",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "761ebfd2-bd14-4fa9-8714-210c665d7435",
+            "tag": "n254a61g3l1"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 62,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254a62",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "f0caeef0-38c8-4b38-88ac-b5137c9260dc",
+          "tag": "n254a62g4",
+          "levels": [
+           {
+            "address": 2,
+            "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "tag": "n254a62g4l2"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 60,
+        "oid": "e9500ec9-c5e2-486c-84a4-a8f69dc8db48",
+        "tag": "n254a60",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 43,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u43"
+       },
+       {
+        "address": 52,
+        "oid": "a6c3181c-81e2-40df-848b-1df78feb994a",
+        "tag": "n254u52"
+       },
+       {
+        "address": 45,
+        "oid": "35339774-bb1e-486c-8fd5-079e681b8f58",
+        "tag": "n254u45"
+       },
+       {
+        "address": 47,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254u47"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u47"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u43"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u47"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u43"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a62"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n254a62g4l2"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a62"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n254a62g4l2"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 3,
+   "project": "XOID003",
+   "plan": {
+    "seed": 3,
+    "project": "XOID003",
+    "create_order": [
+     254,
+     252
+    ],
+    "submit_order": [
+     252,
+     254
+    ],
+    "networks": {
+     "254": {
+      "applications": [
+       {
+        "address": 59,
+        "oid": "b804d820-9841-4117-8906-159644f9794c",
+        "tag": "n254a59",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "f51e8722-c21b-4092-88ce-6f2410645d51",
+          "tag": "n254a59g2",
+          "levels": []
+         },
+         {
+          "address": 4,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n254a59g4",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 47,
+        "oid": "ba6676b3-651c-4253-8d4b-9adbebcd1f5e",
+        "tag": "n254u47"
+       },
+       {
+        "address": 40,
+        "oid": "2257989f-ef82-4c88-86ce-d90a71d2af72",
+        "tag": "n254u40"
+       },
+       {
+        "address": 53,
+        "oid": "7eb0adf4-22ce-4afb-892f-dddf18f2c41c",
+        "tag": "n254u53"
+       },
+       {
+        "address": 52,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u52"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 60,
+        "oid": "47997b6b-db3d-4150-8756-4931edcf6109",
+        "tag": "n252a60",
+        "groups": [
+         {
+          "address": 5,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a60g5",
+          "levels": [
+           {
+            "address": 3,
+            "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "tag": "n252a60g5l3"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 59,
+        "oid": "0526ef70-2698-4f4f-85a8-181b691406be",
+        "tag": "n252a59",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "fcf249f3-d4e4-41c3-820a-b57c360c4979",
+          "tag": "n252a59g2",
+          "levels": []
+         },
+         {
+          "address": 3,
+          "oid": "5815a3d5-16a9-4f39-8bc7-3a83fd63ed5b",
+          "tag": "n252a59g3",
+          "levels": [
+           {
+            "address": 2,
+            "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            "tag": "n252a59g3l2"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 63,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252a63",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "54b9693c-961c-4dbc-87eb-b70c60b7d02b",
+          "tag": "n252a63g4",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "tag": "n252a63g4l1"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 56,
+        "oid": "1badb4f5-13b4-4a39-81da-01354f468977",
+        "tag": "n252u56"
+       },
+       {
+        "address": 32,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n252u32"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u32"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a63"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a63g4l1"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u32"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a63"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a63g4l1"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a59g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a59g3l2"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a60g5l3"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a59g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a59g3l2"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a60g5l3"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 4,
+   "project": "XOID004",
+   "plan": {
+    "seed": 4,
+    "project": "XOID004",
+    "create_order": [
+     253,
+     252
+    ],
+    "submit_order": [
+     252,
+     253
+    ],
+    "networks": {
+     "253": {
+      "applications": [],
+      "units": [
+       {
+        "address": 58,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u58"
+       },
+       {
+        "address": 44,
+        "oid": "459142de-ccea-4645-82a0-0403ce80c4b0",
+        "tag": "n253u44"
+       },
+       {
+        "address": 28,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253u28"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 61,
+        "oid": "8224b122-c3e4-4892-8919-6ada4fcfa583",
+        "tag": "n252a61",
+        "groups": [
+         {
+          "address": 3,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a61g3",
+          "levels": []
+         },
+         {
+          "address": 4,
+          "oid": "9286a175-4abc-406a-88ab-b93f01d89a02",
+          "tag": "n252a61g4",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "8c320f89-f134-4e0c-8d90-5ecfd160c5d0",
+            "tag": "n252a61g4l1"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 56,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252a56",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 43,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n252u43"
+       },
+       {
+        "address": 34,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252u34"
+       },
+       {
+        "address": 23,
+        "oid": "7671863c-0bdb-423a-84c1-5c910b11ad28",
+        "tag": "n252u23"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u43"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u34"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u43"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u34"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u58"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a61g3"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u58"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a61g3"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 5,
+   "project": "XOID005",
+   "plan": {
+    "seed": 5,
+    "project": "XOID005",
+    "create_order": [
+     254,
+     253,
+     252
+    ],
+    "submit_order": [
+     253,
+     254,
+     252
+    ],
+    "networks": {
+     "254": {
+      "applications": [
+       {
+        "address": 58,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254a58",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n254a58g2",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 62,
+        "oid": "3729c619-c60a-4cab-859e-eefb015c33b2",
+        "tag": "n254a62",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 33,
+        "oid": "32ea6928-f623-4bf2-804b-74ba4a0fe75d",
+        "tag": "n254u33"
+       },
+       {
+        "address": 53,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u53"
+       }
+      ]
+     },
+     "253": {
+      "applications": [
+       {
+        "address": 58,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253a58",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "4d25deb3-54f4-4a69-80ac-ff0043892dfc",
+          "tag": "n253a58g2",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "tag": "n253a58g2l1"
+           }
+          ]
+         },
+         {
+          "address": 4,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n253a58g4",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 57,
+        "oid": "2f4d4c86-50d7-413f-8248-91917b121dc5",
+        "tag": "n253u57"
+       },
+       {
+        "address": 20,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u20"
+       },
+       {
+        "address": 55,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253u55"
+       }
+      ]
+     },
+     "252": {
+      "applications": [],
+      "units": [
+       {
+        "address": 26,
+        "oid": "6b384309-c9a9-47a6-8c8f-95ef04a012e8",
+        "tag": "n252u26"
+       },
+       {
+        "address": 44,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u44"
+       },
+       {
+        "address": 35,
+        "oid": "2e50bd4e-b52f-453c-8bf6-4ef773ec28d0",
+        "tag": "n252u35"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n253a58g2l1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u55"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u44"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n253a58g2l1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u55"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u44"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a58"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n253a58"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u20"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a58"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n253a58"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u20"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 6,
+   "project": "XOID006",
+   "plan": {
+    "seed": 6,
+    "project": "XOID006",
+    "create_order": [
+     253,
+     254
+    ],
+    "submit_order": [
+     253,
+     254
+    ],
+    "networks": {
+     "253": {
+      "applications": [],
+      "units": [
+       {
+        "address": 33,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u33"
+       },
+       {
+        "address": 47,
+        "oid": "9c2c0ac2-cda9-4957-89b3-d1a243f9300c",
+        "tag": "n253u47"
+       }
+      ]
+     },
+     "254": {
+      "applications": [],
+      "units": [
+       {
+        "address": 56,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254u56"
+       },
+       {
+        "address": 32,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254u32"
+       },
+       {
+        "address": 51,
+        "oid": "c16cf5c5-1801-4d9a-831a-5bf371f970cf",
+        "tag": "n254u51"
+       },
+       {
+        "address": 37,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u37"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u56"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u32"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u37"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u56"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u32"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u37"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u33"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u33"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 7,
+   "project": "XOID007",
+   "plan": {
+    "seed": 7,
+    "project": "XOID007",
+    "create_order": [
+     252,
+     253,
+     254
+    ],
+    "submit_order": [
+     252,
+     254,
+     253
+    ],
+    "networks": {
+     "252": {
+      "applications": [
+       {
+        "address": 56,
+        "oid": "f29d0da9-953f-48f1-809f-76b5a170b338",
+        "tag": "n252a56",
+        "groups": []
+       },
+       {
+        "address": 62,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252a62",
+        "groups": []
+       },
+       {
+        "address": 60,
+        "oid": "2217bead-dbc4-46cb-8e81-973e0becd7b0",
+        "tag": "n252a60",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 37,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u37"
+       },
+       {
+        "address": 55,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252u55"
+       },
+       {
+        "address": 27,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u27"
+       }
+      ]
+     },
+     "253": {
+      "applications": [
+       {
+        "address": 57,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253a57",
+        "groups": [
+         {
+          "address": 5,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n253a57g5",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "tag": "n253a57g5l1"
+           }
+          ]
+         },
+         {
+          "address": 2,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n253a57g2",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 24,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253u24"
+       },
+       {
+        "address": 46,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u46"
+       },
+       {
+        "address": 47,
+        "oid": "14f4733f-3e7d-4bfb-87a2-ea20b2f14c94",
+        "tag": "n253u47"
+       },
+       {
+        "address": 25,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u25"
+       }
+      ]
+     },
+     "254": {
+      "applications": [
+       {
+        "address": 61,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254a61",
+        "groups": [
+         {
+          "address": 5,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n254a61g5",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 63,
+        "oid": "ab1031d0-f646-41f4-8a09-7c976bf46c69",
+        "tag": "n254a63",
+        "groups": []
+       },
+       {
+        "address": 59,
+        "oid": "d17f9aca-e01f-4057-8a02-135e92b1d3f2",
+        "tag": "n254a59",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 22,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254u22"
+       },
+       {
+        "address": 33,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u33"
+       },
+       {
+        "address": 52,
+        "oid": "f1d69ed6-17f5-4837-8708-20fe119a72d1",
+        "tag": "n254u52"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u46"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u22"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u33"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u46"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u22"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u33"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n253a57g5l1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a61g5"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u25"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n253a57g5l1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a61g5"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u25"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 8,
+   "project": "XOID008",
+   "plan": {
+    "seed": 8,
+    "project": "XOID008",
+    "create_order": [
+     253,
+     254
+    ],
+    "submit_order": [
+     253,
+     254
+    ],
+    "networks": {
+     "253": {
+      "applications": [
+       {
+        "address": 59,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253a59",
+        "groups": []
+       },
+       {
+        "address": 62,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253a62",
+        "groups": [
+         {
+          "address": 3,
+          "oid": "60908405-d45c-49a3-8ec3-53c162e917d3",
+          "tag": "n253a62g3",
+          "levels": [
+           {
+            "address": 2,
+            "oid": "fdd9a78d-18df-4393-8223-aa56a9b7e3ea",
+            "tag": "n253a62g3l2"
+           }
+          ]
+         },
+         {
+          "address": 4,
+          "oid": "1607b1c4-b0f9-4306-8c02-e56756a3e957",
+          "tag": "n253a62g4",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 63,
+        "oid": "dae3df9c-5b50-4a36-8eac-871f492091f2",
+        "tag": "n253a63",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n253a63g2",
+          "levels": []
+         },
+         {
+          "address": 5,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n253a63g5",
+          "levels": [
+           {
+            "address": 3,
+            "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "tag": "n253a63g5l3"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 32,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u32"
+       },
+       {
+        "address": 34,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u34"
+       },
+       {
+        "address": 56,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n253u56"
+       },
+       {
+        "address": 49,
+        "oid": "9fbd8735-80ed-4503-8ea0-3260d7ef27bb",
+        "tag": "n253u49"
+       }
+      ]
+     },
+     "254": {
+      "applications": [
+       {
+        "address": 60,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254a60",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 21,
+        "oid": "b3880de0-e9be-4f88-81e6-187fdb522231",
+        "tag": "n254u21"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n253a63g2"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a60"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u34"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n253a63g2"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a60"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u34"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n253a59"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u56"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u32"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n253a59"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u56"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u32"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 9,
+   "project": "XOID009",
+   "plan": {
+    "seed": 9,
+    "project": "XOID009",
+    "create_order": [
+     254,
+     253,
+     252
+    ],
+    "submit_order": [
+     254,
+     252,
+     253
+    ],
+    "networks": {
+     "254": {
+      "applications": [
+       {
+        "address": 58,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254a58",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 33,
+        "oid": "e323bb2a-bf00-488d-8a22-e4c76237dbe6",
+        "tag": "n254u33"
+       }
+      ]
+     },
+     "253": {
+      "applications": [],
+      "units": [
+       {
+        "address": 43,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u43"
+       },
+       {
+        "address": 50,
+        "oid": "c5c7d186-1674-418d-83bb-41b36bf82959",
+        "tag": "n253u50"
+       },
+       {
+        "address": 48,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u48"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 60,
+        "oid": "0e06acd4-6943-48c5-811e-99fb01597ac1",
+        "tag": "n252a60",
+        "groups": []
+       },
+       {
+        "address": 58,
+        "oid": "98cae043-f6c9-46f2-8caf-107ad9c98c23",
+        "tag": "n252a58",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a58g4",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 56,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252a56",
+        "groups": []
+       }
+      ],
+      "units": [
+       {
+        "address": 30,
+        "oid": "e4794195-021c-46ff-8489-14ef33fb4b4f",
+        "tag": "n252u30"
+       },
+       {
+        "address": 44,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252u44"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u48"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a58g4"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u44"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u48"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a58g4"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u44"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u43"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u43"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a56"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 10,
+   "project": "XOID010",
+   "plan": {
+    "seed": 10,
+    "project": "XOID010",
+    "create_order": [
+     253,
+     254
+    ],
+    "submit_order": [
+     253,
+     254
+    ],
+    "networks": {
+     "253": {
+      "applications": [],
+      "units": [
+       {
+        "address": 31,
+        "oid": "6bd7f503-61b0-4e09-8ae6-a2289a6ab329",
+        "tag": "n253u31"
+       },
+       {
+        "address": 43,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u43"
+       },
+       {
+        "address": 27,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u27"
+       },
+       {
+        "address": 24,
+        "oid": "74f942cb-220a-4b0a-8cd2-875ea96ec2b3",
+        "tag": "n253u24"
+       }
+      ]
+     },
+     "254": {
+      "applications": [
+       {
+        "address": 63,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254a63",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n254a63g4",
+          "levels": []
+         },
+         {
+          "address": 1,
+          "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "tag": "n254a63g1",
+          "levels": [
+           {
+            "address": 3,
+            "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "tag": "n254a63g1l3"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 40,
+        "oid": "280b11fd-807d-4245-8814-d575531ec56c",
+        "tag": "n254u40"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n254a63g1l3"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a63"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a63g1"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n254a63g1l3"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n254a63"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n254a63g1"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u27"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u43"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u27"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u43"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 11,
+   "project": "XOID011",
+   "plan": {
+    "seed": 11,
+    "project": "XOID011",
+    "create_order": [
+     254,
+     253,
+     252
+    ],
+    "submit_order": [
+     252,
+     254,
+     253
+    ],
+    "networks": {
+     "254": {
+      "applications": [
+       {
+        "address": 56,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254a56",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n254a56g1",
+          "levels": []
+         },
+         {
+          "address": 5,
+          "oid": "d7a94ded-9749-4e23-80c6-a5b85387f613",
+          "tag": "n254a56g5",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 34,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u34"
+       },
+       {
+        "address": 32,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u32"
+       },
+       {
+        "address": 54,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n254u54"
+       }
+      ]
+     },
+     "253": {
+      "applications": [],
+      "units": [
+       {
+        "address": 22,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u22"
+       },
+       {
+        "address": 25,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u25"
+       },
+       {
+        "address": 29,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n253u29"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 57,
+        "oid": "b57a6a1d-faf8-4da9-801e-5b4578511608",
+        "tag": "n252a57",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "ed52a241-35b0-4a54-86a8-0bdf0023b682",
+          "tag": "n252a57g1",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 62,
+        "oid": "4fab6f3e-164f-4513-863e-9bed45100358",
+        "tag": "n252a62",
+        "groups": [
+         {
+          "address": 4,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a62g4",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 58,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252a58",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a58g1",
+          "levels": [
+           {
+            "address": 1,
+            "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "tag": "n252a58g1l1"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 39,
+        "oid": "30d0b194-8245-4164-828a-6fcf303a07b2",
+        "tag": "n252u39"
+       },
+       {
+        "address": 48,
+        "oid": "a4ca83b2-6b52-408d-8187-0f0bc4ff64de",
+        "tag": "n252u48"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a58g1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a58"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a58g1l1"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a58g1"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a58"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Level",
+       "tag": "n252a58g1l1"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u54"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a62g4"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n254u54"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "seed": 12,
+   "project": "XOID012",
+   "plan": {
+    "seed": 12,
+    "project": "XOID012",
+    "create_order": [
+     253,
+     254,
+     252
+    ],
+    "submit_order": [
+     254,
+     253,
+     252
+    ],
+    "networks": {
+     "253": {
+      "applications": [
+       {
+        "address": 56,
+        "oid": "f8a88518-6c57-44bc-892e-6b951cce9c77",
+        "tag": "n253a56",
+        "groups": [
+         {
+          "address": 2,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n253a56g2",
+          "levels": [
+           {
+            "address": 3,
+            "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "tag": "n253a56g2l3"
+           }
+          ]
+         },
+         {
+          "address": 1,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n253a56g1",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 52,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u52"
+       },
+       {
+        "address": 30,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n253u30"
+       }
+      ]
+     },
+     "254": {
+      "applications": [],
+      "units": [
+       {
+        "address": 25,
+        "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "tag": "n254u25"
+       },
+       {
+        "address": 43,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n254u43"
+       }
+      ]
+     },
+     "252": {
+      "applications": [
+       {
+        "address": 63,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252a63",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "f0eb21aa-5b39-4037-82f5-d75ea9e16e27",
+          "tag": "n252a63g1",
+          "levels": []
+         },
+         {
+          "address": 5,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a63g5",
+          "levels": [
+           {
+            "address": 3,
+            "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            "tag": "n252a63g5l3"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "address": 60,
+        "oid": "c59c74ab-3453-471c-8364-19110b21bbba",
+        "tag": "n252a60",
+        "groups": [
+         {
+          "address": 5,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a60g5",
+          "levels": []
+         },
+         {
+          "address": 2,
+          "oid": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          "tag": "n252a60g2",
+          "levels": []
+         }
+        ]
+       },
+       {
+        "address": 59,
+        "oid": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "tag": "n252a59",
+        "groups": [
+         {
+          "address": 1,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a59g1",
+          "levels": []
+         },
+         {
+          "address": 2,
+          "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "tag": "n252a59g2",
+          "levels": []
+         }
+        ]
+       }
+      ],
+      "units": [
+       {
+        "address": 48,
+        "oid": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "tag": "n252u48"
+       }
+      ]
+     }
+    }
+   },
+   "steps": [
+    {
+     "step": "submit",
+     "statuses": [
+      301,
+      301,
+      301
+     ]
+    },
+    {
+     "step": "submitted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a60g2"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u48"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a59"
+      }
+     }
+    },
+    {
+     "step": "reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a60g2"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n252u48"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Application",
+       "tag": "n252a59"
+      }
+     }
+    },
+    {
+     "step": "delete",
+     "statuses": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": 200,
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": 200,
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": 200
+     }
+    },
+    {
+     "step": "deleted",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 401
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 401
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 401
+      }
+     }
+    },
+    {
+     "step": "unrelated-dbset",
+     "status": 200
+    },
+    {
+     "step": "after-unrelated-dbset",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a63g5"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a60g5"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u30"
+      }
+     }
+    },
+    {
+     "step": "deleted-reloaded",
+     "selected": {
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a63g5"
+      },
+      "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb": {
+       "status": 344,
+       "element": "Group",
+       "tag": "n252a60g5"
+      },
+      "cccccccc-cccc-4ccc-8ccc-cccccccccccc": {
+       "status": 344,
+       "element": "Unit",
+       "tag": "n253u30"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+ "oracle": {
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "version": "3.4.0 build 2001",
+  "owned_loopback_listeners": true,
+  "listeners": [
+   "127.0.0.1:49905",
+   "127.0.0.1:49906",
+   "127.0.0.1:49907",
+   "127.0.0.1:49908",
+   "127.0.0.1:49909",
+   "127.0.0.1:49910"
+  ],
+  "cleanup_complete": true,
+  "process_exit_confirmed": true,
+  "work_removed": true
+ },
+ "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+}
