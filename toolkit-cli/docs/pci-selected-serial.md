@@ -17,8 +17,11 @@ lease keyed by the canonical numeric IP and port before its fresh inventory,
 journal or address request. A second cooperating Toolkit process on the same
 host and endpoint fails before PCI I/O and can try again after the first exits.
 The OS releases the lease even after a process crash; the durable journal still
-requires read-only recovery and never authorizes replay. Plan and verify remain
-read-only and do not take this lease.
+requires read-only recovery and never authorizes replay. Plan stays read-only
+and takes no lease. Verify observes through the same commissioning lanes an
+apply would move, so it holds the same lease: a contended observation refuses
+before PCI I/O (outcome uncertain) instead of classifying a bus another process
+may be moving.
 
 The lease is a lock file in a private user directory under `/tmp` on POSIX
 systems, independent of `TMPDIR`; Windows uses the user's configured temporary
@@ -247,7 +250,9 @@ inconsistent observations; lower-level unit tests cover the flow-queue and
 confirmation-allocation cancellation paths.
 
 The Rust `cbus-tools serial-apply` and `serial-verify` commands now take the
-same host-local advisory endpoint lease as the Python coordinator. A competing
+same host-local advisory endpoint lease as the Python coordinator; both sides
+hold it for verify as well as apply, since observation lanes contend the same
+way. A competing
 cooperating process on that host is refused before its PCI connection or
 journal creation, and a crash releases the OS lock. The durable attempt marker
 still controls no-replay recovery; the lease does not exclude `cmqttd`, remote

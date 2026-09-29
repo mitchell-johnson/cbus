@@ -631,15 +631,21 @@ class SelectedSerialCoordinator:
         plan,value=self._validated_plan(plan)
         with self._lock:
             evidence=self._base('verify',plan)
+            # A verification observes the same commissioning lanes an apply
+            # would move through, so it holds the same host-local lease: a
+            # contended observation refuses before PCI I/O (outcome
+            # uncertain) instead of classifying a bus another process may be
+            # moving. Plan stays read-only and takes no lease.
             try:
-                deadline=time.monotonic()+self.settings['overall_timeout']
-                self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
-                evidence['state']='after_observed';self._classify(evidence,value)
-                result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
-                final_evidence=result.as_dict()
-                if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached during verification finalization')
-                self.last_result=result;self.last_evidence=final_evidence
-                return result
+                with EndpointLease(self.host,self.port):
+                    deadline=time.monotonic()+self.settings['overall_timeout']
+                    self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
+                    evidence['state']='after_observed';self._classify(evidence,value)
+                    result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
+                    final_evidence=result.as_dict()
+                    if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached during verification finalization')
+                    self.last_result=result;self.last_evidence=final_evidence
+                    return result
             except BaseException as error:
                 self._error(error,evidence)
                 raise

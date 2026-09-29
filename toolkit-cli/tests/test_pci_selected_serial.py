@@ -67,6 +67,18 @@ class SelectedSerialTests(unittest.TestCase):
             self.assertEqual(caught.exception.selected_serial_evidence['outcome'],'preconditions_failed')
             self.assertFalse(caught.exception.selected_serial_evidence['transport_invoked'])
 
+    def test_cooperating_endpoint_contention_refuses_verify_before_io(self):
+        initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
+        with tempfile.TemporaryDirectory() as tmp,conversation(initial) as (endpoint,state):
+            subject=manager(endpoint);plan=subject.plan(A,6)
+            baseline=list(state['requests'])
+            with EndpointLease(*endpoint):
+                with self.assertRaises(EndpointLeaseBusy) as caught:
+                    subject.verify(plan)
+            self.assertEqual(state['requests'],baseline)
+            self.assertEqual(caught.exception.selected_serial_evidence['outcome'],'uncertain')
+            self.assertFalse(caught.exception.selected_serial_evidence['after_collection_complete'])
+
     def test_independent_literal_peer_full_sequence_and_recovery_do_not_replay(self):
         initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
         responses=initial+initial+[RECEIPT_A]+after_responses()+after_responses()
