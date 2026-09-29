@@ -2087,6 +2087,11 @@ impl Server {
         } else if method == "UNRAVEL" {
             let args = ["NET", "UNRAVEL", words[1]];
             self.net_unravel(tag, &args)
+        } else if method == "PSYNC" {
+            if words.len() != 3 {
+                return err(tag, 400, "400 Syntax Error: Too many parameters");
+            }
+            self.mock_psync(tag, words[1])
         } else if method == "FACTORYDEFAULT" {
             if words.len() != 3 || !valid_target(words[1]) {
                 return err(
@@ -2128,6 +2133,35 @@ impl Server {
                 final_text: format!("202 Done: {}", words[1]),
                 status: 202,
             }
+        }
+    }
+
+    /// Mock `DO unit Psync`: the model has no bus, so a physically present
+    /// unit is accepted without refreshing its cached summary. A database-only
+    /// unit is native "Unit not found" (C-Gate 3.4.0.2001 capture).
+    fn mock_psync(&mut self, tag: &str, address: &str) -> Response {
+        let not_found = || {
+            err(
+                tag,
+                status::ABSENT,
+                &format!("401 Bad object or device ID: {address} (Unit not found)"),
+            )
+        };
+        let Some((project, network, unit)) = self.unit_of(address) else {
+            return not_found();
+        };
+        if project != self.current.clone().unwrap_or_default() {
+            return err(tag, status::NOT_FOUND, "404 Project not selected");
+        }
+        let present = self
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&network))
+            .is_some_and(|network| network.physical.contains_key(&unit));
+        if present {
+            ok(tag, vec![], "200 OK")
+        } else {
+            not_found()
         }
     }
 

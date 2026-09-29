@@ -1,0 +1,8 @@
+{"name": "netvoltage_present", "command": "GET //DIAGNOSE/254/p/16 NetVoltage", "native_lines": ["300 //DIAGNOSE/254/p/16: NetVoltage=31.8"], "mock_contract": "shape"}
+{"name": "psync_present", "command": "DO //DIAGNOSE/254/p/16 Psync", "native_lines": ["202 Done: //DIAGNOSE/254/p/16"], "mock_contract": "exact"}
+{"name": "burden_present", "command": "GET //DIAGNOSE/254/p/16 BurdenActive", "native_lines": ["300 //DIAGNOSE/254/p/16: BurdenActive=no"], "mock_contract": "shape"}
+{"name": "pp_get_missing_parameter", "command": "PP GET <session> ClockGenEnable", "native_lines": ["460 No such parameter: ClockGenEnable"], "mock_contract": "exact"}
+{"name": "database_only_get_netvoltage", "command": "GET //DIAGNOSE/254/p/99 NetVoltage", "native_lines": ["401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"], "mock_contract": "exact"}
+{"name": "database_only_do_psync", "command": "DO //DIAGNOSE/254/p/99 Psync", "native_lines": ["401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"], "mock_contract": "exact"}
+{"name": "database_only_get_burdenactive", "command": "GET //DIAGNOSE/254/p/99 BurdenActive", "native_lines": ["401 Bad object or device ID: //DIAGNOSE/254/p/99 (Unit not found)"], "mock_contract": "exact"}
+{"name": "detached_psync", "command": "DO //DIAGNOSE/254/p/17 Psync", "native_lines": ["408 Operation failed: //DIAGNOSE/254/p/17 ()"], "mock_contract": "service-silent-unit"}

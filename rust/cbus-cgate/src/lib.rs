@@ -7028,7 +7028,8 @@ impl Server {
         }
         match session.params.get(wanted) {
             Some(value) => parameter_reply(tag, vec![format!("{wanted}={value}")]),
-            None => err(tag, status::NOT_FOUND, "404 Parameter not found"),
+            // Native C-Gate 3.4.0.2001 (owned capture, P8.05 diagnostics).
+            None => err(tag, 460, &format!("460 No such parameter: {wanted}")),
         }
     }
 
@@ -12063,7 +12064,7 @@ mod tests {
         // NEW keeps identity out of the parameter namespace (native
         // `PP GET *` carries no identity rows; export reads the struct).
         assert_eq!(s.handle("[10] PP NEW S1 KEY1 1.2.67").status, 200);
-        assert_eq!(s.handle("[11] PP GET S1 UnitType").status, 404);
+        assert_eq!(s.handle("[11] PP GET S1 UnitType").status, 460);
         // SET then read back the full table, including an mK-escaped
         // space end to end over the wire shapes.
         assert_eq!(s.handle("[12] PP SET S1 UnitName LOUNGE").status, 200);
@@ -12094,7 +12095,7 @@ mod tests {
         assert_eq!(s.handle("[17] PP START S2 L1").status, 200);
         assert_eq!(s.handle("[18] PP LOAD S2 /db//TEST/254/p/20").status, 200);
         assert!(s.sessions["S2"].dirty.is_empty());
-        assert_eq!(s.handle("[19] PP GET S2 FirmwareVersion").status, 404);
+        assert_eq!(s.handle("[19] PP GET S2 FirmwareVersion").status, 460);
         let reloaded = s.handle("[19b] PP GET S2 UnitName");
         assert_eq!(reloaded.final_text, "315 UnitName=LOUNGE");
         // QUICKGET reads database fields without a session.

@@ -6124,6 +6124,7 @@ impl Service {
             extended_firmware: Option<String>,
             applications: Option<[u8; 2]>,
             widget_groups: Option<String>,
+            net_voltage: Option<String>,
         }
 
         let mut identities = Vec::with_capacity(addresses.len());
@@ -6221,6 +6222,10 @@ impl Service {
             };
             let has_exactly_one_known_serial_reply =
                 serial_replies.len() == 1 && serials.len() == 1;
+            let net_voltage = match serial_replies.as_slice() {
+                [reply] => net_voltage_text(reply),
+                _ => None,
+            };
             // P3d: surface duplicate-address conflicts on the event channel
             // and retain the observed set in the volatile snapshot. The scalar
             // `serial` keeps "" on conflict (SerialNumber getter/SET
@@ -6255,6 +6260,7 @@ impl Service {
                 extended_firmware: None,
                 applications: None,
                 widget_groups: None,
+                net_voltage,
             });
         }
 
@@ -6416,8 +6422,12 @@ impl Service {
                         "Application",
                         "Application2",
                         "WidgetGroups",
+                        "NetVoltage",
                     ] {
                         unit.fields.remove(field);
+                    }
+                    if let Some(voltage) = identity.net_voltage {
+                        unit.fields.insert("NetVoltage".into(), voltage);
                     }
                     if let Some(firmware) = identity.extended_firmware {
                         unit.fields.insert("FirmwareVersion".into(), firmware);
@@ -13327,6 +13337,11 @@ impl Service {
             self.net_unravel(client, &line, tag, &command).await
         } else if method == "FACTORYDEFAULT" {
             self.factory_default_edlt(client, tag, words).await
+        } else if method == "PSYNC" {
+            if words.len() != 3 {
+                return err(tag, 400, "400 Syntax Error: Too many parameters");
+            }
+            self.psync_unit(tag, words[1]).await
         } else {
             return err(tag, 402, "402 Method not supported by object");
         };
@@ -13340,6 +13355,81 @@ impl Service {
                 status: 202,
             }
         }
+    }
+
+    /// Native `DO unit Psync` for a unit on the directly attached network.
+    /// CBus2Unit.m reads IDENTIFY16 (y: BurdenActive is bit 7) and then
+    /// IDENTIFY4 (x: NetVoltage byte 9), refreshing whichever succeeds. A
+    /// silent unit is native `408 Operation failed: <unit> ()`; a unit never
+    /// observed on the bus is `401 ... (Unit not found)`.
+    async fn psync_unit(&self, tag: &str, address: &str) -> Response {
+        let _commands = self.commands.lock().await;
+        let not_found = || {
+            err(
+                tag,
+                401,
+                &format!("401 Bad object or device ID: {address} (Unit not found)"),
+            )
+        };
+        let Some((project, network, unit)) = Server::split_unit(address) else {
+            return not_found();
+        };
+        if project != self.project {
+            return not_found();
+        }
+        let present = {
+            let model = self.model.lock().await;
+            model
+                .projects
+                .get(&project)
+                .and_then(|project| project.networks.get(&network))
+                .is_some_and(|network| network.physical.contains_key(&unit))
+        };
+        if !present {
+            return not_found();
+        }
+        if network != self.network {
+            return err(
+                tag,
+                408,
+                &format!("408 Operation failed: {address} (routed Psync is not supported)"),
+            );
+        }
+        let (pci_generation, pci) = self.current_pci_epoch().await;
+        let burden = match pci.identify_first(unit, 16).await {
+            Ok(Some(data)) if !data.is_empty() => Some(data[0] & 0x80 != 0),
+            _ => None,
+        };
+        let voltage = match pci.identify_all(unit, 4).await {
+            Ok(replies) if replies.len() == 1 => net_voltage_text(&replies[0]),
+            _ => None,
+        };
+        let Some(_commit_guard) = self.pci_commit_guard(pci_generation, &pci).await else {
+            return err(tag, 408, "408 Psync invalidated by PCI reconnect");
+        };
+        if let Some(record) = self
+            .model
+            .lock()
+            .await
+            .projects
+            .get_mut(&project)
+            .and_then(|project| project.networks.get_mut(&network))
+            .and_then(|network| network.physical.get_mut(&unit))
+        {
+            if let Some(burden) = burden {
+                record.fields.insert(
+                    "BurdenActive".into(),
+                    if burden { "yes" } else { "no" }.into(),
+                );
+            }
+            if let Some(voltage) = &voltage {
+                record.fields.insert("NetVoltage".into(), voltage.clone());
+            }
+        }
+        if burden.is_none() || voltage.is_none() {
+            return err(tag, 408, &format!("408 Operation failed: {address} ()"));
+        }
+        ok(tag, vec![], "200 OK")
     }
 
     async fn factory_default_edlt(
@@ -16114,6 +16204,18 @@ fn serial_number(data: &[u8]) -> io::Result<Option<String>> {
         return Ok(None);
     }
     Ok(Some(format!("{}.{}", packed >> 12, packed & 0xfff)))
+}
+
+/// Native C-Gate 3.4.0.2001 `NetVoltage` text for one twelve-byte IDENTIFY4
+/// extended diagnostic summary: CBus2Unit.a() truncates
+/// `byte9 * 0.15904 + 0.5 + 0.05` to one decimal place. The value is what the
+/// unit reports; cmqttd adds no electrical model.
+fn net_voltage_text(data: &[u8]) -> Option<String> {
+    if data.len() != 12 {
+        return None;
+    }
+    let tenths = ((f64::from(data[9]) * 0.15904 + 0.5 + 0.05) * 10.0) as u32;
+    Some(format!("{}.{}", tenths / 10, tenths % 10))
 }
 
 fn known_serials(replies: &[Vec<u8>]) -> io::Result<HashSet<String>> {

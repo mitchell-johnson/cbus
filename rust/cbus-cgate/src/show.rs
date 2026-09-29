@@ -1903,6 +1903,29 @@ impl Server {
         if matches!(attribute, "?" | "??") {
             return discovery(tag, address, schema, attribute == "??");
         }
+        // Native CBus2Unit diagnostics: NetVoltage formats the IDENTIFY4
+        // voltage byte and BurdenActive is IDENTIFY16 bit 7, both cached at
+        // the last sync/Psync. A database-only unit C-Gate never observed is
+        // "Unit not found"; an unobserved summary keeps the native zero state
+        // (0 * 0.15904 + 0.55 -> "0.5", burden "no").
+        if let Some((name, zero)) = [("NetVoltage", "0.5"), ("BurdenActive", "no")]
+            .into_iter()
+            .find(|(name, _)| name.eq_ignore_ascii_case(attribute))
+        {
+            if !network.physical.contains_key(&unit_address) && !unit.created_by_new {
+                return err(
+                    tag,
+                    status::ABSENT,
+                    &format!("401 Bad object or device ID: {address} (Unit not found)"),
+                );
+            }
+            let value = unit
+                .fields
+                .iter()
+                .find(|(candidate, _)| candidate.eq_ignore_ascii_case(name))
+                .map_or_else(|| zero.to_string(), |(_, value)| value.clone());
+            return property(tag, address, attribute, &value);
+        }
         let value = |name: &str| {
             unit.fields
                 .iter()

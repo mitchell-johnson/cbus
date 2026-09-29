@@ -10293,6 +10293,7 @@ async fn physical_net_sync_surfaces_duplicate_serial_conflict_on_events() {
         "Application",
         "Application2",
         "WidgetGroups",
+        "NetVoltage",
     ] {
         assert!(
             !snapshot.fields.contains_key(field),
@@ -20465,4 +20466,156 @@ async fn move_journal_rejects_malformed_and_unknown_ids() {
     assert!(listed.lines[0].contains("\"journals\":[]"), "{listed:?}");
     assert!(silent(&mut reader).await);
     cleanup(&service, &path);
+}
+
+/// P8.05: native `DO unit Psync` reads IDENTIFY16 then IDENTIFY4 and caches
+/// BurdenActive/NetVoltage; a silent unit is `408 Operation failed: <unit> ()`
+/// with the previous cached values kept, and a unit never observed is 401.
+#[tokio::test(start_paused = true)]
+async fn psync_refreshes_native_burden_and_voltage_and_fails_silent_units() {
+    assert_eq!(super::net_voltage_text(&[0; 12]).as_deref(), Some("0.5"));
+    let mut summary = [0u8; 12];
+    for (raw, text) in [
+        (0xa2, "26.3"),
+        (0xc5, "31.8"),
+        (0xbe, "30.7"),
+        (0xff, "41.1"),
+    ] {
+        summary[9] = raw;
+        assert_eq!(super::net_voltage_text(&summary).as_deref(), Some(text));
+    }
+    assert_eq!(super::net_voltage_text(&[0; 11]), None);
+
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, state_path(), pci, None).unwrap();
+    let mut observed = Unit::blank(5, "");
+    observed.unit_type = "KEYGL5".into();
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .physical
+        .insert(5, observed);
+    let mut client = ClientState::default();
+    let get = |attribute: &'static str| {
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    &format!("[g] GET //HARNESS/254/p/5 {attribute}"),
+                )
+                .await
+                .final_text
+        }
+    };
+    // Unobserved summary: native zero state.
+    assert_eq!(
+        get("NetVoltage").await,
+        "300 //HARNESS/254/p/5: NetVoltage=0.5"
+    );
+    assert_eq!(
+        get("BurdenActive").await,
+        "300 //HARNESS/254/p/5: BurdenActive=no"
+    );
+    // A database-only unit that was never observed is not a C-Gate unit.
+    let missing = service
+        .handle(&mut client, "[m] DO //HARNESS/254/p/99 Psync")
+        .await;
+    assert_eq!(
+        missing.final_text,
+        "401 Bad object or device ID: //HARNESS/254/p/99 (Unit not found)"
+    );
+
+    let psync = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] DO //HARNESS/254/p/5 Psync",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002110"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    database_pci_reply(&mut remote_write, 5, &[0x85, 0x10, 0x80, 0x00, 0x00, 0xff]).await;
+    tokio::task::yield_now().await;
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4605002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let mut identity = vec![0x8d, 4];
+    identity.extend_from_slice(&[0xff, 0xff, 0xff, 0, 0, 0x18, 0xb3, 0xf6, 0x82, 0xc5, 0, 1]);
+    database_pci_reply(&mut remote_write, 5, &identity).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    let response = psync.await.unwrap();
+    assert_eq!(
+        response.final_text, "202 Done: //HARNESS/254/p/5",
+        "{response:?}"
+    );
+    assert_eq!(
+        get("NetVoltage").await,
+        "300 //HARNESS/254/p/5: NetVoltage=31.8"
+    );
+    assert_eq!(
+        get("BurdenActive").await,
+        "300 //HARNESS/254/p/5: BurdenActive=yes"
+    );
+
+    // The unit stops answering: both reads confirm but get no reply.
+    let psync = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[2] DO //HARNESS/254/p/5 Psync",
+                )
+                .await
+        }
+    });
+    for attribute in [b"2110", b"2104"] {
+        let request = database_pci_line(&mut remote_read).await;
+        assert!(
+            request.windows(4).any(|window| window == attribute),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        for _ in 0..3 {
+            tokio::time::advance(Duration::from_secs(1)).await;
+            tokio::task::yield_now().await;
+        }
+    }
+    let response = psync.await.unwrap();
+    assert_eq!(
+        response.final_text, "408 Operation failed: //HARNESS/254/p/5 ()",
+        "{response:?}"
+    );
+    // Like native, a failed Psync leaves the last cached values in place.
+    assert_eq!(
+        get("NetVoltage").await,
+        "300 //HARNESS/254/p/5: NetVoltage=31.8"
+    );
 }
