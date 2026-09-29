@@ -88,7 +88,9 @@ def verify(*, port=20024, report_path=None, backend=None):
         raise ValueError('Use a valid loopback port different from the shared oracle20023')
     if backend == 'docker' and subprocess.run(['docker', 'inspect', CONTAINER], capture_output=True).returncode == 0:
         raise RuntimeError('The dedicated scene container already exists; inspect it before another run')
-    vendor = BASE / 'research/vendor/cgate/app'
+    # The owned local backend uses the explicitly provisioned application directory.
+    selected = os.environ.get('CBUS_LOCAL_CGATE_VENDOR') if backend == 'local' else None
+    vendor = Path(selected).resolve() if selected else BASE / 'research/vendor/cgate/app'
     if not (vendor / 'cgate.jar').is_file():
         raise RuntimeError('Extract the user-supplied native C-Gate reference first')
     runtime = BASE / 'research/runtime'
@@ -117,7 +119,7 @@ def verify(*, port=20024, report_path=None, backend=None):
     report = {'format': 'cbus-native-filesystem-scene-acceptance-v1', 'scope': 'Python vendor-format scene execution over native lighting and independent synthetic state; native SCENE commands tested separately; not PP device scenes',
               'project': project, 'scene_set': scene_set, 'scene': scene_name, 'work_directory': str(work), 'port': port,
               'backend': backend, 'image': IMAGE if not local else None, 'owner': owner, 'commands': [], 'checks': {}, 'cleanup_errors': [],
-              'source_hashes': {str(path.relative_to(BASE)): hashlib.sha256(path.read_bytes()).hexdigest() for path in (
+              'source_hashes': {str(path.relative_to(BASE) if path.is_relative_to(BASE) else path): hashlib.sha256(path.read_bytes()).hexdigest() for path in (
                   vendor / 'cgate.jar', BASE / 'src/cbus_toolkit/scenes.py', BASE / 'src/cbus_toolkit/cgate.py',
                   BASE / 'research/NativeSceneFileProbe.java', BASE / 'research/local_cgate.py',
                   BASE / 'tests/test_scenes.py', Path(__file__).resolve())}}

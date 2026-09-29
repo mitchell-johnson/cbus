@@ -101,10 +101,12 @@ def generate_pki(path):
 
 def verify(*, vendor_dir=None, output=None, backend=None):
     research = Path(__file__).resolve().parent
-    vendor = (Path(vendor_dir) if vendor_dir else research / "vendor/cgate/app").resolve()
+    backend = service_backend() if backend is None else backend
+    # The owned local backend uses the explicitly provisioned application directory.
+    selected = vendor_dir or (os.environ.get("CBUS_LOCAL_CGATE_VENDOR") if backend == "local" else None)
+    vendor = (Path(selected) if selected else research / "vendor/cgate/app").resolve()
     if not (vendor / "cgate.jar").is_file():
         raise RuntimeError("Extract the exact Toolkit vendor installer before this probe")
-    backend = service_backend() if backend is None else backend
     if backend not in ("docker", "local"):
         raise ValueError("Native TLS backend must be docker or local")
     name = "cbus-toolkit-tls-" + uuid.uuid4().hex[:10]

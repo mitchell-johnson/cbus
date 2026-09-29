@@ -368,12 +368,15 @@ class NativeParentTransactionTests(unittest.TestCase):
                         if 'complete_levels_if_present' in row['facts']:
                             record['levels'] = list(range(256))
                         groups.append(record)
-                    if not any(row['application'] == 56 and row['group'] == 12
-                               for row in groups):
-                        groups.append({
-                            'application': 56, 'group': 12, 'exists': True,
-                            'dynamic_images': [False] * 4, 'levels': [],
-                        })
+                    # Operation-introduced groups need explicit positive evidence,
+                    # exactly as in the offline transaction_cache fixture.
+                    for application, group in ((56, 12), (56, 42), (202, 42)):
+                        if not any((row['application'], row['group']) == (application, group)
+                                   for row in groups):
+                            groups.append({
+                                'application': application, 'group': group, 'exists': True,
+                                'dynamic_images': [False] * 4, 'levels': [],
+                            })
                     metadata = {
                         'format': 'cbus-edlt-lifecycle-cache-v1',
                         'applications': applications, 'groups': groups,
