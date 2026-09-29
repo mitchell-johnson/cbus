@@ -54,6 +54,18 @@ audit compares that trace to JUnit, requires at least one passing test in the
 is missing, truncated, or entirely skipped. A green source job therefore cannot
 conceal a cmqttd suite that skipped because its binary was absent.
 
+The committed differential receipts under `toolkit-cli/research/fixtures/`, the
+C-Gate contract inventory and the parity register are bound to source
+fingerprints, so editing a fingerprinted Rust or Python source makes
+`tests/test_parity_register.py` report them stale.
+`make refresh-parity-receipts` rebuilds both debug servers, regenerates the contract
+inventory, re-runs the `SESSION_ID`, numeric-tag and Unit XML mapper
+differentials against each server into the committed fixture paths, then
+rebuilds the `SESSION_ID` physical applicability receipt and the parity
+register and runs `check-parity-register`. It stops on the first failed
+differential. It never rewrites the retained pre-fix `SESSION_ID` receipt, and
+receipts must never be edited by hand.
+
 The `toolkit-*-results.json` artifacts record the exact source revision,
 JUnit/trace hashes, case IDs and outcomes, call events, and reported pass/skip/
 failure counts. Pytest's JUnit counter includes `unittest` subtest events that

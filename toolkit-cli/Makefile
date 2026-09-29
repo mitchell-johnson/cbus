@@ -27,6 +27,10 @@
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
 #   make check-parity-register  verify generated scope/evidence accounting
+#   make refresh-parity-receipts
+#                       rebuild both servers, re-run every source-bound
+#                       differential into research/fixtures, then regenerate
+#                       the contract inventory, applicability and register
 #   make coverage       print the evidence-derived completion gate status
 #   make require-complete
 #                       enforce the evidence-derived gate (nonzero until parity)
@@ -119,6 +123,42 @@ check-dbgetxml-wire-interop: build-interop
 		PYTHONPATH=src:. $(PY) -m pytest \
 		tests/test_cgate_dbgetxml_framing_interop.py -q -p no:cacheprovider
 
+# Regenerate the source-bound parity receipts after a fingerprinted Rust or
+# Python source changes. Every differential is a real re-run against freshly
+# built cgate-mock and cmqttd on owned loopback ports; never edit hashes by
+# hand. Order matters: the contract inventory hashes the Rust C-Gate sources,
+# the physical applicability receipt hashes the inventory, and the register
+# validates every receipt. The tagged and DBSETXML differentials fingerprint
+# this Makefile and CI, so edit those first. A failed differential stops the
+# target and leaves its failed receipt in the working tree for inspection.
+# research/fixtures/cgate-session-differential-pre-fix.json is deliberately
+# not regenerated: it is the retained red run of a pinned pre-fix binary
+# (provenance pre-fix-binary) that tests expect to stay failed.
+refresh-parity-receipts: build-interop
+	$(PY) research/build_cgate_contract_inventory.py
+	$(PY) research/cgate_session_differential.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" \
+		--output research/fixtures/cgate-session-differential-fixed.json
+	PYTHONPATH=src:research $(PY) research/run_cgate_session_cmqttd_differential.py \
+		--cmqttd-bin "$(CMQTTD_BIN)" \
+		--output research/fixtures/cgate-session-differential-cmqttd.json
+	PYTHONPATH=src:. $(PY) research/cgate_tagged_session_differential.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" \
+		--cmqttd-bin "$(CMQTTD_BIN)" \
+		--output-dir research/runtime
+	cp research/runtime/cgate-tagged-session-differential-mock.json \
+		research/fixtures/cgate-tagged-session-differential-cgate-mock.json
+	cp research/runtime/cgate-tagged-session-differential-cmqttd.json \
+		research/fixtures/cgate-tagged-session-differential-cmqttd.json
+	PYTHONPATH=src:. $(PY) research/cgate_dbsetxml_unit_differential.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" \
+		--cmqttd-bin "$(CMQTTD_BIN)" \
+		--output-dir research/fixtures
+	PYTHONPATH=src $(PY) research/cgate_session_physical_applicability.py \
+		--output research/fixtures/cgate-session-physical-applicability.json
+	$(PY) research/build_parity_register.py
+	$(MAKE) check-parity-register
+
 check-interop: check-session-differential check-tagged-session-differential check-dbsetxml-unit-differential check-dbgetxml-wire-interop
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
@@ -147,4 +187,4 @@ compile:
 	check-tagged-session-differential \
 	check-dbsetxml-unit-differential \
 	check-cgate-interop check-cmqtt-interop check-interop check-wheel \
-	check-parity-register coverage require-complete compile
+	check-parity-register refresh-parity-receipts coverage require-complete compile
