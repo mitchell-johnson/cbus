@@ -65,7 +65,7 @@ def _exchange(host: str, port: int, command: str, tag: str,
             stream.settimeout(timeout)
             file = stream.makefile("rwb", buffering=0)
             banner = file.readline().decode("utf-8").rstrip("\r\n")
-            file.write(f"[{tag}] {command}\r\n".encode("ascii"))
+            stream.sendall(f"[{tag}] {command}\r\n".encode("ascii"))
             prefix = f"[{tag}] "
             for _ in range(512):
                 raw = file.readline()
