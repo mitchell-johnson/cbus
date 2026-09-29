@@ -327,12 +327,18 @@ def junit_result(path: Path) -> dict[str, object]:
         raise GateError("Invalid JUnit counters") from error
     _require(all(value >= 0 for value in counters.values()), "Invalid JUnit counters")
     cases = list(root.iter("testcase"))
-    _require(counters["tests"] > 0 and counters["tests"] == len(cases),
+    # Pytest's JUnit counters include unittest subtests that it does not emit
+    # as test cases; the difference is bound to the trace's subtest counts.
+    _require(bool(cases) and counters["tests"] >= len(cases),
              "JUnit test count does not match test cases")
-    _require(sum(case.find("failure") is not None for case in cases) == counters["failures"]
-             and sum(case.find("error") is not None for case in cases) == counters["errors"]
-             and sum(case.find("skipped") is not None for case in cases) == counters["skipped"],
+    case_outcomes = {"failures": "failure", "errors": "error", "skipped": "skipped"}
+    unitemized = {name: counters[name] - sum(case.find(outcome) is not None for case in cases)
+                  for name, outcome in case_outcomes.items()}
+    unitemized["reported"] = counters["tests"] - len(cases)
+    _require(all(value >= 0 for value in unitemized.values())
+             and sum(unitemized[name] for name in case_outcomes) <= unitemized["reported"],
              "JUnit outcome counters do not match test cases")
+    unitemized["passed"] = unitemized["reported"] - sum(unitemized[name] for name in case_outcomes)
     nodeids = []
     for case in cases:
         properties = case.find("properties")
@@ -344,7 +350,9 @@ def junit_result(path: Path) -> dict[str, object]:
         nodeids.append(matched[0])
     _require(len(nodeids) == len(set(nodeids)), "JUnit contains duplicate test node IDs")
     return {**counters, "passed": counters["tests"] - counters["failures"]
-            - counters["errors"] - counters["skipped"], "nodeids": nodeids}
+            - counters["errors"] - counters["skipped"],
+            **({"unitemized_subtests": unitemized} if unitemized["reported"] else {}),
+            "nodeids": nodeids}
 
 
 def trace_result(path: Path, selectors: list[str], junit: dict[str, object], exit_code: int) -> dict:
@@ -365,6 +373,14 @@ def trace_result(path: Path, selectors: list[str], junit: dict[str, object], exi
              "JUnit cases do not match executed provisioned tests")
     _require(trace.get("session_exitstatus") == exit_code,
              "Pytest trace exit status does not match the process")
+    subtests = trace.get("subtests", {"passed": 0, "failed": 0, "skipped": 0})
+    _require(isinstance(subtests, dict) and set(subtests) == {"passed", "failed", "skipped"}
+             and all(type(value) is int and value >= 0 for value in subtests.values()),
+             "Invalid pytest subtest trace")
+    unitemized = junit.get("unitemized_subtests", {"reported": 0, "passed": 0})
+    _require(sum(subtests.values()) == unitemized["reported"]
+             and subtests["passed"] == unitemized["passed"],
+             "JUnit subtest counters do not match executed subtests")
     def matches(node: str, selector: str) -> bool:
         return (node == selector or node.startswith(selector + "::")
                 or node.startswith(selector + "["))
@@ -373,7 +389,8 @@ def trace_result(path: Path, selectors: list[str], junit: dict[str, object], exi
                  "A selected test module or node collected zero tests")
     _require(all(any(matches(node, selector) for selector in selectors) for node in collected),
              "Pytest collected a test outside the declared selection")
-    return {"collected": len(collected), "executed": len(executed), "deselected": 0}
+    return {"collected": len(collected), "executed": len(executed), "deselected": 0,
+            **({"subtests": subtests} if sum(subtests.values()) else {})}
 
 
 def source_revision() -> str:

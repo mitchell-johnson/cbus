@@ -192,9 +192,25 @@ class ReleaseGateIntegrityTests(unittest.TestCase):
             path.write_text(_xml(property_present=False))
             with self.assertRaisesRegex(release_gate.GateError, "node ID"):
                 release_gate.junit_result(path)
-            path.write_text(_xml(count=2))
+            path.write_text(_xml(count=0))
             with self.assertRaisesRegex(release_gate.GateError, "test count"):
                 release_gate.junit_result(path)
+            # An inflated counter looks like unitemized subtests, which the
+            # independently traced subtest events must then account for.
+            path.write_text(_xml(count=2))
+            summary = release_gate.junit_result(path)
+            self.assertEqual(summary["unitemized_subtests"],
+                             {"failures": 0, "errors": 0, "skipped": 0, "reported": 1, "passed": 1})
+            trace = Path(folder) / "trace.json"
+            for subtests in (None, {"passed": 0, "failed": 0, "skipped": 0},
+                             {"passed": 0, "failed": 1, "skipped": 0}):
+                with self.subTest(subtests=subtests):
+                    trace.write_text(json.dumps({
+                        "format": release_gate.TRACE_FORMAT, "collected": [NODE], "executed": [NODE],
+                        "deselected": [], "session_exitstatus": 0,
+                        **({} if subtests is None else {"subtests": subtests})}))
+                    with self.assertRaisesRegex(release_gate.GateError, "subtest"):
+                        release_gate.trace_result(trace, ["tests/test_fixture.py"], summary, 0)
 
     def test_wheel_record_and_installed_bytes_are_bound(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -345,6 +361,39 @@ class ReleaseGateIntegrityTests(unittest.TestCase):
             self.assertEqual(release_gate.trace_result(trace, ["tests/test_fixture.py"],
                                                        summary, 0),
                              {"collected": 1, "executed": 1, "deselected": 0})
+
+    def test_real_pytest_plugin_binds_unitemized_unittest_subtests(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.fixture(root)
+            (root / "tests/test_fixture.py").write_text(
+                "import unittest\n"
+                "class Fixture(unittest.TestCase):\n"
+                "    def test_fixture(self):\n"
+                "        for value in range(3):\n"
+                "            with self.subTest(value=value):\n"
+                "                self.assertGreaterEqual(value, 0)\n")
+            config = root / "pytest.ini"
+            config.write_text("[pytest]\n")
+            trace = root / "trace.json"
+            junit = root / "result.xml"
+            project = Path(release_gate.__file__).resolve().parents[1]
+            environment = os.environ.copy()
+            environment["PYTHONPATH"] = str(project)
+            environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+            environment.pop("PYTEST_ADDOPTS", None)
+            environment.pop("PYTEST_PLUGINS", None)
+            result = subprocess.run([
+                sys.executable, "-m", "pytest", "-c", str(config), "--rootdir", str(root),
+                "-p", "research.release_gate_pytest", "--cbus-release-gate-trace", str(trace),
+                "tests/test_fixture.py", f"--junitxml={junit}", "-q",
+            ], cwd=root, env=environment, text=True, capture_output=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            summary = release_gate.junit_result(junit)
+            self.assertEqual(summary["unitemized_subtests"]["passed"], 3)
+            self.assertEqual(release_gate.trace_result(trace, ["tests/test_fixture.py"], summary, 0),
+                             {"collected": 1, "executed": 1, "deselected": 0,
+                              "subtests": {"passed": 3, "failed": 0, "skipped": 0}})
 
 
 if __name__ == "__main__":

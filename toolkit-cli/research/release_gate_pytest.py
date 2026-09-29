@@ -8,6 +8,7 @@ passed.
 """
 from __future__ import annotations
 
+from collections import Counter
 import json
 from pathlib import Path
 
@@ -15,6 +16,7 @@ import pytest
 
 
 FORMAT = "cbus-release-gate-pytest-trace-v1"
+_SUBTESTS: Counter = Counter()
 
 
 def _nodeid(item):
@@ -33,6 +35,7 @@ def pytest_configure(config):
     config._cbus_release_gate_collected = []
     config._cbus_release_gate_deselected = []
     config._cbus_release_gate_executed = []
+    _SUBTESTS.clear()
 
 
 def pytest_deselected(items):
@@ -57,6 +60,13 @@ def pytest_runtest_makereport(item, call):
         item.config._cbus_release_gate_executed.append(_nodeid(item))
 
 
+def pytest_runtest_logreport(report):
+    # JUnit counts unittest subtests without emitting their cases; count
+    # them independently so the runner can bind that difference.
+    if report.when == "call" and type(report).__name__ == "SubtestReport":
+        _SUBTESTS[report.outcome] += 1
+
+
 def pytest_sessionfinish(session, exitstatus):
     selected = session.config.getoption("--cbus-release-gate-trace")
     if not selected:
@@ -68,6 +78,8 @@ def pytest_sessionfinish(session, exitstatus):
         "collected": session.config._cbus_release_gate_collected,
         "deselected": session.config._cbus_release_gate_deselected,
         "executed": session.config._cbus_release_gate_executed,
+        "subtests": {outcome: _SUBTESTS[outcome]
+                     for outcome in ("passed", "failed", "skipped")},
         "session_exitstatus": int(exitstatus),
     }
     temporary = path.with_name(path.name + ".tmp")
