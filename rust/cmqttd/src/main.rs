@@ -69,8 +69,38 @@ fn start_pci_reset(pci: &Arc<PciClient>) {
     });
 }
 
-/// Pump C-Bus events into the gateway; on connection loss, reconnect
-/// (discovery modes) or shut down (plain `-t`).
+/// Work for the MQTT gateway, applied strictly in bus order.
+enum GatewayWork {
+    Event(CBusEvent),
+    Reconnected,
+    /// Signals once every earlier item has been handed to MQTT.
+    Drained(tokio::sync::oneshot::Sender<()>),
+}
+
+/// Apply C-Bus events to the MQTT gateway on their own task. MQTT publishes
+/// wait on rumqttc's bounded request queue, which only drains while the
+/// broker is connected; running them here keeps a broker outage from
+/// stalling the event pump, and with it the embedded C-Gate event stream,
+/// transport reconnects and programming observers. The queue is unbounded
+/// like the pump's own inbound channel; it drains in order once MQTT is back.
+fn spawn_gateway_worker(gw: Arc<Gateway>) -> mpsc::UnboundedSender<GatewayWork> {
+    let (tx, mut rx) = mpsc::unbounded_channel::<GatewayWork>();
+    tokio::spawn(async move {
+        while let Some(work) = rx.recv().await {
+            match work {
+                GatewayWork::Event(ev) => gw.on_cbus_event(ev).await,
+                GatewayWork::Reconnected => gw.on_cbus_reconnected().await,
+                GatewayWork::Drained(done) => {
+                    let _ = done.send(());
+                }
+            }
+        }
+    });
+    tx
+}
+
+/// Pump C-Bus events to the C-Gate service and the MQTT gateway; on
+/// connection loss, reconnect (discovery modes) or shut down (plain `-t`).
 async fn cbus_event_pump(
     gw: Arc<Gateway>,
     mqtt: AsyncClient,
@@ -79,13 +109,20 @@ async fn cbus_event_pump(
     spec: ConnSpec,
     cgate: Option<Arc<cbus_cgate::service::Service>>,
 ) {
+    let gateway = spawn_gateway_worker(gw.clone());
     while let Some(ev) = ev_rx.recv().await {
         if let Some(service) = &cgate {
             service.observe(&ev).await;
         }
         if let CBusEvent::ConnectionLost = ev {
-            gw.on_cbus_event(ev).await;
+            let _ = gateway.send(GatewayWork::Event(ev));
             if !spec.reconnect {
+                // Queue the retained OFF state behind every earlier event
+                // before the final MQTT flush. A broker outage cannot hold
+                // shutdown open indefinitely.
+                let (done, drained) = tokio::sync::oneshot::channel();
+                let _ = gateway.send(GatewayWork::Drained(done));
+                let _ = tokio::time::timeout(Duration::from_secs(5), drained).await;
                 tracing::error!("C-Bus connection lost; shutting down");
                 flush_mqtt_before_exit(&mqtt).await;
                 std::process::exit(0);
@@ -105,7 +142,7 @@ async fn cbus_event_pump(
                         service.set_pci(new_pci.clone()).await;
                     }
                     gw.set_pci(new_pci).await;
-                    gw.on_cbus_reconnected().await;
+                    let _ = gateway.send(GatewayWork::Reconnected);
                     // Every cached observation was invalidated on transport
                     // loss. Force a fresh configured sweep instead of relying
                     // on the startup-only deduplication or a later timer.
@@ -118,7 +155,7 @@ async fn cbus_event_pump(
                 }
             }
         } else {
-            gw.on_cbus_event(ev).await;
+            let _ = gateway.send(GatewayWork::Event(ev));
         }
     }
 }

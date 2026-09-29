@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, oneshot};
 
 /// MQTT topic-filter matching (`#`, `+`).
 pub fn topic_matches(filter: &str, topic: &str) -> bool {
@@ -51,8 +51,11 @@ pub struct PublishRecord {
 }
 
 struct ClientHandle {
-    tx: mpsc::UnboundedSender<Vec<u8>>,
+    /// `None` once the connection ended or was dropped by the test.
+    tx: Option<mpsc::UnboundedSender<Vec<u8>>>,
     subscriptions: Vec<String>,
+    /// Fires to make the broker drop this connection (outage emulation).
+    kill: Option<oneshot::Sender<()>>,
 }
 
 #[derive(Default)]
@@ -65,6 +68,10 @@ struct State {
     connections: usize,
     clean_disconnects: usize,
     injected_pubacks: usize,
+    /// While set, new TCP connections are accepted and immediately closed
+    /// (a broker that is down or restarting).
+    refusing: bool,
+    refused: usize,
 }
 
 /// The broker: `start()` binds an ephemeral port; queries are snapshots.
@@ -174,6 +181,30 @@ impl MiniBroker {
         self.state.lock().unwrap().injected_pubacks
     }
 
+    /// Drop every live client connection without an MQTT DISCONNECT, as a
+    /// crashed or restarting broker would. Recorded history is kept.
+    pub fn disconnect_clients(&self) {
+        let mut st = self.state.lock().unwrap();
+        for client in &mut st.clients {
+            client.tx = None;
+            if let Some(kill) = client.kill.take() {
+                let _ = kill.send(());
+            }
+        }
+    }
+
+    /// While `refusing`, close every new connection immediately after
+    /// accepting it, so clients observe an unavailable broker. Clearing it
+    /// lets clients reconnect on the same port (a broker restart).
+    pub fn set_refusing(&self, refusing: bool) {
+        self.state.lock().unwrap().refusing = refusing;
+    }
+
+    /// Connections closed because the broker was refusing.
+    pub fn refused_connections(&self) -> usize {
+        self.state.lock().unwrap().refused
+    }
+
     /// Deliver a message to subscribed clients as if published by an
     /// external client (e.g. Home Assistant sending a /set command).
     pub fn inject(&self, topic: &str, payload: &[u8]) {
@@ -196,8 +227,10 @@ impl MiniBroker {
         let st = self.state.lock().unwrap();
         let pkt = publish_packet(topic, payload, qos, retain);
         for c in &st.clients {
-            if c.subscriptions.iter().any(|f| topic_matches(f, topic)) {
-                let _ = c.tx.send(pkt.clone());
+            if let Some(tx) = &c.tx {
+                if c.subscriptions.iter().any(|f| topic_matches(f, topic)) {
+                    let _ = tx.send(pkt.clone());
+                }
             }
         }
     }
@@ -231,14 +264,20 @@ async fn read_packet(
 async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) {
     let (mut rd, mut wr) = stream.into_split();
     let (tx, mut rx) = mpsc::unbounded_channel::<Vec<u8>>();
+    let (kill, mut killed) = oneshot::channel::<()>();
     let client_index;
     {
         let mut st = state.lock().unwrap();
+        if st.refusing {
+            st.refused += 1;
+            return;
+        }
         st.connections += 1;
         client_index = st.clients.len();
         st.clients.push(ClientHandle {
-            tx: tx.clone(),
+            tx: Some(tx.clone()),
             subscriptions: Vec::new(),
+            kill: Some(kill),
         });
     }
     tokio::spawn(async move {
@@ -250,7 +289,11 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
     });
 
     loop {
-        let Ok((hdr, body)) = read_packet(&mut rd).await else {
+        let packet = tokio::select! {
+            packet = read_packet(&mut rd) => packet,
+            _ = &mut killed => break,
+        };
+        let Ok((hdr, body)) = packet else {
             break;
         };
         let kind = hdr >> 4;
@@ -303,8 +346,10 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
                     // deliver to all matching subscribers (incl. sender),
                     // like a real broker; delivered at qos 0.
                     for c in &st.clients {
-                        if c.subscriptions.iter().any(|f| topic_matches(f, &topic)) {
-                            let _ = c.tx.send(pkt.clone());
+                        if let Some(tx) = &c.tx {
+                            if c.subscriptions.iter().any(|f| topic_matches(f, &topic)) {
+                                let _ = tx.send(pkt.clone());
+                            }
                         }
                     }
                 }
@@ -358,4 +403,7 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
             }
         }
     }
+    // Release the broker-side sender so the writer task ends and the socket
+    // closes, whether the client left or the test dropped it.
+    state.lock().unwrap().clients[client_index].tx = None;
 }

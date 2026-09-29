@@ -293,7 +293,10 @@ report does. Negative confirmation has no success echo, and timeout or transport
 loss is outcome-uncertain and is never replayed after a reconnect. Non-retained diagnostics are published on
 `cmqttd/cbus/command_result`. The retained cmqttd binary sensor changes to
 `OFF` on C-Bus loss and `ON` when a fresh transport is installed; reconnect
-also forces a configured status sweep to replace invalidated observations.
+also forces a configured status sweep to replace invalidated observations. MQTT
+publishes for bus events run on their own ordered worker, so a broker outage
+does not stall the C-Gate event stream, PCI reconnects or a running `PP SAVE`;
+the queued observations are delivered in order when the broker returns.
 
 The embedded C-Gate endpoint binds volatile commits from the physical operations
 listed below to the shared PCI generation and client that performed the I/O. A

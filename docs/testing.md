@@ -249,6 +249,20 @@ Transport tests separately prove bounded AUTO polling and that a lost reply is
 never replayed after reconnect. These loopback tests do not establish behavior
 of a particular physical DALI gateway or downstream DALI bus.
 
+`cmqttd/tests/system_cgate_pp_liveness.rs` runs a 16-chunk direct `PP SAVE`
+against a scripted unit on the shared fake PCI. While a STORE is unacknowledged,
+MQTT commands still reach the wire once each, in publish order, within a bound
+derived from `FlowConfig` (`rto_max + silent_hold + error_pause + 2 x min_gap`
+plus 1 s slack). Their state echoes follow PCI confirmation, and bus observations
+reach MQTT and C-Gate `EVENT` rows in bus order. A PCI loss mid-save
+(ESP32-WiFi reconnect mode) returns 502 with the confirmed-write count, replays
+no STORE, ignores a late ACK and only writes the remaining chunks on an explicit
+new save. A broker outage mid-save leaves the save and 80 C-Gate events
+unaffected; on reconnect cmqttd resubscribes, republishes discovery and bridge
+state, and delivers the queued observations. The mini broker's
+`disconnect_clients`/`set_refusing` emulate that outage. These are scripted
+loopback tests, not physical programming or broker acceptance.
+
 `system_cgate_net_lifecycle.rs` starts the real daemon with the fake PCI and
 mini broker. It pins exact NET/NETWORK/TOPOLOGY help, LOGIN boundaries, local
 catalogue operations with zero PCI writes, bound OPEN/CLOSE and project
