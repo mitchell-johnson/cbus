@@ -28,7 +28,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Discover CNI2/Wiser endpoints | `interface discover-cni`, `interface scan-cni --probe BIND@DEST`, `interface scan-cni --auto-adapters [--plan-only]` | Bounded IPv4 UDP queries; auto mode needs the optional `network` extra; plan-only sends no traffic; no TCP or C-Bus connection |
 | Probe or set up a serial PCI | `interface probe-serial PORT [--setup]` | Exclusive open of one explicit port; reset/identify/RECALL only; `--setup` writes cmqttd's four interface options after a `present` result and verifies readback; needs the `serial` extra |
 | Inspect route bytes | `pci-route` | Offline |
-| Plan supported device settings | `keys`, `sensors`, `din-settings`, `dlt`, `edlt`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications; `dlt profiles` explains DLT/eDLT admission |
+| Plan supported device settings | `keys`, `sensors`, `din-settings`, `dlt`, `edlt`, `wireless`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications; `dlt profiles` explains DLT/eDLT admission; `wireless boundary` composes C-Gate learn/unit-action commands without I/O |
 | Edit scenes/templates or match serial inventories | `scene`, `unit-templates`, `unit-addressing` | Local files |
 | Preferences, CSV, About and update diagnostics | `preferences`, `toolkit-database-csv`, `toolkit-about`, `update-*` | Varies; some require Windows/vendor files |
 | Diagnose firmware or explicitly perform USB DFU | `firmware` | Offline or explicit device, depending on subcommand |

@@ -81,6 +81,7 @@
     "tests/test_cli_sensors.py",
     "tests/test_cli_serials.py",
     "tests/test_cli_unit_templates.py",
+    "tests/test_cli_wireless.py::WirelessCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
     "tests/test_clocks_native.py",
     "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation",
     "tests/test_conversion.py",
@@ -157,6 +158,8 @@
     "tests/test_thermostat_templates_native.py",
     "tests/test_toolkit_database_csv_area_native.py",
     "tests/test_unit_diagnostics.py::NativeDiagnosticsTests::test_native_capture_reproduces_the_committed_fixture",
-    "tests/test_unit_templates.py::UnitTemplateNativeTest"
+    "tests/test_unit_templates.py::UnitTemplateNativeTest",
+    "tests/test_wireless_gateway.py::WirelessGatewayNativeTest",
+    "tests/test_wireless_unit_globals.py::WirelessGlobalsNativeTest"
   ]
 }

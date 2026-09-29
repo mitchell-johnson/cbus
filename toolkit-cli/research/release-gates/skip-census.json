@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 434,
+    "test_modules": 437,
     "modules_without_skip_sites": 240,
-    "modules_with_skip_sites": 194,
+    "modules_with_skip_sites": 197,
     "modules_by_category": {
-      "cgate_test_host": 115,
+      "cgate_test_host": 118,
       "external_cgate_project": 1,
       "host_platform": 15,
       "host_tool": 6,
-      "native_cgate_local": 38,
+      "native_cgate_local": 41,
       "native_opt_in": 2,
       "original_model_runtime": 3,
       "original_toolkit": 61,
@@ -67,19 +67,19 @@
       "runtime_capability": 3,
       "rust_binaries": 7,
       "unclassified": 2,
-      "unit_specs": 102,
+      "unit_specs": 105,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 103,
+      "all": 106,
       "partial": 17,
       "none": 74
     },
-    "native_runnable_tests": 198,
-    "native_selected_required_tests": 198,
+    "native_runnable_tests": 201,
+    "native_selected_required_tests": 201,
     "native_excluded": 0,
-    "native_selection_selectors": 123
+    "native_selection_selectors": 126
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -1670,6 +1670,39 @@
           ],
           "categories": [
             "cgate_test_host",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cli_wireless.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_cli_wireless.py::WirelessCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for the wireless CLI acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
             "unit_specs"
           ],
           "offline": "skips",
@@ -7334,6 +7367,72 @@
             "NativeWindowsProjectRepairTests::test_amd64_actual_files_faults_and_full_cli",
             "NativeWindowsProjectRepairTests::test_x86_actual_files_faults_and_full_cli"
           ]
+        }
+      ]
+    },
+    "tests/test_wireless_gateway.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_wireless_gateway.py::WirelessGatewayNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for wireless gateway acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_wireless_unit_globals.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_wireless_unit_globals.py::WirelessGlobalsNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for wireless unit globals acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
         }
       ]
     }
