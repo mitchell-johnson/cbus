@@ -68,6 +68,31 @@ class SelectedSerialCLITests(unittest.TestCase):
                 self.assertEqual(requests(sim),before)
                 self.assertFalse(journal.exists())
 
+    def test_subprocess_attempt_store_refuses_repeat_across_journal_directories_before_io(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp=Path(tmp);store=tmp/'store';store.mkdir();first=tmp/'a';first.mkdir();second=tmp/'b';second.mkdir()
+            path=tmp/'plan.json';sim=fixture()
+            with sim.running() as endpoint:
+                path.write_text(json.dumps(manager(endpoint).plan(A,6).as_dict()))
+                missing=self.subprocess_cli('serial-address','apply',path,'--recovery',first/'journal.json',
+                                            '--attempt-store',tmp/'missing',status=1)
+                self.assertIn('not a directory',missing['error'])
+                self.assertFalse((first/'journal.json').exists());self.assertEqual(sim.co_operations,[])
+                moved=self.subprocess_cli('serial-address','apply',path,'--recovery',first/'journal.json',
+                                          '--attempt-store',store)
+                self.assertEqual(moved['outcome'],'observed_expected_change')
+                marker=Path(moved['attempt_identity'])
+                self.assertEqual(marker.parent,store.resolve());self.assertTrue(marker.is_file())
+                before=list(requests(sim))
+                repeat=self.subprocess_cli('serial-address','apply',path,'--recovery',second/'journal.json',
+                                           '--attempt-store',store,status=1)
+                self.assertIn('read-only recovery only',repeat['error'])
+                self.assertFalse(repeat['selected_serial_evidence']['transport_invoked'])
+                self.assertEqual(requests(sim),before);self.assertEqual(len(sim.co_operations),1)
+                self.assertFalse((second/'journal.json').exists())
+                recovered=self.subprocess_cli('serial-address','verify','--recovery',marker)
+                self.assertEqual(recovered['outcome'],'observed_expected_change')
+
     def test_literal_subprocess_sequence_exports_exact_plan_and_verifies_without_replay(self):
         before=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
         with tempfile.TemporaryDirectory() as tmp,conversation(before*2+[RECEIPT_A]+after_responses()*2) as (endpoint,state):

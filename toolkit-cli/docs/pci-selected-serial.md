@@ -59,7 +59,9 @@ native two-second quiet/address windows. The CLI does not configure the PCI.
 from the strictly validated plan. They accept no endpoint/settings overrides.
 The two verify inputs are mutually exclusive. Apply repeats the live guards and
 requires a new journal; verify performs inventory only and leaves both files
-unchanged. Corrupt/ambiguous recovery JSON is rejected before connecting.
+unchanged. Apply also accepts `--attempt-store DIR` to share its attempt marker
+across journal directories (see below), and `verify --recovery` accepts an
+attempt marker in place of a journal. Corrupt/ambiguous recovery JSON is rejected before connecting.
 
 Apply and verify print the full result and exit0 only for
 `observed_expected_change`; unchanged, unexpected and uncertain outcomes exit1.
@@ -195,7 +197,11 @@ SHA-256 over the Rust fingerprint encoding of the validated plan (sorted keys,
 integral floats as integers, numeric IP hosts normalized), which the Python
 coordinator reproduces byte for byte; both suites pin the same encoder golden
 vector and the same marker filename for the committed vector plan. The marker
-lives in the resolved journal directory. An existing marker, from either
+lives in the resolved journal directory, or with `--attempt-store DIR` (Python
+`serial-address apply` and Rust `serial-apply` alike; `attempt_store=` in the
+Python API) in one existing shared directory, so repeats contend across journal
+directories. The record names its scope, and a missing store refuses before
+any I/O. An existing marker, from either
 implementation, refuses apply before any PCI I/O or journal creation. Otherwise
 the marker is reserved after the fresh preconditions and before the journal and
 the one-shot request. Like the journal, its envelope conservatively records

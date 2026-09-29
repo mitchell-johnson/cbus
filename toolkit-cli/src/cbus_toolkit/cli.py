@@ -1928,6 +1928,8 @@ def build_parser():
     p = serial_ops.add_parser("apply", help="Repeat live guards and send exactly one command with a durable recovery journal")
     p.add_argument("plan", type=Path, help="Validated plan; endpoint and timing settings come from this file")
     p.add_argument("--recovery", type=Path, required=True, help="New recovery journal; caller must exclusively own commissioning access")
+    p.add_argument("--attempt-store", type=Path, default=None,
+                   help="Existing shared directory for the attempt marker (shared with Rust serial-apply), so repeats contend across journal locations")
     p = serial_ops.add_parser("verify", help="Collect a fresh full inventory without replaying an address command")
     selection = p.add_mutually_exclusive_group(required=True)
     selection.add_argument("--plan", type=Path, help="Read the expected change from a saved plan")
@@ -2882,13 +2884,15 @@ def _selected_serial_cli(args):
                 "plan": document, "address_command_sent": False, "database_updated": False}, 0
     if args.action == "apply":
         new_path(args.recovery)
+        if args.attempt_store is not None and not args.attempt_store.is_dir():
+            raise ValueError(f"Shared attempt store is not a directory: {args.attempt_store}")
     plan = (SelectedSerialPlan.load(args.plan) if args.plan is not None
             else SelectedSerialCoordinator.load_recovery(args.recovery))
     document = plan.as_dict()
     coordinator = SelectedSerialCoordinator(**document["endpoint"], local_unit=document["local_unit"],
         expected_local_serial=document["expected_local_serial"], **document["settings"])
-    result = (coordinator.apply(plan, recovery_path=args.recovery) if args.action == "apply"
-              else coordinator.verify(plan))
+    result = (coordinator.apply(plan, recovery_path=args.recovery, attempt_store=args.attempt_store)
+              if args.action == "apply" else coordinator.verify(plan))
     return result.as_dict(), int(not result.observed_expected_change)
 
 
