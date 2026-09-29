@@ -50,18 +50,18 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 442,
+    "test_modules": 444,
     "modules_without_skip_sites": 243,
-    "modules_with_skip_sites": 199,
+    "modules_with_skip_sites": 201,
     "modules_by_category": {
       "cgate_test_host": 118,
       "external_cgate_project": 1,
       "host_platform": 16,
       "host_tool": 6,
-      "native_cgate_local": 43,
+      "native_cgate_local": 44,
       "native_opt_in": 2,
       "original_model_runtime": 3,
-      "original_toolkit": 61,
+      "original_toolkit": 62,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 3,
@@ -72,14 +72,14 @@
       "windows": 12
     },
     "native_modules": {
-      "all": 108,
+      "all": 109,
       "partial": 17,
-      "none": 74
+      "none": 75
     },
-    "native_runnable_tests": 203,
-    "native_selected_required_tests": 203,
+    "native_runnable_tests": 204,
+    "native_selected_required_tests": 204,
     "native_excluded": 0,
-    "native_selection_selectors": 128
+    "native_selection_selectors": 129
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -6685,6 +6685,32 @@
         }
       ]
     },
+    "tests/test_toolkit_database_csv_native_batch.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_database_csv_native_batch.py::NativeBatchColdLoadTests",
+          "kind": "decorator.skipUnless",
+          "condition": "all((os.environ.get(key) for key in ('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR')))",
+          "reason": "Select pinned Java11 and original C-Gate for the owned cold-load batch",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_toolkit_database_csv_original.py": {
       "categories": [
         "original_toolkit"
@@ -6753,6 +6779,42 @@
           ],
           "tests": [
             "test_csv_snapshot_through_rust_server"
+          ]
+        }
+      ]
+    },
+    "tests/test_toolkit_database_csv_registry.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_database_csv_registry.py::FactoryRegistryTests::test_fresh_original_exe_map_extraction_matches_committed_receipt",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Pinned original Toolkit EXE/MAP not provisioned",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "FactoryRegistryTests::test_fresh_original_exe_map_extraction_matches_committed_receipt"
           ]
         }
       ]
