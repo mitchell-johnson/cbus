@@ -17,13 +17,13 @@
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "4ca00641774922806fab302db876a139233be8d100096d5513bf95188896b511",
-    "cgate_tagged_session_differential_cmqttd": "65e3cb1590ba336f45efb445f8e02c88d4cc08bc080eece02ace467c92ba0816",
-    "cgate_session_physical_applicability": "1e23c40935418be9c5972d19663b78acb6a1f3a7bb1d6a0acddf93b06af7494f",
+    "cgate_session_differential_cmqttd": "d56dadc9015c42e2a60ca8ac7ca0590f877805e96313beb57587bef4122b8d9c",
+    "cgate_tagged_session_differential_cmqttd": "0b9ea41c5bf4dc66570f740cacb19b153756c68318088a39bbb8b9cdad849f14",
+    "cgate_session_physical_applicability": "a0fd3137fa5cc116d7133483fb87bb7a77e462301dad76f2df714169d0c17922",
     "roadmap": "90aa55976454df66c98f687ec5ba9b5fbc335f7923dd53d31a5293ff6fd744ad",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e"
   },
-  "evidence_bundle_sha256": "4fe92ede71b5129a3458dfe3e9ed17976c13d5d8df77c9f87c24dd11759fc6b0",
+  "evidence_bundle_sha256": "a0fe0df415adae1230f4e10b7ccd8a187d0356e66f2892186314147c9f7dab13",
   "work_item_ids": [
     "P0.01",
     "P0.02",

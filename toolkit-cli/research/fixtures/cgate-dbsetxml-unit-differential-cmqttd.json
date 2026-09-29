@@ -15,7 +15,7 @@
     "path": "/Volumes/external/cbus-toolkit-storage-20260915-v2/rust-target/debug/cmqttd",
     "sha256": "885fb92c7708103993f207b7efd90057644ed62dcfa9a8d3ebc417239e1aeaff"
   },
-  "source_revision": "3839e661f783a274f23f2ae218d5fcc3e45eccee",
+  "source_revision": "83e17016f18008aac82f1153e6504a139429f0e6",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "73a5036a77577f06a866e5f2c9cf04a83dee4ef1defb86953ecc27008576dc0a",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
