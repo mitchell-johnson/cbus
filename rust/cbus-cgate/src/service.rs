@@ -13377,17 +13377,26 @@ impl Service {
         if project != self.project {
             return not_found();
         }
-        let present = {
-            let model = self.model.lock().await;
-            model
+        // Native input-unit classes (CBus2InputUnit.m) skip IDENTIFY16. The
+        // class comes from the configured catalogue; without that evidence
+        // the CBus2Unit.m order (IDENTIFY16, then IDENTIFY4) is used.
+        let reads_burden = {
+            let mut model = self.model.lock().await;
+            let Some((unit_type, firmware)) = model
                 .projects
                 .get(&project)
                 .and_then(|project| project.networks.get(&network))
-                .is_some_and(|network| network.physical.contains_key(&unit))
+                .and_then(|network| network.physical.get(&unit))
+                .map(|record| (record.unit_type.clone(), record.firmware.clone()))
+            else {
+                return not_found();
+            };
+            model
+                .catalog()
+                .ok()
+                .and_then(|catalog| catalog.psync_reads_burden(&unit_type, &firmware))
+                .unwrap_or(true)
         };
-        if !present {
-            return not_found();
-        }
         if network != self.network {
             return err(
                 tag,
@@ -13396,9 +13405,13 @@ impl Service {
             );
         }
         let (pci_generation, pci) = self.current_pci_epoch().await;
-        let burden = match pci.identify_first(unit, 16).await {
-            Ok(Some(data)) if !data.is_empty() => Some(data[0] & 0x80 != 0),
-            _ => None,
+        let burden = if reads_burden {
+            match pci.identify_first(unit, 16).await {
+                Ok(Some(data)) if !data.is_empty() => Some(data[0] & 0x80 != 0),
+                _ => None,
+            }
+        } else {
+            None
         };
         let voltage = match pci.identify_all(unit, 4).await {
             Ok(replies) if replies.len() == 1 => net_voltage_text(&replies[0]),
@@ -13426,7 +13439,7 @@ impl Service {
                 record.fields.insert("NetVoltage".into(), voltage.clone());
             }
         }
-        if burden.is_none() || voltage.is_none() {
+        if (reads_burden && burden.is_none()) || voltage.is_none() {
             return err(tag, 408, &format!("408 Operation failed: {address} ()"));
         }
         ok(tag, vec![], "200 OK")

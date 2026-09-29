@@ -806,6 +806,15 @@ a nonzero exit status even if C-Gate's last line says OK. Recovery enables the
 gateway clock and verifies that gateway separately. See the
 [native clock and burden evidence](docs/native-clocks.md).
 
+The Toolkit Diagnostics dialog reports presence, network voltage, burden and
+clock status for each database unit. Absent units are `unknown`, not zero:
+
+```sh
+cbus-toolkit cgate network diagnose //TEST/254 --project TEST
+```
+
+See [network diagnostics](docs/network-diagnostics.md).
+
 ## Sensor occupancy settings
 
 The tested ST7 profile is SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL.

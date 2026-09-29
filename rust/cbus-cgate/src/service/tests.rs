@@ -20468,6 +20468,90 @@ async fn move_journal_rejects_malformed_and_unknown_ids() {
     cleanup(&service, &path);
 }
 
+/// P8.05: catalogue classes derived from CBus2InputUnit (KEYE1 is
+/// CBusNeoInputUnit) Psync with IDENTIFY4 only, like CBus2InputUnit.m, and
+/// leave BurdenActive at its cached value. Native C-Gate against the
+/// synthetic PCI sent no IDENTIFY16 to the KEYE1, so the fixture's rejection
+/// of that attribute never occurred.
+#[tokio::test(start_paused = true)]
+async fn psync_of_catalogue_input_class_reads_only_identify4() {
+    let unitspec = state_path().with_extension("psync-input-unitspec");
+    std::fs::create_dir_all(&unitspec).unwrap();
+    std::fs::write(
+        unitspec.join("cbusunits.xml"),
+        "<CBusUnits><Units><Unit><CatalogNumber>5031NMML</CatalogNumber><FirmwareRevisions>\
+         <Revision><UnitType>KEYE1</UnitType><MinVersion>2.5.00</MinVersion><MaxVersion>9</MaxVersion>\
+         <UnitSpecName>KEYE.xml</UnitSpecName><ClassName>CBusNeoInputUnit</ClassName></Revision>\
+         </FirmwareRevisions></Unit></Units></CBusUnits>",
+    )
+    .unwrap();
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, state_path(), pci, Some(unitspec)).unwrap();
+    let mut observed = Unit::blank(4, "");
+    observed.unit_type = "KEYE1".into();
+    observed.firmware = "2.5.00".into();
+    observed.fields.insert("BurdenActive".into(), "yes".into());
+    service
+        .model
+        .lock()
+        .await
+        .projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .physical
+        .insert(4, observed);
+    let psync = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] DO //HARNESS/254/p/4 Psync",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\4604002104"), "{request:?}");
+    let code = request[request.len() - 2];
+    remote_write.write_all(&[code, b'.']).await.unwrap();
+    let mut identity = vec![0x8d, 4];
+    identity.extend_from_slice(&[0xff, 0xff, 0xff, 0, 0, 0x18, 0xb1, 0x06, 0x16, 0xc0, 0, 5]);
+    database_pci_reply(&mut remote_write, 4, &identity).await;
+    tokio::time::advance(Duration::from_secs(2)).await;
+    tokio::task::yield_now().await;
+    let response = psync.await.unwrap();
+    assert_eq!(
+        response.final_text, "202 Done: //HARNESS/254/p/4",
+        "{response:?}"
+    );
+    for (attribute, expected) in [("NetVoltage", "31.0"), ("BurdenActive", "yes")] {
+        let reply = service
+            .handle(
+                &mut ClientState::default(),
+                &format!("[g] GET //HARNESS/254/p/4 {attribute}"),
+            )
+            .await;
+        assert_eq!(
+            reply.final_text,
+            format!("300 //HARNESS/254/p/4: {attribute}={expected}")
+        );
+    }
+}
+
 /// P8.05: native `DO unit Psync` reads IDENTIFY16 then IDENTIFY4 and caches
 /// BurdenActive/NetVoltage; a silent unit is `408 Operation failed: <unit> ()`
 /// with the previous cached values kept, and a unit never observed is 401.

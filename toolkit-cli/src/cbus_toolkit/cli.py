@@ -1650,6 +1650,7 @@ def build_parser():
     p.add_argument("--no-voltage", action="store_true", help="Clear Get Network Voltage")
     p.add_argument("--no-burden", action="store_true", help="Clear Get Network Burden")
     p.add_argument("--no-clock", action="store_true", help="Clear Get Network Clock")
+    p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
     for action in ("state", "open", "close", "sync", "sync-new", "discover", "check-units", "unravel", "clocks", "tree", "rename", "set-project", "wait-ready", "calculate"):
         p = netops.add_parser(action)
         p.add_argument("address")
@@ -3237,6 +3238,9 @@ def _network(args, client):
         return network.unravel(args.address, units=args.unit, match_database=args.match_database)
     if action == "diagnose":
         from .unit_diagnostics import NetworkDiagnostics
+        if args.project is not None:
+            from .native import NativeProjects
+            NativeProjects(client).operation("use", args.project)
         return NetworkDiagnostics(client).diagnose(
             args.address, units=args.unit, voltage=not args.no_voltage,
             burden=not args.no_burden, clock=not args.no_clock,

@@ -793,6 +793,74 @@ class RustInteropTests(unittest.TestCase):
         self.assertEqual(value.code, 342)
         self.assertTrue(value.final.endswith("=7"))
 
+    def test_public_cli_network_diagnose_matches_mock_native_envelopes(self):
+        """Toolkit Diagnostics dialog through the real CLI and cgate-mock.
+
+        The mock has no bus: present units keep the native zero summary
+        (NetVoltage 0.5, BurdenActive no) and a unit without a
+        ClockGenEnable parameter answers native 460. This pins the
+        cross-language envelopes, not voltages, burdens or clocks.
+        """
+        import sys
+
+        for command in (
+            "PROJECT NEW DIAGNOSE",
+            "PROJECT USE DIAGNOSE",
+            "DBCREATENET 254 Diag Cni 127.0.0.1:10001",
+            "DBADDSAFE //DIAGNOSE/254 Unit 16 U16",
+            "DBSETSAFE //DIAGNOSE/254/p/16/UnitType PC_CNIED",
+            "DBADDSAFE //DIAGNOSE/254 Unit 20 U20",
+            "DBSETSAFE //DIAGNOSE/254/p/20/UnitType KEYGL5",
+            "DBADDSAFE //DIAGNOSE/254 Unit 99 U99",
+            "DBSETSAFE //DIAGNOSE/254/p/99/UnitType KEYE1",
+            "MOCK BUS-DEL //DIAGNOSE/254 99",
+            "NET OPEN //DIAGNOSE/254",
+        ):
+            self.client.command(command)
+
+        def diagnose(*arguments):
+            process = subprocess.run(
+                [sys.executable, "-m", "cbus_toolkit", "cgate", "--host", "127.0.0.1",
+                 "--port", str(self.port), "network", "diagnose", "//DIAGNOSE/254",
+                 "--project", "DIAGNOSE", *arguments],
+                text=True, capture_output=True, timeout=30,
+            )
+            return process.returncode, json.loads(process.stdout or process.stderr)
+
+        status, report = diagnose()
+        # Unit 99 is database-only, so the run is incomplete (exit 1).
+        self.assertEqual(status, 1, report)
+        self.assertEqual(report["pingu_addresses"], [16, 20])
+        units = {row["address"]: row for row in report["units"]}
+        self.assertEqual(
+            {key: units[16][key] for key in ("found", "voltage", "voltage_text", "burden",
+                                             "burden_basis", "clock", "clock_basis", "errors")},
+            {"found": "present", "voltage": 0.5, "voltage_text": "0.5", "burden": "not-enabled",
+             "burden_basis": "native-burdenactive", "clock": "not-enabled",
+             "clock_basis": "no-clockgenenable-parameter", "errors": []})
+        self.assertEqual((units[20]["burden_basis"], units[20]["clock_basis"]),
+                         ("toolkit-unit-type-rule", "toolkit-unit-type-rule"))
+        self.assertEqual({key: units[99][key] for key in ("found", "voltage", "burden", "clock")},
+                         {"found": "not-found", "voltage": "unknown", "burden": "unknown",
+                          "clock": "unknown"})
+        self.assertFalse(report["complete"])
+        self.assertFalse(report["absent_units_queried"])
+        sent = [row["command"] for row in report["commands"]]
+        self.assertFalse(any("/p/99" in command for command in sent), sent)
+        self.assertFalse(any("/p/20 Psync" in command or "/p/20 BurdenActive" in command
+                             for command in sent), sent)
+        replies = {row["command"]: row["lines"] for row in report["commands"]}
+        self.assertEqual(replies["DO //DIAGNOSE/254/p/16 Psync"],
+                         ["202 Done: //DIAGNOSE/254/p/16"])
+        self.assertEqual([lines for command, lines in replies.items()
+                          if command.endswith(" ClockGenEnable")],
+                         [["460 No such parameter: ClockGenEnable"]])
+
+        # Present units only, with every requested field known: exit 0.
+        status, report = diagnose("--unit", "16", "--unit", "20")
+        self.assertEqual(status, 0, report)
+        self.assertTrue(report["complete"])
+
 
 if __name__ == "__main__":
     unittest.main()

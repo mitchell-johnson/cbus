@@ -692,9 +692,13 @@
         "tests/test_clocks.py",
         "tests/test_clocks_native.py",
         "tests/test_simulator_clocks.py",
-        "research/fixtures/native-clocks-acceptance.json"
+        "research/fixtures/native-clocks-acceptance.json",
+        "docs/network-diagnostics.md",
+        "tests/test_unit_diagnostics.py",
+        "research/fixtures/native-unit-diagnostics.json",
+        "research/fixtures/unit-diagnostics-static.json"
       ],
-      "limits": "Offline calculator matches 14 native cases. Clock target/recovery and burden edits verified through native C-Gate, independent persisted PCI bytes and conflict cases; final200 per-unit errors and unmet targets produce incomplete CLI outcomes. Electrical arbitration and remaining diagnostics are unverified."
+      "limits": "Offline calculator matches 14 native cases. Clock target/recovery and burden edits verified through native C-Gate, independent persisted PCI bytes and conflict cases; final200 per-unit errors and unmet targets produce incomplete CLI outcomes. The Diagnostics dialog sequence (NET PINGU, NetVoltage, Psync/BurdenActive, PP ClockGenEnable) matches a native C-Gate capture and runs through cgate-mock and cmqttd; cmqttd cannot Psync the local PCI unit, routed Psync and the firmware-1.00 N/A voltage rule are unimplemented, and error-dialog text 0xEAB-0xEAD is unresolved. Electrical arbitration and electrical values are unverified."
     },
     {
       "id": "preferences-and-update-workflow",

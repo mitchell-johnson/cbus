@@ -40,6 +40,8 @@ pub struct CatalogEntry {
     pub unit_spec_name: String,
     /// Revision marked `IsDefault`, used for catalogue-selected firmware.
     pub is_default: bool,
+    /// Implementing C-Gate class (`ClassName`), empty when absent.
+    pub class_name: String,
 }
 
 /// Bounded, validated catalogue document plus the fields PP queries expose.
@@ -159,6 +161,7 @@ pub fn load_catalog(dir: &Path) -> Result<Catalog, String> {
                 max_version: child_text(revision, "MaxVersion"),
                 unit_spec_name: child_text(revision, "UnitSpecName"),
                 is_default: child_text(revision, "IsDefault").eq_ignore_ascii_case("true"),
+                class_name: child_text(revision, "ClassName"),
             });
         }
     }
@@ -210,7 +213,38 @@ fn version_cmp(left: &[u32], right: &[u32]) -> std::cmp::Ordering {
         .unwrap_or(std::cmp::Ordering::Equal)
 }
 
+/// C-Gate 3.4.0.2001 classes whose `DO <unit> Psync` comes from
+/// `CBus2InputUnit.m`, which reads IDENTIFY4 (NetVoltage) but never
+/// IDENTIFY16 (BurdenActive). Every other `CBus2Unit` class without its own
+/// override uses `CBus2Unit.m`: IDENTIFY16 and then IDENTIFY4.
+const PSYNC_INPUT_CLASSES: &[&str] = &[
+    "CBus2InputUnit",
+    "CBus2InputSensorUnit",
+    "CBus2SceneMasterUnit",
+    "CBusCurrentSensorUnit",
+    "CBusNeoInputUnit",
+    "CBusSENPILLSpecialIdentify",
+    "CBusSENPILLUnit",
+    "CBusTemperatureSensorPro",
+];
+
 impl Catalog {
+    /// Whether native Psync reads IDENTIFY16 for this type and firmware:
+    /// `Some(false)` when every matching revision names an input class,
+    /// `Some(true)` when none does, and `None` when there is no class
+    /// evidence or the matching revisions disagree.
+    pub fn psync_reads_burden(&self, unit_type: &str, firmware: &str) -> Option<bool> {
+        let mut classes = self
+            .matching(unit_type, firmware)
+            .into_iter()
+            .map(|entry| entry.class_name.rsplit('.').next().unwrap_or_default());
+        let first = classes.next().filter(|class| !class.is_empty())?;
+        let input = PSYNC_INPUT_CLASSES.contains(&first);
+        classes
+            .all(|class| !class.is_empty() && PSYNC_INPUT_CLASSES.contains(&class) == input)
+            .then_some(!input)
+    }
+
     /// Catalogue rows matching one unit type and inclusive firmware range.
     pub fn matching(&self, unit_type: &str, firmware: &str) -> Vec<&CatalogEntry> {
         let Some(version) = version_parts(firmware) else {
@@ -1075,6 +1109,35 @@ mod tests {
             format!("<UnitSpecification>{body}</UnitSpecification>"),
         )
         .expect("write spec");
+    }
+
+    #[test]
+    fn psync_burden_read_follows_the_catalogue_class() {
+        let dir = scratch("psync-class");
+        std::fs::write(
+            dir.join("cbusunits.xml"),
+            "<CBusUnits><Units>\
+             <Unit><CatalogNumber>A</CatalogNumber><FirmwareRevisions>\
+             <Revision><UnitType>KEYE1</UnitType><MinVersion>2.5.00</MinVersion><MaxVersion>9</MaxVersion>\
+             <ClassName>CBusNeoInputUnit</ClassName></Revision></FirmwareRevisions></Unit>\
+             <Unit><CatalogNumber>B</CatalogNumber><FirmwareRevisions>\
+             <Revision><UnitType>PC_CNIED</UnitType><MinVersion>5.0.00</MinVersion><MaxVersion>9</MaxVersion>\
+             <ClassName>com.clipsal.cgate.cbus.dev.CBus2PCILocal</ClassName></Revision></FirmwareRevisions></Unit>\
+             <Unit><CatalogNumber>C</CatalogNumber><FirmwareRevisions>\
+             <Revision><UnitType>MIXED</UnitType><MinVersion>1.0.00</MinVersion><MaxVersion>9</MaxVersion>\
+             <ClassName>CBusNeoInputUnit</ClassName></Revision></FirmwareRevisions></Unit>\
+             <Unit><CatalogNumber>D</CatalogNumber><FirmwareRevisions>\
+             <Revision><UnitType>MIXED</UnitType><MinVersion>1.0.00</MinVersion><MaxVersion>9</MaxVersion>\
+             <ClassName>CBusProRelayUnit</ClassName></Revision></FirmwareRevisions></Unit>\
+             </Units></CBusUnits>",
+        )
+        .unwrap();
+        let catalog = load_catalog(&dir).expect("catalogue loads");
+        assert_eq!(catalog.psync_reads_burden("KEYE1", "2.5.00"), Some(false));
+        assert_eq!(catalog.psync_reads_burden("PC_CNIED", "5.5.00"), Some(true));
+        assert_eq!(catalog.psync_reads_burden("KEYE1", "2.4.00"), None);
+        assert_eq!(catalog.psync_reads_burden("MIXED", "1.0.00"), None);
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]
