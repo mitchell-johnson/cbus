@@ -129,6 +129,8 @@ UMBRELLA_PHYSICAL_UNDECIDED = frozenset({
     "toolkit-differential-acceptance",
     "database-unit-addressing",
     "toolkit-database-report-export",
+    "topology-navigation",
+    "project-documentation",
 })
 # Physical C-Gate paths need an interface and the reference network, plus
 # these families by first command word; routed paths add 1-6 bridge topologies.
