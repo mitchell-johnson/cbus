@@ -476,6 +476,13 @@ fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
     if code == "700" && source == "cgate" && text == "Heartbeat." {
         return Some(5);
     }
+    // Class BF logs a refused event-port peer at level 4 with a null source.
+    if code == "805"
+        && source == "null"
+        && text.starts_with("Access control refused event connection from /")
+    {
+        return Some(4);
+    }
     let session = source.strip_prefix("cmd")?;
     if session.is_empty() || !session.bytes().all(|byte| byte.is_ascii_digit()) {
         return None;

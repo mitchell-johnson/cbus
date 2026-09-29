@@ -14218,10 +14218,10 @@ async fn auth_gate_dormant_exposes_native_login_and_leaves_programming_ungated()
     let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
     let mut client = ClientState::default();
     let login = service.handle(&mut client, "[1] LOGIN anything").await;
-    assert_eq!(login.status, 422);
+    assert_eq!(login.status, 400);
     assert_eq!(
-        login.final_text, "422 Username and Password do not match.",
-        "one word is not a native username/password pair"
+        login.final_text, "400 Syntax Error.",
+        "native build 2001 rejects a username without a password as syntax"
     );
     let logout = service.handle(&mut client, "[2] LOGOUT").await;
     assert_eq!(logout.status, 211);
@@ -19631,7 +19631,7 @@ async fn administrative_runtime_commands_are_stateful_durable_and_redact_secrets
             .handle(&mut client, "[premature] CONFIRM")
             .await
             .status,
-        408
+        400
     );
     assert_eq!(
         service
@@ -21145,3 +21145,5 @@ async fn matchdb_unravel_refuses_ambiguous_occupied_database_target() {
     assert!(journals(&service).is_empty());
     cleanup(&service, &path);
 }
+
+mod secondary_authorization;

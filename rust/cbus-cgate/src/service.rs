@@ -46,7 +46,7 @@ pub(crate) fn applications_get_catalog(model: &Server, tag: &str, words: &[&str]
     }
 }
 use crate::access::{
-    credential_digest_for, native_minimum_for, native_probed_commands, AccessEntry,
+    command_minimum_for, credential_digest_for, native_probed_commands, AccessEntry,
     CgateAccessLevel,
 };
 use crate::auth;
@@ -2725,10 +2725,13 @@ impl Service {
         {
             return err(tag, 420, "420 LOGIN required");
         }
-        if let Some(minimum) = native_minimum_for(&upper) {
+        if let Some(minimum) = command_minimum_for(&upper) {
             if self.ensure_access_level(client).await < minimum {
                 return err(tag, 420, "420 Access denied.");
             }
+        }
+        if let Some(response) = self.cgate_object_access(client, tag, &words, verb).await {
+            return response;
         }
         if let Some(response) = family_help {
             return response;
@@ -4451,7 +4454,7 @@ impl Service {
         {
             return err(tag, 420, "420 LOGIN required");
         }
-        if let Some(minimum) = native_minimum_for(&upper) {
+        if let Some(minimum) = command_minimum_for(&upper) {
             if self.ensure_access_level(client).await < minimum {
                 return err(tag, 420, "420 Access denied.");
             }
@@ -5051,7 +5054,9 @@ impl Service {
             };
         }
         if !client.shutdown_pending {
-            return err(tag, 408, "408 No operation awaiting confirmation");
+            // Native oI dispatch answers a CONFIRM with no pending SHUTDOWN
+            // as an unknown command at every ACCESS level.
+            return err(tag, 400, "400 Syntax Error.");
         }
         client.shutdown_pending = false;
         let _ = self.shutdown.send(());
@@ -5704,8 +5709,9 @@ impl Service {
 
         if words.len() == 2 {
             let Some(expected) = self.auth_token_hash.get() else {
-                client.login_attempts = client.login_attempts.saturating_add(1);
-                return err(tag, 422, "422 Username and Password do not match.");
+                // Native LOGIN with a username but no password is a parser
+                // error, not a failed credential check.
+                return err(tag, 400, "400 Syntax Error.");
             };
             let candidate = auth::sha256(words[1].as_bytes());
             if auth::constant_time_eq(&candidate, expected) {
@@ -13329,6 +13335,25 @@ impl Service {
             return err(tag, 400, "400 DO requires an object and method");
         }
         let method = words[2].to_ascii_uppercase();
+        // Exposed native methods (`Ch`) carry their own level after the DO
+        // handler floor: group On/Off/Ramp are Operate, unit and network
+        // Sync/PSync are Admin, network Unravel and eDLT FactoryDefault are
+        // Program (secondary-authorization-inventory.json).
+        let required = match method.as_str() {
+            "SYNC" | "PSYNC" => CgateAccessLevel::Admin,
+            "UNRAVEL" | "FACTORYDEFAULT" => CgateAccessLevel::Program,
+            _ => CgateAccessLevel::Operate,
+        };
+        if client.access_level.unwrap_or(CgateAccessLevel::None) < required {
+            return err(
+                tag,
+                420,
+                &format!(
+                    "420 Access denied: {} (Insufficient access level to run method)",
+                    words[1]
+                ),
+            );
+        }
         let response = if matches!(method.as_str(), "ON" | "OFF" | "RAMP" | "TERMINATERAMP") {
             let mut command = vec![method, words[1].to_string()];
             command.extend(words[3..].iter().map(|word| (*word).to_string()));
@@ -13761,6 +13786,90 @@ impl Service {
     /// `CONFIG SET` changes native admission for subsequent connections now,
     /// despite the catalogue's `effective=restart` metadata. Read only the
     /// current global value; an already admitted session is unaffected.
+    /// Secondary per-parameter checks on the root `cgate` object after the
+    /// GET/SET handler floors. Native `Ck` parameters carry independent read
+    /// and write levels: KCount reads from Clipsal, EventLevel writes from
+    /// Operate, and every other catalogued root parameter writes only at Max
+    /// (native_cgate_secondary_authorization_probe.json `cgate_object`).
+    async fn cgate_object_access(
+        &self,
+        client: &mut ClientState,
+        tag: &str,
+        words: &[&str],
+        verb: &str,
+    ) -> Option<Response> {
+        const WRITABLE_AT_OPERATE: &[&str] = &["EventLevel"];
+        const READ_ONLY: &[&str] = &[
+            "State",
+            "Version",
+            "DatabaseVersion",
+            "KCount",
+            "MemoryFree",
+            "MemoryUsed",
+            "MemoryTotal",
+            "MemoryMaximum",
+            "ComputerName",
+            "JavaArguments",
+            "LogFreeSpace",
+            "ProjectFreeSpace",
+            "IPAddress",
+            "IsPrerelease",
+            "ServerMode",
+            "Threads",
+        ];
+        if !words
+            .get(1)
+            .is_some_and(|target| target.eq_ignore_ascii_case("cgate"))
+        {
+            return None;
+        }
+        let parameter = words.get(2)?;
+        let known = |names: &[&str]| {
+            names
+                .iter()
+                .any(|name| name.eq_ignore_ascii_case(parameter))
+        };
+        let level = self.ensure_access_level(client).await;
+        match verb {
+            "GET"
+                if words.len() == 3 && known(&["KCount"]) && level >= CgateAccessLevel::Clipsal =>
+            {
+                // The native value is an internal counter; cmqttd has none.
+                Some(Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: "300 cgate: KCount=0".to_string(),
+                    status: 300,
+                })
+            }
+            "SET" if words.len() >= 4 => {
+                let required = if known(WRITABLE_AT_OPERATE) {
+                    CgateAccessLevel::Operate
+                } else if known(READ_ONLY) {
+                    CgateAccessLevel::Max
+                } else {
+                    return None;
+                };
+                (level < required).then(|| {
+                    err(
+                        tag,
+                        420,
+                        "420 Access denied: cgate (Insufficient access level for write)",
+                    )
+                })
+            }
+            _ => None,
+        }
+    }
+
+    /// Native event, load-change and config-change listeners admit a peer
+    /// only at Monitor or above. cmqttd's loopback recovery fallback exists
+    /// for the command listener and is not applied to this read-only stream.
+    async fn admits_event_peer(&self, local: std::net::IpAddr, peer: std::net::IpAddr) -> bool {
+        let model = self.model.lock().await;
+        peer_access_level(&model, local, peer) >= CgateAccessLevel::Monitor
+    }
+
     async fn accepts_command_peer(&self, peer: std::net::IpAddr) -> bool {
         let value = {
             let model = self.model.lock().await;
@@ -13880,16 +13989,29 @@ impl Service {
                 .map_err(io::Error::other)?;
             let (stream, _) = listener.accept().await?;
             let peer = stream.peer_addr()?.ip();
+            let local = stream.local_addr()?.ip();
             let service = self.clone();
             tokio::spawn(async move {
                 let _permit = permit;
-                // Apply the effective command allowlist to the separate event
-                // port too. Native event-port admission is not yet captured;
-                // an event subscriber must never bypass a configured deny.
+                // Deliberate tightening: native build 2001 does not apply
+                // accept-connections-from to the event port, but a cmqttd
+                // event subscriber must never bypass a configured deny.
                 if !service.accepts_command_peer(peer).await {
                     if let Err(error) = connection_admission::hold_silent(stream).await {
                         tracing::debug!("C-Gate refused event peer disconnected: {error}");
                     }
+                    return;
+                }
+                // Native event-server admission (class BF) requires the live
+                // ACCESS level of this peer to be at least Monitor. Below it
+                // the socket is closed at once and event 805 names the peer
+                // (native_cgate_secondary_authorization_probe.json).
+                if !service.admits_event_peer(local, peer).await {
+                    drop(stream);
+                    let _ = service.events.send(format!(
+                        "#e# {} 805 null - Access control refused event connection from /{peer}",
+                        service.event_timestamp()
+                    ));
                     return;
                 }
                 if let Err(error) = service.event_stream(stream, false).await {
@@ -14043,7 +14165,7 @@ impl Service {
     }
 
     fn publish_command_entry(&self, client: &ClientState, raw: &str) -> Option<String> {
-        if !Self::native_logs_command_entry(raw) {
+        if !Self::native_logs_command_entry(raw) || native_hides_command_trace(raw) {
             return None;
         }
         let session = client.command_session?;
@@ -14062,7 +14184,7 @@ impl Service {
         wire: &str,
         raw: &str,
     ) -> Vec<String> {
-        if !self.command_show_responses {
+        if !self.command_show_responses || native_hides_command_trace(raw) {
             return Vec::new();
         }
         let Some(session) = client.command_session else {
@@ -14169,6 +14291,18 @@ impl Service {
                 // The handler permits only session commands until it succeeds.
                 client.recovery_only = true;
             } else {
+                // Native allocates a session number before refusing a peer
+                // whose live ACCESS level is None, then logs event 805.
+                let refused = {
+                    let mut sessions = self.command_sessions.lock().await;
+                    let id = sessions.register(origin.clone());
+                    sessions.sessions.remove(&id);
+                    id
+                };
+                let _ = self.events.send(format!(
+                    "#e# {} 805 cmd{refused} - Access control refused connection from /{remote_address}",
+                    self.event_timestamp()
+                ));
                 writer.write_all(b"421 Connection refused.\r\n").await?;
                 writer.flush().await?;
                 writer.shutdown().await?;
@@ -14575,6 +14709,23 @@ fn split_heredoc(line: &str) -> Option<(String, String)> {
 fn is_cgate_comment(line: &str) -> bool {
     let body = line.trim_start();
     body.starts_with('#') || body.starts_with("//")
+}
+
+/// Native `Command.sendCommandEvent` logs event 761 and the 766 response
+/// rows only when the top-level command's handler floor is Debug or lower
+/// (`canAccess(6)`). The Clipsal-floor roots ACCESS, LOG, PP, SAVE_TO_NVM and
+/// START_BACKGROUND_JOB therefore leave no command trace
+/// (native_cgate_secondary_authorization_probe.json `command_events`).
+fn native_hides_command_trace(line: &str) -> bool {
+    let body = line
+        .strip_prefix('[')
+        .and_then(|tagged| tagged.split_once(']'))
+        .map_or(line, |(_, body)| body.trim_start());
+    body.split_whitespace().next().is_some_and(|root| {
+        ["ACCESS", "LOG", "PP", "SAVE_TO_NVM", "START_BACKGROUND_JOB"]
+            .iter()
+            .any(|hidden| root.eq_ignore_ascii_case(hidden))
+    })
 }
 
 fn command_has_credential(line: &str) -> bool {
@@ -15760,13 +15911,7 @@ fn connection_access_level(model: &Server, client: &ClientState) -> CgateAccessL
     let (Some(local), Some(remote)) = (client.local_address, client.remote_address) else {
         return CgateAccessLevel::Clipsal;
     };
-    let matched = model
-        .access_entries
-        .iter()
-        .filter(|entry| entry.matches_interface(local) || entry.matches_remote(remote))
-        .map(AccessEntry::level)
-        .max()
-        .unwrap_or(CgateAccessLevel::None);
+    let matched = peer_access_level(model, local, remote);
     // cmqttd's default listener is loopback-only. Keep that recovery path
     // available even after an empty LOAD/DELETE sequence; unlike the vendor
     // daemon, a bad access row must never poison or permanently brick the
@@ -15776,6 +15921,26 @@ fn connection_access_level(model: &Server, client: &ClientState) -> CgateAccessL
     } else {
         matched
     }
+}
+
+/// Highest live interface/remote ACCESS row matching one socket, as native
+/// `u.a(Socket)` computes it for every new command or event peer. Existing
+/// sessions keep the level captured at connect until LOGIN/LOGOUT.
+fn peer_access_level(
+    model: &Server,
+    local: std::net::IpAddr,
+    remote: std::net::IpAddr,
+) -> CgateAccessLevel {
+    if !model.access_admission_enforced {
+        return CgateAccessLevel::Clipsal;
+    }
+    model
+        .access_entries
+        .iter()
+        .filter(|entry| entry.matches_interface(local) || entry.matches_remote(remote))
+        .map(AccessEntry::level)
+        .max()
+        .unwrap_or(CgateAccessLevel::None)
 }
 
 fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {

@@ -1,0 +1,742 @@
+{
+  "schema": "native-cgate-secondary-authorization-v1",
+  "captured_utc": "2026-09-29T19:31:49.198551+00:00",
+  "scope": "Owned IPv4 loopback command and event listeners; live ACCESS edits; no physical endpoint, site project, IPv6 peer, load-change or config-change port",
+  "oracle": {
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "source_hashes": {
+      "rust/cbus-cgate/research/native_secondary_authorization_probe.py": "3af3d9c678667bbac8eaf3d28ccc4ab5cd53eef87cf97254f460292f5715e969",
+      "rust/cbus-cgate/research/native_admin_authorization_probe.py": "83a8082602a9da5a3cbd0ff62d2bfd1677aa35dc4c5097ca584d95b12742cd18",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "physical_endpoint": false
+  },
+  "event_admission": {
+    "initial_access": [
+      "interface 127.0.0.1 Program",
+      "user sec-admin <redacted> Clipsal"
+    ],
+    "steps": [
+      {
+        "case": "Connect",
+        "delete": [
+          "200 OK."
+        ],
+        "add": [
+          "200 OK."
+        ],
+        "access_list": [
+          "135-line=1 entry=user sec-admin <redacted> Clipsal",
+          "135 line=2 entry=interface 127.0.0.1 Connect"
+        ],
+        "broadcast": [
+          "200 OK."
+        ],
+        "new_event_peer": {
+          "eof": true,
+          "received_rows": [],
+          "received_marker": false
+        },
+        "new_command_session": {
+          "greeting_prefix": "201 Service ready",
+          "login_query": [
+            "210 Access level: Connect"
+          ]
+        },
+        "existing_event_peer": {
+          "eof": false,
+          "rows": [
+            "805 null - Access control refused event connection from /127.0.0.1",
+            "703 null - broadcast_event SP class secondary-admission-connect",
+            "803 cmd5 - Host:/127.0.0.1 opened command interface from port: <ephemeral>",
+            "804 cmd5 - Host:/127.0.0.1 closed command interface from port: <ephemeral>"
+          ]
+        },
+        "admin_level_after": [
+          "210 Access level: Clipsal"
+        ]
+      },
+      {
+        "case": "Monitor",
+        "delete": [
+          "200 OK."
+        ],
+        "add": [
+          "200 OK."
+        ],
+        "access_list": [
+          "135-line=1 entry=user sec-admin <redacted> Clipsal",
+          "135 line=2 entry=interface 127.0.0.1 Monitor"
+        ],
+        "broadcast": [
+          "200 OK."
+        ],
+        "new_event_peer": {
+          "eof": false,
+          "received_rows": [
+            "703 null - broadcast_event SP class secondary-admission-monitor"
+          ],
+          "received_marker": true
+        },
+        "new_command_session": {
+          "greeting_prefix": "201 Service ready",
+          "login_query": [
+            "210 Access level: Monitor"
+          ]
+        },
+        "existing_event_peer": {
+          "eof": false,
+          "rows": [
+            "703 null - broadcast_event SP class secondary-admission-monitor",
+            "803 cmd7 - Host:/127.0.0.1 opened command interface from port: <ephemeral>",
+            "804 cmd7 - Host:/127.0.0.1 closed command interface from port: <ephemeral>",
+            "804 sys Host:/127.0.0.1 closed event interface from port: <ephemeral>"
+          ]
+        },
+        "admin_level_after": [
+          "210 Access level: Clipsal"
+        ]
+      },
+      {
+        "case": "None-row",
+        "delete": [
+          "200 OK."
+        ],
+        "add": [
+          "200 OK."
+        ],
+        "access_list": [
+          "135-line=1 entry=user sec-admin <redacted> Clipsal",
+          "135 line=2 entry=interface 127.0.0.1 None"
+        ],
+        "broadcast": [
+          "200 OK."
+        ],
+        "new_event_peer": {
+          "eof": true,
+          "received_rows": [],
+          "received_marker": false
+        },
+        "new_command_session": {
+          "greeting_prefix": "421 Connection re",
+          "login_query": [
+            "<eof>"
+          ]
+        },
+        "existing_event_peer": {
+          "eof": false,
+          "rows": [
+            "805 null - Access control refused event connection from /127.0.0.1",
+            "703 null - broadcast_event SP class secondary-admission-none-row",
+            "805 cmd9 - Access control refused connection from /127.0.0.1"
+          ]
+        },
+        "admin_level_after": [
+          "210 Access level: Clipsal"
+        ]
+      },
+      {
+        "case": "unmatched",
+        "delete": [
+          "200 OK."
+        ],
+        "access_list": [
+          "135 line=1 entry=user sec-admin <redacted> Clipsal"
+        ],
+        "broadcast": [
+          "200 OK."
+        ],
+        "new_event_peer": {
+          "eof": true,
+          "received_rows": [],
+          "received_marker": false
+        },
+        "new_command_session": {
+          "greeting_prefix": "421 Connection re",
+          "login_query": [
+            "<eof>"
+          ]
+        },
+        "existing_event_peer": {
+          "eof": false,
+          "rows": [
+            "805 null - Access control refused event connection from /127.0.0.1",
+            "703 null - broadcast_event SP class secondary-admission-unmatched",
+            "805 cmd11 - Access control refused connection from /127.0.0.1"
+          ]
+        },
+        "admin_level_after": [
+          "210 Access level: Clipsal"
+        ]
+      },
+      {
+        "case": "Operate",
+        "add": [
+          "200 OK."
+        ],
+        "access_list": [
+          "135-line=1 entry=user sec-admin <redacted> Clipsal",
+          "135 line=2 entry=interface 127.0.0.1 Operate"
+        ],
+        "broadcast": [
+          "200 OK."
+        ],
+        "new_event_peer": {
+          "eof": false,
+          "received_rows": [
+            "703 null - broadcast_event SP class secondary-admission-operate"
+          ],
+          "received_marker": true
+        },
+        "new_command_session": {
+          "greeting_prefix": "201 Service ready",
+          "login_query": [
+            "210 Access level: Operate"
+          ]
+        },
+        "existing_event_peer": {
+          "eof": false,
+          "rows": [
+            "703 null - broadcast_event SP class secondary-admission-operate",
+            "803 cmd13 - Host:/127.0.0.1 opened command interface from port: <ephemeral>",
+            "804 cmd13 - Host:/127.0.0.1 closed command interface from port: <ephemeral>",
+            "804 sys Host:/127.0.0.1 closed event interface from port: <ephemeral>"
+          ]
+        },
+        "admin_level_after": [
+          "210 Access level: Clipsal"
+        ]
+      }
+    ],
+    "admin_greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "admin_login": [
+      "211 Access level set to: Clipsal"
+    ],
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    }
+  },
+  "login_matrix": {
+    "initial_access": [
+      "interface 127.0.0.1 Operate",
+      "user sec-none <redacted> None",
+      "user sec-monitor <redacted> Monitor",
+      "user sec-program <redacted> Program",
+      "user sec-debug <redacted> Debug",
+      "user sec-clipsal <redacted> Clipsal",
+      "user sec-max <redacted> Max"
+    ],
+    "session_matrix": {
+      "greeting_prefix": "201 Service ready",
+      "query_initial": [
+        "210 Access level: Operate"
+      ],
+      "wrong_password": [
+        "422 Username and Password do not match."
+      ],
+      "query_after_wrong_password": [
+        "210 Access level: Operate"
+      ],
+      "unknown_user": [
+        "422 Username and Password do not match."
+      ],
+      "username_case": [
+        "422 Username and Password do not match."
+      ],
+      "missing_password": [
+        "400 Syntax Error."
+      ],
+      "query_after_failures": [
+        "210 Access level: Operate"
+      ],
+      "above_interface": [
+        "211 Access level set to: Clipsal"
+      ],
+      "query_above_interface": [
+        "210 Access level: Clipsal"
+      ],
+      "repeated_downgrade": [
+        "211 Access level set to: Monitor"
+      ],
+      "operate_command_at_monitor": [
+        "420 Access denied."
+      ],
+      "none_user": [
+        "211 Access level set to: None"
+      ],
+      "query_none_user": [
+        "210 Access level: None"
+      ],
+      "connect_command_at_none": [
+        "420 Access denied."
+      ],
+      "login_from_none": [
+        "211 Access level set to: Program"
+      ],
+      "logout": [
+        "211 Access level set to: Operate"
+      ],
+      "query_after_logout": [
+        "210 Access level: Operate"
+      ],
+      "logout_again": [
+        "211 Access level set to: Operate"
+      ],
+      "event_subscribe": [
+        "200 OK."
+      ],
+      "event_query_before": [
+        "306 e7s0c0"
+      ],
+      "login_after_state": [
+        "211 Access level set to: Clipsal"
+      ],
+      "session_id_after_login": [
+        "300 sessionID=null"
+      ],
+      "event_query_after_login": [
+        "306 e7s0c0"
+      ],
+      "logout_after_state": [
+        "211 Access level set to: Operate"
+      ],
+      "session_id_after_logout": [
+        "300 sessionID=null"
+      ],
+      "event_query_after_logout": [
+        "306 e7s0c0"
+      ]
+    },
+    "advisory_lock": {
+      "lock": [
+        "225 cgate: Locked."
+      ],
+      "relock_same_session": [
+        "425 cgate: Already locked by: /127.0.0.1#6"
+      ],
+      "other_session_lock": [
+        "425 cgate: Already locked by: /127.0.0.1#6"
+      ],
+      "owner_login": [
+        "211 Access level set to: Program"
+      ],
+      "owner_relock_after_login": [
+        "425 cgate: Already locked by: /127.0.0.1#6"
+      ],
+      "owner_unlock_after_login": [
+        "426 cgate: Unlock failed."
+      ],
+      "other_lock_after_owner_login": [
+        "225 cgate: Locked."
+      ],
+      "other_unlock": [
+        "226 cgate: Unlocked."
+      ],
+      "owner_logout": [
+        "211 Access level set to: Operate"
+      ],
+      "owner_lock_after_logout": [
+        "225 cgate: Locked."
+      ],
+      "other_lock_after_owner_close": [
+        "225 cgate: Locked."
+      ],
+      "other_unlock_after_owner_close": [
+        "226 cgate: Unlocked."
+      ]
+    },
+    "cgate_object": {
+      "Monitor": {
+        "query": [
+          "210 Access level: Monitor"
+        ],
+        "get_kcount": [
+          "420 Access denied: cgate (Insufficient access level for read)"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "420 Access denied."
+        ],
+        "set_state": [
+          "420 Access denied."
+        ],
+        "do_gc": [
+          "420 Access denied."
+        ]
+      },
+      "Operate": {
+        "query": [
+          "210 Access level: Operate"
+        ],
+        "get_kcount": [
+          "420 Access denied: cgate (Insufficient access level for read)"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "200 OK: cgate"
+        ],
+        "set_state": [
+          "420 Access denied: cgate (Insufficient access level for write)"
+        ],
+        "do_gc": [
+          "202 Done: cgate"
+        ]
+      },
+      "Program": {
+        "query": [
+          "210 Access level: Program"
+        ],
+        "get_kcount": [
+          "420 Access denied: cgate (Insufficient access level for read)"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "200 OK: cgate"
+        ],
+        "set_state": [
+          "420 Access denied: cgate (Insufficient access level for write)"
+        ],
+        "do_gc": [
+          "202 Done: cgate"
+        ]
+      },
+      "Debug": {
+        "query": [
+          "210 Access level: Debug"
+        ],
+        "get_kcount": [
+          "420 Access denied: cgate (Insufficient access level for read)"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "200 OK: cgate"
+        ],
+        "set_state": [
+          "420 Access denied: cgate (Insufficient access level for write)"
+        ],
+        "do_gc": [
+          "202 Done: cgate"
+        ]
+      },
+      "Clipsal": {
+        "query": [
+          "210 Access level: Clipsal"
+        ],
+        "get_kcount": [
+          "300 cgate: KCount=0"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "200 OK: cgate"
+        ],
+        "set_state": [
+          "420 Access denied: cgate (Insufficient access level for write)"
+        ],
+        "do_gc": [
+          "202 Done: cgate"
+        ]
+      },
+      "Max": {
+        "query": [
+          "210 Access level: Max"
+        ],
+        "get_kcount": [
+          "300 cgate: KCount=-1"
+        ],
+        "get_eventlevel": [
+          "300 cgate: EventLevel=5"
+        ],
+        "set_eventlevel": [
+          "200 OK: cgate"
+        ],
+        "set_state": [
+          "200 OK: cgate"
+        ],
+        "do_gc": [
+          "202 Done: cgate"
+        ]
+      }
+    },
+    "live_access": {
+      "admin_login": [
+        "211 Access level set to: Clipsal"
+      ],
+      "existing_query": [
+        "210 Access level: Operate"
+      ],
+      "programmed_login": [
+        "211 Access level set to: Program"
+      ],
+      "list_at_clipsal": [
+        "135-line=1 entry=interface 127.0.0.1 Operate",
+        "135-line=2 entry=user sec-none <redacted> None",
+        "135-line=3 entry=user sec-monitor <redacted> Monitor",
+        "135-line=4 entry=user sec-program <redacted> Program",
+        "135-line=5 entry=user sec-debug <redacted> Debug",
+        "135 line=6 entry=user sec-clipsal <redacted> Clipsal"
+      ],
+      "delete_interface": [
+        "200 OK."
+      ],
+      "add_monitor_interface": [
+        "200 OK."
+      ],
+      "existing_query_after_change": [
+        "210 Access level: Operate"
+      ],
+      "existing_operate_command_after_change": [
+        "401 Bad object or device ID."
+      ],
+      "existing_logout": [
+        "211 Access level set to: Monitor"
+      ],
+      "existing_operate_command_after_logout": [
+        "420 Access denied."
+      ],
+      "reconnect_query": [
+        "210 Access level: Monitor"
+      ],
+      "delete_program_user": [
+        "200 OK."
+      ],
+      "programmed_query_after_delete": [
+        "210 Access level: Program"
+      ],
+      "programmed_logout": [
+        "211 Access level set to: Monitor"
+      ],
+      "programmed_relogin_after_delete": [
+        "422 Username and Password do not match."
+      ],
+      "admin_self_downgrade_list": [
+        [
+          "211 Access level set to: Max"
+        ],
+        [
+          "135-line=1 entry=user sec-none <redacted> None",
+          "135-line=2 entry=user sec-monitor <redacted> Monitor",
+          "135-line=3 entry=user sec-debug <redacted> Debug",
+          "135-line=4 entry=user sec-clipsal <redacted> Clipsal",
+          "135-line=5 entry=user sec-max <redacted> Max",
+          "135 line=6 entry=interface 127.0.0.1 Monitor"
+        ]
+      ]
+    },
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    "advisory_lock_earlier_run": {
+      "captured_utc": "2026-09-29T19:27:36.590144+00:00",
+      "note": "Same probe lock sequence in an earlier owned child. Native lock owners are weak references to the AccessContext that LOGIN/LOGOUT replaces, so release after a swap waits for garbage collection: this run released before the relock, the primary run released only after the owner unlock attempt.",
+      "rows": {
+        "lock": [
+          "225 cgate: Locked."
+        ],
+        "relock_same_session": [
+          "425 cgate: Already locked by: /127.0.0.1#6"
+        ],
+        "other_session_lock": [
+          "425 cgate: Already locked by: /127.0.0.1#6"
+        ],
+        "owner_login": [
+          "211 Access level set to: Program"
+        ],
+        "owner_relock_after_login": [
+          "225 cgate: Locked."
+        ],
+        "owner_unlock_after_login": [
+          "226 cgate: Unlocked."
+        ],
+        "other_lock_after_owner_login": [
+          "225 cgate: Locked."
+        ],
+        "other_unlock": [
+          "226 cgate: Unlocked."
+        ],
+        "owner_logout": [
+          "211 Access level set to: Operate"
+        ],
+        "owner_lock_after_logout": [
+          "225 cgate: Locked."
+        ],
+        "other_lock_after_owner_close": [
+          "225 cgate: Locked."
+        ],
+        "other_unlock_after_owner_close": [
+          "226 cgate: Unlocked."
+        ]
+      }
+    }
+  },
+  "command_events": {
+    "commands": [
+      "NOOP",
+      "ACCESS LIST",
+      "LOG",
+      "PP LIST_LOCK",
+      "LOGIN",
+      "EVENT",
+      "CONFIG GET cgate-name"
+    ],
+    "watcher_mode": [
+      "200 OK."
+    ],
+    "actor_login": [
+      "211 Access level set to: Clipsal"
+    ],
+    "replies": {
+      "NOOP": "200 OK.",
+      "ACCESS LIST": "135 line=2 entry=user sec-clipsal <redacted> Clipsal",
+      "LOG": "101 Help:  LOG EXTRACT - Extract server log file into a specified location.",
+      "PP LIST_LOCK": "122 no open locks",
+      "LOGIN": "210 Access level: Clipsal",
+      "EVENT": "306 e0s0c0",
+      "CONFIG GET cgate-name": "303 cgate-name=Schneider Electric C-Gate"
+    },
+    "watcher_rows": [
+      "766 cmd3 - Response: [s1] 200 OK.",
+      "766 cmd5 - Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+      "761 cmd5 - Command: LOGIN [arguments hidden]",
+      "766 cmd5 - Response: [s1] 211 Access level set to: Clipsal",
+      "761 cmd5 - Command: [s2] NOOP",
+      "766 cmd5 - Response: [s2] 200 OK.",
+      "761 cmd5 - Command: LOGIN [arguments hidden]",
+      "766 cmd5 - Response: [s6] 210 Access level: Clipsal",
+      "761 cmd5 - Command: [s7] EVENT",
+      "766 cmd5 - Response: [s7] 306 e0s0c0",
+      "761 cmd5 - Command: [s8] CONFIG GET cgate-name",
+      "766 cmd5 - Response: [s8] 303 cgate-name=Schneider Electric C-Gate",
+      "761 cmd5 - Command: [s9] NOOP",
+      "766 cmd5 - Response: [s9] 200 OK."
+    ],
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    }
+  },
+  "access_control_roles": {
+    "commands": [
+      "ACCESSCONTROL",
+      "ACCESSCONTROL CLOSE //MISSING/254/213 1 1",
+      "ACCESSCONTROL LOCK //MISSING/254/213 1 1"
+    ],
+    "roles": {
+      "None": {
+        "login": [
+          "211 Access level set to: None"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Connect": {
+        "login": [
+          "211 Access level set to: Connect"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Monitor": {
+        "login": [
+          "211 Access level set to: Monitor"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Operate": {
+        "login": [
+          "211 Access level set to: Operate"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Admin": {
+        "login": [
+          "211 Access level set to: Admin"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Program": {
+        "login": [
+          "211 Access level set to: Program"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Debug": {
+        "login": [
+          "211 Access level set to: Debug"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Clipsal": {
+        "login": [
+          "211 Access level set to: Clipsal"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      },
+      "Max": {
+        "login": [
+          "211 Access level set to: Max"
+        ],
+        "replies": {
+          "ACCESSCONTROL": "400 Syntax Error.",
+          "ACCESSCONTROL CLOSE //MISSING/254/213 1 1": "400 Syntax Error.",
+          "ACCESSCONTROL LOCK //MISSING/254/213 1 1": "400 Syntax Error."
+        }
+      }
+    },
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    }
+  }
+}

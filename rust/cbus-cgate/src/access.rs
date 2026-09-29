@@ -711,6 +711,40 @@ pub(crate) fn native_minimum_for(upper: &[String]) -> Option<CgateAccessLevel> {
     None
 }
 
+/// Floors for command paths with no native handler-entry gradient. Native
+/// build 2001 answers these with 400 at every role (no fresh-child
+/// `ACCESSCONTROL` root is registered, and `UNIT`/`CMQTT` are cmqttd
+/// extensions), so each floor is a documented cmqttd decision: the
+/// `AccessControlCommand` source declares Operate for the physical
+/// application-213 leaves, UNIT IDENTIFY follows native IDENTIFY, raw
+/// memory reads follow the Program programming families, label observations
+/// follow GET, and capability metadata needs only a connected session.
+/// `#`, `//`, CONFIRM, LOGIN and LOGOUT deliberately have none: native parses
+/// comments first, CONFIRM re-checks the pending SHUTDOWN, and LOGIN/LOGOUT
+/// bypass `checkRunCommand` (secondary-authorization-audit.md).
+pub(crate) const CMQTT_DEFINED_FLOORS: &[(&str, CgateAccessLevel)] = &[
+    ("ACCESSCONTROL CLOSE", CgateAccessLevel::Operate),
+    ("ACCESSCONTROL LOCK", CgateAccessLevel::Operate),
+    ("ACCESS_CONTROL CLOSE", CgateAccessLevel::Operate),
+    ("ACCESS_CONTROL LOCK", CgateAccessLevel::Operate),
+    ("UNIT IDENTIFY", CgateAccessLevel::Operate),
+    ("UNIT READMEM", CgateAccessLevel::Program),
+    ("CMQTT LABELS", CgateAccessLevel::Monitor),
+    ("CMQTT CAPABILITIES", CgateAccessLevel::Connect),
+];
+
+/// Native-observed floor, else the documented cmqttd floor for a path that
+/// has no native handler gradient.
+pub(crate) fn command_minimum_for(upper: &[String]) -> Option<CgateAccessLevel> {
+    native_minimum_for(upper).or_else(|| {
+        let path = upper.iter().take(2).cloned().collect::<Vec<_>>().join(" ");
+        CMQTT_DEFINED_FLOORS
+            .iter()
+            .find(|(candidate, _)| *candidate == path)
+            .map(|(_, level)| *level)
+    })
+}
+
 /// One durable access-list row. User credentials are never retained in
 /// plaintext. The digest is bound to the case-sensitive username so equal
 /// passwords do not have equal stored values across users.
