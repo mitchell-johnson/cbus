@@ -50,11 +50,11 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 447,
+    "test_modules": 448,
     "modules_without_skip_sites": 242,
-    "modules_with_skip_sites": 205,
+    "modules_with_skip_sites": 206,
     "modules_by_category": {
-      "cgate_test_host": 118,
+      "cgate_test_host": 119,
       "external_cgate_project": 1,
       "host_platform": 16,
       "host_tool": 6,
@@ -72,14 +72,14 @@
       "windows": 12
     },
     "native_modules": {
-      "all": 109,
+      "all": 110,
       "partial": 18,
       "none": 78
     },
-    "native_runnable_tests": 206,
-    "native_selected_required_tests": 206,
+    "native_runnable_tests": 207,
+    "native_selected_required_tests": 207,
     "native_excluded": 0,
-    "native_selection_selectors": 130
+    "native_selection_selectors": 131
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -3516,6 +3516,31 @@
           "tests": [
             "OriginalNormalizationTests::test_unchanged_original_before_save_literal_eight_cases"
           ]
+        }
+      ]
+    },
+    "tests/test_edlt_open_unit_get.py": {
+      "categories": [
+        "cgate_test_host"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_open_unit_get.py::NativeOpenUnitGetTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_TEST_HOST')",
+          "reason": "Set CBUS_CGATE_TEST_HOST for a disposable native C-Gate",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST"
+          ],
+          "categories": [
+            "cgate_test_host"
+          ],
+          "offline": "skips",
+          "native": "runs"
         }
       ]
     },
