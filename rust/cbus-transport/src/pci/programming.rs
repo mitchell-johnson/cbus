@@ -2632,13 +2632,15 @@ impl PciClient {
         parameter: u8,
         length: usize,
     ) -> Result<Vec<u8>> {
-        self.recall_parameter_with_route(
-            unit,
-            parameter,
-            length,
-            ProgrammingRoute::DirectChecksummed,
-        )
-        .await
+        // Direct recalls follow the session checksum mode (see
+        // `set_command_checksum`); checksummed remains the default.
+        let route = if self.command_checksum() {
+            ProgrammingRoute::DirectChecksummed
+        } else {
+            ProgrammingRoute::DirectUnchecksummed
+        };
+        self.recall_parameter_with_route(unit, parameter, length, route)
+            .await
     }
 
     /// Recall one standard CAL parameter through a one-to-six bridge source
@@ -4700,7 +4702,7 @@ impl PciClient {
             return Err(Error::new(ErrorKind::BrokenPipe, "PCI disconnected"));
         }
         let packet = Packet::PointToPoint {
-            meta: Meta::new(true, 1),
+            meta: Meta::new(self.command_checksum(), 1),
             unit_address: unit,
             bridged: !bridges.is_empty(),
             hops: bridges.to_vec(),

@@ -514,6 +514,12 @@ pub struct PciClient {
     mmi_lane: tokio::sync::Mutex<()>,
     mmi_fault: std::sync::atomic::AtomicBool,
     mmi_collecting: std::sync::atomic::AtomicBool,
+    /// Outer SRCHK checksum on commissioning observation commands (install
+    /// MMI, IDENTIFY collection, direct parameter recall) and the reply
+    /// parser's first framing choice. True matches a checksummed session
+    /// (cmqttd enables SRCHK at init); a checksum-off peer needs false.
+    /// Defaults to true, preserving every existing caller until it opts in.
+    command_checksum: std::sync::atomic::AtomicBool,
     disconnected: std::sync::atomic::AtomicBool,
     shutdown: watch::Sender<bool>,
     background_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
@@ -586,6 +592,7 @@ impl PciClient {
             mmi_lane: tokio::sync::Mutex::new(()),
             mmi_fault: std::sync::atomic::AtomicBool::new(false),
             mmi_collecting: std::sync::atomic::AtomicBool::new(false),
+            command_checksum: std::sync::atomic::AtomicBool::new(true),
             disconnected: std::sync::atomic::AtomicBool::new(false),
             shutdown,
             background_tasks: Mutex::new(Vec::with_capacity(2)),
@@ -630,6 +637,22 @@ impl PciClient {
             let _ = self.packets.send(None);
             let _ = self.events.send(CBusEvent::ConnectionLost);
         }
+    }
+
+    /// Select the outer SRCHK checksum for commissioning observation
+    /// commands and the preferred reply framing. Applies to subsequently
+    /// sent frames and decoded replies; set it before any commissioning I/O
+    /// (the init sequence itself is fixed). Callers that honor a
+    /// selected-serial plan pass its `command_checksum` setting.
+    pub fn set_command_checksum(&self, enabled: bool) {
+        self.command_checksum
+            .store(enabled, std::sync::atomic::Ordering::Release);
+    }
+
+    /// Whether commissioning observation frames carry the checksum.
+    pub fn command_checksum(&self) -> bool {
+        self.command_checksum
+            .load(std::sync::atomic::Ordering::Acquire)
     }
 
     // ------------------------------------------------------------ sending
@@ -1085,6 +1108,7 @@ impl PciClient {
                                 .mmi_collecting
                                 .load(std::sync::atomic::Ordering::Acquire),
                         );
+                        fb.set_checksum(client.command_checksum());
                         for ev in fb.feed(chunk) {
                             if let Some(p) = ev.packet {
                                 client.handle_cbus_packet(p);

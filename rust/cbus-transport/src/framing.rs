@@ -84,7 +84,25 @@ impl FrameBuffer {
             } else {
                 decode_packet
             };
-            let (packet, consumed) = decode(&self.buf, self.checksum, true, self.from_pci);
+            let (mut packet, mut consumed) = decode(&self.buf, self.checksum, true, self.from_pci);
+            // Units emit checksummed replies even into a checksum-off
+            // session. When a bare from-PCI decode fails, retry once as
+            // checksummed and keep it only if it parses; a frame invalid in
+            // both modes stays Invalid. Checksummed sessions (cmqttd) stay
+            // strict: a frame failing its checksum is never reinterpreted
+            // as bare. Server-side parsing stays strict as well.
+            if self.from_pci
+                && !self.checksum
+                && matches!(packet, Some(Packet::Invalid))
+                && consumed > 0
+            {
+                let (fallback_packet, fallback_consumed) =
+                    decode(&self.buf, true, true, self.from_pci);
+                if !matches!(fallback_packet, Some(Packet::Invalid)) && fallback_consumed > 0 {
+                    packet = fallback_packet;
+                    consumed = fallback_consumed;
+                }
+            }
             if consumed > 0 {
                 let raw = self.buf[..consumed.min(self.buf.len())].to_vec();
                 self.buf.drain(..consumed.min(self.buf.len()));

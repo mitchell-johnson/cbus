@@ -144,8 +144,10 @@ enum Command {
     /// opens a direct TCP socket and requires exclusive ownership of
     /// the CNI; stop `cmqttd` or any other current owner before running it.
     /// Caller timing replaces plan timing: `--timeout` bounds the whole
-    /// observation while plan transport settings are validated but never
-    /// enforced. The plan comes from a file (`--plan`) or from the embedded
+    /// observation while other plan transport settings are validated but
+    /// never enforced. The plan's `command_checksum` IS enforced (the
+    /// session must match the peer): checksum-off plans speak bare frames.
+    /// The plan comes from a file (`--plan`) or from the embedded
     /// plan in a recovery journal (`--journal`, resuming verification from
     /// a crashed/interrupted apply without the plan file); exactly one of
     /// the two is required. `--journal` also accepts the durable attempt
@@ -178,7 +180,8 @@ enum Command {
     /// The journal must not exist (exclusive creation, checked before connecting);
     /// `--timeout` separately bounds the fresh-before and post-send
     /// observations. The exact one-shot send and its bounded receipt capture
-    /// use the same PCI connection as those observations. The journal is
+    /// use the same PCI connection as those observations, all in the plan's
+    /// `command_checksum` session mode. The journal is
     /// recovery evidence that also carries the embedded plan. An additional
     /// canonical-plan attempt marker is reserved beside the journal by
     /// default, or in --attempt-store when specified. Preserve both files.
@@ -983,6 +986,7 @@ fn verify_json(
         "wire_quiescence_after_return_verified": evidence.wire_quiescence_after_return_verified,
         "discard_client_after_deadline_or_cancellation": evidence.discard_client_after_deadline_or_cancellation,
         "endpoint_binding_cli_verified": true,
+        "command_checksum": plan.command_checksum,
         "plan": {
             "serial": plan.serial,
             "destination": plan.destination,
@@ -1038,6 +1042,7 @@ fn apply_failure_json(
         "wire_quiescence_after_return_verified": false,
         "discard_client_after_deadline_or_cancellation": true,
         "endpoint_binding_cli_verified": true,
+        "command_checksum": plan.command_checksum,
         "plan": {
             "serial": plan.serial,
             "destination": plan.destination,
@@ -1087,6 +1092,10 @@ async fn serial_verify_cmd(
     pci_client
         .set_local_unit_hint(plan.local_unit)
         .map_err(|e| format!("local PCI unit: {e}"))?;
+    // The observation session follows the plan's checksum mode, like the
+    // Python coordinator: a checksum-off plan speaks bare MMI, IDENTIFY and
+    // recall frames end to end instead of being rejected by a bare peer.
+    pci_client.set_command_checksum(plan.command_checksum);
     let evidence = verify_plan(&raw, &pci_client, verify_options(total_deadline))
         .await
         .map_err(|e| format!("verify: {e}"))?;
@@ -1154,6 +1163,9 @@ async fn serial_apply_cmd(
     pci_client
         .set_local_unit_hint(plan.local_unit)
         .map_err(|e| format!("local PCI unit: {e}"))?;
+    // Observations and the local-options recall follow the plan's checksum
+    // mode (see serial-verify); the one-shot send already encodes it.
+    pci_client.set_command_checksum(plan.command_checksum);
     let once_ = ApplyOnce::new(&raw);
     match once_
         .apply(

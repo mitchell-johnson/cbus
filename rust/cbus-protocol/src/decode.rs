@@ -211,14 +211,28 @@ fn decode_body(
     // byte is a C/D marker with a low-five-bit byte count, not an addressed
     // packet header. The wire form is ambiguous with priority-3 addressed
     // traffic, so only recognize installation blocks inside an active MMI
-    // transaction and only for the installation application.
+    // transaction and only for the installation application. Installation
+    // blocks carry their checksum on the wire even into a checksum-off
+    // session, so there a trailing byte that completes a valid checksum is
+    // framing. Any other length falls through to the ordinary decoders.
     if install_mmi && from_pci && flags & 0xe0 == 0xc0 && raw.get(1) == Some(&0xff) {
         let count = usize::from(flags & 0x1f);
-        if count >= 3 && raw.len() == count + 1 {
-            let application = raw[1];
-            let block_start = raw[2];
-            let mut states = Vec::with_capacity((raw.len() - 3) * 4);
-            for value in &raw[3..] {
+        let body = if count >= 3 && raw.len() == count + 1 {
+            Some(raw)
+        } else if !checksum
+            && count >= 3
+            && raw.len() == count + 2
+            && crate::common::validate_cbus_checksum(raw)
+        {
+            Some(&raw[..raw.len() - 1])
+        } else {
+            None
+        };
+        if let Some(body) = body {
+            let application = body[1];
+            let block_start = body[2];
+            let mut states = Vec::with_capacity((body.len() - 3) * 4);
+            for value in &body[3..] {
                 states.extend((0..4).map(|shift| (value >> (shift * 2)) & 0x03));
             }
             if usize::from(block_start) + states.len() > 256 {
@@ -244,17 +258,29 @@ fn decode_body(
     // low address bits collide with an addressed packet type. Other direct
     // replies used here do not collide. Keep this exception exact so a short
     // ordinary 0x86 point-to-point packet is never reinterpreted as a CAL.
+    // Replies may also arrive checksummed into a checksum-off session
+    // (units emit checksums regardless of the command session mode): a
+    // trailing byte that completes the checksum is framing, not data.
     let complete_bare_reply = flags == (CAL_REPLY | 13) && raw.len() == 14;
+    let checksummed_trailer = !checksum
+        && flags == (CAL_REPLY | 13)
+        && raw.len() == 15
+        && crate::common::validate_cbus_checksum(raw);
     if from_pci
         && !dp
         && (complete_bare_reply
+            || checksummed_trailer
             || !matches!(
                 address_type,
                 DAT_POINT_TO_POINT_TO_MULTIPOINT | DAT_POINT_TO_MULTIPOINT | DAT_POINT_TO_POINT
             ))
     {
         let mut cals = Vec::new();
-        let mut cal_data = raw;
+        let mut cal_data = if checksummed_trailer {
+            &raw[..raw.len() - 1]
+        } else {
+            raw
+        };
         while !cal_data.is_empty() {
             let (cal, cal_len) = Cal::decode_one(cal_data)?;
             cal_data = cal_data.get(cal_len..).unwrap_or(&[]);
@@ -472,6 +498,22 @@ mod tests {
     use super::*;
 
     #[test]
+    fn checksummed_cal_reply_parses_in_checksum_off_session() {
+        // Units emit checksummed replies even into checksum-off sessions
+        // (captured from the Python fixture): the trailing checksum byte is
+        // framing, and the twelve-byte IDENTIFY4 payload must decode.
+        let (packet, consumed) =
+            decode_packet(b"8D04FFFFFF000018A664A3B10005F7\r\n", false, true, true);
+        assert_eq!(consumed, 32);
+        match packet {
+            Some(Packet::PointToPoint { cals, .. }) => {
+                assert_eq!(cals.len(), 1);
+            }
+            other => panic!("expected CAL reply, got {other:?}"),
+        }
+    }
+
+    #[test]
     fn specials() {
         assert_eq!(decode_packet(b"", true, true, true), (None, 0));
         assert_eq!(
@@ -595,6 +637,32 @@ mod tests {
         }
         assert!(!matches!(
             decode_packet(wire, true, true, true).0,
+            Some(Packet::StandardStatus { .. })
+        ));
+    }
+
+    #[test]
+    fn checksummed_installation_mmi_parses_in_checksum_off_session() {
+        // A checksum-off session still receives checksummed MMI blocks: the
+        // trailing byte completing the checksum is framing, not state data.
+        let checksummed = b"D8FF000000000001000000000000000000000000000000000028\r\n";
+        let (packet, consumed) = decode_packet_install_mmi(checksummed, false, true, true);
+        assert_eq!(consumed, checksummed.len());
+        match packet.unwrap() {
+            Packet::StandardStatus { states, .. } => {
+                assert_eq!(states.len(), 88);
+                assert_eq!(states[16], 1);
+            }
+            other => panic!("wrong packet {other:?}"),
+        }
+        // The bare form of the same block decodes identically.
+        let bare = b"D8FF0000000000010000000000000000000000000000000000\r\n";
+        let (packet, _) = decode_packet_install_mmi(bare, false, true, true);
+        assert!(matches!(packet, Some(Packet::StandardStatus { .. })));
+        // A trailer that does not complete the checksum is not framing.
+        let corrupt = b"D8FF000000000001000000000000000000000000000000000029\r\n";
+        assert!(!matches!(
+            decode_packet_install_mmi(corrupt, false, true, true).0,
             Some(Packet::StandardStatus { .. })
         ));
     }

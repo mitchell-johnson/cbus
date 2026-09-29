@@ -284,6 +284,17 @@ journal creation, and a crash releases the OS lock. The durable attempt marker
 still controls no-replay recovery; the lease does not exclude `cmqttd`, remote
 hosts, or controllers that do not cooperate.
 
+Rust `serial-verify` and `serial-apply` run the whole session in the plan's
+`command_checksum` mode, as the Python coordinator does: a checksum-off plan
+sends bare install-MMI, IDENTIFY and local-options recall frames (and the
+already plan-encoded one-shot request) instead of the checksummed frames a
+checksum-off peer rejects. Peers still emit checksummed MMI blocks and CAL
+replies into a checksum-off session, and those parse in either mode; a
+checksummed session never reinterprets a frame failing its checksum as bare.
+Both commands also bind the plan's local unit as the reply-correlation hint
+before any I/O, so sourceless local IDENTIFY replies correlate. A plan file
+written by either implementation therefore verifies and applies with the other.
+
 The plan and journal components do not authorize a bus mutation. The Rust
 verifier also does not enforce the plan's endpoint, local PCI serial or
 transport settings and emits no Python-equivalent raw-frame proof: the caller

@@ -151,9 +151,18 @@ fn mmi_line(start: u8, count: usize, states: &[u8; 256]) -> Vec<u8> {
     line
 }
 
-fn checksum_line(mut bytes: Vec<u8>) -> Vec<u8> {
-    let sum = bytes.iter().fold(0u8, |acc, b| acc.wrapping_add(*b));
-    bytes.push(0u8.wrapping_sub(sum));
+fn checksum_line(bytes: Vec<u8>) -> Vec<u8> {
+    encode_line(bytes, true)
+}
+
+/// Hex-encode a reply in the session mode: checksummed frames append the
+/// checksum byte, bare frames omit it (as a checksum-off session receives
+/// them). MMI status blocks are exempt: they always carry checksums.
+fn encode_line(mut bytes: Vec<u8>, checksummed: bool) -> Vec<u8> {
+    if checksummed {
+        let sum = bytes.iter().fold(0u8, |acc, b| acc.wrapping_add(*b));
+        bytes.push(0u8.wrapping_sub(sum));
+    }
     let mut line = bytes
         .iter()
         .map(|b| format!("{b:02X}"))
@@ -163,7 +172,7 @@ fn checksum_line(mut bytes: Vec<u8>) -> Vec<u8> {
     line
 }
 
-fn identify_line(unit: u8, payload: &[u8]) -> Vec<u8> {
+fn identify_line(unit: u8, payload: &[u8], checksummed: bool) -> Vec<u8> {
     if unit == 16 {
         // The attached PCI's own IDENTIFY response is a bare CAL. This pins
         // the CLI requirement to establish the validated local-unit hint
@@ -173,14 +182,14 @@ fn identify_line(unit: u8, payload: &[u8]) -> Vec<u8> {
             data: payload.to_vec(),
         }
         .encode();
-        checksum_line(cal)
+        encode_line(cal, checksummed)
     } else {
-        identify_reply_line(unit, 4, payload)
+        identify_reply_line(unit, 4, payload, checksummed)
     }
 }
 
 /// Routed IDENTIFY reply with the requested CAL parameter and payload.
-fn identify_reply_line(unit: u8, parameter: u8, data: &[u8]) -> Vec<u8> {
+fn identify_reply_line(unit: u8, parameter: u8, data: &[u8], checksummed: bool) -> Vec<u8> {
     use cbus_protocol::cal::Cal;
     let cal = Cal::Reply {
         parameter,
@@ -189,13 +198,13 @@ fn identify_reply_line(unit: u8, parameter: u8, data: &[u8]) -> Vec<u8> {
     .encode();
     let mut bytes = vec![0x86, unit, 0x10, 0x01, 0x00];
     bytes.extend(cal);
-    checksum_line(bytes)
+    encode_line(bytes, checksummed)
 }
 
 /// Local-options recall reply for unit 16 carrying one option byte
 /// (mirrors the `NET UNRAVELUNIT` wire shape in the transport apply test).
-fn recall_line(option: u8) -> Vec<u8> {
-    checksum_line(vec![0x86, 16, 0x10, 0x00, 0x82, 0x42, option])
+fn recall_line(option: u8, checksummed: bool) -> Vec<u8> {
+    encode_line(vec![0x86, 16, 0x10, 0x00, 0x82, 0x42, option], checksummed)
 }
 
 fn selected_serial_receipt_line() -> Vec<u8> {
@@ -263,11 +272,15 @@ impl PeerScript {
     }
 }
 
+/// Every client request line the peer received, in order.
+type RequestLog = std::sync::Arc<std::sync::Mutex<Vec<Vec<u8>>>>;
+
 fn handle_session(
     stream: std::net::TcpStream,
     script: &PeerScript,
     first: Vec<u8>,
     sent: &AtomicBool,
+    log: &RequestLog,
 ) -> std::io::Result<()> {
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut writer = stream;
@@ -286,6 +299,7 @@ fn handle_session(
         if line.is_empty() || line[0] != b'\\' {
             continue; // init / basic-mode frames need no acknowledgement
         }
+        log.lock().unwrap().push(line.clone());
         // A trailing g..z byte is the confirmation code (confirmed read);
         // checksummed-but-unconfirmed frames (e.g. the local-options
         // recall) carry none. Hex digits never collide with g..z, so the
@@ -301,7 +315,10 @@ fn handle_session(
             // Ack immediately so the client never retransmits.
             writer.write_all(&[*body.last().unwrap(), b'.'])?;
         }
-        if hexpart.starts_with(b"05FF00FAFF0003") {
+        // Requests arrive checksummed or bare according to the plan's
+        // session mode; CAL replies echo the request form, while MMI status
+        // blocks always carry checksums.
+        if hexpart == b"05FF00FAFF0003" || hexpart == b"05FF00FAFF00" {
             for (start, count) in [(0u8, 88usize), (88, 88), (176, 80)] {
                 writer.write_all(&mmi_line(start, count, script.states_for(sent)))?;
             }
@@ -315,7 +332,7 @@ fn handle_session(
             });
             if bytes.len() >= 6 && bytes[0] == 0x46 && bytes[3] == 0x1A {
                 let option = script.option.expect("unexpected local-options recall");
-                writer.write_all(&recall_line(option))?;
+                writer.write_all(&recall_line(option, bytes.len() == 7))?;
                 writer.flush()?;
             } else if bytes.len() >= 11 && bytes[..5] == [0x05, 0xff, 0x00, 0x0f, 0x00] {
                 let command_checksum = script
@@ -337,13 +354,15 @@ fn handle_session(
                     writer.write_all(&selected_serial_receipt_line())?;
                     writer.flush()?;
                 }
-            } else if bytes.len() >= 6 && bytes[0] == 0x46 && bytes[3] == 0x21 {
+            } else if bytes.len() >= 5 && bytes[0] == 0x46 && bytes[3] == 0x21 {
                 let unit = bytes[1];
                 let attribute = bytes[4];
+                // A checksummed IDENTIFY carries a sixth checksum byte.
+                let checksummed = bytes.len() == 6;
                 match attribute {
                     4 => {
                         for payload in script.probes_for(unit, sent) {
-                            writer.write_all(&identify_line(unit, &payload))?;
+                            writer.write_all(&identify_line(unit, &payload, checksummed))?;
                         }
                         writer.flush()?;
                         // then silence: the client completes the probe on its
@@ -357,7 +376,12 @@ fn handle_session(
                         } else {
                             format!("FW{unit}")
                         };
-                        writer.write_all(&identify_reply_line(unit, attribute, text.as_bytes()))?;
+                        writer.write_all(&identify_reply_line(
+                            unit,
+                            attribute,
+                            text.as_bytes(),
+                            checksummed,
+                        ))?;
                         writer.flush()?;
                     }
                     _ => {
@@ -382,6 +406,12 @@ fn handle_session(
 /// refused. The one handler exits on CLI EOF; a hung CLI is bounded by its
 /// own `--timeout`.
 fn spawn_peer_with_send_observer(script: PeerScript) -> (u16, std::sync::Arc<AtomicBool>) {
+    let (port, sent, _) = spawn_peer_logged(script);
+    (port, sent)
+}
+
+/// [`spawn_peer_with_send_observer`] that also exposes the request log.
+fn spawn_peer_logged(script: PeerScript) -> (u16, std::sync::Arc<AtomicBool>, RequestLog) {
     let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
     let port = listener.local_addr().unwrap().port();
     let script = std::sync::Arc::new(script);
@@ -389,6 +419,8 @@ fn spawn_peer_with_send_observer(script: PeerScript) -> (u16, std::sync::Arc<Ato
     // session flips it only after observing the exact address request.
     let sent = std::sync::Arc::new(AtomicBool::new(false));
     let send_observer = sent.clone();
+    let log = RequestLog::default();
+    let request_log = log.clone();
     std::thread::spawn(move || {
         let Ok((stream, _)) = listener.accept() else {
             return;
@@ -399,11 +431,11 @@ fn spawn_peer_with_send_observer(script: PeerScript) -> (u16, std::sync::Arc<Ato
         if reader.read_until(b'\r', &mut first).is_err() || first.is_empty() {
             return;
         }
-        if let Err(e) = handle_session(stream, &script, first, &sent) {
+        if let Err(e) = handle_session(stream, &script, first, &sent, &log) {
             panic!("peer session failed: {e}");
         }
     });
-    (port, send_observer)
+    (port, send_observer, request_log)
 }
 
 fn spawn_peer(script: PeerScript) -> u16 {
@@ -732,7 +764,7 @@ fn serial_apply_expected_after_succeeds_without_a_matching_receipt() {
 
 #[test]
 fn serial_apply_uses_exact_checksummed_request_on_one_connection() {
-    let port = spawn_peer(PeerScript {
+    let (port, _, log) = spawn_peer_logged(PeerScript {
         states: pre_move_states(),
         probes: vec![(16, vec![serial_c()]), (255, vec![serial_a(), serial_b()])],
         option: Some(5),
@@ -775,6 +807,91 @@ fn serial_apply_uses_exact_checksummed_request_on_one_connection() {
         "{evidence}"
     );
     assert_eq!(evidence["receipt_matched"], true, "{evidence}");
+    assert_eq!(evidence["command_checksum"], true, "{evidence}");
+    // A checksummed plan keeps every observation frame checksummed.
+    assert_session_frames(&log.lock().unwrap(), true);
+}
+
+/// Assert every MMI, IDENTIFY and recall request used one checksum mode.
+fn assert_session_frames(log: &[Vec<u8>], checksummed: bool) {
+    let mmi = if checksummed {
+        b"05FF00FAFF0003".as_slice()
+    } else {
+        b"05FF00FAFF00".as_slice()
+    };
+    let hex_body = |line: &Vec<u8>| -> Vec<u8> {
+        let body = &line[1..line.len() - 1];
+        match body.last() {
+            Some(b'g'..=b'z') => body[..body.len() - 1].to_vec(),
+            _ => body.to_vec(),
+        }
+    };
+    let bodies: Vec<Vec<u8>> = log.iter().map(hex_body).collect();
+    assert!(
+        bodies.iter().any(|body| body.as_slice() == mmi),
+        "expected MMI in the plan's checksum mode: {log:?}"
+    );
+    for body in &bodies {
+        if body.starts_with(b"05FF00FAFF00") {
+            assert_eq!(body.as_slice(), mmi, "MMI mode mismatch: {log:?}");
+        } else if body.starts_with(b"46") && body.get(6..8) == Some(b"21".as_slice()) {
+            let expected = if checksummed { 12 } else { 10 };
+            assert_eq!(body.len(), expected, "IDENTIFY mode mismatch: {log:?}");
+        } else if body.starts_with(b"46") && body.get(6..8) == Some(b"1A".as_slice()) {
+            let expected = if checksummed { 14 } else { 12 };
+            assert_eq!(body.len(), expected, "recall mode mismatch: {log:?}");
+        }
+    }
+}
+
+#[test]
+fn serial_apply_speaks_the_plans_checksum_off_session() {
+    let (port, _, log) = spawn_peer_logged(PeerScript {
+        states: pre_move_states(),
+        probes: vec![(16, vec![serial_c()]), (255, vec![serial_a(), serial_b()])],
+        option: Some(5),
+        address_checksum: Some(false),
+        address_receipt: true,
+        post_states: Some(post_move_states()),
+        post_probes: Some(vec![
+            (6, vec![serial_a()]),
+            (16, vec![serial_c()]),
+            (255, vec![serial_b()]),
+        ]),
+    });
+    let plan = plan_file_for_port(port, "apply-bare-session.json");
+    let journal = temp_path("apply-bare-session-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+            "--timeout",
+            "30",
+        ],
+    );
+    std::fs::remove_file(&plan).ok();
+    std::fs::remove_file(&journal).ok();
+    remove_reported_attempt_marker(&out);
+    assert!(
+        status.success(),
+        "bare-session apply must succeed: {out} {err}"
+    );
+    let evidence: Value = serde_json::from_str(out.trim()).unwrap();
+    assert_eq!(
+        evidence["outcome"], "observed_expected_change",
+        "{evidence}"
+    );
+    assert_eq!(evidence["command_checksum"], false, "{evidence}");
+    // A checksum-off plan speaks bare observation frames end to end, while
+    // the peer's always-checksummed MMI blocks still parse.
+    assert_session_frames(&log.lock().unwrap(), false);
 }
 
 #[test]
@@ -1017,7 +1134,7 @@ fn spawn_persistent_phased_peer(script: PeerScript) -> u16 {
             if reader.read_until(b'\r', &mut first).is_err() || first.is_empty() {
                 continue;
             }
-            if let Err(e) = handle_session(stream, &script, first, &sent) {
+            if let Err(e) = handle_session(stream, &script, first, &sent, &RequestLog::default()) {
                 panic!("peer session failed: {e}");
             }
         }

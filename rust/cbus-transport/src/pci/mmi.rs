@@ -94,12 +94,13 @@ impl PciClient {
             client: self,
             complete: false,
         };
-        let meta = Meta::new(true, 0);
+        // The checksum follows the session mode: cmqttd enables SRCHK during
+        // PCI initialization, while a checksum-off peer needs bare frames.
+        // Native C-Gate's checksumless capture comes from a session where
+        // SRCHK is off.
+        let meta = Meta::new(self.command_checksum(), 0);
         let packet = if bridges.is_empty() {
             Packet::PointToMultipoint {
-                // cmqttd enables SRCHK during PCI initialization, so this shared
-                // session must include the command checksum. Native C-Gate's
-                // checksumless capture comes from a session where SRCHK is off.
                 meta,
                 application: 0xff,
                 sals: vec![Sal::InstallMmiRequest],
@@ -308,6 +309,49 @@ mod tests {
             .unwrap();
         remote
             .write_all(&addressed_block(176, 80, &[255]))
+            .await
+            .unwrap();
+        let states = running.await.unwrap().unwrap();
+        assert_eq!(states.len(), 256);
+        assert_eq!(states[16], 1);
+        assert_eq!(states[255], 1);
+        assert_eq!(states.iter().filter(|state| **state != 0).count(), 2);
+    }
+
+    /// Bare twin of [`addressed_block`]: the same report without the
+    /// trailing checksum, as a checksum-off peer may send it.
+    fn bare_addressed_block(start: u8, count: usize, present: &[usize]) -> Vec<u8> {
+        let mut line = addressed_block(start, count, present);
+        // Drop the two checksum hex digits before CRLF.
+        line.drain(line.len() - 4..line.len() - 2);
+        line
+    }
+
+    #[tokio::test]
+    async fn checksum_off_session_speaks_bare_frames() {
+        let (pci, mut remote) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.install_mmi().await }
+        });
+        let mut request = Vec::new();
+        remote.read_until(b'\r', &mut request).await.unwrap();
+        assert!(request.starts_with(b"\\05FF00FAFF00"));
+        assert_eq!(request.len(), b"\\05FF00FAFF00g\r".len());
+        let code = request[request.len() - 2];
+        remote.write_all(&[code, b'.']).await.unwrap();
+        // Bare and checksummed replies both parse in a checksum-off session.
+        remote
+            .write_all(&bare_addressed_block(0, 88, &[16]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&addressed_block(88, 88, &[]))
+            .await
+            .unwrap();
+        remote
+            .write_all(&bare_addressed_block(176, 80, &[255]))
             .await
             .unwrap();
         let states = running.await.unwrap().unwrap();
