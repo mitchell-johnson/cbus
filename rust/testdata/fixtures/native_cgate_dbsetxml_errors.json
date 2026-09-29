@@ -1,0 +1,2621 @@
+{
+  "schema": "native-cgate-dbsetxml-errors-v1",
+  "captured_utc": "2026-09-29T19:29:19.546321+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "listeners": [
+      "127.0.0.1:61304",
+      "127.0.0.1:61305",
+      "127.0.0.1:61306",
+      "127.0.0.1:61307",
+      "127.0.0.1:61308",
+      "127.0.0.1:61309"
+    ],
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "2390c7e2df220090a73a532a9ee8efe6d217b324576e0dc9db23450172b56452",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+  "network_oid": "b5096da0-9e69-103f-b582-e8d05ab253ba",
+  "interface_oid": "b50994b0-9e69-103f-b583-e8d05ab253ba",
+  "baseline": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>",
+  "probes": [
+    {
+      "case": "malformed-unclosed-network",
+      "set_tag": 111,
+      "readback_tag": 112,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "malformed-not-xml",
+      "set_tag": 113,
+      "readback_tag": 114,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "malformed-mismatched-tag",
+      "set_tag": 115,
+      "readback_tag": 116,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "malformed-two-roots",
+      "set_tag": 117,
+      "readback_tag": 118,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "malformed-undeclared-prefix",
+      "set_tag": 119,
+      "readback_tag": 120,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "empty-document",
+      "set_tag": 126,
+      "readback_tag": 127,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "root-unit-at-network-path",
+      "set_tag": 128,
+      "readback_tag": 129,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "root-network-at-unit-path",
+      "set_tag": 135,
+      "readback_tag": 136,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "root-application-at-unit-path",
+      "set_tag": 137,
+      "readback_tag": 138,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "root-unit-at-application-path",
+      "set_tag": 139,
+      "readback_tag": 140,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "root-unknown-element",
+      "set_tag": 146,
+      "readback_tag": 147,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "root-project-at-network-path",
+      "set_tag": 148,
+      "readback_tag": 149,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-unit-body-21-at-20",
+      "set_tag": 155,
+      "readback_tag": 156,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-application-body-57-at-56",
+      "set_tag": 162,
+      "readback_tag": 163,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-network-body-253-at-254",
+      "set_tag": 169,
+      "readback_tag": 170,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-network-number-only-253",
+      "set_tag": 176,
+      "readback_tag": 177,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-unit-non-numeric",
+      "set_tag": 183,
+      "readback_tag": 184,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-unit-out-of-range",
+      "set_tag": 190,
+      "readback_tag": 191,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "address-unit-missing",
+      "set_tag": 197,
+      "readback_tag": 198,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "interface-address-change",
+      "set_tag": 204,
+      "readback_tag": 205,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "interface-type-change",
+      "set_tag": 211,
+      "readback_tag": 212,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "interface-oid-change",
+      "set_tag": 218,
+      "readback_tag": 219,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "interface-missing",
+      "set_tag": 225,
+      "readback_tag": 226,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "network-oid-change",
+      "set_tag": 232,
+      "readback_tag": 233,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "unit-inside-application",
+      "set_tag": 239,
+      "readback_tag": 240,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "interface-inside-unit",
+      "set_tag": 246,
+      "readback_tag": 247,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "application-inside-unit",
+      "set_tag": 253,
+      "readback_tag": 254,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "unknown-network-child",
+      "set_tag": 260,
+      "readback_tag": 261,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "duplicate-unit-tagname",
+      "set_tag": 267,
+      "readback_tag": 268,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "duplicate-unit-address",
+      "set_tag": 269,
+      "readback_tag": 270,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "root-text-content",
+      "set_tag": 271,
+      "readback_tag": 272,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "unit-oid-malformed",
+      "set_tag": 273,
+      "readback_tag": 274,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "unit-oid-missing",
+      "set_tag": 280,
+      "readback_tag": 281,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "unit-tagname-missing",
+      "set_tag": 287,
+      "readback_tag": 288,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "unit-unittype-missing",
+      "set_tag": 289,
+      "readback_tag": 290,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "unit-pp-missing-value",
+      "set_tag": 291,
+      "readback_tag": 292,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "unit-pp-unknown-name",
+      "set_tag": 298,
+      "readback_tag": 299,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "tagname-32",
+      "set_tag": 305,
+      "readback_tag": 306,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "oversize-tagname-33",
+      "set_tag": 312,
+      "readback_tag": 313,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "oversize-tagname-4096",
+      "set_tag": 314,
+      "readback_tag": 315,
+      "status": 446,
+      "network_unchanged": true
+    },
+    {
+      "case": "target-missing-unit",
+      "set_tag": 316,
+      "readback_tag": 317,
+      "status": 401,
+      "network_unchanged": true
+    },
+    {
+      "case": "target-missing-network",
+      "set_tag": 318,
+      "readback_tag": 319,
+      "status": 401,
+      "network_unchanged": true
+    },
+    {
+      "case": "target-missing-project",
+      "set_tag": 320,
+      "readback_tag": 321,
+      "status": 440,
+      "network_unchanged": true
+    },
+    {
+      "case": "target-oid-unit",
+      "set_tag": 322,
+      "readback_tag": 323,
+      "status": 301,
+      "network_unchanged": false
+    },
+    {
+      "case": "document-64kib",
+      "set_tag": 330,
+      "status": 301,
+      "document_bytes": 65742
+    },
+    {
+      "case": "document-1mib",
+      "set_tag": 331,
+      "status": null,
+      "timed_out": true,
+      "elapsed_seconds": 120,
+      "document_bytes": 1048782
+    }
+  ],
+  "cases": [
+    {
+      "tag": 100,
+      "command": "PROJECT NEW XERR",
+      "request": "[100] PROJECT NEW XERR\r\n",
+      "response_lines": [
+        "[100] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 101,
+      "command": "PROJECT USE XERR",
+      "request": "[101] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[101] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 102,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[102] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[102] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ]
+    },
+    {
+      "tag": 103,
+      "command": "DBGETXML //XERR/254",
+      "request": "[103] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[103] 343-Begin XML snippet\r\n",
+        "[103] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[103] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[103] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 104,
+      "command": "DBSETXML //XERR/254",
+      "request": "[104] DBSETXML //XERR/254 << END104\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND104\r\n",
+      "response_lines": [
+        "[104] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ]
+    },
+    {
+      "tag": 105,
+      "command": "PROJECT SAVE XERR",
+      "request": "[105] PROJECT SAVE XERR\r\n",
+      "response_lines": [
+        "[105] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 106,
+      "command": "DBGETXML //XERR/254",
+      "request": "[106] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[106] 343-Begin XML snippet\r\n",
+        "[106] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[106] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[106] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 107,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[107] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[107] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 108,
+      "command": "PROJECT LOAD XERR",
+      "request": "[108] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[108] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 109,
+      "command": "PROJECT USE XERR",
+      "request": "[109] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[109] 200 OK.\r\n"
+      ]
+    },
+    {
+      "tag": 110,
+      "command": "DBGETXML //XERR/254",
+      "request": "[110] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[110] 343-Begin XML snippet\r\n",
+        "[110] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[110] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[110] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 111,
+      "command": "DBSETXML //XERR/254",
+      "request": "[111] DBSETXML //XERR/254 << END111\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND111\r\n",
+      "response_lines": [
+        "[111] 446 Unable to set XML: org.xml.sax.SAXParseException; lineNumber: 2; columnNumber: 1; XML document structures must start and end within the same entity.\r\n"
+      ],
+      "case": "malformed-unclosed-network"
+    },
+    {
+      "tag": 112,
+      "command": "DBGETXML //XERR/254",
+      "request": "[112] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[112] 343-Begin XML snippet\r\n",
+        "[112] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[112] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[112] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 113,
+      "command": "DBSETXML //XERR/254",
+      "request": "[113] DBSETXML //XERR/254 << END113\r\nhello\r\nEND113\r\n",
+      "response_lines": [
+        "[113] 446 Unable to set XML: org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 1; Content is not allowed in prolog.\r\n"
+      ],
+      "case": "malformed-not-xml"
+    },
+    {
+      "tag": 114,
+      "command": "DBGETXML //XERR/254",
+      "request": "[114] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[114] 343-Begin XML snippet\r\n",
+        "[114] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[114] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[114] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 115,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[115] DBSETXML //XERR/254/p/20 << END115\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Units>\r\nEND115\r\n",
+      "response_lines": [
+        "[115] 446 Unable to set XML: org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 199; The end-tag for element type \"Unit\" must end with a '>' delimiter.\r\n"
+      ],
+      "case": "malformed-mismatched-tag"
+    },
+    {
+      "tag": 116,
+      "command": "DBGETXML //XERR/254",
+      "request": "[116] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[116] 343-Begin XML snippet\r\n",
+        "[116] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[116] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[116] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 117,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[117] DBSETXML //XERR/254/p/20 << END117\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND117\r\n",
+      "response_lines": [
+        "[117] 446 Unable to set XML: org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 201; The markup in the document following the root element must be well-formed.\r\n"
+      ],
+      "case": "malformed-two-roots"
+    },
+    {
+      "tag": 118,
+      "command": "DBGETXML //XERR/254",
+      "request": "[118] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[118] 343-Begin XML snippet\r\n",
+        "[118] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[118] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[118] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 119,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[119] DBSETXML //XERR/254/p/20 << END119\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><x:Diagnostic>u</x:Diagnostic></Unit>\r\nEND119\r\n",
+      "response_lines": [
+        "[119] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "malformed-undeclared-prefix"
+    },
+    {
+      "tag": 120,
+      "command": "DBGETXML //XERR/254",
+      "request": "[120] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[120] 343-Begin XML snippet\r\n",
+        "[120] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[120] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[120] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 121,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[121] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[121] 343-Begin XML snippet\r\n",
+        "[121] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[121] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[121] 344 End XML snippet\r\n"
+      ],
+      "case": "malformed-undeclared-prefix#target"
+    },
+    {
+      "tag": 122,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[122] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[122] 200 OK.\r\n"
+      ],
+      "case": "malformed-undeclared-prefix#restore"
+    },
+    {
+      "tag": 123,
+      "command": "PROJECT LOAD XERR",
+      "request": "[123] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[123] 200 OK.\r\n"
+      ],
+      "case": "malformed-undeclared-prefix#restore"
+    },
+    {
+      "tag": 124,
+      "command": "PROJECT USE XERR",
+      "request": "[124] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[124] 200 OK.\r\n"
+      ],
+      "case": "malformed-undeclared-prefix#restore"
+    },
+    {
+      "tag": 125,
+      "command": "DBGETXML //XERR/254",
+      "request": "[125] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[125] 343-Begin XML snippet\r\n",
+        "[125] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[125] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[125] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 126,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[126] DBSETXML //XERR/254/p/20 << END126\r\n\r\nEND126\r\n",
+      "response_lines": [
+        "[126] 446 Unable to set XML: org.xml.sax.SAXParseException; Premature end of file.\r\n"
+      ],
+      "case": "empty-document"
+    },
+    {
+      "tag": 127,
+      "command": "DBGETXML //XERR/254",
+      "request": "[127] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[127] 343-Begin XML snippet\r\n",
+        "[127] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[127] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[127] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 128,
+      "command": "DBSETXML //XERR/254",
+      "request": "[128] DBSETXML //XERR/254 << END128\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND128\r\n",
+      "response_lines": [
+        "[128] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "root-unit-at-network-path"
+    },
+    {
+      "tag": 129,
+      "command": "DBGETXML //XERR/254",
+      "request": "[129] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[129] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ]
+    },
+    {
+      "tag": 130,
+      "command": "DBGETXML //XERR/254",
+      "request": "[130] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[130] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ],
+      "case": "root-unit-at-network-path#target"
+    },
+    {
+      "tag": 131,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[131] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[131] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-network-path#restore"
+    },
+    {
+      "tag": 132,
+      "command": "PROJECT LOAD XERR",
+      "request": "[132] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[132] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-network-path#restore"
+    },
+    {
+      "tag": 133,
+      "command": "PROJECT USE XERR",
+      "request": "[133] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[133] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-network-path#restore"
+    },
+    {
+      "tag": 134,
+      "command": "DBGETXML //XERR/254",
+      "request": "[134] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[134] 343-Begin XML snippet\r\n",
+        "[134] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[134] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[134] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 135,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[135] DBSETXML //XERR/254/p/20 << END135\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND135\r\n",
+      "response_lines": [
+        "[135] 446 Unable to set XML: ValidationException: The field '_unitType' (whose xml name is 'UnitType') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/UnitType\r\n"
+      ],
+      "case": "root-network-at-unit-path"
+    },
+    {
+      "tag": 136,
+      "command": "DBGETXML //XERR/254",
+      "request": "[136] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[136] 343-Begin XML snippet\r\n",
+        "[136] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[136] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[136] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 137,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[137] DBSETXML //XERR/254/p/20 << END137\r\n<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application>\r\nEND137\r\n",
+      "response_lines": [
+        "[137] 446 Unable to set XML: ValidationException: The field '_unitType' (whose xml name is 'UnitType') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/UnitType\r\n"
+      ],
+      "case": "root-application-at-unit-path"
+    },
+    {
+      "tag": 138,
+      "command": "DBGETXML //XERR/254",
+      "request": "[138] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[138] 343-Begin XML snippet\r\n",
+        "[138] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[138] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[138] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 139,
+      "command": "DBSETXML //XERR/254/56",
+      "request": "[139] DBSETXML //XERR/254/56 << END139\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND139\r\n",
+      "response_lines": [
+        "[139] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "root-unit-at-application-path"
+    },
+    {
+      "tag": 140,
+      "command": "DBGETXML //XERR/254",
+      "request": "[140] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[140] 343-Begin XML snippet\r\n",
+        "[140] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[140] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[140] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 141,
+      "command": "DBGETXML //XERR/254/56",
+      "request": "[141] DBGETXML //XERR/254/56\r\n",
+      "response_lines": [
+        "[141] 401 Bad object or device ID: Element 56 not found.\r\n"
+      ],
+      "case": "root-unit-at-application-path#target"
+    },
+    {
+      "tag": 142,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[142] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[142] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-application-path#restore"
+    },
+    {
+      "tag": 143,
+      "command": "PROJECT LOAD XERR",
+      "request": "[143] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[143] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-application-path#restore"
+    },
+    {
+      "tag": 144,
+      "command": "PROJECT USE XERR",
+      "request": "[144] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[144] 200 OK.\r\n"
+      ],
+      "case": "root-unit-at-application-path#restore"
+    },
+    {
+      "tag": 145,
+      "command": "DBGETXML //XERR/254",
+      "request": "[145] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[145] 343-Begin XML snippet\r\n",
+        "[145] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[145] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[145] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 146,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[146] DBSETXML //XERR/254/p/20 << END146\r\n<Foo><OID>11111111-1111-4111-8111-111111111111</OID></Foo>\r\nEND146\r\n",
+      "response_lines": [
+        "[146] 446 Unable to set XML: ValidationException: The field '_tagName' (whose xml name is 'TagName') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/TagName\r\n"
+      ],
+      "case": "root-unknown-element"
+    },
+    {
+      "tag": 147,
+      "command": "DBGETXML //XERR/254",
+      "request": "[147] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[147] 343-Begin XML snippet\r\n",
+        "[147] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[147] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[147] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 148,
+      "command": "DBSETXML //XERR/254",
+      "request": "[148] DBSETXML //XERR/254 << END148\r\n<Project><TagName>X</TagName></Project>\r\nEND148\r\n",
+      "response_lines": [
+        "[148] 301 OID=b5626310-9e69-103f-b5b8-e8d05ab253ba\r\n"
+      ],
+      "case": "root-project-at-network-path"
+    },
+    {
+      "tag": 149,
+      "command": "DBGETXML //XERR/254",
+      "request": "[149] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[149] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ]
+    },
+    {
+      "tag": 150,
+      "command": "DBGETXML //XERR/254",
+      "request": "[150] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[150] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ],
+      "case": "root-project-at-network-path#target"
+    },
+    {
+      "tag": 151,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[151] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[151] 200 OK.\r\n"
+      ],
+      "case": "root-project-at-network-path#restore"
+    },
+    {
+      "tag": 152,
+      "command": "PROJECT LOAD XERR",
+      "request": "[152] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[152] 200 OK.\r\n"
+      ],
+      "case": "root-project-at-network-path#restore"
+    },
+    {
+      "tag": 153,
+      "command": "PROJECT USE XERR",
+      "request": "[153] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[153] 200 OK.\r\n"
+      ],
+      "case": "root-project-at-network-path#restore"
+    },
+    {
+      "tag": 154,
+      "command": "DBGETXML //XERR/254",
+      "request": "[154] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[154] 343-Begin XML snippet\r\n",
+        "[154] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[154] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[154] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 155,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[155] DBSETXML //XERR/254/p/20 << END155\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND155\r\n",
+      "response_lines": [
+        "[155] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "address-unit-body-21-at-20"
+    },
+    {
+      "tag": 156,
+      "command": "DBGETXML //XERR/254",
+      "request": "[156] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[156] 343-Begin XML snippet\r\n",
+        "[156] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[156] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[156] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 157,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[157] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[157] 401 Bad object or device ID: Element 20 not found.\r\n"
+      ],
+      "case": "address-unit-body-21-at-20#target"
+    },
+    {
+      "tag": 158,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[158] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[158] 200 OK.\r\n"
+      ],
+      "case": "address-unit-body-21-at-20#restore"
+    },
+    {
+      "tag": 159,
+      "command": "PROJECT LOAD XERR",
+      "request": "[159] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[159] 200 OK.\r\n"
+      ],
+      "case": "address-unit-body-21-at-20#restore"
+    },
+    {
+      "tag": 160,
+      "command": "PROJECT USE XERR",
+      "request": "[160] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[160] 200 OK.\r\n"
+      ],
+      "case": "address-unit-body-21-at-20#restore"
+    },
+    {
+      "tag": 161,
+      "command": "DBGETXML //XERR/254",
+      "request": "[161] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[161] 343-Begin XML snippet\r\n",
+        "[161] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[161] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[161] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 162,
+      "command": "DBSETXML //XERR/254/56",
+      "request": "[162] DBSETXML //XERR/254/56 << END162\r\n<Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>57</Address></Application>\r\nEND162\r\n",
+      "response_lines": [
+        "[162] 301 OID=22222222-2222-4222-8222-222222222222\r\n"
+      ],
+      "case": "address-application-body-57-at-56"
+    },
+    {
+      "tag": 163,
+      "command": "DBGETXML //XERR/254",
+      "request": "[163] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[163] 343-Begin XML snippet\r\n",
+        "[163] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[163] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>57</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[163] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 164,
+      "command": "DBGETXML //XERR/254/56",
+      "request": "[164] DBGETXML //XERR/254/56\r\n",
+      "response_lines": [
+        "[164] 401 Bad object or device ID: Element 56 not found.\r\n"
+      ],
+      "case": "address-application-body-57-at-56#target"
+    },
+    {
+      "tag": 165,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[165] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[165] 200 OK.\r\n"
+      ],
+      "case": "address-application-body-57-at-56#restore"
+    },
+    {
+      "tag": 166,
+      "command": "PROJECT LOAD XERR",
+      "request": "[166] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[166] 200 OK.\r\n"
+      ],
+      "case": "address-application-body-57-at-56#restore"
+    },
+    {
+      "tag": 167,
+      "command": "PROJECT USE XERR",
+      "request": "[167] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[167] 200 OK.\r\n"
+      ],
+      "case": "address-application-body-57-at-56#restore"
+    },
+    {
+      "tag": 168,
+      "command": "DBGETXML //XERR/254",
+      "request": "[168] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[168] 343-Begin XML snippet\r\n",
+        "[168] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[168] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[168] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 169,
+      "command": "DBSETXML //XERR/254",
+      "request": "[169] DBSETXML //XERR/254 << END169\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND169\r\n",
+      "response_lines": [
+        "[169] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "address-network-body-253-at-254"
+    },
+    {
+      "tag": 170,
+      "command": "DBGETXML //XERR/254",
+      "request": "[170] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[170] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ]
+    },
+    {
+      "tag": 171,
+      "command": "DBGETXML //XERR/254",
+      "request": "[171] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[171] 401 Bad object or device ID: Element 254 not found.\r\n"
+      ],
+      "case": "address-network-body-253-at-254#target"
+    },
+    {
+      "tag": 172,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[172] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[172] 200 OK.\r\n"
+      ],
+      "case": "address-network-body-253-at-254#restore"
+    },
+    {
+      "tag": 173,
+      "command": "PROJECT LOAD XERR",
+      "request": "[173] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[173] 200 OK.\r\n"
+      ],
+      "case": "address-network-body-253-at-254#restore"
+    },
+    {
+      "tag": 174,
+      "command": "PROJECT USE XERR",
+      "request": "[174] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[174] 200 OK.\r\n"
+      ],
+      "case": "address-network-body-253-at-254#restore"
+    },
+    {
+      "tag": 175,
+      "command": "DBGETXML //XERR/254",
+      "request": "[175] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[175] 343-Begin XML snippet\r\n",
+        "[175] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[175] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[175] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 176,
+      "command": "DBSETXML //XERR/254",
+      "request": "[176] DBSETXML //XERR/254 << END176\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>253</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND176\r\n",
+      "response_lines": [
+        "[176] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "address-network-number-only-253"
+    },
+    {
+      "tag": 177,
+      "command": "DBGETXML //XERR/254",
+      "request": "[177] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[177] 343-Begin XML snippet\r\n",
+        "[177] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[177] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>253</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[177] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 178,
+      "command": "DBGETXML //XERR/254",
+      "request": "[178] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[178] 343-Begin XML snippet\r\n",
+        "[178] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[178] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>253</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[178] 344 End XML snippet\r\n"
+      ],
+      "case": "address-network-number-only-253#target"
+    },
+    {
+      "tag": 179,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[179] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[179] 200 OK.\r\n"
+      ],
+      "case": "address-network-number-only-253#restore"
+    },
+    {
+      "tag": 180,
+      "command": "PROJECT LOAD XERR",
+      "request": "[180] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[180] 200 OK.\r\n"
+      ],
+      "case": "address-network-number-only-253#restore"
+    },
+    {
+      "tag": 181,
+      "command": "PROJECT USE XERR",
+      "request": "[181] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[181] 200 OK.\r\n"
+      ],
+      "case": "address-network-number-only-253#restore"
+    },
+    {
+      "tag": 182,
+      "command": "DBGETXML //XERR/254",
+      "request": "[182] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[182] 343-Begin XML snippet\r\n",
+        "[182] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[182] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[182] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 183,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[183] DBSETXML //XERR/254/p/20 << END183\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>abc</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND183\r\n",
+      "response_lines": [
+        "[183] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "address-unit-non-numeric"
+    },
+    {
+      "tag": 184,
+      "command": "DBGETXML //XERR/254",
+      "request": "[184] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[184] 343-Begin XML snippet\r\n",
+        "[184] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[184] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>abc</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[184] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 185,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[185] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[185] 401 Bad object or device ID: Element 20 not found.\r\n"
+      ],
+      "case": "address-unit-non-numeric#target"
+    },
+    {
+      "tag": 186,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[186] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[186] 200 OK.\r\n"
+      ],
+      "case": "address-unit-non-numeric#restore"
+    },
+    {
+      "tag": 187,
+      "command": "PROJECT LOAD XERR",
+      "request": "[187] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[187] 200 OK.\r\n"
+      ],
+      "case": "address-unit-non-numeric#restore"
+    },
+    {
+      "tag": 188,
+      "command": "PROJECT USE XERR",
+      "request": "[188] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[188] 200 OK.\r\n"
+      ],
+      "case": "address-unit-non-numeric#restore"
+    },
+    {
+      "tag": 189,
+      "command": "DBGETXML //XERR/254",
+      "request": "[189] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[189] 343-Begin XML snippet\r\n",
+        "[189] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[189] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[189] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 190,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[190] DBSETXML //XERR/254/p/20 << END190\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>300</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND190\r\n",
+      "response_lines": [
+        "[190] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "address-unit-out-of-range"
+    },
+    {
+      "tag": 191,
+      "command": "DBGETXML //XERR/254",
+      "request": "[191] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[191] 343-Begin XML snippet\r\n",
+        "[191] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[191] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>300</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[191] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 192,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[192] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[192] 401 Bad object or device ID: Element 20 not found.\r\n"
+      ],
+      "case": "address-unit-out-of-range#target"
+    },
+    {
+      "tag": 193,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[193] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[193] 200 OK.\r\n"
+      ],
+      "case": "address-unit-out-of-range#restore"
+    },
+    {
+      "tag": 194,
+      "command": "PROJECT LOAD XERR",
+      "request": "[194] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[194] 200 OK.\r\n"
+      ],
+      "case": "address-unit-out-of-range#restore"
+    },
+    {
+      "tag": 195,
+      "command": "PROJECT USE XERR",
+      "request": "[195] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[195] 200 OK.\r\n"
+      ],
+      "case": "address-unit-out-of-range#restore"
+    },
+    {
+      "tag": 196,
+      "command": "DBGETXML //XERR/254",
+      "request": "[196] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[196] 343-Begin XML snippet\r\n",
+        "[196] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[196] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[196] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 197,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[197] DBSETXML //XERR/254/p/20 << END197\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND197\r\n",
+      "response_lines": [
+        "[197] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "address-unit-missing"
+    },
+    {
+      "tag": 198,
+      "command": "DBGETXML //XERR/254",
+      "request": "[198] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[198] 343-Begin XML snippet\r\n",
+        "[198] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[198] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[198] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 199,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[199] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[199] 401 Bad object or device ID: Element 20 not found.\r\n"
+      ],
+      "case": "address-unit-missing#target"
+    },
+    {
+      "tag": 200,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[200] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[200] 200 OK.\r\n"
+      ],
+      "case": "address-unit-missing#restore"
+    },
+    {
+      "tag": 201,
+      "command": "PROJECT LOAD XERR",
+      "request": "[201] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[201] 200 OK.\r\n"
+      ],
+      "case": "address-unit-missing#restore"
+    },
+    {
+      "tag": 202,
+      "command": "PROJECT USE XERR",
+      "request": "[202] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[202] 200 OK.\r\n"
+      ],
+      "case": "address-unit-missing#restore"
+    },
+    {
+      "tag": 203,
+      "command": "DBGETXML //XERR/254",
+      "request": "[203] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[203] 343-Begin XML snippet\r\n",
+        "[203] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[203] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[203] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 204,
+      "command": "DBSETXML //XERR/254",
+      "request": "[204] DBSETXML //XERR/254 << END204\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND204\r\n",
+      "response_lines": [
+        "[204] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "interface-address-change"
+    },
+    {
+      "tag": 205,
+      "command": "DBGETXML //XERR/254",
+      "request": "[205] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[205] 343-Begin XML snippet\r\n",
+        "[205] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[205] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[205] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 206,
+      "command": "DBGETXML //XERR/254",
+      "request": "[206] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[206] 343-Begin XML snippet\r\n",
+        "[206] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[206] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:2</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[206] 344 End XML snippet\r\n"
+      ],
+      "case": "interface-address-change#target"
+    },
+    {
+      "tag": 207,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[207] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[207] 200 OK.\r\n"
+      ],
+      "case": "interface-address-change#restore"
+    },
+    {
+      "tag": 208,
+      "command": "PROJECT LOAD XERR",
+      "request": "[208] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[208] 200 OK.\r\n"
+      ],
+      "case": "interface-address-change#restore"
+    },
+    {
+      "tag": 209,
+      "command": "PROJECT USE XERR",
+      "request": "[209] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[209] 200 OK.\r\n"
+      ],
+      "case": "interface-address-change#restore"
+    },
+    {
+      "tag": 210,
+      "command": "DBGETXML //XERR/254",
+      "request": "[210] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[210] 343-Begin XML snippet\r\n",
+        "[210] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[210] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[210] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 211,
+      "command": "DBSETXML //XERR/254",
+      "request": "[211] DBSETXML //XERR/254 << END211\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>COM9</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND211\r\n",
+      "response_lines": [
+        "[211] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "interface-type-change"
+    },
+    {
+      "tag": 212,
+      "command": "DBGETXML //XERR/254",
+      "request": "[212] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[212] 343-Begin XML snippet\r\n",
+        "[212] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[212] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>COM9</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[212] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 213,
+      "command": "DBGETXML //XERR/254",
+      "request": "[213] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[213] 343-Begin XML snippet\r\n",
+        "[213] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[213] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>COM9</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[213] 344 End XML snippet\r\n"
+      ],
+      "case": "interface-type-change#target"
+    },
+    {
+      "tag": 214,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[214] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[214] 200 OK.\r\n"
+      ],
+      "case": "interface-type-change#restore"
+    },
+    {
+      "tag": 215,
+      "command": "PROJECT LOAD XERR",
+      "request": "[215] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[215] 200 OK.\r\n"
+      ],
+      "case": "interface-type-change#restore"
+    },
+    {
+      "tag": 216,
+      "command": "PROJECT USE XERR",
+      "request": "[216] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[216] 200 OK.\r\n"
+      ],
+      "case": "interface-type-change#restore"
+    },
+    {
+      "tag": 217,
+      "command": "DBGETXML //XERR/254",
+      "request": "[217] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[217] 343-Begin XML snippet\r\n",
+        "[217] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[217] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[217] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 218,
+      "command": "DBSETXML //XERR/254",
+      "request": "[218] DBSETXML //XERR/254 << END218\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>44444444-4444-4444-8444-444444444444</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND218\r\n",
+      "response_lines": [
+        "[218] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "interface-oid-change"
+    },
+    {
+      "tag": 219,
+      "command": "DBGETXML //XERR/254",
+      "request": "[219] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[219] 343-Begin XML snippet\r\n",
+        "[219] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[219] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>44444444-4444-4444-8444-444444444444</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[219] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 220,
+      "command": "DBGETXML //XERR/254",
+      "request": "[220] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[220] 343-Begin XML snippet\r\n",
+        "[220] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[220] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>44444444-4444-4444-8444-444444444444</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[220] 344 End XML snippet\r\n"
+      ],
+      "case": "interface-oid-change#target"
+    },
+    {
+      "tag": 221,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[221] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[221] 200 OK.\r\n"
+      ],
+      "case": "interface-oid-change#restore"
+    },
+    {
+      "tag": 222,
+      "command": "PROJECT LOAD XERR",
+      "request": "[222] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[222] 200 OK.\r\n"
+      ],
+      "case": "interface-oid-change#restore"
+    },
+    {
+      "tag": 223,
+      "command": "PROJECT USE XERR",
+      "request": "[223] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[223] 200 OK.\r\n"
+      ],
+      "case": "interface-oid-change#restore"
+    },
+    {
+      "tag": 224,
+      "command": "DBGETXML //XERR/254",
+      "request": "[224] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[224] 343-Begin XML snippet\r\n",
+        "[224] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[224] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[224] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 225,
+      "command": "DBSETXML //XERR/254",
+      "request": "[225] DBSETXML //XERR/254 << END225\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND225\r\n",
+      "response_lines": [
+        "[225] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "interface-missing"
+    },
+    {
+      "tag": 226,
+      "command": "DBGETXML //XERR/254",
+      "request": "[226] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[226] 343-Begin XML snippet\r\n",
+        "[226] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[226] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[226] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 227,
+      "command": "DBGETXML //XERR/254",
+      "request": "[227] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[227] 343-Begin XML snippet\r\n",
+        "[227] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[227] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[227] 344 End XML snippet\r\n"
+      ],
+      "case": "interface-missing#target"
+    },
+    {
+      "tag": 228,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[228] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[228] 200 OK.\r\n"
+      ],
+      "case": "interface-missing#restore"
+    },
+    {
+      "tag": 229,
+      "command": "PROJECT LOAD XERR",
+      "request": "[229] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[229] 200 OK.\r\n"
+      ],
+      "case": "interface-missing#restore"
+    },
+    {
+      "tag": 230,
+      "command": "PROJECT USE XERR",
+      "request": "[230] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[230] 200 OK.\r\n"
+      ],
+      "case": "interface-missing#restore"
+    },
+    {
+      "tag": 231,
+      "command": "DBGETXML //XERR/254",
+      "request": "[231] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[231] 343-Begin XML snippet\r\n",
+        "[231] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[231] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[231] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 232,
+      "command": "DBSETXML //XERR/254",
+      "request": "[232] DBSETXML //XERR/254 << END232\r\n<Network><OID>55555555-5555-4555-8555-555555555555</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND232\r\n",
+      "response_lines": [
+        "[232] 301 OID=55555555-5555-4555-8555-555555555555\r\n"
+      ],
+      "case": "network-oid-change"
+    },
+    {
+      "tag": 233,
+      "command": "DBGETXML //XERR/254",
+      "request": "[233] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[233] 343-Begin XML snippet\r\n",
+        "[233] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[233] 347-<Network><OID>55555555-5555-4555-8555-555555555555</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[233] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 234,
+      "command": "DBGETXML //XERR/254",
+      "request": "[234] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[234] 343-Begin XML snippet\r\n",
+        "[234] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[234] 347-<Network><OID>55555555-5555-4555-8555-555555555555</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[234] 344 End XML snippet\r\n"
+      ],
+      "case": "network-oid-change#target"
+    },
+    {
+      "tag": 235,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[235] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[235] 200 OK.\r\n"
+      ],
+      "case": "network-oid-change#restore"
+    },
+    {
+      "tag": 236,
+      "command": "PROJECT LOAD XERR",
+      "request": "[236] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[236] 200 OK.\r\n"
+      ],
+      "case": "network-oid-change#restore"
+    },
+    {
+      "tag": 237,
+      "command": "PROJECT USE XERR",
+      "request": "[237] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[237] 200 OK.\r\n"
+      ],
+      "case": "network-oid-change#restore"
+    },
+    {
+      "tag": 238,
+      "command": "DBGETXML //XERR/254",
+      "request": "[238] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[238] 343-Begin XML snippet\r\n",
+        "[238] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[238] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[238] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 239,
+      "command": "DBSETXML //XERR/254",
+      "request": "[239] DBSETXML //XERR/254 << END239\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Application></Network>\r\nEND239\r\n",
+      "response_lines": [
+        "[239] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "unit-inside-application"
+    },
+    {
+      "tag": 240,
+      "command": "DBGETXML //XERR/254",
+      "request": "[240] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[240] 343-Begin XML snippet\r\n",
+        "[240] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[240] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\n",
+        "[240] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 241,
+      "command": "DBGETXML //XERR/254",
+      "request": "[241] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[241] 343-Begin XML snippet\r\n",
+        "[241] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[241] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Network>\r\n",
+        "[241] 344 End XML snippet\r\n"
+      ],
+      "case": "unit-inside-application#target"
+    },
+    {
+      "tag": 242,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[242] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[242] 200 OK.\r\n"
+      ],
+      "case": "unit-inside-application#restore"
+    },
+    {
+      "tag": 243,
+      "command": "PROJECT LOAD XERR",
+      "request": "[243] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[243] 200 OK.\r\n"
+      ],
+      "case": "unit-inside-application#restore"
+    },
+    {
+      "tag": 244,
+      "command": "PROJECT USE XERR",
+      "request": "[244] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[244] 200 OK.\r\n"
+      ],
+      "case": "unit-inside-application#restore"
+    },
+    {
+      "tag": 245,
+      "command": "DBGETXML //XERR/254",
+      "request": "[245] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[245] 343-Begin XML snippet\r\n",
+        "[245] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[245] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[245] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 246,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[246] DBSETXML //XERR/254/p/20 << END246\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><Interface><InterfaceType>Cni</InterfaceType></Interface></Unit>\r\nEND246\r\n",
+      "response_lines": [
+        "[246] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "interface-inside-unit"
+    },
+    {
+      "tag": 247,
+      "command": "DBGETXML //XERR/254",
+      "request": "[247] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[247] 343-Begin XML snippet\r\n",
+        "[247] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[247] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[247] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 248,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[248] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[248] 343-Begin XML snippet\r\n",
+        "[248] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[248] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[248] 344 End XML snippet\r\n"
+      ],
+      "case": "interface-inside-unit#target"
+    },
+    {
+      "tag": 249,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[249] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[249] 200 OK.\r\n"
+      ],
+      "case": "interface-inside-unit#restore"
+    },
+    {
+      "tag": 250,
+      "command": "PROJECT LOAD XERR",
+      "request": "[250] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[250] 200 OK.\r\n"
+      ],
+      "case": "interface-inside-unit#restore"
+    },
+    {
+      "tag": 251,
+      "command": "PROJECT USE XERR",
+      "request": "[251] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[251] 200 OK.\r\n"
+      ],
+      "case": "interface-inside-unit#restore"
+    },
+    {
+      "tag": 252,
+      "command": "DBGETXML //XERR/254",
+      "request": "[252] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[252] 343-Begin XML snippet\r\n",
+        "[252] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[252] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[252] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 253,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[253] DBSETXML //XERR/254/p/20 << END253\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application></Unit>\r\nEND253\r\n",
+      "response_lines": [
+        "[253] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "application-inside-unit"
+    },
+    {
+      "tag": 254,
+      "command": "DBGETXML //XERR/254",
+      "request": "[254] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[254] 343-Begin XML snippet\r\n",
+        "[254] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[254] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[254] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 255,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[255] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[255] 343-Begin XML snippet\r\n",
+        "[255] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[255] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[255] 344 End XML snippet\r\n"
+      ],
+      "case": "application-inside-unit#target"
+    },
+    {
+      "tag": 256,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[256] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[256] 200 OK.\r\n"
+      ],
+      "case": "application-inside-unit#restore"
+    },
+    {
+      "tag": 257,
+      "command": "PROJECT LOAD XERR",
+      "request": "[257] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[257] 200 OK.\r\n"
+      ],
+      "case": "application-inside-unit#restore"
+    },
+    {
+      "tag": 258,
+      "command": "PROJECT USE XERR",
+      "request": "[258] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[258] 200 OK.\r\n"
+      ],
+      "case": "application-inside-unit#restore"
+    },
+    {
+      "tag": 259,
+      "command": "DBGETXML //XERR/254",
+      "request": "[259] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[259] 343-Begin XML snippet\r\n",
+        "[259] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[259] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[259] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 260,
+      "command": "DBSETXML //XERR/254",
+      "request": "[260] DBSETXML //XERR/254 << END260\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Widget/></Network>\r\nEND260\r\n",
+      "response_lines": [
+        "[260] 301 OID=b5096da0-9e69-103f-b582-e8d05ab253ba\r\n"
+      ],
+      "case": "unknown-network-child"
+    },
+    {
+      "tag": 261,
+      "command": "DBGETXML //XERR/254",
+      "request": "[261] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[261] 343-Begin XML snippet\r\n",
+        "[261] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[261] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[261] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 262,
+      "command": "DBGETXML //XERR/254",
+      "request": "[262] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[262] 343-Begin XML snippet\r\n",
+        "[262] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[262] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[262] 344 End XML snippet\r\n"
+      ],
+      "case": "unknown-network-child#target"
+    },
+    {
+      "tag": 263,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[263] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[263] 200 OK.\r\n"
+      ],
+      "case": "unknown-network-child#restore"
+    },
+    {
+      "tag": 264,
+      "command": "PROJECT LOAD XERR",
+      "request": "[264] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[264] 200 OK.\r\n"
+      ],
+      "case": "unknown-network-child#restore"
+    },
+    {
+      "tag": 265,
+      "command": "PROJECT USE XERR",
+      "request": "[265] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[265] 200 OK.\r\n"
+      ],
+      "case": "unknown-network-child#restore"
+    },
+    {
+      "tag": 266,
+      "command": "DBGETXML //XERR/254",
+      "request": "[266] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[266] 343-Begin XML snippet\r\n",
+        "[266] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[266] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[266] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 267,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[267] DBSETXML //XERR/254/p/20 << END267\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><TagName>Second</TagName></Unit>\r\nEND267\r\n",
+      "response_lines": [
+        "[267] 446 Unable to set XML: ValidationException: Element 'TagName' occurs more than once. (parent class: com.clipsal.cgate.tag.model.Unit  location: /Unit/TagName\r\n"
+      ],
+      "case": "duplicate-unit-tagname"
+    },
+    {
+      "tag": 268,
+      "command": "DBGETXML //XERR/254",
+      "request": "[268] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[268] 343-Begin XML snippet\r\n",
+        "[268] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[268] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[268] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 269,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[269] DBSETXML //XERR/254/p/20 << END269\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><Address>20</Address></Unit>\r\nEND269\r\n",
+      "response_lines": [
+        "[269] 446 Unable to set XML: ValidationException: Element 'Address' occurs more than once. (parent class: com.clipsal.cgate.tag.model.Unit  location: /Unit/Address\r\n"
+      ],
+      "case": "duplicate-unit-address"
+    },
+    {
+      "tag": 270,
+      "command": "DBGETXML //XERR/254",
+      "request": "[270] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[270] 343-Begin XML snippet\r\n",
+        "[270] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[270] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[270] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 271,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[271] DBSETXML //XERR/254/p/20 << END271\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion>stray</Unit>\r\nEND271\r\n",
+      "response_lines": [
+        "[271] 446 Unable to set XML: org.xml.sax.SAXException: Illegal Text data found as child of: Unit   value: 'stray'\r\n"
+      ],
+      "case": "root-text-content"
+    },
+    {
+      "tag": 272,
+      "command": "DBGETXML //XERR/254",
+      "request": "[272] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[272] 343-Begin XML snippet\r\n",
+        "[272] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[272] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[272] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 273,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[273] DBSETXML //XERR/254/p/20 << END273\r\n<Unit><OID>not-a-uuid</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND273\r\n",
+      "response_lines": [
+        "[273] 301 OID=b5b4a1c0-9e69-103f-b5b9-e8d05ab253ba\r\n"
+      ],
+      "case": "unit-oid-malformed"
+    },
+    {
+      "tag": 274,
+      "command": "DBGETXML //XERR/254",
+      "request": "[274] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[274] 343-Begin XML snippet\r\n",
+        "[274] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[274] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>b5b4a1c0-9e69-103f-b5b9-e8d05ab253ba</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[274] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 275,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[275] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[275] 343-Begin XML snippet\r\n",
+        "[275] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[275] 347-<Unit><OID>b5b4a1c0-9e69-103f-b5b9-e8d05ab253ba</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[275] 344 End XML snippet\r\n"
+      ],
+      "case": "unit-oid-malformed#target"
+    },
+    {
+      "tag": 276,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[276] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[276] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-malformed#restore"
+    },
+    {
+      "tag": 277,
+      "command": "PROJECT LOAD XERR",
+      "request": "[277] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[277] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-malformed#restore"
+    },
+    {
+      "tag": 278,
+      "command": "PROJECT USE XERR",
+      "request": "[278] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[278] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-malformed#restore"
+    },
+    {
+      "tag": 279,
+      "command": "DBGETXML //XERR/254",
+      "request": "[279] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[279] 343-Begin XML snippet\r\n",
+        "[279] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[279] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[279] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 280,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[280] DBSETXML //XERR/254/p/20 << END280\r\n<Unit><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND280\r\n",
+      "response_lines": [
+        "[280] 301 OID=b5b712c0-9e69-103f-b5ba-e8d05ab253ba\r\n"
+      ],
+      "case": "unit-oid-missing"
+    },
+    {
+      "tag": 281,
+      "command": "DBGETXML //XERR/254",
+      "request": "[281] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[281] 343-Begin XML snippet\r\n",
+        "[281] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[281] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>b5b712c0-9e69-103f-b5ba-e8d05ab253ba</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[281] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 282,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[282] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[282] 343-Begin XML snippet\r\n",
+        "[282] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[282] 347-<Unit><OID>b5b712c0-9e69-103f-b5ba-e8d05ab253ba</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[282] 344 End XML snippet\r\n"
+      ],
+      "case": "unit-oid-missing#target"
+    },
+    {
+      "tag": 283,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[283] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[283] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-missing#restore"
+    },
+    {
+      "tag": 284,
+      "command": "PROJECT LOAD XERR",
+      "request": "[284] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[284] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-missing#restore"
+    },
+    {
+      "tag": 285,
+      "command": "PROJECT USE XERR",
+      "request": "[285] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[285] 200 OK.\r\n"
+      ],
+      "case": "unit-oid-missing#restore"
+    },
+    {
+      "tag": 286,
+      "command": "DBGETXML //XERR/254",
+      "request": "[286] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[286] 343-Begin XML snippet\r\n",
+        "[286] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[286] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[286] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 287,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[287] DBSETXML //XERR/254/p/20 << END287\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND287\r\n",
+      "response_lines": [
+        "[287] 446 Unable to set XML: ValidationException: The field '_tagName' (whose xml name is 'TagName') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/TagName\r\n"
+      ],
+      "case": "unit-tagname-missing"
+    },
+    {
+      "tag": 288,
+      "command": "DBGETXML //XERR/254",
+      "request": "[288] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[288] 343-Begin XML snippet\r\n",
+        "[288] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[288] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[288] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 289,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[289] DBSETXML //XERR/254/p/20 << END289\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND289\r\n",
+      "response_lines": [
+        "[289] 446 Unable to set XML: ValidationException: The field '_unitType' (whose xml name is 'UnitType') is a required field of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/UnitType\r\n"
+      ],
+      "case": "unit-unittype-missing"
+    },
+    {
+      "tag": 290,
+      "command": "DBGETXML //XERR/254",
+      "request": "[290] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[290] 343-Begin XML snippet\r\n",
+        "[290] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[290] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[290] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 291,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[291] DBSETXML //XERR/254/p/20 << END291\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\"/></Unit>\r\nEND291\r\n",
+      "response_lines": [
+        "[291] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "unit-pp-missing-value"
+    },
+    {
+      "tag": 292,
+      "command": "DBGETXML //XERR/254",
+      "request": "[292] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[292] 343-Begin XML snippet\r\n",
+        "[292] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[292] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\"/></Unit></Network>\r\n",
+        "[292] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 293,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[293] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[293] 343-Begin XML snippet\r\n",
+        "[293] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[293] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\"/></Unit>\r\n",
+        "[293] 344 End XML snippet\r\n"
+      ],
+      "case": "unit-pp-missing-value#target"
+    },
+    {
+      "tag": 294,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[294] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[294] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-missing-value#restore"
+    },
+    {
+      "tag": 295,
+      "command": "PROJECT LOAD XERR",
+      "request": "[295] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[295] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-missing-value#restore"
+    },
+    {
+      "tag": 296,
+      "command": "PROJECT USE XERR",
+      "request": "[296] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[296] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-missing-value#restore"
+    },
+    {
+      "tag": 297,
+      "command": "DBGETXML //XERR/254",
+      "request": "[297] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[297] 343-Begin XML snippet\r\n",
+        "[297] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[297] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[297] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 298,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[298] DBSETXML //XERR/254/p/20 << END298\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"NoSuchParameter\" Value=\"1\"/></Unit>\r\nEND298\r\n",
+      "response_lines": [
+        "[298] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "unit-pp-unknown-name"
+    },
+    {
+      "tag": 299,
+      "command": "DBGETXML //XERR/254",
+      "request": "[299] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[299] 343-Begin XML snippet\r\n",
+        "[299] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[299] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"NoSuchParameter\" Value=\"1\"/></Unit></Network>\r\n",
+        "[299] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 300,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[300] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[300] 343-Begin XML snippet\r\n",
+        "[300] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[300] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"NoSuchParameter\" Value=\"1\"/></Unit>\r\n",
+        "[300] 344 End XML snippet\r\n"
+      ],
+      "case": "unit-pp-unknown-name#target"
+    },
+    {
+      "tag": 301,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[301] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[301] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-unknown-name#restore"
+    },
+    {
+      "tag": 302,
+      "command": "PROJECT LOAD XERR",
+      "request": "[302] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[302] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-unknown-name#restore"
+    },
+    {
+      "tag": 303,
+      "command": "PROJECT USE XERR",
+      "request": "[303] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[303] 200 OK.\r\n"
+      ],
+      "case": "unit-pp-unknown-name#restore"
+    },
+    {
+      "tag": 304,
+      "command": "DBGETXML //XERR/254",
+      "request": "[304] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[304] 343-Begin XML snippet\r\n",
+        "[304] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[304] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[304] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 305,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[305] DBSETXML //XERR/254/p/20 << END305\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND305\r\n",
+      "response_lines": [
+        "[305] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "tagname-32"
+    },
+    {
+      "tag": 306,
+      "command": "DBGETXML //XERR/254",
+      "request": "[306] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[306] 343-Begin XML snippet\r\n",
+        "[306] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[306] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[306] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 307,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[307] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[307] 343-Begin XML snippet\r\n",
+        "[307] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[307] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[307] 344 End XML snippet\r\n"
+      ],
+      "case": "tagname-32#target"
+    },
+    {
+      "tag": 308,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[308] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[308] 200 OK.\r\n"
+      ],
+      "case": "tagname-32#restore"
+    },
+    {
+      "tag": 309,
+      "command": "PROJECT LOAD XERR",
+      "request": "[309] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[309] 200 OK.\r\n"
+      ],
+      "case": "tagname-32#restore"
+    },
+    {
+      "tag": 310,
+      "command": "PROJECT USE XERR",
+      "request": "[310] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[310] 200 OK.\r\n"
+      ],
+      "case": "tagname-32#restore"
+    },
+    {
+      "tag": 311,
+      "command": "DBGETXML //XERR/254",
+      "request": "[311] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[311] 343-Begin XML snippet\r\n",
+        "[311] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[311] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[311] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 312,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[312] DBSETXML //XERR/254/p/20 << END312\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND312\r\n",
+      "response_lines": [
+        "[312] 446 Unable to set XML: ValidationException: The following exception occured while validating field '_tagName' of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/TagName Strings of this type must have a maximum length of 32 characters\r\n"
+      ],
+      "case": "oversize-tagname-33"
+    },
+    {
+      "tag": 313,
+      "command": "DBGETXML //XERR/254",
+      "request": "[313] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[313] 343-Begin XML snippet\r\n",
+        "[313] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[313] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[313] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 314,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "[314] DBSETXML //XERR/254/p/20 << END314\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND314\r\n",
+      "response_lines": [
+        "[314] 446 Unable to set XML: ValidationException: The following exception occured while validating field '_tagName' of class 'com.clipsal.cgate.tag.model.Unit';    - location of error: XPATH: /Unit/TagName Strings of this type must have a maximum length of 32 characters\r\n"
+      ],
+      "case": "oversize-tagname-4096"
+    },
+    {
+      "tag": 315,
+      "command": "DBGETXML //XERR/254",
+      "request": "[315] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[315] 343-Begin XML snippet\r\n",
+        "[315] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[315] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[315] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 316,
+      "command": "DBSETXML //XERR/254/p/99",
+      "request": "[316] DBSETXML //XERR/254/p/99 << END316\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>99</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND316\r\n",
+      "response_lines": [
+        "[316] 401 Bad object or device ID: Element 99 not found.\r\n"
+      ],
+      "case": "target-missing-unit"
+    },
+    {
+      "tag": 317,
+      "command": "DBGETXML //XERR/254",
+      "request": "[317] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[317] 343-Begin XML snippet\r\n",
+        "[317] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[317] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[317] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 318,
+      "command": "DBSETXML //XERR/253",
+      "request": "[318] DBSETXML //XERR/253 << END318\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND318\r\n",
+      "response_lines": [
+        "[318] 401 Bad object or device ID: Element 253 not found.\r\n"
+      ],
+      "case": "target-missing-network"
+    },
+    {
+      "tag": 319,
+      "command": "DBGETXML //XERR/254",
+      "request": "[319] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[319] 343-Begin XML snippet\r\n",
+        "[319] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[319] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[319] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 320,
+      "command": "DBSETXML //NOPROJ/254",
+      "request": "[320] DBSETXML //NOPROJ/254 << END320\r\n<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND320\r\n",
+      "response_lines": [
+        "[320] 440 There is no tag database to perform this operation on\r\n"
+      ],
+      "case": "target-missing-project"
+    },
+    {
+      "tag": 321,
+      "command": "DBGETXML //XERR/254",
+      "request": "[321] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[321] 343-Begin XML snippet\r\n",
+        "[321] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[321] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[321] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 322,
+      "command": "DBSETXML !11111111-1111-4111-8111-111111111111",
+      "request": "[322] DBSETXML !11111111-1111-4111-8111-111111111111 << END322\r\n<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\nEND322\r\n",
+      "response_lines": [
+        "[322] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "target-oid-unit"
+    },
+    {
+      "tag": 323,
+      "command": "DBGETXML //XERR/254",
+      "request": "[323] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[323] 343-Begin XML snippet\r\n",
+        "[323] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[323] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[323] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 324,
+      "command": "DBGETXML !11111111-1111-4111-8111-111111111111",
+      "request": "[324] DBGETXML !11111111-1111-4111-8111-111111111111\r\n",
+      "response_lines": [
+        "[324] 343-Begin XML snippet\r\n",
+        "[324] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[324] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[324] 344 End XML snippet\r\n"
+      ],
+      "case": "target-oid-unit#target"
+    },
+    {
+      "tag": 325,
+      "command": "PROJECT CLOSE XERR",
+      "request": "[325] PROJECT CLOSE XERR\r\n",
+      "response_lines": [
+        "[325] 200 OK.\r\n"
+      ],
+      "case": "target-oid-unit#restore"
+    },
+    {
+      "tag": 326,
+      "command": "PROJECT LOAD XERR",
+      "request": "[326] PROJECT LOAD XERR\r\n",
+      "response_lines": [
+        "[326] 200 OK.\r\n"
+      ],
+      "case": "target-oid-unit#restore"
+    },
+    {
+      "tag": 327,
+      "command": "PROJECT USE XERR",
+      "request": "[327] PROJECT USE XERR\r\n",
+      "response_lines": [
+        "[327] 200 OK.\r\n"
+      ],
+      "case": "target-oid-unit#restore"
+    },
+    {
+      "tag": 328,
+      "command": "DBGETXML //XERR/254",
+      "request": "[328] DBGETXML //XERR/254\r\n",
+      "response_lines": [
+        "[328] 343-Begin XML snippet\r\n",
+        "[328] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[328] 347-<Network><OID>b5096da0-9e69-103f-b582-e8d05ab253ba</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b50994b0-9e69-103f-b583-e8d05ab253ba</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[328] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 329,
+      "command": "DBGETXML //XERR/254/p/20",
+      "request": "[329] DBGETXML //XERR/254/p/20\r\n",
+      "response_lines": [
+        "[329] 343-Begin XML snippet\r\n",
+        "[329] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[329] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[329] 344 End XML snippet\r\n"
+      ]
+    },
+    {
+      "tag": 330,
+      "command": "DBSETXML //XERR/254/p/20",
+      "request": "<65742-byte here-document, sha256 be603e0a93d350a381b659bb670ed0f0f00a6e5e23b750fef24ea154a48b0dca>",
+      "response_lines": [
+        "[330] 301 OID=11111111-1111-4111-8111-111111111111\r\n"
+      ],
+      "case": "document-64kib"
+    },
+    {
+      "tag": 331,
+      "case": "document-1mib",
+      "request_sha256": "3aa8fcaf301d3821b350bcf1f1d67567f905518732e3b1b50d0adb14d3878d71",
+      "timed_out_after_seconds": 120
+    }
+  ]
+}

@@ -16472,6 +16472,136 @@ async fn unsaved_dbsetxml_reverts_on_close_but_survives_daemon_restart_without_p
 }
 
 #[tokio::test]
+async fn dbsetxml_error_matrix_refuses_without_mutation_or_pci_io() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_dbsetxml_errors.json"
+    ))
+    .unwrap();
+    let request = |tag: u64| {
+        let row = native["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["tag"].as_u64() == Some(tag))
+            .unwrap();
+        let request = row["request"].as_str().unwrap();
+        let (head, rest) = request.split_once(&format!(" << END{tag}\r\n")).unwrap();
+        let document = rest.strip_suffix(&format!("\r\nEND{tag}\r\n")).unwrap();
+        (head.to_string(), document.to_string())
+    };
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] PROJECT NEW XERR",
+        "[2] PROJECT USE XERR",
+        "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    let initial = service.handle(&mut client, "[4] DBGETXML //XERR/254").await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let substitute = |value: &str| {
+        value
+            .replace(native["network_oid"].as_str().unwrap(), &network_oid)
+            .replace(native["interface_oid"].as_str().unwrap(), &interface_oid)
+    };
+    let (_, base) = request(104);
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[5] DBSETXML //XERR/254", &substitute(&base))
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[6] PROJECT SAVE XERR")
+            .await
+            .status,
+        200
+    );
+    let mut baseline = Vec::new();
+    for read in ["[r] DBGETXML //XERR/254", "[r] DBGETXML //XERR/254/p/20"] {
+        baseline.push(service.handle(&mut client, read).await.lines);
+    }
+    let state =
+        || serde_json::from_slice::<serde_json::Value>(&std::fs::read(&path).unwrap()).unwrap();
+    let vectors = include_str!("../../../testdata/vectors/cgate_dbsetxml_errors.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(vectors.len(), 44);
+    for vector in vectors {
+        let name = vector["name"].as_str().unwrap();
+        let (head, document) = request(vector["set_tag"].as_u64().unwrap());
+        let before = state();
+        let response = service
+            .handle_document(&mut client, &substitute(&head), &substitute(&document))
+            .await;
+        assert_eq!(
+            u64::from(response.status),
+            vector["rust_status"].as_u64().unwrap(),
+            "{name}: {response:?}"
+        );
+        if let Some(reply) = vector["rust_reply"].as_str() {
+            assert_eq!(response.final_text, reply, "{name}");
+        }
+        if let Some(prefix) = vector["rust_reply_prefix"].as_str() {
+            assert!(
+                response.final_text.starts_with(prefix),
+                "{name}: {response:?}"
+            );
+        }
+        if response.status >= 400 {
+            // A refusal neither changes the model nor rewrites the repository.
+            assert_eq!(state(), before, "{name} changed durable state");
+        }
+        for line in [
+            "[c] PROJECT CLOSE XERR",
+            "[l] PROJECT LOAD XERR",
+            "[u] PROJECT USE XERR",
+        ] {
+            assert_eq!(
+                service.handle(&mut client, line).await.status,
+                200,
+                "{name}"
+            );
+        }
+        let mut observed = Vec::new();
+        for read in ["[r] DBGETXML //XERR/254", "[r] DBGETXML //XERR/254/p/20"] {
+            observed.push(service.handle(&mut client, read).await.lines);
+        }
+        assert_eq!(observed, baseline, "{name} was not reverted");
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    let _ = std::fs::remove_file(path);
+}
+
+#[tokio::test]
 async fn duplicate_oid_units_keep_independent_documents_through_service_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

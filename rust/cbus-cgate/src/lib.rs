@@ -635,6 +635,73 @@ fn db_xml_missing_unit_name(tag: &str, network_child: bool) -> Response {
     )
 }
 
+/// Native reply when a path names a project with no loaded tag database.
+const NO_TAG_DATABASE: &str = "440 There is no tag database to perform this operation on";
+
+/// Native Castor validation failures for a direct Unit replacement.
+///
+/// The owned error capture shows the mapper binds the body to the target's
+/// Unit class whatever its root element is called, rejects direct text and a
+/// repeated scalar element while parsing, then requires `TagName` before
+/// `UnitType` (before the existing `UnitName` rule) and limits `TagName` to
+/// 32 characters. Repeated-element detection is captured for `TagName` and
+/// `Address` and applied to the other single-valued Unit scalars.
+fn native_unit_validation_failure(node: roxmltree::Node<'_, '_>) -> Option<String> {
+    const CLASS: &str = "com.clipsal.cgate.tag.model.Unit";
+    if let Some(text) = node
+        .children()
+        .filter(roxmltree::Node::is_text)
+        .filter_map(|child| child.text())
+        .map(str::trim)
+        .find(|text| !text.is_empty())
+    {
+        return Some(format!(
+            "org.xml.sax.SAXException: Illegal Text data found as child of: Unit   value: '{text}'"
+        ));
+    }
+    let scalar = |name: &'static str| {
+        node.children().filter(move |child| {
+            child.is_element()
+                && child.tag_name().namespace().is_none()
+                && child.tag_name().name() == name
+        })
+    };
+    for name in [
+        "OID",
+        "TagName",
+        "Address",
+        "UnitType",
+        "UnitName",
+        "FirmwareVersion",
+        "CatalogNumber",
+        "SerialNumber",
+        "Description",
+    ] {
+        if scalar(name).count() > 1 {
+            return Some(format!(
+                "ValidationException: Element '{name}' occurs more than once. (parent class: {CLASS}  location: /Unit/{name}"
+            ));
+        }
+    }
+    for (name, member) in [("TagName", "_tagName"), ("UnitType", "_unitType")] {
+        if scalar(name).next().is_none() {
+            return Some(format!(
+                "ValidationException: The field '{member}' (whose xml name is '{name}') is a required field of class '{CLASS}';    - location of error: XPATH: /Unit/{name}"
+            ));
+        }
+    }
+    let tag_name = scalar("TagName")
+        .next()?
+        .children()
+        .filter_map(|child| child.text())
+        .collect::<String>();
+    (tag_name.chars().count() > 32).then(|| {
+        format!(
+            "ValidationException: The following exception occured while validating field '_tagName' of class '{CLASS}';    - location of error: XPATH: /Unit/TagName Strings of this type must have a maximum length of 32 characters"
+        )
+    })
+}
+
 fn tag_of(cmd: &TaggedCommand) -> &str {
     &cmd.tag
 }
@@ -7954,7 +8021,10 @@ impl Server {
             }
             if let Some(oid) = words[1].strip_prefix('!') {
                 if !oid.contains('/') {
-                    if let Some(path) = self.selected_duplicate_unit_path(oid) {
+                    if let Some(path) = self
+                        .selected_duplicate_unit_path(oid)
+                        .or_else(|| self.unique_unit_path_by_oid(oid))
+                    {
                         return self.dbsetxml_unit(tag_of(&cmd), &path, document);
                     }
                 }
@@ -8015,17 +8085,15 @@ impl Server {
                 "400 DBSETXML does not accept DTD or entity declarations",
             );
         }
+        // Native C-Gate reports every SAX failure as 446 without mutation.
         let parsed = match roxmltree::Document::parse(document) {
             Ok(parsed) => parsed,
-            Err(error) => {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    &format!("400 Invalid DBSETXML Unit XML: {error}"),
-                )
-            }
+            Err(error) => return err(tag, 446, &format!("446 Unable to set XML: {error}")),
         };
         let root = parsed.root_element();
+        if let Some(detail) = native_unit_validation_failure(root) {
+            return err(tag, 446, &format!("446 Unable to set XML: {detail}"));
+        }
         if root.tag_name().namespace().is_some() || root.tag_name().name() != "Unit" {
             return err(
                 tag,
@@ -8040,6 +8108,9 @@ impl Server {
                 "400 DBSETXML requires a unit path",
             );
         };
+        if !self.projects.contains_key(&project_name) {
+            return err(tag, 440, NO_TAG_DATABASE);
+        }
         if self.current.as_deref() != Some(project_name.as_str()) {
             return err(tag, status::NOT_FOUND, "404 Project not selected");
         }
@@ -8179,13 +8250,7 @@ impl Server {
         }
         let parsed_document = match roxmltree::Document::parse(document) {
             Ok(parsed) => parsed,
-            Err(error) => {
-                return err(
-                    tag,
-                    status::BAD_REQUEST,
-                    &format!("400 Invalid DBSETXML XML: {error}"),
-                )
-            }
+            Err(error) => return err(tag, 446, &format!("446 Unable to set XML: {error}")),
         };
         let object = match parse_db_xml_object(parsed_document.root_element()) {
             Ok(object) => object,
@@ -8296,6 +8361,12 @@ impl Server {
         };
         let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
         if parts.first().copied() != Some(project) {
+            if parts
+                .first()
+                .is_some_and(|name| !self.projects.contains_key(*name))
+            {
+                return Err((440, NO_TAG_DATABASE[4..].to_string()));
+            }
             return Err((status::NOT_FOUND, "Project not selected".to_string()));
         }
         match parts.as_slice() {
@@ -11469,6 +11540,33 @@ impl Server {
             .filter(|(_, unit)| unit.oid == oid)
             .max_by_key(|(network_address, unit)| (*network_address, unit.address))
             .map(|(_, unit)| unit)
+    }
+
+    /// Path of the only Unit with `oid` in the selected project, when no
+    /// other database object shares that OID.
+    fn unique_unit_path_by_oid(&self, oid: &str) -> Option<String> {
+        let project = self.current.as_deref()?;
+        if self.pending_object(project, oid).is_some()
+            || self
+                .invalidated_unit_oid_lookups
+                .contains(&(project.to_string(), oid.to_string()))
+        {
+            return None;
+        }
+        let mut matches = self
+            .projects
+            .get(project)?
+            .networks
+            .iter()
+            .flat_map(|(net, network)| {
+                network
+                    .units
+                    .values()
+                    .filter(move |unit| unit.oid == oid)
+                    .map(move |unit| format!("//{project}/{net}/p/{}", unit.address))
+            });
+        let path = matches.next()?;
+        matches.next().is_none().then_some(path)
     }
 
     fn duplicated_unit_oid_in_current_project(&self, oid: &str) -> bool {
