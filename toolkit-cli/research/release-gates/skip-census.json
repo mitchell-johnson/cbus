@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 441,
+    "test_modules": 442,
     "modules_without_skip_sites": 243,
-    "modules_with_skip_sites": 198,
+    "modules_with_skip_sites": 199,
     "modules_by_category": {
       "cgate_test_host": 118,
       "external_cgate_project": 1,
-      "host_platform": 15,
+      "host_platform": 16,
       "host_tool": 6,
-      "native_cgate_local": 42,
+      "native_cgate_local": 43,
       "native_opt_in": 2,
       "original_model_runtime": 3,
       "original_toolkit": 61,
@@ -72,14 +72,14 @@
       "windows": 12
     },
     "native_modules": {
-      "all": 107,
+      "all": 108,
       "partial": 17,
       "none": 74
     },
-    "native_runnable_tests": 202,
-    "native_selected_required_tests": 202,
+    "native_runnable_tests": 203,
+    "native_selected_required_tests": 203,
     "native_excluded": 0,
-    "native_selection_selectors": 127
+    "native_selection_selectors": 128
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5529,6 +5529,35 @@
       "sites": [
         {
           "scope": "tests/test_pci_routed_recall_original.py::OriginalRecallTests",
+          "kind": "decorator.skipUnless",
+          "condition": "sys.platform == 'darwin' and all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_CGATE_JAVAC', 'CBUS_LOCAL_CGATE_VENDOR')))",
+          "reason": "Explicit owned macOS JDK/compiler and original C-Gate files required",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_JAVAC",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "host_platform",
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_pci_routed_write_original.py": {
+      "categories": [
+        "host_platform",
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 8,
+      "sites": [
+        {
+          "scope": "tests/test_pci_routed_write_original.py::OriginalRoutedWriteTests",
           "kind": "decorator.skipUnless",
           "condition": "sys.platform == 'darwin' and all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_CGATE_JAVAC', 'CBUS_LOCAL_CGATE_VENDOR')))",
           "reason": "Explicit owned macOS JDK/compiler and original C-Gate files required",

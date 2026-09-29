@@ -1,0 +1,10331 @@
+{
+ "cases": [
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "nominal",
+    "id": "nominal-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "f4c51e1b7d0b2a67064cb29c3ef27930230e02f62244e9527356d5f8cafb910b"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "f7e1743befcda89b06527cf920d70cb0ab152dc6f20cca871c12725d8c22879a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "nominal",
+    "id": "ack-first-n0-d0",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "54c86f6ac4ae116b6440a39e6ad84b916d4e31bf2bb7e6a604f8c2994ac4cc99"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322446CA"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "552098f9d6467703db2b74fd4bee897cb5bbbf0f78866f2f541a2281fbc4e5a5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322347CA"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "9f8fa63539c21f126cfc5d2133a98a68a19e940faa5bb3d66cafd0c3c21c44de"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86051000322346CA"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "2f1f82b16cf93db4d127e53235f900b0132cb724086b239c9ea6c9dfab804c0a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [],
+    "depth": 0,
+    "family": "nominal",
+    "id": "data-0-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "57f5af9338b24a3c2ad628fe056df7715205ba4eca99cdb11f3de83de3319275"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 0,
+    "family": "nominal",
+    "id": "data-29-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "57a9093c911094b95c00521981f0786e4f910f17d9d45dd77d85a8501791ebe4"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "nominal",
+    "id": "nominal-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "2a85d859f3aa4190550fcdf8e8841275abb19522099056c1f490f1ba48d3a836"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "db82c5d56fd2cd69ecdbcb0de4e0f555193809a60c79d3ea9829a4060f5d5b1c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "nominal",
+    "id": "ack-first-n0-d1",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "ceb5b076f8f2b797778e447550593fa75725b50420b987f2bc183dcb633d70be"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322446B5"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "148aad39dadb4a8e429aa58f214521159a628de88cf7a693798211e7829c794f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322347B5"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "342152081cd8c8f5cc761b392c4bb1c1b84c9a58a44d2810b6a3f128d452b910"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100105322346B5"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "d2886533ac45a5c93f0bbdcb458118e22b3d3266f37adf991449f6d1c147f6f8"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [],
+    "depth": 1,
+    "family": "nominal",
+    "id": "data-0-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "d79c7259e1ae45b4c7e7c0f09e63d67994402ccabed7069bf018529200624d4e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 1,
+    "family": "nominal",
+    "id": "data-29-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "726d5b7a76d2ae78dffcc793cf6a94cf48b4e51de6f64670bc2e539e783aff5e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "nominal",
+    "id": "nominal-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "380a9215163c78835f5904a41018b5d5272d0e89458fff361111dcc52424ee38"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "a2de5f52c23049f2d8b9e19c245c875439ae1724d590f99f338e44584994a707"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "nominal",
+    "id": "ack-first-n0-d2",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "51aeb5eadc596207c24a4c4b6d7835400e7cea2dafd87d42e7cec1d63518cfc7"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "8614100215043224469F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "6e6cba54ce70e6ce2449edb36f4163b5913b679a74b8de0d08d6f1ba5bd6829a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "8614100215043223479F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "b045a756d43d5dcf06bf9a40d6c5ad4507f5565dc3aae802997649dd7151b326"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "8614100215053223469F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "2e5521f915cf2048074b9e6d8431cf3f208016e87b5ae93218e5daf11e8682ef"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [],
+    "depth": 2,
+    "family": "nominal",
+    "id": "data-0-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\4628122904A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "41404cd03f32ead4c5ef890309e5587761ba7bf60c39a9446c8b8c66cbebc757"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 2,
+    "family": "nominal",
+    "id": "data-29-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\4628122904BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "6fdb240ce2fc6c3b2d7eca0fcf6e52933e9a85f5d908327d50129da9fae4e246"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "nominal",
+    "id": "nominal-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "55035611d653f49359e4676ef22d21945a39a7679c4e18d7f8ec80a6a050ba95"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "54b63e8b629b89f8269f40565b3e32e34065d6c3484b995642d9f509917136ae"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "nominal",
+    "id": "ack-first-n0-d3",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "0462466933ff12972a311d88ac07a3186528a618455d1726406f3e5aa8c7e705"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432244688"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "7213ed688b9e07cd243d9d277b60b69bf86bff20bf1a8c6a9e6f20ae84baaa1f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234788"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "5c8f346fcc74a8e941dd90e4ef56c5ee564e9e1413d545e75b520bb149f4689d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160532234688"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "8022d56f10cc77648126af022b1f38690ed375e3eed6eb327be59e3bbe2238e6"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [],
+    "depth": 3,
+    "family": "nominal",
+    "id": "data-0-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46281B292A04A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "d6404d0ebb5678d3e1d975a027bc32d70f5f1659bad887aeb9f9e92ba0eccabf"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 3,
+    "family": "nominal",
+    "id": "data-29-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46281B292A04BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "d658374db2bf6c447b4f516d0b3a26610ee590632099d6153dfbecfa7cb7c224"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "nominal",
+    "id": "nominal-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "2a444d6fcd470b26b25d778fd770c53225a805b14d83086cea14eb5062d6b59d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "a471e7f16797b2dbd322b492163b5b499d982efd53c2b6f05d5b22ab4425848f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "nominal",
+    "id": "ack-first-n0-d4",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "9c4446d5a0240662aeea52de61ac2fa657221532da9e55cbedf6380a70a9f516"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432244670"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "5b1e0838fd84b0a33c8073c7fc299a17b06e6cfaa25320c3715f862bf0c76bd0"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234770"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "fc7bdb41d255e256c0f1dc15479e14319f61f3768d28d971a7198c3ca22f7e55"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170532234670"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "37fa681c1723fea1afb61474d4792a94362de7c9798077ec9a5a77e0c91335c5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [],
+    "depth": 4,
+    "family": "nominal",
+    "id": "data-0-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462824292A2B04A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "7d11c37e4677aa06736631d1f532c547f92f5bcb0a51ecadd9e65be4a374e7aa"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 4,
+    "family": "nominal",
+    "id": "data-29-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462824292A2B04BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "7b91dc633e13e2e62e1db5399beaf3bebab4a27f47088aa22326a45413712ac1"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "nominal",
+    "id": "nominal-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "689156677b71128299e20cde677ca108b3f1ca4c8bc0bb798def2d972402cb2f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "7ba559824815d520f1546949aa881ba974db9b5858f13bc2430aae3800ef9377"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "nominal",
+    "id": "ack-first-n0-d5",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "c8231a696ab85017f28f2c70f3ab452976ae9805d73300e5dc75dd77b6884511"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432244657"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f773592b13a05f192ac5eb9f820667316becba2cd91a50567c9fd69967a4ab89"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234757"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "de2bab69900e970ad8e6c005e471df56b14e34e4c3b2fedfdaf404292d07233c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180532234657"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "e0f709fcdb4338cf982ae113aea32e9a1bc427c6ca89c9a26c108b9e04f929bb"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [],
+    "depth": 5,
+    "family": "nominal",
+    "id": "data-0-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46282D292A2B2C04A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "469df70b5fc302b138bd2b14cfe4377228239652e8d7e97cc790054aee5891f5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 5,
+    "family": "nominal",
+    "id": "data-29-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46282D292A2B2C04BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "ed3efc5c4145c963bbd7917854e57125f97107b3a83f65d771120c3595e919e3"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "nominal",
+    "id": "nominal-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "73b33d2315ce4dc7d6ef28e36121568742fc5ada506c365e274bc61cbe7dc8af"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-n1-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "d15d915feaa8e5d81b6c50becd340362b77c0d9800b8ae613ac33771d3eecb86"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "nominal",
+    "id": "ack-first-n0-d6",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L",
+     "Cg."
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "9b8dd1c677b503d1510d9c192b593556d6a8e605b29dc46e72e27a72254287cf"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-parameter",
+    "id": "wrong-parameter-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043224463D"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "64902f65aa59b445433a10a2cc6ffd2ddb3c47fa4bdeee92012d2c4d03d74256"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-tag",
+    "id": "wrong-tag-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223473D"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "06a55af5553dc7f503fa751e37e820a735bf4d6c48ee7f5fc45a626f5315ae78"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-unit",
+    "id": "wrong-unit-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819053223463D"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "96062a2d47a97e40643a465101e4cdbee2786e15c8fcbd63a431e80e70eaed77"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [],
+    "depth": 6,
+    "family": "nominal",
+    "id": "data-0-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A22346",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "394a7791b45065699ba26f5394194a3c97f95eca56469f6a5acac283fde77212"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "depth": 6,
+    "family": "nominal",
+    "id": "data-29-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04BF23460102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "828bf065bbe4ab502bd84f175890b4847d492232c32a7273ae11c95a5ffbe774"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "861F100104322346AB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "ddb16d169b8f064199119b5bc63db3522c9cb0a2948d8f3f2eaa7a4ac43e175f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-route",
+    "id": "short-route-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "18939f453a9ad4c64223d91add9ec728ca9788e6612bad2807aeca323f1b8c50"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B7",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "4592171c604457eca925e512151a1fe341be368c2e18cdf5d6a70453b7519e4b"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "bare-ack",
+    "id": "bare-ack-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "1275e07ab574a1c94b71fe1ca98de7458ce66c4923aa38d4487ff46e1f419ce6"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861F1002150432234695"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "6180c99a32cd23c03a16d1c80a91a94a5b81081c7118139023c0f2e5c8b3befe"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-route",
+    "id": "wrong-middle-bridge-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021E0432234697"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "06a271c59bdd59d665ed12d99df9ea3a90eb2c4ad038bd0c5fd4ef65baf3caf6"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "wrong-route",
+    "id": "short-route-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "3e85e7522dbd9dc49a6ed95d91edbb3238319b62cb4550c391cd5d751b07bee3"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B7",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f9ba0da6d61d1301712140f0c4b31f867a9dc7d01cd90317d9aa15d8857856a2"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2",
+    "context": 2,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 2,
+    "family": "bare-ack",
+    "id": "bare-ack-d2",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40,
+     41
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\4628122904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f980aa0e37bed0ad9e72f7327d11255452d49faaf980be89dc8d323dc2f3fd7e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "861F10031516043223467E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "3f1b5780f15f38540fa09374e813e3e7ad7b89df65cce4d01dae788e3e1e0a2b"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-route",
+    "id": "wrong-middle-bridge-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "861410031E160432234680"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "8917fb19a1149bb0fe3a528eecf0b7b3e9d9fa9c6cbed4b6d84f2fb2f65a49bb"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "wrong-route",
+    "id": "short-route-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "861410021504322346A0"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "65841669c3c89045c990ee5c52b95deefb2727304f36b0048be98620f8dabf7a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B7",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "fc84581cc027789f229ba16b9c1891d43370bcc9bd0d5e6b6d99e5c4145c4ccc"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3",
+    "context": 3,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 3,
+    "family": "bare-ack",
+    "id": "bare-ack-d3",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46281B292A04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "b50cb87e74d4504889a630022c496c28b61e044f4078d2c8a9400f556f23d98a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861F10041516170432234666"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "35f626f7387efe6c9593458cb46642b5c1edbff1ddcae46f9fee133d323fb67c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-route",
+    "id": "wrong-middle-bridge-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041E16170432234668"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "d418aba19d985afc51925da3110dcd4ce97c67fca102be074fa5ce8a71757b2d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "wrong-route",
+    "id": "short-route-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "8614100315160432234689"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f7612e4c528de89ea5a7729615c9b018583a59901d67397b8046da32e8f74cac"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B7",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "36382a6bd09e4a7e32fd7993c64594237acb5de93f70bfe191d5a215889c1ad0"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4",
+    "context": 4,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 4,
+    "family": "bare-ack",
+    "id": "bare-ack-d4",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462824292A2B04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "b8461d4315b273d4cf9a4532f54d5979b8fdb3cb84589c4487b780f66460d106"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "861F100515161718043223464D"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f0a372ce71efd58d05ab111d001a1a7a9f766221668213c84056a3904638c382"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-route",
+    "id": "wrong-middle-bridge-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "861410051E161718043223464F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "7c37e9d0f176c98f72a4142df644c4c727803cc58c5fb9059777fdf5afca1226"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "wrong-route",
+    "id": "short-route-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "861410041516170432234671"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "112a5c786fd9767adf75b86d39538dae5de3cd075d2341e42d2b22705eb6192d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B7",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "95e67c8df5c84a7e1ecae7c322c2fb8343aa9052b4e290370846acc989dd23b5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5",
+    "context": 5,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 5,
+    "family": "bare-ack",
+    "id": "bare-ack-d5",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46282D292A2B2C04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "5603398ca98400425005efa056b23aa944a64854a26c9f2bcaecee06680ee3f5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-route",
+    "id": "wrong-first-bridge-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861F100615161718190432234633"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "da50e6691f57115776e9d7276193cad412f828b593d778163e3b614ea329017c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-route",
+    "id": "wrong-middle-bridge-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061E161718190432234635"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "de29c95df68e805e06f5e312ba411bd1c05614e2adbc41bcdf39c0481ba20cc2"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-route",
+    "id": "short-route-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "86141005151617180432234658"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "289301a6baa46cacb51426888cf1767ae9a149af3388786e70783659648a851a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B7",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "cached-network-identity",
+    "id": "cached-network-identity-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "a63618f3304e48c30622af7141865c9671875debd2fd76db98a5574263f87e6d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "bare-ack",
+    "id": "bare-ack-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f9695b22f25fcbb8cac0d586b39f8e191b4eb4e429f26fd8c94a7901b74c3f0e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "bare-ack",
+    "id": "bare-ack-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0S"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "322346"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "5fb19322346f0c4db5ee5fd50716c419660e4a0547608e73d368a28f254353a4"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "confirmation-required",
+    "id": "unconfirmed-n0-d0",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true
+    ]
+   },
+   "semantic_sha256": "8e80e4d502e67f6454288996d899f0a6c361d38185dd09aeabca65ecdea4082d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-repeated-n1-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     false,
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "40d19ac9f03b530907fd62568378c6f33c346c90d7d0dc627f9ee7a71224c1dc"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "destination",
+    "id": "destination-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041100322346CA"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "01dfa250b51edcc88fd2462eed00ec52aa533e2798e034026c84fb299b531a6f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "checksum",
+    "id": "checksum-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CC"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "39764df6356452d3d0fac2a7e028602ea556795c019c79c69622de9f9c1bb624"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "negative",
+    "id": "negative-3b-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "860410003B2346C2"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": true,
+    "negative_acknowledgements": 1,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "0f8c8145b48b6c086bd8e3903c610218fe0591b40c891d6a05c1f3fd82fbdcb8"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "wrong-tag",
+    "id": "negative-3b-wrong-tag-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "860410003B2347C1"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "10a9ead5739e6b6715783bba655b8b8e939f5a1db4fa7bad5d278a90ffb5b137"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "trailing-cal",
+    "id": "trailing-cal-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "8604100032234632000099"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "0b02b77a0d23bff35f8c7744632cac3ae39e269c4ccce049dbee8e59ef043dfa"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "nominal",
+    "id": "alpha-tag-d0",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "860410003223AB66"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "fba9b9565826083baf2b57e7bbeff8280b0c227c9069e1db892b32073642e48b"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "lowercase-hex",
+    "id": "lowercase-d0",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "860410003223ab66"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "3ba1e060a96bdb06251a84526e409b51be6cab250cc20cfa224db98400560590"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "duplicate",
+    "id": "duplicate-ack-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "d865ec3576a874f6f44a05c2118c8583b6cba430e869dbd1bd6c3c9849ac7da3"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "duplicate",
+    "id": "duplicate-confirmation-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "f345ea7190c866627a12aaa4cbbeee3ad1a30955e7efd1423787a76f084c5deb"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "confirmation-tag",
+    "id": "other-confirmation-tag-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Ch.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     false,
+     false
+    ]
+   },
+   "semantic_sha256": "d8e760bfc21469ed8f58eefc16c66fad82bbc8edd207ba4b7480e0626c5de5e1"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "negative-confirmation",
+    "id": "confirmation-hash-t0-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "aa75f0965c769aa83f3570e9432eaad07795c6b5ba6a1c117f8811fecda8172c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "negative-confirmation",
+    "id": "confirmation-dollar-t0-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg$",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "e0c9009de82bac26d82d8d9c0e42dd8b183e3de7615c667d50a6501ae4b4831a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "negative-confirmation",
+    "id": "confirmation-percent-t0-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg%",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "bf819ac9b44cb0a1339224b6da0282bceefd4fd9f35d9e7c16ee341f9ea6e085"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "hash-confirmation",
+    "id": "confirmation-hash-t1-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "86041000322346CB"
+    ],
+    "root": 0,
+    "t": true,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "ee1aac29bfd320c3d14d3ea5d6d1b8d3eb31a3aab888cd996bd4fb044cafe692"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "nominal",
+    "id": "header-06-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "060410003223464B"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "f4c30fe69b6914342436368a425b06ac410aea02d5e323bc3778f4d6193ddb4d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "header",
+    "id": "header-0e-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "0E04100032234643"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "f3b307138935cb95903a03de970549b5b1d9a328f4b9c39287f7dfa2e284ccf2"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "header",
+    "id": "header-46-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "460410003223460B"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "19aa49c99c210746f127e96ac63fa8773f330713b9065d253c58071fea7cd502"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "header",
+    "id": "header-c6-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "C60410003223468B"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "9531fe83d8284795e6c6e88c9d523adfaad979aa27d93a12d721960cb3eaca9e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [],
+    "cache": "-",
+    "context": 0,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 0,
+    "family": "header",
+    "id": "header-85-d0",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 4,
+     "route_entries": []
+    },
+    "raws": [
+     "85041000322346CC"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\460400A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "c1d5cd07f67fdb8943246065a2bd70d83871df6a6f3d93971075cb90bf4b9714"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "confirmation-required",
+    "id": "unconfirmed-n0-d1",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true
+    ]
+   },
+   "semantic_sha256": "c66e93d8323b38f1d63b507ff49c7efa5041637940255ef557fb464781a25a18"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-repeated-n1-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     false,
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "74f2c6328b7dc5963ee26a36d42e81b7c5050351dbe18b427bb523cc0ebe6a6f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "destination",
+    "id": "destination-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614110104322346B5"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "0b93948cf10f42de3d8155994929d9bd75bf445adf9bc9e149e5967211aeb250"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "checksum",
+    "id": "checksum-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B7"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "4db656ff4fe94610b21e6f9fe384d7d98d842d503723a8e06b01a32965629299"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "negative",
+    "id": "negative-3b-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "86141001043B2346AD"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": true,
+    "negative_acknowledgements": 1,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "95d41a33a45fd7780309d62ed25497c6147b443581dacb2b685a08312cd79f01"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "wrong-tag",
+    "id": "negative-3b-wrong-tag-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "86141001043B2347AC"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "6b8dea209cb42c6233b81699f3ae36d316280c71e833e1232a2fc166531db09f"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "trailing-cal",
+    "id": "trailing-cal-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "861410010432234632000084"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "7459d4587fbaa37542892d98fc55eb4661e4747d83ad3d7d2e33239c2f4e9c43"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "nominal",
+    "id": "alpha-tag-d1",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "86141001043223AB51"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "7fae14fde32cf2304fd207cbc207636b63c3bac3910f67bd5c81ffdd7ae140e0"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "lowercase-hex",
+    "id": "lowercase-d1",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "86141001043223ab51"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "38d426ac51edc93a691da0a2d8a7561d84d7c76898a3782d5b6994b8cfc1d71e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "duplicate",
+    "id": "duplicate-ack-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "80e2b7534a9b8fb3978e6a61b9b78042350581288a164491321bfc1662c93ea0"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "duplicate",
+    "id": "duplicate-confirmation-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "8ec9213888e760a5326bcc303a76c112637a230b36c08e7f42f47158af4122e5"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "confirmation-tag",
+    "id": "other-confirmation-tag-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Ch.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     false
+    ]
+   },
+   "semantic_sha256": "14c31c8cee8d99b508e229fdf1e35b6bcbbfd8c3024854b63fe0605ddc7865bc"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "negative-confirmation",
+    "id": "confirmation-hash-t0-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "a466f28bd73d24b5d38710e0065c192f0233011674677511d0690d83c2e2f76e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "negative-confirmation",
+    "id": "confirmation-dollar-t0-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg$",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "24a016b3af6ce592ffbe5d3933989e679eda3dadf00a18dd674e334ac53e2aa4"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "negative-confirmation",
+    "id": "confirmation-percent-t0-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg%",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "4a1709db6132049edc8273f12acca764a995cde07598b87e3fe6646504ee0dfd"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "hash-confirmation",
+    "id": "confirmation-hash-t1-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8614100104322346B6"
+    ],
+    "root": 0,
+    "t": true,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "31651f55a484f6f401f6f94312ce6fbff2e70c92d1ae1e7fadd63ede62c49055"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "nominal",
+    "id": "header-06-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "061410010432234636"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "235a3dbad55f7bc74bbf01b170c1efe2d0d26700c0d77f0da6fccc7b14f29fd8"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "header",
+    "id": "header-0e-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "0E141001043223462E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "c0318e2e6489903332dab8513678deacb2deed35ac515f67bbfc14ec1282e45e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "header",
+    "id": "header-46-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "4614100104322346F6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "be49aa637e626f3acf34b151f7dfeb353c1da96204f209e881628729f5ef7d86"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "header",
+    "id": "header-c6-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "C61410010432234676"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "a90e6096e7a49689cd639fa59bfe8a764f49b458afb3b9120a51e560d707f4cc"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     40
+    ],
+    "cache": "0:20=B1",
+    "context": 1,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 1,
+    "family": "header",
+    "id": "header-85-d1",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      4
+     ]
+    },
+    "raws": [
+     "8514100104322346B7"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\46280904A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "6e5f02687e2ede54f47cba0d51f0dfe384c5cf18ad1da111e383bb2343806a95"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "confirmation-required",
+    "id": "unconfirmed-n0-d6",
+    "key": 70,
+    "n": false,
+    "operations": [
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true
+    ]
+   },
+   "semantic_sha256": "b3a383b30831f075dd685d9b66754524bd4a1689255ad779b20971997071b5c4"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "ack-before-confirmation",
+    "id": "ack-first-repeated-n1-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "R0L",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     false,
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "8653921a21165b7b5282d565189b6ca610734ad07d129e6b86e56878b785b072"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "destination",
+    "id": "destination-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861411061516171819043223463D"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "215e4f05ed30fc3b54213a16b7b3b35829ed68097a992cdc8b6fe0e31f7e9bb6"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "checksum",
+    "id": "checksum-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "c18e72d2e332e97774a6d61bf5218468011d57c6d720e8a251ae20975c67f8db"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "negative",
+    "id": "negative-3b-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043B234635"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": true,
+    "negative_acknowledgements": 1,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "5a19dbbcf724cc084b7ceaca6abb68ba8c5fae1459bbf4bdd976b135a577a84c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "wrong-tag",
+    "id": "negative-3b-wrong-tag-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043B234734"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f2f7f0de528f8fac243b09ad56a735426ce6b8195af0da57b04edfaf2cef124a"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "trailing-cal",
+    "id": "trailing-cal-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463200000C"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "a933e96e0c42cc8b73c81acfaa608ba0ef3444afe83ed96191a1a7186a09044d"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "nominal",
+    "id": "alpha-tag-d6",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223ABD9"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "5391132b3a547e42297ddd4fb1c33f3c70b745513e614e5f893930b92d3f6a89"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "lowercase-hex",
+    "id": "lowercase-d6",
+    "key": 171,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223abd9"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423AB4142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "4ea72da1a145e229b2219a4284cda83df22f5be9f08231de5264e007ae1043e7"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "duplicate",
+    "id": "duplicate-ack-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "f442fe33564fc15a76735514544c9460a653001c1d46d1044fec4d188e5d0f52"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "duplicate",
+    "id": "duplicate-confirmation-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     false,
+     true
+    ]
+   },
+   "semantic_sha256": "909fb7af431becec4fb382beec9caac7660648a2d602b5227beac5d44be54203"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "confirmation-tag",
+    "id": "other-confirmation-tag-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Ch.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     false,
+     false
+    ]
+   },
+   "semantic_sha256": "d56e5a8d285dd464c1dd1f5b69ae3ab5ef71d75e0051501b19103cced1467c5e"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "negative-confirmation",
+    "id": "confirmation-hash-t0-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "112e1da4cfb884348828ec14c41d45799d1cb983627fcd066788db457c817403"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "negative-confirmation",
+    "id": "confirmation-dollar-t0-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg$",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "43e8bf8c077c5d47c257c61c8010887ee875dc27453c0d28c0c06659b54b322c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "negative-confirmation",
+    "id": "confirmation-percent-t0-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg%",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": false,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "dc103cef44bd636a77ef600e3fac68285e55fc8b4d22bdb06a0b091f47db78bb"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "hash-confirmation",
+    "id": "confirmation-hash-t1-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg#",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "861410061516171819043223463E"
+    ],
+    "root": 0,
+    "t": true,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "4db93c2a21dbf367832462dce11e9e1b0d6c707876719d8a5efa04adbb9e66e1"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "nominal",
+    "id": "header-06-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "06141006151617181904322346BE"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 1,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": true,
+    "results": [
+     true,
+     true
+    ]
+   },
+   "semantic_sha256": "da74c0667853ce7a612dcee41d6ab9ab8779ac3c307fb8ddc1aa8d25806cfc4c"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "header",
+    "id": "header-0e-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "0E141006151617181904322346B6"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "e79c79848c024b579f4c28eecdc51366982b0683284f27d4eeeae91076e8b8dc"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "header",
+    "id": "header-46-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "461410061516171819043223467E"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "b9da868d1a473f5bf4ce4b76f0eead611c27acad2f98f43a6bffeaafbb3465d9"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "header",
+    "id": "header-c6-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "C6141006151617181904322346FE"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "3e0a05361d0a34a257d86e99876bcdae9dd4222d870c33643aac17c876790908"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "header",
+    "id": "header-85-d6",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "851410061516171819043223463F"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "bb9f342f6b97b69f9dc8a84591f435946576390e2940e6c71b9165ff7d06a5b3"
+  },
+  {
+   "input": {
+    "active": true,
+    "bridges": [
+     45,
+     44,
+     43,
+     42,
+     41,
+     40
+    ],
+    "cache": "0:20=B1;1:21=B2;2:22=B3;3:23=B4;4:24=B5;5:25=B6",
+    "context": 6,
+    "data": [
+     65,
+     66
+    ],
+    "depth": 6,
+    "family": "route-count",
+    "id": "route-count-7",
+    "key": 70,
+    "n": true,
+    "operations": [
+     "Cg.",
+     "R0L"
+    ],
+    "outgoing": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45
+    ],
+    "parameter": 35,
+    "python_expected": {
+     "destination_byte": 16,
+     "outer_source_byte": 20,
+     "route_entries": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      4
+     ]
+    },
+    "raws": [
+     "8614100715161718191A0432234623"
+    ],
+    "root": 0,
+    "t": false,
+    "tag": "g",
+    "unit": 4
+   },
+   "native": {
+    "acknowledgements": 0,
+    "command": "\\462836292A2B2C2D04A423464142",
+    "confirmed": true,
+    "constructor": [
+     true
+    ],
+    "errors": [],
+    "negative": false,
+    "negative_acknowledgements": 0,
+    "prepend_accepted": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "received": false,
+    "results": [
+     true,
+     false
+    ]
+   },
+   "semantic_sha256": "53533183e6ab3cf4cf219685d1dcde63a76723612c8ac1cd44a5eb6f19df870f"
+  }
+ ],
+ "format": "pci-routed-write-original-vectors-v1",
+ "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+ "original_report_sha256": "52354869a186f9271dd2608f7e34f17a295e2e2b6577c02c3a689677e796ae6b",
+ "original_stdout_sha256": "9dc2d1ffc370b76ba726068fead0c239d493278b840471fd795774890a5da0de",
+ "runtime": {
+  "arch": "aarch64",
+  "java": "11.0.32.1",
+  "kind": "runtime",
+  "network_constructors_bypassed": true,
+  "network_security_manager": true,
+  "original_ct_and_cr_constructors": true,
+  "preflight_case_count": 150,
+  "sender_receiver_dispatch_invoked": false
+ },
+ "semantic_normalization": "All original fields retained behind semantic_sha256; per-action UTC bounds excluded; positive aW.N replaced by a named timestamp marker and separately range-checked in fresh runs.",
+ "source_sha256": "8c90cb7d8e94505b5ca18581052e4edb8be2ff9a810b05de94c4d6b74cd0b454",
+ "tsv_sha256": "1486fd5fd082201bcb74e32b07c3e6df7a974d2c2ba370cb9db132d0d13fa8c1"
+}

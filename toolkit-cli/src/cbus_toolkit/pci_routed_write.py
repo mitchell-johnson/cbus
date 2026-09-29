@@ -74,6 +74,21 @@ class RoutedWriteResult:
         }
 
 
+def acknowledgement_matches(frame, expected, parameter, expected_ack_tag):
+    """Return whether one inspected frame is the declared routed WRITE ACK.
+
+    The complete received path (outer source, destination and route entries),
+    the ACK parameter and the declared tag must all match. This is a byte-level
+    correlation; it never resolves a cached logical network.
+    """
+    return (
+        _path(frame) == expected
+        and type(frame.cal) is AcknowledgeCAL
+        and frame.cal.parameter == parameter
+        and frame.cal.tag == expected_ack_tag
+    )
+
+
 class RoutedWriteClient:
     """Send one direct routed WRITE and require one exact ACK plus PCI confirm.
 
@@ -259,11 +274,8 @@ class RoutedWriteClient:
                             evidence["confirmation_received"] = True
                     else:
                         frame = inspect_received_cal_route(raw)
-                        matched = (
-                            _path(frame) == expected
-                            and type(frame.cal) is AcknowledgeCAL
-                            and frame.cal.parameter == command.cal.parameter
-                            and frame.cal.tag == expected_ack_tag
+                        matched = acknowledgement_matches(
+                            frame, expected, command.cal.parameter, expected_ack_tag
                         )
                         event = RoutedWriteEvent("frame", raw, matched, frame=frame)
                         events.append(event)

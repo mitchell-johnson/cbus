@@ -131,6 +131,7 @@
     "tests/test_pci_inventory.py",
     "tests/test_pci_routed_identify_original.py",
     "tests/test_pci_routed_recall_original.py",
+    "tests/test_pci_routed_write_original.py",
     "tests/test_pci_routing.py",
     "tests/test_pci_serials.py",
     "tests/test_physical_addressing.py",

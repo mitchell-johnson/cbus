@@ -63,6 +63,8 @@ The original Java process ran under a deny-all-network macOS sandbox. A connecti
 
 [Focused acceptance](../research/fixtures/pci-routing-acceptance.json) records both supported Python versions, including a fresh original358/493 matrix under the pinned owned macOS JDK. That optional test uses `CBUS_CGATE_JAVA`, `CBUS_CGATE_JAVAC` and `CBUS_LOCAL_CGATE_VENDOR`; its platform/permission boundary is explicit. `CBUS_PCI_ROUTING_REPORT_DIR` may select an owned report root, with a fresh subdirectory per execution. Other platforms require a separately established original-process isolation backend.
 
+Routed WRITE acknowledgement correlation has its own [original matcher matrix](pci-routed-write.md#original-ack-correlation-matrix): 150 cases through C-Gate's `ct`/`cj` classes at bridge depths zero through six, compared with the Python client and Rust decoder.
+
 This outgoing evidence does not cover received route normalization, cached bridge/programming object resolution, routed MMI, physical network identity, hardware delivery, checksummed interface configuration, routed commissioning or firmware persistence.
 
 ## Received addressed frames

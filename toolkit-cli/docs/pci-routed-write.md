@@ -103,6 +103,49 @@ The retained acceptance fixture covers the earlier raw checkpoint. No physical
 bridge or device acceptance, physical readback, commit, reboot or power-cycle
 persistence is claimed by the typed addition.
 
+## Original ACK correlation matrix
+
+[`NativeRoutedWriteProbe.java`](../research/NativeRoutedWriteProbe.java) drives
+the unchanged C-Gate 3.4.0 build 2001 WRITE command class `ct` (the class
+`CBusUnit` uses for parameter STOREs), its `aW.k(int)` route prepend, the `cj`
+received-message constructor and the `cr` counter over constructed
+network/unit bridge caches. Sender, receiver and network dispatch are never
+invoked, and the process runs under a deny-all-network sandbox and Java
+security manager. [The sanitized vectors](../research/fixtures/pci-routed-write-original-vectors.json)
+retain 150 generated cases (`research/pci_routed_write_original.py`), each with
+the observed decision summary and a semantic hash of every original field.
+Route depths zero through six each cover nominal, wrong parameter, wrong tag
+and wrong unit; depths one through six add wrong first/middle bridge, short
+route and a cached-network-identity mismatch.
+
+The original matcher accepts an ACK only when its tag equals the first WRITE
+byte after the parameter; `3B` with the same parameter and tag is a negative
+acknowledgement. Received routes are resolved through cached bridge objects to
+a logical network, which must be the command's network. It does not compare
+the destination or validate the checksum, ignores a trailing CAL, admits any
+header whose low three bits are `110` and a bare ACK when no route is
+involved, tolerates duplicate ACKs/confirmations and, with `n=true`, drops an
+ACK that precedes the PCI confirmation.
+
+`tests/test_pci_routed_write_original.py` replays every case through the real
+`RoutedWriteClient` with a scripted one-chunk peer and pins the relation per
+family. Python agrees on nominal and wrong route/unit/parameter/tag/count,
+negative ACK and negative confirmation cases. It is stricter on destination,
+checksum, trailing CAL, header, bare ACK, duplicates, unconfirmed and `#`
+confirmations. It is deliberately wider in three declared places: it accepts
+an ACK before the confirmation, decodes lowercase hex, and correlates the
+declared byte path rather than cached network objects (`original_cached_object_correlation_verified`
+stays false; the saved-topology planner supplies that path). The native outbound
+command string equals the Python wire for every case, and every refusal after
+send is an uncertain, unreplayed outcome. The seven nominal ACK frames are
+also Rust decode vectors (`fp-native-routed-write-ack-d0..d6` in
+`rust/testdata/vectors/decode_from_pci.jsonl`).
+
+The fresh original test uses `CBUS_CGATE_JAVA`, `CBUS_CGATE_JAVAC` and
+`CBUS_LOCAL_CGATE_VENDOR` on macOS; `CBUS_PCI_ROUTED_WRITE_REPORT_DIR` may
+select an owned report root. This is original matcher evidence, not bridge,
+device, commit or persistence evidence.
+
 ## Rust simulator composition gate
 
 The Rust protocol decoder now retains all outbound Network-PCI bridge bytes,
