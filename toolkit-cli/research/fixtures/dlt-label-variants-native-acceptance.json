@@ -1,0 +1,156 @@
+{
+  "format": "cbus-dlt-label-variants-native-acceptance-v1",
+  "scope": "Classic DLT LabelFlavourLSB/MSB through owned native C-Gate PP sessions on synthetic database units; no physical unit, display or label transfer",
+  "specs": {
+    "KEYL5.xml": "c3f29166c59b03a76c4545ca3dd79de89b277fe5f0a3188b5bd686a3795a8095",
+    "KEYL4.xml": "8d045edada38377378d01c76d5c48c7a84126aea7e3e1a1973dac312f26fd995",
+    "I_DLT.xml": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133",
+    "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7"
+  },
+  "types": [
+    {
+      "unit_type": "KEYBL5",
+      "firmware": "2.1.00",
+      "catalog_number": "5085DL",
+      "selections": [
+        {
+          "1": 4,
+          "2": 3,
+          "3": 2,
+          "8": 4
+        },
+        {
+          "1": 1,
+          "5": 3,
+          "8": 2
+        }
+      ],
+      "raw_after_hex": [
+        "df768da413328168",
+        "97768da453328128"
+      ],
+      "raw_byte_assertions": 16,
+      "database_xml_matches": true
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "2.0.00",
+      "catalog_number": "5055DL",
+      "selections": [
+        {
+          "1": 4,
+          "2": 3,
+          "3": 2,
+          "8": 4
+        },
+        {
+          "1": 1,
+          "5": 3,
+          "8": 2
+        }
+      ],
+      "raw_after_hex": [
+        "df768da413328168",
+        "97768da453328128"
+      ],
+      "raw_byte_assertions": 16,
+      "database_xml_matches": true
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "3.0.99",
+      "catalog_number": "5055DL",
+      "selections": [
+        {
+          "1": 4,
+          "2": 3,
+          "3": 2,
+          "8": 4
+        },
+        {
+          "1": 1,
+          "5": 3,
+          "8": 2
+        }
+      ],
+      "raw_after_hex": [
+        "df768da413328168",
+        "97768da453328128"
+      ],
+      "raw_byte_assertions": 16,
+      "database_xml_matches": true
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "3.0.00",
+      "catalog_number": "E5084DL",
+      "selections": [
+        {
+          "1": 4,
+          "2": 3,
+          "3": 2,
+          "8": 4
+        },
+        {
+          "1": 1,
+          "5": 3,
+          "8": 2
+        }
+      ],
+      "raw_after_hex": [
+        "df768da413328168",
+        "97768da453328128"
+      ],
+      "raw_byte_assertions": 16,
+      "database_xml_matches": true
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "2.1.00",
+      "catalog_number": "E5054DL",
+      "selections": [
+        {
+          "1": 4,
+          "2": 3,
+          "3": 2,
+          "8": 4
+        },
+        {
+          "1": 1,
+          "5": 3,
+          "8": 2
+        }
+      ],
+      "raw_after_hex": [
+        "df768da413328168",
+        "97768da453328128"
+      ],
+      "raw_byte_assertions": 16,
+      "database_xml_matches": true
+    }
+  ],
+  "refused": [
+    {
+      "unit_type": "KEYBL5",
+      "firmware": "1.4.00",
+      "reason_matched": "MinVersion",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "2.0.00",
+      "reason_matched": "IsInternal",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "2.5.00",
+      "reason_matched": "IsInternal",
+      "values_unchanged": true
+    }
+  ],
+  "passed": true,
+  "physical_hardware_verified": false,
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "project_close_reload_passed": true
+}

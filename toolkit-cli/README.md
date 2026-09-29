@@ -837,6 +837,14 @@ with the original percent/level conversion and slider coupling. Use
 RELDN8SP, RELAY4 and other firmware are refused. See
 [din-output-settings.md](docs/din-output-settings.md).
 
+## DLT profiles and classic label variants
+
+`dlt profiles` reports the DLT/eDLT registry and why an identity is admitted or
+refused by each workflow. Classic Saturn/Neo/Decorator DLT units (KEYBL5,
+KEYML5, KEYDL4) support per-key label-variant selection with `dlt labels
+show|plan` offline or `cgate unit ... [--dry-run] dlt-labels` on a database
+unit. See [dlt-profiles.md](docs/dlt-profiles.md).
+
 ## eDLT widgets
 
 The tested profile is KEYGL5 5.5.00 / 5055EDL. Configure Off/On or Dimmer

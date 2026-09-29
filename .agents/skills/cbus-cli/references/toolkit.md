@@ -27,7 +27,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Direct CNI queries and commissioning | `pci`, `serial-address` | Explicit PCI/CNI endpoint |
 | Discover CNI2/Wiser endpoints | `interface discover-cni`, `interface scan-cni --probe BIND@DEST`, `interface scan-cni --auto-adapters [--plan-only]` | Bounded IPv4 UDP queries; auto mode needs the optional `network` extra; plan-only sends no traffic; no TCP or C-Bus connection |
 | Inspect route bytes | `pci-route` | Offline |
-| Plan supported device settings | `keys`, `sensors`, `din-settings`, `edlt`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications |
+| Plan supported device settings | `keys`, `sensors`, `din-settings`, `dlt`, `edlt`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications; `dlt profiles` explains DLT/eDLT admission |
 | Edit scenes/templates or match serial inventories | `scene`, `unit-templates`, `unit-addressing` | Local files |
 | Preferences, CSV, About and update diagnostics | `preferences`, `toolkit-database-csv`, `toolkit-about`, `update-*` | Varies; some require Windows/vendor files |
 | Diagnose firmware or explicitly perform USB DFU | `firmware` | Offline or explicit device, depending on subcommand |
