@@ -31,7 +31,7 @@
 
 use crate::inventory::{parse_serial_number, InventoryOptions};
 use crate::pci::PciClient;
-use crate::plan::{validate_plan_document_with_value, PlanError};
+use crate::plan::{refuse_routed_execution, validate_plan_document_with_value, PlanError};
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
 
@@ -416,6 +416,7 @@ pub async fn verify_plan(
     options: VerifyOptions,
 ) -> Result<VerifyEvidence, VerifyInitError> {
     let (plan, document) = validate_plan_document_with_value(raw_plan)?;
+    refuse_routed_execution(&plan)?;
     let (before, expected) = extract_snapshots(&document)?;
     let bounds = options.inventory;
     if bounds.total_deadline.is_zero()

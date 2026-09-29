@@ -11,7 +11,9 @@ use cbus_transport::apply::{
 };
 use cbus_transport::conn::Endpoint;
 use cbus_transport::inventory::InventoryOptions;
-use cbus_transport::plan::{validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES};
+use cbus_transport::plan::{
+    refuse_routed_execution, validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES,
+};
 use cbus_transport::verify::{
     extract_snapshots, verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome,
 };
@@ -866,6 +868,7 @@ fn load_plan_for_cli(
     }
     let (plan, document) = validate_plan_document_with_value(&raw)
         .map_err(|e| format!("plan: invalid plan document: {e}"))?;
+    refuse_routed_execution(&plan).map_err(|e| format!("plan: {e}"))?;
     // Snapshot extraction is part of "corrupt plan" rejection: a plan whose
     // embedded before/expected snapshots cannot be read must fail before
     // connecting, not after a wasted observation.
@@ -897,6 +900,7 @@ fn load_journal_for_cli(
     // the same journal evidence; do not reopen the path and introduce a
     // substitution or unbounded-read window.
     let recovery = load_recovery(journal_path).map_err(|e| e.to_string())?;
+    refuse_routed_execution(&recovery.plan).map_err(|e| format!("plan: {e}"))?;
     let plan_value: Value = serde_json::from_slice(&recovery.plan_document)
         .map_err(|e| format!("journal: invalid embedded plan: {e}"))?;
     extract_snapshots(&plan_value)

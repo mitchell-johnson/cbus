@@ -467,6 +467,26 @@ async fn invalid_plan_is_rejected_before_any_request() {
 }
 
 #[tokio::test(start_paused = true)]
+async fn routed_plan_is_refused_before_any_request() {
+    let (pci, mut remote) = setup().await;
+    let mut doc = valid_plan_doc();
+    doc["route"] = serde_json::json!([1]);
+    doc["project_sha256"] = serde_json::Value::from("ab".repeat(32));
+    let error = verify_plan(
+        &serde_json::to_vec(&doc).unwrap(),
+        &pci,
+        VerifyOptions::default(),
+    )
+    .await
+    .expect_err("routed verification must be refused");
+    assert!(
+        error.to_string().contains("routed_execution_unsupported"),
+        "{error}"
+    );
+    assert_no_request(&mut remote).await;
+}
+
+#[tokio::test(start_paused = true)]
 async fn invalid_collection_deadline_sends_nothing() {
     let (pci, mut remote) = setup().await;
     let mut options = VerifyOptions::default();

@@ -168,6 +168,38 @@ missing, wrong or forged receipt can still be followed by independent inventory.
 Transport/close errors, malformed frames, trailing partial input, byte saturation,
 deadline failure or interruption stop further network I/O in that call.
 
+## Routed plan schema (offline only)
+
+A `cbus-selected-serial-plan-v1` document may carry two optional fields. Both
+are absent from a direct plan, so direct canonical bytes, attempt IDs and marker
+file names are unchanged. Python `SelectedSerialPlan.from_dict` and Rust
+`cbus_transport::plan` apply the same rules and reason codes:
+
+| Rule | Reason |
+| --- | --- |
+| `route` is a JSON array of 1 to 6 distinct integers in 1..254: the bridge addresses in outgoing order. An empty array, a seventh bridge, a repeated bridge (a cycle), 0 (the direct/programming route marker), 255 (broadcast), a Boolean, float, string or `null` are rejected. | `invalid_route` |
+| A route requires `project_sha256`: the 64-character lowercase SHA-256 of the saved XML/CBZ project whose topology produced it, as in [`commissioning_route`](../src/cbus_toolkit/commissioning_route.py). `project_sha256` without a route is rejected, so each direct intent has only one fingerprint. | `route_binding` |
+| The first bridge is on the local network, where the local PCI already owns `local_unit`, so `route[0] == local_unit` is contradictory. Later hops are on other networks and may reuse that number. | `route_proof` |
+| Any other field is still rejected. | `plan_fields` |
+
+When a route is present, the canonical fingerprint and attempt marker cover
+both fields. `SelectedSerialCoordinator.plan(..., route=..., project_sha256=...)` validates
+them before I/O and embeds them in a plan built from the usual direct
+observations.
+
+Every embedded v1 observation is a direct capture from the local interface.
+Serial replies must use route `00`. Evidence of this kind proves only the local
+PCI, its options and the local network. It never observes the far network, bridge
+acceptance or a routed target. A validated routed plan is therefore an intent
+document only. Python apply/verify, Rust `apply_plan`/`verify_plan` and
+`cbus-tools serial-verify`/`serial-apply` refuse it with
+`routed_execution_unsupported` before any lease, attempt marker, journal,
+connection or PCI byte. The shared vectors in
+`rust/testdata/vectors/selected_serial_plan.jsonl` pin accepted one-bridge and
+six-bridge plans, including their attempt IDs, and every rejection above. No
+routed commissioning execution, simulator routing, native C-Gate result or
+physical bridge evidence exists for this schema.
+
 ## Recovery journal and outcomes
 
 `apply` requires a **new** recovery path. It creates a mode0600 file exclusively,

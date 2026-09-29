@@ -98,7 +98,10 @@
 //! [`RecoveryRecord`] or an error on corrupt/ambiguous content.
 //!
 use crate::journal::RecoveryJournal;
-use crate::plan::{parse_strict_json_value, validate_plan_document_with_value, ValidatedPlan};
+use crate::plan::{
+    parse_strict_json_value, refuse_routed_execution, validate_plan_document_with_value,
+    ValidatedPlan,
+};
 use crate::verify::{verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome};
 use crate::PciClient;
 use ring::digest::{digest, SHA256};
@@ -783,6 +786,9 @@ pub async fn apply_plan(
     // No I/O yet: a rejection here is Plan and implies no journal and no send.
     let (plan, plan_value) = validate_plan_document_with_value(raw_plan)
         .map_err(|error| ApplyError::Plan(error.to_string()))?;
+    // A routed plan is a schema-only intent: refuse before any marker,
+    // journal, fingerprint claim or PCI I/O.
+    refuse_routed_execution(&plan).map_err(|error| ApplyError::Plan(error.to_string()))?;
     let fingerprint = canonical_plan_fingerprint(&plan_value);
     // The durable identity is scoped to the resolved journal directory or
     // explicit shared store. An existing path (including a symlink or corrupt

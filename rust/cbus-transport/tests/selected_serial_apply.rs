@@ -927,6 +927,35 @@ async fn invalid_plan_fails_before_any_io() {
 }
 
 #[tokio::test(start_paused = true)]
+async fn routed_plan_is_refused_before_marker_journal_or_io() {
+    let (pci, mut remote) = setup().await;
+    let journal = journal_path("routed");
+    let mut doc = valid_plan_doc();
+    doc["route"] = serde_json::json!([1, 2]);
+    doc["project_sha256"] = serde_json::Value::from("ab".repeat(32));
+    let raw = serde_json::to_vec(&doc).unwrap();
+    assert!(validate_plan_document(&raw).unwrap().is_routed());
+    let marker = attempt_identity_path(&raw, &journal).unwrap();
+    let options = ApplyOptions {
+        durable_attempt_identity: true,
+        ..ApplyOptions::default()
+    };
+    let error = apply_plan(&raw, &pci, &journal, options)
+        .await
+        .expect_err("routed execution must be refused");
+    assert!(
+        matches!(&error, ApplyError::Plan(message) if message.contains("routed_execution_unsupported")),
+        "routed refusal must be a Plan error, got {error}"
+    );
+    assert!(!journal.exists(), "routed refusal must leave no journal");
+    assert!(
+        !marker.exists(),
+        "routed refusal must leave no attempt marker"
+    );
+    assert_no_request(&mut remote).await;
+}
+
+#[tokio::test(start_paused = true)]
 async fn apply_uses_the_validators_sanitized_plan_value() {
     const PLACEHOLDER: &str = "__ignored_large_python_integer__";
     let mut doc = valid_plan_doc();

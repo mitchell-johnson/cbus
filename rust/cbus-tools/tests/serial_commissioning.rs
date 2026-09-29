@@ -964,6 +964,50 @@ fn serial_apply_refuses_existing_journal_before_connect() {
 }
 
 #[test]
+fn serial_commands_refuse_a_routed_plan_before_connect_or_journal() {
+    let dead = closed_port();
+    let plan = plan_file_for_port(dead, "routed-plan.json");
+    let mut doc: Value = serde_json::from_slice(&std::fs::read(&plan).unwrap()).unwrap();
+    doc["route"] = serde_json::json!([1]);
+    doc["project_sha256"] = Value::from("ab".repeat(32));
+    std::fs::write(&plan, serde_json::to_vec(&doc).unwrap()).unwrap();
+    let journal = temp_path("routed-journal.json");
+    let addr = format!("127.0.0.1:{dead}");
+    for args in [
+        vec![
+            "serial-verify",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+        ],
+        vec![
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+        ],
+    ] {
+        let (status, out, err) = run(BIN, &args);
+        assert_eq!(status.code(), Some(1), "routed plan must fail: {err}");
+        assert!(err.contains("routed_execution_unsupported"), "{err}");
+        assert!(
+            !err.contains("connect"),
+            "must fail before connecting: {err}"
+        );
+        assert!(
+            out.trim().is_empty(),
+            "hard errors must keep stdout empty: {out:?}"
+        );
+    }
+    std::fs::remove_file(&plan).ok();
+    assert!(!journal.exists(), "no journal may exist after a refusal");
+}
+
+#[test]
 fn serial_apply_rejects_corrupt_plan_before_connect() {
     let dead = closed_port();
     let plan = temp_path("apply-corrupt-plan.json");

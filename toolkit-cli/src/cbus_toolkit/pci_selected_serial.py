@@ -15,6 +15,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import stat
 import tempfile
 import threading
@@ -41,6 +42,17 @@ ATTEMPT_FORMAT = 'cbus-selected-serial-attempt-v1'
 ATTEMPT_SCOPES = ('resolved_journal_directory','operator_selected_attempt_store')
 _U64_LIMIT = 2**64
 _I64_MIN = -2**63
+# Optional routed-plan fields shared with `cbus_transport::plan`. Absent on
+# a direct plan, so direct canonical bytes, fingerprints and markers are
+# unchanged; both present on a schema-only routed intent that no execution
+# path accepts yet.
+PLAN_FIELDS = ('format','endpoint','local_unit','expected_local_serial','source','serial','destination',
+               'settings','before','local_identity','local_options','expected_after','request_hex',
+               'scope','atomic_observation','firmware_persistence_verified','exclusive_ownership_required')
+ROUTE_FIELDS = ('route','project_sha256')
+MAX_ROUTE_BRIDGES = 6
+ROUTED_EXECUTION_UNSUPPORTED = 'routed_execution_unsupported'
+_SHA256 = re.compile(r'[0-9a-f]{64}')
 
 
 def _validate_json_tree(value):
@@ -239,6 +251,51 @@ def _options_proof(document, local, checksum):
     if value != 5: raise ValueError('The bounded coordinator requires freshly observed local option byte 05')
 
 
+class SelectedSerialPlanError(ValueError):
+    """A plan rule whose reason code is shared with `cbus_transport::plan`."""
+
+    def __init__(self, reason, message):
+        super().__init__(message)
+        self.reason = reason
+
+
+def _route_fields(value, local):
+    """Validate optional route/project_sha256 exactly like Rust `validate_route`.
+
+    ``route`` holds 1..6 distinct bridge addresses in 1..254, in outgoing
+    order (0 is the direct/programming route marker, 255 broadcast); an empty
+    list is contradictory because absence means direct. ``project_sha256`` is
+    required with a route and refused without one, so a direct intent keeps a
+    single fingerprint. The first bridge sits on the local network, where the
+    local PCI already owns ``local``.
+    """
+    if 'route' not in value:
+        if 'project_sha256' in value:
+            raise SelectedSerialPlanError('route_binding',
+                'project_sha256 binds a route; a direct plan carries no topology binding')
+        return None
+    route = value['route']
+    if (type(route) is not list or not 1 <= len(route) <= MAX_ROUTE_BRIDGES or
+            any(type(bridge) is not int or not 1 <= bridge <= 254 for bridge in route) or
+            len(set(route)) != len(route)):
+        raise SelectedSerialPlanError('invalid_route', 'route must be 1..6 distinct bridge addresses in 1..254')
+    binding = value.get('project_sha256')
+    if not isinstance(binding, str) or not _SHA256.fullmatch(binding):
+        raise SelectedSerialPlanError('route_binding',
+            'A routed plan requires project_sha256 as 64 lowercase hexadecimal characters')
+    if route[0] == local:
+        raise SelectedSerialPlanError('route_proof', 'The first bridge cannot share the local PCI unit address')
+    return route
+
+
+def _refuse_routed_execution(value):
+    # Embedded v1 observations are direct local-interface captures (serial
+    # replies with route 00); they never observe the far network.
+    if 'route' in value:
+        raise SelectedSerialPlanError(ROUTED_EXECUTION_UNSUPPORTED,
+            'Routed selected-serial execution is not implemented; refused before any I/O')
+
+
 def _expected(before, serial, destination, local_serial, local):
     identities = {row['address']:list(row['serials']) for row in before['identities']}
     if identities.get(local) != [local_serial]: raise ValueError('Pinned local PCI serial does not match')
@@ -264,9 +321,7 @@ class SelectedSerialPlan:
     @classmethod
     def from_dict(cls, value):
         value = json.loads(_json(value))
-        _keys(value, ('format','endpoint','local_unit','expected_local_serial','source','serial','destination',
-                      'settings','before','local_identity','local_options','expected_after','request_hex',
-                      'scope','atomic_observation','firmware_persistence_verified','exclusive_ownership_required'), 'Plan')
+        _keys(value, PLAN_FIELDS+tuple(key for key in ROUTE_FIELDS if isinstance(value, dict) and key in value), 'Plan')
         if value['format'] != 'cbus-selected-serial-plan-v1': raise ValueError('Unsupported selected-serial plan')
         _keys(value['endpoint'], ('host','port'), 'Endpoint')
         _keys(value['settings'], ('overall_timeout','observation_timeout','confirmation_timeout','mmi_response_timeout',
@@ -275,6 +330,7 @@ class SelectedSerialPlan:
         # Constructors validate settings/endpoint without I/O.
         coordinator = SelectedSerialCoordinator(**value['endpoint'],local_unit=value['local_unit'],
             expected_local_serial=value['expected_local_serial'],**value['settings'])
+        _route_fields(value,value['local_unit'])
         serial, _ = _selected_serial(value['serial'])
         if serial != value['serial'] or coordinator.expected_local_serial != value['expected_local_serial']:
             raise ValueError('Plan serials must be canonical')
@@ -653,7 +709,10 @@ class SelectedSerialCoordinator:
         error.selected_serial_evidence=self.last_evidence
         return error
 
-    def plan(self,serial,destination,*,source=255):
+    def plan(self,serial,destination,*,source=255,route=None,project_sha256=None):
+        """Observe directly and build a plan; ``route`` makes it a schema-only routed intent."""
+        routing={key:item for key,item in (('route',route),('project_sha256',project_sha256)) if item is not None}
+        _route_fields(routing,self.local_unit)
         serial,_=_selected_serial(serial)
         request=encode_serial_address(serial,destination,command_checksum=self.command_checksum)
         if type(source) is not int or source!=255: raise ValueError('Only source address 255 is supported')
@@ -670,7 +729,7 @@ class SelectedSerialCoordinator:
                     'before':evidence['before'],'local_identity':evidence['local_identity'],
                     'local_options':evidence['local_options'],'expected_after':expected,'request_hex':request.hex(),
                     'scope':'two_known_serials_at_255_explicit_empty_destination','atomic_observation':False,
-                    'firmware_persistence_verified':False,'exclusive_ownership_required':True}
+                    'firmware_persistence_verified':False,'exclusive_ownership_required':True}|routing
                 result=SelectedSerialPlan.from_dict(value)
                 if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached during plan finalization')
                 self.last_evidence=value
@@ -682,6 +741,7 @@ class SelectedSerialCoordinator:
     def _validated_plan(self,plan):
         if not isinstance(plan,SelectedSerialPlan): raise TypeError('Expected a validated SelectedSerialPlan')
         plan=SelectedSerialPlan.from_dict(plan.as_dict());value=plan.as_dict()
+        _refuse_routed_execution(value)
         _same(value['endpoint'],{'host':self.host,'port':self.port},'Coordinator endpoint')
         _same(value['local_unit'],self.local_unit,'Coordinator local address')
         _same(value['expected_local_serial'],self.expected_local_serial,'Coordinator local serial')

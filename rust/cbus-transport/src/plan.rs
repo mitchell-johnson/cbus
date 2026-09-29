@@ -14,6 +14,10 @@
 //! Journal/apply/verify orchestration is explicitly out of scope: a valid
 //! plan is a validated intent document, never proof of movement or
 //! persistence.
+//!
+//! The optional `route`/`project_sha256` pair declares a topology-bound
+//! routed intent. It is schema-only: embedded observations stay direct, and
+//! [`refuse_routed_execution`] stops apply/verify before any I/O.
 
 use cbus_protocol::cal::Cal;
 use cbus_protocol::pci_observation::{
@@ -51,6 +55,20 @@ pub struct ValidatedPlan {
     pub host: String,
     /// Endpoint port.
     pub port: u16,
+    /// Optional outgoing bridge path (1..=6 distinct bytes in 1..=254). `None` is a
+    /// direct plan; `Some` is a topology-bound routed intent that no
+    /// execution path accepts yet (see [`refuse_routed_execution`]).
+    pub route: Option<Vec<u8>>,
+    /// Lowercase SHA-256 of the saved project file whose topology produced
+    /// `route`. Present exactly when `route` is present.
+    pub project_sha256: Option<String>,
+}
+
+impl ValidatedPlan {
+    /// Whether the plan names an outgoing bridge path.
+    pub fn is_routed(&self) -> bool {
+        self.route.is_some()
+    }
 }
 
 /// Precise failure class for every rejection.
@@ -1547,6 +1565,17 @@ fn expected_change(
 // Top-level document validation, mirroring `SelectedSerialPlan.from_dict`.
 // ---------------------------------------------------------------------------
 
+/// Longest outgoing bridge path, matching the six-bridge limit of
+/// `commissioning_route.MAX_BRIDGES` and the routed-CAL route count.
+pub const MAX_ROUTE_BRIDGES: usize = 6;
+
+/// Stable reason for refusing to execute a validated routed plan.
+pub const ROUTED_EXECUTION_UNSUPPORTED: &str = "routed_execution_unsupported";
+
+/// Optional plan fields: absent on a direct plan, both present on a routed
+/// plan. Direct plans therefore keep their exact canonical bytes.
+const ROUTE_KEYS: [&str; 2] = ["route", "project_sha256"];
+
 const PLAN_KEYS: [&str; 17] = [
     "format",
     "endpoint",
@@ -1567,8 +1596,87 @@ const PLAN_KEYS: [&str; 17] = [
     "exclusive_ownership_required",
 ];
 
+/// Validate the optional routed-plan fields, mirroring `_route_fields`.
+///
+/// `route` is a JSON array of 1..=6 distinct integers in 1..=254 (the
+/// far-side bridge unit addresses in outgoing order; 0 is the direct/
+/// programming route marker and 255 the broadcast address, so neither names
+/// a bridge). An empty array is contradictory: absence means direct.
+/// `project_sha256` (64 lowercase hex) is required with a route and refused
+/// without one, so a direct intent has exactly one canonical fingerprint.
+/// The first bridge sits on the local network, where the local PCI already
+/// owns `local_unit`, so `route[0] == local_unit` contradicts the plan.
+fn validate_route(
+    doc: &Map<String, Value>,
+    local_unit: u8,
+) -> Result<(Option<Vec<u8>>, Option<String>), PlanError> {
+    let Some(route) = doc.get("route") else {
+        if doc.contains_key("project_sha256") {
+            return Err(PlanError::new(
+                "route_binding",
+                "project_sha256 binds a route; a direct plan carries no topology binding",
+            ));
+        }
+        return Ok((None, None));
+    };
+    let invalid = || {
+        PlanError::new(
+            "invalid_route",
+            "route must be 1..6 distinct bridge addresses in 1..254",
+        )
+    };
+    let entries = route.as_array().ok_or_else(invalid)?;
+    if entries.is_empty() || entries.len() > MAX_ROUTE_BRIDGES {
+        return Err(invalid());
+    }
+    let mut bridges = Vec::with_capacity(entries.len());
+    for entry in entries {
+        let bridge = as_u64_in(entry, 1, 254).ok_or_else(invalid)? as u8;
+        if bridges.contains(&bridge) {
+            return Err(invalid());
+        }
+        bridges.push(bridge);
+    }
+    let binding = doc
+        .get("project_sha256")
+        .and_then(Value::as_str)
+        .filter(|text| {
+            text.len() == 64 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
+        })
+        .ok_or_else(|| {
+            PlanError::new(
+                "route_binding",
+                "A routed plan requires project_sha256 as 64 lowercase hexadecimal characters",
+            )
+        })?;
+    if bridges[0] == local_unit {
+        return Err(PlanError::new(
+            "route_proof",
+            "The first bridge cannot share the local PCI unit address",
+        ));
+    }
+    Ok((Some(bridges), Some(binding.to_string())))
+}
+
+/// Refuse any execution of a routed plan before I/O.
+///
+/// Embedded v1 observations are direct local-interface captures (serial
+/// replies with route `[0x00]`); they never observe the far network, so a
+/// validated routed plan is a schema-only intent document.
+pub fn refuse_routed_execution(plan: &ValidatedPlan) -> Result<(), PlanError> {
+    if plan.is_routed() {
+        return Err(PlanError::new(
+            ROUTED_EXECUTION_UNSUPPORTED,
+            "Routed selected-serial execution is not implemented; refused before any I/O",
+        ));
+    }
+    Ok(())
+}
+
 fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
-    check_keys(doc, &PLAN_KEYS, "plan_fields", "Plan")?;
+    let mut required = PLAN_KEYS.to_vec();
+    required.extend(ROUTE_KEYS.iter().filter(|key| doc.contains_key(**key)));
+    check_keys(doc, &required, "plan_fields", "Plan")?;
     if doc.get("format") != Some(&Value::from("cbus-selected-serial-plan-v1")) {
         return Err(PlanError::new(
             "unsupported_format",
@@ -1581,6 +1689,7 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
         &doc["expected_local_serial"],
         &doc["settings"],
     )?;
+    let (route, project_sha256) = validate_route(doc, local_unit)?;
     let serial = canonical_serial(&doc["serial"])?;
     if serial != doc["serial"].as_str().unwrap_or_default()
         || expected_local_serial != doc["expected_local_serial"].as_str().unwrap_or_default()
@@ -1701,6 +1810,8 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
         expected_local_serial,
         host,
         port,
+        route,
+        project_sha256,
     })
 }
 
