@@ -1,0 +1,2430 @@
+{
+  "format": "cbus-key-preset-family-equivalence-v1",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_code_executed": false,
+  "spec_sha256": {
+    "BCNC4A.xml": "6a2bdf032699c180d87aa135f5f0f4ddbeb1b3ca779e37956f914ee5e12a4ce2",
+    "DINAUX4.xml": "0f9b31ed16a509dc2892d073da121c83006dbec8215cf8935fab35959c172e23",
+    "I_BCPRO.xml": "4ea9abdddde77a771ec3c13908ac3d4c7b0dc2d5206b93eb2c4a7ad4dee85ec6",
+    "I_KEY.xml": "610772568d96cf2cd85d37f9c38c58051854aa5f9e1b1788ea20acda88a79f68",
+    "I_KEYH3CORE.xml": "b6230e4fac0e26cbd107ddc651d5ed85fdef36e20b88f3104e38d8ce7b3de780",
+    "I_KEYH3PRO.xml": "13f894ea9b8758b28021a5063e76fdfc8e08d5d4b33f4639db62ade9dc7087df",
+    "I_KEYHCORE.xml": "b6230e4fac0e26cbd107ddc651d5ed85fdef36e20b88f3104e38d8ce7b3de780",
+    "I_KEYHPRO.xml": "9a19d0eb5bf96d2c39b2c5e9f4879627356ea9b402124bacd21995ea7d364d7e",
+    "I_NEO.xml": "1f361d105826f20ee1775f2874bddac58f28f3a8271376ac77868557f8128149",
+    "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7",
+    "I_NEOPRO.xml": "1ffa027e2c5e98da1461673a0bb8e67e96ae9a97ae41c37753bb6fa8cb26b1ab",
+    "KEY1.xml": "4e1cff5d20e1e34dcc48e5f8233de3342c8273c5eb8d72ccae538d0490dbf064",
+    "KEY2.xml": "ee36ef7fad437f0cdf1abd78e58abebb0e2411a96fb8455d84330c69f0022188",
+    "KEY4.xml": "8e8094146eda7b7c50d3ffd452736dfce62a422e413428ce5a22ed056ca4d459",
+    "KEYA1.xml": "1a8ba490e8c59fab4f0316d22738510138b48681062fbec4bc7be859d1f16911",
+    "KEYA1_A.xml": "817482b517d8d649bfe9173b53f14a2e7041b6dfb07a00740be84ac1eb5c8182",
+    "KEYA3.xml": "ff1ea2360245ba3fe5a00a5f2c3d9a728bad5419ea6f8fdd5e9b7f602f9de83b",
+    "KEYA3_A.xml": "7d461340d7afd84882ef27164cf55fd6214941c15ccfd38ed6401cc5d35d570c",
+    "KEYA6.xml": "5ff8f9ad967558e0d020cabf3e997908f6b72fe583a976621a656fed941bb2bc",
+    "KEYA6_A.xml": "d80ba3791e43ea033df63388a2d26ae7a40b849eba94867643b360860c2845d6",
+    "KEYA8.xml": "ad266203fe4c7dacab2c23962253c6a54690720c40c06fcb9553ab40c84f75cb",
+    "KEYA8_A.xml": "d5d4d5ec60be87ba5f44ddc1bf11f4565762143db4c7291e48c2a400eedb33ce",
+    "KEYAUX4.xml": "0d461890db0d989f43d5ec3469b16d4198b930caf9d91ef8fd1dc321ba6e6718",
+    "KEYAV2.xml": "8f2d45397de925f2e761faad6c31c650f94c1ec1a5a67de0c881b3e150d60bb6",
+    "KEYAV2_A.xml": "5160a6752af62fcfd95f50053d5c9aa64332c7282b4ef8d50d2920dd71df5f9c",
+    "KEYAV4.xml": "ec4697c2867bd1dc23f9fa301ed9b9da93910bb9c5c99a9e3f78f23cf78865b9",
+    "KEYAV4_A.xml": "2912f4f2b86fcfec12d7117f52daff3c626887538bfa972d5af76029bebac6e3",
+    "KEYB2.xml": "ffe7a7ff6d6491adf77b4424c467e819468271b24a269496c1fb91bbd2ab50e3",
+    "KEYB2_A.xml": "d4271b9445b23daa680217fc743f03cb604cb133ec3fdb0faa3a1f849e727323",
+    "KEYB4.xml": "e8e9996d9ccc90b854c6b46061861ec1664b308443539384fe909259df518775",
+    "KEYB4_A.xml": "3ff01e6dd4a3c3e9c69c6e1d444e2953e69ce9dc7e36743e973bcb9f42a31145",
+    "KEYB6.xml": "e32fec010d2ff879a149a9bd6f93852bf8735a06ee2ff3ef441ab69a506f9d00",
+    "KEYB6_A.xml": "8c7144badce2d04b680f9cf5909eff9edf016021d1bf2441b7caf38ec2390e02",
+    "KEYBC2.xml": "3df1177bf5bbf18869611e48d83a6c074e0740fd39f73e40495469a65ed6e98f",
+    "KEYBC4.xml": "37123e80222c49ad26bfd286b224d6a71a477f062c1bc8918858fd5372735e86",
+    "KEYC1.xml": "2827aa52f2df637118da942b13ceffbf23c793de33e69012a53bde2bce9f54ac",
+    "KEYC2.xml": "707f9d681680e1c9a6155e4fefeae912203868a940184e8d3d099c515aa5bf21",
+    "KEYC4.xml": "25dbcdafed049470346d8dc65197fac67279a703067fc37cd2afdf25b64cf85a",
+    "KEYCIR1.xml": "e8aaf9bbd4d0f40d9fadbe340372e9e14d00d327d998a3d68e371772ddd10681",
+    "KEYCIR4.xml": "d8fd6f29e8734003c7492e54eca626a620f4d6f66f7598f06025a42651c14ef4",
+    "KEYDV1.xml": "2237317721bd2aa5e980be4e1c31c35c8130efe6f788e34426e13b660453f9c2",
+    "KEYDV2.xml": "066d653170853362ac7c08aacbba414760b1cfef49ff05e54a2c6e57f76fdb68",
+    "KEYDV3.xml": "f39b13d7ae9a7bbbaac000485c2d557f6afba95f99893ae157376259e9193afc",
+    "KEYDV4.xml": "1bb09e07669d2345718c0ebaf7d4f068181d25dd4f028c1212c61dcb98d5eed9",
+    "KEYE.xml": "8f9aae67a141b6a2919a4551dbd72762d56be1f97fbd8f51d66d4cce54cbeed4",
+    "KEYH1.xml": "ed06f9bca394e1671be06aadfae84bbd938339fd76efface8d260db700080f8a",
+    "KEYH1_A.xml": "105f4a2609741f22fa58eb3b71e3d9f8d24e5992c3e4c8792137e4580ab12cfb",
+    "KEYH2.xml": "ffdc2b645be9839c5660e00aef816c09b6df3a5c1a832b749d82493f909dcb0b",
+    "KEYH2_A.xml": "55411613155493c801743f18e715644b200030ef0dabd5a1ed5a30d4552a5136",
+    "KEYH3.xml": "72e791c1e587dc727c002f5ff38ebf37c44232ba9c9beb6d83e8ddf2c5517d8c",
+    "KEYH3_A.xml": "e69af4bdb28e15dc7ac6b53b5bf27f9d5c499da12d587ae89104ce4a4a276dfa",
+    "KEYH4.xml": "5c4eba0b5e70d640201af75900395ca884bdd22d4f88da9cdf91cba39c3f5a2c",
+    "KEYH4_A.xml": "721261d05589860510cce8584e9537ace51309dbf437ffe7f73e9efda47b894d",
+    "KEYIR1.xml": "bdef92d8a7abc65b8c1ebe68e2e148fa69758cf3fa121b1f58641867e313bee7",
+    "KEYIR4.xml": "ea563fa2f1a492c5f238cbdb687a7e9fbdc440dc98d2a5d79df8e9c9f765a73b",
+    "KEYM2.xml": "0fff94c46333df97e7e7471176c3816c1c7b4864e35283f765721db1b9f3a8ca",
+    "KEYM2_A.xml": "02cfd7f822f807ebae53f69ece5f92ed13a3f552ebce260dbd09c1dbdeab721e",
+    "KEYM4.xml": "d2512412f2304db00bcc77e5568b6c493b50d1fd44bd64187d8ef51457478995",
+    "KEYM4_A.xml": "d8d08956c12540f8003410ad00ca47cbe0c1b87a7929e8fb3eb4cd9e91e7e0f8",
+    "KEYM6.xml": "364be7142b3a83c00b97dce495711ba7d64f92c5b14a47bb9af05440e5591113",
+    "KEYM6_A.xml": "98a3921cfe326889f248a93518290a6e2e7ad7a6f9a4afb199521842f3039383",
+    "KEYM8.xml": "6a896ec2b715bd1f43bc91ab68170b23f6b28badad27bcf9c69777e6617ffaa4",
+    "KEYM8_A.xml": "af667683ee15a88e98ab6abfeeb3880ddf81a99c48ff17cffebb85bce7a1b5ad",
+    "KEYP2.xml": "999b0766a5c3c33e116c19e6dce70b7f81bee0d991a2d2e3808c37bf8068a244",
+    "KEYP4.xml": "b6873584fc2f914ea1decf697823183a7502bc048e04fdb5f1622f808ab729d0",
+    "KEYP6.xml": "62758dc8c35a7f6bb6f1bf4075fc5d4899ac8c8b3cd9b477e0b54a354310fc9a",
+    "KEYV1.xml": "dbc6c5127da5b89daa38939df0ffbf74da9d75cab0873e4924155c694256cadc",
+    "KEYV1SP.xml": "3bd8f6fc369c938459243ae5e82441dacc04a1475208b1a96101e0b0e90efb01",
+    "KEYV2.xml": "336a05638b6093f0a0515116a27506c3bc536abd0494db17533aa117a1dec828",
+    "KEYV3.xml": "e7a9ec9abba4731eff21d5b5d21c5c96624e6a7ed39e45cce2fc3de7541f41b8"
+  },
+  "virtual_slots": {
+    "MacroFunctionSubsetName": "0x1c4",
+    "MaximumKeyCount": "0x190"
+  },
+  "preset_template_types": {
+    "unused": 16,
+    "on": 0,
+    "off": 1,
+    "toggle": 2,
+    "dimmer": 3,
+    "dimmer_memory": 3,
+    "on_up": 4,
+    "off_down": 5,
+    "timer": 6,
+    "bellpress": 7,
+    "dimmer_up": 8,
+    "dimmer_down": 9,
+    "soft_up": 10,
+    "soft_down": 11,
+    "preset1": 12,
+    "preset2": 13,
+    "trigger1": 14,
+    "trigger2": 15
+  },
+  "catalog_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+  "macro_function_subsets": {
+    "AUX": {
+      "0": [16, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 28, 17, 18, 19, 20, 21, 22, 26],
+      "202": [16, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 28, 14, 15, 17, 18, 19, 20, 21, 22, 26],
+      "255": [16]
+    },
+    "KEY": {
+      "0": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 26],
+      "202": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 26],
+      "255": [16]
+    },
+    "NEO": {
+      "0": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23, 24, 26],
+      "202": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 26],
+      "255": [16]
+    },
+    "NEOPRO": {
+      "0": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+      "202": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+      "255": [16]
+    },
+    "NEOPRO_CLASSIC": {
+      "0": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23, 24, 26],
+      "202": [16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 26],
+      "255": [16]
+    }
+  },
+  "bcnc4_forced_defaults": {
+    "method": "CIS_TBCNC4CGateAgent.TBCNC4CGateAgent.BeforeSaveProgrammingInformation",
+    "call_sequence": ["CIS_TBCNC4CGateAgent.TBCNC4CGateAgent.CBusUnit", "CIS_TBCNC.TBCNC4.ApplyMicroFunctionDefaults", "CIS_TBCNC4CGateAgent.TBCNC4CGateAgent.CBusUnit", "CIS_TBCNC.TBCNC4.ApplyLearnModeDefaults", "CIS_TKeyInputCGateAgent.TCBusKeyInputCGateAgent.BeforeSaveProgrammingInformation"],
+    "forced_stage_writes": 16
+  },
+  "aux_template_override": {
+    "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup",
+    "override_field": "0x8e",
+    "replaced_template_types": [27, 7],
+    "replacement_template_type": 28
+  },
+  "families": {
+    "classic": {
+      "reference_spec": "KEY4.xml",
+      "workflow_parameters": ["JPCommand", "SRCommand", "LPCommand", "LRCommand", "BlockAllocation", "GroupAddress", "Application", "TimerHighByte", "TimerLowByte", "TimerExpiryCommand", "LightLevelStore1", "LightLevelStore2"],
+      "accepted_agents": ["TCBusKeyInputCGateAgent"],
+      "types": [
+        {
+          "spec_filename": "KEY1.xml",
+          "unit_type": "KEY1",
+          "spec_sources": ["I_KEY.xml", "KEY1.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "6e0c788813e079ad2fcb293e5992067a3f7b5c42424250a306a7547e888ccf1d",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKey1..TKey1",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e13f"
+          },
+          "toolkit_class_chain": ["TKey1", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKey1.TKey1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEY1.xml"],
+            "catalog_numbers": ["5031N", "5031NL", "C5031NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEY2.xml",
+          "unit_type": "KEY2",
+          "spec_sources": ["I_KEY.xml", "KEY2.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "6e0c788813e079ad2fcb293e5992067a3f7b5c42424250a306a7547e888ccf1d",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKey2..TKey2",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e1cf"
+          },
+          "toolkit_class_chain": ["TKey2", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKey2.TKey2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEY2.xml"],
+            "catalog_numbers": ["5032N", "5032NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEY4.xml",
+          "unit_type": "KEY4",
+          "spec_sources": ["I_KEY.xml", "KEY4.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "6e0c788813e079ad2fcb293e5992067a3f7b5c42424250a306a7547e888ccf1d",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKey4..TKey4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e25f"
+          },
+          "toolkit_class_chain": ["TKey4", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKey4.TKey4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEY4.xml"],
+            "catalog_numbers": ["5034N", "5034NL", "C5034NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYIR1.xml",
+          "unit_type": "KEYIR1",
+          "spec_sources": ["I_KEY.xml", "KEYIR1.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "19780887a3bb9a8f91c53d942dd7a2be966b1fefb887c8e8350d1fa9bcec0ac2",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["InfraRedBank"],
+          "default_only_differences": ["PatchEnable"],
+          "guarded_parameters": ["InfraRedBank"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYIR1..TKEYIR1",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e2ef"
+          },
+          "toolkit_class_chain": ["TKEYIR1", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYIR1.TKEYIR1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEYIR1.xml"],
+            "catalog_numbers": ["5031NIR", "5031NIRL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYIR4.xml",
+          "unit_type": "KEYIR4",
+          "spec_sources": ["I_KEY.xml", "KEYIR4.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "19780887a3bb9a8f91c53d942dd7a2be966b1fefb887c8e8350d1fa9bcec0ac2",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["InfraRedBank"],
+          "default_only_differences": ["PatchEnable"],
+          "guarded_parameters": ["InfraRedBank"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYIR4..TKEYIR4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e383"
+          },
+          "toolkit_class_chain": ["TKEYIR4", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYIR4.TKEYIR4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEYIR4.xml"],
+            "catalog_numbers": ["5034NIR", "5034NIRL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYAUX4.xml",
+          "unit_type": "KEYAUX4",
+          "spec_sources": ["I_KEY.xml", "KEYAUX4.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "b2c8061425b52faff68322bb20620c1f75b59517659f32b3adbf7c5bd36b0b20",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["IndicatorBrightness"],
+          "default_only_differences": ["JPCommand", "LPCommand", "LRCommand", "PatchEnable", "SRCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYAUX4..TKEYAUX4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e53f"
+          },
+          "toolkit_class_chain": ["TKEYAUX4", "TCBusKeyAuxInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "AUX",
+          "macro_function_subset_method": "CIS_TCBusKeyAuxInputUnit.TCBusKeyAuxInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYAUX4.TKEYAUX4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEYAUX4.xml"],
+            "catalog_numbers": ["5104AUX"]
+          },
+          "subset_excluded_presets": ["bellpress"],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "DINAUX4.xml",
+          "unit_type": "DINAUX4",
+          "spec_sources": ["I_KEY.xml", "DINAUX4.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "4b7252882295b309643c31f6d02797ba2d4861c64942fd4827ce2304a0ca9d5a",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["GAVBroadcastFlag", "IndicatorBrightness"],
+          "default_only_differences": ["JPCommand", "LPCommand", "LRCommand", "PatchEnable", "SRCommand"],
+          "guarded_parameters": ["GAVBroadcastFlag"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TDINAUX4..TDINAUX4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e5d3"
+          },
+          "toolkit_class_chain": ["TDINAUX4", "TCBusKeyAuxInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "AUX",
+          "macro_function_subset_method": "CIS_TCBusKeyAuxInputUnit.TCBusKeyAuxInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TDINAUX4.TDINAUX4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["DINAUX4.xml"],
+            "catalog_numbers": ["L5504AUX", "SLCLE5504AUX"]
+          },
+          "subset_excluded_presets": ["bellpress"],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYBC2.xml",
+          "unit_type": "KEYBC2",
+          "spec_sources": ["I_KEY.xml", "KEYBC2.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "4b7252882295b309643c31f6d02797ba2d4861c64942fd4827ce2304a0ca9d5a",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["GAVBroadcastFlag", "IndicatorBrightness"],
+          "default_only_differences": ["JPCommand", "LPCommand", "LRCommand", "PatchEnable", "SRCommand"],
+          "guarded_parameters": ["GAVBroadcastFlag"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYBC2..TKEYBC2",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e417"
+          },
+          "toolkit_class_chain": ["TKEYBC2", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYBC2.TKEYBC2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEYBC2.xml"],
+            "catalog_numbers": ["5102BCLEDL", "SLC5102BCLEDL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYBC4.xml",
+          "unit_type": "KEYBC4",
+          "spec_sources": ["I_KEY.xml", "KEYBC4.xml"],
+          "min_version": "1.2.63",
+          "parameter_layout_sha256": "4b7252882295b309643c31f6d02797ba2d4861c64942fd4827ce2304a0ca9d5a",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["GAVBroadcastFlag", "IndicatorBrightness"],
+          "default_only_differences": ["JPCommand", "LPCommand", "LRCommand", "PatchEnable", "SRCommand"],
+          "guarded_parameters": ["GAVBroadcastFlag"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYBC4..TKEYBC4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138e4ab"
+          },
+          "toolkit_class_chain": ["TKEYBC4", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKeyInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYBC4.TKEYBC4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["KEYBC4.xml"],
+            "catalog_numbers": ["5104BCL", "SLC5104BCL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "BCNC4A.xml",
+          "unit_type": "BCNC4A",
+          "spec_sources": ["I_KEY.xml", "KEYBC4.xml", "BCNC4A.xml"],
+          "min_version": "1.1",
+          "parameter_layout_sha256": "4b7252882295b309643c31f6d02797ba2d4861c64942fd4827ce2304a0ca9d5a",
+          "workflow_layout_sha256": "e67063cda2752381b827a7695c99384c4f2b8067e965a4cc23cc95c2ea0ce04f",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["GAVBroadcastFlag", "IndicatorBrightness"],
+          "default_only_differences": ["EEPROMLevelStore", "JPCommand", "LPCommand", "LRCommand", "PatchEnable", "SRCommand"],
+          "guarded_parameters": ["GAVBroadcastFlag"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TBCNC..TBCNC4A",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138f72b"
+          },
+          "toolkit_class_chain": ["TBCNC4A", "TBCNC4", "TBCNC", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TBCNC4CGateAgent",
+          "toolkit_agent_chain": ["TBCNC4CGateAgent", "TCBusKeyInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "KEY",
+          "macro_function_subset_method": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TBCNC.TBCNC4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "1.2.67",
+            "spec_filenames": ["BCNC4A.xml"],
+            "catalog_numbers": ["5032NLPCP"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["Toolkit TBCNC4CGateAgent forces ApplyMicroFunctionDefaults before every save"]
+        }
+      ]
+    },
+    "neo": {
+      "reference_spec": "KEYM4.xml",
+      "workflow_parameters": ["JPCommand", "SRCommand", "LPCommand", "LRCommand", "BlockAllocation", "GroupAddress", "Application", "SecondApplicationBlocks", "TimerHighByte", "TimerLowByte", "TimerExpiryCommand", "LightLevelStore1", "LightLevelStore2", "SceneKeySelector", "IndicatorBlockAssignment"],
+      "accepted_agents": ["TCBusNeoProInputCGateAgent", "TCBusKEYExCGateAgent"],
+      "types": [
+        {
+          "spec_filename": "KEYA1.xml",
+          "unit_type": "KEYA1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYA1.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA1..TKEYA1",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138385c"
+          },
+          "toolkit_class_chain": ["TKEYA1", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYA1.TKEYA1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA1.xml"],
+            "catalog_numbers": ["R5061NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYA3.xml",
+          "unit_type": "KEYA3",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYA3.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA3..TKEYA3",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383aa8"
+          },
+          "toolkit_class_chain": ["TKEYA3", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYA3.TKEYA3.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA3.xml"],
+            "catalog_numbers": ["R5063NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYA6.xml",
+          "unit_type": "KEYA6",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYA6.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA6..TKEYA6",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383cf4"
+          },
+          "toolkit_class_chain": ["TKEYA6", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 6,
+          "maximum_key_count_method": "CIS_TKEYA6.TKEYA6.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA6.xml"],
+            "catalog_numbers": ["R5066NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYA8.xml",
+          "unit_type": "KEYA8",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYA8.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA8..TKEYA8",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383e18"
+          },
+          "toolkit_class_chain": ["TKEYA8", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 8,
+          "maximum_key_count_method": "CIS_TKEYA8.TKEYA8.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA8.xml"],
+            "catalog_numbers": ["R5068NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYAV2.xml",
+          "unit_type": "KEYAV2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYAV2.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYAV2..TKEYAV2",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383980"
+          },
+          "toolkit_class_chain": ["TKEYAV2", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYAV2.TKEYAV2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYAV2.xml"],
+            "catalog_numbers": ["R5062VNL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYAV4.xml",
+          "unit_type": "KEYAV4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYAV4.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYAV4..TKEYAV4",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383bcc"
+          },
+          "toolkit_class_chain": ["TKEYAV4", "TCBusNeoProReflectionInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYAV4.TKEYAV4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYAV4.xml"],
+            "catalog_numbers": ["R5064VNL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYB2.xml",
+          "unit_type": "KEYB2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYB2.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB2..TKEYB2",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1383f3c"
+          },
+          "toolkit_class_chain": ["TKEYB2", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYB2.TKEYB2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB2.xml"],
+            "catalog_numbers": ["5082NL", "E5082NL", "SLC5082NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYB4.xml",
+          "unit_type": "KEYB4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYB4.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB4..TKEYB4",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1384060"
+          },
+          "toolkit_class_chain": ["TKEYB4", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYB4.TKEYB4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB4.xml"],
+            "catalog_numbers": ["5084NL", "E5084NL", "SLC5084NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYB6.xml",
+          "unit_type": "KEYB6",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYB6.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB6..TKEYB6",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1384184"
+          },
+          "toolkit_class_chain": ["TKEYB6", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 6,
+          "maximum_key_count_method": "CIS_TKEYB6.TKEYB6.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB6.xml"],
+            "catalog_numbers": ["5086NL", "E5086NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYC1.xml",
+          "unit_type": "KEYC1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYC1.xml"],
+          "min_version": "1.8.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYC1..TKEYC1",
+            "min_firmware": "1.8.01",
+            "max_firmware": "9",
+            "call_va": "0x138f067"
+          },
+          "toolkit_class_chain": ["TKEYC1", "TCBusNeoProClassicInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO_CLASSIC",
+          "macro_function_subset_method": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYC1.TKEYC1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYC1.xml"],
+            "catalog_numbers": ["5031NL", "E5031NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYC2.xml",
+          "unit_type": "KEYC2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYC2.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYC2..TKEYC2",
+            "min_firmware": "1.8.01",
+            "max_firmware": "9",
+            "call_va": "0x138f113"
+          },
+          "toolkit_class_chain": ["TKEYC2", "TCBusNeoProClassicInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO_CLASSIC",
+          "macro_function_subset_method": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYC2.TKEYC2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYC2.xml"],
+            "catalog_numbers": ["5032NL", "E5032NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYC4.xml",
+          "unit_type": "KEYC4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYC4.xml"],
+          "min_version": "1.8.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYC4..TKEYC4",
+            "min_firmware": "1.8.01",
+            "max_firmware": "9",
+            "call_va": "0x138f1bf"
+          },
+          "toolkit_class_chain": ["TKEYC4", "TCBusNeoProClassicInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO_CLASSIC",
+          "macro_function_subset_method": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYC4.TKEYC4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYC4.xml"],
+            "catalog_numbers": ["5034NL", "E5034NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYCIR1.xml",
+          "unit_type": "KEYCIR1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYCIR1.xml"],
+          "min_version": "1.8.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYCIR1..TKEYCIR1",
+            "min_firmware": "1.8.01",
+            "max_firmware": "9",
+            "call_va": "0x138e08f"
+          },
+          "toolkit_class_chain": ["TKEYCIR1", "TCBusNeoProClassicIRInputUnit", "TCBusNeoProClassicInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO_CLASSIC",
+          "macro_function_subset_method": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 0,
+          "maximum_key_count_method": "CIS_TKEYCIR1.TKEYCIR1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYCIR1.xml"],
+            "catalog_numbers": ["5031NIRL", "E5031NIRL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["Toolkit MaximumKeyCount is zero"]
+        },
+        {
+          "spec_filename": "KEYCIR4.xml",
+          "unit_type": "KEYCIR4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYCIR4.xml"],
+          "min_version": "1.8.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYCIR4..TKEYCIR4",
+            "min_firmware": "1.8.01",
+            "max_firmware": "9",
+            "call_va": "0x138f26b"
+          },
+          "toolkit_class_chain": ["TKEYCIR4", "TCBusNeoProClassicIRInputUnit", "TCBusNeoProClassicInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO_CLASSIC",
+          "macro_function_subset_method": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYCIR4.TKEYCIR4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYCIR4.xml"],
+            "catalog_numbers": ["5034NIRL", "E5034NIRL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYDV1.xml",
+          "unit_type": "KEYDV1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYDV1.xml"],
+          "min_version": "1.8.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYDV1..TKEYDV1",
+            "min_firmware": "1.8.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138ebef"
+          },
+          "toolkit_class_chain": ["TKEYDV1", "TCBusDecoratorInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYDV1.TKEYDV1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYDV1.xml"],
+            "catalog_numbers": ["SLC5051NLM", "SLC5081NLM"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYDV2.xml",
+          "unit_type": "KEYDV2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYDV2.xml"],
+          "min_version": "1.8.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYDV2..TKEYDV2",
+            "min_firmware": "1.8.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138ecbb"
+          },
+          "toolkit_class_chain": ["TKEYDV2", "TCBusDecoratorInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYDV2.TKEYDV2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYDV2.xml"],
+            "catalog_numbers": ["SLC5052NLM", "SLC5082NLM"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYDV3.xml",
+          "unit_type": "KEYDV3",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYDV3.xml"],
+          "min_version": "1.8.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYDV3..TKEYDV3",
+            "min_firmware": "1.8.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138ed87"
+          },
+          "toolkit_class_chain": ["TKEYDV3", "TCBusDecoratorInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYDV3.TKEYDV3.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYDV3.xml"],
+            "catalog_numbers": ["SLC5053NLM", "SLC5083NLM"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYDV4.xml",
+          "unit_type": "KEYDV4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYDV4.xml"],
+          "min_version": "1.8.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYDV4..TKEYDV4",
+            "min_firmware": "1.8.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138ee53"
+          },
+          "toolkit_class_chain": ["TKEYDV4", "TCBusDecoratorInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYDV4.TKEYDV4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYDV4.xml"],
+            "catalog_numbers": ["SLC5054NLM", "SLC5084NLM"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYE.xml",
+          "unit_type": "KEYE1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYE.xml"],
+          "min_version": "2.2.5",
+          "parameter_layout_sha256": "dd62cc904e7d0451b0476bb9655855576059c8560fb1c791629531d97822f199",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["KeyMask"],
+          "default_only_differences": ["DisableIR", "IndicatorFunction", "KeyDisableGroupInvert"],
+          "guarded_parameters": ["KeyMask"],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYEx..TKEYEx",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138b65f"
+          },
+          "toolkit_class_chain": ["TKEYEx", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusKEYExCGateAgent",
+          "toolkit_agent_chain": ["TCBusKEYExCGateAgent", "TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYEx.TKEYEx.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYE.xml"],
+            "catalog_numbers": ["5031NMML", "5041NMML"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYH1.xml",
+          "unit_type": "KEYH1",
+          "spec_sources": ["I_KEYHCORE.xml", "I_KEYHPRO.xml", "KEYH1.xml"],
+          "min_version": "1.0",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH1..TKEYH1",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x13842a8"
+          },
+          "toolkit_class_chain": ["TKEYH1", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYH1.TKEYH1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH1.xml"],
+            "catalog_numbers": ["ER5041NL", "R5041NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYH2.xml",
+          "unit_type": "KEYH2",
+          "spec_sources": ["I_KEYHCORE.xml", "I_KEYHPRO.xml", "KEYH2.xml"],
+          "min_version": "1.0",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH2..TKEYH2",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x13843cc"
+          },
+          "toolkit_class_chain": ["TKEYH2", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYH2.TKEYH2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH2.xml"],
+            "catalog_numbers": ["ER5042NL", "R5042NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYH3.xml",
+          "unit_type": "KEYH3",
+          "spec_sources": ["I_KEYH3CORE.xml", "I_KEYH3PRO.xml", "KEYH3.xml"],
+          "min_version": "1.0",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH3..TKEYH3",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x13844f0"
+          },
+          "toolkit_class_chain": ["TKEYH3", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYH3.TKEYH3.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH3.xml"],
+            "catalog_numbers": ["ER5043NL", "R5043NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYH4.xml",
+          "unit_type": "KEYH4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYH4.xml"],
+          "min_version": "1.0",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH4..TKEYH4",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1384614"
+          },
+          "toolkit_class_chain": ["TKEYH4", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYH4.TKEYH4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH4.xml"],
+            "catalog_numbers": ["ER5044NL", "R5044NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYM2.xml",
+          "unit_type": "KEYM2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYM2.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM2..TKEYM2",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1384de8"
+          },
+          "toolkit_class_chain": ["TKEYM2", "TCBusNeoProStandardInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYM2.TKEYM2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM2.xml"],
+            "catalog_numbers": ["5052NL", "E5052NL", "SLC5052NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYM4.xml",
+          "unit_type": "KEYM4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYM4.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": true,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM4..TKEYM4",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1384f0c"
+          },
+          "toolkit_class_chain": ["TKEYM4", "TCBusNeoProStandardInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYM4.TKEYM4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM4.xml"],
+            "catalog_numbers": ["5054NL", "E5054NL", "SLC5054NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYM6.xml",
+          "unit_type": "KEYM6",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYM6.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "decision": "refused",
+          "refusal_reasons": ["no unique Toolkit RegisterUnitType registration"]
+        },
+        {
+          "spec_filename": "KEYM8.xml",
+          "unit_type": "KEYM8",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYM8.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM8..TKEYM8",
+            "min_firmware": "1.5.03",
+            "max_firmware": "2.9.99",
+            "call_va": "0x1385030"
+          },
+          "toolkit_class_chain": ["TKEYM8", "TCBusNeoProStandardInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 8,
+          "maximum_key_count_method": "CIS_TKEYM8.TKEYM8.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM8.xml"],
+            "catalog_numbers": ["5058NL", "E5058NL", "SLC5058NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYP2.xml",
+          "unit_type": "KEYP2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYP2.xml"],
+          "min_version": "2.0.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYPX..TKEYP2",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138ef23"
+          },
+          "toolkit_class_chain": ["TKEYP2", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYPX.TKEYP2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYP2.xml"],
+            "catalog_numbers": ["LHC882"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYP4.xml",
+          "unit_type": "KEYP4",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYP4.xml"],
+          "min_version": "2.0.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYPX..TKEYP4",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138ef44"
+          },
+          "toolkit_class_chain": ["TKEYP4", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYPX.TKEYP4.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYP4.xml"],
+            "catalog_numbers": ["LHC884"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYP6.xml",
+          "unit_type": "KEYP6",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYP6.xml"],
+          "min_version": "2.0.00",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": [],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYPX..TKEYP6",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x138ef65"
+          },
+          "toolkit_class_chain": ["TKEYP6", "TCBusNeoProSaturnInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 6,
+          "maximum_key_count_method": "CIS_TKEYPX.TKEYP6.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYP6.xml"],
+            "catalog_numbers": ["LHC886"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYV1.xml",
+          "unit_type": "KEYV1",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYV1.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": ["IndicatorFunction"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYV1..TKEYV1",
+            "min_firmware": "1.7.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138f31b"
+          },
+          "toolkit_class_chain": ["TKEYV1", "TCBusNeoProVieoInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYV1.TKEYV1.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYV1.xml"],
+            "catalog_numbers": ["5091NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYV2.xml",
+          "unit_type": "KEYV2",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYV2.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": ["IndicatorFunction"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYV2..TKEYV2",
+            "min_firmware": "1.7.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138f3e3"
+          },
+          "toolkit_class_chain": ["TKEYV2", "TCBusNeoProVieoInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYV2.TKEYV2.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYV2.xml"],
+            "catalog_numbers": ["5092NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYV3.xml",
+          "unit_type": "KEYV3",
+          "spec_sources": ["I_NEOCORE.xml", "I_NEOPRO.xml", "KEYV3.xml"],
+          "min_version": "1.5.01",
+          "parameter_layout_sha256": "6f015851f3437dabc22bea85cbc7419e1f52d3edfd49bf6ca09dc2c3d4e31318",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": [],
+          "default_only_differences": ["IndicatorFunction"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYV3..TKEYV3",
+            "min_firmware": "1.7.00",
+            "max_firmware": "2.9.99",
+            "call_va": "0x138f4ab"
+          },
+          "toolkit_class_chain": ["TKEYV3", "TCBusNeoProVieoInputUnit", "TCBusNeoProInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoProInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoProInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYV3.TKEYV3.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYV3.xml"],
+            "catalog_numbers": ["5093NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "admitted",
+          "refusal_reasons": []
+        },
+        {
+          "spec_filename": "KEYV1SP.xml",
+          "unit_type": "KEYV1SP",
+          "spec_sources": ["I_NEOCORE.xml", "I_BCPRO.xml", "KEYV1SP.xml"],
+          "min_version": "1.1",
+          "parameter_layout_sha256": "dd86c6c3e8353aacae62b21658c553a144312b23e1e46726778302eabfdece83",
+          "workflow_layout_sha256": "3765afccd51030c2c2eec990bb05c08fb35ab038ebcce291bce6533c5d643fd2",
+          "workflow_layout_matches_reference": true,
+          "differing_layout_parameters": ["BistableSwitchBlock", "EnableNightlightOnPA6", "GroupAssertOnPowerup", "IDBacklightIllumination", "LightLevel", "NightlightColour", "PrimaryColour", "RetardationIndex"],
+          "default_only_differences": ["IndicatorBlockAssignment", "IndicatorFunction"],
+          "guarded_parameters": ["BistableSwitchBlock", "GroupAssertOnPowerup", "LightLevel", "RetardationIndex"],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYV1SP..TKEYV1SP",
+            "min_firmware": "0",
+            "max_firmware": "9",
+            "call_va": "0x139549b"
+          },
+          "toolkit_class_chain": ["TKEYV1SP", "TCBusCouplerVieoInputUnit", "TCoreBusCouplerInputUnit", "TCoreNeoProInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusCouplerVieoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusCouplerVieoInputCGateAgent", "TCoreBusCouplerInputCGateAgent", "TCoreNeoProInputCGateAgent", "TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEOPRO",
+          "macro_function_subset_method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYV1SP.TKEYV1SP.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYV1SP.xml"],
+            "catalog_numbers": ["BCL-V-01"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["Toolkit C-Gate agent differs from the accepted save path"]
+        },
+        {
+          "spec_filename": "KEYA1_A.xml",
+          "unit_type": "KEYA1",
+          "spec_sources": ["I_NEO.xml", "KEYA1_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA1..TKEYA1_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x138383b"
+          },
+          "toolkit_class_chain": ["TKEYA1_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYA1.TKEYA1_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA1.xml"],
+            "catalog_numbers": ["R5061NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYA3_A.xml",
+          "unit_type": "KEYA3",
+          "spec_sources": ["I_NEO.xml", "KEYA3_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA3..TKEYA3_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1383a87"
+          },
+          "toolkit_class_chain": ["TKEYA3_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYA3.TKEYA3_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA3.xml"],
+            "catalog_numbers": ["R5063NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYA6_A.xml",
+          "unit_type": "KEYA6",
+          "spec_sources": ["I_NEO.xml", "KEYA6_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA6..TKEYA6_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1383cd3"
+          },
+          "toolkit_class_chain": ["TKEYA6_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 6,
+          "maximum_key_count_method": "CIS_TKEYA6.TKEYA6_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA6.xml"],
+            "catalog_numbers": ["R5066NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYA8_A.xml",
+          "unit_type": "KEYA8",
+          "spec_sources": ["I_NEO.xml", "KEYA8_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYA8..TKEYA8_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1383df7"
+          },
+          "toolkit_class_chain": ["TKEYA8_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 8,
+          "maximum_key_count_method": "CIS_TKEYA8.TKEYA8_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYA8.xml"],
+            "catalog_numbers": ["R5068NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYAV2_A.xml",
+          "unit_type": "KEYAV2",
+          "spec_sources": ["I_NEO.xml", "KEYAV2_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYAV2..TKEYAV2_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x138395f"
+          },
+          "toolkit_class_chain": ["TKEYAV2_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYAV2.TKEYAV2_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYAV2.xml"],
+            "catalog_numbers": ["R5062VNL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYAV4_A.xml",
+          "unit_type": "KEYAV4",
+          "spec_sources": ["I_NEO.xml", "KEYAV4_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYAV4..TKEYAV4_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1383bab"
+          },
+          "toolkit_class_chain": ["TKEYAV4_A", "TCBusNeoReflectionInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYAV4.TKEYAV4_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYAV4.xml"],
+            "catalog_numbers": ["R5064VNL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYB2_A.xml",
+          "unit_type": "KEYB2",
+          "spec_sources": ["I_NEO.xml", "KEYB2_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB2..TKEYB2_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1383f1b"
+          },
+          "toolkit_class_chain": ["TKEYB2_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYB2.TKEYB2_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB2.xml"],
+            "catalog_numbers": ["5082NL", "E5082NL", "SLC5082NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYB4_A.xml",
+          "unit_type": "KEYB4",
+          "spec_sources": ["I_NEO.xml", "KEYB4_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB4..TKEYB4_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x138403f"
+          },
+          "toolkit_class_chain": ["TKEYB4_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYB4.TKEYB4_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB4.xml"],
+            "catalog_numbers": ["5084NL", "E5084NL", "SLC5084NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYB6_A.xml",
+          "unit_type": "KEYB6",
+          "spec_sources": ["I_NEO.xml", "KEYB6_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYB6..TKEYB6_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1384163"
+          },
+          "toolkit_class_chain": ["TKEYB6_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 6,
+          "maximum_key_count_method": "CIS_TKEYB6.TKEYB6_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYB6.xml"],
+            "catalog_numbers": ["5086NL", "E5086NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYH1_A.xml",
+          "unit_type": "KEYH1",
+          "spec_sources": ["I_NEO.xml", "KEYH1_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH1..TKEYH1_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1384287"
+          },
+          "toolkit_class_chain": ["TKEYH1_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 1,
+          "maximum_key_count_method": "CIS_TKEYH1.TKEYH1_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH1.xml"],
+            "catalog_numbers": ["ER5041NL", "R5041NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYH2_A.xml",
+          "unit_type": "KEYH2",
+          "spec_sources": ["I_NEO.xml", "KEYH2_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH2..TKEYH2_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x13843ab"
+          },
+          "toolkit_class_chain": ["TKEYH2_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYH2.TKEYH2_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH2.xml"],
+            "catalog_numbers": ["ER5042NL", "R5042NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYH3_A.xml",
+          "unit_type": "KEYH3",
+          "spec_sources": ["I_NEO.xml", "KEYH3_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH3..TKEYH3_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x13844cf"
+          },
+          "toolkit_class_chain": ["TKEYH3_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 3,
+          "maximum_key_count_method": "CIS_TKEYH3.TKEYH3_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH3.xml"],
+            "catalog_numbers": ["ER5043NL", "R5043NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYH4_A.xml",
+          "unit_type": "KEYH4",
+          "spec_sources": ["I_NEO.xml", "KEYH4_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYH4..TKEYH4_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x13845f3"
+          },
+          "toolkit_class_chain": ["TKEYH4_A", "TCBusNeoSaturnInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYH4.TKEYH4_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYH4.xml"],
+            "catalog_numbers": ["ER5044NL", "R5044NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYM2_A.xml",
+          "unit_type": "KEYM2",
+          "spec_sources": ["I_NEO.xml", "KEYM2_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM2..TKEYM2_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1384dc7"
+          },
+          "toolkit_class_chain": ["TKEYM2_A", "TCBusNeoStandardInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 2,
+          "maximum_key_count_method": "CIS_TKEYM2.TKEYM2_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM2.xml"],
+            "catalog_numbers": ["5052NL", "E5052NL", "SLC5052NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYM4_A.xml",
+          "unit_type": "KEYM4",
+          "spec_sources": ["I_NEO.xml", "KEYM4_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM4..TKEYM4_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x1384eeb"
+          },
+          "toolkit_class_chain": ["TKEYM4_A", "TCBusNeoStandardInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 4,
+          "maximum_key_count_method": "CIS_TKEYM4.TKEYM4_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM4.xml"],
+            "catalog_numbers": ["5054NL", "E5054NL", "SLC5054NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        },
+        {
+          "spec_filename": "KEYM6_A.xml",
+          "unit_type": "KEYM6",
+          "spec_sources": ["I_NEO.xml", "KEYM6_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "no unique Toolkit RegisterUnitType registration"]
+        },
+        {
+          "spec_filename": "KEYM8_A.xml",
+          "unit_type": "KEYM8",
+          "spec_sources": ["I_NEO.xml", "KEYM8_A.xml"],
+          "min_version": "1.3.01",
+          "parameter_layout_sha256": "ec5a26d1c29642f97fa2e79d786269a5e0b52899b35df26081e0704249156aa9",
+          "workflow_layout_sha256": "fd5cd43123b91816e2260df026b32258999626526cc0f5910ee5956dc6012924",
+          "workflow_layout_matches_reference": false,
+          "differing_layout_parameters": ["CorridorGroupBlock", "CorridorLinkEnable", "CorridorMasterGroup", "CorridorOfficeGroupBlock", "DisableIRNEC", "DualJoinPrimaryApplication", "DualJoinSecondaryApplication", "HardwareConfiguration", "JoinPrimaryApplication", "JoinSecondaryApplication", "KeyDisableGroup", "KeyDisableGroupInvert", "NightlightColour", "SecondApplicationBlocks"],
+          "default_only_differences": ["IndicatorFunction", "JPCommand"],
+          "guarded_parameters": [],
+          "already_supported": false,
+          "toolkit_registration": {
+            "class_symbol": "CIS_TKEYM8..TKEYM8_A",
+            "min_firmware": "1.3.01",
+            "max_firmware": "1.5.02",
+            "call_va": "0x138500f"
+          },
+          "toolkit_class_chain": ["TKEYM8_A", "TCBusNeoStandardInputUnit", "TCBusNeoInputUnit", "TCBusKeyInputUnit", "TCoreKeyInputUnit", "TCustomKeyInputUnit", "TCBusInputUnit"],
+          "toolkit_agent_class": "TCBusNeoInputCGateAgent",
+          "toolkit_agent_chain": ["TCBusNeoInputCGateAgent", "TCoreNeoInputCGateAgent", "TCoreKeyInputCGateAgent", "TCBusInputUnitCGateAgent", "TCBusLearnUnitCGateAgent", "TCBusUnitCGateAgent"],
+          "macro_function_subset": "NEO",
+          "macro_function_subset_method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetName",
+          "maximum_key_count": 8,
+          "maximum_key_count_method": "CIS_TKEYM8.TKEYM8_A.MaximumKeyCount",
+          "subset_preset_template_types": {
+            "0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16],
+            "202": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+          },
+          "catalog_selection": {
+            "firmware": "2.5.00",
+            "spec_filenames": ["KEYM8.xml"],
+            "catalog_numbers": ["5058NL", "E5058NL", "SLC5058NL"]
+          },
+          "subset_excluded_presets": [],
+          "decision": "refused",
+          "refusal_reasons": ["preset parameter layout differs from KEYM4.xml", "Toolkit C-Gate agent differs from the accepted save path", "catalogue does not select this specification at firmware 2.5.00", "tested firmware is outside the Toolkit class registration"]
+        }
+      ]
+    }
+  },
+  "limits": "Static specification and executable evidence only. It does not execute Toolkit, establish GUI rendering, physical key behavior or every firmware revision. Native preset acceptance is recorded separately."
+}
