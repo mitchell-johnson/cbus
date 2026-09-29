@@ -1,0 +1,771 @@
+{
+  "schema": "native-cgate-dbsetxml-lifecycle-v1",
+  "captured_utc": "2026-09-29T19:12:58.199103+00:00",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "physical_endpoint": false
+  },
+  "capture_script_sha256": "2a8ae029831e2a3b9833451857014d5cbd0ef37885df4d2af6cfc27a5514ace0",
+  "service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+  "project": "XLIFE",
+  "network_oid": "b1e84260-9e67-103f-a279-89bb8295a379",
+  "interface_oid": "b1e86970-9e67-103f-a27a-89bb8295a379",
+  "phases": [
+    {
+      "phase": "no-autosave",
+      "tag_autosave": "no",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+      "seeded_from_previous_tag_directory": false,
+      "terminated_with_sigterm": true,
+      "owned_loopback_listeners": true,
+      "listeners": [
+        "127.0.0.1:55053",
+        "127.0.0.1:55054",
+        "127.0.0.1:55055",
+        "127.0.0.1:55056",
+        "127.0.0.1:55057",
+        "127.0.0.1:55058"
+      ],
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    {
+      "phase": "restart-after-no-autosave",
+      "tag_autosave": "no",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+      "seeded_from_previous_tag_directory": true,
+      "terminated_with_sigterm": false,
+      "owned_loopback_listeners": true,
+      "listeners": [
+        "127.0.0.1:55061",
+        "127.0.0.1:55062",
+        "127.0.0.1:55063",
+        "127.0.0.1:55064",
+        "127.0.0.1:55065",
+        "127.0.0.1:55066"
+      ],
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    {
+      "phase": "autosave",
+      "tag_autosave": "yes",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+      "seeded_from_previous_tag_directory": false,
+      "terminated_with_sigterm": true,
+      "owned_loopback_listeners": true,
+      "listeners": [
+        "127.0.0.1:55074",
+        "127.0.0.1:55075",
+        "127.0.0.1:55076",
+        "127.0.0.1:55077",
+        "127.0.0.1:55078",
+        "127.0.0.1:55079"
+      ],
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    {
+      "phase": "restart-after-autosave",
+      "tag_autosave": "yes",
+      "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0\r\n",
+      "seeded_from_previous_tag_directory": true,
+      "terminated_with_sigterm": false,
+      "owned_loopback_listeners": true,
+      "listeners": [
+        "127.0.0.1:55089",
+        "127.0.0.1:55090",
+        "127.0.0.1:55091",
+        "127.0.0.1:55092",
+        "127.0.0.1:55093",
+        "127.0.0.1:55094"
+      ],
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    }
+  ],
+  "cases": [
+    {
+      "tag": 100,
+      "command": "PROJECT NEW XLIFE",
+      "request": "[100] PROJECT NEW XLIFE\r\n",
+      "response_lines": [
+        "[100] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 101,
+      "command": "PROJECT USE XLIFE",
+      "request": "[101] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[101] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 102,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[102] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[102] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 103,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[103] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[103] 343-Begin XML snippet\r\n",
+        "[103] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[103] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[103] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-create",
+      "files": {}
+    },
+    {
+      "tag": 104,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[104] DBSETXML //XLIFE/254 << END104\r\n<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>SavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND104\r\n",
+      "response_lines": [
+        "[104] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-unsaved-dbsetxml",
+      "files": {}
+    },
+    {
+      "tag": 105,
+      "command": "PROJECT SAVE XLIFE",
+      "request": "[105] PROJECT SAVE XLIFE\r\n",
+      "response_lines": [
+        "[105] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-save",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 106,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[106] DBSETXML //XLIFE/254 << END106\r\n<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>UnsavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>UnsavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND106\r\n",
+      "response_lines": [
+        "[106] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 107,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[107] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[107] 343-Begin XML snippet\r\n",
+        "[107] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[107] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>UnsavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>UnsavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[107] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-unsaved-replacement",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 108,
+      "command": "PROJECT CLOSE XLIFE",
+      "request": "[108] PROJECT CLOSE XLIFE\r\n",
+      "response_lines": [
+        "[108] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-close-without-save",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 109,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[109] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[109] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 110,
+      "command": "PROJECT USE XLIFE",
+      "request": "[110] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[110] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 111,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[111] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[111] 343-Begin XML snippet\r\n",
+        "[111] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[111] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>SavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[111] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 112,
+      "command": "DBGETXML //XLIFE/254/p/21",
+      "request": "[112] DBGETXML //XLIFE/254/p/21\r\n",
+      "response_lines": [
+        "[112] 401 Bad object or device ID: Element 21 not found.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 113,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[113] DBSETXML //XLIFE/254 << END113\r\n<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>ResavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ResavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND113\r\n",
+      "response_lines": [
+        "[113] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 114,
+      "command": "PROJECT SAVE XLIFE",
+      "request": "[114] PROJECT SAVE XLIFE\r\n",
+      "response_lines": [
+        "[114] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-resave",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "178b903191537c6adb69c0d4f7a4999d7d4c9e8b66bc129af8a6e9d0def76db5",
+          "bytes": 737280,
+          "markers": [
+            "ResavedName"
+          ]
+        },
+        "XLIFE/XLIFE.db.old": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 115,
+      "command": "PROJECT CLOSE XLIFE",
+      "request": "[115] PROJECT CLOSE XLIFE\r\n",
+      "response_lines": [
+        "[115] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 116,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[116] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[116] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 117,
+      "command": "PROJECT USE XLIFE",
+      "request": "[117] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[117] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 118,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[118] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[118] 343-Begin XML snippet\r\n",
+        "[118] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[118] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>ResavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ResavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[118] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 119,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[119] DBSETXML //XLIFE/254 << END119\r\n<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>UnsavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND119\r\n",
+      "response_lines": [
+        "[119] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 120,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[120] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[120] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 121,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[121] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[121] 343-Begin XML snippet\r\n",
+        "[121] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[121] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>UnsavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+        "[121] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 122,
+      "command": "DBSET //XLIFE/254/p/20/TagName DbsetName",
+      "request": "[122] DBSET //XLIFE/254/p/20/TagName DbsetName\r\n",
+      "response_lines": [
+        "[122] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 123,
+      "command": "PROJECT CLOSE XLIFE",
+      "request": "[123] PROJECT CLOSE XLIFE\r\n",
+      "response_lines": [
+        "[123] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 124,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[124] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[124] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 125,
+      "command": "PROJECT USE XLIFE",
+      "request": "[125] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[125] 200 OK.\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 126,
+      "command": "DBGETXML //XLIFE/254/p/20",
+      "request": "[126] DBGETXML //XLIFE/254/p/20\r\n",
+      "response_lines": [
+        "[126] 343-Begin XML snippet\r\n",
+        "[126] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[126] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>ResavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[126] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 127,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[127] DBSETXML //XLIFE/254 << END127\r\n<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>RestartName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>RestartName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND127\r\n",
+      "response_lines": [
+        "[127] 301 OID=b1e84260-9e67-103f-a279-89bb8295a379\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": 128,
+      "command": "DBGETXML //XLIFE/254/p/20",
+      "request": "[128] DBGETXML //XLIFE/254/p/20\r\n",
+      "response_lines": [
+        "[128] 343-Begin XML snippet\r\n",
+        "[128] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[128] 347-<Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>RestartName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>\r\n",
+        "[128] 344 End XML snippet\r\n"
+      ],
+      "phase": "no-autosave"
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "before-sigterm",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "178b903191537c6adb69c0d4f7a4999d7d4c9e8b66bc129af8a6e9d0def76db5",
+          "bytes": 737280,
+          "markers": [
+            "ResavedName"
+          ]
+        },
+        "XLIFE/XLIFE.db.old": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": null,
+      "phase": "no-autosave",
+      "disk": "after-sigterm",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "178b903191537c6adb69c0d4f7a4999d7d4c9e8b66bc129af8a6e9d0def76db5",
+          "bytes": 737280,
+          "markers": [
+            "ResavedName"
+          ]
+        },
+        "XLIFE/XLIFE.db.old": {
+          "sha256": "a70acd5fa926482fc2038c535e63908e5a9fc5fdbedc877172ce197dd8254149",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 300,
+      "command": "PROJECT LIST",
+      "request": "[300] PROJECT LIST\r\n",
+      "response_lines": [
+        "[300] 124 no projects found\r\n"
+      ],
+      "phase": "restart-after-no-autosave"
+    },
+    {
+      "tag": 301,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[301] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[301] 200 OK.\r\n"
+      ],
+      "phase": "restart-after-no-autosave"
+    },
+    {
+      "tag": 302,
+      "command": "PROJECT USE XLIFE",
+      "request": "[302] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[302] 200 OK.\r\n"
+      ],
+      "phase": "restart-after-no-autosave"
+    },
+    {
+      "tag": 303,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[303] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[303] 343-Begin XML snippet\r\n",
+        "[303] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[303] 347-<Network><OID>b1e84260-9e67-103f-a279-89bb8295a379</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b1e86970-9e67-103f-a27a-89bb8295a379</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>ResavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ResavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[303] 344 End XML snippet\r\n"
+      ],
+      "phase": "restart-after-no-autosave"
+    },
+    {
+      "tag": 304,
+      "command": "DBGETXML //XLIFE/254/p/21",
+      "request": "[304] DBGETXML //XLIFE/254/p/21\r\n",
+      "response_lines": [
+        "[304] 343-Begin XML snippet\r\n",
+        "[304] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[304] 347-<Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>ResavedName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit>\r\n",
+        "[304] 344 End XML snippet\r\n"
+      ],
+      "phase": "restart-after-no-autosave"
+    },
+    {
+      "tag": 500,
+      "command": "PROJECT NEW XLIFE",
+      "request": "[500] PROJECT NEW XLIFE\r\n",
+      "response_lines": [
+        "[500] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 501,
+      "command": "PROJECT USE XLIFE",
+      "request": "[501] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[501] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 502,
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:1",
+      "request": "[502] DBCREATENET 254 Local Cni 127.0.0.1:1\r\n",
+      "response_lines": [
+        "[502] 301 OID=b3933340-9e67-103f-b4f5-b980827c67b3\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 503,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[503] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[503] 343-Begin XML snippet\r\n",
+        "[503] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[503] 347-<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface></Network>\r\n",
+        "[503] 344 End XML snippet\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-create",
+      "files": {}
+    },
+    {
+      "tag": 504,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[504] DBSETXML //XLIFE/254 << END504\r\n<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>SavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND504\r\n",
+      "response_lines": [
+        "[504] 301 OID=b3933340-9e67-103f-b4f5-b980827c67b3\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-unsaved-dbsetxml",
+      "files": {}
+    },
+    {
+      "tag": 505,
+      "command": "PROJECT SAVE XLIFE",
+      "request": "[505] PROJECT SAVE XLIFE\r\n",
+      "response_lines": [
+        "[505] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-save",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "db4de01ee1fbce7b388088d5ddf79ee7f7c65a19ca6f2eb998ab948101ba14fd",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 506,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[506] DBSETXML //XLIFE/254 << END506\r\n<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>AutosaveName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>AutosaveName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND506\r\n",
+      "response_lines": [
+        "[506] 301 OID=b3933340-9e67-103f-b4f5-b980827c67b3\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-unsaved-replacement",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "db4de01ee1fbce7b388088d5ddf79ee7f7c65a19ca6f2eb998ab948101ba14fd",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 507,
+      "command": "PROJECT CLOSE XLIFE",
+      "request": "[507] PROJECT CLOSE XLIFE\r\n",
+      "response_lines": [
+        "[507] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-close-without-save",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "db4de01ee1fbce7b388088d5ddf79ee7f7c65a19ca6f2eb998ab948101ba14fd",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 508,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[508] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[508] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 509,
+      "command": "PROJECT USE XLIFE",
+      "request": "[509] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[509] 200 OK.\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 510,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[510] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[510] 343-Begin XML snippet\r\n",
+        "[510] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[510] 347-<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>SavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[510] 344 End XML snippet\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": 511,
+      "command": "DBSETXML //XLIFE/254",
+      "request": "[511] DBSETXML //XLIFE/254 << END511\r\n<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>RestartName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit><Unit><OID>33333333-3333-4333-8333-333333333333</OID><TagName>RestartName</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\nEND511\r\n",
+      "response_lines": [
+        "[511] 301 OID=b3933340-9e67-103f-b4f5-b980827c67b3\r\n"
+      ],
+      "phase": "autosave"
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "before-sigterm",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "db4de01ee1fbce7b388088d5ddf79ee7f7c65a19ca6f2eb998ab948101ba14fd",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": null,
+      "phase": "autosave",
+      "disk": "after-sigterm",
+      "files": {
+        "XLIFE/XLIFE.db": {
+          "sha256": "db4de01ee1fbce7b388088d5ddf79ee7f7c65a19ca6f2eb998ab948101ba14fd",
+          "bytes": 737280,
+          "markers": [
+            "SavedName"
+          ]
+        }
+      }
+    },
+    {
+      "tag": 700,
+      "command": "PROJECT LOAD XLIFE",
+      "request": "[700] PROJECT LOAD XLIFE\r\n",
+      "response_lines": [
+        "[700] 200 OK.\r\n"
+      ],
+      "phase": "restart-after-autosave"
+    },
+    {
+      "tag": 701,
+      "command": "PROJECT USE XLIFE",
+      "request": "[701] PROJECT USE XLIFE\r\n",
+      "response_lines": [
+        "[701] 200 OK.\r\n"
+      ],
+      "phase": "restart-after-autosave"
+    },
+    {
+      "tag": 702,
+      "command": "DBGETXML //XLIFE/254",
+      "request": "[702] DBGETXML //XLIFE/254\r\n",
+      "response_lines": [
+        "[702] 343-Begin XML snippet\r\n",
+        "[702] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+        "[702] 347-<Network><OID>b3933340-9e67-103f-b4f5-b980827c67b3</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>b3935a50-9e67-103f-b4f6-b980827c67b3</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>SavedName</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><DeviceName>NEWUNIT</DeviceName><GroupNumber></GroupNumber></Unit></Network>\r\n",
+        "[702] 344 End XML snippet\r\n"
+      ],
+      "phase": "restart-after-autosave"
+    }
+  ]
+}

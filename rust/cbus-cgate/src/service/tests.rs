@@ -16290,6 +16290,188 @@ async fn document_semantics_validate_before_mutation_and_remain_authenticated() 
 }
 
 #[tokio::test]
+async fn unsaved_dbsetxml_reverts_on_close_but_survives_daemon_restart_without_pci_io() {
+    async fn call(service: &Arc<Service>, client: &mut ClientState, line: &str) -> Response {
+        service.handle(client, line).await
+    }
+    fn unit_names(response: &Response) -> Vec<String> {
+        let xml = response.lines[0].strip_prefix("347-").unwrap();
+        roxmltree::Document::parse(xml)
+            .unwrap()
+            .descendants()
+            .filter(|node| node.has_tag_name("Unit"))
+            .map(|unit| {
+                unit.children()
+                    .find(|child| child.has_tag_name("TagName"))
+                    .and_then(|child| child.text())
+                    .unwrap()
+                    .to_string()
+            })
+            .collect()
+    }
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] PROJECT NEW XLIFE",
+        "[2] PROJECT USE XLIFE",
+        "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
+    ] {
+        assert_eq!(
+            call(&service, &mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    let initial = call(&service, &mut client, "[4] DBGETXML //XLIFE/254").await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let network = |name: &str, units: &[u8]| {
+        let units = units
+            .iter()
+            .map(|address| {
+                format!(
+                    "<Unit><OID>1111111{address:01x}-1111-4111-8111-111111111111</OID><TagName>{name}</TagName><Address>{address}</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit>"
+                )
+            })
+            .collect::<String>();
+        format!(
+            "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>{units}</Network>"
+        )
+    };
+    let saved = network("SavedName", &[4]);
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[5] DBSETXML //XLIFE/254", &saved)
+            .await
+            .status,
+        301
+    );
+    assert_eq!(
+        call(&service, &mut client, "[6] PROJECT SAVE XLIFE")
+            .await
+            .status,
+        200
+    );
+    let unsaved = network("UnsavedName", &[4, 5]);
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[7] DBSETXML //XLIFE/254", &unsaved)
+            .await
+            .status,
+        301
+    );
+    for line in [
+        "[8] PROJECT CLOSE XLIFE",
+        "[9] PROJECT LOAD XLIFE",
+        "[10] PROJECT USE XLIFE",
+    ] {
+        assert_eq!(
+            call(&service, &mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    let reverted = call(&service, &mut client, "[11] DBGETXML //XLIFE/254").await;
+    assert_eq!(unit_names(&reverted), ["SavedName"]);
+    assert_eq!(
+        call(&service, &mut client, "[12] DBGETXML //XLIFE/254/p/5")
+            .await
+            .status,
+        401
+    );
+
+    // cmqttd keeps every accepted edit crash-durable: an unsaved replacement
+    // survives a daemon restart, unlike native C-Gate, but the persisted
+    // saved image still governs a later CLOSE.
+    let restart = network("RestartName", &[4, 5]);
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[13] DBSETXML //XLIFE/254", &restart)
+            .await
+            .status,
+        301
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err()
+    );
+    drop(service);
+    let (restart_pci, mut restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        call(&restarted, &mut client, "[14] PROJECT USE XLIFE")
+            .await
+            .status,
+        200
+    );
+    let durable = call(&restarted, &mut client, "[15] DBGETXML //XLIFE/254").await;
+    assert_eq!(unit_names(&durable), ["RestartName", "RestartName"]);
+    for line in [
+        "[16] PROJECT CLOSE XLIFE",
+        "[17] PROJECT LOAD XLIFE",
+        "[18] PROJECT USE XLIFE",
+    ] {
+        assert_eq!(
+            call(&restarted, &mut client, line).await.status,
+            200,
+            "{line}"
+        );
+    }
+    let reverted = call(&restarted, &mut client, "[19] DBGETXML //XLIFE/254").await;
+    assert_eq!(unit_names(&reverted), ["SavedName"]);
+
+    // The configured project is imported as saved. A saved image that no
+    // longer binds the configured hardware Network is never restored.
+    assert_eq!(
+        call(&restarted, &mut client, "[20] PROJECT CLOSE HARNESS")
+            .await
+            .status,
+        200
+    );
+    restarted
+        .model
+        .lock()
+        .await
+        .saved_projects
+        .get_mut("HARNESS")
+        .unwrap()
+        .project
+        .networks
+        .get_mut(&254)
+        .unwrap()
+        .iface_addr = "127.0.0.1:2".to_string();
+    let refused = call(&restarted, &mut client, "[21] PROJECT CLOSE HARNESS").await;
+    assert_eq!(refused.status, 408, "{refused:?}");
+    assert_eq!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254].iface_addr,
+        "127.0.0.1:10001"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), restart_remote.read_u8())
+            .await
+            .is_err()
+    );
+    let _ = std::fs::remove_file(path);
+}
+
+#[tokio::test]
 async fn duplicate_oid_units_keep_independent_documents_through_service_restart() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

@@ -427,6 +427,10 @@ struct Database {
     config_values: HashMap<String, String>,
     scene_snapshots: HashMap<String, Vec<(String, u8)>>,
     database_files: HashMap<String, Project>,
+    /// Last PROJECT SAVE image per project. `None` marks a repository from
+    /// before saved images existed; its projects are then treated as saved.
+    #[serde(default)]
+    saved_projects: Option<HashMap<String, crate::SavedProjectImage>>,
     #[serde(default)]
     database_file_unit_documents: HashMap<String, HashMap<String, String>>,
     #[serde(default)]
@@ -489,6 +493,7 @@ impl Database {
             config_values: s.config_values.clone(),
             scene_snapshots: s.scene_snapshots.clone(),
             database_files,
+            saved_projects: Some(s.saved_projects.clone()),
             database_file_unit_documents: s.database_file_unit_documents.clone(),
             database_file_unit_pp_fields: s.database_file_unit_pp_fields.clone(),
             database_file_db_xml_extras: s.database_file_db_xml_extras.clone(),
@@ -537,6 +542,22 @@ impl Database {
                 .flatten()
                 .map(|object| object.oid.clone()),
         );
+        for image in self.saved_projects.iter().flat_map(HashMap::values) {
+            for network in image.project.networks.values() {
+                used_oids.insert(network.oid.clone());
+                used_oids.insert(network.interface_oid.clone());
+                used_oids.extend(network.units.values().map(|unit| unit.oid.clone()));
+            }
+            used_oids.extend(image.tables.db_levels.iter().map(|level| level.oid.clone()));
+            used_oids.extend(
+                image
+                    .tables
+                    .db_pending
+                    .iter()
+                    .map(|object| object.oid.clone()),
+            );
+        }
+        used_oids.remove("");
         for oid in &used_oids {
             reserve_restored_oid(oid);
         }
@@ -605,7 +626,12 @@ impl Database {
         s.access_admission_enforced = self.access_admission_enforced;
         s.access_snapshots = self.access_snapshots;
         s.access_snapshot_admission = self.access_snapshot_admission;
-        Ok(migrated_network_oids)
+        let images_missing = self.saved_projects.is_none();
+        match self.saved_projects {
+            Some(images) => s.saved_projects = images,
+            None => s.mark_all_projects_saved(),
+        }
+        Ok(migrated_network_oids || images_missing)
     }
 
     fn save(&self, path: &Path) -> io::Result<()> {
@@ -1815,6 +1841,8 @@ impl Service {
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {
                 seed_project_xml_metadata(&mut model, xml, &project)?;
+                // The imported project file is the first saved image.
+                model.mark_all_projects_saved();
                 Database::from_server(&model).save(&state_path)?
             }
             Err(e) => return Err(e),
@@ -4277,6 +4305,31 @@ impl Service {
         model.set_command_session(client.command_session);
         let response = model.handle(line);
         model.set_command_session(None);
+        // PROJECT CLOSE restores the last saved tree. For the configured
+        // project, that tree must still hold the hardware Network with the
+        // same address and interface binding as the running service.
+        if verb == "PROJECT" && sub == "CLOSE" && response.status < 400 {
+            let binding = |server: &Server| {
+                server
+                    .projects
+                    .get(&self.project)
+                    .and_then(|project| project.networks.get(&self.network))
+                    .map(|network| {
+                        (
+                            network.iface_type.to_ascii_uppercase(),
+                            network.iface_addr.clone(),
+                        )
+                    })
+            };
+            if binding(&model) != binding(&before) {
+                *model = before;
+                return err(
+                    tag,
+                    408,
+                    "408 Operation failed: saved project does not retain the configured network binding; PROJECT SAVE first",
+                );
+            }
+        }
         let retained_application_creation = response.status == status::ABSENT
             && verb == "NEW"
             && matches!(sub, "GROUP" | "PHANTOM")

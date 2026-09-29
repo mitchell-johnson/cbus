@@ -2488,7 +2488,9 @@ impl Server {
                     return err(tag, status::NOT_FOUND, "404 Project not open");
                 }
             }
-            self.project_close(tag)
+            // STOP only deselects; it does not unload unsaved edits.
+            self.current = None;
+            ok(tag, vec![], "200 OK")
         }
     }
 

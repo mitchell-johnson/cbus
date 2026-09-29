@@ -2084,6 +2084,35 @@ pub struct DbPendingObject {
     pub xml_order: Option<u16>,
 }
 
+/// Project-scoped database side tables, keyed without the project name so a
+/// snapshot can be restored under the same or another project.
+#[derive(Debug, Clone, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
+pub struct ProjectTables {
+    unit_documents: HashMap<String, String>,
+    unit_pp_fields: HashMap<String, BTreeSet<String>>,
+    db_xml_extras: HashMap<String, DbXmlExtras>,
+    db_fields: HashMap<String, String>,
+    objects: BTreeSet<String>,
+    db_levels: Vec<DbLevel>,
+    db_pending: Vec<DbPendingObject>,
+    /// OID-addressed field rows (`!oid/...`) for the project's identities.
+    /// Archives predate this field; only saved-project images carry it.
+    #[serde(default)]
+    oid_fields: HashMap<String, String>,
+}
+
+/// A project's database as of its last `PROJECT SAVE`.
+///
+/// Owned build-2001 captures show that DBSETXML and DBSET change only the
+/// loaded project: the project file is unchanged until `PROJECT SAVE`, and
+/// `PROJECT CLOSE` followed by `PROJECT LOAD` restores the saved tree,
+/// whatever `tag-autosave` is set to. The image is what CLOSE restores.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct SavedProjectImage {
+    project: Project,
+    tables: ProjectTables,
+}
+
 /// In-memory C-Gate server.
 #[derive(Clone)]
 pub struct Server {
@@ -2171,6 +2200,10 @@ pub struct Server {
     scene_snapshots: HashMap<String, Vec<(String, u8)>>,
     /// Two-phase shutdown state used by `SHUTDOWN`/`CONFIRM`.
     shutdown_pending: bool,
+    /// Last `PROJECT SAVE` image of each project. A project without an image
+    /// (never saved, or created by a verb with no captured save boundary)
+    /// is left unchanged by `PROJECT CLOSE`.
+    saved_projects: HashMap<String, SavedProjectImage>,
     /// Named in-memory database snapshots used by `DBSAVE`/`DBLOAD`.
     database_files: HashMap<String, Project>,
     /// Complete typed Unit XML stored with each internal project snapshot,
@@ -2260,6 +2293,7 @@ impl Server {
             session_tag: None,
             scene_snapshots: HashMap::new(),
             shutdown_pending: false,
+            saved_projects: HashMap::new(),
             database_files: HashMap::new(),
             database_file_unit_documents: HashMap::new(),
             database_file_unit_pp_fields: HashMap::new(),
@@ -2511,15 +2545,49 @@ impl Server {
             _ if starts_with(&upper, "PROJECT LIST") => self.project_list(&cmd.tag),
             _ if starts_with(&upper, "PROJECT NEW") => self.project_new(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT USE") => self.project_use(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT LOAD") => self.project_load(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT CLOSE") => self.project_close(&cmd.tag),
+            _ if starts_with(&upper, "PROJECT LOAD") => {
+                let response = self.project_load(&cmd.tag, &words);
+                // A server-file load replaces the project from that file.
+                if response.status < 400 && words.len() == 4 {
+                    self.mark_project_saved(words[2]);
+                }
+                response
+            }
+            _ if starts_with(&upper, "PROJECT CLOSE") => self.project_close(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT SAVE") => self.project_save(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT DELETE") => self.project_delete(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT COPY") => self.project_copy(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT RENAME") => self.project_rename(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT DELETE") => {
+                let response = self.project_delete(&cmd.tag, &words);
+                if response.status < 400 {
+                    self.saved_projects.remove(words[2]);
+                }
+                response
+            }
+            // Copy, rename and restore have no captured unsaved-edit
+            // boundary; the resulting project is treated as saved.
+            _ if starts_with(&upper, "PROJECT COPY") => {
+                let response = self.project_copy(&cmd.tag, &words);
+                if response.status < 400 {
+                    self.mark_project_saved(words[3]);
+                }
+                response
+            }
+            _ if starts_with(&upper, "PROJECT RENAME") => {
+                let response = self.project_rename(&cmd.tag, &words);
+                if response.status < 400 {
+                    self.saved_projects.remove(words[2]);
+                    self.mark_project_saved(words[3]);
+                }
+                response
+            }
             _ if starts_with(&upper, "PROJECT DIR") => self.project_dir(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT ARCHIVE") => self.project_archive(&cmd.tag, &words),
-            _ if starts_with(&upper, "PROJECT RESTORE") => self.project_restore(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT RESTORE") => {
+                let response = self.project_restore(&cmd.tag, &words);
+                if response.status < 400 && words.len() == 4 {
+                    self.mark_project_saved(words[2]);
+                }
+                response
+            }
             _ if starts_with(&upper, "PROJECT REPAIR") => self.project_repair(&cmd.tag, &words),
             _ if starts_with(&upper, "REPOSITORY LIST") => self.repository_list(&cmd.tag, &words),
             _ if starts_with(&upper, "NET OPEN") => self.net_open(&cmd.tag, &words),
@@ -2762,7 +2830,16 @@ impl Server {
         }
     }
 
-    fn project_close(&mut self, tag: &str) -> Response {
+    fn project_close(&mut self, tag: &str, words: &[&str]) -> Response {
+        // Native CLOSE unloads the project; its next LOAD reads the file
+        // written by the last PROJECT SAVE, discarding unsaved edits.
+        if let Some(name) = words
+            .get(2)
+            .map(|name| (*name).to_string())
+            .or_else(|| self.current.clone())
+        {
+            self.revert_project_to_saved(&name);
+        }
         self.current = None;
         ok(tag, vec![], "200 OK")
     }
@@ -2789,6 +2866,7 @@ impl Server {
             .expect("validated project")
             .to_string();
         self.save_nested_level_tags(&project);
+        self.mark_project_saved(&project);
         ok(tag, vec![], "200 OK")
     }
 
@@ -3288,81 +3366,102 @@ impl Server {
         ok(tag, vec![], "200 OK.")
     }
 
-    fn archive_unit_documents(&mut self, project: &str, archive: &str) {
+    /// Collect a project's side tables with project-relative keys.
+    fn project_tables(&self, project: &str) -> ProjectTables {
         let prefix = format!("{project}\u{1f}");
-        let documents = self
+        let strip = |key: &String| key.strip_prefix(&prefix).map(str::to_string);
+        let unit_documents = self
             .unit_documents
             .iter()
-            .filter_map(|(key, value)| {
-                key.strip_prefix(&prefix)
-                    .map(|oid| (oid.to_string(), value.clone()))
-            })
+            .filter_map(|(key, value)| strip(key).map(|oid| (oid, value.clone())))
             .collect();
-        let pp_fields = self
+        let unit_pp_fields = self
             .unit_pp_fields
             .iter()
-            .filter_map(|(key, value)| {
-                key.strip_prefix(&prefix)
-                    .map(|oid| (oid.to_string(), value.clone()))
-            })
+            .filter_map(|(key, value)| strip(key).map(|oid| (oid, value.clone())))
             .collect();
-        self.database_file_unit_documents
-            .insert(archive.to_string(), documents);
-        self.database_file_unit_pp_fields
-            .insert(archive.to_string(), pp_fields);
-        let extras = self
+        let db_xml_extras = self
             .db_xml_extras
             .iter()
-            .filter_map(|(key, value)| {
-                key.strip_prefix(&prefix)
-                    .map(|oid| (oid.to_string(), value.clone()))
-            })
+            .filter_map(|(key, value)| strip(key).map(|oid| (oid, value.clone())))
             .collect();
-        self.database_file_db_xml_extras
-            .insert(archive.to_string(), extras);
 
         let prefix = format!("//{project}");
         let slash = format!("{prefix}/");
-        self.database_file_db_fields.insert(
-            archive.to_string(),
-            self.db_fields
-                .iter()
-                .filter(|(path, _)| *path == &prefix || path.starts_with(&slash))
-                .map(|(path, value)| (path.clone(), value.clone()))
-                .collect(),
-        );
+        let db_fields = self
+            .db_fields
+            .iter()
+            .filter(|(path, _)| *path == &prefix || path.starts_with(&slash))
+            .map(|(path, value)| (path.clone(), value.clone()))
+            .collect();
         let project_oids = self.active_db_oids(project);
-        self.database_file_objects.insert(
-            archive.to_string(),
-            self.objects
-                .iter()
-                .filter(|path| {
-                    *path == &prefix
-                        || path.starts_with(&slash)
-                        || path.starts_with(&format!("{prefix}-"))
-                        || path
-                            .strip_prefix('!')
-                            .is_some_and(|oid| project_oids.contains(oid))
-                })
-                .cloned()
-                .collect(),
-        );
-        self.database_file_db_levels.insert(
-            archive.to_string(),
-            self.db_levels
-                .values()
-                .filter(|level| level.parent == prefix || level.parent.starts_with(&slash))
-                .cloned()
-                .collect(),
-        );
-        self.database_file_db_pending.insert(
-            archive.to_string(),
-            self.db_pending
-                .values()
-                .filter(|object| object.project == project)
-                .cloned()
-                .collect(),
-        );
+        let objects = self
+            .objects
+            .iter()
+            .filter(|path| {
+                *path == &prefix
+                    || path.starts_with(&slash)
+                    || path.starts_with(&format!("{prefix}-"))
+                    || path
+                        .strip_prefix('!')
+                        .is_some_and(|oid| project_oids.contains(oid))
+            })
+            .cloned()
+            .collect();
+        let mut db_levels = self
+            .db_levels
+            .values()
+            .filter(|level| level.parent == prefix || level.parent.starts_with(&slash))
+            .cloned()
+            .collect::<Vec<_>>();
+        db_levels
+            .sort_by(|a, b| (&a.parent, &a.oid, a.address).cmp(&(&b.parent, &b.oid, b.address)));
+        let mut db_pending = self
+            .db_pending
+            .values()
+            .filter(|object| object.project == project)
+            .cloned()
+            .collect::<Vec<_>>();
+        db_pending.sort_by(|a, b| (&a.oid, &a.path, &a.parent).cmp(&(&b.oid, &b.path, &b.parent)));
+        let oid_fields = self
+            .db_fields
+            .iter()
+            .filter(|(key, _)| {
+                key.strip_prefix('!')
+                    .map(|rest| rest.split('/').next().unwrap_or(rest))
+                    .is_some_and(|oid| project_oids.contains(oid))
+            })
+            .map(|(key, value)| (key.clone(), value.clone()))
+            .collect();
+        ProjectTables {
+            unit_documents,
+            unit_pp_fields,
+            db_xml_extras,
+            db_fields,
+            objects,
+            db_levels,
+            db_pending,
+            oid_fields,
+        }
+    }
+
+    fn archive_unit_documents(&mut self, project: &str, archive: &str) {
+        let tables = self.project_tables(project);
+        let archive = archive.to_string();
+        self.database_file_unit_documents
+            .insert(archive.clone(), tables.unit_documents);
+        self.database_file_unit_pp_fields
+            .insert(archive.clone(), tables.unit_pp_fields);
+        self.database_file_db_xml_extras
+            .insert(archive.clone(), tables.db_xml_extras);
+        self.database_file_db_fields
+            .insert(archive.clone(), tables.db_fields);
+        self.database_file_objects
+            .insert(archive.clone(), tables.objects);
+        self.database_file_db_levels
+            .insert(archive.clone(), tables.db_levels);
+        self.database_file_db_pending
+            .insert(archive, tables.db_pending);
     }
 
     fn restore_unit_document_archive(&mut self, archive: &str, project: &str) {
@@ -3371,6 +3470,49 @@ impl Server {
             .get(archive)
             .map(|record| record.name.clone())
             .unwrap_or_else(|| project.to_string());
+        let tables = ProjectTables {
+            unit_documents: self
+                .database_file_unit_documents
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            unit_pp_fields: self
+                .database_file_unit_pp_fields
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            db_xml_extras: self
+                .database_file_db_xml_extras
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            db_fields: self
+                .database_file_db_fields
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            objects: self
+                .database_file_objects
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            db_levels: self
+                .database_file_db_levels
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            db_pending: self
+                .database_file_db_pending
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            oid_fields: HashMap::new(),
+        };
+        self.apply_project_tables(&source, project, tables);
+    }
+
+    /// Merge snapshot side tables into `project`, remapping `//source` paths.
+    fn apply_project_tables(&mut self, source: &str, project: &str, tables: ProjectTables) {
         let source_prefix = format!("//{source}");
         let destination_prefix = format!("//{project}");
         let remap = |path: &str| {
@@ -3378,60 +3520,130 @@ impl Server {
                 .map(|suffix| format!("{destination_prefix}{suffix}"))
                 .unwrap_or_else(|| path.to_string())
         };
-        if let Some(documents) = self.database_file_unit_documents.get(archive) {
-            self.unit_documents.extend(
-                documents
-                    .iter()
-                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
-            );
+        self.unit_documents.extend(
+            tables
+                .unit_documents
+                .into_iter()
+                .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
+        );
+        self.unit_pp_fields.extend(
+            tables
+                .unit_pp_fields
+                .into_iter()
+                .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
+        );
+        self.db_xml_extras.extend(
+            tables
+                .db_xml_extras
+                .into_iter()
+                .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
+        );
+        self.db_fields.extend(
+            tables
+                .db_fields
+                .into_iter()
+                .map(|(path, value)| (remap(&path), value)),
+        );
+        self.db_fields.extend(tables.oid_fields);
+        self.objects
+            .extend(tables.objects.iter().map(|path| remap(path)));
+        for mut level in tables.db_levels {
+            level.parent = remap(&level.parent);
+            self.known_oids.insert(level.oid.clone());
+            let base = format!("{project}\u{1f}{}", level.oid);
+            let mut key = base.clone();
+            let mut suffix = 1_u64;
+            while self.db_levels.contains_key(&key) {
+                key = format!("{base}#{suffix}");
+                suffix += 1;
+            }
+            self.db_levels.insert(key, level);
         }
-        if let Some(pp_fields) = self.database_file_unit_pp_fields.get(archive) {
-            self.unit_pp_fields.extend(
-                pp_fields
-                    .iter()
-                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
-            );
+        for mut object in tables.db_pending {
+            object.project = project.to_string();
+            object.parent = remap(&object.parent);
+            object.path = object.path.as_deref().map(&remap);
+            self.known_oids.insert(object.oid.clone());
+            self.insert_db_pending_object(object);
         }
-        if let Some(extras) = self.database_file_db_xml_extras.get(archive) {
-            self.db_xml_extras.extend(
-                extras
-                    .iter()
-                    .map(|(oid, value)| (Self::unit_document_key(project, oid), value.clone())),
-            );
+    }
+
+    /// Record `project` as saved: `PROJECT CLOSE` later restores this image.
+    pub(crate) fn mark_project_saved(&mut self, project: &str) {
+        let Some(mut record) = self.projects.get(project).cloned() else {
+            return;
+        };
+        Self::reset_project_retries(&mut record);
+        // The configured-interface shell kept after DBNEW has no database
+        // identity and is never part of a saved tree.
+        record.networks.retain(|_, network| !network.oid.is_empty());
+        for network in record.networks.values_mut() {
+            network.state = NetworkState::Closed;
+            network.physical.clear();
+            network.levels.clear();
         }
-        if let Some(fields) = self.database_file_db_fields.get(archive) {
-            self.db_fields.extend(
-                fields
-                    .iter()
-                    .map(|(path, value)| (remap(path), value.clone())),
-            );
+        let tables = self.project_tables(project);
+        self.saved_projects.insert(
+            project.to_string(),
+            SavedProjectImage {
+                project: record,
+                tables,
+            },
+        );
+    }
+
+    /// Treat every loaded project as saved (fresh or pre-image repositories).
+    pub(crate) fn mark_all_projects_saved(&mut self) {
+        let names = self.projects.keys().cloned().collect::<Vec<_>>();
+        for name in names {
+            self.mark_project_saved(&name);
         }
-        if let Some(objects) = self.database_file_objects.get(archive) {
-            self.objects.extend(objects.iter().map(|path| remap(path)));
-        }
-        if let Some(levels) = self.database_file_db_levels.get(archive) {
-            for mut level in levels.clone() {
-                level.parent = remap(&level.parent);
-                self.known_oids.insert(level.oid.clone());
-                let base = format!("{project}\u{1f}{}", level.oid);
-                let mut key = base.clone();
-                let mut suffix = 1_u64;
-                while self.db_levels.contains_key(&key) {
-                    key = format!("{base}#{suffix}");
-                    suffix += 1;
-                }
-                self.db_levels.insert(key, level);
+    }
+
+    /// Discard unsaved database edits, as native `PROJECT CLOSE` does by
+    /// unloading the project. Runtime network state (open/closed, retries,
+    /// physical inventory and live levels) is not database state and is
+    /// retained for every Network that exists in the saved tree.
+    fn revert_project_to_saved(&mut self, name: &str) {
+        let Some(image) = self.saved_projects.get(name).cloned() else {
+            return;
+        };
+        let Some(current) = self.projects.remove(name) else {
+            return;
+        };
+        let project_oids: HashSet<String> = current
+            .networks
+            .values()
+            .flat_map(|network| {
+                std::iter::once(network.oid.clone())
+                    .chain(std::iter::once(network.interface_oid.clone()))
+                    .chain(network.units.values().map(|unit| unit.oid.clone()))
+            })
+            .collect();
+        // Scene snapshots are not part of the modeled saved tree.
+        let scenes = std::mem::take(&mut self.scene_snapshots);
+        self.delete_project_prefix(name, project_oids);
+        self.scene_snapshots = scenes;
+        let mut restored = image.project;
+        restored.name = name.to_string();
+        for (address, network) in &mut restored.networks {
+            if let Some(live) = current.networks.get(address) {
+                network.state = live.state;
+                network.retries = live.retries;
+                network.physical = live.physical.clone();
+                network.levels = live.levels.clone();
             }
         }
-        if let Some(objects) = self.database_file_db_pending.get(archive) {
-            for mut object in objects.clone() {
-                object.project = project.to_string();
-                object.parent = remap(&object.parent);
-                object.path = object.path.as_deref().map(&remap);
-                self.known_oids.insert(object.oid.clone());
-                self.insert_db_pending_object(object);
+        // Retain the non-database configured-interface shell, if any.
+        for (address, network) in &current.networks {
+            if network.oid.is_empty() && !restored.networks.contains_key(address) {
+                restored.networks.insert(*address, network.clone());
             }
         }
+        self.projects.insert(name.to_string(), restored);
+        self.apply_project_tables(name, name, image.tables);
+        self.invalidated_unit_oid_lookups
+            .retain(|(project, _)| project != name);
     }
 
     /// Native `REPOSITORY LIST`: this mock models no server-side project
