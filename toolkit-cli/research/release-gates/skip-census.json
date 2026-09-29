@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 445,
+    "test_modules": 446,
     "modules_without_skip_sites": 243,
-    "modules_with_skip_sites": 202,
+    "modules_with_skip_sites": 203,
     "modules_by_category": {
       "cgate_test_host": 119,
       "external_cgate_project": 1,
@@ -61,7 +61,7 @@
       "native_cgate_local": 45,
       "native_opt_in": 2,
       "original_model_runtime": 3,
-      "original_toolkit": 63,
+      "original_toolkit": 64,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 3,
@@ -74,7 +74,7 @@
     "native_modules": {
       "all": 109,
       "partial": 18,
-      "none": 75
+      "none": 76
     },
     "native_runnable_tests": 205,
     "native_selected_required_tests": 205,
@@ -5806,6 +5806,42 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_project_documentation.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation.py::test_vendor_inputs_reproduce_the_committed_receipt",
+          "kind": "decorator.skipif",
+          "condition": "not os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Set CBUS_TOOLKIT_EXE (and optionally CBUS_TOOLKIT_MAP) to regenerate the receipt",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_vendor_inputs_reproduce_the_committed_receipt"
+          ]
         }
       ]
     },
