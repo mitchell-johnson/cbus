@@ -1,0 +1,62 @@
+# Isolated offline staging stack for the cmqttd deployment rehearsal
+# (docs/deployment-rehearsal.md). Run it only through rehearse.sh, which
+# always passes a unique `-p` project name so every container, network and
+# volume is namespaced away from the production `cbus` stack.
+#
+# Nothing here reaches a real broker, CNI, PCI or C-Bus network:
+# - no `container_name`, no published host ports, no `env_file`;
+# - the only CNI is the Rust PCI simulator on the internal compose network;
+# - the only broker is a throwaway Mosquitto with persistence disabled;
+# - the only project is the committed synthetic fixture.
+
+name: ${STAGING_PROJECT:?use deploy/staging/rehearse.sh}
+
+services:
+  broker:
+    image: ${STAGING_MOSQUITTO_IMAGE:-eclipse-mosquitto:2}
+    restart: "no"
+    networks: [staging]
+    configs:
+      - source: mosquitto
+        target: /mosquitto/config/mosquitto.conf
+
+  simulator:
+    # The simulator ships in the same image as cmqttd.
+    image: ${STAGING_SIMULATOR_IMAGE:?set by rehearse.sh}
+    restart: "no"
+    networks: [staging]
+    command: ["cbus-simulator", "0.0.0.0", "10001"]
+
+  cmqttd:
+    image: ${STAGING_CMQTTD_IMAGE:?set by rehearse.sh}
+    # Plain TCP CNI mode exits 0 on CNI loss; the supervisor restarts it.
+    restart: always
+    networks: [staging]
+    depends_on: [broker, simulator]
+    environment:
+      MQTT_SERVER: broker
+      MQTT_PORT: "1883"
+      MQTT_USE_TLS: "0"
+      CNI_ADDR: simulator:10001
+      CBUS_TIMESYNC: "0"
+      CBUS_STATUS_RESYNC: ${STAGING_STATUS_RESYNC:-20}
+      CMQTTD_VERBOSITY: INFO
+      CMQTTD_CGATE_BIND: 127.0.0.1:20023
+      CMQTTD_CGATE_STATE: /var/lib/cmqttd/cgate.json
+    volumes:
+      - state:/var/lib/cmqttd
+      - ../../rust/testdata/fixtures/project.xml:/etc/cmqttd/project.cbz:ro
+
+configs:
+  mosquitto:
+    content: |
+      listener 1883
+      allow_anonymous true
+      persistence false
+
+networks:
+  staging:
+    internal: true
+
+volumes:
+  state:

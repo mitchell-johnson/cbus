@@ -213,6 +213,8 @@ rows.
 
 `cmqttd` tests launch the compiled daemon against an in-process MQTT 3.1.1 broker and a scripted fake PCI. They verify startup, subscriptions, discovery, state publication, command delivery, status sweeps, clock behavior, and reconnect-related flows without external services. The MQTT consistency regressions cover immediate opposite QoS 1 commands, PUBACKs, delayed and lost PCI confirmations, FIFO blocking, outcome-uncertain failure, per-command physical level requests, C-Gate cache population only from bus reports, transport-state publication, and a forced post-reconnect sweep.
 
+The resilience tests also cover three fault paths. In a broker crash and restart, the daemon resubscribes and republishes discovery without fabricating state. After a plain-TCP CNI drop, the daemon exits and a supervisor restart recovers it. Two MQTT clients each receive every state publish from a burst of bus events. The [staging rehearsal](deployment-rehearsal.md) repeats the broker, CNI and rollback checks with Docker against Mosquitto and `cbus-simulator`. It is offline evidence only.
+
 Routed PP tests cover one- and six-bridge standard CAL, page-aware, OEM memory,
 and GOC encoding plus exact Reply Network, unit, parameter, tag and length
 correlation. Lock-protected SAVE additionally exercises the routed Unlock

@@ -193,6 +193,18 @@ impl MiniBroker {
         }
     }
 
+    /// Simulate a broker crash and restart on the same port: drop every
+    /// client (as [`MiniBroker::disconnect_clients`]) and forget
+    /// subscriptions and retained messages, as a broker without persistence
+    /// would. The inbound publish log and counters are kept so tests can
+    /// compare before and after.
+    pub fn restart(&self) {
+        self.disconnect_clients();
+        let mut st = self.state.lock().unwrap();
+        st.subscriptions.clear();
+        st.retained.clear();
+    }
+
     /// While `refusing`, close every new connection immediately after
     /// accepting it, so clients observe an unavailable broker. Clearing it
     /// lets clients reconnect on the same port (a broker restart).
@@ -296,6 +308,11 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
         let Ok((hdr, body)) = packet else {
             break;
         };
+        // A dropped connection must not record a packet that raced its
+        // kill signal (e.g. a SUBSCRIBE after restart() cleared state).
+        if state.lock().unwrap().clients[client_index].tx.is_none() {
+            break;
+        }
         let kind = hdr >> 4;
         match kind {
             1 => {

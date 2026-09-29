@@ -631,3 +631,311 @@ async fn auth_file_accepted_and_daemon_connects() {
     std::fs::remove_file(&auth).ok();
     assert!(sys.broker.errors().is_empty());
 }
+
+// ------------------------------------------------ broker/CNI recovery (P11.03)
+
+const SET_WILDCARD: &str = "homeassistant/light/+/set";
+const BRIDGE_STATE: &str = "homeassistant/binary_sensor/cbus_cmqttd/state";
+const META_CONFIG: &str = "homeassistant/binary_sensor/cbus_cmqttd/config";
+const GROUP1_CONFIG: &str = "homeassistant/light/cbus_1/config";
+const GROUP10_CONFIG: &str = "homeassistant/light/cbus_10/config";
+
+fn retained_is(sys: &System, topic: &str, payload: &[u8]) -> bool {
+    sys.broker.retained(topic).as_deref() == Some(payload)
+}
+
+#[tokio::test]
+async fn broker_restart_resubscribes_and_republishes_discovery() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    require(STARTUP, "initial retained discovery and state", || {
+        retained_is(&sys, BRIDGE_STATE, b"ON")
+            && sys.broker.retained(META_CONFIG).is_some()
+            && sys.broker.retained(GROUP1_CONFIG).is_some()
+            && sys.broker.retained(GROUP10_CONFIG).is_some()
+    })
+    .await;
+    require(STARTUP, "startup status sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+    let discovery_before = [META_CONFIG, GROUP1_CONFIG, GROUP10_CONFIG]
+        .map(|topic| sys.broker.retained(topic).expect("retained discovery"));
+    let sweeps_before = sys.pci.count_payload(&configured_sweep()[0]);
+
+    // Crash the broker: sockets drop without DISCONNECT and the broker
+    // comes back with no sessions, subscriptions or retained messages.
+    let mark = sys.broker.publishes().len();
+    let connections_before = sys.broker.connections();
+    sys.broker.restart();
+    assert!(!sys.broker.has_subscription(SET_WILDCARD));
+    assert!(sys.broker.retained(GROUP1_CONFIG).is_none());
+
+    require(STARTUP, "MQTT reconnect", || {
+        sys.broker.connections() > connections_before
+    })
+    .await;
+    require(STARTUP, "command wildcard resubscribed", || {
+        sys.broker.has_subscription(SET_WILDCARD)
+    })
+    .await;
+    require(STARTUP, "discovery and bridge state republished", || {
+        retained_is(&sys, BRIDGE_STATE, b"ON")
+            && [META_CONFIG, GROUP1_CONFIG, GROUP10_CONFIG]
+                .iter()
+                .all(|topic| sys.broker.retained(topic).is_some())
+    })
+    .await;
+    // Byte-identical discovery: Home Assistant keeps the same entities.
+    for (topic, before) in [META_CONFIG, GROUP1_CONFIG, GROUP10_CONFIG]
+        .iter()
+        .zip(discovery_before.iter())
+    {
+        assert_eq!(
+            sys.broker.retained(topic).as_ref(),
+            Some(before),
+            "{topic} changed across the broker restart"
+        );
+    }
+
+    // No fabricated state: the daemon has no fresh bus evidence, so it
+    // republishes no light state and does not repeat the startup sweep.
+    // Light state returns with the next genuine observation or the
+    // periodic -S resync.
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    let after = &sys.broker.publishes()[mark..];
+    assert!(
+        !after
+            .iter()
+            .any(|p| p.topic.starts_with("homeassistant/light/") && p.topic.ends_with("/state")),
+        "light state published after broker restart without bus evidence"
+    );
+    assert_eq!(
+        sys.pci.count_payload(&configured_sweep()[0]),
+        sweeps_before,
+        "an MQTT reconnect must not repeat the startup status sweep"
+    );
+
+    // A genuine bus event after the restart is retained again.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x79, 0x01]));
+    require(STARTUP, "post-restart observed state retained", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_1/state")
+            .is_some_and(|payload| parse_json(&payload)["state"] == "ON")
+    })
+    .await;
+
+    // A command published after the restart reaches the PCI exactly once.
+    let commands_before = sys.pci.count_payload(CMD_FRAME);
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    require(COMMAND_DRAIN, "post-restart command frame", || {
+        sys.pci.count_payload(CMD_FRAME) == commands_before + 1
+    })
+    .await;
+    assert!(sys.broker.errors().is_empty(), "{:?}", sys.broker.errors());
+}
+
+/// Plain `-t` CNI mode has no in-process reconnect: on TCP loss cmqttd
+/// retains bridge state OFF and exits 0 so the container supervisor
+/// (`restart: always`) starts a fresh process. This asserts that policy and
+/// that the restarted process fully recovers against the same broker.
+#[tokio::test]
+async fn cni_tcp_drop_exits_and_supervisor_restart_recovers() {
+    let mut sys = start_default().await;
+    wait_started(&sys).await;
+    require(STARTUP, "initial sweep and bridge state", || {
+        retained_is(&sys, BRIDGE_STATE, b"ON")
+            && configured_sweep()
+                .iter()
+                .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+    let discovery_before = sys.broker.retained(GROUP1_CONFIG).expect("discovery");
+
+    sys.pci.kick();
+    let status = sys
+        .daemon
+        .wait_exit(Duration::from_secs(10))
+        .await
+        .expect("plain TCP mode exits on CNI loss");
+    assert!(status.success(), "clean exit expected, got {status:?}");
+    require(Duration::from_secs(2), "retained bridge OFF", || {
+        retained_is(&sys, BRIDGE_STATE, b"OFF")
+    })
+    .await;
+    // The retained light config survives the process exit on the broker.
+    assert_eq!(
+        sys.broker.retained(GROUP1_CONFIG),
+        Some(discovery_before.clone())
+    );
+
+    // The supervisor restart: a fresh process with identical arguments.
+    let broker_port = sys.broker.port().to_string();
+    let pci_addr = format!("127.0.0.1:{}", sys.pci.port());
+    let project = project_file();
+    sys.daemon = cbus_test_support::proc::Daemon::spawn(
+        BIN,
+        &[
+            "-b",
+            "127.0.0.1",
+            "-p",
+            &broker_port,
+            "--broker-disable-tls",
+            "-t",
+            &pci_addr,
+            "-T",
+            "0",
+            "-v",
+            "DEBUG",
+            "-P",
+            &project,
+        ],
+    );
+    require(STARTUP, "CNI reconnect", || sys.pci.connections() >= 2).await;
+    require(STARTUP, "re-init smart connect", || {
+        sys.pci.smart_connect_count() >= 2
+    })
+    .await;
+    require(STARTUP, "fresh configured sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 2)
+    })
+    .await;
+    require(STARTUP, "retained bridge ON after restart", || {
+        retained_is(&sys, BRIDGE_STATE, b"ON")
+    })
+    .await;
+    assert_eq!(sys.broker.retained(GROUP1_CONFIG), Some(discovery_before));
+
+    let commands_before = sys.pci.count_payload(CMD_FRAME);
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    require(COMMAND_DRAIN, "command after supervisor restart", || {
+        sys.pci.count_payload(CMD_FRAME) == commands_before + 1
+    })
+    .await;
+}
+
+/// Two independent MQTT subscribers (e.g. Home Assistant plus a logger)
+/// each receive every state publish of a bus-event burst, in bus order.
+#[tokio::test]
+async fn two_client_mqtt_fanout_under_event_burst() {
+    use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
+    use std::sync::{Arc, Mutex};
+
+    type PublishLog = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
+    const FILTER: &str = "homeassistant/light/+/state";
+    const BURST: u8 = 60;
+
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    require(STARTUP, "startup status sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+
+    let mut received = Vec::new();
+    for name in ["fanout-a", "fanout-b"] {
+        let log: PublishLog = Arc::default();
+        let mut options = MqttOptions::new(name, "127.0.0.1", sys.broker.port());
+        options.set_keep_alive(Duration::from_secs(30));
+        let (client, mut eventloop) = AsyncClient::new(options, 16);
+        client.subscribe(FILTER, QoS::AtMostOnce).await.unwrap();
+        let sink = log.clone();
+        tokio::spawn(async move {
+            // keep the client alive for the task's lifetime
+            let _client = client;
+            while let Ok(event) = eventloop.poll().await {
+                if let Event::Incoming(Packet::Publish(publish)) = event {
+                    sink.lock()
+                        .unwrap()
+                        .push((publish.topic, publish.payload.to_vec()));
+                }
+            }
+        });
+        received.push(log);
+    }
+    require(STARTUP, "both subscribers attached", || {
+        sys.broker
+            .subscriptions()
+            .iter()
+            .filter(|filter| *filter == FILTER)
+            .count()
+            == 2
+    })
+    .await;
+    // Settle past any late startup readback so the burst window is clean.
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    let mark = sys.broker.publishes().len();
+    for log in &received {
+        log.lock().unwrap().clear();
+    }
+
+    // Burst: instant ramps of group 1 through levels 1..=BURST, interleaved
+    // with ON/OFF toggles of group 10, written back to back by the CNI.
+    for level in 1..=BURST {
+        sys.pci
+            .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x02, 0x01, level]));
+        let toggle = if level % 2 == 0 { 0x79 } else { 0x01 };
+        sys.pci
+            .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, toggle, 0x0a]));
+    }
+
+    let expected_len = 2 * BURST as usize;
+    let published = || {
+        sys.broker.publishes()[mark..]
+            .iter()
+            .filter(|p| cbus_test_support::broker::topic_matches(FILTER, &p.topic))
+            .map(|p| (p.topic.clone(), p.payload.clone()))
+            .collect::<Vec<_>>()
+    };
+    require(
+        Duration::from_secs(30),
+        "every burst state published",
+        || published().len() >= expected_len,
+    )
+    .await;
+    require(
+        Duration::from_secs(30),
+        "every subscriber caught up",
+        || {
+            received
+                .iter()
+                .all(|log| log.lock().unwrap().len() >= expected_len)
+        },
+    )
+    .await;
+    tokio::time::sleep(Duration::from_millis(300)).await;
+
+    let published = published();
+    assert_eq!(published.len(), expected_len, "one state per bus event");
+    let levels = published
+        .iter()
+        .filter(|(topic, _)| topic == "homeassistant/light/cbus_1/state")
+        .map(|(_, payload)| parse_json(payload)["brightness"].as_u64().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(
+        levels,
+        (1..=BURST as u64).collect::<Vec<_>>(),
+        "bus order kept"
+    );
+    let toggles = published
+        .iter()
+        .filter(|(topic, _)| topic == "homeassistant/light/cbus_10/state")
+        .map(|(_, payload)| parse_json(payload)["state"].as_str().unwrap().to_owned())
+        .collect::<Vec<_>>();
+    assert_eq!(toggles.len(), BURST as usize);
+    assert_eq!(toggles.last().map(String::as_str), Some("ON"));
+    for (index, log) in received.iter().enumerate() {
+        assert_eq!(
+            *log.lock().unwrap(),
+            published,
+            "subscriber {index} diverged from the daemon's publish order"
+        );
+    }
+}
