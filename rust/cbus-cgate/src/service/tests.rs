@@ -5724,6 +5724,84 @@ async fn failed_persistence_rolls_back_database_changes() {
     std::fs::remove_dir(path).unwrap();
 }
 
+/// Native C-Gate 3.4.0.2001 answers every named `SCENE PLAY`/`RECORD` with
+/// 401: its command class `nJ` looks names up in table `BS`, which nothing
+/// fills, while the scene loader `AY` registers in `Bm`. cmqttd deliberately
+/// implements both verbs (docs/cmqttd-cgate.md, "Deliberate native
+/// deviations"). Only an unrecorded scene keeps the native 401.
+#[tokio::test]
+async fn named_scene_record_and_play_deliberately_extend_native_401() {
+    let path = state_path();
+    let (pci_client, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci_client.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        database_pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+
+    let absent = service
+        .handle(
+            &mut ClientState::default(),
+            "[absent] SCENE PLAY house evening",
+        )
+        .await;
+    assert_eq!(absent.status, 401);
+    assert_eq!(absent.final_text, "401 Scene not found");
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote_read.read_u8())
+            .await
+            .is_err(),
+        "an unrecorded scene must not reach the PCI"
+    );
+
+    service
+        .observe(&CBusEvent::LevelReport {
+            app: 56,
+            block_start: 0,
+            levels: vec![None, Some(42)],
+        })
+        .await;
+    let record = service
+        .handle(
+            &mut ClientState::default(),
+            "[record] SCENE RECORD house evening",
+        )
+        .await;
+    assert_eq!(record.status, 200, "{record:?}");
+    assert_eq!(
+        service.model.lock().await.scene_snapshots["house/evening"],
+        vec![("//HARNESS/254/56/1".to_string(), 42)]
+    );
+
+    let play = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[play] SCENE PLAY house evening",
+                )
+                .await
+        }
+    });
+    let request = database_pci_line(&mut remote_read).await;
+    assert!(request.starts_with(b"\\05380002012A"), "{request:?}");
+    remote_write
+        .write_all(&[request[request.len() - 2], b'.'])
+        .await
+        .unwrap();
+    assert_eq!(play.await.unwrap().status, 200);
+    let status = database_pci_line(&mut remote_read).await;
+    assert!(status.starts_with(b"\\05FF00"), "{status:?}");
+    std::fs::remove_file(path).unwrap();
+}
+
 #[tokio::test]
 async fn corrupt_database_is_not_overwritten() {
     let path = state_path();
