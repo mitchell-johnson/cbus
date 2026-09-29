@@ -1113,8 +1113,17 @@
     },
     {
       "id": "project-documentation",
-      "status": "pending",
-      "evidence": []
+      "status": "in_progress",
+      "evidence": [
+        "src/cbus_toolkit/project_documentation.py",
+        "src/cbus_toolkit/cli.py",
+        "tests/test_project_documentation.py",
+        "research/project_documentor_static.py",
+        "research/experiments/2026-09-30/project-documentor-static.json",
+        "research/experiments/2026-09-30/project-documentor-static.md",
+        "docs/project-documentation.md"
+      ],
+      "limits": "Offline `project document` reads one bounded legacy XML/CBZ snapshot and writes a new UTF-8 (BOM, CRLF) HTML page that reproduces the statically recovered Toolkit 1.18.0.2754 Document Project structure: head/style/header block, contents with the original `<li \\>` items and skipped application/group 255, per-network facts, application and group sections, trigger-group Events with Action Selectors/Values/Levels names, the Units section with BURDEN/XC100B/XC305B heading-only units, and the first-match factory selection over all 223 pinned registrations by upper-case type and numeric firmware range. The base, Clock, General Input and Custom Scene Key Unit bodies and the DIN RELDN4/8/8B/12 and DIMDN4/4F/8/8F output table are recovered; the other output types and bridges are partial; 25 other documentor bodies, all 14 ActionSelectorUse overrides, group Inputs/Outputs/Other unit usage and the status-report interval are unrecovered and are explicitly marked in the page and in a final Not documented (unrecovered) section. Calculator lines need a user-supplied catalogue. Output is deterministic and never overwrites. A pinned static receipt verifies the reproduced literals, registrations, VMT slots, level names and resource strings against the original EXE/MAP without executing it. Byte and visual parity with an original page are unassessed (no original output captured); printing, the progress/cancel dialog, the LoadAndSort key, locale month names, the scan-error branch and native C-Gate 3 projects are not implemented or unassessed."
     },
     {
       "id": "dali-commissioning",

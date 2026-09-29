@@ -50,6 +50,11 @@ for images. Report `diagnostics`, orphans and circular joins as project facts,
 not live topology; layout, print and pixel parity are unassessed. See
 `toolkit-cli/docs/topology.md`.
 
+`project document FILE [--output NEW] [--network N]` writes the Toolkit Document
+Project HTML (UTF-8 BOM, CRLF) and never overwrites. Treat every `not documented
+(unrecovered)` marker as missing evidence rather than a project fact; byte/visual
+parity and printing are unassessed. See `toolkit-cli/docs/project-documentation.md`.
+
 Scanner text is keyboard-wedge input: Toolkit 1.18 recognizes a 28-plus-character
 software configuration code (catalogue in characters 1–16, serial from 17) and
 12/28-character unit-dialog serials. It has no `CBUS:` prefix. Use

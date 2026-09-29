@@ -369,6 +369,16 @@ cbus-toolkit project topology house.cbz --far-side 254/3
 cbus-toolkit project topology house.cbz --format svg --output topology.svg
 ```
 
+`project document` writes the Toolkit Document Project HTML page for a saved
+XML/CBZ project from statically recovered Toolkit 1.18 rules. It never
+overwrites. Unrecovered per-type bodies and data are marked, never guessed;
+byte/visual parity and printing are unassessed. See
+[project documentation](docs/project-documentation.md).
+
+```sh
+cbus-toolkit project document house.cbz --output house.html
+```
+
 ## C-Gate and PCI
 
 Outgoing CAL routes can also be encoded and inspected offline:

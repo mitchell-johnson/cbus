@@ -1,0 +1,4200 @@
+{
+  "checks": {
+    "custom_scene_key_unit_base_only": true,
+    "din_profiles_are_dimmer_units": true,
+    "documentor_methods": true,
+    "firmware_within_limits": true,
+    "format_html_string_replace_all_ignore_case": true,
+    "hex_address_format": true,
+    "levels_names": true,
+    "literals:DisplayHTMLApplication": true,
+    "literals:DisplayHTMLGroup": true,
+    "literals:DisplayHTMLLevel": true,
+    "literals:DisplayHTMLNetwork": true,
+    "literals:DisplayHTMLUnit": true,
+    "literals:FormatHTMLString": true,
+    "literals:TBridgeDocumentor.DocumentHTML": true,
+    "literals:TOutputDocumentor.DocumentHTML": true,
+    "literals:TProjectDocumentor.GetAllUnitProgramming": true,
+    "literals:TProjectDocumentor.GetNetworkMinimumStatusReportInterval": true,
+    "literals:TProjectDocumentor.InsertHTMLApplication": true,
+    "literals:TProjectDocumentor.InsertHTMLContents": true,
+    "literals:TProjectDocumentor.InsertHTMLGroup": true,
+    "literals:TProjectDocumentor.InsertHTMLGroupInput": true,
+    "literals:TProjectDocumentor.InsertHTMLGroupOther": true,
+    "literals:TProjectDocumentor.InsertHTMLGroupOutput": true,
+    "literals:TProjectDocumentor.InsertHTMLNetworkNEW": true,
+    "literals:TProjectDocumentor.InsertHTMLTriggerGroup": true,
+    "literals:TProjectDocumentor.InsertHTMLUnit": true,
+    "literals:TProjectDocumentor.InsertHTMLUnits": true,
+    "literals:TProjectDocumentor.OnDocumentHTMLnew": true,
+    "literals:TProjectNodeHelper.DocumentProject": true,
+    "literals:TUnitTypeDocumentor.DocumentHTML": true,
+    "registration_symbols": true,
+    "registrations": true,
+    "resource:62334": true,
+    "resource:62345": true,
+    "resource:62346": true,
+    "resource:62347": true,
+    "resource:63389": true,
+    "resource_use:GeneratingDocumentation": true,
+    "resource_use:SetCurrentNetwork": true,
+    "resource_use:date_format": true,
+    "save_app_path": true,
+    "save_utf8": true,
+    "trigger_application_202": true,
+    "unassigned_application_255": true,
+    "unused_group_255": true
+  },
+  "din_profile_dimmer_units": {
+    "DIMDN4": {
+      "classes": [
+        "TDIMDN4"
+      ],
+      "dimmer_unit": true
+    },
+    "DIMDN4F": {
+      "classes": [
+        "TDIMDN4F"
+      ],
+      "dimmer_unit": true
+    },
+    "DIMDN8": {
+      "classes": [
+        "TDIMDN8"
+      ],
+      "dimmer_unit": true
+    },
+    "DIMDN8F": {
+      "classes": [
+        "TDIMDN8F"
+      ],
+      "dimmer_unit": true
+    },
+    "RELDN12": {
+      "classes": [
+        "TRELDN12"
+      ],
+      "dimmer_unit": true
+    },
+    "RELDN4": {
+      "classes": [
+        "TRELDN4"
+      ],
+      "dimmer_unit": true
+    },
+    "RELDN8": {
+      "classes": [
+        "TRELDN8"
+      ],
+      "dimmer_unit": true
+    },
+    "RELDN8B": {
+      "classes": [
+        "TRELDN8B"
+      ],
+      "dimmer_unit": true
+    }
+  },
+  "documentor_classes": {
+    "ArchitecturalDimmer": {
+      "action_selector_use": "ArchitecturalDimmer",
+      "ancestry": [
+        "TArchitecturalDimmerDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "ArchitecturalDimmer"
+    },
+    "Bridge": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TBridgeDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "partial",
+      "document_html": "Bridge"
+    },
+    "BytecraftDimmer": {
+      "action_selector_use": "BytecraftDimmer",
+      "ancestry": [
+        "TBytecraftDimmerDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "BytecraftDimmer"
+    },
+    "CBusWirelessInput": {
+      "action_selector_use": "CBusWirelessInput",
+      "ancestry": [
+        "TCBusWirelessInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "CBusWirelessInput"
+    },
+    "ClassicKeyInput": {
+      "action_selector_use": "ClassicKeyInput",
+      "ancestry": [
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "ClassicKeyInput"
+    },
+    "ClassicOutput": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TClassicOutputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "ClassicOutput"
+    },
+    "Clock": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TClockDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "recovered",
+      "document_html": "UnitType"
+    },
+    "CustomSceneController": {
+      "action_selector_use": "CustomSceneController",
+      "ancestry": [
+        "TCustomSceneControllerDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "CustomSceneController"
+    },
+    "CustomSceneKeyUnit": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TCustomSceneKeyUnitDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "recovered",
+      "document_html": "CustomSceneKeyUnit"
+    },
+    "DALI2B": {
+      "action_selector_use": "DALI2B",
+      "ancestry": [
+        "TDALI2BDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "DALI2B"
+    },
+    "DLT": {
+      "action_selector_use": "NeoProInput",
+      "ancestry": [
+        "TDLTDocumentor",
+        "TNeoProInputDocumentor",
+        "TNeoInputDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "DLT"
+    },
+    "DMXGateway": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TDMXGatewayDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "DMXGateway"
+    },
+    "DigitalTemperatureSensor": {
+      "action_selector_use": "DigitalTemperatureSensor",
+      "ancestry": [
+        "TDigitalTemperatureSensorDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "DigitalTemperatureSensor"
+    },
+    "ErrorReportOutput": {
+      "action_selector_use": "ErrorReportOutput",
+      "ancestry": [
+        "TErrorReportOutputDocumentor",
+        "TOutputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "partial",
+      "document_html": "Output"
+    },
+    "FanController": {
+      "action_selector_use": "FanController",
+      "ancestry": [
+        "TFanControllerDocumentor",
+        "TOutputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "FanController"
+    },
+    "GeneralInput": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TGeneralInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "recovered",
+      "document_html": "UnitType"
+    },
+    "LightLevelSensor": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TLightLevelSensorDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "LightLevelSensor"
+    },
+    "Multisensor": {
+      "action_selector_use": "NeoInput",
+      "ancestry": [
+        "TMultisensorDocumentor",
+        "TNeoInputDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "Multisensor"
+    },
+    "NeoInput": {
+      "action_selector_use": "NeoInput",
+      "ancestry": [
+        "TNeoInputDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "NeoInput"
+    },
+    "NeoProInput": {
+      "action_selector_use": "NeoProInput",
+      "ancestry": [
+        "TNeoProInputDocumentor",
+        "TNeoInputDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "NeoProInput"
+    },
+    "Output": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TOutputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "partial",
+      "document_html": "Output"
+    },
+    "PIR": {
+      "action_selector_use": "ClassicKeyInput",
+      "ancestry": [
+        "TPIRDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "PIR"
+    },
+    "RemoteControl": {
+      "action_selector_use": "RemoteControl",
+      "ancestry": [
+        "TRemoteControlDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "RemoteControl"
+    },
+    "SENTEMP": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TSENTEMPDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "SENTEMP"
+    },
+    "SENTEMPPro": {
+      "action_selector_use": "SENTEMPPro",
+      "ancestry": [
+        "TSENTEMPProDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "SENTEMPPro"
+    },
+    "ST7LightLevelSensor": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TST7LightLevelSensorDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "ST7LightLevelSensor"
+    },
+    "ST7PIRSensor": {
+      "action_selector_use": "ClassicKeyInput",
+      "ancestry": [
+        "TST7PIRSensorDocumentor",
+        "TClassicKeyInputDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "ST7PIRSensor"
+    },
+    "Thermostat": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TThermostatDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "Thermostat"
+    },
+    "UnitType": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "recovered",
+      "document_html": "UnitType"
+    },
+    "WHAA": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TWHAADocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "WHAA"
+    },
+    "WirelessGateway": {
+      "action_selector_use": "UnitType",
+      "ancestry": [
+        "TWirelessGatewayDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "WirelessGateway"
+    },
+    "WirelessGatewayAdvanced": {
+      "action_selector_use": "WirelessGatewayAdvanced",
+      "ancestry": [
+        "TWirelessGatewayAdvancedDocumentor",
+        "TWirelessGatewayDocumentor",
+        "TUnitTypeDocumentor",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "body_status": "unrecovered",
+      "document_html": "WirelessGatewayAdvanced"
+    }
+  },
+  "format": "cbus-toolkit-project-documentor-static-v1",
+  "levels_names": {
+    "202": "Action Selectors",
+    "203": "Values"
+  },
+  "limit": "This verifies pinned original routines, factory registrations, VMT slots and the strings the CLI reproduces. It does not execute the Toolkit, load a project, compare a generated page, recover per-unit group-usage or unrecovered documentor bodies, print, or show the progress dialog.",
+  "method_spans": {
+    "DisplayHTMLApplication": {
+      "bytes": 284,
+      "end": "0xca5924",
+      "sha256": "453d2e9acc632dc47c857a14968b380569d828c272962af7e258017cb651210e",
+      "start": "0xca5808"
+    },
+    "DisplayHTMLGroup": {
+      "bytes": 320,
+      "end": "0xca5c6c",
+      "sha256": "3b654652b21badb0e10e63152d4edd6353022923250e96575f34a604846b2644",
+      "start": "0xca5b2c"
+    },
+    "DisplayHTMLLevel": {
+      "bytes": 312,
+      "end": "0xca5da4",
+      "sha256": "5334a86735beb390967d1a0374af746be64fe0856fe1584d7d8c8c1bf11ad301",
+      "start": "0xca5c6c"
+    },
+    "DisplayHTMLNetwork": {
+      "bytes": 216,
+      "end": "0xca59fc",
+      "sha256": "e640d30278824b4a8b65f2879c7e15078c2020625d43ae265c89116e86699a4c",
+      "start": "0xca5924"
+    },
+    "DisplayHTMLUnit": {
+      "bytes": 304,
+      "end": "0xca5b2c",
+      "sha256": "bb1b82be86b3e9ea3f57aa546d381a8ee1e0a933dbf62b8c7f9d399359ee50d3",
+      "start": "0xca59fc"
+    },
+    "FormatHTMLString": {
+      "bytes": 236,
+      "end": "0xca5e90",
+      "sha256": "3bc9716bb511237b27d129b00719580ffec0259b003dc7ca18aea6f7436b9b1c",
+      "start": "0xca5da4"
+    },
+    "TBridgeDocumentor.DocumentHTML": {
+      "bytes": 1648,
+      "end": "0xd3f308",
+      "sha256": "7a061cc6277445633e37b35ba55e28b602612a8275f74bae96d6d69178c2101d",
+      "start": "0xd3ec98"
+    },
+    "TOutputDocumentor.DocumentHTML": {
+      "bytes": 1612,
+      "end": "0xd24e10",
+      "sha256": "b3ff7d87501bf187968d6ac6ca5bf2452d43a7afdeb01698af37965195051e4e",
+      "start": "0xd247c4"
+    },
+    "TProjectDocumentor.GetAllUnitProgramming": {
+      "bytes": 1048,
+      "end": "0xf05920",
+      "sha256": "80ec6f35b53e9d6680f1a9d6fac83f92712cd4490e4251edf629b775cb58cda3",
+      "start": "0xf05508"
+    },
+    "TProjectDocumentor.GetNetworkMinimumStatusReportInterval": {
+      "bytes": 400,
+      "end": "0xf05280",
+      "sha256": "6628a6add1ff313c0369ba83886c9bc2e7f9d274c4840b683efd4cc4de152dfb",
+      "start": "0xf050f0"
+    },
+    "TProjectDocumentor.InsertHTMLApplication": {
+      "bytes": 876,
+      "end": "0xf078c8",
+      "sha256": "3b267aa8a400e1e75c4dc87ddf617f7441c0eb6917fa3fd9a8b4a96310a5669b",
+      "start": "0xf0755c"
+    },
+    "TProjectDocumentor.InsertHTMLContents": {
+      "bytes": 1116,
+      "end": "0xf06f78",
+      "sha256": "a9e09549bb0cc2324968184a37cdd3af93ef162fc4a756fc5fa4baf01d83d1ac",
+      "start": "0xf06b1c"
+    },
+    "TProjectDocumentor.InsertHTMLGroup": {
+      "bytes": 1176,
+      "end": "0xf07d60",
+      "sha256": "f770399f648094e6aecd66bee730c0bdb81217cea49686b739a9fab2f2c728ad",
+      "start": "0xf078c8"
+    },
+    "TProjectDocumentor.InsertHTMLGroupInput": {
+      "bytes": 544,
+      "end": "0xf085d4",
+      "sha256": "c1192b93dd1037aa4152bcef1e004bde3e8dd8360bb923eb93e1f9a3ae0ce941",
+      "start": "0xf083b4"
+    },
+    "TProjectDocumentor.InsertHTMLGroupOther": {
+      "bytes": 544,
+      "end": "0xf08a18",
+      "sha256": "17d78fb32193644a47c1305b3b62fbea344882a2161314eb7a56c3e784bee326",
+      "start": "0xf087f8"
+    },
+    "TProjectDocumentor.InsertHTMLGroupOutput": {
+      "bytes": 548,
+      "end": "0xf087f8",
+      "sha256": "5a1379c3637d283878a69574c114bd35810dbbf627bad8e619d02d5855d1983f",
+      "start": "0xf085d4"
+    },
+    "TProjectDocumentor.InsertHTMLNetworkNEW": {
+      "bytes": 1416,
+      "end": "0xf0755c",
+      "sha256": "230eba4aa832dcd1334f1308865669bfd793d4527d14181c5af173d7c67a5d3e",
+      "start": "0xf06fd4"
+    },
+    "TProjectDocumentor.InsertHTMLTriggerGroup": {
+      "bytes": 1620,
+      "end": "0xf083b4",
+      "sha256": "809b055f49b8c13d976f1360bf639b1cd63a020ab33a41893a3080937f9e573a",
+      "start": "0xf07d60"
+    },
+    "TProjectDocumentor.InsertHTMLUnit": {
+      "bytes": 860,
+      "end": "0xf08edc",
+      "sha256": "2f03d63d50e25f449547f47683b1f800800d7c89f794aadc774c0a45878933a5",
+      "start": "0xf08b80"
+    },
+    "TProjectDocumentor.InsertHTMLUnits": {
+      "bytes": 360,
+      "end": "0xf08b80",
+      "sha256": "c6cba229d60e1f5da735f4b4fab085d5d5c0953553cc888f0ec0ce3421525be7",
+      "start": "0xf08a18"
+    },
+    "TProjectDocumentor.OnDocumentHTMLnew": {
+      "bytes": 1668,
+      "end": "0xf06b1c",
+      "sha256": "82a2d74a2adbc30166737fd2a5a1cff5f2e67158d8be3c877bc2180cb9898a35",
+      "start": "0xf06498"
+    },
+    "TProjectNodeHelper.DocumentProject": {
+      "bytes": 696,
+      "end": "0xf0a234",
+      "sha256": "31d38dbd76884fbb313e354c82d57b760807ebfd1e95afa004b677e1d700eea1",
+      "start": "0xf09f7c"
+    },
+    "TUnitTypeDocumentor.DocumentHTML": {
+      "bytes": 1100,
+      "end": "0xf06418",
+      "sha256": "c21b1ee0e4388aa31689253c2bd6078970556e3678cfa2ad8bc05318fb806538",
+      "start": "0xf05fcc"
+    }
+  },
+  "model_module_sha256": "85c5cb19cf4631b09785bb6f006337baafa2035e13335f846de662b356711540",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "per_type_string_inventory": {
+    "TArchitecturalDimmerDocumentor.ActionSelectorUse": {
+      "bytes": 432,
+      "literals": [
+        "<li />",
+        "<li />",
+        "<li />",
+        "<li />"
+      ],
+      "resources": [
+        "Trigger Halogen Clean Scene"
+      ],
+      "sha256": "89ff7fc05c0043677235bd1a4f97312edb0bb0798daccaa22aa8e2b312387aa1"
+    },
+    "TArchitecturalDimmerDocumentor.DocumentHTML": {
+      "bytes": 10756,
+      "literals": [
+        "C-Bus Lock Enable Group: ",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th><th>Curve</th><th>Fan Kickstart</th><th>Min</th><th>Max</th><th>Max RMS Voltage</th><th>Turn On Threshold</th>",
+        "<th>C-Bus Mask 1</th>",
+        "<th>C-Bus Mask 2</th>",
+        "<th>C-Bus Mask 3</th>",
+        "<th>C-Bus Mask 4</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td><td>",
+        ", ",
+        "&nbsp;",
+        "</td><td>",
+        "Max",
+        "Min",
+        "&nbsp;",
+        "<td>",
+        "</td>",
+        "<td>",
+        " s</td>",
+        "<td>",
+        "&nbsp;",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "%</td>",
+        "<td>LINE(",
+        ")</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "</tr>",
+        "</table>",
+        "<br />",
+        "DMX Enable Group: ",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>DMX</th>",
+        "<th>Enable Fade Time</th><th>Set 1</th><th>Set 2</th><th>Set 3</th><th>Set 4</th><th>Disable Operation</th><th>Duration</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td><td>&lt;DMX Disabled&gt;</td>",
+        "<tr><td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        " s</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Yes</td>",
+        "<td>&nbsp;</td>",
+        "<td>Take C-Bus</td>",
+        "<td>",
+        " s</td>",
+        "<td>Update C-Bus</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "<br />",
+        "<b>Special Scenes</b><br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Parameters</th><th>Controls</th></tr>",
+        "<tr><td>Panic/Dry Contact 1 (aux1)</td><td>",
+        "</td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "<tr><td>Panic/Dry Contact 2 (aux2)</td><td>",
+        "</td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "<tr><td>Panic/Dry Contact 3 (aux3)</td><td>",
+        "</td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "<tr><td>Backup Generator / Load Shed (aux4)</td><td>",
+        "</td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "<tr><td>C-Bus Loss</td><td>",
+        "<table border=\"1\"><tr><th>Fade Time</th></tr><tr><td>",
+        " s</td></tr></table></td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "<tr><td>Halogen Clean</td><td>",
+        "<table border=\"1\"><tr><th>Action Selector</th><th>Fade Time</th><th>Duration</th></tr><tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " s</td>",
+        "<td>",
+        " m</td></tr></table></td><td>",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td></tr>",
+        "</table>",
+        "</td></tr>",
+        "</table>",
+        "<br />",
+        "<b>Scenes</b><br />",
+        "<table border=\"1\"><tr><th>Scene</th><th>Action Selector</th>",
+        "<th>Cross Fade Time</th>",
+        "<th>Controls</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "d ",
+        "h ",
+        "m ",
+        " s</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\"><tr><th>Group</th><th>Level</th>",
+        "<th>Ramp Rate</th>",
+        "<th>Fade Time</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table></td></tr>",
+        "</table>",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "b1e18065df823ee83b5563b59b33f2739ced4ec8588473c2b3a6283dbbb6f241"
+    },
+    "TBridgeDocumentor.DocumentHTML": {
+      "bytes": 1648,
+      "literals": [
+        "Adjacent Network: ",
+        "<br/>",
+        "Connect Application 1: ",
+        "<br/>",
+        "Connect Application 2: ",
+        "<br/>",
+        "Connect Applications: All Applications<br/>",
+        "Send Messages to Adjacent Network: Yes<br/>",
+        "Send Messages to Adjacent Network: No<br/>",
+        "Send Messages to Remote Network: Unknown Network<br/>",
+        "Send Messages to Remote Network: ",
+        "<br/>",
+        "Send Messages to a Remote Network: No<br/>",
+        "WARNING: ",
+        " has no far side Network."
+      ],
+      "resources": [],
+      "sha256": "7a061cc6277445633e37b35ba55e28b602612a8275f74bae96d6d69178c2101d"
+    },
+    "TBytecraftDimmerDocumentor.ActionSelectorUse": {
+      "bytes": 496,
+      "literals": [
+        "<li />Advanced Trigger Scene ",
+        "<li />Trigger Scene "
+      ],
+      "resources": [],
+      "sha256": "21b6d6491bd811b64d4d0042773e361bc15afac596ed4c73bd43182bff60a0e4"
+    },
+    "TBytecraftDimmerDocumentor.DocumentHTML": {
+      "bytes": 5924,
+      "literals": [
+        "C-Bus Lock Enable Group: ",
+        "<br />",
+        "DMX Enable Group: ",
+        "<br />",
+        "Control Failure Scene: Enabled<br />",
+        "Control Failure Scene Ramp Rate: ",
+        "<br />",
+        "Control Failure Scene: Disabled<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th><th>Curve</th><th>Min</th><th>Max</th>",
+        "<th>C-Bus Lock</th>",
+        "<th>Max RMS Voltage</th>",
+        "<th>DMX</th><th>Take|Update</th><th>C-Bus Fade</th><th>DMX Fade</th>",
+        "<th>Restore Level</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        ", ",
+        "</td>",
+        "<td>Min</td>",
+        "<td>Max</td>",
+        "<td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "%</td>",
+        "<td>Yes</td>",
+        "<td>No</td>",
+        "<td>LINE</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td><td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "<Unused>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>Update</td>",
+        "<td>Take</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "Scenes: <br />",
+        "<table border=\"1\"",
+        "<tr><th>Scene</th><th>Scene Type</th><th>Trigger</th><th>Scene On</th><th>Scene Off</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>Advanced</td>",
+        "<td>",
+        "</td>",
+        "<td>Basic</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Group</th><th>Level</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Group</th><th>Level</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "ac566126732adc7378c318c1f00f4e196c95628502ba18b7ce3f1d2412b65e96"
+    },
+    "TBytecraftDimmerDocumentor.IsChannelUnused": {
+      "bytes": 60,
+      "literals": [],
+      "resources": [],
+      "sha256": "e525010cd83116d1200accec1869187d903931e9f29561083035ef1ed6374600"
+    },
+    "TCBusWirelessInputDocumentor.ActionSelectorUse": {
+      "bytes": 380,
+      "literals": [
+        "<br />",
+        "Triggers Scene "
+      ],
+      "resources": [],
+      "sha256": "7405e1921b0e95bbe17d05233b4a840b5df3f8810ebef62ea1f259049f92e768"
+    },
+    "TCBusWirelessInputDocumentor.DocumentHTML": {
+      "bytes": 1428,
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Controls</th></tr>",
+        "<tr>",
+        "</tr>",
+        "</table>",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Group</th><th>Dimming Curve</th><th>Min</th><th>Max</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td><td>",
+        "</td><td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "2222739542e9227087099cddbbc89b0344f86072fcfd1e3f01ec523a34ca37c3"
+    },
+    "TCBusWirelessInputDocumentor.DocumentKeyHTML": {
+      "bytes": 2444,
+      "literals": [
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>Scene ",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Group</th>",
+        "<th>Preset 1</th>",
+        "<th>Preset 2</th>",
+        "<th>Timer</th><th>Expiry</th>",
+        "</tr>",
+        "<tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table></td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>"
+      ],
+      "resources": [],
+      "sha256": "4a7195503d4c3075a4e95bc1bd6063731a1169af47d06aa473d335f1ed5ae359"
+    },
+    "TCBusWirelessInputDocumentor.DocumentScenesHTML": {
+      "bytes": 1300,
+      "literals": [
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Trigger</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "<td>",
+        "%",
+        "<br />",
+        "<br />",
+        "</td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "8d3b8d24559f83bf6d466676efb93ac4c31335f4a0f93c531dbfcf4123e90d24"
+    },
+    "TClassicKeyInputDocumentor.ActionSelectorUse": {
+      "bytes": 900,
+      "literals": [
+        "<br/>",
+        "Key ",
+        "<br/>",
+        "Key "
+      ],
+      "resources": [],
+      "sha256": "d42d5a833c1255f27719d95b6a7798a9a5959f3a3c50e10d6bd30a2c8ab80e83"
+    },
+    "TClassicKeyInputDocumentor.DocumentHTML": {
+      "bytes": 5056,
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>",
+        "</td></tr>",
+        "<tr><th>Long Press</th><td>",
+        "</td></tr>",
+        "<tr><th>Ramp 1</th><td>",
+        "</td></tr>",
+        "<tr><th>Ramp 2</th><td>",
+        "</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th>",
+        "<th>Bistable</th>",
+        "<th>Macro Function</th>",
+        "<th>Micro Functions</th>",
+        "<th>Controls</th></tr>",
+        "Unconnected Key ",
+        " ",
+        " ",
+        " ",
+        "<tr><td>",
+        "</td>",
+        "<td>Yes</td>",
+        "<td>No</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "<table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr></table></td><td>",
+        "&nbsp;</td><td>",
+        "&nbsp;",
+        "<table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr>",
+        "<td>Scene ",
+        "</td>",
+        "<td>",
+        "</td></tr></table>",
+        "<table border=\"1\"><tr>",
+        "<th>Group</th>",
+        "<th>Preset 1</th>",
+        "<th>Preset 2</th>",
+        "<th>Timer</th><th>Expiry</th>",
+        "</tr>",
+        "<tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "&nbsp;",
+        "</td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "d43b2075facbf168f2d3a28acc89fcbaed4d923ad8b4e0b15077c6825f5982cb"
+    },
+    "TClassicOutputDocumentor.DocumentHTML": {
+      "bytes": 1608,
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th></tr>",
+        "<tr><td>",
+        "</td><td>",
+        ", ",
+        "&nbsp;",
+        "</td><td>",
+        "Max",
+        "Min",
+        "&nbsp;",
+        "</td></tr>",
+        "</table>",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "05f04a52ccffaa1264becc78aec3e23b1a667ab8ac0bb0b27ee210051669cd4d"
+    },
+    "TCustomSceneControllerDocumentor.ActionSelectorUse": {
+      "bytes": 460,
+      "literals": [
+        "Scene Master Off",
+        "<br />",
+        "Triggers Scene "
+      ],
+      "resources": [],
+      "sha256": "b37f8855a8b1a6d974df2ecf4e2b419e26a77b9549ac159149408ca970c8b501"
+    },
+    "TCustomSceneControllerDocumentor.DocumentHTML": {
+      "bytes": 2056,
+      "literals": [
+        "Control Group: ",
+        "<br />",
+        "Master Off Action Selector: ",
+        "<br />",
+        "Master Off Ramp Rate: ",
+        "<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th>",
+        "<th>Trigger</th>",
+        "<th>Controls</th></tr>",
+        "<tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "<td>Yes</td>",
+        "<td>No</td>",
+        "</tr>",
+        "</table></td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "e6c9176bb3c50a9c8b8ad0cf46233b802512614a68903b76b9ee2f6dfb68300f"
+    },
+    "TCustomSceneControllerDocumentor.IsSceneUnused": {
+      "bytes": 100,
+      "literals": [],
+      "resources": [],
+      "sha256": "204ca52057eab4af2c61093927eee0814efa947f01471ec1026b0c32ffcf3ba0"
+    },
+    "TCustomSceneKeyUnitDocumentor.DocumentHTML": {
+      "bytes": 36,
+      "literals": [],
+      "resources": [],
+      "sha256": "f487ea21cd5590c54993cc903202f05dd4b03f33660eafef1a551abc0a12677c"
+    },
+    "TDALI2BDocumentor.ActionSelectorUse": {
+      "bytes": 244,
+      "literals": [
+        "<li />",
+        "<li />"
+      ],
+      "resources": [
+        "Trigger Dali Network A Error Report",
+        "Trigger Dali Network B Error Report"
+      ],
+      "sha256": "a514ea7b24ffdd09779e2ee0893378fea2b2fcf308dc5170ff7217b774395e6e"
+    },
+    "TDALI2BDocumentor.DocumentHTML": {
+      "bytes": 5540,
+      "literals": [
+        "<table border=\"0\">",
+        "<tr><th>Dali Network A</th><th>Dali Network B</th></tr><tr>",
+        "<td><table border=\"1\">",
+        "<tr><th>Live Error Reporting</th><td>On</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Live Error Reporting</th><td>Off</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>Unused</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>Yes</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>No</td></tr>",
+        "<tr><th>Status Correction</th><td>On</td></tr>",
+        "<tr><th>Dali A Restore Level</th><td>",
+        "%</td></tr>",
+        "<tr><th>Status Correction</th><td>Off</td></tr>",
+        "<tr><th>Dali A to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "<tr><th>Dali A to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "</table></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Live Error Reporting</th><td>On</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Live Error Reporting</th><td>Off</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>Unused</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>Yes</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>No</td></tr>",
+        "<tr><th>Status Correction</th><td>On</td></tr>",
+        "<tr><th>Dali B Restore Level</th><td>",
+        "%</td></tr>",
+        "<tr><th>Status Correction</th><td>Off</td></tr>",
+        "<tr><th>Dali B to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "<tr><th>Dali B to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>C-Bus Group</th><th>Dali Action</th><th>Mapping</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>1:1 Mapping</td></tr>",
+        "<td>Diabled</td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "5364f6018a7a0b8991aa5ea45f713691d6d68da4026ea5e22b4e0e9881182322"
+    },
+    "TDLTDocumentor.DocumentHTML": {
+      "bytes": 188,
+      "literals": [
+        "Labels: Static",
+        "Labels: Dynamic"
+      ],
+      "resources": [],
+      "sha256": "b19a3894d2074e4d790d5b8ad2ea7380f207e8e04b75362230c1d384ac62fb2e"
+    },
+    "TDMXGatewayDocumentor.DocumentHTML": {
+      "bytes": 904,
+      "literals": [
+        "<table border=\"1\"><tr><th>Group</th><th>DMX Slots</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        ", ",
+        "</td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "984984c56ad61696ba8e28919f569ba9ccc1185a638bab9fd153ad5636f3500d"
+    },
+    "TDigitalTemperatureSensorDocumentor.ActionSelectorUse": {
+      "bytes": 236,
+      "literals": [
+        "<li />",
+        "<li />"
+      ],
+      "resources": [
+        "Trigger Temperature Report"
+      ],
+      "sha256": "33f94261cba38e3a01af2e53b5b8f2c93d5995e1a1bc92611e6b1ac7732424cd"
+    },
+    "TDigitalTemperatureSensorDocumentor.DocumentHTML": {
+      "bytes": 1804,
+      "literals": [
+        "<b>Device ID: </b>Unassigned<br />",
+        "<b>Device ID: </b>",
+        "<br />",
+        "<table border=\"1\"><tr>",
+        "<th>",
+        "</th>",
+        "</tr>",
+        "<tr>",
+        "<td>",
+        "<b>Mode:</b> HVAC<br />",
+        "<b>Communication Group:</b> ",
+        "<br />",
+        "<b>Zones:</b> ",
+        "<br />",
+        "<b>Mode:</b> Measurement<br />",
+        "<b>Broadcast Interval:</b> ",
+        " seconds<br />",
+        "<b>Broadcast Threshold:</b> ",
+        "%.2f",
+        "<br />",
+        "<b>Broadcast Threshold:</b> ",
+        "%.2f",
+        "<br />",
+        "</td>",
+        "</tr>"
+      ],
+      "resources": [],
+      "sha256": "282e282c7988ec52f2f8b5274ddaa48d12833aacc18da95b4f69f84478484c35"
+    },
+    "TErrorReportOutputDocumentor.ActionSelectorUse": {
+      "bytes": 332,
+      "literals": [
+        "<li />",
+        "<li />"
+      ],
+      "resources": [
+        "Trigger Error Report",
+        "Trigger Error Report Clear"
+      ],
+      "sha256": "02eb2bde6ece43bf8e086c9231d06babf86581038e18a0e36b40ea7497c96207"
+    },
+    "TFanControllerDocumentor.ActionSelectorUse": {
+      "bytes": 196,
+      "literals": [
+        "<li />"
+      ],
+      "resources": [
+        "Fan Speed Cycle"
+      ],
+      "sha256": "433480c0a29eaedbf5f4e3c14253e4028e296f62b27dc58750dbea9239bb49ef"
+    },
+    "TFanControllerDocumentor.DocumentHTML": {
+      "bytes": 1488,
+      "literals": [
+        "<b>Master Unit</b><br />",
+        "<b>Slave Unit</b><br />",
+        "Master: ",
+        "<br />",
+        "<b>Stand Alone Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr>",
+        "<tr><td>Off</td><td>0%</td><td>",
+        "</td></tr>",
+        "<tr><td>Low</td><td>1% - ",
+        "%</td><td>",
+        "</td></tr>",
+        "<tr><td>Medium</td><td>",
+        "% - ",
+        "%</td><td>",
+        "</td></tr>",
+        "<tr><td>High</td><td>",
+        "% - 100%</td><td>",
+        "</td></tr></table>"
+      ],
+      "resources": [],
+      "sha256": "b8d2fec3da0b881f102808dbf269b47192c54398dbd8b782621f4958ab83fe3b"
+    },
+    "TLightLevelSensorDocumentor.DocumentHTML": {
+      "bytes": 1096,
+      "literals": [
+        "Light Level Group: ",
+        "<br />",
+        "On/Off Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Target: ",
+        " ",
+        ", ",
+        " ",
+        "<br />",
+        "Margin: ",
+        " ",
+        ", ",
+        " ",
+        " (",
+        "%)<br />"
+      ],
+      "resources": [],
+      "sha256": "489fc1cc0ecd0199ee03e4cf35db7dad666b4fb8ccc48c2adfb53bbac2e09c19"
+    },
+    "TMultisensorDocumentor.DocumentHTML": {
+      "bytes": 36,
+      "literals": [],
+      "resources": [],
+      "sha256": "b581ab4421e1c2fac62fd6b6c202ca40d3bc0920c4f3ded68c9449a39eede606"
+    },
+    "TNeoInputDocumentor.ActionSelectorUse": {
+      "bytes": 308,
+      "literals": [],
+      "resources": [
+        "Triggers Scene "
+      ],
+      "sha256": "bca3bb35da7f846239a7db0527573a28c2f11fc8202a883190af8d7a7787631b"
+    },
+    "TNeoInputDocumentor.DocumentHTML": {
+      "bytes": 1716,
+      "literals": [
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td></tr>",
+        "</table></td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "<td>",
+        "%",
+        "<br />",
+        "<br />",
+        "</td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "49784c380ced69fcd5b254ee783bbad531788972b30ac259c876cdf03e57618b"
+    },
+    "TNeoInputDocumentor.HasScenes": {
+      "bytes": 100,
+      "literals": [],
+      "resources": [],
+      "sha256": "8fb97939d88a79fc3a8b95451d8c211dc6204315bb5bf57d55ba05ccb31d895a"
+    },
+    "TNeoProInputDocumentor.ActionSelectorUse": {
+      "bytes": 900,
+      "literals": [
+        "<br/>",
+        "Key ",
+        "<br/>",
+        "Key "
+      ],
+      "resources": [],
+      "sha256": "086af6b075b371a2763e640c9822f1caa6c9ecbdb454ba07d234b64a39a76f9e"
+    },
+    "TNeoProInputDocumentor.DocumentHTML": {
+      "bytes": 36,
+      "literals": [],
+      "resources": [],
+      "sha256": "28b9a0507e3b014d60bcae1ea3e37363dbe3b6492241818d91af0e95645f7c61"
+    },
+    "TOutputDocumentor.DocumentHTML": {
+      "bytes": 1612,
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th>",
+        "<th>Logic Function</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td><td>",
+        ", ",
+        "&nbsp;",
+        "</td>",
+        "<td>",
+        "Max",
+        "Min",
+        "&nbsp;",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "b3ff7d87501bf187968d6ac6ca5bf2452d43a7afdeb01698af37965195051e4e"
+    },
+    "TOutputDocumentor.UsesLogicGroups": {
+      "bytes": 400,
+      "literals": [],
+      "resources": [],
+      "sha256": "ac4f7868a38bd3848fa94bc5699228365f2d861caf327f0093a7e121d9221dcf"
+    },
+    "TPIRDocumentor.DocumentHTML": {
+      "bytes": 532,
+      "literals": [
+        "<br />",
+        "PIR Enable/Disable Group: ",
+        "<br />",
+        "PIR Disable Group: ",
+        "<br />",
+        "PIR Enable Group: ",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "d4f84c765a843bd7b704774cf9b1b10fb12749b3de2e73b60c4d3595cb9e467e"
+    },
+    "TRemoteControlDocumentor.ActionSelectorUse": {
+      "bytes": 40,
+      "literals": [],
+      "resources": [],
+      "sha256": "e2b1eb7a787e6a8cd8bc9d4df5242476f24c65694ffb1e46ab1b2ad9047b6a4c"
+    },
+    "TRemoteControlDocumentor.DocumentHTML": {
+      "bytes": 2116,
+      "literals": [
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Controls</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td><table border=\"1\"><tr><th>Unit</th><th>Key</th><th>Macro Function</th><th>Controls</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "</tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>Scene ",
+        "</td>",
+        "</tr>",
+        "</table></td></tr>",
+        "<td>",
+        "</td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "5741d33069ce53c7fc5dad064caddae6df82cf0c707beee84efe4091d0b4d505"
+    },
+    "TRemoteControlDocumentor.IsRemoteKeyUnused": {
+      "bytes": 468,
+      "literals": [],
+      "resources": [],
+      "sha256": "149564427e7884a9bc3bf25abd3d6d69a74adf33ccfa574b01f9772338ad4327"
+    },
+    "TSENTEMPDocumentor.DocumentHTML": {
+      "bytes": 1312,
+      "literals": [
+        "Controlled Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Economy Group: ",
+        "<br />",
+        "Mode: Heating<br />",
+        "Mode: Cooling<br />",
+        "Target: ",
+        "<br />",
+        "Margin: ",
+        "<br />",
+        "Economy Offset: ",
+        "<br />",
+        "Target: ",
+        "<br />",
+        "Margin: ",
+        "<br />",
+        "Economy Offset: ",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "9e99d02892e1e661a17760620de315e95f6aaad7c0e34ac47e49cda3144e19d0"
+    },
+    "TSENTEMPProDocumentor.ActionSelectorUse": {
+      "bytes": 184,
+      "literals": [
+        "<li />"
+      ],
+      "resources": [
+        "Trigger Temperature Broadcast"
+      ],
+      "sha256": "337af2eedf98307a282408c5f9ffeed699fb3ef1436f9a643884737261a01dd6"
+    },
+    "TSENTEMPProDocumentor.DocumentHTML": {
+      "bytes": 3096,
+      "literals": [
+        "Controlled Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Economy Group: ",
+        "<br />",
+        "Mode: Heating<br />",
+        "Mode: Cooling<br />",
+        "Target Temperature High: ",
+        "<br />",
+        "Target Temperature Low: ",
+        "<br />",
+        "Economy Offset: ",
+        "<br />",
+        "Target Temperature High: ",
+        "<br />",
+        "Target Temperature Low: ",
+        "<br />",
+        "Economy Offset: ",
+        "<br />",
+        "Temperature Group: ",
+        "<br />",
+        "Communication Group: ",
+        "<br />",
+        "Zones: ",
+        "<br />",
+        "Device ID: ",
+        "<br />",
+        "Broadcast Trigger Group: ",
+        "<br />",
+        "Broadcast Trigger Action Selector: ",
+        "<br />",
+        "Broadcast Interval: ",
+        "<br />",
+        "Broadcast Interval: Not Used<br />",
+        "Broadcast Temperature Threshold: ",
+        "%.2f",
+        "<br />",
+        "Broadcast Temperature Threshold: ",
+        "%.2f",
+        "<br />",
+        "Broadcast Temperature Threshold: Not Used<br />"
+      ],
+      "resources": [],
+      "sha256": "8673beea14546f65c7e24cbb8a5312da6c385235d106107c3e31d6c02dca6293"
+    },
+    "TST7LightLevelSensorDocumentor.DocumentHTML": {
+      "bytes": 1120,
+      "literals": [
+        "Light Level Group: ",
+        "<br />",
+        "On/Off Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Broadcast Group: ",
+        "<br />",
+        "Broadcast Time: ",
+        "<br />",
+        "Target: ",
+        " ",
+        ", ",
+        " ",
+        "<br />",
+        "Margin: ",
+        "%<br />"
+      ],
+      "resources": [],
+      "sha256": "7062298ac00307f55165330205bd2ba11f6beaa32f4eab1bb9d095863f61f6d5"
+    },
+    "TST7PIRSensorDocumentor.DocumentHTML": {
+      "bytes": 532,
+      "literals": [
+        "<br />",
+        "PIR Enable/Disable Group: ",
+        "<br />",
+        "PIR Disable Group: ",
+        "<br />",
+        "PIR Enable Group: ",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "41c52a518c861aad1d6f4d65feccb3118f2c0fa5cbf60f77a7d30d1a31fe59e4"
+    },
+    "TThermostatDocumentor.DisplayFanDelay": {
+      "bytes": 276,
+      "literals": [
+        "m",
+        "30s",
+        "s"
+      ],
+      "resources": [],
+      "sha256": "eb4a6cb75c0d3859a044ff487da7dcb3c5b4d03c18b98e59bf573b41659d2e11"
+    },
+    "TThermostatDocumentor.DocumentHTML": {
+      "bytes": 8188,
+      "literals": [
+        "Master/Slave: ",
+        "<br/>",
+        "Master Unit: ",
+        "<br/>",
+        "Plant Type: ",
+        "<br/>",
+        "UI Displayed Temperature Zone: ",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">",
+        "</th></tr>",
+        "<tr><th>Plant Zone</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "<tr><th>Cooling Operation</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "<tr><th>Heating Operation</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "<tr><th>Venting Operation</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "<tr><th>User Controlled</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>",
+        "No",
+        "Yes",
+        "</td></tr>",
+        "</table>",
+        "<br/>",
+        "Guard Enabled<br/>",
+        "Lower Activation Threshold: ",
+        "<br/>",
+        "Upper Activation Threshold: ",
+        "<br/>",
+        "Lower Activation Threshold: ",
+        "<br/>",
+        "Upper Activation Threshold: ",
+        "<br/>",
+        "Guard Disabled<br/>",
+        "<br/>",
+        "Fan Operation Mode: ",
+        "<br/>",
+        "<table>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Heating Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>No</td></tr>",
+        "<tr><th>Fan Speeds</th><td>",
+        "</td></tr>",
+        "<tr><th>Default Speed</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan On Delay</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Cooling Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>No</td></tr>",
+        "<tr><th>Fan Speeds</th><td>",
+        "</td></tr>",
+        "<tr><th>Default Speed</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan On Delay</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>",
+        "</td></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Scheduling</th></tr>",
+        "<tr><th>Non-Evaporative Plant Equipment</th><td>Enabled</td></tr>",
+        "<tr><th>Non-Evaporative Plant Equipment</th><td>Disabled</td></tr>",
+        "<tr><th>Evaporative Plant Equipment</th><td>Enabled</td></tr>",
+        "<tr><th>Evaporative Plant Equipment</th><td>Disabled</td></tr>",
+        "<tr><th>Enable Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Override Group</th><td>",
+        "</td></tr>",
+        "</table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Internal Relays</th></tr>",
+        "<tr><th>Relay 1</th><td>",
+        "</td></tr>",
+        "<tr><th>Relay 2</th><td>",
+        "</td></tr>",
+        "<tr><th>Relay 3</th><td>",
+        "</td></tr>",
+        "<tr><th>Relay 4</th><td>",
+        "</td></tr>",
+        "<tr><th>Relay 5</th><td>",
+        "</td></tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "b4eea64955783a46d32232d2cc670d5c383a10a66c6592860e0680612f86f554"
+    },
+    "TWHAADocumentor.DocumentHTML": {
+      "bytes": 2796,
+      "literals": [
+        "Use Matrix Switcher Auto Assign Zone: Yes<br/>",
+        "Use Matrix Switcher Auto Assign Zone: No<br/>",
+        "Matrix Switcher Number: ",
+        "<br/>",
+        "Zone Number: ",
+        "<br/>",
+        "<br/>",
+        "CBus Control Application: ",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Audio Control</th></tr>",
+        "<tr><th>Volume</th><td>",
+        "</td></tr>",
+        "<tr><th>Bass</th><td>",
+        "</td></tr>",
+        "<tr><th>Treble</th><td>",
+        "</td></tr>",
+        "</table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Source/Dynamic Control Groups</th></tr>",
+        "<tr><th>Next Source</th><td>",
+        "</td></tr>",
+        "<tr><th>Prev Source</th><td>",
+        "</td></tr>",
+        "<tr><th>Absolute</th><td>",
+        "</td></tr>",
+        "<tr><th>Dynamic 1</th><td>",
+        "</td></tr>",
+        "<tr><th>Dynamic 2</th><td>",
+        "</td></tr>",
+        "</table>",
+        "CBus Control Application: ",
+        "<Unused>",
+        "<br/>"
+      ],
+      "resources": [],
+      "sha256": "17d4bd4f83c94032c6186b820e1f6c495dce9431b29df6bf22eb850c1f841f7e"
+    },
+    "TWirelessGatewayAdvancedDocumentor.ActionSelectorUse": {
+      "bytes": 560,
+      "literals": [
+        "<br />",
+        "Triggers Scene "
+      ],
+      "resources": [],
+      "sha256": "f0f1b326f78e07704764df68b72343d38d006cad7dadd568578af4e34333f5b0"
+    },
+    "TWirelessGatewayAdvancedDocumentor.DocumentHTML": {
+      "bytes": 996,
+      "literals": [
+        "Unit Address: ",
+        "<br />",
+        "Tagname: ",
+        "<br />",
+        "Part name: ",
+        "<br />",
+        "Application: ",
+        "<br />",
+        "Secondary Application: ",
+        "<br />",
+        "Serial Number: ",
+        "<br />",
+        "Firmware Version: ",
+        "<br />",
+        "Notes: ",
+        "<br />",
+        "<br />"
+      ],
+      "resources": [],
+      "sha256": "733e7462ca0bac7d75f6e1ed2ff0a8e95ed405a7d91afe17720024b0b9e6fd50"
+    },
+    "TWirelessGatewayAdvancedDocumentor.DocumentRemotesHTML": {
+      "bytes": 1264,
+      "literals": [
+        "<b>Remote ",
+        "</b> - ",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Function</th><th>Control</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td></tr>",
+        "<td>Scene ",
+        "</td></tr>",
+        "</table><br/>"
+      ],
+      "resources": [],
+      "sha256": "c69866b3d7fafccfe75b171a328dec60f305e47faab70be24a6aa08a790a7d96"
+    },
+    "TWirelessGatewayAdvancedDocumentor.DocumentScenesHTML": {
+      "bytes": 1608,
+      "literals": [
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Trigger</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "<td>",
+        "%",
+        "<br />",
+        "<br />",
+        "</td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "8b0ea6e46ff7e6d21c5ff5910a3db830fe23f2fca1ff768cbf1e1921b524d80e"
+    },
+    "TWirelessGatewayDocumentor.DocumentHTML": {
+      "bytes": 1596,
+      "literals": [
+        "Adjacent Network: ",
+        "<br/>",
+        "Connect Application 1: ",
+        "<br/>",
+        "Connect Application 2: ",
+        "<br/>",
+        "Connect Applications: All Applications<br/>",
+        "Send Messages to Adjacent Network: Yes<br/>",
+        "Send Messages to Adjacent Network: No<br/>",
+        "Send Messages to Remote Network: ",
+        "<br/>",
+        "Send Messages to a Remote Network: No<br/>",
+        "Sync To Wired: Yes<br/>",
+        "Sync To Wired: No<br/>",
+        "Status Monitor Application: ",
+        "<br/>",
+        "WARNING: Wireless Gateway has no far side Network."
+      ],
+      "resources": [],
+      "sha256": "487d226923c5f22cb451e17a6fa8b85845fbd974ce8c47abaa1fdebf44f847f7"
+    }
+  },
+  "registration_initializers": [
+    {
+      "bytes": 152,
+      "sha256": "1fa88d1d570df2dc5fe41e660a9297830c93cdb83a5c1f40e7cf8c8e47445214",
+      "start": "0x1383240",
+      "symbol": "CIS_TSENPILLA.CIS_TSENPILLA"
+    },
+    {
+      "bytes": 344,
+      "sha256": "09438041d8c8c7e7f8c81f69ae9513ab71f2a78db858856353da3f1a8e363fd6",
+      "start": "0x13832d8",
+      "symbol": "CIS_TSENPILL.CIS_TSENPILL"
+    },
+    {
+      "bytes": 376,
+      "sha256": "051fbd0514d46f1099951f4221f294adfa9814388f21099ba97df7bb1f6ecbcf",
+      "start": "0x1383430",
+      "symbol": "CIS_TSENLL.CIS_TSENLL"
+    },
+    {
+      "bytes": 292,
+      "sha256": "8cba9bbcc8f8213350b6ad8e5055a97ebf41e0a0770f1e4b6fcbf6aa9ed70b6d",
+      "start": "0x1383808",
+      "symbol": "CIS_TKEYA1.CIS_TKEYA1"
+    },
+    {
+      "bytes": 296,
+      "sha256": "32c5c6f71a599c2f8ddfbc02b436daeea9289486e024464546241151c56068fd",
+      "start": "0x138392c",
+      "symbol": "CIS_TKEYAV2.CIS_TKEYAV2"
+    },
+    {
+      "bytes": 292,
+      "sha256": "9be4c0ef781c275419288c82b412a58e32a5623455f638e366092219853d074e",
+      "start": "0x1383a54",
+      "symbol": "CIS_TKEYA3.CIS_TKEYA3"
+    },
+    {
+      "bytes": 296,
+      "sha256": "b6d8bd17720f53099870ac9b1c2e4605f053f7cf858bc3222b3d18754c91c4b6",
+      "start": "0x1383b78",
+      "symbol": "CIS_TKEYAV4.CIS_TKEYAV4"
+    },
+    {
+      "bytes": 292,
+      "sha256": "21d897e85345c7bd15c1ea60e6f5b0eab003bf9700f5d0f214dccd5d92a83c98",
+      "start": "0x1383ca0",
+      "symbol": "CIS_TKEYA6.CIS_TKEYA6"
+    },
+    {
+      "bytes": 292,
+      "sha256": "98d27baee1e062ab7a0e69df489e5cb92643640d7f271d8b6d06778d2f600708",
+      "start": "0x1383dc4",
+      "symbol": "CIS_TKEYA8.CIS_TKEYA8"
+    },
+    {
+      "bytes": 292,
+      "sha256": "56e9d7b2cdb86b453cf285df08673e04ed3680a2a1e9065e2533367e320318c2",
+      "start": "0x1383ee8",
+      "symbol": "CIS_TKEYB2.CIS_TKEYB2"
+    },
+    {
+      "bytes": 292,
+      "sha256": "dc09a7accd8f9be15ed96c6de431a62bc0e39a87098bfc362e7de1ce58c98c04",
+      "start": "0x138400c",
+      "symbol": "CIS_TKEYB4.CIS_TKEYB4"
+    },
+    {
+      "bytes": 292,
+      "sha256": "467d41833eb1885264437fea12b0699a554c859eaf484be6a24e77fb106c3153",
+      "start": "0x1384130",
+      "symbol": "CIS_TKEYB6.CIS_TKEYB6"
+    },
+    {
+      "bytes": 292,
+      "sha256": "fcce706a621fd4e66801d0d14b41d3097d080c709c771c0652b863c95d79c61b",
+      "start": "0x1384254",
+      "symbol": "CIS_TKEYH1.CIS_TKEYH1"
+    },
+    {
+      "bytes": 292,
+      "sha256": "395be7997ce72059068e8171e56ae81a986f8310341a057463c834aa4c5ea70f",
+      "start": "0x1384378",
+      "symbol": "CIS_TKEYH2.CIS_TKEYH2"
+    },
+    {
+      "bytes": 292,
+      "sha256": "d6d3807f31eeeb0250a248de08cdcbb08cbb240546a0cf72758aad33b1cd61f1",
+      "start": "0x138449c",
+      "symbol": "CIS_TKEYH3.CIS_TKEYH3"
+    },
+    {
+      "bytes": 292,
+      "sha256": "5584b321dd81161ecb86b0585479a62fc64ad9cc7992fd33055d45da24b4548e",
+      "start": "0x13845c0",
+      "symbol": "CIS_TKEYH4.CIS_TKEYH4"
+    },
+    {
+      "bytes": 144,
+      "sha256": "7dbcb46ca8bda47de67541b5fbecb254033cebf869d8a8aaeee3605aac1fdf40",
+      "start": "0x1384b54",
+      "symbol": "CIS_TCBusCouplerDinAuxInputUnit.CIS_TCBusCouplerDinAuxInputUnit"
+    },
+    {
+      "bytes": 292,
+      "sha256": "ab697b3e3d9b809fc347ed8b454f9d4e61861c9cb7f58c04ffe883537b3c37c8",
+      "start": "0x1384d94",
+      "symbol": "CIS_TKEYM2.CIS_TKEYM2"
+    },
+    {
+      "bytes": 292,
+      "sha256": "6fa3c8475f88b4d00e9d9b21ed1d0c46e1d99ba199c6b33e290c7e814a5bc751",
+      "start": "0x1384eb8",
+      "symbol": "CIS_TKEYM4.CIS_TKEYM4"
+    },
+    {
+      "bytes": 292,
+      "sha256": "d5dc6aeb50092b9fa0e03b4ba97ff695ad3c4907c57b5f8161adddcf32d14143",
+      "start": "0x1384fdc",
+      "symbol": "CIS_TKEYM8.CIS_TKEYM8"
+    },
+    {
+      "bytes": 152,
+      "sha256": "21ecfab59c7ca85baa19807236debffcc63e8891859ab8b29b5aa529cf3c0983",
+      "start": "0x1385290",
+      "symbol": "CIS_TSENPIRIC.CIS_TSENPIRIC"
+    },
+    {
+      "bytes": 848,
+      "sha256": "e86cb1c541441cf3625bfb1dc74d77328292d348cd9d94a753d06ea81df93eec",
+      "start": "0x1385328",
+      "symbol": "CIS_TSENPIRSS.CIS_TSENPIRSS"
+    },
+    {
+      "bytes": 152,
+      "sha256": "2a1de507e104fa43c06cca5d9ba4b9c4d77c4f2340663e5369ce7decdd29d381",
+      "start": "0x1386a40",
+      "symbol": "CIS_TPC_GIM.CIS_TPC_GIM"
+    },
+    {
+      "bytes": 444,
+      "sha256": "0d8fcc36c9c773c8bcce284025951d41c40ba5c5fc0e26c2c3f4183dc738dc0a",
+      "start": "0x1386df8",
+      "symbol": "CIS_TDIMDUX.CIS_TDIMDUX"
+    },
+    {
+      "bytes": 740,
+      "sha256": "da612cfed737744eb08e2eace5a0f92981bae19d6789bbd7cd612745c0d0f8cf",
+      "start": "0x1388384",
+      "symbol": "CIS_TBridge.CIS_TBridge"
+    },
+    {
+      "bytes": 616,
+      "sha256": "1dce422d56145aaba4f96d3cad2ea88c192290e7587cc620bbbc4caf5ab9869a",
+      "start": "0x1388668",
+      "symbol": "CIS_TCBusWirelessGatewayUnit.CIS_TCBusWirelessGatewayUnit"
+    },
+    {
+      "bytes": 176,
+      "sha256": "452fc855da309cd72c7de7cf1985dc7498f9e9100dd8ce4336069f72c8efd66b",
+      "start": "0x13888d0",
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.CIS_TCBusWirelessGatewayAdvancedUnit"
+    },
+    {
+      "bytes": 728,
+      "sha256": "16b66138e30d7de60eb6d250399fc8150376107b1445362b5189df1dce28b227",
+      "start": "0x1388980",
+      "symbol": "CIS_TWTXU.CIS_TWTXU"
+    },
+    {
+      "bytes": 436,
+      "sha256": "c75ce2085cd46b38746962bae3fafd43893284fc984d93bf24d70ff21a98ed49",
+      "start": "0x1389494",
+      "symbol": "CIS_TDIMARX.CIS_TDIMARX"
+    },
+    {
+      "bytes": 148,
+      "sha256": "bf11aa183acf4a6acaf2de802c42140ce724f29ccf23aec5deb3146b4d122d7e",
+      "start": "0x1389648",
+      "symbol": "CIS_TANODN4.CIS_TANODN4"
+    },
+    {
+      "bytes": 700,
+      "sha256": "d233b5479a3e4836d1dafed83dc0aacf6e806b81c66416de552c710139c9880e",
+      "start": "0x138a030",
+      "symbol": "CIS_TNCCOutputUnit.CIS_TNCCOutputUnit"
+    },
+    {
+      "bytes": 792,
+      "sha256": "9ed37986c37b80f17984116549404eed795fd7da89f1572397792c32d46bb889",
+      "start": "0x138b62c",
+      "symbol": "CIS_TKEYEx.CIS_TKEYEx"
+    },
+    {
+      "bytes": 340,
+      "sha256": "363e255f21378641be430760916e065da47d2324f90f9a6dcc1ae59c50d13d1c",
+      "start": "0x138c014",
+      "symbol": "CIS_TMarshallingBoxUnit.CIS_TMarshallingBoxUnit"
+    },
+    {
+      "bytes": 176,
+      "sha256": "d218fa2a7b69771beba9993ce699f63f40e091bf1784645c3fec699c19beb30a",
+      "start": "0x138e060",
+      "symbol": "CIS_TKEYCIR1.CIS_TKEYCIR1"
+    },
+    {
+      "bytes": 144,
+      "sha256": "6b2df81ea24c54859e5121c01c9721304a4ec3bca03b9d42f0afe0179e8440e8",
+      "start": "0x138e110",
+      "symbol": "CIS_TKey1.CIS_TKey1"
+    },
+    {
+      "bytes": 144,
+      "sha256": "ab3f8ee5b4108a5b50b42147277f9a2d7c9504761e8bc87252bb29b37c0b88d0",
+      "start": "0x138e1a0",
+      "symbol": "CIS_TKey2.CIS_TKey2"
+    },
+    {
+      "bytes": 144,
+      "sha256": "bc0314e084ea7588318880b7de3c77b6c1a302441d2dce3d3f568c595303a1b5",
+      "start": "0x138e230",
+      "symbol": "CIS_TKey4.CIS_TKey4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "3db30c1f2cf401c7475a9f3ff7de544d3dc9bec000792526d7c46d56fde3f045",
+      "start": "0x138e2c0",
+      "symbol": "CIS_TKEYIR1.CIS_TKEYIR1"
+    },
+    {
+      "bytes": 148,
+      "sha256": "506eae0a629796089b139c351c63ab342d3d895b03068c9d4bbd8c0c764b1b81",
+      "start": "0x138e354",
+      "symbol": "CIS_TKEYIR4.CIS_TKEYIR4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "2841008d637d8400c22536782c172fc8e7e15736f44294020c9b33e931eff8fb",
+      "start": "0x138e3e8",
+      "symbol": "CIS_TKEYBC2.CIS_TKEYBC2"
+    },
+    {
+      "bytes": 148,
+      "sha256": "467279a85899371526e1380e2c69e5581a72fe077e29f681b66470c11e95cf60",
+      "start": "0x138e47c",
+      "symbol": "CIS_TKEYBC4.CIS_TKEYBC4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "b8d33a6ac395f4f23b6c43a68ade1a3ff6e30f0590a7383d4e7f8954a4ffd641",
+      "start": "0x138e510",
+      "symbol": "CIS_TKEYAUX4.CIS_TKEYAUX4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "e3abd28d0d487200ddeca3b833b67c86b5ede462f3310bc3c593d99f72fd34d1",
+      "start": "0x138e5a4",
+      "symbol": "CIS_TDINAUX4.CIS_TDINAUX4"
+    },
+    {
+      "bytes": 144,
+      "sha256": "8103788ad167a830612b5b1fbc063c0cb045a29d9be9ca4d0671dbf1211e897f",
+      "start": "0x138e638",
+      "symbol": "CIS_TCLK2.CIS_TCLK2"
+    },
+    {
+      "bytes": 340,
+      "sha256": "09315a3391abbb786ca4fab23856e65db77228988c3e742c66f214bdd4012c22",
+      "start": "0x138ea6c",
+      "symbol": "CIS_TKEYBIRx.CIS_TKEYBIRx"
+    },
+    {
+      "bytes": 204,
+      "sha256": "4c0e69741018080a539ab1071af4b2726ecc1911f0785ca3ef51c4b882cf3021",
+      "start": "0x138ebc0",
+      "symbol": "CIS_TKEYDV1.CIS_TKEYDV1"
+    },
+    {
+      "bytes": 204,
+      "sha256": "ba5ecaaf743c74b9222419a9f4b0dcca20b28b4260323906a30fade492efbf67",
+      "start": "0x138ec8c",
+      "symbol": "CIS_TKEYDV2.CIS_TKEYDV2"
+    },
+    {
+      "bytes": 204,
+      "sha256": "a73f0a3a6653e3a22b53bb68e0e1566ff1705b3331e7ffa9d1c799ec2e8f1c90",
+      "start": "0x138ed58",
+      "symbol": "CIS_TKEYDV3.CIS_TKEYDV3"
+    },
+    {
+      "bytes": 204,
+      "sha256": "9eb47dcffdd4c5e81beefda177d210de823e886dfa11ad0aba5e176618d350f7",
+      "start": "0x138ee24",
+      "symbol": "CIS_TKEYDV4.CIS_TKEYDV4"
+    },
+    {
+      "bytes": 328,
+      "sha256": "57b9f893b1046961ecfb4b46def3f9903c61b63951910cf6414aecb2a5d281fd",
+      "start": "0x138eef0",
+      "symbol": "CIS_TKEYPX.CIS_TKEYPX"
+    },
+    {
+      "bytes": 172,
+      "sha256": "46c3469cba9640932b82a74587e5914ef55307bd9b5dce0bcf493c9dc97c4fbb",
+      "start": "0x138f038",
+      "symbol": "CIS_TKEYC1.CIS_TKEYC1"
+    },
+    {
+      "bytes": 172,
+      "sha256": "66c257f91bce4ee791a1e25641b4ab768d574a27ecbcd3c5c1c65fd43b8e0ab3",
+      "start": "0x138f0e4",
+      "symbol": "CIS_TKEYC2.CIS_TKEYC2"
+    },
+    {
+      "bytes": 172,
+      "sha256": "74c7b9a2713ab88fb93e4aaf54175597022f7abea3a1cc6eb9f02f5305039701",
+      "start": "0x138f190",
+      "symbol": "CIS_TKEYC4.CIS_TKEYC4"
+    },
+    {
+      "bytes": 176,
+      "sha256": "27c54a86871990e26dc49ff9a277d8d6eb631ca2cdda710f9ea9514a50342263",
+      "start": "0x138f23c",
+      "symbol": "CIS_TKEYCIR4.CIS_TKEYCIR4"
+    },
+    {
+      "bytes": 200,
+      "sha256": "c4d837615bdaae72b6780abe22882511b0615d3980a691d09b6a9f0bd1b60feb",
+      "start": "0x138f2ec",
+      "symbol": "CIS_TKEYV1.CIS_TKEYV1"
+    },
+    {
+      "bytes": 200,
+      "sha256": "8150e413d5779a257d3414e606a8861c610f57e10ecfac332204da3678db7c8d",
+      "start": "0x138f3b4",
+      "symbol": "CIS_TKEYV2.CIS_TKEYV2"
+    },
+    {
+      "bytes": 200,
+      "sha256": "ca257b92572573e922a167ef5a376ecc52b13af2e098ac1a9c419d12834edba6",
+      "start": "0x138f47c",
+      "symbol": "CIS_TKEYV3.CIS_TKEYV3"
+    },
+    {
+      "bytes": 244,
+      "sha256": "ca3b0101d252e34fdcfef4bfa51cf5e13174c22d560520ac9f180deadc148e8d",
+      "start": "0x138f6f8",
+      "symbol": "CIS_TBCNC.CIS_TBCNC"
+    },
+    {
+      "bytes": 272,
+      "sha256": "99f0a0573ffb2be981db86e28399595138c4e23ec46a94cc0f6bd1165ba5efc5",
+      "start": "0x138f918",
+      "symbol": "CIS_TSENPIR.CIS_TSENPIR"
+    },
+    {
+      "bytes": 200,
+      "sha256": "eafcdfc01bfe113fc42dbbc3a8d0738d1446c0ce98a7eb5ef0352b3f094ae93b",
+      "start": "0x138fbec",
+      "symbol": "CIS_TSENTEMP.CIS_TSENTEMP"
+    },
+    {
+      "bytes": 156,
+      "sha256": "9a27725e7d5052ed8926cf1bfa16fdc4a3aeb9d15a7d43304514f12f004b2839",
+      "start": "0x138fcb4",
+      "symbol": "CIS_TSENTEMPPro.CIS_TSENTEMPPro"
+    },
+    {
+      "bytes": 2016,
+      "sha256": "627fac7b8d0453314a9924c28a3b04f0e6997a4c04b455dd93bdda383f5f83ef",
+      "start": "0x138fd50",
+      "symbol": "CIS_TThermostat.CIS_TThermostat"
+    },
+    {
+      "bytes": 148,
+      "sha256": "74597d36efd9e98edb85f5e225e30e57ed7b3e9991ce4ff7956607222f305e38",
+      "start": "0x1390f14",
+      "symbol": "CIS_TKEYML5.CIS_TKEYML5"
+    },
+    {
+      "bytes": 148,
+      "sha256": "8a5f8b1b3357207b2a214ceb37c66152dbe0f0087be28ce19c239a0013f0e528",
+      "start": "0x1391238",
+      "symbol": "CIS_TKEYBL5.CIS_TKEYBL5"
+    },
+    {
+      "bytes": 148,
+      "sha256": "4a9ae1f869dc080ba7b60c8fc452d175d6e166bf52909b607c134a5f899cc1e7",
+      "start": "0x13912cc",
+      "symbol": "CIS_TKEYDL4.CIS_TKEYDL4"
+    },
+    {
+      "bytes": 152,
+      "sha256": "b3766e6bdcfbbbefb281a97a83969b3ac804948a48fb30160f734bfd9f959f17",
+      "start": "0x1391548",
+      "symbol": "CIS_TKEYSCEN4.CIS_TKEYSCEN4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "d52c4b4bbb2f819ff8ea02656e8d572f1ecc43d8b7e95a864d10a97286451a6c",
+      "start": "0x1391634",
+      "symbol": "CIS_TSCNCTL5.CIS_TSCNCTL5"
+    },
+    {
+      "bytes": 176,
+      "sha256": "f7433d7d5190c962a6261244f55ecb3c112777fc743b32b54e913e3da6441654",
+      "start": "0x1391aa4",
+      "symbol": "CIS_TDIMPR12.CIS_TDIMPR12"
+    },
+    {
+      "bytes": 148,
+      "sha256": "0f8e8a5c0aa8a1f0da48c10b72641c531065c4083f14e02cca4f491f01ec166c",
+      "start": "0x1391f10",
+      "symbol": "CIS_TDIMMER4.CIS_TDIMMER4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "bbe2545760da52398a9365ce931e4111dfa46f4ec4c186854cc8d07e853304e8",
+      "start": "0x1391fa4",
+      "symbol": "CIS_TAN_OUT4.CIS_TAN_OUT4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "5354c48fb5716148681cb28be2523664e42d9688f112ae463e801a7029e8b9e2",
+      "start": "0x1392038",
+      "symbol": "CIS_TRELAY4.CIS_TRELAY4"
+    },
+    {
+      "bytes": 364,
+      "sha256": "0a9c363b113cdd604ec5628955d37ecf95ebe1b45e500a2d63ad5f585d52edcc",
+      "start": "0x1392364",
+      "symbol": "CIS_TPC_DAL2B.CIS_TPC_DAL2B"
+    },
+    {
+      "bytes": 1476,
+      "sha256": "c47c7a5b74d2b9b77856c0cbc4427a1b388a9a6056b9172b314db69b09a0ed9d",
+      "start": "0x1392880",
+      "symbol": "CIS_TPC_WHAA.CIS_TPC_WHAA"
+    },
+    {
+      "bytes": 1604,
+      "sha256": "60795d55e3370bc1d2190ad4a249b2d199845994ee36ed271b7489ba16b6024e",
+      "start": "0x1393708",
+      "symbol": "CIS_TWRDX.CIS_TWRDX"
+    },
+    {
+      "bytes": 752,
+      "sha256": "918d614cfe0cf2330bfa39c48dde8b16bf08f63eaacabc646d7aebdacdea57f8",
+      "start": "0x1393e4c",
+      "symbol": "CIS_TWPLUGX.CIS_TWPLUGX"
+    },
+    {
+      "bytes": 268,
+      "sha256": "1f42bd01bb81b02653db5f6b14d5447801118e045b1900015e6c1a62bfd99311",
+      "start": "0x139413c",
+      "symbol": "CIS_TWPADX.CIS_TWPADX"
+    },
+    {
+      "bytes": 148,
+      "sha256": "6c71f2e73243cacfd50725674de13174aff89b1079b1a5bc1d319c89e0851dad",
+      "start": "0x139546c",
+      "symbol": "CIS_TKEYV1SP.CIS_TKEYV1SP"
+    },
+    {
+      "bytes": 148,
+      "sha256": "ffca1834b6a863bb7f85af61fa170085d0ad8ddb2095f47d2e88ded04bbd570f",
+      "start": "0x1395500",
+      "symbol": "CIS_TKEYV2SP.CIS_TKEYV2SP"
+    },
+    {
+      "bytes": 148,
+      "sha256": "678b724571ad5f4ccc36f2ebf1e990db8fb1595c36beb7fde9dc61662f37d0fc",
+      "start": "0x1395594",
+      "symbol": "CIS_TKEYV3SP.CIS_TKEYV3SP"
+    },
+    {
+      "bytes": 236,
+      "sha256": "2fed6c53ea8fc18164f05648990ffbff505248514a5c7cedbce2592c05e3f335",
+      "start": "0x1395628",
+      "symbol": "CIS_TBCNxB.CIS_TBCNxB"
+    },
+    {
+      "bytes": 148,
+      "sha256": "b54ecd29b1f3f604916531c086af82639ccda4950b9a820462da4ce501ae13fd",
+      "start": "0x1397948",
+      "symbol": "CIS_TSENLLA.CIS_TSENLLA"
+    },
+    {
+      "bytes": 244,
+      "sha256": "3eff462fa13000c09c795760d2adcdd1e93bc40782f84f633e83793429af893b",
+      "start": "0x1397f6c",
+      "symbol": "CIS_TDIMDN4.CIS_TDIMDN4"
+    },
+    {
+      "bytes": 244,
+      "sha256": "8090f10be41a887d83a4e4710200f8b6753e4b1784dac7bad87aeddbbd4f2cc8",
+      "start": "0x1398060",
+      "symbol": "CIS_TDIMDN8.CIS_TDIMDN8"
+    },
+    {
+      "bytes": 148,
+      "sha256": "d6ba7742e24d6a1e40df9877f0af1bdd32586c6921e1c8727a316116cce3cbcf",
+      "start": "0x1398154",
+      "symbol": "CIS_TDIMDS8.CIS_TDIMDS8"
+    },
+    {
+      "bytes": 148,
+      "sha256": "129965b0d9ae0814fd82800207617e2dee720ebf435c87e3f8c4dba9d7d488da",
+      "start": "0x13981e8",
+      "symbol": "CIS_TDIMPR1.CIS_TDIMPR1"
+    },
+    {
+      "bytes": 148,
+      "sha256": "03e9280ae237fbeedc80a9b877a260a02e8ebac5611f52826e614670b1c39bb1",
+      "start": "0x139827c",
+      "symbol": "CIS_TDIMPR2.CIS_TDIMPR2"
+    },
+    {
+      "bytes": 148,
+      "sha256": "1c1bb7aed7fa23cb0e5f107b57ab6d353b614172e1ceff415507a15286a017d0",
+      "start": "0x1398310",
+      "symbol": "CIS_TDIMPR4.CIS_TDIMPR4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "2db18b5dc51ebc34a3b51235939bcf2432abee02854f076a4ad62866caf0402a",
+      "start": "0x13983a4",
+      "symbol": "CIS_TRELDN12.CIS_TRELDN12"
+    },
+    {
+      "bytes": 148,
+      "sha256": "8e6b3ebeec4ca1e360c8ec0780d19e799fb3efdbe88f66c22a5f7dfd90670123",
+      "start": "0x1398438",
+      "symbol": "CIS_TRELDN4.CIS_TRELDN4"
+    },
+    {
+      "bytes": 344,
+      "sha256": "732c21383cac4eccd8f1b437e0f2846f6eb5ff87a07baf7b36a3ae1f6aab3b95",
+      "start": "0x13984cc",
+      "symbol": "CIS_TRELDN8.CIS_TRELDN8"
+    },
+    {
+      "bytes": 148,
+      "sha256": "547fc1094ae2e307d5db635b0aa5cc7c4b63bdc87a9a6a5d7d8d36d2c42cd8d1",
+      "start": "0x1398624",
+      "symbol": "CIS_TRELDC4.CIS_TRELDC4"
+    },
+    {
+      "bytes": 148,
+      "sha256": "e501266c08d0c111dd269fa413d04dc4047e086cb99cd6b88fb58930afb009db",
+      "start": "0x13986b8",
+      "symbol": "CIS_TRELDB1.CIS_TRELDB1"
+    },
+    {
+      "bytes": 148,
+      "sha256": "7ccbd2884d54e1702cc3e92867a1a5a32c23219c9d48d3baaeaf340f1142fbf9",
+      "start": "0x139874c",
+      "symbol": "CIS_TRELSM8.CIS_TRELSM8"
+    },
+    {
+      "bytes": 148,
+      "sha256": "cb317d43ff67b3419af172d4882d5aa7102ba65696b8435008a6706d979dd7b9",
+      "start": "0x1398958",
+      "symbol": "CIS_TRELDF1.CIS_TRELDF1"
+    },
+    {
+      "bytes": 148,
+      "sha256": "d5d980de04cffdc7249f14ccf183ac0e21b1bc832a2118242ce45efd69443180",
+      "start": "0x1398a64",
+      "symbol": "CIS_TDMXDO12.CIS_TDMXDO12"
+    },
+    {
+      "bytes": 148,
+      "sha256": "125b059b4accae8827057e1df2ea42b18a23607f10ff095e883cb6a6a2577b32",
+      "start": "0x1398c54",
+      "symbol": "CIS_TRELAY1.CIS_TRELAY1"
+    },
+    {
+      "bytes": 148,
+      "sha256": "3bb65a879eadbf9c237806bf55547aeb45a2cc3012f9d6375d839cd0412f8091",
+      "start": "0x1398ce8",
+      "symbol": "CIS_TRELAY2.CIS_TRELAY2"
+    },
+    {
+      "bytes": 2848,
+      "sha256": "87ee34bc3ade55954ac62bf329ce968e6e1a317cbf4079b113ecf259155ea546",
+      "start": "0x1399244",
+      "symbol": "CIS_TWRETMX.CIS_TWRETMX"
+    },
+    {
+      "bytes": 2560,
+      "sha256": "3e8d6421a0193455b602622a8e8ef299de547532bac00119ba3b82c920e73800",
+      "start": "0x1399d64",
+      "symbol": "CIS_TWRETBX.CIS_TWRETBX"
+    },
+    {
+      "bytes": 1792,
+      "sha256": "df5faed15f80413f3bcafc2dfa8ea97029a41916898b791073c0d16061b771e7",
+      "start": "0x139a764",
+      "symbol": "CIS_TWRPX.CIS_TWRPX"
+    },
+    {
+      "bytes": 512,
+      "sha256": "60f912ec5acf6edec6d0f92e4c32464d21af1fb584d982dd358c0c8eb7ae6ab0",
+      "start": "0x139ae64",
+      "symbol": "CIS_TWPAPX.CIS_TWPAPX"
+    },
+    {
+      "bytes": 152,
+      "sha256": "c9e56f10e9774a2edf0742fb5c1ec6ddd1bcae0f389f4debba3eaf711593fa82",
+      "start": "0x139c314",
+      "symbol": "CIS_TPC_RDTS.CIS_TPC_RDTS"
+    },
+    {
+      "bytes": 272,
+      "sha256": "bc16389ad76da7cd11901f2320e0ffc08e5644f157e40d56dd84477505e342be",
+      "start": "0x139f644",
+      "symbol": "CIS_TDIMDD8.CIS_TDIMDD8"
+    },
+    {
+      "bytes": 272,
+      "sha256": "d0888eaa6fd1eda015414068fdd9fe4a43e486021e448c8248b549698c215c2e",
+      "start": "0x139f790",
+      "symbol": "CIS_TDIMDD4.CIS_TDIMDD4"
+    }
+  ],
+  "registrations": [
+    [
+      "SENPILLA",
+      "Multisensor",
+      "0",
+      "9"
+    ],
+    [
+      "SENPILL",
+      "Multisensor",
+      "0",
+      "9"
+    ],
+    [
+      "SENLL",
+      "LightLevelSensor",
+      "1.00",
+      "2.0.00"
+    ],
+    [
+      "PE_CELL",
+      "LightLevelSensor",
+      "1.00",
+      "2.0.00"
+    ],
+    [
+      "SENLL",
+      "ST7LightLevelSensor",
+      "2.0.01",
+      "9"
+    ],
+    [
+      "KEYA1",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYA1",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYAV2",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYAV2",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYA3",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYA3",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYAV4",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYAV4",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYA6",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYA6",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYA8",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYA8",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYB2",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYB2",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYB4",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYB4",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYB6",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYB6",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYH1",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYH1",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYH2",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYH2",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYH3",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYH3",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYH4",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYH4",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "BCI4A",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYM2",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYM2",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYM4",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYM4",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "KEYM8",
+      "NeoInput",
+      "1.3.01",
+      "1.5.02"
+    ],
+    [
+      "KEYM8",
+      "NeoProInput",
+      "1.5.03",
+      "2.9.99"
+    ],
+    [
+      "SENPIRIC",
+      "Multisensor",
+      "0",
+      "9"
+    ],
+    [
+      "SENPIRSS",
+      "PIR",
+      "1.00",
+      "2.0.00"
+    ],
+    [
+      "SENPIROA",
+      "PIR",
+      "1.2.60",
+      "2.0.00"
+    ],
+    [
+      "SENPIRIA",
+      "PIR",
+      "1.2.60",
+      "2.0.00"
+    ],
+    [
+      "SENPIRIB",
+      "PIR",
+      "1.2.60",
+      "2.0.00"
+    ],
+    [
+      "SENPIROA",
+      "ST7PIRSensor",
+      "2.0.01",
+      "9"
+    ],
+    [
+      "SENPIRIA",
+      "ST7PIRSensor",
+      "2.0.01",
+      "9"
+    ],
+    [
+      "SENPIRIB",
+      "ST7PIRSensor",
+      "2.0.01",
+      "2.3.9"
+    ],
+    [
+      "SENPIRIB",
+      "Multisensor",
+      "2.4",
+      "9"
+    ],
+    [
+      "PC_GIM",
+      "GeneralInput",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDU4",
+      "ErrorReportOutput",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR3A",
+      "ErrorReportOutput",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR6A",
+      "ErrorReportOutput",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR12A",
+      "ErrorReportOutput",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE1N",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE1F",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE2N",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE2F",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLSN",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLSF",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLS",
+      "Bridge",
+      "0",
+      "9"
+    ],
+    [
+      "WGATE5N",
+      "WirelessGateway",
+      "0",
+      "2.2.89"
+    ],
+    [
+      "WGATE5F",
+      "WirelessGateway",
+      "0",
+      "2.2.89"
+    ],
+    [
+      "WGATE5N",
+      "WirelessGateway",
+      "2.2.90",
+      "2.4.99"
+    ],
+    [
+      "WGATE5F",
+      "WirelessGatewayAdvanced",
+      "2.2.90",
+      "2.4.99"
+    ],
+    [
+      "WTXU",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "WTXUP",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "NEOI 1FL",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "NEOI 4FL",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "NEOI HHR",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "WTXU 2FL",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "WTXU 6FL",
+      "RemoteControl",
+      "0",
+      "9"
+    ],
+    [
+      "DIMAR3",
+      "ArchitecturalDimmer",
+      "0",
+      "9"
+    ],
+    [
+      "DIMAR6",
+      "ArchitecturalDimmer",
+      "0",
+      "9"
+    ],
+    [
+      "DIMAR12",
+      "ArchitecturalDimmer",
+      "0",
+      "9"
+    ],
+    [
+      "C12DIMAR",
+      "ArchitecturalDimmer",
+      "0",
+      "9"
+    ],
+    [
+      "ANODN4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN16A",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN8A",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN4A",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDH4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "KEYE1",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYE2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYE3",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYE4",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYEIR1",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYEIR2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYEIR3",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYEIR4",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "ANOMB8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DSIMB8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELMB8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "KEYCIR1",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEY1",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEY2",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEY4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYIR1",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYIR4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBC2",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBC4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYAUX4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "DINAUX4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "CLK2",
+      "Clock",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBIR2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBIR4",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBIR6",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYDV1",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYDV2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYDV3",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYDV4",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYP2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYP4",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYP6",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYC1",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYC2",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYC4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYCIR4",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV1",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV2",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV3",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "BCNC4A",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "BCNC4B",
+      "ClassicKeyInput",
+      "0",
+      "9"
+    ],
+    [
+      "SENPIR",
+      "PIR",
+      "0",
+      "9"
+    ],
+    [
+      "SENPOR",
+      "PIR",
+      "0",
+      "9"
+    ],
+    [
+      "SENTEMP",
+      "SENTEMP",
+      "0",
+      "9"
+    ],
+    [
+      "SENTEMPB",
+      "SENTEMPPro",
+      "0",
+      "9"
+    ],
+    [
+      "PC_TSA",
+      "Thermostat",
+      "0",
+      "9"
+    ],
+    [
+      "PC_TSA5",
+      "Thermostat",
+      "0",
+      "9"
+    ],
+    [
+      "PC_TSB",
+      "Thermostat",
+      "0",
+      "9"
+    ],
+    [
+      "PC_TSB5",
+      "Thermostat",
+      "0",
+      "9"
+    ],
+    [
+      "KEYML5",
+      "DLT",
+      "0",
+      "9"
+    ],
+    [
+      "KEYBL5",
+      "DLT",
+      "0",
+      "9"
+    ],
+    [
+      "KEYDL4",
+      "DLT",
+      "0",
+      "9"
+    ],
+    [
+      "KEYSCEN4",
+      "CustomSceneKeyUnit",
+      "0",
+      "9"
+    ],
+    [
+      "SCNCTL5",
+      "CustomSceneController",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR12",
+      "BytecraftDimmer",
+      "0",
+      "9"
+    ],
+    [
+      "DIMMER4",
+      "ClassicOutput",
+      "0",
+      "9"
+    ],
+    [
+      "AN_OUT4",
+      "ClassicOutput",
+      "0",
+      "9"
+    ],
+    [
+      "RELAY4",
+      "ClassicOutput",
+      "0",
+      "9"
+    ],
+    [
+      "PC_DAL2B",
+      "DALI2B",
+      "0",
+      "9"
+    ],
+    [
+      "PC_DAL2C",
+      "DALI2B",
+      "0",
+      "9"
+    ],
+    [
+      "PC_WHAD",
+      "WHAA",
+      "0",
+      "9"
+    ],
+    [
+      "PC_WHAR",
+      "WHAA",
+      "0",
+      "9"
+    ],
+    [
+      "PC_WHARB",
+      "WHAA",
+      "0",
+      "9"
+    ],
+    [
+      "WRD0R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD1R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD3R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD4R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD0D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD1D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD3D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRD4D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM1R1EZ",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM2R2EZ",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPA2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPA2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPAD1D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPAD1R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV1SP",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV2SP",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "KEYV3SP",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "BCN2B",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "BCN4B",
+      "NeoProInput",
+      "0",
+      "9"
+    ],
+    [
+      "SENLLA",
+      "Multisensor",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDN4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDN4F",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDN8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDN8F",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDS8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR1",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR2",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMPR4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN12",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN8B",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDN8SP",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDC4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDB1",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELSM8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "RELDF1",
+      "FanController",
+      "0",
+      "9"
+    ],
+    [
+      "DMXDO12",
+      "DMXGateway",
+      "0",
+      "9"
+    ],
+    [
+      "RELAY1",
+      "ClassicOutput",
+      "0",
+      "9"
+    ],
+    [
+      "RELAY2",
+      "ClassicOutput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM4D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM4D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM4R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM4R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM8D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM8D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM8R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM8R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM2D1EZ",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRM4D2EZ",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB4D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB4D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB4R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB4R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB6D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB6D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB6R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRB6R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP4D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP4D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP4R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP4R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP6D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP6D2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP6R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WRP6R2",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPAP2D1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "WPAP2R1",
+      "CBusWirelessInput",
+      "0",
+      "9"
+    ],
+    [
+      "SENTEMP4",
+      "DigitalTemperatureSensor",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDD8",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDD8F",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDD4",
+      "Output",
+      "0",
+      "9"
+    ],
+    [
+      "DIMDD4F",
+      "Output",
+      "0",
+      "9"
+    ]
+  ],
+  "resources": {
+    "62334": "Levels",
+    "62345": "dd mmm yyyy hh:mm",
+    "62346": "Network %d of %d",
+    "62347": "Generating Documentation",
+    "63389": "An Error occurred during the Project Document procedure.\r\nParts of the document may not be correct"
+  }
+}

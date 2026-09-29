@@ -1402,6 +1402,8 @@ def build_parser():
     project_legacy_transform_options(ops)
     from .project_topology import options as project_topology_options
     project_topology_options(ops)
+    from .project_documentation import options as project_documentation_options
+    project_documentation_options(ops)
     from .barcode_cli import project_options as barcode_project_options
     barcode_project_options(ops)
     create = ops.add_parser("new")
@@ -2466,6 +2468,9 @@ def _project(args):
     if args.action == "topology":
         from .project_topology import run as project_topology_run
         return project_topology_run(args)
+    if args.action == "document":
+        from .project_documentation import run as project_documentation_run
+        return project_documentation_run(args)
     if args.action == "add-unit":
         from .barcode_cli import run_add_unit
         return run_add_unit(args)
