@@ -1,6 +1,8 @@
 """CLI adapter for guarded physical PP inspection and editing."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from .physical_programming import (
     PhysicalProgramming,
     SUPPORTED_METHODS,
@@ -48,6 +50,26 @@ def options(parser) -> None:
         action="store_true",
         help="LOAD, stage and read back in the temporary session without SAVE",
     )
+    apply.add_argument(
+        "--journal",
+        type=Path,
+        help=(
+            "Durable attempt journal, exclusively created and fsynced before PP SAVE "
+            "(required unless --dry-run); refused while this path or another journal "
+            "for the same unit in its directory is unresolved"
+        ),
+    )
+
+    recover = actions.add_parser(
+        "recover",
+        help="Classify a journaled save's ranges from a fresh read-only physical LOAD",
+    )
+    recover.add_argument(
+        "--journal",
+        type=Path,
+        required=True,
+        help="Attempt journal written by physical-pp apply",
+    )
 
 
 def run(args, client):
@@ -65,5 +87,9 @@ def run(args, client):
             method=args.method,
             destination=args.destination,
             dry_run=args.dry_run,
+            journal=args.journal,
         ), 0
+    if args.remote_action == "recover":
+        report = workflow.recover(args.journal)
+        return report, 0 if report["conclusive"] else 1
     raise ValueError("Unknown physical PP action")

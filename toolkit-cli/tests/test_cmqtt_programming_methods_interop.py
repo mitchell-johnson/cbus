@@ -117,6 +117,23 @@ class _DropConnection(Exception):
     pass
 
 
+# Save boundaries at which ``ProgrammingPCI(drop_on=(phase, range_index))``
+# closes the PCI stream:
+# * ``pre-send``: the range's first STORE arrives but is not applied;
+# * ``post-send``: that STORE chunk is applied but never acknowledged;
+# * ``post-ack``: the range's final STORE is acknowledged, then the next
+#   request (its exact readback) is dropped;
+# * ``between``: after the range completes, the next range's first mutating
+#   request (STORE, UNLOCK, page select or GIU flag) is dropped unapplied;
+# * ``nvm-execute``/``nvm-poll``: the C-Bus 3 Save-to-NVM EXECUTE, or the
+#   POLL after a running EXECUTE, is dropped.
+DROP_PHASES = ("pre-send", "post-send", "post-ack", "between", "nvm-execute", "nvm-poll")
+
+
+def opcode_is_nvm(cal, operation):
+    return len(cal) == 4 and cal[0] == 0xE3 and cal[1] == operation and cal[2:] == b"\x00\x04"
+
+
 def _checksum(body):
     return bytes((*body, -sum(body) & 0xFF))
 
@@ -323,7 +340,8 @@ class ProgrammingPCI(PCISimulator):
     """Stateful peer for the exact PP wire contract over one route."""
 
     def __init__(self, route, layout, memory, *, drop_after_store=None, nvm_running=False,
-                 fragment=None, overflow_on_first_recall=False):
+                 fragment=None, overflow_on_first_recall=False, drop_on=None,
+                 journal_probe=None):
         super().__init__(profile="captured", command_checksum=True)
         self.route = tuple(route)
         # layout: (method, first physical/logical address, end) per parameter
@@ -346,6 +364,16 @@ class ProgrammingPCI(PCISimulator):
         self.fragment = fragment or {}
         self.overflow_on_first_recall = overflow_on_first_recall
         self.overflow_sent = False
+        # drop_on=(phase, range_index) interrupts one save boundary; range
+        # indexes name ``layout`` rows.  See ``DROP_PHASES``.
+        if drop_on is not None and drop_on[0] not in DROP_PHASES:
+            raise ValueError(f"unknown drop phase {drop_on[0]!r}")
+        self.drop_on = drop_on
+        self.stored_addresses = {}
+        self.pending_trigger = None
+        # The attempt journal as it was on disk when the first STORE arrived.
+        self.journal_probe = journal_probe
+        self.journal_at_first_store = None
         self._peer_lock = threading.Lock()
 
     def _connection(self, conn, connection, shutdown):
@@ -433,6 +461,44 @@ class ProgrammingPCI(PCISimulator):
                        data[offset:offset + size])
                 for offset in range(0, len(data), size)]
 
+    def _drop(self):
+        self.dropped = True
+        self.dropped_at = time.monotonic()
+        raise _DropConnection()
+
+    def _range_index(self, space, address):
+        for index, (method, start, end) in enumerate(self.layout):
+            if start <= address < end and self._method(space, address) == method:
+                return index
+        raise AssertionError(f"no range covers {space} 0x{address:X}")
+
+    def _store(self, space, method, tag, address, data):
+        """Apply one STORE chunk to memory with the configured interruption."""
+        index = self._range_index(space, address)
+        if self.journal_probe is not None and self.journal_at_first_store is None:
+            self.journal_at_first_store = json.loads(Path(self.journal_probe).read_text())
+        armed = self.drop_on is not None and not self.dropped and self.drop_on[1] == index
+        first_chunk = index not in self.stored_addresses
+        if armed and first_chunk and self.drop_on[0] == "pre-send":
+            self._drop()
+        for offset, value in enumerate(data):
+            self.memory[space][address + offset] = value
+        self.stored_addresses.setdefault(index, set()).update(
+            range(address, address + len(data)))
+        if armed and first_chunk and self.drop_on[0] == "post-send":
+            with self._peer_lock:
+                self.stores.append({
+                    "method": method, "tag": tag, "address": address, "data": bytes(data),
+                    "giu_running": self.giu_running, "time": time.monotonic(),
+                })
+            self._drop()
+        _, start, end = self.layout[index]
+        if armed and self.stored_addresses[index] >= set(range(start, end)):
+            # The ACK below completes the range; the next request is the
+            # boundary for post-ack and between-range interruptions.
+            self.pending_trigger = self.drop_on[0]
+        self._record_store(method, tag, address, data)
+
     def _record_store(self, method, tag, address, data):
         with self._peer_lock:
             self.stores.append({
@@ -440,15 +506,36 @@ class ProgrammingPCI(PCISimulator):
                 "giu_running": self.giu_running, "time": time.monotonic(),
             })
         if self.drop_after_store == method and not self.dropped:
-            self.dropped = True
-            self.dropped_at = time.monotonic()
-            raise _DropConnection()
+            self._drop()
+
+    def _boundary(self, cal):
+        """Drop at a post-ACK/between-range boundary or around NVM commit."""
+        if self.dropped or self.drop_on is None:
+            return
+        phase, opcode = self.drop_on[0], cal[0]
+        if self.pending_trigger == "post-ack":
+            self._drop()
+        if self.pending_trigger == "between":
+            pointer = (opcode & 0xE0 == 0xA0 and len(cal) >= 3
+                       and ((cal[1] == 0 and cal[2] == 0x41)
+                            or (cal[1] == 0xFF and cal[2] == 0x42 and len(cal) == 5)))
+            if (opcode & 0xE0 == 0xA0 and not pointer) or opcode in (0x11, 0x39, 0xE3):
+                self._drop()
+        if opcode_is_nvm(cal, 0x81) and phase == "nvm-execute":
+            with self._peer_lock:
+                self.nvm.append("execute")
+            self._drop()
+        if opcode_is_nvm(cal, 0x82) and phase == "nvm-poll":
+            with self._peer_lock:
+                self.nvm.append("poll")
+            self._drop()
 
     def _command(self, line, context):
         if line in (b"~", b"A32100FF", b"A32200FF", b"A342000E", b"A3300079"):
             return b"", None
         code, cal, envelope = self._parse(line)
         opcode = cal[0]
+        self._boundary(cal)
 
         if opcode == 0x21:
             if len(cal) != 2 or cal[1] not in (1, 2):
@@ -528,10 +615,8 @@ class ProgrammingPCI(PCISimulator):
             elif parameter == 1 and tag == 0x42 and self.oem_pointer is not None:
                 method = self._method("oem", self.oem_pointer)
                 address = self.oem_pointer
-                for offset, value in enumerate(data[1:]):
-                    self.memory["oem"][address + offset] = value
                 self.oem_pointer += len(data) - 1
-                self._record_store(method, tag, address, data[1:])
+                self._store("oem", method, tag, address, data[1:])
             elif parameter == 0xFC and data in (b"\x03\x00", b"\x03\x01"):
                 self.giu_running = data == b"\x03\x01"
                 with self._peer_lock:
@@ -541,20 +626,14 @@ class ProgrammingPCI(PCISimulator):
             elif parameter == 0xFF and len(data) >= 4:
                 address = int.from_bytes(data[1:3], "big")
                 method = self._method("goc", address)
-                for offset, value in enumerate(data[3:]):
-                    self.memory["goc"][address + offset] = value
-                self._record_store(method, tag, address, data[3:])
+                self._store("goc", method, tag, address, data[3:])
             elif self._standard(parameter):
                 method = self._method("standard", parameter)
-                for offset, value in enumerate(data[1:]):
-                    self.memory["standard"][parameter + offset] = value
-                self._record_store(method, tag, parameter, data[1:])
+                self._store("standard", method, tag, parameter, data[1:])
             elif self.selected_page is not None:
                 address = self.selected_page * 256 + parameter
                 method = self._method("paged", address)
-                for offset, value in enumerate(data[1:]):
-                    self.memory["paged"][address + offset] = value
-                self._record_store(method, tag, address, data[1:])
+                self._store("paged", method, tag, address, data[1:])
             else:
                 raise AssertionError(f"unclassified WRITE {cal.hex()}")
             return self._answer(code, [bytes((0x32, parameter, tag))],
@@ -642,11 +721,11 @@ def peer_state(params):
 
 
 @contextmanager
-def running_daemon(tmp_path, pci, project, specs):
+def running_daemon(tmp_path, pci, project, specs, *, log_name="programming-methods-daemon.log"):
     with socket.socket() as broker:
         broker.bind(("127.0.0.1", 0))
         broker.listen(1)
-        log_path = tmp_path / "programming-methods-daemon.log"
+        log_path = tmp_path / log_name
         with log_path.open("w+") as log:
             process = subprocess.Popen([
                 str(BIN), "--tcp", f"{pci[0]}:{pci[1]}",
@@ -687,15 +766,23 @@ def value_text(param, value):
     return " ".join(f"0x{byte:02X}" for byte in value)
 
 
-def invoke(port, target, method, edits, *, timeout=180):
+def invoke(port, target, method, edits, *, journal, timeout=180):
     command = [
         sys.executable, "-m", "cbus_toolkit", "cgate",
         "--host", "127.0.0.1", "--port", str(port), "--timeout", "45",
-        "physical-pp", "apply", target, "--method", method,
+        "physical-pp", "apply", target, "--method", method, "--journal", str(journal),
     ]
     for name, text in edits:
         command += ["--set", name, text]
     return subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+
+
+def invoke_recover(port, journal, *, timeout=180):
+    return subprocess.run([
+        sys.executable, "-m", "cbus_toolkit", "cgate",
+        "--host", "127.0.0.1", "--port", str(port), "--timeout", "45",
+        "physical-pp", "recover", "--journal", str(journal),
+    ], capture_output=True, text=True, timeout=timeout)
 
 
 @dataclass
@@ -703,25 +790,44 @@ class Run:
     result: subprocess.CompletedProcess
     peer: ProgrammingPCI
     target: str
+    journal: Path = None
 
     @property
     def document(self):
         return json.loads(self.result.stdout if self.result.returncode == 0 else self.result.stderr)
 
+    @property
+    def journal_document(self):
+        return json.loads(self.journal.read_text(encoding="utf-8"))
 
-def run_apply(tmp_path, route, params, edits, *, method=None, **peer_options):
-    """Program ``edits`` ({name: text}) through the real CLI and daemon."""
+
+def run_apply(tmp_path, route, params, edits, *, method=None, after=None, **peer_options):
+    """Program ``edits`` ({name: text}) through the real CLI and daemon.
+
+    ``after(run, restart)`` runs once that daemon has stopped, with the same
+    peer.  ``restart()`` starts a replacement cmqttd on the same state file:
+    a plain ``--tcp`` daemon exits when its PCI stream is lost, so recovery
+    always observes the unit through a new process and PCI connection.
+    """
     specs = tmp_path / "unitspec"
     specs.mkdir()
     project = tmp_path / "project.xml"
     target = write_project(project, route)
     write_spec(specs, params)
     layout, memory = peer_state(params)
-    peer = ProgrammingPCI(route, layout, memory, **peer_options)
+    journals = tmp_path / "journals"
+    journals.mkdir()
+    journal = journals / "attempt.json"
+    peer = ProgrammingPCI(route, layout, memory, journal_probe=journal, **peer_options)
     selected = method or next(param.method for param in params if param.name in edits)
-    with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
-        result = invoke(port, target, selected, list(edits.items()))
-    return Run(result, peer, target)
+    with peer.running() as pci:
+        with running_daemon(tmp_path, pci, project, specs) as port:
+            result = invoke(port, target, selected, list(edits.items()), journal=journal)
+        run = Run(result, peer, target, journal)
+        if after is not None:
+            after(run, lambda: running_daemon(tmp_path, pci, project, specs,
+                                              log_name="restarted-daemon.log"))
+    return run
 
 
 def numbers(values):
@@ -851,10 +957,13 @@ def test_real_cli_programs_all_ten_methods_through_one_routed_session(tmp_path):
     write_spec(specs, params)
     layout, memory = peer_state(params)
     peer = ProgrammingPCI(route, layout, memory)
+    journals = tmp_path / "journals"
+    journals.mkdir()
     with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
         for param in params:
             result = invoke(port, target, param.method,
-                            [(param.name, value_text(param, expected[param.method]))])
+                            [(param.name, value_text(param, expected[param.method]))],
+                            journal=journals / f"{param.method}.json")
             assert result.returncode == 0, (param.method, result.stderr)
             value = json.loads(result.stdout)
             assert value["method"] == param.method and value["complete"]
@@ -1064,3 +1173,305 @@ def test_ncc_specification_commits_nvm_after_any_confirmed_change(tmp_path, rout
     assert run.peer.nvm == ["execute", "poll"]
     assert [row["method"] for row in run.peer.stores] == ["direct"]
     assert run.peer.read("paged", 0x300, 2) == b"\x33\x44"
+
+
+# --------------------------------------------------------------------------
+# Durable attempt journal and read-only recovery (P4.03)
+# --------------------------------------------------------------------------
+
+def wait_until_ready(port, *, timeout=20):
+    """Wait until the replacement cmqttd has a ready PCI programming lane."""
+    from cbus_toolkit.cgate import CGateClient
+    deadline = time.monotonic() + timeout
+    document = {}
+    while time.monotonic() < deadline:
+        with CGateClient("127.0.0.1", int(port), timeout=10) as client:
+            response = client.command("CMQTT CAPABILITIES")
+        document = json.loads(response.lines[0][4:])
+        if document.get("pci_connected") and document.get("programming_lane_state") == "ready":
+            return document
+        time.sleep(0.05)
+    raise AssertionError(f"cmqttd did not connect: {document}")
+
+
+def recover_after_drop(run, restart):
+    with restart() as port:
+        fresh = wait_until_ready(port)
+        before = len(run.peer.requests)
+        run.recovery = invoke_recover(port, run.journal)
+        run.recovery_requests = run.peer.requests[before:]
+        run.fresh_generation = fresh["pci_generation"]
+
+
+def two_ranges(method, first_size=2, second_size=2):
+    """Two changed fields of one method; range 0 precedes range 1."""
+    first_address = MULTI[method][0] if first_size > 2 else ADDRESSES[method]
+    first = Param(method + "_a", method, first_address, first_size,
+                  before=pattern(first_size, 0x10, 3))
+    second_address = first_address + first_size + 4
+    second = Param(method + "_b", method, second_address, second_size,
+                   before=pattern(second_size, 0x40, 7))
+    return [first, second], {
+        first.name: pattern(first_size, 0xA0, 5), second.name: pattern(second_size, 0xC0, 3)}
+
+
+def assert_journal_envelope(document, run):
+    assert document["format"] == "cbus-physical-pp-journal-v1"
+    assert document["send_may_have_occurred"] is True
+    assert document["read_only_recovery_only"] is True
+    assert document["plan"]["unit"]["destination"] == run.target
+    assert [item["phase"] for item in document["history"]][:2] == ["planned", "save-sent"]
+    # The journal was durable, and already said save-sent, when the first
+    # STORE reached the unit.
+    probe = run.peer.journal_at_first_store
+    assert probe is not None and probe["phase"] == "save-sent"
+    assert probe["attempt_id"] == document["attempt_id"]
+
+
+def assert_read_only_recovery(run):
+    """Recovery performed a fresh LOAD on a new generation and never wrote."""
+    assert run.recovery_requests, "recovery performed no physical LOAD"
+    cals = [row["cal_hex"] for row in run.recovery_requests]
+    assert not [cal for cal in cals
+                if (int(cal[:2], 16) & 0xE0 == 0xA0
+                    and not cal.startswith(("A40041", "A4FF42")))
+                or cal[:2] in ("11", "39", "E3")], cals
+    assert len({row["connection"] for row in run.peer.wire_log}) >= 2
+
+
+def journal_cases():
+    return [
+        # (id, method, drop_on, first_size, expected store states, classifications)
+        pytest.param("direct", ("pre-send", 0), 2,
+                     ["uncertain", "not-attempted"], ["unchanged", "unchanged"],
+                     "observed_unchanged", id="pre-send"),
+        pytest.param("direct", ("post-send", 0), MULTI["direct"][1],
+                     ["uncertain", "not-attempted"], ["mixed", "unchanged"],
+                     "observed_mixed", id="post-send-before-ack"),
+        pytest.param("direct", ("post-ack", 0), 2,
+                     ["uncertain", "not-attempted"], ["expected", "unchanged"],
+                     "observed_partial", id="post-ack-before-readback"),
+        pytest.param("direct", ("between", 0), 2,
+                     ["confirmed", "uncertain"], ["expected", "unchanged"],
+                     "observed_partial", id="between-ranges"),
+        pytest.param("paged", ("between", 0), MULTI["paged"][1],
+                     ["confirmed", "uncertain"], ["expected", "unchanged"],
+                     "observed_partial", id="paged-between-ranges"),
+        pytest.param("goc2", ("post-send", 1), 2,
+                     ["confirmed", "uncertain"], ["expected", "expected"],
+                     "observed_expected", id="goc2-post-send-second-range"),
+    ]
+
+
+@needs_cmqttd
+@pytest.mark.parametrize("method,drop_on,first_size,states,classes,outcome", journal_cases())
+def test_interrupted_save_journal_and_read_only_recovery(
+        tmp_path, method, drop_on, first_size, states, classes, outcome):
+    params, after = two_ranges(method, first_size)
+    run = run_apply(tmp_path, ROUTES["one-bridge"], params,
+                    {param.name: value_text(param, after[param.name]) for param in params},
+                    drop_on=drop_on, after=recover_after_drop)
+    assert run.result.returncode == 1
+    assert run.peer.dropped
+    evidence = run.document["physical_programming_evidence"]
+    assert evidence["save_outcome_uncertain"] and evidence["save_attempts"] == 1
+    assert evidence["journal"]["phase"] == "save-uncertain"
+    document = run.journal_document
+    assert_journal_envelope(document, run)
+    assert document["phase"] == "save-uncertain"
+    assert not document["complete"]
+    assert [row["store_state"] for row in document["ranges"]] == states
+    assert document["save_reply"]["server_reply"]
+    assert document["save_reply"]["confirmed_writes_reported"] == states.count("confirmed")
+    assert document["nvm_commit"] == "not-required"
+    ranges = document["plan"]["ranges"]
+    assert [row["parameter"] for row in ranges] == [param.name for param in params]
+    assert [(row["logical_address"], row["length"]) for row in ranges] == [
+        (param.address, param.size) for param in params]
+    assert all(row["write_planned"] and row["changed"] for row in ranges)
+    # Recovery: read-only fresh LOAD through a replacement daemon and PCI.
+    report = json.loads(run.recovery.stdout)
+    assert [row["classification"] for row in report["ranges"]] == classes
+    assert report["outcome"] == outcome
+    assert report["read_only"] and not report["save_attempted"]
+    assert report["fresh_pci_generation"] == run.fresh_generation
+    assert_read_only_recovery(run)
+    resolved = json.loads(run.journal.read_text())
+    assert resolved["recoveries"][-1]["classifications"] == classes
+    if outcome == "observed_mixed":
+        assert run.recovery.returncode == 1
+        assert not report["conclusive"] and not resolved["resolved"]
+    else:
+        assert run.recovery.returncode == 0, run.recovery.stderr
+        assert report["conclusive"] and resolved["resolved"]
+        assert resolved["resolution"]["by"] == "recover"
+        assert resolved["resolution"]["outcome"] == outcome
+    # Recovery never changes memory: the peer still holds the observed state.
+    for param, classification in zip(params, classes):
+        data = run.peer.read(param.space, physical(param.method, param.address), param.size)
+        if classification == "expected":
+            assert data == after[param.name]
+        elif classification == "unchanged":
+            assert data == param.before
+        else:
+            assert data not in (param.before, after[param.name])
+
+
+@needs_cmqttd
+@pytest.mark.parametrize("drop_phase,nvm_state,executes", [
+    pytest.param("nvm-execute", "uncertain", ["execute"], id="drop-at-execute"),
+    pytest.param("nvm-poll", "uncertain", ["execute", "poll"], id="after-execute-before-poll"),
+])
+def test_interrupted_nvm_commit_is_journaled_and_recovery_flags_persistence(
+        tmp_path, drop_phase, nvm_state, executes):
+    param, after = method_case("ncc", 2)
+    run = run_apply(tmp_path, ROUTES["local"], [param], {param.name: value_text(param, after)},
+                    drop_on=(drop_phase, 0), nvm_running=True, after=recover_after_drop)
+    assert run.result.returncode == 1
+    assert run.peer.nvm == executes
+    document = run.journal_document
+    assert_journal_envelope(document, run)
+    assert document["phase"] == "save-uncertain"
+    assert document["plan"]["requires_nvm_commit"]
+    assert [row["store_state"] for row in document["ranges"]] == ["confirmed"]
+    assert document["save_reply"]["nvm_commit_failed"]
+    assert document["nvm_commit"] == nvm_state
+    report = json.loads(run.recovery.stdout)
+    assert run.recovery.returncode == 0, run.recovery.stderr
+    assert [row["classification"] for row in report["ranges"]] == ["expected"]
+    assert report["outcome"] == "observed_expected"
+    # A fresh LOAD cannot observe the NVM commit or power-cycle persistence.
+    assert report["nvm_commit_uncertain"] and not report["nvm_commit_observed"]
+    assert not report["power_cycle_persistence_verified"]
+    assert_read_only_recovery(run)
+
+
+@needs_cmqttd
+def test_incomplete_journal_refuses_repeat_saves_before_io_until_recovered(tmp_path):
+    params, after = two_ranges("direct")
+    edits = {param.name: value_text(param, after[param.name]) for param in params}
+    outcomes = {}
+
+    def repeat(run, restart):
+        with restart() as port:
+            wait_until_ready(port)
+            before = len(run.peer.requests)
+            # Same path, then a new path for the same unit in the same directory.
+            same = invoke(port, run.target, "direct", list(edits.items()), journal=run.journal)
+            other = invoke(port, run.target, "direct", list(edits.items()),
+                           journal=run.journal.parent / "second.json")
+            outcomes["refused"] = (same, other, run.peer.requests[before:])
+            recovered = invoke_recover(port, run.journal)
+            assert recovered.returncode == 0, recovered.stderr
+            outcomes["after_recovery"] = invoke(
+                port, run.target, "direct", list(edits.items()),
+                journal=run.journal.parent / "third.json")
+
+    run = run_apply(tmp_path, ROUTES["one-bridge"], params, edits,
+                    drop_on=("pre-send", 0), after=repeat)
+    assert run.result.returncode == 1
+    same, other, requests = outcomes["refused"]
+    assert same.returncode == other.returncode == 1
+    assert "records an incomplete save" in json.loads(same.stderr)["error"]
+    assert "records an incomplete save" in json.loads(other.stderr)["error"]
+    assert "No PP I/O was attempted" in json.loads(other.stderr)["error"]
+    assert not requests, "a refused save reached the PCI"
+    assert not (run.journal.parent / "second.json").exists()
+    # After a conclusive recovery a fresh decision uses a new journal.
+    final = outcomes["after_recovery"]
+    assert final.returncode == 0, final.stderr
+    assert json.loads(final.stdout)["journal"]["phase"] == "complete"
+    for param in params:
+        assert run.peer.read(param.space, param.address, param.size) == after[param.name]
+
+
+@needs_cmqttd
+def test_completed_save_journal_records_every_phase(tmp_path):
+    params, after = two_ranges("direct")
+    run = run_apply(tmp_path, ROUTES["one-bridge"], params,
+                    {param.name: value_text(param, after[param.name]) for param in params})
+    assert run.result.returncode == 0, run.result.stderr
+    document = run.journal_document
+    assert_journal_envelope(document, run)
+    assert [item["phase"] for item in document["history"]] == [
+        "planned", "save-sent", "save-confirmed", "readback-verified", "complete"]
+    assert document["complete"] and document["resolved"]
+    assert [row["store_state"] for row in document["ranges"]] == ["confirmed", "confirmed"]
+    assert document["fresh_readback"]["verified"]
+    assert run.document["journal"]["attempt_id"] == document["attempt_id"]
+
+
+# --------------------------------------------------------------------------
+# Programmed field preservation (P4.04)
+# --------------------------------------------------------------------------
+
+def preservation_case(method):
+    """Target field between declared neighbours, plus undeclared guard bytes.
+
+    ``paged``/``ncc`` targets cross a page with one neighbour on each page;
+    another space holds an unrelated declared field.
+    """
+    address, size = MULTI[method]
+    target = Param("target", method, address, size, before=pattern(size, 0x10, 3))
+    before = Param("before", method, address - 4, 4, before=b"\x5A\xA5\x5A\xA5")
+    after = Param("after", method, address + size, 4, before=b"\x3C\xC3\x3C\xC3")
+    other_method = "paged" if method == "direct" else "direct"
+    other = Param("other", other_method, ADDRESSES[other_method] + 0x40
+                  if other_method == "direct" else 0x2F0, 3, before=b"\x01\x02\x03")
+    return [target, before, after, other], pattern(size, 0xA0, 5)
+
+
+def snapshot(peer):
+    return {space: dict(values) for space, values in peer.memory.items()}
+
+
+@needs_cmqttd
+@pytest.mark.parametrize("method", ("direct", "paged", "ncc", "goc2", "edlt"))
+def test_save_preserves_every_byte_outside_the_target_range(tmp_path, method):
+    params, new = preservation_case(method)
+    target = params[0]
+    layout, memory = peer_state(params)
+    # Undeclared guard bytes on both sides of the neighbours.
+    start = physical(method, target.address)
+    for address in (start - 6, start - 5, start + target.size + 4, start + target.size + 5):
+        memory[target.space][address] = 0xEE
+    original = {space: dict(values) for space, values in memory.items()}
+    captured = {}
+
+    def recover(port, run):
+        captured["after"] = snapshot(run.peer)
+        captured["recovery"] = invoke_recover(port, run.journal)
+        assert snapshot(run.peer) == captured["after"]
+
+    specs = tmp_path / "unitspec"
+    specs.mkdir()
+    project = tmp_path / "project.xml"
+    unit = write_project(project, ROUTES["one-bridge"])
+    write_spec(specs, params)
+    journal = tmp_path / "attempt.json"
+    # Contiguous neighbours are read as one range; long replies fragment.
+    peer = ProgrammingPCI(ROUTES["one-bridge"], layout, memory, journal_probe=journal,
+                          nvm_running=method == "ncc",
+                          fragment={"ncc": 8, "edlt": 16, "goc2": 16})
+    with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+        result = invoke(port, unit, method, [(target.name, value_text(target, new))],
+                        journal=journal)
+        run = Run(result, peer, unit, journal)
+        recover(port, run)
+    assert_complete(run, method)
+    expected = {space: dict(values) for space, values in original.items()}
+    for offset, value in enumerate(new):
+        expected[target.space][start + offset] = value
+    assert captured["after"] == expected
+    changed = {(space, address) for space in original for address in original[space]
+               if original[space][address] != captured["after"][space][address]}
+    assert changed == {(target.space, start + offset) for offset in range(target.size)
+                       if target.before[offset] != new[offset]}
+    # Only the target's own range was stored, and a fresh recovery agrees.
+    assert {row["method"] for row in peer.stores} == {method}
+    assert all(start <= row["address"] and row["address"] + len(row["data"]) <= start + target.size
+               for row in peer.stores)
+    assert peer.nvm == (["execute", "poll"] if method == "ncc" else [])
+    report = json.loads(captured["recovery"].stdout)
+    assert [row["classification"] for row in report["ranges"]] == ["expected"]
+    assert [row["parameter"] for row in report["ranges"]] == ["target"]

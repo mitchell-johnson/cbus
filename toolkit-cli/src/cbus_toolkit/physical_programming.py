@@ -6,13 +6,19 @@ physical unit: require cmqttd's live capability declaration, bind each edit to
 one schema ``ProgramMethod``, issue a single SAVE/SAVE_TO_SOURCE, and compare a
 fresh physical LOAD with the values staged before that save.
 
+Every mutating save first creates a durable attempt journal
+(:mod:`cbus_toolkit.physical_pp_journal`) binding the planned byte ranges, and
+``recover`` classifies those ranges from a fresh, read-only physical LOAD.
+
 Neither the successful C-Gate reply nor the fresh readback proves persistence
 through a power cycle.  No state-changing command is retried automatically.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import json
+import os
 import re
 import xml.etree.ElementTree as ET
 from typing import Any, Iterable, Mapping, Protocol
@@ -20,11 +26,20 @@ from uuid import uuid4
 
 from .programming import (
     Programmer,
+    ProgrammingCommandError,
     ProgrammingError,
     _integer_value,
     _parameter_name,
+    _rows,
     quote_value,
     xml_text,
+)
+from .physical_pp_journal import (
+    PhysicalPPJournal,
+    PhysicalPPJournalError,
+    byte_digest,
+    now as _now,
+    refuse_unresolved,
 )
 
 
@@ -106,6 +121,9 @@ class PhysicalParameter:
     protection: str
     address: str | None
     tags: tuple[str, ...]
+    bit_size: int = 8
+    bit_address: int = 0
+    array_skip: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -209,6 +227,14 @@ def _schema(reply: Any) -> dict[str, PhysicalParameter]:
             raise PhysicalProgrammingError(
                 f"Native physical schema has invalid type or ArraySize for {name!r}"
             )
+        try:
+            bit_size = _integer_value(fields.get("BitSize") or "8")
+            bit_address = _integer_value(fields.get("BitAddress") or "0")
+            array_skip = _integer_value(fields.get("ArraySkip") or "0")
+        except ProgrammingError as error:
+            raise PhysicalProgrammingError(
+                f"Native physical schema has an invalid bit layout for {name!r}"
+            ) from error
         parameters[name] = PhysicalParameter(
             name=name,
             value_type=value_type,
@@ -217,10 +243,144 @@ def _schema(reply: Any) -> dict[str, PhysicalParameter]:
             protection=fields.get("Protection", "").strip().casefold() or "none",
             address=fields.get("Address"),
             tags=tuple(tags),
+            bit_size=bit_size,
+            bit_address=bit_address,
+            array_skip=array_skip,
         )
     if not parameters:
         raise PhysicalProgrammingError("Native physical schema contains no parameters")
     return parameters
+
+
+def _schema_digest(schema: Mapping[str, PhysicalParameter]) -> str:
+    rows = [
+        {**item.as_dict(), "bit_size": item.bit_size, "bit_address": item.bit_address,
+         "array_skip": item.array_skip}
+        for item in schema.values()
+    ]
+    encoded = json.dumps(rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def parameter_extent(parameter: PhysicalParameter) -> tuple[int, int]:
+    """Return the logical PP session address and byte span of one parameter.
+
+    This mirrors cmqttd's ``ParameterLayout::for_param`` and
+    ``logical_range``: paged/NCC and standard fields use ``Address`` directly;
+    OEM and GOC memory is represented at ``Address`` (already offset by 256).
+    The journal cross-checks every span against cmqttd's own ``PP DEBUG``
+    change map before the save, so a disagreement refuses rather than
+    journaling the wrong bytes.
+    """
+    if parameter.address is None:
+        raise PhysicalProgrammingError(f"Native schema has no address for {parameter.name!r}")
+    try:
+        start = _integer_value(parameter.address.strip())
+    except ProgrammingError as error:
+        raise PhysicalProgrammingError(
+            f"Native schema address for {parameter.name!r} is invalid"
+        ) from error
+    kind = parameter.value_type
+    count, bits, bit_address, skip = (
+        parameter.array_size, parameter.bit_size, parameter.bit_address, parameter.array_skip
+    )
+    if min(start, bits, bit_address, skip) < 0:
+        raise PhysicalProgrammingError(f"Native schema layout for {parameter.name!r} is invalid")
+    if kind == "int":
+        if not 1 <= bits <= 16 or bit_address + bits > 16:
+            raise PhysicalProgrammingError(f"Unsupported int layout for {parameter.name!r}")
+        width = -(-(bit_address + bits) // 8)
+        span = (count - 1) * width * (skip + 1) + width
+    elif kind == "long":
+        if not 8 <= bits <= 64 or bits % 8 or bit_address:
+            raise PhysicalProgrammingError(f"Unsupported long layout for {parameter.name!r}")
+        width = bits // 8
+        span = (count - 1) * width * (skip + 1) + width
+    elif kind == "bit":
+        span = -(-(bit_address + count) // 8)
+    elif kind == "string":
+        span = count
+    elif kind == "sixbit":
+        span = 6
+    else:
+        raise PhysicalProgrammingError(
+            f"Unsupported parameter type {kind!r} for {parameter.name!r}"
+        )
+    if not 1 <= span <= 65536 or start + span > 65536:
+        raise PhysicalProgrammingError(f"Parameter {parameter.name!r} exceeds the PP address space")
+    return start, span
+
+
+def _save_writable(parameter: PhysicalParameter) -> bool:
+    """cmqttd/native lP skip special and non-bit factory fields on SAVE."""
+    if parameter.protection == "factory":
+        return parameter.value_type == "bit"
+    return parameter.protection != "special"
+
+
+def _debug_rows(reply: Any) -> dict[str, list[str]]:
+    rows: dict[str, list[str]] = {}
+    for code, message in _rows(reply):
+        if code != 199 or ">" not in message:
+            continue
+        label, _, cells = message.partition(">")
+        label = label.strip()
+        if label in rows:
+            raise PhysicalProgrammingError("PP DEBUG repeated a memory row")
+        rows[label] = [cell for cell in cells.split("|") if cell != ""]
+    for label in ("unit", "current", "change"):
+        if label not in rows:
+            raise PhysicalProgrammingError(f"PP DEBUG omitted its {label!r} memory row")
+    width = len(rows["current"])
+    if not 1 <= width <= 16 or any(len(rows[label]) != width for label in ("unit", "change")):
+        raise PhysicalProgrammingError("PP DEBUG returned inconsistent memory rows")
+    return rows
+
+
+def _cell(value: str) -> int | None:
+    if value == "??":
+        return None
+    if re.fullmatch(r"[0-9a-fA-F]{2}", value) is None:
+        raise PhysicalProgrammingError("PP DEBUG returned a malformed memory cell")
+    return int(value, 16)
+
+
+def _session_memory(session: Any, start: int, length: int) -> dict[str, list[Any]]:
+    """Read cmqttd's loaded (``unit``) and staged (``current``) PP bytes."""
+    result: dict[str, list[Any]] = {"unit": [], "current": [], "change": []}
+    address = start
+    while address < start + length:
+        rows = _debug_rows(session.debug_memory(address))
+        take = min(len(rows["current"]), start + length - address)
+        result["unit"].extend(_cell(cell) for cell in rows["unit"][:take])
+        result["current"].extend(_cell(cell) for cell in rows["current"][:take])
+        result["change"].extend(cell.lower() == "ff" for cell in rows["change"][:take])
+        address += take
+    return result
+
+
+_CONFIRMED_WRITES = re.compile(r"after (\d+) confirmed write\(s\)")
+
+
+def _save_reply_evidence(error: BaseException) -> dict[str, Any]:
+    """Classify a failed SAVE from cmqttd's complete reply text, if any.
+
+    Only a complete server reply is interpreted.  cmqttd stores changed
+    ranges in unit-specification order and stops at the first fault, naming
+    how many ranges it confirmed (tagged ACKs plus exact per-range readback).
+    Any other failure leaves every planned range uncertain.
+    """
+    from .cgate import CGateError
+    server_reply = isinstance(error, (CGateError, ProgrammingCommandError))
+    text = str(error)
+    match = _CONFIRMED_WRITES.search(text) if server_reply else None
+    return {
+        "server_reply": server_reply,
+        "error": text[:4096],
+        "type": type(error).__name__,
+        "confirmed_writes_reported": int(match[1]) if match else None,
+        "nvm_commit_failed": bool(server_reply and "Save-to-NVM failed" in text),
+    }
 
 
 def _comparable_value(parameter: PhysicalParameter, value: str) -> Any:
@@ -493,6 +653,112 @@ class PhysicalProgramming:
             _attach(error, evidence)
             raise
 
+    def _journal_plan(
+        self,
+        session: Any,
+        schema: Mapping[str, PhysicalParameter],
+        selected: tuple[PhysicalParameter, ...],
+        edit_rows: tuple[PhysicalEdit, ...],
+        source_path: PhysicalUnitPath,
+        destination_path: PhysicalUnitPath,
+        method: str,
+        capabilities: Mapping[str, Any],
+        *,
+        native_save_operation: str,
+    ) -> dict[str, Any]:
+        """Bind the exact loaded and staged bytes of every edited range.
+
+        Ranges follow unit-specification order, which is the order in which
+        cmqttd stores changed parameters.  The loaded (``unit``) and staged
+        (``current``) bytes come from cmqttd's own session memory, and every
+        byte of each extent must be in its SET change map.
+        """
+        order = {name: index for index, name in enumerate(schema)}
+        ranges = []
+        for item in sorted(selected, key=lambda parameter: order[parameter.name]):
+            start, length = parameter_extent(item)
+            memory = _session_memory(session, start, length)
+            if None in memory["unit"] or None in memory["current"]:
+                raise PhysicalProgrammingError(
+                    f"PP session memory for {item.name!r} is incomplete; no PP SAVE was sent"
+                )
+            if not all(memory["change"]):
+                raise PhysicalProgrammingError(
+                    f"Staged PP memory for {item.name!r} does not match its declared extent; "
+                    "no PP SAVE was sent"
+                )
+            old, new = bytes(memory["unit"]), bytes(memory["current"])
+            ranges.append({
+                "index": len(ranges),
+                "parameter": item.name,
+                "program_method": item.program_method,
+                "protection": item.protection,
+                "type": item.value_type,
+                "logical_address": start,
+                "length": length,
+                "old_sha256": byte_digest(old),
+                "new_sha256": byte_digest(new),
+                "changed": old != new,
+                "write_planned": old != new and _save_writable(item),
+            })
+        generation = capabilities.get("pci_generation")
+        return {
+            "operation_id": self.operation_id,
+            "unit": {
+                "source": source_path.value,
+                "destination": destination_path.value,
+                "lock_address": destination_path.lock_address,
+                "project": destination_path.project,
+                "network": destination_path.network,
+                "unit": destination_path.unit,
+            },
+            "schema_sha256": _schema_digest(schema),
+            "method": method,
+            "native_save_operation": native_save_operation,
+            "requires_nvm_commit": any(
+                item.program_method == "ncc" for item in schema.values()),
+            "pci_generation": generation if type(generation) is int else None,
+            "edits": [item.as_dict() for item in edit_rows],
+            "ranges": ranges,
+        }
+
+    @staticmethod
+    def _journal_save_failure(
+        attempt: PhysicalPPJournal, error: BaseException, evidence: dict[str, Any]
+    ) -> None:
+        reply = _save_reply_evidence(error)
+        evidence["save_reply"] = reply
+
+        def mutate(document: dict[str, Any]) -> None:
+            confirmed = reply["confirmed_writes_reported"]
+            planned = [row for row in document["ranges"] if row["store_state"] == "possible"]
+            if confirmed is not None and confirmed > len(planned):
+                confirmed = None
+            for position, row in enumerate(planned):
+                if confirmed is None:
+                    row["store_state"] = "uncertain"
+                elif position < confirmed:
+                    row["store_state"] = "confirmed"
+                elif position == confirmed:
+                    row["store_state"] = "uncertain"
+                else:
+                    row["store_state"] = "not-attempted"
+            if document["nvm_commit"] == "possible":
+                document["nvm_commit"] = (
+                    "not-reached"
+                    if confirmed is not None and not reply["nvm_commit_failed"]
+                    and confirmed < len(planned)
+                    else "uncertain"
+                )
+            document["save_reply"] = {"confirmed": False, "at": _now(), **reply}
+
+        try:
+            attempt.advance("save-uncertain", mutate)
+            evidence["journal"]["phase"] = "save-uncertain"
+        except BaseException as secondary:
+            evidence["journal"]["update_error"] = {
+                "type": type(secondary).__name__, "message": str(secondary)}
+
     def apply(
         self,
         source: str,
@@ -501,6 +767,7 @@ class PhysicalProgramming:
         method: str,
         destination: str | None = None,
         dry_run: bool = False,
+        journal: str | os.PathLike[str] | None = None,
     ) -> dict[str, Any]:
         source_path = PhysicalUnitPath.parse(source)
         destination_path = (
@@ -515,6 +782,16 @@ class PhysicalProgramming:
         method = _method(method)
         edit_rows = _edits(edits)
         saving = not dry_run
+        if saving and journal is None:
+            raise ValueError(
+                "Physical PP save requires a durable attempt journal (--journal PATH)"
+            )
+        if dry_run and journal is not None:
+            raise ValueError("Physical PP dry-run never saves; omit the attempt journal")
+        if saving:
+            # Refuse before any C-Gate command while this path or any journal
+            # in its directory for the same unit still needs recovery.
+            refuse_unresolved(journal, destination_path.value)
         capabilities = _preflight(self.client, method, saving=saving)
         evidence: dict[str, Any] = {
             "format": "cbus-physical-pp-apply-v1",
@@ -628,6 +905,33 @@ class PhysicalProgramming:
                         "fresh_physical_readback_performed": False,
                     })
                     return evidence
+                evidence["phase"] = "journal-plan"
+                plan = self._journal_plan(
+                    session, schema, selected, edit_rows, source_path, destination_path,
+                    method, capabilities,
+                    native_save_operation=evidence["native_save_operation"],
+                )
+                evidence["phase"] = "journal-create"
+                attempt = PhysicalPPJournal.create(journal, plan)
+                evidence["journal"] = {
+                    "path": str(attempt.path),
+                    "attempt_id": attempt.document["attempt_id"],
+                    "phase": "planned",
+                    "ranges": len(plan["ranges"]),
+                    "write_planned_ranges": sum(
+                        1 for row in plan["ranges"] if row["write_planned"]),
+                }
+
+                def mark_sent(document):
+                    for row in document["ranges"]:
+                        if row["store_state"] == "planned":
+                            row["store_state"] = "possible"
+                    if document["nvm_commit"] == "planned":
+                        document["nvm_commit"] = "possible"
+
+                # A failed durable phase update stops before the SAVE command.
+                attempt.advance("save-sent", mark_sent)
+                evidence["journal"]["phase"] = "save-sent"
                 evidence.update({
                     "phase": "save",
                     "save_attempted": True,
@@ -645,6 +949,7 @@ class PhysicalProgramming:
                         "save_outcome_uncertain": True,
                         "complete": False,
                     })
+                    self._journal_save_failure(attempt, error, evidence)
                     _attach(error, evidence)
                     raise
                 evidence.update({
@@ -652,6 +957,17 @@ class PhysicalProgramming:
                     "save_outcome_uncertain": False,
                     "phase": "fresh-physical-verification",
                 })
+
+                def mark_confirmed(document):
+                    for row in document["ranges"]:
+                        if row["store_state"] == "possible":
+                            row["store_state"] = "confirmed"
+                    if document["nvm_commit"] == "possible":
+                        document["nvm_commit"] = "confirmed"
+                    document["save_reply"] = {"confirmed": True, "at": _now()}
+
+                attempt.advance("save-confirmed", mark_confirmed)
+                evidence["journal"]["phase"] = "save-confirmed"
         except BaseException as error:
             evidence.setdefault("complete", False)
             _attach(error, evidence)
@@ -700,10 +1016,26 @@ class PhysicalProgramming:
                     "verification_mismatches": value_mismatches,
                     "verification_schema_mismatches": schema_mismatches,
                 })
+                attempt.advance("readback-mismatch", lambda document: document.update({
+                    "fresh_readback": {"verified": False, "at": _now(),
+                                       "mismatched_parameters": sorted(
+                                           set(value_mismatches) | set(schema_mismatches))},
+                }))
+                evidence["journal"]["phase"] = "readback-mismatch"
                 raise PhysicalProgrammingError(
                     "Fresh physical PP readback differed from the confirmed saved values",
                     evidence,
                 )
+            attempt.advance("readback-verified", lambda document: document.update({
+                "fresh_readback": {"verified": True, "at": _now(),
+                                   "comparison": "native-schema-type-aware"},
+            }))
+            attempt.advance("complete", lambda document: document.update({
+                "complete": True,
+                "resolved": True,
+                "resolution": {"by": "apply", "outcome": "complete", "at": _now()},
+            }))
+            evidence["journal"]["phase"] = "complete"
             evidence.update({
                 "phase": "complete",
                 "complete": True,
@@ -715,8 +1047,143 @@ class PhysicalProgramming:
             return evidence
         except BaseException as error:
             evidence.setdefault("complete", False)
+            if attempt.document is not None and attempt.document["phase"] == "save-confirmed":
+                try:
+                    attempt.advance("readback-unavailable", lambda document: document.update({
+                        "fresh_readback": {"verified": False, "at": _now(),
+                                           "error": str(error)[:4096]},
+                    }))
+                    evidence["journal"]["phase"] = "readback-unavailable"
+                except BaseException as secondary:
+                    evidence["journal"]["update_error"] = {
+                        "type": type(secondary).__name__, "message": str(secondary)}
             _attach(error, evidence)
             raise
+
+
+    def recover(self, journal: str | os.PathLike[str]) -> dict[str, Any]:
+        """Classify every journaled range from a fresh, read-only PP LOAD.
+
+        This never stages, saves, unlocks a parameter or commits NVM.  The
+        journal is marked resolved only when every range is conclusively
+        ``expected`` or ``unchanged``; ``mixed`` or ``unreadable`` ranges leave
+        it unresolved so a later save of that unit remains refused.
+        """
+        attempt = PhysicalPPJournal.open(journal)
+        document = attempt.document
+        plan = document["plan"]
+        target = PhysicalUnitPath.parse(plan["unit"]["destination"], label="destination")
+        report: dict[str, Any] = {
+            "format": "cbus-physical-pp-recovery-v1",
+            "operation_id": self.operation_id,
+            "journal": str(attempt.path),
+            "attempt_id": document["attempt_id"],
+            "journal_phase": document["phase"],
+            "journal_nvm_commit": document["nvm_commit"],
+            "destination": target.value,
+            "method": plan["method"],
+            "read_only": True,
+            "save_attempted": False,
+            "automatic_write_retries": 0,
+            "recorded_pci_generation": plan["pci_generation"],
+            "fresh_pci_generation": None,
+            "nvm_commit_observed": False,
+            "power_cycle_persistence_verified": False,
+        }
+        fresh: dict[int, bytes | None] = {row["index"]: None for row in plan["ranges"]}
+        errors: list[dict[str, Any]] = []
+        try:
+            capabilities = _preflight(self.client, plan["method"], saving=False)
+            generation = capabilities.get("pci_generation")
+            report["fresh_pci_generation"] = generation if type(generation) is int else None
+            session_name, lock_name = self._names("recover")
+            with Programmer(self.client).load(
+                target.lock_address, target.value, name=session_name, lock_name=lock_name,
+            ) as session:
+                schema = _schema(session.info("*"))
+                if _schema_digest(schema) != plan["schema_sha256"]:
+                    errors.append({"phase": "schema",
+                                   "message": "fresh physical schema differs from the journal"})
+                else:
+                    for row in plan["ranges"]:
+                        try:
+                            cells = _session_memory(
+                                session, row["logical_address"], row["length"])["unit"]
+                        except Exception as error:
+                            errors.append({"phase": "range", "index": row["index"],
+                                           "message": str(error)[:4096]})
+                            continue
+                        if None not in cells:
+                            fresh[row["index"]] = bytes(cells)
+        except Exception as error:
+            errors.append({"phase": "physical-load", "type": type(error).__name__,
+                           "message": str(error)[:4096]})
+        ranges = []
+        for row, progress in zip(plan["ranges"], document["ranges"]):
+            data = fresh[row["index"]]
+            digest = None if data is None else byte_digest(data)
+            if digest is None:
+                classification = "unreadable"
+            elif digest == row["new_sha256"]:
+                classification = "expected"
+            elif digest == row["old_sha256"]:
+                classification = "unchanged"
+            else:
+                classification = "mixed"
+            ranges.append({
+                "index": row["index"],
+                "parameter": row["parameter"],
+                "logical_address": row["logical_address"],
+                "length": row["length"],
+                "write_planned": row["write_planned"],
+                "journaled_store_state": progress["store_state"],
+                "fresh_sha256": digest,
+                "classification": classification,
+            })
+        kinds = {row["classification"] for row in ranges}
+        if "unreadable" in kinds:
+            outcome = "unreadable"
+        elif "mixed" in kinds:
+            outcome = "observed_mixed"
+        elif kinds == {"expected"}:
+            outcome = "observed_expected"
+        elif kinds == {"unchanged"}:
+            outcome = "observed_unchanged"
+        else:
+            outcome = "observed_partial"
+        conclusive = outcome in ("observed_expected", "observed_unchanged", "observed_partial")
+        report.update({
+            "ranges": ranges,
+            "errors": errors,
+            "outcome": outcome,
+            "conclusive": conclusive,
+            # RAM/EEPROM readback cannot observe a C-Bus 3 NVM commit.
+            "nvm_commit_uncertain": bool(
+                plan["requires_nvm_commit"] and "expected" in kinds
+                and document["nvm_commit"] != "confirmed"
+            ),
+        })
+        record = {
+            "at": _now(),
+            "operation_id": self.operation_id,
+            "outcome": outcome,
+            "conclusive": conclusive,
+            "fresh_pci_generation": report["fresh_pci_generation"],
+            "classifications": [row["classification"] for row in ranges],
+            "fresh_sha256": [row["fresh_sha256"] for row in ranges],
+            "errors": errors,
+        }
+
+        def mutate(updated: dict[str, Any]) -> None:
+            updated["recoveries"].append(record)
+            if conclusive and not updated["resolved"]:
+                updated["resolved"] = True
+                updated["resolution"] = {"by": "recover", "outcome": outcome, "at": record["at"]}
+
+        attempt.advance(None, mutate)
+        report["resolved"] = attempt.document["resolved"]
+        report["resolution"] = attempt.document["resolution"]
+        return report
 
 
 def physical_programming_error_payload(error: BaseException) -> dict[str, Any]:
