@@ -1,0 +1,325 @@
+{
+  "checks": {
+    "bridge_types": true,
+    "drawn_element_kinds": true,
+    "element:Bridge": true,
+    "element:CBTI": true,
+    "element:CNI": true,
+    "element:CNI2": true,
+    "element:Network": true,
+    "element:PCI": true,
+    "far_bridge_types": true,
+    "interface_enum_table": true,
+    "interface_model:C-Bus Home Controller": true,
+    "interface_model:CNI": true,
+    "interface_model:Etherlite": true,
+    "interface_model:Lorax": true,
+    "interface_model:LoraxUSB": true,
+    "interface_model:Serial": true,
+    "interface_model:Socket": true,
+    "interface_model:SpaceLogicCBusHomeController": true,
+    "interface_model:Wiser": true,
+    "interface_model:modem": true,
+    "markers:CIS_TTopologyExpressFlowChart.GetNetworkConnectionColor": true,
+    "markers:CIS_TTopologyGenerator.TTopologyGenerator.FindLocalNetworks": true,
+    "markers:CIS_TTopologyGenerator.TTopologyGenerator.GenerateNetworkTree": true,
+    "markers:CIS_TTopologyGenerator.TTopologyGenerator.GetAvailableY": true,
+    "markers:CIS_TfrmTopologyNode.TfrmTopologyNode.GetContextHelpID": true,
+    "near_bridge_types": true,
+    "network_tags": true,
+    "orphan_warning_tag": true,
+    "resource:CIS_TTopologyGenerator.TTopologyGenerator.CheckOrphanedNetworks": true,
+    "resource:CIS_TTopologyGenerator.TTopologyGenerator.GetAvailableY": true,
+    "resource:CIS_TfrmTopologyNode.TfrmTopologyNode.Print": true,
+    "wireless_gateway_types": true,
+    "wireless_unit_rule": true
+  },
+  "format": "cbus-toolkit-topology-generator-static-v1",
+  "interface_enum_table": [
+    [
+      "Serial",
+      0
+    ],
+    [
+      "CNI",
+      1
+    ],
+    [
+      "CNI",
+      4
+    ],
+    [
+      "C-Bus Home Controller",
+      4
+    ],
+    [
+      "SpaceLogicCBusHomeController",
+      10
+    ],
+    [
+      "Lorax",
+      8
+    ],
+    [
+      "LoraxUSB",
+      9
+    ],
+    [
+      "Etherlite",
+      2
+    ],
+    [
+      "Socket",
+      1
+    ],
+    [
+      "Wiser",
+      4
+    ],
+    [
+      "Bridge",
+      6
+    ],
+    [
+      "Bridge",
+      5
+    ],
+    [
+      "modem",
+      7
+    ],
+    [
+      "<fallback>",
+      0
+    ]
+  ],
+  "limit": "This verifies pinned original source routines and the constants the CLI reproduces. It does not execute the Toolkit, load a project, render the ExpressFlowChart, establish network-manager order, print, copy an image, or open a unit form.",
+  "method_spans": {
+    "CIS_TCommonCBus.TCBUSUnit.GetUnitType": {
+      "bytes": 36,
+      "end": "0xf2ef04",
+      "sha256": "8749a9d6ff41345e9367776e719095a96db49ef0f3342b66b9b3099f0d1b543a",
+      "start": "0xf2eee0"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.IsBridgeFarSide": {
+      "bytes": 120,
+      "end": "0xf348c8",
+      "sha256": "f8ced358b97dc4d6038c63202e665dde19fdb4919a89ae9fb0aa347317fab619",
+      "start": "0xf34850"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.IsNearBridge": {
+      "bytes": 120,
+      "end": "0xf34b1c",
+      "sha256": "ac73091a7abe3bd360f92d98bd839dac9482d04395e76e8cbf5f682fd5edf68b",
+      "start": "0xf34aa4"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetIsWireless": {
+      "bytes": 304,
+      "end": "0xf2b864",
+      "sha256": "5cfc740393371e9899e182cee0f155505950459da42055d6e651a3ed869c2587",
+      "start": "0xf2b734"
+    },
+    "CIS_TCommonCBus.TNetworkInterface.GetInterfaceType": {
+      "bytes": 1004,
+      "end": "0xf2c218",
+      "sha256": "304d0e273339d3424810eef15c1763155edcccd5569bdfd9ef0dd7db06398c02",
+      "start": "0xf2be2c"
+    },
+    "CIS_TTopologyExpressFlowChart.GetNetworkConnectionColor": {
+      "bytes": 40,
+      "end": "0x1175670",
+      "sha256": "85a2a177e58b9281e52a2aaee25704739171798c50e4f4215053b12f2485fba3",
+      "start": "0x1175648"
+    },
+    "CIS_TTopologyExpressFlowChart.TTopologyExpressFlowChart.DrawElement": {
+      "bytes": 640,
+      "end": "0x1174d6c",
+      "sha256": "0e1cf8e44b8d596ee5538f5e1bf3990b3a1646b3852eec273ab44c3986383a41",
+      "start": "0x1174aec"
+    },
+    "CIS_TTopologyExpressFlowChart.TTopologyExpressFlowChart.DrawNetworkAddress": {
+      "bytes": 552,
+      "end": "0x1176058",
+      "sha256": "a756b748bef17cd018ef9bc2f013d24c2fbc23615742e843dabf6c79778a09fe",
+      "start": "0x1175e30"
+    },
+    "CIS_TTopologyExpressFlowChart.TTopologyExpressFlowChart.GetElement": {
+      "bytes": 924,
+      "end": "0x1174a6c",
+      "sha256": "a9ec64de5d7c0e1346e79bc5b22b2ad7ea417b0f55ef8ccf6ba9a8bc0aa502c0",
+      "start": "0x11746d0"
+    },
+    "CIS_TTopologyExpressFlowChart.TerminateNetworkConnection": {
+      "bytes": 176,
+      "end": "0x1175648",
+      "sha256": "332498b7444cbe007c57b9e03f83a5144b03465fcb06c598bfec3925b0ad0cfd",
+      "start": "0x1175598"
+    },
+    "CIS_TTopologyGenerator.GenerateTopologyScript": {
+      "bytes": 424,
+      "end": "0x1176514",
+      "sha256": "4e3fd7343ae4f868333298486d6ccf07a04fa5f095def90d0165b95e4d0759c1",
+      "start": "0x117636c"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddBridgeElement": {
+      "bytes": 932,
+      "end": "0x1178404",
+      "sha256": "262137efbc83843b3331685720c71245e3b85bd3246a47839245235084d84d98",
+      "start": "0x1178060"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddCBTIElement": {
+      "bytes": 684,
+      "end": "0x1177864",
+      "sha256": "7afc067dd65e26dc898a2659f773557886e628a34e7705893eb2a2dd81553e12",
+      "start": "0x11775b8"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddCNI2Element": {
+      "bytes": 684,
+      "end": "0x1177db8",
+      "sha256": "b6c9cfc49e971fb83b54ff5a910f2d677bdb54c293d25c9473340f95c64d8e63",
+      "start": "0x1177b0c"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddCNIElement": {
+      "bytes": 680,
+      "end": "0x1177b0c",
+      "sha256": "70c84507afa2d10a7a7a904a1ea31838a9ab760fbf614a7318d2b5f5c64ad378",
+      "start": "0x1177864"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddNetwork": {
+      "bytes": 1492,
+      "end": "0x11775b8",
+      "sha256": "c3815e507ff7aa27db1248bd74f8f09ab5b047fb864f0066a5f5d9f9793616fd",
+      "start": "0x1176fe4"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.AddPCIElement": {
+      "bytes": 680,
+      "end": "0x1178060",
+      "sha256": "b142cfa8f6227f505850196417d0a14b60389cd54e62711726490986afff6fe9",
+      "start": "0x1177db8"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.CheckOrphanedNetworks": {
+      "bytes": 536,
+      "end": "0x117878c",
+      "sha256": "2ca4c89e3591a49f58357f1bd5122812dabf9cba890a5c11a1d4a510db7a3d5c",
+      "start": "0x1178574"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.Create": {
+      "bytes": 128,
+      "end": "0x1176594",
+      "sha256": "f2a686b109ba24671da84e8d289f6e4ad37ac311dea437b187ab166d9d4fbf4e",
+      "start": "0x1176514"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.ExploreNetwork": {
+      "bytes": 1148,
+      "end": "0x1176e94",
+      "sha256": "87833fbf4afb3804d041dd2a19c7fc69573e0da88d0dbb6ef79fb8b6f56a9017",
+      "start": "0x1176a18"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.FindLocalNetworks": {
+      "bytes": 116,
+      "end": "0x1176824",
+      "sha256": "5348dcd3b1066aae26b62846f393ce6cdf8e9a64ed220cc8140ccdc7ed02d1b2",
+      "start": "0x11767b0"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.Generate": {
+      "bytes": 464,
+      "end": "0x11767b0",
+      "sha256": "fa2d36fe758bed7aa472a535f0e913394d93460a954676e6e2f3506220eec6f1",
+      "start": "0x11765e0"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.GenerateNetworkTree": {
+      "bytes": 500,
+      "end": "0x1176a18",
+      "sha256": "50bbcb9f2eea3c2bced71cc170c421a06ab2248d34428f66151c509050e5fbb7",
+      "start": "0x1176824"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.GetAvailableY": {
+      "bytes": 292,
+      "end": "0x1176fe4",
+      "sha256": "491a1aa97cf432feb1ab0d0407c21fca8e1a25bd0c31df3c6ab1c59681206573",
+      "start": "0x1176ec0"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.IsNetworkInTopologyMap": {
+      "bytes": 308,
+      "end": "0x11788c0",
+      "sha256": "c6285b93a9d4db39306fb81b93d40915fad49f50a80bd4812b2d61901c410750",
+      "start": "0x117878c"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.IsProcessedNetwork": {
+      "bytes": 44,
+      "end": "0x1176ec0",
+      "sha256": "8e5649e35e70dc4ce11fa5321f7edde83718ce12480de66e5a726605a8bbd326",
+      "start": "0x1176e94"
+    },
+    "CIS_TTopologyGenerator.TTopologyGenerator.IsWirelessGateway": {
+      "bytes": 368,
+      "end": "0x1178574",
+      "sha256": "290d6f306d82068eb4eb0c32022dea99638bef12f5343954335be000cd28b46f",
+      "start": "0x1178404"
+    },
+    "CIS_TUnitType.TCGateUnitCatalog.IsBridge": {
+      "bytes": 528,
+      "end": "0xf41804",
+      "sha256": "30c7915e42c65697fdf17f560e6b2ed6e9e8774678ac9d1a06d611e4d83778d8",
+      "start": "0xf415f4"
+    },
+    "CIS_TUnitType.TCGateUnitCatalog.IsBridgeFarSide": {
+      "bytes": 296,
+      "end": "0xf4192c",
+      "sha256": "0bcf51247d3f4b01077e5e0d520bbce6f2c52903b90bd2508a10729ee1ac406d",
+      "start": "0xf41804"
+    },
+    "CIS_TUnitType.TCGateUnitCatalog.IsNearBridge": {
+      "bytes": 296,
+      "end": "0xf42288",
+      "sha256": "bd595bcecf94867eb18f7d40e9f6d432b86b0c5f9558924fd42c6c73b4f54926",
+      "start": "0xf42160"
+    },
+    "CIS_TUnitType.TCGateUnitCatalog.IsWireless": {
+      "bytes": 368,
+      "end": "0xf41c40",
+      "sha256": "fbe5120ada5160c5ae6e7c2acdc9dd1f1c8955bae3dd6ce16943f492ed943d23",
+      "start": "0xf41ad0"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.CopyToClipboard": {
+      "bytes": 204,
+      "end": "0x11797a8",
+      "sha256": "e429125f834d84a5d4f967e991448e51801490c905a7211bba6d1042116bc522",
+      "start": "0x11796dc"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.GetContextHelpID": {
+      "bytes": 24,
+      "end": "0x11798a4",
+      "sha256": "bf98a3fd7b9fe1a6e2f88245d5acfc624aa1653ae1924ce6527bfd3016ca8d16",
+      "start": "0x117988c"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.OpenFarSideGUI": {
+      "bytes": 308,
+      "end": "0x117a0a8",
+      "sha256": "88985c19db61a70c88f3d2200fb4e5f2acc1415e158cffa7ad08bcfab7b2957a",
+      "start": "0x1179f74"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.OpenNearSideGUI": {
+      "bytes": 204,
+      "end": "0x1179f74",
+      "sha256": "0103bed4706a17a1b66ea3ba68200877c43cef4afe36e73f6b2b242f1d0403e0",
+      "start": "0x1179ea8"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.OpenUnitsNode": {
+      "bytes": 92,
+      "end": "0x1179ea8",
+      "sha256": "4439fb36f271992c7bf100b9bf6adb630087ecfcd5922852be64d1cdcc204306",
+      "start": "0x1179e4c"
+    },
+    "CIS_TfrmTopologyNode.TfrmTopologyNode.Print": {
+      "bytes": 656,
+      "end": "0x11796dc",
+      "sha256": "c0005171af0fa68e563d55b0d2ea16638e3c1fa412c0f9830028c7795bd1a5df",
+      "start": "0x117944c"
+    }
+  },
+  "model_module_sha256": "7d4de0c3ee8817e39984fdada3ef4a1e43acef23ba7b4df94f14450258b106af",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+}

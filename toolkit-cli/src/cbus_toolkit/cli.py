@@ -1305,6 +1305,8 @@ def build_parser():
     project_repair_options(ops)
     from .project_legacy_transform_cli import options as project_legacy_transform_options
     project_legacy_transform_options(ops)
+    from .project_topology import options as project_topology_options
+    project_topology_options(ops)
     create = ops.add_parser("new")
     create.add_argument("file", type=Path)
     create.add_argument("--name", required=True)
@@ -2297,6 +2299,9 @@ def _project(args):
     if args.action == "transform-legacy":
         from .project_legacy_transform_cli import run as project_legacy_transform_run
         return project_legacy_transform_run(args)
+    if args.action == "topology":
+        from .project_topology import run as project_topology_run
+        return project_topology_run(args)
     from .project import ProjectDocument
     if args.action == "new":
         if args.file.exists():

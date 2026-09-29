@@ -351,6 +351,18 @@ a separate file. Explicit OID references protect against dangling references;
 device-specific implicit references are not yet modeled. Native C-Gate 3
 SQLite projects must be managed through C-Gate rather than the legacy editor.
 
+`project topology` builds the Toolkit topology map of a saved XML/CBZ project:
+networks, interfaces, bridges and wireless gateways, orphaned networks and
+circular joins. It also resolves navigation targets and exports deterministic
+DOT or SVG images; original layout, print and pixel parity are unassessed.
+See [topology](docs/topology.md).
+
+```sh
+cbus-toolkit project topology house.cbz --navigate 3
+cbus-toolkit project topology house.cbz --far-side 254/3
+cbus-toolkit project topology house.cbz --format svg --output topology.svg
+```
+
 ## C-Gate and PCI
 
 Outgoing CAL routes can also be encoded and inspected offline:

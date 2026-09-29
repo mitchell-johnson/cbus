@@ -320,6 +320,31 @@ def _route(source: int, target: int, networks: dict[int, _Network]) -> tuple[int
     return tuple(route)
 
 
+def resolve_network_route(
+    project: ProjectDocument, *, source_network: int, target_network: int
+) -> tuple[int, ...]:
+    """Resolve only the far-side bridge bytes between two project networks.
+
+    This applies the same root-interface, Bridge-parent, conventional-unit and
+    six-bridge rules as :func:`plan_commissioning_route` without a unit target.
+    """
+    if type(project) is not ProjectDocument:
+        raise TypeError("project must be an exact ProjectDocument")
+    source = _byte(source_network, "source_network")
+    target = _byte(target_network, "target_network")
+    _, networks = _project_networks(project)
+    if source not in networks:
+        raise ProjectError(f"Source network {source} is absent from the project")
+    if target not in networks:
+        raise ProjectError(f"Target network {target} is absent from the project")
+    if networks[source].interface_type.casefold() not in SUPPORTED_ROOT_INTERFACES:
+        raise ProjectError(
+            "Source network must be directly attached through a CNI or Serial interface; "
+            "reverse and sibling bridge starts are unsupported"
+        )
+    return _route(source, target, networks)
+
+
 def plan_commissioning_route(
     project: ProjectDocument,
     *,

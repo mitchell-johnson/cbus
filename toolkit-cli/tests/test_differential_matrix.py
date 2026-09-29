@@ -1,6 +1,6 @@
 """Phase 4+: differential matrix with rubric + eight attempted rows (TDD).
 
-Enumerates all 39 ledger areas x workflow/negative-path slots and proves
+Enumerates all 41 ledger areas x workflow/negative-path slots and proves
 the exact differential state: only ``edlt-reset-controls`` /
 ``nominal_workflow``, ``edlt-retained-scene-editing`` /
 ``nominal_workflow``, ``edlt-global-category-programming`` /
@@ -28,15 +28,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DifferentialMatrixTests(unittest.TestCase):
-    def test_ledger_has_39_areas_and_census_incomplete(self):
+    def test_ledger_has_41_areas_and_census_incomplete(self):
         ledger = differential.load_ledger()
-        self.assertEqual(len(ledger["features"]), 39)
+        self.assertEqual(len(ledger["features"]), 41)
         self.assertFalse(ledger["census_complete"])
 
     def test_matrix_enumerates_every_ledger_area(self):
         ledger = differential.load_ledger()
         matrix = differential.build_matrix(ledger)
-        self.assertEqual(matrix["ledger_areas"], 39)
+        self.assertEqual(matrix["ledger_areas"], 41)
         self.assertEqual(set(matrix["areas"]), set(differential.ledger_area_ids(ledger)))
 
     def test_matrix_holds_exact_eight_row_state(self):
@@ -420,7 +420,7 @@ class DifferentialMatrixTests(unittest.TestCase):
 
     def test_summary_reports_incomplete(self):
         summary = differential.summary(differential.build_matrix())
-        self.assertEqual(summary["ledger_areas"], 39)
+        self.assertEqual(summary["ledger_areas"], 41)
         self.assertEqual(summary["accepted_areas"], 0)
         self.assertFalse(summary["complete"])
         self.assertFalse(summary["census_complete"])

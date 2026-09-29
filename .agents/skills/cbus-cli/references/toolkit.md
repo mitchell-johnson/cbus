@@ -42,6 +42,13 @@ comparisons; see `toolkit-cli/docs/project-repair.md` for the exact encoding
 behavior. The returned `native_load_verified=false` is intentional: a successful
 portable repair does not establish native project loadability.
 
+`project topology FILE` is a read-only map of a saved XML/CBZ project built from
+statically recovered Toolkit 1.18 rules. Use `--navigate NET`, `--near-side NET/UNIT` or
+`--far-side NET/UNIT` to resolve unit paths, and `--format dot|svg [--output NEW]`
+for images. Report `diagnostics`, orphans and circular joins as project facts,
+not live topology; layout, print and pixel parity are unassessed. See
+`toolkit-cli/docs/topology.md`.
+
 When a repaired XML `Installation` still has DBVersion 2, 2.1 or 2.2, use
 `project transform-legacy REPAIRED.xml --dry-run` to validate the bounded
 conversion, then `--output NEW.xml` to write a new file exclusively. The 2
