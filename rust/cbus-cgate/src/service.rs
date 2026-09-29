@@ -13620,15 +13620,19 @@ impl Service {
             return false;
         }
         let root = root.to_ascii_uppercase();
-        matches!(root.as_str(), "CMQTT" | "UNIT" | "EVENTS" | "EXIT" | "MOCK")
-            || crate::manual::DOCUMENTED_COMMANDS.iter().any(|path| {
-                path.split_whitespace()
-                    .next()
-                    .is_some_and(|known| known.eq_ignore_ascii_case(&root))
-            })
-            || crate::manual::DECOMPILED_COMMAND_GROUPS
-                .iter()
-                .any(|(known, _)| known.eq_ignore_ascii_case(&root))
+        // `AccessControlCommand` registers its native root as the unseparated
+        // `ACCESSCONTROL`; the decompiled group table spells it
+        // `ACCESS_CONTROL`, so both spellings reach dispatch.
+        matches!(
+            root.as_str(),
+            "CMQTT" | "UNIT" | "EVENTS" | "EXIT" | "MOCK" | "ACCESSCONTROL"
+        ) || crate::manual::DOCUMENTED_COMMANDS.iter().any(|path| {
+            path.split_whitespace()
+                .next()
+                .is_some_and(|known| known.eq_ignore_ascii_case(&root))
+        }) || crate::manual::DECOMPILED_COMMAND_GROUPS
+            .iter()
+            .any(|(known, _)| known.eq_ignore_ascii_case(&root))
     }
 
     fn publish_command_entry(&self, client: &ClientState, raw: &str) -> Option<String> {

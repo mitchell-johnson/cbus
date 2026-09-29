@@ -25,6 +25,8 @@ fn native_command_trace_requires_a_recognized_top_level_family() {
         "[exit] EXIT",
         "[extension] CMQTT CAPABILITIES",
         "[extension] UNIT READMEM //TEST/254/p/1 0 1",
+        "[native-root] ACCESSCONTROL CLOSE //TEST/254/213 7 9",
+        "[group-root] ACCESS_CONTROL LOCK //TEST/254/213 7 9",
     ] {
         assert!(Service::native_logs_command_entry(command), "{command}");
     }
@@ -19035,7 +19037,13 @@ async fn access_control_close_and_lock_use_exact_once_native_frames() {
             }
         });
         let mut frame = Vec::new();
-        remote_read.read_until(b'\r', &mut frame).await.unwrap();
+        tokio::time::timeout(
+            Duration::from_secs(5),
+            remote_read.read_until(b'\r', &mut frame),
+        )
+        .await
+        .unwrap_or_else(|_| panic!("{command}: no PCI frame within 5s"))
+        .unwrap();
         assert!(frame.starts_with(expected), "{command}: {frame:?}");
         let confirmation = frame[frame.len() - 2];
         remote_write.write_all(&[confirmation, b'.']).await.unwrap();
