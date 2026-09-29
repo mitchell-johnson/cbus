@@ -1,0 +1,2965 @@
+{
+  "backend": "macos-mono",
+  "cases": [
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.2
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.3.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 227288,
+          "file_sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.3.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.3.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.1
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.2
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.3.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 227288,
+          "file_sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.3.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.3.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.3.0.bin",
+          "sha256": "a33e052cfd7295698f4943da3a8abaac612dda343df9a5249736aca5465c9c8f"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.3.0.zip",
+      "package_version": "1.3.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.9
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.4.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 227288,
+          "file_sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.4.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.4.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.8
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.2
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.4.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 227288,
+          "file_sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.4.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.4.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 227288,
+          "entry": "edlt_main_hwv1_1.4.0.bin",
+          "sha256": "9b0c9cf884fcdef929fe7de8d8bf04d38a9c2347ad4f4e8e80e2bf15b35a1691"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.4.0.zip",
+      "package_version": "1.4.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.8
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.5.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 237320,
+          "file_sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.5.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.5.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.8
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.2
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.2
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1.5.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 237320,
+          "file_sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1.5.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1.5.0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.1
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv2_1.5.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 240235,
+          "file_sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1.5.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1.5.0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.4
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.2
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv2_1.5.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 240235,
+          "file_sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d",
+          "gap_seconds": 10.7
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1.5.0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1.5.0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "refusal": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 237320,
+          "entry": "edlt_main_hwv1_1.5.0.bin",
+          "sha256": "f0c2379eddc7c2ddb816fcdeb6d24c336e2e881a45aa25254efa94a16fe55400"
+        },
+        "TivaPCI": {
+          "bytes": 240235,
+          "entry": "edlt_main_hwv2_1.5.0.bin",
+          "sha256": "ed583a27fdbecd8ae3336a639c3dd41f68c231de773ce6f1fe6a82b9b117429d"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.5.0.zip",
+      "package_version": "1.5.0",
+      "plan_argv": [],
+      "plan_supported": false,
+      "probe_exit_code": 0,
+      "progress": [],
+      "result": [
+        "dowork",
+        "The selected firmware archive is not compatible with the connected eDLT unit."
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.3
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 245991,
+          "file_sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.2
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.4
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.4
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x2000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv1_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 245991,
+          "file_sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778",
+          "gap_seconds": 10.4
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "1.0 (Stellaris + PCI)",
+      "native_variant": "StellarisPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x2000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv1_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = StellarisPCI",
+        "Firmware image = $TMP/edlt_main_hwv1_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x2000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "StellarisPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.2
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv2_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 244313,
+          "file_sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355",
+          "gap_seconds": 10.7
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "success": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.8
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.6
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.7
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.6
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv2_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 244313,
+          "file_sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Successfully upgraded firmware on unit."
+      ],
+      "result": [
+        "upgrade",
+        "returned"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "ncc_first_request": true,
+        "ncc_mono_limit": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.8
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv3_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 334704,
+          "file_sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e",
+          "gap_seconds": 10.6
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": false,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv3_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaNCC",
+        "Firmware image = $TMP/edlt_main_hwv3_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Skipping font data installation (not required).",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Checking firmware version after upgrade..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Timed out while waiting for response from unit|False"
+      ],
+      "serial_commands": [
+        "id"
+      ],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "ncc_first_request": true,
+        "ncc_mono_limit": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.7
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.6
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.5
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.4
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv3_1_7_0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 334704,
+          "file_sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e",
+          "gap_seconds": 10.4
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": null,
+      "force_font": true,
+      "hardware_version": "3.0 (Tiva + NCC)",
+      "native_variant": "TivaNCC",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv3_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaNCC",
+        "Firmware image = $TMP/edlt_main_hwv3_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit...",
+        "Successfully upgraded firmware on the unit.",
+        "Checking firmware version after upgrade..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Timed out while waiting for response from unit|False"
+      ],
+      "serial_commands": [
+        "id"
+      ],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaNCC"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "failure_stop": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 3,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 2.0
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": 1,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Unable to prepare unit for firmware upgrade (exit code 3).|False"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "failure_stop": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 2.0
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 3,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": 2,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Unable to clear flash memory for font data installation (exit code 3).|False"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "failure_stop": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.7
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.5
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 3,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": 3,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Unable to write font data to unit (exit code 3).|False"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "failure_stop": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.4
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.4
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 3,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": 4,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Unable to prepare unit for firmware upgrade (exit code 3).|False"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    },
+    {
+      "assembly_version": "1.16.3.0",
+      "checks": {
+        "argv_sequence": true,
+        "decrypt_adapter_hashes": true,
+        "delays": true,
+        "extracted_entries": true,
+        "failure_stop": true,
+        "file_arguments": true,
+        "native_variant": true,
+        "package_version": true,
+        "temporary_files_removed": true
+      },
+      "dfuprog": [
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 1.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-c",
+            "-l",
+            "720896"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 8.3
+        },
+        {
+          "argv": [
+            "-z",
+            "-b",
+            "-a",
+            "0",
+            "-f",
+            "<extracted:edlt_fontdata_1.0.0.bin>"
+          ],
+          "exit_code": 0,
+          "file_bytes": 672481,
+          "file_sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b",
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-m"
+          ],
+          "exit_code": 0,
+          "file_bytes": null,
+          "file_sha256": null,
+          "gap_seconds": 0.3
+        },
+        {
+          "argv": [
+            "-b",
+            "-a",
+            "0x4000",
+            "-r",
+            "-f",
+            "<extracted:edlt_main_hwv2_1_7_0.bin>"
+          ],
+          "exit_code": 3,
+          "file_bytes": 244313,
+          "file_sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355",
+          "gap_seconds": 10.3
+        }
+      ],
+      "extracted": {
+        "Font": {
+          "bytes": 672481,
+          "entry": "edlt_fontdata_1.0.0.bin",
+          "sha256": "8136f4cb424721784fe7877002c03307f04cdd323bb126fab8cae1db425a2c0b"
+        },
+        "StellarisPCI": {
+          "bytes": 245991,
+          "entry": "edlt_main_hwv1_1_7_0.bin",
+          "sha256": "d46c0afd478fcb6ccb86d8e415aad0504d8d919b2399508308784b7965827778"
+        },
+        "TivaNCC": {
+          "bytes": 334704,
+          "entry": "edlt_main_hwv3_1_7_0.bin",
+          "sha256": "fbfd5ab2f041315c39c7b989507d14b9b78efd89d9d136fc48149d6615476d1e"
+        },
+        "TivaPCI": {
+          "bytes": 244313,
+          "entry": "edlt_main_hwv2_1_7_0.bin",
+          "sha256": "a10d336315d6db8e23ce5b4bc96d0d2fa980b380e845050e0a9bb4a77d78d355"
+        }
+      },
+      "fail_at": 5,
+      "force_font": true,
+      "hardware_version": "2.0 (Tiva + PCI)",
+      "native_variant": "TivaPCI",
+      "package": "eDLTFirmware_1.7.0.zip",
+      "package_version": "1.7.0",
+      "plan_argv": [
+        [
+          "-m"
+        ],
+        [
+          "-z",
+          "-c",
+          "-l",
+          "720896"
+        ],
+        [
+          "-z",
+          "-b",
+          "-a",
+          "0",
+          "-f",
+          "<extracted:edlt_fontdata_1.0.0.bin>"
+        ],
+        [
+          "-m"
+        ],
+        [
+          "-b",
+          "-a",
+          "0x4000",
+          "-r",
+          "-f",
+          "<extracted:edlt_main_hwv2_1_7_0.bin>"
+        ]
+      ],
+      "plan_supported": true,
+      "probe_exit_code": 0,
+      "progress": [
+        "Verifying upgrade parameters...",
+        "Unit variant = TivaPCI",
+        "Firmware image = $TMP/edlt_main_hwv2_1_7_0.bin",
+        "Firmware address (-a parameter) = 0x4000",
+        "Font data = $TMP/edlt_fontdata_1.0.0.bin",
+        "DFU application = $UPDATER/dfuprog.exe",
+        "Preparing DFU process object...",
+        "Preparing unit for firmware upgrade...",
+        "Performing font data installation (forced).",
+        "Clearing flash memory on unit for font data installation...",
+        "Installing font data on unit...",
+        "Successfully installed font data on the unit.",
+        "Preparing unit for firmware upgrade...",
+        "Upgrading firmware on unit..."
+      ],
+      "result": [
+        "exception",
+        "Exception|Unable to write firmware to unit (exit code 3).|False"
+      ],
+      "serial_commands": [],
+      "stderr_empty": true,
+      "temporary_files_left": [],
+      "variant": "TivaPCI"
+    }
+  ],
+  "compiled_probe_sha256": "b26641b291c33b43e9ed9db2bb7f75c38caea21ef008c6fdf905e36fac678aeb",
+  "decrypt_adapter_compared": true,
+  "format": "cbus-firmware-update-plan-original-oracle-v1",
+  "mono_limits": [
+    "System.IO.Ports.SerialPort.DataReceived is not raised, so the NCC branch stops at the first id timeout",
+    "The ForceFontUpgradeCheckBox is an uninitialized CheckBox whose check_state is set; constructing one needs GDI+"
+  ],
+  "password_reported": false,
+  "physical_hardware_accessed": false,
+  "plaintext_retained": false,
+  "probe_sha256": "becd82054938d3b427e90245a4d526cde6d8e6cec3ca4350540b792d3b419c58",
+  "retyped_glue": "FirmwareUpgrader_DoWork argument assignments and required-file check (unit discovery uses WMI)",
+  "runtime_hashes": {
+    "bin/mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "etc/mono/config": "5f8a2ac3f2ba0ab21c53f75d06414ce049232c7d6dc45a921bdff66a7dab11a2",
+    "lib/libMonoPosixHelper.dylib": "243763bbaa900ae5f69ce3c5325ed1f321b6b3f77aaf7c1318db84e5ae32343a",
+    "lib/libmono-native-compat.0.dylib": "c89a2392978245b560e619f45b7f2fb8c855a3dd0872a8604dc4ef7e5adab17d",
+    "lib/mono/4.5/Microsoft.CSharp.dll": "6a32705163da884cee8bd7ef381694a119865f4a6f9b6fa39e0bbe60cdc4b248",
+    "lib/mono/4.5/System.Core.dll": "18507d65f274356ca237e7ff69eae1bd5f4e3ef3ad4c611b83cb65eebdbcf65f",
+    "lib/mono/4.5/System.Drawing.dll": "0938e49c506ff253de33c4a5c85af732381bcefdb71fe439d23828b5bfbfb805",
+    "lib/mono/4.5/System.Windows.Forms.dll": "fa3a88fd4a3c19af300a34ca2884c6271cb77b4765776b1bc1580a8381d11c96",
+    "lib/mono/4.5/System.Xml.dll": "95b7a14296050b5e5b73753b84cddc54ef90b94aaad0af980df4746dba8f9fd4",
+    "lib/mono/4.5/System.dll": "5d5c56e3a70e873e8f8c514cc5db15c8647c8b0933b7eeae11a5e9705f5c8386",
+    "lib/mono/4.5/mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771",
+    "lib/mono/4.5/mscorlib.dll": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4",
+    "lib/mono/gac/I18N.West/4.0.0.0__0738eb9f132ed756/I18N.West.dll": "d9b1af4624fc2ad388019d534bba0e7667646d45e55795d2d1a738d4bcaa1eb6",
+    "lib/mono/gac/I18N/4.0.0.0__0738eb9f132ed756/I18N.dll": "1304efeb2c590721b5cd78f89b2bac423784f05c532a51970551a0170c44812d",
+    "lib/mono/gac/Mono.Security/4.0.0.0__0738eb9f132ed756/Mono.Security.dll": "f3aee98ee4953edc81d092f39696dccb3c3aedaed8dd60f01c60f4d649be6172",
+    "lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll": "18507d65f274356ca237e7ff69eae1bd5f4e3ef3ad4c611b83cb65eebdbcf65f",
+    "lib/mono/gac/System.Drawing/4.0.0.0__b03f5f7f11d50a3a/System.Drawing.dll": "0938e49c506ff253de33c4a5c85af732381bcefdb71fe439d23828b5bfbfb805",
+    "lib/mono/gac/System.Management/4.0.0.0__b03f5f7f11d50a3a/System.Management.dll": "1d2f8c36846a0a1a1b9e2e9defcf03aa15052b989436bc411ff79a5104f6d5c6",
+    "lib/mono/gac/System.Windows.Forms/4.0.0.0__b77a5c561934e089/System.Windows.Forms.dll": "fa3a88fd4a3c19af300a34ca2884c6271cb77b4765776b1bc1580a8381d11c96",
+    "lib/mono/gac/System.Xml/4.0.0.0__b77a5c561934e089/System.Xml.dll": "95b7a14296050b5e5b73753b84cddc54ef90b94aaad0af980df4746dba8f9fd4",
+    "lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll": "5d5c56e3a70e873e8f8c514cc5db15c8647c8b0933b7eeae11a5e9705f5c8386"
+  },
+  "runtime_version": "6.12.0.206",
+  "scope": "Unchanged Toolkit 1.18 FirmwareUpdater UnzipFirmwarePackage/UpgradeFirmware under task-local macOS Mono with an argv-recording dfuprog stub; no USB, driver, dfuprog.exe or physical serial device",
+  "source_hashes": {
+    "research/NativeFirmwareUpdateProbe.cs": "becd82054938d3b427e90245a4d526cde6d8e6cec3ca4350540b792d3b419c58",
+    "research/firmware_update_oracle.py": "2de4a50c4cf43be8a7d616f8fd1866b5d8ca2282b397d72993a6540ebca4321e",
+    "src/cbus_toolkit/firmware_update_plan.py": "c9e9a9713e7c080152de3365549b6350f8e4bd46d74a14eed7dc93f915f2cc08"
+  },
+  "status": "passed",
+  "vendor_hashes": {
+    "EDLTCommon.dll": "41c740d2376f98cfcce20a58eb1ba2a7ea0629a8a2f56ef6a1bf134cae5da3e2",
+    "Firmware/eDLTFirmware/dfuprog.exe": "fb3f46f81fd1878cba2cde47f72dceaa9e1b4ac1be0e083c33901a34d130aa0e",
+    "Firmware/eDLTFirmware/eDLTFirmware_1.3.0.zip": "47c58e7dfefae4786c2536b6949e5fafa8c8877a0e3785791a35884809b4ac3d",
+    "Firmware/eDLTFirmware/eDLTFirmware_1.4.0.zip": "b069b3aa6aa414839d880fd8163f15db8afa6de67475925a5f27bf75267daa61",
+    "Firmware/eDLTFirmware/eDLTFirmware_1.5.0.zip": "93e258c9bf2482a20579a4abf1d125956fe074a11ed8ef823e871773870a946b",
+    "Firmware/eDLTFirmware/eDLTFirmware_1.7.0.zip": "f937ccf1ec0d13939e0ba677ee54fe44b2d4a250fe0b578a0dd82effbbc05a34",
+    "FirmwareUpdater.exe": "f54ea945167436b8a3e95decb1d146d01d60e4af1badcd34f4bad626df1e54d5",
+    "GlobalCommon.dll": "9f1328be4fab00366add4fc25239ed1c3feaea698b4a3413b1ee37e78abc210c"
+  }
+}

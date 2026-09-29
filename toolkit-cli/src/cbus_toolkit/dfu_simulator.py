@@ -33,7 +33,7 @@ class DFUSimulator:
         self.binary={False:False,True:False}
         self._program=None; self._upload=b''; self._busy_next=None
         self.transfers=0; self.programmed_bytes=0; self.completed_programs=0
-        self.detached=False
+        self.detached=False; self.host_sessions=0
 
     def _error(self, status):
         self.status=status; self.state=10; self._busy_next=None
@@ -147,6 +147,18 @@ class DFUSimulator:
         reply=self._upload[:length]; self._upload=self._upload[length:]
         self.state=9 if self._upload else 2
         return reply
+
+    def new_host_session(self):
+        """Model a fresh vendor-DLL handle, as each dfuprog process opens.
+
+        The DLL keeps its block counter in the handle, so a new process starts
+        at zero. Transient DFU state is cleared and flash is preserved. This is
+        not a model of DETACH, target reset or USB re-enumeration.
+        """
+        self.state=2; self.status=0; self.next_block=0
+        self.binary={False:False,True:False}
+        self._program=None; self._upload=b''; self._busy_next=None
+        self.detached=False; self.host_sessions+=1
 
     def snapshot(self):
         return {'schema':1,'scope':'Memory-only DFU peer; no physical-device acceptance',

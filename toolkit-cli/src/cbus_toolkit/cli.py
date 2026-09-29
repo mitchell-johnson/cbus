@@ -1250,6 +1250,28 @@ def _firmware(args):
             status = 0
         return {"format": "cbus-" + args.action + "-v1", **result, "read_only": True,
                 "firmware_written": False}, status
+    if args.action in ("update-plan", "update-simulate", "inspect-images"):
+        from . import firmware_update_plan as updater
+        password, source = updater.read_password_file(args.package_password_file)
+        if args.action == "inspect-images":
+            if password is None:
+                raise ValueError("inspect-images requires --package-password-file or " + updater.PASSWORD_FILE_ENV)
+            return updater.inspect_package_images(args.file, password, password_source=source), 0
+        plan = updater.update_plan(args.file, variant=args.variant, hardware_version=args.hardware_version,
+                                   force_font=args.force_font)
+        if args.action == "update-plan":
+            if password is not None and plan["supported"]:
+                updater.attach_image_inspection(plan, updater.inspect_package_images(
+                    args.file, password, password_source=source))
+            return plan, int(not plan["supported"])
+        if password is None:
+            raise ValueError("update-simulate requires --package-password-file or " + updater.PASSWORD_FILE_ENV)
+        if not plan["supported"]:
+            return {"format": "cbus-edlt-firmware-update-simulation-v1", "complete": False, "plan": plan,
+                    "development_evidence_only": True, "physical_device_verified": False}, 1
+        images = updater.load_selected_images(args.file, plan, password)
+        result = updater.simulate_plan(plan, images, flash_size=args.flash_size, external_size=args.external_size)
+        return {**result, "plan": plan}, int(not result["complete"])
     from .firmware_diagnostics import (SerialDiagnostics, classify_hardware, compare_package,
                                        inspect_package, parse_identification, parse_ncc_versions)
     if args.action == "inspect-package":
@@ -2327,6 +2349,22 @@ def build_parser():
             p.add_argument("--package", type=Path)
     p = fwops.add_parser("classify-hardware")
     p.add_argument("version")
+    for action, text in (("update-plan", "Reproduce the original updater dfuprog/NCC step list for a package offline"),
+                         ("update-simulate", "Run a package plan against the memory DFU peer (development evidence only)"),
+                         ("inspect-images", "Decrypt package entries in memory and report hashes and DFU metadata")):
+        p = fwops.add_parser(action, help=text)
+        p.add_argument("file", type=Path, help="eDLTFirmware_<version>.zip package")
+        p.add_argument("--package-password-file", type=Path,
+                       help="File holding the archive password (default: $CBUS_EDLT_PACKAGE_PASSWORD_FILE); never printed")
+        if action == "inspect-images":
+            continue
+        selector = p.add_mutually_exclusive_group(required=True)
+        selector.add_argument("--variant", choices=("StellarisPCI", "TivaPCI", "TivaNCC"))
+        selector.add_argument("--hardware-version", help="Unit HW Version text mapped exactly as the original updater")
+        p.add_argument("--force-font", action="store_true", help="Original 'Force font data installation' option")
+        if action == "update-simulate":
+            p.add_argument("--flash-size", type=_number, default=1024 * 1024, help="Simulated internal flash bytes")
+            p.add_argument("--external-size", type=_number, help="Simulated external flash bytes")
     for action in ("dfu-status", "dfu-command"):
         p = fwops.add_parser(action, help="Decode a captured DFU record without hardware access")
         p.add_argument("hex", help="Hexadecimal byte pairs, optionally separated by spaces")

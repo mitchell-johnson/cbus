@@ -1765,6 +1765,22 @@ and release. Tests use the real PyUSB library with a fake backend and independen
 flash memory; physical bootloader and vendor firmware acceptance remain open.
 See [usb-dfu.md](docs/usb-dfu.md) and [firmware-usb.md](docs/firmware-usb.md).
 
+`update-plan` reproduces the original eDLT updater's `dfuprog` step list for a
+vendor package without running it:
+
+```sh
+cbus-toolkit firmware update-plan eDLTFirmware_1.7.0.zip --variant TivaNCC
+cbus-toolkit firmware inspect-images eDLTFirmware_1.7.0.zip --package-password-file private/password
+```
+
+The plan covers the variant address, font skip/force rule, the original erase
+formula, per-step failure messages and the NCC post-check. Its argv sequence
+matches the unchanged original methods run under Mono for all four Toolkit
+1.18 packages. Reading image contents needs the package password from a
+private file and, for AES entries, the `firmware` extra. `update-simulate` runs
+a plan against the memory DFU simulator only. See
+[firmware-update-plan.md](docs/firmware-update-plan.md).
+
 ## Stored unit scenes
 
 The tested Neo profile is KEYE1 2.5.00 / 5031NMML:
