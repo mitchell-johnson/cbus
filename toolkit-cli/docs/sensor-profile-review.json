@@ -1,0 +1,2565 @@
+{
+  "format": "cbus-sensor-profile-review-v1",
+  "original_execution": false,
+  "inputs": {
+    "unitspec_sha256": {
+      "I_SENPILL.xml": "ec4f917bdaf32e3fa1879cc60286d8e6b107685a9f306cb5435b14bff2d2c483",
+      "SENLL.xml": "0d43d95e774a1d5b16926aec3264a1535b0e16314bdd7b7e0a382b9420f60f8f",
+      "SENLLA.xml": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee",
+      "SENLL_ST7.xml": "8cde972f010c216f7d4d8db556b0e3407fa582053776c38e4f76b6692666a033",
+      "SENPILLA.xml": "ab3083240563ad272182df26f5d44ca849f8d7a315b3abe27d56930fcc55ea06",
+      "SENPILL_1.xml": "48535b6208d7b7cdee9e0ec18d40bbbfa4ad267d097fdebb174c1def4deb1449",
+      "SENPILL_2.xml": "0fbae06ab6460dce5225ebc234b850b82e00ab69080bb4dadad102fd191975c0",
+      "SENPILL_3.xml": "6c3280e25d742b645cc7274a543228b46fe7c1eb19c187b18d4dc13e3762f12d",
+      "SENPILL_ST7.xml": "9f5fe3088980cb8554aa11599b55342164f0be5fb411f92623d08606990ae388",
+      "SENPIR.xml": "9abd22237c5b82891818288bb7768931c4041f188b9715d67a9634f59669694f",
+      "SENPIRIA_ST7.xml": "c0952d965a7970e38868105c866f91e65cc13984dab326452923c9559a168c66",
+      "SENPIRIA_ST7_2.xml": "8ef75ff825178625c84cf8994f7e2a1b197ed7fd789a776de2033a331d747887",
+      "SENPIRIB_ST7.xml": "8d5b8a15df537ee260d1623bae8a1a3dbd70065ed92779e5361d512366950428",
+      "SENPIRIB_ST7_2.xml": "14001836a5b1557841216f9675b22074cdb24555af8ffc334739b0dab6f0fe2e",
+      "SENPIRIC.xml": "93fe2234d261acc40d59190ef6e06072001c70f758b8666b18ae54be759d3da4",
+      "SENPIROA_ST7.xml": "0b27b4fe574032e958211f1b445b32173112000fa2e44d1fe3da8dd0fe1008cb",
+      "SENPIROA_ST7_2.xml": "99c238bd6c213fd8dc238b8f3cbebbe7511d4306e92dcd74ef9b73fd1114bd1c",
+      "SENPIRSS.xml": "523cb470b5d058a282310ae45133f2438b4b017d01bd8c41c8c8a567bd02e94d",
+      "SENPIRSS_ST7.xml": "8fa3adab6bb38878cebb9f6527c8e3b0e4783a104ea5b3679b055edd77b992ba",
+      "SENPIRSS_ST7_2.xml": "e5f938ce626060d7bb21a95cc92420e43ef16cdd9329f00b576aa2887bfac116"
+    },
+    "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "reference": {
+    "spec": "SENPILL_ST7.xml",
+    "workflow_fields": 30,
+    "layout_fields": [
+      "Type",
+      "Address",
+      "ArraySize",
+      "BitSize",
+      "BitAddress",
+      "ArraySkip",
+      "MinValue",
+      "MaxValue",
+      "Protection"
+    ]
+  },
+  "specs": {
+    "SENLL.xml": {
+      "declared_type": "SENLL",
+      "include_chain": [
+        "SENLL.xml"
+      ],
+      "parameter_count": 20,
+      "layout_sha256": "78c48a354daba73b48afa1c783e3bf207a11d4f3b2e3cd91563cf16cff60b4b9",
+      "workflow_layout_sha256": "44af008d1fb3ac7f15afdf51bcba05ef3a269145a76fd576ca067029f6cd6cbe",
+      "parameters_added": 9,
+      "parameters_removed": 71,
+      "parameters_changed": 1,
+      "defaults_changed": 2,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "PE_CELL",
+        "SENLL"
+      ]
+    },
+    "SENLLA.xml": {
+      "declared_type": "SENLLA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPILLA.xml",
+        "SENLLA.xml"
+      ],
+      "parameter_count": 93,
+      "layout_sha256": "587cb57ab59f58698d89f2853ef2a214494c782a77d882cca88c54af74e0c508",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 11,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 12,
+      "full_layout_equal": false,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENLLA"
+      ]
+    },
+    "SENLL_ST7.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENLL_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 10,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENLL"
+      ]
+    },
+    "SENPILLA.xml": {
+      "declared_type": "SENPILLA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPILLA.xml"
+      ],
+      "parameter_count": 93,
+      "layout_sha256": "587cb57ab59f58698d89f2853ef2a214494c782a77d882cca88c54af74e0c508",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 11,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 0,
+      "full_layout_equal": false,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPILL",
+        "SENPILLA"
+      ]
+    },
+    "SENPILL_1.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_1.xml"
+      ],
+      "parameter_count": 76,
+      "layout_sha256": "338342f301a446aa02d3f08ddf79038285179fef4eec2a47e88f2d5f51cd8873",
+      "workflow_layout_sha256": "947c09b1d657be646733d68c0a9bd9a0c9687c3e4a8001c8630a96c9899b669a",
+      "parameters_added": 0,
+      "parameters_removed": 6,
+      "parameters_changed": 8,
+      "defaults_changed": 3,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "SENPILL"
+      ]
+    },
+    "SENPILL_2.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_2.xml"
+      ],
+      "parameter_count": 76,
+      "layout_sha256": "338342f301a446aa02d3f08ddf79038285179fef4eec2a47e88f2d5f51cd8873",
+      "workflow_layout_sha256": "947c09b1d657be646733d68c0a9bd9a0c9687c3e4a8001c8630a96c9899b669a",
+      "parameters_added": 0,
+      "parameters_removed": 6,
+      "parameters_changed": 8,
+      "defaults_changed": 3,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "SENPILL"
+      ]
+    },
+    "SENPILL_3.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_3.xml"
+      ],
+      "parameter_count": 76,
+      "layout_sha256": "338342f301a446aa02d3f08ddf79038285179fef4eec2a47e88f2d5f51cd8873",
+      "workflow_layout_sha256": "947c09b1d657be646733d68c0a9bd9a0c9687c3e4a8001c8630a96c9899b669a",
+      "parameters_added": 0,
+      "parameters_removed": 6,
+      "parameters_changed": 8,
+      "defaults_changed": 3,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "SENPILL"
+      ]
+    },
+    "SENPILL_ST7.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 0,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPILL"
+      ]
+    },
+    "SENPIR.xml": {
+      "declared_type": "SENPIR",
+      "include_chain": [
+        "SENPIR.xml"
+      ],
+      "parameter_count": 30,
+      "layout_sha256": "c4a473ae76fbbe15b669522275bf975f81b696d554a4a1f0b0f2cc6357b339b4",
+      "workflow_layout_sha256": "614304e02e74363b07d7a77a94917dbd7daea6486e56a6cc959493eb437b5a5f",
+      "parameters_added": 6,
+      "parameters_removed": 58,
+      "parameters_changed": 13,
+      "defaults_changed": 16,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "SENPIR",
+        "SENPIRSS",
+        "SENSOR"
+      ]
+    },
+    "SENPIRIA_ST7.xml": {
+      "declared_type": "SENPIRIA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRIA_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 9,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIRIA"
+      ]
+    },
+    "SENPIRIA_ST7_2.xml": {
+      "declared_type": "SENPIRIA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRSS_ST7_2.xml",
+        "SENPIRIA_ST7_2.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 9,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIRIA"
+      ]
+    },
+    "SENPIRIB_ST7.xml": {
+      "declared_type": "SENPIRIB",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRIB_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 8,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIRIB"
+      ]
+    },
+    "SENPIRIB_ST7_2.xml": {
+      "declared_type": "SENPIRIB",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRSS_ST7_2.xml",
+        "SENPIRIB_ST7_2.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 8,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": []
+    },
+    "SENPIRIC.xml": {
+      "declared_type": "SENPIRIC",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPILLA.xml",
+        "SENPIRIC.xml"
+      ],
+      "parameter_count": 93,
+      "layout_sha256": "587cb57ab59f58698d89f2853ef2a214494c782a77d882cca88c54af74e0c508",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 11,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 0,
+      "full_layout_equal": false,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIRIB",
+        "SENPIRIC"
+      ]
+    },
+    "SENPIROA_ST7.xml": {
+      "declared_type": "SENPIROA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIROA_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 9,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIROA"
+      ]
+    },
+    "SENPIROA_ST7_2.xml": {
+      "declared_type": "SENPIROA",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRSS_ST7_2.xml",
+        "SENPIROA_ST7_2.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 9,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": [
+        "SENPIROA"
+      ]
+    },
+    "SENPIRSS.xml": {
+      "declared_type": "SENPIRSS",
+      "include_chain": [
+        "SENPIRSS.xml"
+      ],
+      "parameter_count": 34,
+      "layout_sha256": "23771ee56d273f4f3cab4f465e5b559ec95732df307fd6b13564a9d27f88414a",
+      "workflow_layout_sha256": "614304e02e74363b07d7a77a94917dbd7daea6486e56a6cc959493eb437b5a5f",
+      "parameters_added": 6,
+      "parameters_removed": 54,
+      "parameters_changed": 13,
+      "defaults_changed": 16,
+      "full_layout_equal": false,
+      "workflow_fields_equal": false,
+      "catalogued_as": [
+        "SENPIRIA",
+        "SENPIRIB",
+        "SENPIROA",
+        "SENPIRSS"
+      ]
+    },
+    "SENPIRSS_ST7.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 8,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": []
+    },
+    "SENPIRSS_ST7_2.xml": {
+      "declared_type": "SENPILL",
+      "include_chain": [
+        "I_SENPILL.xml",
+        "SENPILL_ST7.xml",
+        "SENPIRSS_ST7.xml",
+        "SENPIRSS_ST7_2.xml"
+      ],
+      "parameter_count": 82,
+      "layout_sha256": "180f65ea16891fba0efc9d14c80c4e6fdae2aab3c6144f7d397b2c07fbf40df9",
+      "workflow_layout_sha256": "0e5901d7238eb505f57b64fb972e990e6e936e727113147c169891984e2b8f22",
+      "parameters_added": 0,
+      "parameters_removed": 0,
+      "parameters_changed": 0,
+      "defaults_changed": 8,
+      "full_layout_equal": true,
+      "workflow_fields_equal": true,
+      "catalogued_as": []
+    }
+  },
+  "toolkit": {
+    "version_compare": "CIS_Strings.VersionStringCompare: numeric StrToIntDef per \".\" token",
+    "registration_initializer_sha256": {
+      "CIS_TSENPILL": "09438041d8c8c7e7f8c81f69ae9513ab71f2a78db858856353da3f1a8e363fd6",
+      "CIS_TSENPILLA": "1fa88d1d570df2dc5fe41e660a9297830c93cdb83a5c1f40e7cf8c8e47445214",
+      "CIS_TSENPIRSS": "e86cb1c541441cf3625bfb1dc74d77328292d348cd9d94a753d06ea81df93eec",
+      "CIS_TSENPIRIC": "21ecfab59c7ca85baa19807236debffcc63e8891859ab8b29b5aa529cf3c0983",
+      "CIS_TSENPIR": "99f0a0573ffb2be981db86e28399595138c4e23ec46a94cc0f6bd1165ba5efc5",
+      "CIS_TSENLL": "051fbd0514d46f1099951f4221f294adfa9814388f21099ba97df7bb1f6ecbcf",
+      "CIS_TSENLLA": "b54ecd29b1f3f604916531c086af82639ccda4950b9a820462da4ce501ae13fd"
+    },
+    "registrations": [
+      {
+        "unit_type": "SENPILL",
+        "firmware_min": "1.6.00",
+        "firmware_max": "2.0.00",
+        "class": "TSENPILL",
+        "ancestry": [
+          "TSENPILL",
+          "TCBusMultisensorUnit",
+          "TCBusNeoInputUnit",
+          "TCBusKeyInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138330b"
+      },
+      {
+        "unit_type": "SENPILL",
+        "firmware_min": "2.0.01",
+        "firmware_max": "2.3.9",
+        "class": "TST7SENPILL",
+        "ancestry": [
+          "TST7SENPILL",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x138332c"
+      },
+      {
+        "unit_type": "SENPILL",
+        "firmware_min": "2.4",
+        "firmware_max": "9",
+        "class": "TSENPILLA",
+        "ancestry": [
+          "TSENPILLA",
+          "TCBusSurfaceMountMultisensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x138334d"
+      },
+      {
+        "unit_type": "SENPILLA",
+        "firmware_min": "0",
+        "firmware_max": "9",
+        "class": "TSENPILLA",
+        "ancestry": [
+          "TSENPILLA",
+          "TCBusSurfaceMountMultisensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x138326f"
+      },
+      {
+        "unit_type": "SENPIRSS",
+        "firmware_min": "1.00",
+        "firmware_max": "2.0.00",
+        "class": "TSENPIRSS",
+        "ancestry": [
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138535b"
+      },
+      {
+        "unit_type": "SENPIROA",
+        "firmware_min": "1.2.60",
+        "firmware_max": "2.0.00",
+        "class": "TSENPIROA",
+        "ancestry": [
+          "TSENPIROA",
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138537c"
+      },
+      {
+        "unit_type": "SENPIRIA",
+        "firmware_min": "1.2.60",
+        "firmware_max": "2.0.00",
+        "class": "TSENPIRSS",
+        "ancestry": [
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138539d"
+      },
+      {
+        "unit_type": "SENPIRIB",
+        "firmware_min": "1.2.60",
+        "firmware_max": "2.0.00",
+        "class": "TSENPIRSS",
+        "ancestry": [
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x13853be"
+      },
+      {
+        "unit_type": "SENPIROA",
+        "firmware_min": "2.0.01",
+        "firmware_max": "9",
+        "class": "TST7SENPIROA",
+        "ancestry": [
+          "TST7SENPIROA",
+          "TCBusST7SENPIROAUnit",
+          "TCBusST7PIRSensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x1385463"
+      },
+      {
+        "unit_type": "SENPIRIA",
+        "firmware_min": "2.0.01",
+        "firmware_max": "9",
+        "class": "TST7SENPIRSS",
+        "ancestry": [
+          "TST7SENPIRSS",
+          "TCBusST7PIRSensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x1385484"
+      },
+      {
+        "unit_type": "SENPIRIB",
+        "firmware_min": "2.0.01",
+        "firmware_max": "2.3.9",
+        "class": "TST7SENPIRSS",
+        "ancestry": [
+          "TST7SENPIRSS",
+          "TCBusST7PIRSensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x13854a5"
+      },
+      {
+        "unit_type": "SENPIRIB",
+        "firmware_min": "2.4",
+        "firmware_max": "9",
+        "class": "TSENPIRIC",
+        "ancestry": [
+          "TSENPIRIC",
+          "TCBusSurfaceMountPIRSensorUnit",
+          "TCBusSurfaceMountMultisensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x13854c6"
+      },
+      {
+        "unit_type": "SENPIRIC",
+        "firmware_min": "0",
+        "firmware_max": "9",
+        "class": "TSENPIRIC",
+        "ancestry": [
+          "TSENPIRIC",
+          "TCBusSurfaceMountPIRSensorUnit",
+          "TCBusSurfaceMountMultisensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x13852bf"
+      },
+      {
+        "unit_type": "SENPIR",
+        "firmware_min": "0",
+        "firmware_max": "9",
+        "class": "TSENPIR",
+        "ancestry": [
+          "TSENPIR",
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138f94b"
+      },
+      {
+        "unit_type": "SENSOR",
+        "firmware_min": "0",
+        "firmware_max": "9",
+        "class": "TSENPIR",
+        "ancestry": [
+          "TSENPIR",
+          "TSENPIRSS",
+          "TCBusPirSensorInputUnit",
+          "TCoreKeyInputUnit",
+          "TCustomKeyInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x138f96c"
+      },
+      {
+        "unit_type": "SENLL",
+        "firmware_min": "1.00",
+        "firmware_max": "2.0.00",
+        "class": "TSENLL",
+        "ancestry": [
+          "TSENLL",
+          "TCBusSensorInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x1383468"
+      },
+      {
+        "unit_type": "PE_CELL",
+        "firmware_min": "1.00",
+        "firmware_max": "2.0.00",
+        "class": "TSENLL",
+        "ancestry": [
+          "TSENLL",
+          "TCBusSensorInputUnit",
+          "TCBusInputUnit",
+          "TCBusLearnUnit",
+          "TCBUSUnit",
+          "TCGateObject",
+          "TCBUSObject",
+          "TPersistableObject",
+          "TIdentifiableObject",
+          "TFlashObject",
+          "TFoundationObject",
+          "TCustomFlashObject",
+          "TFlashElement",
+          "TManagedFlashObject",
+          "TBASEObject",
+          "TObject"
+        ],
+        "callsite": "0x1383489"
+      },
+      {
+        "unit_type": "SENLL",
+        "firmware_min": "2.0.01",
+        "firmware_max": "9",
+        "class": "TST7SENLL",
+        "ancestry": [
+          "TST7SENLL",
+          "TCBusST7LightLevelSensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x13834ec"
+      },
+      {
+        "unit_type": "SENLLA",
+        "firmware_min": "0",
+        "firmware_max": "9",
+        "class": "TSENLLA",
+        "ancestry": [
+          "TSENLLA",
+          "TCBusSurfaceMountLightLevelSensorUnit",
+          "TCBusSurfaceMountMultisensorUnit",
+          "TCBusST7MultisensorUnit"
+        ],
+        "callsite": "0x1397977"
+      }
+    ],
+    "agent_registration_sha256": "50908f2a42730cf3117affb538fdb07b1835645132a8ba6d4602310193ea5c90",
+    "agents": [
+      {
+        "unit_class": "TST7SENPILL",
+        "agent_class": "TCBusST7MultisensorCGateAgent",
+        "agent_ancestry": [
+          "TCBusST7MultisensorCGateAgent"
+        ],
+        "callsite": "0x13856b8"
+      },
+      {
+        "unit_class": "TST7SENLL",
+        "agent_class": "TCBusST7LightLevelSensorCGateAgent",
+        "agent_ancestry": [
+          "TCBusST7LightLevelSensorCGateAgent",
+          "TCBusST7MultisensorCGateAgent"
+        ],
+        "callsite": "0x13856d0"
+      },
+      {
+        "unit_class": "TST7SENPIRSS",
+        "agent_class": "TCBusST7PIRSensorCGateAgent",
+        "agent_ancestry": [
+          "TCBusST7PIRSensorCGateAgent",
+          "TCBusST7MultisensorCGateAgent"
+        ],
+        "callsite": "0x13856e8"
+      },
+      {
+        "unit_class": "TST7SENPIROA",
+        "agent_class": "TCBusST7PIRSensorCGateAgent",
+        "agent_ancestry": [
+          "TCBusST7PIRSensorCGateAgent",
+          "TCBusST7MultisensorCGateAgent"
+        ],
+        "callsite": "0x1385700"
+      }
+    ],
+    "pir_save": {
+      "before_save_calls": [
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.PrepareForcedParameters",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.CBusUnit"
+      ],
+      "before_save_sha256": "6d1384f386c0998f0b7be71f20b2ce80b4699110898fa074bf4bf015d31d7d92",
+      "conditional_writes": [
+        {
+          "parameter": "IndicatorBlockAssignment",
+          "value": "0x7 0x0 0x0 0x0 0x0 0x0 0x0 0x0",
+          "condition": "PIR unit flag loaded from IndicatorBlockAssignment[0] == 7"
+        }
+      ],
+      "prepare_forced_parameters_sha256": "5d5d39b7bd6d06dc50eb8aa54726f39f78bca8939b0c05afeea3b29490c22d77",
+      "forced": [
+        {
+          "parameter": "PIRLightMovement",
+          "value": 9
+        },
+        {
+          "parameter": "PIRDarkMovement",
+          "value": 10
+        },
+        {
+          "parameter": "PIRDark",
+          "value": 4
+        },
+        {
+          "parameter": "IRBank",
+          "value": 0
+        },
+        {
+          "parameter": "DisableIR",
+          "value": 1
+        },
+        {
+          "parameter": "IRBankKeyOffset",
+          "value": 0
+        },
+        {
+          "parameter": "CorridorLinkOfficeBlock",
+          "value": 0
+        },
+        {
+          "parameter": "CorridorLinkBlock",
+          "value": 0
+        },
+        {
+          "parameter": "CorridorLinkEnablerGroup",
+          "value": 255
+        },
+        {
+          "parameter": "CorridorLinkActive",
+          "value": 0
+        },
+        {
+          "parameter": "BroadcastBlock",
+          "value": 0
+        },
+        {
+          "parameter": "IndicatorControl",
+          "value": 0
+        },
+        {
+          "parameter": "PECEnablerGroup",
+          "value": 255
+        },
+        {
+          "parameter": "SingleJoinEnablerGroup",
+          "value": 255
+        },
+        {
+          "parameter": "SingleJoinEnablerControlGroup",
+          "value": 255
+        },
+        {
+          "parameter": "DualJoinEnablerGroup",
+          "value": 255
+        },
+        {
+          "parameter": "DualJoinEnablerControlGroup",
+          "value": 255
+        },
+        {
+          "parameter": "ControlAppGroupAddress",
+          "value": 255
+        },
+        {
+          "parameter": "SceneKeySelector",
+          "value": 0
+        },
+        {
+          "parameter": "PECFunctionBlock",
+          "value": 0
+        },
+        {
+          "parameter": "PECFunctionActive",
+          "value": 0
+        },
+        {
+          "parameter": "PECFunctionIRKey",
+          "value": 0
+        },
+        {
+          "parameter": "PECFunctionIRActive",
+          "value": 0
+        },
+        {
+          "parameter": "PIRFunctionIRKey",
+          "value": 0
+        },
+        {
+          "parameter": "PIRFunctionIRActive",
+          "value": 0
+        },
+        {
+          "parameter": "PECLevelStore",
+          "value": 0
+        },
+        {
+          "parameter": "PECEnablerGroupLogic",
+          "value": 0
+        },
+        {
+          "parameter": "PotentiometerAFunction",
+          "value": 1
+        },
+        {
+          "parameter": "PotentiometerBFunction",
+          "value": 0
+        },
+        {
+          "parameter": "PotentiometerATimerBlock",
+          "value": 0
+        },
+        {
+          "parameter": "PotentiometerBTimerBlock",
+          "value": 0
+        },
+        {
+          "parameter": "member 0x13c",
+          "index": 4,
+          "value": 0
+        },
+        {
+          "parameter": "member 0x13c",
+          "index": 5,
+          "value": 0
+        },
+        {
+          "parameter": "member 0x13c",
+          "index": 6,
+          "value": 0
+        },
+        {
+          "parameter": "member 0x13c",
+          "index": 7,
+          "value": 0
+        },
+        {
+          "parameter": "member 0x13c",
+          "index": 9,
+          "value": 0
+        },
+        {
+          "parameter": "IndicatorFunction",
+          "attribute_flag_0x58": 0
+        },
+        {
+          "parameter": "PrimaryColour",
+          "attribute_flag_0x58": 0
+        }
+      ],
+      "pir_unit_constants": {
+        "MaximumBlockCount": 4,
+        "MaximumIndicatorCount": 1
+      }
+    },
+    "admitted_class_firmware_scan": {
+      "classes_scanned": 32,
+      "version_comparisons": [
+        {
+          "method": "TCoreNeoProInputUnit.IsJoinModeSupported",
+          "thresholds": [
+            "1.6.0"
+          ],
+          "overridden_by": "TCBusST7MultisensorUnit.IsJoinModeSupported"
+        },
+        {
+          "method": "TCBusNeoInputUnit.GetIsST7",
+          "thresholds": [
+            "1.8.01"
+          ],
+          "overridden_by": "TCBusST7MultisensorUnit.GetIsST7"
+        }
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "unit_type": "PE_CELL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "5031PEWP",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PE",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENLL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLL",
+      "catalog_number": "SLC5031PEWP,GY",
+      "spec": "SENLL_ST7.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENLL",
+      "toolkit_agent": "TCBusST7LightLevelSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENLLA",
+      "catalog_number": "5754PE",
+      "spec": "SENLLA.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENLLA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_1.xml",
+      "firmware_min": "1.6.00",
+      "firmware_max": "1.6.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_1.xml",
+      "firmware_min": "1.7.00",
+      "firmware_max": "1.7.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_1.xml",
+      "firmware_min": "1.8.00",
+      "firmware_max": "1.8.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_2.xml",
+      "firmware_min": "1.8.01",
+      "firmware_max": "1.8.08",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_2.xml",
+      "firmware_min": "1.9.00",
+      "firmware_max": "1.9.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_3.xml",
+      "firmware_min": "1.9.01",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_3.xml",
+      "firmware_min": "2.0.00",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.9",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_above": "2.3.9",
+      "firmware_max": "2.3.99",
+      "toolkit_class": null,
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "no-toolkit-registration"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "5753PEIRL",
+      "spec": "SENPILLA.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPILLA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL.xml",
+      "firmware_min": "1.6.00",
+      "firmware_max": "1.9.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "specification-absent"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL.xml",
+      "firmware_min": "1.9.01",
+      "firmware_max": "1.9.99",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "specification-absent"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL.xml",
+      "firmware_min": "2.0.00",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPILL",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "specification-absent"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.9",
+      "toolkit_class": "TST7SENPILL",
+      "toolkit_agent": "TCBusST7MultisensorCGateAgent",
+      "admitted": true,
+      "refusal": null
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILL_ST7.xml",
+      "firmware_above": "2.3.9",
+      "firmware_max": "2.3.99",
+      "toolkit_class": null,
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "no-toolkit-registration"
+    },
+    {
+      "unit_type": "SENPILL",
+      "catalog_number": "SLC5753PEIRL",
+      "spec": "SENPILLA.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPILLA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPILLA",
+      "catalog_number": "5754ODPEIR",
+      "spec": "SENPILLA.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPILLA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPIR",
+      "catalog_number": "5753",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIR",
+      "catalog_number": "5753",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIR",
+      "catalog_number": "5753",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIR",
+      "catalog_number": "5753",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "9",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.60",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7_2.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7_2.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.60",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.9",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_above": "2.3.9",
+      "firmware_max": "2.3.99",
+      "toolkit_class": null,
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "no-toolkit-registration"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIC.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPIRIC",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.9",
+      "toolkit_class": "TST7SENPIRSS",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "firmware_above": "2.3.9",
+      "firmware_max": "2.3.99",
+      "toolkit_class": null,
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "no-toolkit-registration"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIC.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPIRIC",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPIRIC",
+      "catalog_number": "5754ODPE",
+      "spec": "SENPIRIC.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TSENPIRIC",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "layout-superset-or-changed"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.60",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIROA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIROA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIROA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7_2.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIROA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "2.0.00",
+      "toolkit_class": "TSENPIROA",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.0.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.1.00",
+      "firmware_max": "2.1.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.2.00",
+      "firmware_max": "2.2.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7.xml",
+      "firmware_min": "2.3.00",
+      "firmware_max": "2.3.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7_2.xml",
+      "firmware_min": "2.4.00",
+      "firmware_max": "2.4.99",
+      "toolkit_class": "TST7SENPIROA",
+      "toolkit_agent": "TCBusST7PIRSensorCGateAgent",
+      "admitted": false,
+      "refusal": "different-toolkit-class"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WP",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WP",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.65",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WP",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.66",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WP",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.65",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.66",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.65",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.66",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751L",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.65",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.66",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5751L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5753L",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.65",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.66",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "catalog_number": "5753L",
+      "spec": "SENPIRSS.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIRSS",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENSOR",
+      "catalog_number": "5751",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.00",
+      "firmware_max": "1.00",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENSOR",
+      "catalog_number": "5751",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.63",
+      "firmware_max": "1.2.66",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENSOR",
+      "catalog_number": "5751",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.67",
+      "firmware_max": "1.2.67",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    },
+    {
+      "unit_type": "SENSOR",
+      "catalog_number": "5751",
+      "spec": "SENPIR.xml",
+      "firmware_min": "1.2.68",
+      "firmware_max": "9",
+      "toolkit_class": "TSENPIR",
+      "toolkit_agent": null,
+      "admitted": false,
+      "refusal": "workflow-layout-differs"
+    }
+  ],
+  "limits": [
+    "Static decoded-specification, catalogue and original EXE/MAP analysis; no original Toolkit GUI or dialog was executed.",
+    "Layout equality compares names, type, address, array/bit geometry, protection and min/max; defaults and descriptions are counted separately.",
+    "Toolkit class assignment is read from the unit-factory registrations and agent registrations, not from a running project.",
+    "The firmware scan covers direct VersionStringCompare calls in class methods of the admitted unit and agent ancestry only.",
+    "No native C-Gate, CNI, PCI or physical sensor was used by this review."
+  ]
+}
