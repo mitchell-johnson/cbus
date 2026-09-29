@@ -22,6 +22,7 @@ from uuid import uuid4
 from xml.dom import Node
 
 from .addressing import NetworkAddressing, _container
+from .dlt_profiles import require
 from .edlt import EdltError, _field as _pp_field
 from .edlt_activation import WAKE_MODES
 from .edlt_application_cache import (
@@ -273,9 +274,9 @@ def _snapshot(text, unit_path, editor, *, dltp_index=None):
     if len(unit_addresses) != len(set(unit_addresses)):
         raise ValueError('Native network contains duplicate unit addresses')
     unit = _one_by_address(network, 'Unit', unit_address)
-    if (_field(unit, 'UnitType'), _field(unit, 'FirmwareVersion'),
-            _field(unit, 'CatalogNumber')) != ('KEYGL5', '5.5.00', '5055EDL'):
-        raise ValueError('Native unit is not KEYGL5 / 5055EDL firmware 5.5.00')
+    require('edlt-parent-metadata', _field(unit, 'UnitType'), _field(unit, 'FirmwareVersion'),
+            _field(unit, 'CatalogNumber'), error=ValueError,
+            message='Native unit is not KEYGL5 / 5055EDL firmware 5.5.00')
     unit_oid = _oid(_field(unit, 'OID'))
     values, raw_values = _pp_values(unit, editor)
     default_language = _default_language(network)

@@ -8,6 +8,7 @@ from xml.dom import Node
 
 from .addressing import _container, _network_canonical, _network_path
 from .classic_replacement import _canonical, _document, _field, _set
+from .dlt_profiles import admitted_types
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import xml_text
 from .serials import NativeSerials, SerialInventory, _selection, parse_native_serial
@@ -20,8 +21,9 @@ class SerialPopulationError(RuntimeError):
 
 
 # Concrete Toolkit class compatibility is deliberately bounded. These types
-# are enabled only after source verification of the inherited equality branch.
-_SUPPORTED_TYPES = frozenset(("KEYE1", "KEYGL5", "PC_CNIED"))
+# are enabled only after source verification of the inherited equality branch;
+# DLT/eDLT admission comes from the profile registry.
+_SUPPORTED_TYPES = frozenset(("KEYE1", "PC_CNIED")) | admitted_types("serial-population")
 
 
 def _fingerprint(inventory):

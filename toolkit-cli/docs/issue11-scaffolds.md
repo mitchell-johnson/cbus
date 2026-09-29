@@ -20,7 +20,7 @@ plus (where noted) hardware or vendor-gated acceptance.
 | 9 wireless learn/join | cbus-9zz | `wireless_commissioning.py` | `test_wireless_commissioning.py` | on-device learn/join, gateway transfer effects |
 | 11 barcode scanner | cbus-9zz | `barcode_scanner.py` (original-derived, [barcode.md](barcode.md)) | `test_barcode_scanner.py`, `test_cli_barcode.py` | GUI/physical scanner acceptance, native-database add path, sibling KEYGL5/Hydra scan routines |
 | P-D auto-creation/bulk/labels | cbus-8w7 | `label_transfer_plan.py`, `scene_binding_plan.py` | `test_label_transfer_plan.py`, `test_scene_binding_plan.py` | bulk/global programming, physical transfer/invocation |
-| P-E DLT variants | cbus-kxo | `dlt_variant_guard.py` | `test_dlt_variant_guard.py` | variant behavior, reset/factory physical, updater payloads |
+| P-E DLT variants | cbus-kxo | replaced by the [`dlt_profiles.py` registry](dlt-profiles.md) | `test_dlt_profiles.py`, `test_dlt_labels.py` | other-revision widget behavior, reset/factory physical, updater payloads, physical label rendering |
 | 10 C-Gate commands/events | cbus-pix | `event_stream.py` (offline filter/route/dedup) + Rust `cbus-cgate` (concurrent) | `test_event_stream.py` | remaining app/config commands, live monitoring streams |
 | 6 eDLT firmware/USB | cbus-kxo | (concurrent `edlt_factory_default` work) | — | payload compat, bootloader, physical USB |
 | 12 prefs/updates | cbus-9zz | (existing `toolkit_*update*`, `windows_*` modules) | existing | interactive user-context, trust/rollout/availability |

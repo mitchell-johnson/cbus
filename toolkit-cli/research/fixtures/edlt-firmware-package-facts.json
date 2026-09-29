@@ -1,0 +1,305 @@
+{
+  "format": "cbus-edlt-firmware-package-facts-v1",
+  "source": "Toolkit 1.18.0.2754 app/Firmware/eDLTFirmware",
+  "method": "zip central directory only; no entry opened, decompressed or decrypted; no password used",
+  "packages": [
+    {
+      "name": "eDLTFirmware_1.3.0.zip",
+      "bytes": 498138,
+      "sha256": "47c58e7dfefae4786c2536b6949e5fafa8c8877a0e3785791a35884809b4ac3d",
+      "package_version": "1.3.0",
+      "comment_bytes": 0,
+      "entries": [
+        {
+          "name": "edlt_fontdata_1.0.0.bin",
+          "uncompressed_bytes": 672481,
+          "compressed_bytes": 375866,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2017-02-27T09:45:00",
+          "local_header_offset": 0
+        },
+        {
+          "name": "edlt_main_hwv1_1.3.0.bin",
+          "uncompressed_bytes": 227288,
+          "compressed_bytes": 121888,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2014-05-05T15:03:20",
+          "local_header_offset": 375930
+        }
+      ]
+    },
+    {
+      "name": "eDLTFirmware_1.4.0.zip",
+      "bytes": 498143,
+      "sha256": "b069b3aa6aa414839d880fd8163f15db8afa6de67475925a5f27bf75267daa61",
+      "package_version": "1.4.0",
+      "comment_bytes": 0,
+      "entries": [
+        {
+          "name": "edlt_fontdata_1.0.0.bin",
+          "uncompressed_bytes": 672481,
+          "compressed_bytes": 375866,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2017-02-27T09:45:00",
+          "local_header_offset": 0
+        },
+        {
+          "name": "edlt_main_hwv1_1.4.0.bin",
+          "uncompressed_bytes": 227288,
+          "compressed_bytes": 121893,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2016-04-15T17:37:18",
+          "local_header_offset": 375930
+        }
+      ]
+    },
+    {
+      "name": "eDLTFirmware_1.5.0.zip",
+      "bytes": 631040,
+      "sha256": "93e258c9bf2482a20579a4abf1d125956fe074a11ed8ef823e871773870a946b",
+      "package_version": "1.5.0",
+      "comment_bytes": 0,
+      "entries": [
+        {
+          "name": "edlt_fontdata_1.0.0.bin",
+          "uncompressed_bytes": 672481,
+          "compressed_bytes": 375866,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2016-10-06T16:16:46",
+          "local_header_offset": 0
+        },
+        {
+          "name": "edlt_main_hwv1_1.5.0.bin",
+          "uncompressed_bytes": 237320,
+          "compressed_bytes": 124979,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2017-11-17T09:51:40",
+          "local_header_offset": 375930
+        },
+        {
+          "name": "edlt_main_hwv2_1.5.0.bin",
+          "uncompressed_bytes": 240235,
+          "compressed_bytes": 129629,
+          "crc32": "00000000",
+          "compression_method": 99,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "winzip-aes-256 (AE-2)",
+          "aes_extra": {
+            "header_id": "0x9901",
+            "vendor_version": "AE-2",
+            "vendor_id": "AE",
+            "strength_bits": 256,
+            "actual_compression_method": 8
+          },
+          "extra_field_ids": [
+            "0x000a",
+            "0x9901"
+          ],
+          "version_needed": 51,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2017-11-17T10:00:14",
+          "local_header_offset": 500974
+        }
+      ]
+    },
+    {
+      "name": "eDLTFirmware_1.7.0.zip",
+      "bytes": 825519,
+      "sha256": "f937ccf1ec0d13939e0ba677ee54fe44b2d4a250fe0b578a0dd82effbbc05a34",
+      "package_version": "1.7.0",
+      "comment_bytes": 0,
+      "entries": [
+        {
+          "name": "edlt_fontdata_1.0.0.bin",
+          "uncompressed_bytes": 672481,
+          "compressed_bytes": 375850,
+          "crc32": "3ebdab9c",
+          "compression_method": 8,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "pkware-traditional",
+          "aes_extra": null,
+          "extra_field_ids": [
+            "0x000a"
+          ],
+          "version_needed": 20,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2023-03-23T09:30:56",
+          "local_header_offset": 0
+        },
+        {
+          "name": "edlt_main_hwv1_1_7_0.bin",
+          "uncompressed_bytes": 245991,
+          "compressed_bytes": 129846,
+          "crc32": "7c4ff6c6",
+          "compression_method": 8,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "pkware-traditional",
+          "aes_extra": null,
+          "extra_field_ids": [
+            "0x000a"
+          ],
+          "version_needed": 20,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2023-06-08T17:56:42",
+          "local_header_offset": 375903
+        },
+        {
+          "name": "edlt_main_hwv2_1_7_0.bin",
+          "uncompressed_bytes": 244313,
+          "compressed_bytes": 131044,
+          "crc32": "4b06ea9a",
+          "compression_method": 8,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "pkware-traditional",
+          "aes_extra": null,
+          "extra_field_ids": [
+            "0x000a"
+          ],
+          "version_needed": 20,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2023-06-08T17:56:18",
+          "local_header_offset": 505803
+        },
+        {
+          "name": "edlt_main_hwv3_1_7_0.bin",
+          "uncompressed_bytes": 334704,
+          "compressed_bytes": 188119,
+          "crc32": "05eed8f9",
+          "compression_method": 8,
+          "general_purpose_flags": "0x0001",
+          "encrypted": true,
+          "encryption": "pkware-traditional",
+          "aes_extra": null,
+          "extra_field_ids": [
+            "0x000a"
+          ],
+          "version_needed": 20,
+          "version_made_by": 63,
+          "made_by_system": 0,
+          "dos_timestamp": "2023-06-08T17:49:20",
+          "local_header_offset": 636901
+        }
+      ]
+    }
+  ],
+  "cbus_firmware_mapping": {
+    "status": "unmapped",
+    "reason": "Package versions 1.3.0..1.7.0 name updater main images; C-Bus IDENTIFY reports catalogue revisions such as 5.5.00. No retained source maps a package to a C-Bus firmware revision, so no eDLT profile is admitted from a package version."
+  }
+}

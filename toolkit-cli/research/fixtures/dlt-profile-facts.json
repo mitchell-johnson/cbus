@@ -1,0 +1,571 @@
+{
+  "format": "cbus-dlt-profile-facts-v1",
+  "target": "Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "inputs": {
+    "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7"
+  },
+  "unit_types": {
+    "KEYBL5": {
+      "catalog_numbers": [
+        "5085DL"
+      ],
+      "revisions": [
+        {
+          "min": "1.1",
+          "max": "1.1",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "1.4.00",
+          "max": "1.4.00",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "1.4.01",
+          "max": "1.4.16",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false,
+          "default": true
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false,
+          "default": false
+        }
+      ],
+      "spec_filenames": [
+        "KEYL5.xml"
+      ],
+      "class_names": [
+        "CBusNeoInputUnit"
+      ],
+      "input_count": 8,
+      "group_count": 9
+    },
+    "KEYML5": {
+      "catalog_numbers": [
+        "5055DL"
+      ],
+      "revisions": [
+        {
+          "min": "1.1",
+          "max": "1.1",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "1.4.00",
+          "max": "1.4.00",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "1.4.01",
+          "max": "1.4.16",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false,
+          "default": true
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false,
+          "default": false
+        }
+      ],
+      "spec_filenames": [
+        "KEYL5.xml"
+      ],
+      "class_names": [
+        "CBusNeoInputUnit"
+      ],
+      "input_count": 8,
+      "group_count": 9
+    },
+    "KEYDL4": {
+      "catalog_numbers": [
+        "E5054DL",
+        "E5084DL"
+      ],
+      "revisions": [
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false,
+          "default": true
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false,
+          "default": false
+        }
+      ],
+      "spec_filenames": [
+        "KEYL4.xml"
+      ],
+      "class_names": [
+        "CBusNeoInputUnit"
+      ],
+      "input_count": 8,
+      "group_count": 9
+    },
+    "KEYGL5": {
+      "catalog_numbers": [
+        "5055EDL",
+        "5085EDL",
+        "5085EDLB",
+        "R5045EDL",
+        "R5045EDLW"
+      ],
+      "revisions": [
+        {
+          "min": "1.5.01",
+          "max": "1.5.99",
+          "internal": true,
+          "default": false
+        },
+        {
+          "min": "1.6.00",
+          "max": "1.6.99",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "1.7.00",
+          "max": "1.7.99",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "5.4.00",
+          "max": "5.4.99",
+          "internal": false,
+          "default": false
+        },
+        {
+          "min": "5.5.00",
+          "max": "5.5.99",
+          "internal": false,
+          "default": true
+        },
+        {
+          "min": "5.6.00",
+          "max": "9",
+          "internal": true,
+          "default": false
+        }
+      ],
+      "spec_filenames": [
+        "KEYGL5.xml"
+      ],
+      "class_names": [
+        "CBusEdlt"
+      ],
+      "input_count": 16,
+      "group_count": 16
+    }
+  },
+  "specifications": {
+    "KEYL5.xml": {
+      "sha256": "c3f29166c59b03a76c4545ca3dd79de89b277fe5f0a3188b5bd686a3795a8095",
+      "type": "KEYL5",
+      "min_version": "1.1",
+      "max_version": "9",
+      "includes": [
+        "I_DLT.xml"
+      ],
+      "declared_parameters": 0,
+      "included_by_any_spec": false
+    },
+    "KEYL4.xml": {
+      "sha256": "8d045edada38377378d01c76d5c48c7a84126aea7e3e1a1973dac312f26fd995",
+      "type": "KEYDL4",
+      "min_version": "2.0.00",
+      "max_version": "9",
+      "includes": [
+        "I_DLT.xml"
+      ],
+      "declared_parameters": 0,
+      "included_by_any_spec": false
+    },
+    "I_DLT.xml": {
+      "sha256": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133",
+      "type": "XXXXXXXX",
+      "min_version": "2.0",
+      "max_version": "9",
+      "includes": [
+        "I_NEOCORE.xml"
+      ],
+      "declared_parameters": 15,
+      "included_by_any_spec": true
+    },
+    "I_DLTF.xml": {
+      "sha256": "db1eee1f7c92271085514e11e0061b617dbb39094c318f5bf29c7e598f7d3c28",
+      "type": "XXXXXXXX",
+      "min_version": "2.0",
+      "max_version": "9",
+      "includes": [],
+      "declared_parameters": 68,
+      "included_by_any_spec": false
+    },
+    "I_NEOCORE.xml": {
+      "sha256": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7",
+      "type": "XXXXXXXX",
+      "min_version": "2.0",
+      "max_version": "9",
+      "includes": [],
+      "declared_parameters": 57,
+      "included_by_any_spec": true
+    },
+    "KEYGL5.xml": {
+      "sha256": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+      "type": "KEYGL5",
+      "min_version": "0",
+      "max_version": "9",
+      "includes": [],
+      "declared_parameters": 874,
+      "included_by_any_spec": false
+    }
+  },
+  "help_topics": [
+    {
+      "topic_id": "help:1944.htm",
+      "sha256": "52c613d8789afd4ea09b62afd8160645aaf6282227d397a6e9369ebf8eb0b2a3",
+      "unit_types": [
+        "KEYBL5",
+        "KEYDL4",
+        "KEYGL5",
+        "KEYH5",
+        "KEYML5"
+      ],
+      "catalog_names": []
+    },
+    {
+      "topic_id": "help:2092.htm",
+      "sha256": "e1962ba385d3d14cd69addc2b0ab0919056d7adb2d4970295b10b065c082a6bf",
+      "unit_types": [
+        "KEYML5"
+      ],
+      "catalog_names": [
+        "5055DL",
+        "SLC5055DL"
+      ]
+    },
+    {
+      "topic_id": "help:2111.htm",
+      "sha256": "e13171347a1f7e3f0407e80d102c547788ef0bffb6ecdc255664d66dca923d33",
+      "unit_types": [
+        "KEYBL5"
+      ],
+      "catalog_names": [
+        "5085DL"
+      ]
+    },
+    {
+      "topic_id": "help:2113.htm",
+      "sha256": "10a92e1685e26c888beaa3660687016f57eed778c4aec879d6bbf1c862a226b1",
+      "unit_types": [
+        "KEYDL4"
+      ],
+      "catalog_names": [
+        "5084DL"
+      ]
+    },
+    {
+      "topic_id": "help:2160.htm",
+      "sha256": "c687ce9e02aabe87e24a4d709cd1dac6c5ddae9ace753554630fe87e32ede86f",
+      "unit_types": [
+        "KEYML5"
+      ],
+      "catalog_names": [
+        "5055DL",
+        "SLC5055DL"
+      ]
+    },
+    {
+      "topic_id": "help:2500.htm",
+      "sha256": "ef5bec214a5f0cebaeef8ce037966d9ebe5168a2d5d2e22171d9e577c30b0347",
+      "unit_types": [
+        "KEYBL5"
+      ],
+      "catalog_names": [
+        "5085DL"
+      ]
+    },
+    {
+      "topic_id": "help:2501.htm",
+      "sha256": "89c96943cd0f170e4b6569679cb7a56867ba4928b715a4649a9862a9e8d6e95c",
+      "unit_types": [
+        "KEYDL4"
+      ],
+      "catalog_names": [
+        "5084DL"
+      ]
+    },
+    {
+      "topic_id": "help:2506.htm",
+      "sha256": "15bfb293bddbd8fee063f0cdac47e69c55eaea5f01dd7db1cf79b97ec5fd4955",
+      "unit_types": [
+        "KEYML5"
+      ],
+      "catalog_names": [
+        "5055DL",
+        "SLC5055DL"
+      ]
+    },
+    {
+      "topic_id": "help:4825.htm",
+      "sha256": "5947c21448c4efe40eaa95649dfc9e9852207a64fbdf61fa772039b1145fe492",
+      "unit_types": [
+        "KEYDL4"
+      ],
+      "catalog_names": []
+    },
+    {
+      "topic_id": "help:4838.htm",
+      "sha256": "2fcc4f9df49f33ba1f5d6434974140a3b112b6ddb096bd1e376da4b86f20efde",
+      "unit_types": [
+        "KEYML5"
+      ],
+      "catalog_names": []
+    },
+    {
+      "topic_id": "help:4898.htm",
+      "sha256": "211a3719202d4ec1306629309784a9a84083af68376359df6ee72de09f3f30ab",
+      "unit_types": [
+        "KEYBL5"
+      ],
+      "catalog_names": []
+    },
+    {
+      "topic_id": "help:18867.htm",
+      "sha256": "09b5602b160e61cdb4b3c6e7c84d36b8f892e68f39d159c994cc661f8ed0d9ab",
+      "unit_types": [
+        "KEYGL5"
+      ],
+      "catalog_names": [
+        "5085ED",
+        "5505ED",
+        "R5045ED"
+      ]
+    },
+    {
+      "topic_id": "help:19689.htm",
+      "sha256": "95bb10f11841bbaf10a526134e0f3c85121fd414fad7931b184b8a7476f5cd94",
+      "unit_types": [
+        "KEYGL5"
+      ],
+      "catalog_names": [
+        "5085ED",
+        "5505ED",
+        "R5045ED"
+      ]
+    },
+    {
+      "topic_id": "help:19690.htm",
+      "sha256": "44c871f21b1781fa4f2db60de39a061e1f2253caf72c20c521a6c73ec8ae4aea",
+      "unit_types": [
+        "KEYGL5"
+      ],
+      "catalog_names": [
+        "5085ED",
+        "5505ED",
+        "R5045ED"
+      ]
+    },
+    {
+      "topic_id": "help:20052.htm",
+      "sha256": "12bf377e54563000ae44d3bd351d4a9c705162bbfd0d07deae855bb657a24acb",
+      "unit_types": [
+        "KEYH5"
+      ],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    },
+    {
+      "topic_id": "help:20070.htm",
+      "sha256": "9d38dd3698430371289095f451e67a0b62f3d1ce0f180c28ccd419cf636766cf",
+      "unit_types": [],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    },
+    {
+      "topic_id": "help:20071.htm",
+      "sha256": "100b9931501971d4636dca667b2a443e796f5574d4fb96242d4c6c1ce6de3900",
+      "unit_types": [],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    },
+    {
+      "topic_id": "help:20072.htm",
+      "sha256": "20369a79e825ab103bee4bbdaf8f37d5b9234692b58db1090f88efb61538be1d",
+      "unit_types": [],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    },
+    {
+      "topic_id": "help:20073.htm",
+      "sha256": "dd7bb508eb9319b6da54a670bac12f38cd7af5f9b8ce6a382586a234a800eada",
+      "unit_types": [],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    },
+    {
+      "topic_id": "help:20074.htm",
+      "sha256": "c67e8d1cf2ef507806dc5a2d6abc9e054d95db64ec5fd73d148dc669527d3adf",
+      "unit_types": [
+        "KEYH5"
+      ],
+      "catalog_names": [
+        "R5045EDL"
+      ]
+    }
+  ],
+  "toolkit_label_flavour": {
+    "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "image_base": "0x600000",
+    "ranges": [
+      {
+        "routine": "TInputKeyExtensionNeo.GetLabelFlavour",
+        "va": "0xc99cec",
+        "length": 37,
+        "sha256": "5830278a61a781375ffa5fd29b5b372f3c119f3ceb72f51f6b87017bf9bb3d46",
+        "semantics": "returns the stored zero-based flavour plus one"
+      },
+      {
+        "routine": "TInputKeyExtensionNeo.SetLabelFlavour",
+        "va": "0xc99e00",
+        "length": 84,
+        "sha256": "2d6cd8003b65fcea21d173e6c84041cc75e247ddf31d708f7e582b88b6ff86e4",
+        "semantics": "stores the requested one-based flavour minus one"
+      },
+      {
+        "routine": "TCBusDynamicLabelInputCGateAgent.ctor LabelFlavourLSB/MSB fields",
+        "va": "0x121b90f",
+        "length": 76,
+        "sha256": "e14dfe29c897259d07d7074a12c3b93431bd4cda74e0affc95aaa15b7130d8fd",
+        "semantics": "binds PP LabelFlavourLSB to agent field +0x20C and LabelFlavourMSB to +0x210"
+      },
+      {
+        "routine": "TCBusDynamicLabelInputCGateAgent.LoadLabelFlavours compose",
+        "va": "0x121bf1d",
+        "length": 19,
+        "sha256": "150068fa5cc37dd3a3e1304ae5053a1ea9a966f9e384bf83d7c8b9885e5db022",
+        "semantics": "per key: SetLabelFlavour(2*min(MSB,1) + min(LSB,1) + 1)"
+      },
+      {
+        "routine": "TCBusDynamicLabelInputCGateAgent.SaveLabelFlavours LSB",
+        "va": "0x121d0fb",
+        "length": 43,
+        "sha256": "e05bcbf51b7f4253706dc1be12b912818c861de2a31fb7784cddb60ea5e43dc3",
+        "semantics": "per key: LSB = (GetLabelFlavour - 1) mod 2"
+      },
+      {
+        "routine": "TCBusDynamicLabelInputCGateAgent.SaveLabelFlavours MSB",
+        "va": "0x121d13c",
+        "length": 32,
+        "sha256": "b7758aa7c2b91204426f461208f8f08f8c7e926070c41b78d5da37d3a30ab49d",
+        "semantics": "per key: MSB = (GetLabelFlavour - 1) div 2"
+      }
+    ]
+  },
+  "catalogue_alias_findings": {
+    "help_catalog_names_not_in_catalogue": [
+      "5084DL",
+      "5085ED",
+      "5505ED",
+      "R5045ED",
+      "SLC5055DL"
+    ],
+    "keygl5_help_catalog_names": [
+      "5085ED",
+      "5505ED",
+      "R5045ED"
+    ],
+    "keygl5_catalogue_numbers": [
+      "5055EDL",
+      "5085EDL",
+      "5085EDLB",
+      "R5045EDL",
+      "R5045EDLW"
+    ],
+    "help_names_5055EDL": false,
+    "help_topic_20074_unit_types": [
+      "KEYH5"
+    ],
+    "catalogue_has_KEYH5": false
+  }
+}

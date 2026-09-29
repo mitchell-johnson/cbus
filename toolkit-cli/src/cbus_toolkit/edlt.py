@@ -146,8 +146,12 @@ class LightingWidgetPlan:
 
 class EdltLighting:
     def __init__(self, spec, *, catalog_number="5055EDL", firmware="5.5.00"):
-        if (spec.unit_type, spec.filename, catalog_number, firmware) != ("KEYGL5", "KEYGL5.xml", "5055EDL", "5.5.00"):
-            raise EdltError("Lighting widgets currently support KEYGL5.xml, 5055EDL firmware5.5.00 only")
+        from .dlt_profiles import PROFILES, refusal
+        reason = refusal("edlt-database-widgets", spec.unit_type, firmware, catalog_number)
+        if reason is None and spec.filename != PROFILES[spec.unit_type].spec_filename:
+            reason = "the unit specification is not " + PROFILES[spec.unit_type].spec_filename
+        if reason is not None:
+            raise EdltError("Lighting widgets currently support KEYGL5.xml, 5055EDL firmware5.5.00 only: " + reason)
         self.spec, self.codec = spec, MemoryCodec(spec)
         required = {"Application": (0x21, 2), "ConfigVersionMinor": (0x100, 1),
                     "ConfigVersionMajor": (0x101, 1), "OverallCRC": (0x102, 2),
@@ -471,11 +475,17 @@ class EdltLighting:
         source = getattr(session, "source", None)
         if not source or not source.lower().startswith("/db/"):
             raise EdltError("This bounded widget workflow requires a database programming session")
-        for field, expected in (("UnitType", "KEYGL5"), ("FirmwareVersion", "5.5.00"), ("CatalogNumber", "5055EDL")):
+        from .dlt_profiles import refusal
+        identity = []
+        for field in ("UnitType", "FirmwareVersion", "CatalogNumber"):
             reply = session.programmer.client.command("DBGET " + source[3:] + "/" + field)
             values = [line.split("=", 1)[1].strip() for line in reply.lines if line.startswith("342") and "=" in line]
-            if values != [expected]:
+            if len(values) != 1:
                 raise EdltError("Database device identity differs: " + field)
+            identity.append(values[0])
+        reason = refusal("edlt-database-widgets", *identity)
+        if reason is not None:
+            raise EdltError("Database device identity differs: " + reason)
 
     def _verify_session(self, session):
         self._verify_identity(session)

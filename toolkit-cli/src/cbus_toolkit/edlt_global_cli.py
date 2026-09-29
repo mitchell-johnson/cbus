@@ -45,9 +45,11 @@ def read_parameters(path, *, factory=False):
     if factory and set(values) != {'format', 'unit_type', 'firmware', 'catalog_number', 'parameters'}:
         raise ValueError('Factory preparation requires an exact raw source PP export envelope')
     if 'format' in values:
-        if values.get('format') != 'cbus-cli-parameters-v1' or tuple(values.get(k) for k in
-                ('unit_type', 'firmware', 'catalog_number')) != ('KEYGL5', '5.5.00', '5055EDL'):
-            raise ValueError('eDLT source profile differs from KEYGL5 / 5055EDL / 5.5.00')
+        from .dlt_profiles import refusal
+        reason = 'unsupported export format' if values.get('format') != 'cbus-cli-parameters-v1' else refusal(
+            'edlt-global-source', *(values.get(k) for k in ('unit_type', 'firmware', 'catalog_number')))
+        if reason is not None:
+            raise ValueError('eDLT source profile differs from KEYGL5 / 5055EDL / 5.5.00: ' + reason)
         values = values.get('parameters')
         if not isinstance(values, dict): raise ValueError('Source export requires a parameter mapping')
     if factory and any(type(value) is not str for value in values.values()):

@@ -13,7 +13,6 @@ from .edlt import configuration_crc
 
 _UNIT_ADDRESS = re.compile(r'//([A-Za-z0-9_]{1,8})/([0-9]{1,3})/p/([0-9]{1,3})')
 _NETWORK_ADDRESS = re.compile(r'//([A-Za-z0-9_]{1,8})/([0-9]{1,3})')
-_EDLT_FIRMWARE = re.compile(r'0?5\.0?5\.0{1,2}')
 
 
 def _unit(address):
@@ -41,7 +40,8 @@ def _network(address):
 
 
 def _supported_edlt(unit_type, firmware):
-    return unit_type == 'KEYGL5' and isinstance(firmware, str) and _EDLT_FIRMWARE.fullmatch(firmware) is not None
+    from .dlt_profiles import admits
+    return admits('edlt-physical-labels', unit_type, firmware)
 
 
 def _physical_serial(client, address):
@@ -457,8 +457,10 @@ def _edlt_static_labels(client, address, *, database_name=True, expected_serial=
     metadata = _object(client, f'CMQTT UNIT {address}') if database_name else {}
     unit_type = _bytes(client, address, f'UNIT IDENTIFY {address} 1', attribute=1).decode('ascii').strip(' \0')
     firmware = _bytes(client, address, f'UNIT IDENTIFY {address} 2', attribute=2).decode('ascii').strip(' \0')
-    if not _supported_edlt(unit_type, firmware):
-        raise ValueError(f'Unsupported physical eDLT identity: {unit_type} {firmware}')
+    from .dlt_profiles import refusal
+    reason = refusal('edlt-physical-labels', unit_type, firmware)
+    if reason is not None:
+        raise ValueError(f'Unsupported physical eDLT identity: {unit_type} {firmware}: {reason}')
     serial_evidence = None
     if expected_serial is not None:
         from .serials import parse_native_serial
@@ -528,7 +530,8 @@ def _record_kind(record):
              and isinstance(record.firmware, str) and bool(record.firmware))
     if not known:
         return 'unknown'
-    if record.unit_type == 'KEYGL5' and not _supported_edlt(record.unit_type, record.firmware):
+    from .dlt_profiles import admitted_types
+    if record.unit_type in admitted_types('edlt-physical-labels') and not _supported_edlt(record.unit_type, record.firmware):
         return 'unsupported'
     if _supported_edlt(record.unit_type, record.firmware):
         return 'supported'

@@ -6,6 +6,7 @@ import re
 
 from .addressing import _container
 from .cgate import CGateError
+from .dlt_profiles import require
 from .physical_addressing import PhysicalAddressing, _digest
 from .serial_population import _fingerprint
 from .serials import parse_native_serial
@@ -68,8 +69,8 @@ class EdltDynamicLabelClear:
         serial = parse_native_serial(plan.serial)
         if not serial.known or serial.canonical != plan.serial:
             raise ValueError('Clear plan requires a known canonical serial')
-        if plan.unit_type != 'KEYGL5' or plan.firmware != '5.5.00':
-            raise ValueError('Clear plan requires KEYGL5 firmware 5.5.00')
+        require('edlt-label-clear', plan.unit_type, plan.firmware, error=ValueError,
+                message='Clear plan requires KEYGL5 firmware 5.5.00')
         if (type(plan.inventory) is not tuple or not 1 <= len(plan.inventory) <= 256 or
                 any(type(row) is not tuple or len(row) != 5 or type(row[0]) is not int or not 0 <= row[0] <= 255
                     or any(type(v) is not str or not v or len(v) > 128 or any(ord(c) < 32 or ord(c) == 127 for c in v)
@@ -126,8 +127,8 @@ class EdltDynamicLabelClear:
         unit = observation.records[0]
         if unit.address != address or unit.status != 'ok' or unit.state != 'ok' or unit.presence != 'single' or unit.errors:
             raise ValueError('Clear requires exactly one healthy physical unit at the target')
-        if unit.unit_type != 'KEYGL5' or unit.firmware != '5.5.00':
-            raise ValueError('Clear is bounded to KEYGL5 firmware 5.5.00')
+        require('edlt-label-clear', unit.unit_type, unit.firmware, error=ValueError,
+                message='Clear is bounded to KEYGL5 firmware 5.5.00')
         actual = parse_native_serial(unit.serial)
         if actual.canonical != expected.canonical:
             raise ValueError('Physical source serial differs from the expected unit')
