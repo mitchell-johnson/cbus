@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
+      "source_revision": "f05da4135f92d9173744808ec4fe5cd6f2eddbc3",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -172,6 +172,7 @@
           "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json",
           "rust/testdata/fixtures/native_cgate_dali_help.json",
           "rust/testdata/fixtures/native_cgate_dali_specialized.json",
+          "rust/testdata/fixtures/native_cgate_dbsetxml_errors.json",
           "rust/testdata/fixtures/native_cgate_event_catalogue.json",
           "rust/testdata/fixtures/native_cgate_family_help.json",
           "rust/testdata/fixtures/native_cgate_final_authorization_probe.json",
@@ -186,6 +187,7 @@
           "rust/testdata/fixtures/native_cgate_telephony.json",
           "rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json",
           "rust/testdata/fixtures/project.xml",
+          "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl",
           "rust/testdata/vectors/cgate_event_fanout.jsonl",
           "rust/testdata/vectors/cgate_final_authorization.jsonl",
           "rust/testdata/vectors/cgate_project_snapshot.json",
@@ -200,7 +202,7 @@
           "toolkit-cli/tests/test_cgate_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "ce9e8f3616cb320056ba295fc2f0ba5bbb4125b3eb398cfce3ecd82081c33717"
+        "fingerprint_sha256": "21128c75d427d7090babd4bc8ee84970034fd2d3812f6959459f93c107e09952"
       },
       "report_verification": {
         "format": "cgate-session-differential-v2",
@@ -215,11 +217,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "98155af410becf0d62516ca8c50ea96bfd448b6b3bf6059286c6c1a5afa3e941"
+          "sha256": "bd21aab9fb88a43fc68fb85d6462b877ca807186d20e6e61ffb4f0b714508819"
         }
       ],
       "skips": [],
-      "record_sha256": "9f331b14285e0ca10349776f138c53994c5dabe814631d86db0ccc67578a0b2f"
+      "record_sha256": "e8015366862b8b7d95138edbf796c5a113c11d8f07706515221b5b7f4a93ec28"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -254,7 +256,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
+      "source_revision": "f05da4135f92d9173744808ec4fe5cd6f2eddbc3",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /Users/mitchell/source/cbus-integrator-target/debug/cgate-mock --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output-dir research/runtime",
       "exit_code": 0,
       "invalidates_on": {
@@ -393,6 +395,7 @@
           "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json",
           "rust/testdata/fixtures/native_cgate_dali_help.json",
           "rust/testdata/fixtures/native_cgate_dali_specialized.json",
+          "rust/testdata/fixtures/native_cgate_dbsetxml_errors.json",
           "rust/testdata/fixtures/native_cgate_event_catalogue.json",
           "rust/testdata/fixtures/native_cgate_family_help.json",
           "rust/testdata/fixtures/native_cgate_final_authorization_probe.json",
@@ -407,6 +410,7 @@
           "rust/testdata/fixtures/native_cgate_telephony.json",
           "rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json",
           "rust/testdata/fixtures/project.xml",
+          "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl",
           "rust/testdata/vectors/cgate_event_fanout.jsonl",
           "rust/testdata/vectors/cgate_final_authorization.jsonl",
           "rust/testdata/vectors/cgate_project_snapshot.json",
@@ -423,7 +427,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "68c8d24009fdde57b83ded25fb56a23e8503f116af40bf267983a1dba9138b86"
+        "fingerprint_sha256": "4397a41d57d29c49bc17aeb0eab0d6bc2f76fbb4d223b83b0a581744c9dd094d"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -438,11 +442,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "868adc5a968684886a1cb46de6d959e07f1dc89ba75a9c8bff5eb45cb7408537"
+          "sha256": "cd3ce1fd9a3a151409d18d30799ef4e4da711d3b128be26e099c9857eb162104"
         }
       ],
       "skips": [],
-      "record_sha256": "f0c46ace4a3b66a855e72a354eec523375f48d0cd6874ddfd6bd5617904cbf0f"
+      "record_sha256": "5ddd0b11ea59af46ac3c9e95b88bb34d9235d688630faf8821ac001a33a8d9ae"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -483,7 +487,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
+      "source_revision": "f05da4135f92d9173744808ec4fe5cd6f2eddbc3",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -494,7 +498,7 @@
           "toolkit-cli/research/functional-obligation-pilot.json",
           "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json"
         ],
-        "fingerprint_sha256": "13c856320ede8c8394c0e8dcca0487b7f616f67f162c2d773b6c4f3f03681aa4"
+        "fingerprint_sha256": "59023ab5458ff3f8dbf731bf977ae5cc67cef8ea39b6033f83dd1240830b64ad"
       },
       "report_verification": {
         "format": "cbus-parity-test-report-v1",
@@ -514,16 +518,16 @@
         {
           "role": "input",
           "path": "src/cbus_toolkit/cgate-contract-inventory.json",
-          "sha256": "4429d54110b8c0fcba4fa9a955a275fc7a30822d204fe59f7c64fbe315a68bdc"
+          "sha256": "78783fd95d895715facbc1dd4338080ffb0c8392fac7cc9aba206a68a2858dd5"
         },
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "1667c0daace216830891b9cfaa1e120fdb311c48f1c35e36ec29e205a43dd3ba"
+          "sha256": "ed678bc94eb5309770e45c70f439e696ebb691ce2c8327912cc73ad0816ddab6"
         }
       ],
       "skips": [],
-      "record_sha256": "ba94c8e375f46ff9ff143d26d6b722b2209c9d94a8ff81dd979e9f733872048f"
+      "record_sha256": "ea82a436fba41ffef1f4b177344725658bd54d42ca1e8ef18562c3dba2028af2"
     }
   ]
 }
