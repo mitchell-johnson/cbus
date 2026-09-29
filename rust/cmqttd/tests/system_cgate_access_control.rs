@@ -47,7 +47,7 @@ async fn next_event(reader: &mut BufReader<OwnedReadHalf>) -> String {
         .await
         .unwrap()
         .unwrap();
-    event.trim_end_matches(['\r', '\n']).to_string()
+    untimed_event(&event)
 }
 
 fn checksummed(native_payload: &str) -> String {
@@ -119,7 +119,7 @@ async fn access_control_inbound_events_use_native_text_and_keep_mqtt_live() {
     }
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -132,34 +132,34 @@ async fn access_control_inbound_events_use_native_text_and_keep_mqtt_live() {
     let cases: [(&[u8], &[&str]); 7] = [
         (
             &[5, 4, 0xd5, 0, 0x02, 7, 9],
-            &["#e# accesscontrol close_access_point //HARNESS/254/213 7 9 sourceUnit=4"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] close_access_point zone=7 point=9 sourceUnit=4"],
         ),
         (
             &[5, 4, 0xd5, 0, 0x0a, 7, 9],
-            &["#e# accesscontrol lock_access_point //HARNESS/254/213 7 9 sourceUnit=4"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] lock_access_point zone=7 point=9 sourceUnit=4"],
         ),
         (
             &[5, 5, 0xd5, 0, 0x12, 1, 2],
-            &["#e# accesscontrol access_point_left_open //HARNESS/254/213 1 2 sourceUnit=5"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_left_open zone=1 point=2 sourceUnit=5"],
         ),
         (
             &[5, 5, 0xd5, 0, 0x1a, 1, 2, 0x22, 1, 2],
             &[
-                "#e# accesscontrol access_point_forced_open //HARNESS/254/213 1 2 sourceUnit=5",
-                "#e# accesscontrol access_point_closed //HARNESS/254/213 1 2 sourceUnit=5",
+                "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_forced_open zone=1 point=2 sourceUnit=5",
+                "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_closed zone=1 point=2 sourceUnit=5",
             ],
         ),
         (
             &[5, 6, 0xd5, 0, 0x32, 0, 254],
-            &["#e# accesscontrol exit_request //HARNESS/254/213 0 254 sourceUnit=6"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] exit_request zone=0 point=254 sourceUnit=6"],
         ),
         (
             &[5, 6, 0xd5, 0, 0xa6, 7, 9, 1, 0x12, 0xab, 0x00],
-            &["#e# accesscontrol access_request_valid //HARNESS/254/213 7 9 1 12AB00 sourceUnit=6"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_request_valid zone=7 point=9 direction=1 requester=12AB00 sourceUnit=6"],
         ),
         (
             &[5, 6, 0xd5, 0, 0xc3, 7, 9, 2],
-            &["#e# accesscontrol access_request_invalid //HARNESS/254/213 7 9 2  sourceUnit=6"],
+            &["#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_request_invalid zone=7 point=9 direction=2 requester= sourceUnit=6"],
         ),
     ];
     for (body, expected) in cases {
@@ -183,7 +183,7 @@ async fn access_control_inbound_events_use_native_text_and_keep_mqtt_live() {
     sys.pci.inject(&pci_wire(&[5, 7, 0xd5, 0, 0x22, 3, 4]));
     assert_eq!(
         next_event(&mut reader).await,
-        "#e# accesscontrol access_point_closed //HARNESS/254/213 3 4 sourceUnit=7"
+        "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_closed zone=3 point=4 sourceUnit=7"
     );
     // Access Control observations create no MQTT entity or state.
     tokio::task::yield_now().await;

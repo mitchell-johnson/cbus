@@ -274,7 +274,7 @@ async fn remaining_applications_are_exact_once_authenticated_and_keep_mqtt_live(
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -284,15 +284,15 @@ async fn remaining_applications_are_exact_once_authenticated_and_keep_mqtt_live(
     for (body, expected) in [
         (
             vec![5, 4, 251, 0, 121, 1],
-            "#e# identify on //HARNESS/254/251/1 sourceUnit=4",
+            "#e# <timestamp> 730 //HARNESS/254/251/1 - new level=255 sourceunit=4 ramptime=0",
         ),
         (
             vec![5, 4, 173, 0, 0x87, 0x2b, 0xd1, 0x12, 0x34, 0x56, b'A', b'B'],
-            "#e# shortmessage send //HARNESS/254/173 total=40 sequence=3 info-type=17 number=4660 symbol=86 text=\"AB\" sourceUnit=4",
+            "#e# <timestamp> 702 //HARNESS/254/173 - [shortmessage] send total=40 sequence=3 info-type=17 number=4660 symbol=86 text=\"AB\" sourceUnit=4",
         ),
         (
             vec![5, 4, 206, 0, 0x25, 0xff, 0xc7, 0xff, 0xff, 0xff],
-            "#e# ereport message //HARNESS/254/206 ACK 1023 n n n 7 255 255 255 sourceUnit=4",
+            "#e# <timestamp> 702 //HARNESS/254/206 - [ereport] ereport message ACK 1023 n n n 7 255 255 255 ",
         ),
     ] {
         sys.pci.inject(&pci_wire(&body));
@@ -301,7 +301,7 @@ async fn remaining_applications_are_exact_once_authenticated_and_keep_mqtt_live(
             .await
             .unwrap()
             .unwrap();
-        assert_eq!(event.trim_end_matches(['\r', '\n']), expected);
+        assert_eq!(untimed_event(&event), expected);
     }
     assert_eq!(
         sys.broker.publishes().len(),

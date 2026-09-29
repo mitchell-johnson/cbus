@@ -2689,8 +2689,11 @@ async fn observed_aircon_status_and_command_are_fanned_to_event_clients() {
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# aircon zone_hvac_plant_status //HARNESS/254/172 1 0,1,2 3 1 0 sourceUnit=4"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/172 - [aircon] zone_hvac_plant_status ward=1 zones=0,1,2 type=3 status=1 error=0 sourceUnit=4",
+            "#s# # aircon zone_hvac_plant_status //HARNESS/254/172 1 0,1,2 3 1 0 #sourceunit=4 OID=",
+        ]
     );
 
     service
@@ -2700,8 +2703,11 @@ async fn observed_aircon_status_and_command_are_fanned_to_event_clients() {
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# aircon refresh //HARNESS/254/172 1 sourceUnit=0"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/172 - [aircon] refresh ward=1 sourceUnit=0",
+            "#s# aircon refresh //HARNESS/254/172 1 #sourceunit=0 OID=",
+        ]
     );
 
     std::fs::remove_file(path).unwrap();
@@ -2938,8 +2944,11 @@ async fn observed_audio_commands_labels_and_icons_are_fanned_to_event_clients() 
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# audio current_feed //HARNESS/254/205 1 2 4 3 sourceUnit=4"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/205 - [audio] current_feed multiplexer=1 zone=2 feed=4 gain=3 sourceUnit=4",
+            "#s# audio current_feed //HARNESS/254/205 1 2 4 3 #sourceunit=4 OID=",
+        ]
     );
     service
         .observe(&CBusEvent::AudioEvent {
@@ -2952,9 +2961,13 @@ async fn observed_audio_commands_labels_and_icons_are_fanned_to_event_clients() 
             },
         })
         .await;
+    // Native drops A0 label/load-icon SALs; cmqttd's extension reports them.
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# audio label //HARNESS/254/205 1 1 4 0 1 1 45444C54 sourceUnit=0"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/205 - [audio] label 1 1 4 0 1 1 45444C54 sourceUnit=0",
+            "#s# audio label //HARNESS/254/205 1 1 4 0 1 1 45444C54 #sourceunit=0 OID=",
+        ]
     );
     service
         .observe(&CBusEvent::AudioEvent {
@@ -2967,8 +2980,11 @@ async fn observed_audio_commands_labels_and_icons_are_fanned_to_event_clients() 
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# audio load_icon //HARNESS/254/205 1 1 4 68 2 010203 sourceUnit=5"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/205 - [audio] load_icon 1 1 4 68 2 010203 sourceUnit=5",
+            "#s# audio load_icon //HARNESS/254/205 1 1 4 68 2 010203 #sourceunit=5 OID=",
+        ]
     );
     std::fs::remove_file(path).unwrap();
 }
@@ -3063,8 +3079,11 @@ async fn observed_security_events_use_native_names_addresses_and_byte_escaping()
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# security zone_name //HARNESS/254/208/7 A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=4"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/208/7 - [security] zone_name A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=4",
+            "#s# # security zone_name //HARNESS/254/208/7 A\\x20B\\\\C\\x00\\x7F1234 #sourceunit=4 OID=",
+        ]
     );
     service
         .observe(&CBusEvent::SecurityCommand {
@@ -3073,8 +3092,11 @@ async fn observed_security_events_use_native_names_addresses_and_byte_escaping()
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# security request_zone_name //HARNESS/254/208/127 sourceUnit=0"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/208/127 - [security] request_zone_name sourceUnit=0",
+            "#s# security request_zone_name //HARNESS/254/208/127  #sourceunit=0 OID=",
+        ]
     );
     std::fs::remove_file(path).unwrap();
 }
@@ -3300,8 +3322,11 @@ async fn observed_telephony_commands_and_events_use_native_fanout() {
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# telephony line_off_hook //HARNESS/254/224 out data 12 sourceUnit=4"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/224 - [telephony] line_off_hook out data 12 sourceUnit=4",
+            "#s# telephony line_off_hook //HARNESS/254/224 out data 12 #sourceunit=4 OID=",
+        ]
     );
     service
         .observe(&CBusEvent::TelephonyCommand {
@@ -3310,8 +3335,11 @@ async fn observed_telephony_commands_and_events_use_native_fanout() {
         })
         .await;
     assert_eq!(
-        events.try_recv().unwrap(),
-        "#e# telephony clear_diversion //HARNESS/254/224 sourceUnit=0"
+        next_application_rows(&mut events),
+        [
+            "#e# <timestamp> 702 //HARNESS/254/224 - [telephony] clear_diversion sourceUnit=0",
+            "#s# telephony clear_diversion //HARNESS/254/224  #sourceunit=0 OID=",
+        ]
     );
     std::fs::remove_file(path).unwrap();
 }
@@ -3327,7 +3355,7 @@ async fn observed_access_control_messages_use_native_fanout() {
         (
             Some(4),
             AccessControlMessage::Close { zone: 7, point: 9 },
-            "#e# accesscontrol close_access_point //HARNESS/254/213 7 9 sourceUnit=4",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] close_access_point zone=7 point=9 sourceUnit=4",
         ),
         (
             None,
@@ -3335,27 +3363,27 @@ async fn observed_access_control_messages_use_native_fanout() {
                 zone: 0,
                 point: 254,
             },
-            "#e# accesscontrol lock_access_point //HARNESS/254/213 0 254 sourceUnit=0",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] lock_access_point zone=0 point=254 sourceUnit=0",
         ),
         (
             Some(5),
             AccessControlMessage::PointLeftOpen { zone: 1, point: 2 },
-            "#e# accesscontrol access_point_left_open //HARNESS/254/213 1 2 sourceUnit=5",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_left_open zone=1 point=2 sourceUnit=5",
         ),
         (
             Some(5),
             AccessControlMessage::PointForcedOpen { zone: 1, point: 2 },
-            "#e# accesscontrol access_point_forced_open //HARNESS/254/213 1 2 sourceUnit=5",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_forced_open zone=1 point=2 sourceUnit=5",
         ),
         (
             Some(5),
             AccessControlMessage::PointClosed { zone: 1, point: 2 },
-            "#e# accesscontrol access_point_closed //HARNESS/254/213 1 2 sourceUnit=5",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_point_closed zone=1 point=2 sourceUnit=5",
         ),
         (
             Some(5),
             AccessControlMessage::ExitRequest { zone: 1, point: 2 },
-            "#e# accesscontrol exit_request //HARNESS/254/213 1 2 sourceUnit=5",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] exit_request zone=1 point=2 sourceUnit=5",
         ),
         (
             Some(6),
@@ -3365,7 +3393,7 @@ async fn observed_access_control_messages_use_native_fanout() {
                 direction: 1,
                 data: vec![0x12, 0xab, 0x00],
             },
-            "#e# accesscontrol access_request_valid //HARNESS/254/213 7 9 1 12AB00 sourceUnit=6",
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_request_valid zone=7 point=9 direction=1 requester=12AB00 sourceUnit=6",
         ),
         (
             Some(6),
@@ -3375,14 +3403,14 @@ async fn observed_access_control_messages_use_native_fanout() {
                 direction: 2,
                 data: Vec::new(),
             },
-            // Native appends the empty requester after a separator.
-            "#e# accesscontrol access_request_invalid //HARNESS/254/213 7 9 2  sourceUnit=6",
+            // Native keeps the empty requester key.
+            "#e# <timestamp> 702 //HARNESS/254/213 - [accesscontrol] access_request_invalid zone=7 point=9 direction=2 requester= sourceUnit=6",
         ),
     ] {
         service
             .observe(&CBusEvent::AccessControl { source, message })
             .await;
-        assert_eq!(events.try_recv().unwrap(), expected);
+        assert_eq!(next_application_rows(&mut events)[0], expected);
     }
     std::fs::remove_file(path).unwrap();
 }
@@ -3401,41 +3429,32 @@ async fn access_control_fanout_matches_every_native_captured_row() {
     assert_eq!(cases.len(), 21);
     for case in cases {
         let label = case["label"].as_str().unwrap();
-        let sal = hex::decode(case["sal_hex"].as_str().unwrap()).unwrap();
-        let decoded = cbus_protocol::sal::decode_sals(213, &sal);
+        let mut emitted =
+            replay_monitor_line(&service, &mut events, case["pci_line"].as_str().unwrap()).await;
         if case["cmqttd"] != "same" {
-            assert!(decoded.is_err(), "{label}: {decoded:?}");
+            assert!(emitted.is_empty(), "{label}: {emitted:?}");
             continue;
         }
-        let source = case["source"].as_u64().unwrap() as u8;
-        let rows = case["native_status_rows"].as_array().unwrap();
-        let messages = decoded.unwrap();
-        assert_eq!(messages.len(), rows.len(), "{label}");
-        for (message, row) in messages.into_iter().zip(rows) {
-            let Sal::AccessControl(message) = message else {
-                panic!("{label}: not Access Control");
-            };
-            // Native: `#s# [# ]accesscontrol NAME ADDRESS VALUES #sourceunit=N OID=`.
-            let row = row.as_str().unwrap().strip_prefix("#s# ").unwrap();
-            let row = row.strip_prefix("# ").unwrap_or(row);
-            let body = row
-                .strip_suffix(&format!(" #sourceunit={source} OID="))
-                .unwrap()
-                .replace("//PROJECT/254/213", "//HARNESS/254/213");
-            service
-                .observe(&CBusEvent::AccessControl {
-                    source: Some(source),
-                    message,
-                })
-                .await;
-            assert_eq!(
-                events.try_recv().unwrap(),
-                format!("#e# {body} sourceUnit={source}"),
-                "{label}"
-            );
-        }
+        let mut native = case["native_event_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .chain(case["native_status_rows"].as_array().unwrap())
+            .map(|row| row.as_str().unwrap().to_string())
+            .collect::<Vec<_>>();
+        native.sort();
+        emitted.sort();
+        assert_eq!(emitted, native, "{label}");
     }
     std::fs::remove_file(path).unwrap();
+}
+
+/// The untimed event row and the status row of one application observation.
+fn next_application_rows(events: &mut broadcast::Receiver<String>) -> [String; 2] {
+    [
+        untimed_event(&events.try_recv().unwrap()),
+        events.try_recv().unwrap(),
+    ]
 }
 
 fn lighting_capture_fixture() -> String {
@@ -3458,8 +3477,10 @@ fn untimed_event(line: &str) -> String {
         .strip_prefix("#e# ")
         .and_then(|body| body.split_once(' '))
     {
-        Some((_, rest)) => format!("#e# <timestamp> {rest}"),
-        None => line.to_string(),
+        Some((stamp, rest)) if stamp.starts_with(|c: char| c.is_ascii_digit()) => {
+            format!("#e# <timestamp> {rest}")
+        }
+        _ => line.to_string(),
     }
 }
 
@@ -3572,6 +3593,119 @@ async fn lighting_fanout_matches_every_native_captured_row() {
     }
     assert_eq!(compared, 32);
     std::fs::remove_file(path).unwrap();
+}
+
+/// Native rows cmqttd reproduces: application events, Identify's 730 row and
+/// status rows. The per-packet 734 trace, 824 decode diagnostics, native's
+/// own 899 command-queue debug rows, the 903
+/// server exception and lazy application/phantom-group creation rows are
+/// deliberate deviations recorded in `docs/cmqttd-cgate.md`.
+fn specialist_compared_row(row: &str) -> bool {
+    !(row.contains(" 734 ")
+        || row.contains(" 824 ")
+        || row.contains(" 899 ")
+        || row.contains(" 903 ")
+        || row.ends_with("] loaded application")
+        || row.contains("] automatic phantom group created at address "))
+}
+
+/// Feed one captured monitor line through the PCI decoder, the transport's
+/// SAL-to-event mapping and `Service::observe`; return the untimed rows.
+async fn replay_monitor_line(
+    service: &Service,
+    events: &mut broadcast::Receiver<String>,
+    pci_line: &str,
+) -> Vec<String> {
+    let wire = format!("{pci_line}\r\n");
+    let (packet, _) = cbus_protocol::decode_packet(wire.as_bytes(), true, true, true);
+    if let Some(Packet::PointToMultipoint { meta, sals, .. }) = packet {
+        for sal in sals {
+            if let Some(event) = cbus_transport::pci::sal_event(sal, meta.source_address) {
+                service.observe(&event).await;
+            }
+        }
+    }
+    let mut emitted = Vec::new();
+    while let Ok(line) = events.try_recv() {
+        emitted.push(untimed_event(&line).replace("//HARNESS/", "//PROJECT/"));
+    }
+    emitted
+}
+
+#[tokio::test]
+async fn specialist_fanout_matches_every_native_captured_row() {
+    let fixture_json: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_specialist_events.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let cases = fixture_json["cases"].as_array().unwrap();
+    let mut compared = 0;
+    let mut deviations = 0;
+    for case in cases {
+        let label = case["label"].as_str().unwrap();
+        let native = case["native_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row["row"].as_str().unwrap().to_string())
+            .filter(|row| specialist_compared_row(row))
+            .collect::<Vec<_>>();
+        let mut emitted =
+            replay_monitor_line(&service, &mut events, case["pci_line"].as_str().unwrap()).await;
+        // Native writes the status row from a separate listener, so it can
+        // precede its event row. Compare the sets of rows per case.
+        emitted.sort();
+        let expected = if case["cmqttd"] == "same" {
+            compared += native.len();
+            native
+        } else {
+            deviations += 1;
+            case["cmqttd_rows"]
+                .as_array()
+                .unwrap_or_else(|| panic!("{label}: deviation without cmqttd_rows"))
+                .iter()
+                .map(|row| row.as_str().unwrap().to_string())
+                .collect()
+        };
+        let mut expected = expected;
+        expected.sort();
+        assert_eq!(emitted, expected, "{label}");
+    }
+    assert!(compared > 400, "{compared}");
+    assert!(deviations > 0);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn specialist_event_rows_carry_native_reporting_levels() {
+    let fixture_json: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_specialist_events.json"
+    ))
+    .unwrap();
+    let mut checked = 0;
+    for case in fixture_json["cases"].as_array().unwrap() {
+        if case["cmqttd"] != "same" {
+            continue;
+        }
+        for row in case["native_rows"].as_array().unwrap() {
+            let text = row["row"].as_str().unwrap();
+            if !text.starts_with("#e# ") || !specialist_compared_row(text) {
+                continue;
+            }
+            let line = text.replace("<timestamp>", "20260930-120000.000");
+            assert_eq!(
+                crate::event_reporting_level(&line),
+                row["level"].as_u64().map(|level| level as u8),
+                "{text}"
+            );
+            checked += 1;
+        }
+    }
+    assert!(checked > 200, "{checked}");
 }
 
 #[tokio::test]

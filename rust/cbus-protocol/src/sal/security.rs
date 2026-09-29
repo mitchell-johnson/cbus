@@ -375,11 +375,9 @@ impl SecurityEvent {
                 fields.extend(zones.iter().map(u8::to_string));
                 fields.join(" ")
             }
-            Self::StatusReport2 { zones } => zones
-                .iter()
-                .map(u8::to_string)
-                .collect::<Vec<_>>()
-                .join(" "),
+            // Native prefixes each zone state with a separator, leaving a
+            // leading space where report 1 has its arm/tamper/panic fields.
+            Self::StatusReport2 { zones } => zones.iter().map(|zone| format!(" {zone}")).collect(),
             Self::PasswordEntryStatus { status } => status.to_string(),
             Self::CurrentAlarmType { alarm_type } => alarm_type.to_string(),
             Self::LineCutAlarm { raised } => if *raised {

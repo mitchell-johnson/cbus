@@ -247,7 +247,7 @@ async fn audio_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -261,8 +261,8 @@ async fn audio_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# audio current_feed //HARNESS/254/205 2 7 7 4 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/205 - [audio] current_feed multiplexer=2 zone=7 feed=7 gain=4 sourceUnit=4"
     );
     sys.pci.inject(&pci_wire(&[
         5, 4, 0xcd, 0, 0xa7, 0x4c, 0x20, 1, b'E', b'D', b'L', b'T',
@@ -273,8 +273,8 @@ async fn audio_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# audio label //HARNESS/254/205 1 1 4 0 1 1 45444C54 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/205 - [audio] label 1 1 4 0 1 1 45444C54 sourceUnit=4"
     );
     assert_eq!(
         command(&mut reader, &mut writer, "events-off", "EVENT OFF")

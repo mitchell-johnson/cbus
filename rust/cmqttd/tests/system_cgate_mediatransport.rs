@@ -285,7 +285,7 @@ async fn mediatransport_native_family_is_confirmed_authenticated_and_keeps_mqtt_
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -301,8 +301,8 @@ async fn mediatransport_native_family_is_confirmed_authenticated_and_keeps_mqtt_
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# mediatransport category_name //HARNESS/254/192 group=2 wni=1 total=1 sequence=0 text=\"iPod\" sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/192 - [mediatransport] category_name group=2 wni=1 total=1 sequence=0 text=\"iPod\" sourceUnit=4"
     );
     // Native command parsing reserves outbound WNI 3/4, while the native
     // decoder still surfaces both values. Preserve that asymmetric boundary.
@@ -314,8 +314,8 @@ async fn mediatransport_native_family_is_confirmed_authenticated_and_keeps_mqtt_
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# mediatransport track_name //HARNESS/254/192 group=2 wni=3 total=0 sequence=0 text=\"A\" sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/192 - [mediatransport] track_name group=2 wni=3 total=0 sequence=0 text=\"A\" sourceUnit=4"
     );
     tokio::task::yield_now().await;
     assert!(sys.broker.publishes()[mqtt_before..]

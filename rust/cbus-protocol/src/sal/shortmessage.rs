@@ -138,6 +138,11 @@ impl ShortMessageEvent {
         }
     }
 
+    /// Positional values of the native `#s#` status row.
+    pub fn status_values(&self) -> String {
+        super::positional_values(&self.event_arguments())
+    }
+
     /// Native lower-case event name.
     pub fn event_name(&self) -> &'static str {
         match self {

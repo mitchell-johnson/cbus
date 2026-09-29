@@ -30,6 +30,32 @@ use crate::common::{
 use crate::{DecodeError, EncodeError};
 use chrono::Datelike;
 
+/// Pair native C-Gate event keys with space-separated positional values,
+/// giving the `key=value` detail of a build-2001 `702` application event.
+/// An empty trailing value keeps its key (`requester=`).
+pub(crate) fn keyed_event_text(keys: &[&str], values: &str) -> String {
+    keys.iter()
+        .zip(values.split(' '))
+        .map(|(key, value)| format!("{key}={value}"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Strip the keys from `key=value` event detail, giving the positional values
+/// of the matching `#s#` status row. A final quoted `text="..."` field is kept
+/// verbatim, spaces and all.
+pub(crate) fn positional_values(detail: &str) -> String {
+    let (head, quoted) = match detail.find("text=\"") {
+        Some(index) => (&detail[..index], Some(&detail[index + 5..])),
+        None => (detail, None),
+    };
+    head.split_whitespace()
+        .map(|field| field.split_once('=').map_or(field, |(_, value)| value))
+        .chain(quoted)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// A Smart Application Language message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Sal {
@@ -327,10 +353,16 @@ impl Sal {
 }
 
 /// Application dispatch: decode the SAL payload of a PM packet.
-/// The supported registry includes status-request (0xFF), clock (0xDF),
-/// enable (0xCB), Air-Conditioning (0xAC), Media Transport (0xC0), Audio
-/// (0xCD), Security (0xD0), Measurement (0xE4), lighting (0x30-0x5F), and
-/// temperature (0x19) are registered; anything else errors (-> Invalid packet).
+///
+/// Any four-byte `03 ...` payload is a learn-mode command. Air-Conditioning
+/// (0xAC), Audio (0xCD), Security (0xD0, whose 0x13/0x16 SALs are network
+/// locate), Media Transport (0xC0), Measurement (0xE4), Telephony (0xE0),
+/// Identify (0xFB), Short Message (0xAD), Error Reporting (0xCE) and Access
+/// Control (0xD5) own their full SAL space. Every other application then
+/// routes opcodes 0xA0-0xBF and 0xC0-0xDF to dynamic labels before the
+/// registry: Lighting (0x30-0x5F), Clock (0xDF), Temperature Broadcast (0x19),
+/// Trigger Control (0xCA), Enable Control (0xCB) and status request (0xFF).
+/// Anything else errors (-> Invalid packet).
 pub fn decode_sals(app: u8, data: &[u8]) -> Result<Vec<Sal>, DecodeError> {
     if data.len() == 4 && data.first() == Some(&0x03) {
         return network_management::decode_learn(app, data)

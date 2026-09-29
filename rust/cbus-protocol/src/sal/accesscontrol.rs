@@ -184,6 +184,20 @@ impl AccessControlMessage {
             }
         }
     }
+
+    /// Native `702` event detail: `zone=Z point=P[ direction=D requester=HEX]`.
+    pub fn event_detail(&self) -> String {
+        super::keyed_event_text(
+            &["zone", "point", "direction", "requester"],
+            &self.event_arguments(),
+        )
+    }
+
+    /// True for observations native marks with `# ` in the status row;
+    /// only close and lock are commands.
+    pub fn is_report(&self) -> bool {
+        !matches!(self, Self::Close { .. } | Self::Lock { .. })
+    }
 }
 
 fn encode_request(

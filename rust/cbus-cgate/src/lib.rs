@@ -386,7 +386,8 @@ pub fn event_category(line: &str) -> EventCategory {
 /// corresponding bare event-port row. The native levels of locally captured
 /// forms are not always the last status-code digit: heartbeat 700 and startup
 /// 800 are level 5; command traces 761, 766 and 767 are level 9; diagnostic
-/// 938 is level 8; group level advice 730 is level 7. Other 7xx codes retain
+/// 938 is level 8; group level advice 730 is level 7; application events
+/// 702 `ADDRESS - [tag] ...` are level 8. Other 7xx codes retain
 /// the existing code-digit fallback; unrecognized 8xx/9xx rows have no
 /// inferred level.
 pub fn event_reporting_level(line: &str) -> Option<u8> {
@@ -467,6 +468,17 @@ fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
                     || text.starts_with("ramp terminated new level="))
             {
                 return Some(7);
+            }
+        }
+    }
+    // Application events from `CBusBaseApplication.d`: `ADDRESS -
+    // [tag] ...`, logged at level 8 (the `-` OID column may be stripped).
+    if code == "702" {
+        let mut fields = payload.splitn(2, ' ');
+        if let (Some(address), Some(text)) = (fields.next(), fields.next()) {
+            let text = text.strip_prefix("- ").unwrap_or(text);
+            if address.starts_with("//") && text.starts_with('[') {
+                return Some(8);
             }
         }
     }

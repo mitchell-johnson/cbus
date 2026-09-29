@@ -38,7 +38,7 @@
   "event_row": "702 <application address> - [accesscontrol] <name> zone=Z point=P[ direction=D requester=HEX] sourceUnit=N",
   "status_row": "[# ]accesscontrol <name> <application address> <values> #sourceunit=N OID=; the '# ' prefix marks observations other than close/lock"
  },
- "cmqttd_event_layout": "#e# accesscontrol <name> //PROJECT/NETWORK/213 <status-row values> sourceUnit=N, the untimed application-event layout shared with the other specialist applications; it is not the timestamped native 702 row",
+ "cmqttd_event_layout": "cmqttd emits the native timestamped level-8 702 event row and the '[# ]accesscontrol' status row for every case marked same; see native_cgate_specialist_events.json for the shared application-event shape",
  "cases": [
   {
    "label": "close",

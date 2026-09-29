@@ -216,7 +216,7 @@ async fn security_native_family_is_confirmed_authenticated_and_keeps_mqtt_live()
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -230,8 +230,8 @@ async fn security_native_family_is_confirmed_authenticated_and_keeps_mqtt_live()
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# security zone_unsealed //HARNESS/254/208/7 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/208/7 - [security] zone_unsealed sourceUnit=4"
     );
     let mut zone_name = vec![5, 4, 0xd0, 0, 0xad, 0x8d, 7];
     zone_name.extend_from_slice(b"A B\\C\0\x7f1234");
@@ -242,8 +242,8 @@ async fn security_native_family_is_confirmed_authenticated_and_keeps_mqtt_live()
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# security zone_name //HARNESS/254/208/7 A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/208/7 - [security] zone_name A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=4"
     );
     assert_eq!(
         command(&mut reader, &mut writer, "events-off", "EVENT OFF")

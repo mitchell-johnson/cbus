@@ -1206,163 +1206,7 @@ impl PciClient {
             Packet::PowerOn => tracing::debug!("PCI power-up notification"),
             Packet::PointToMultipoint { meta, sals, .. } => {
                 for s in sals {
-                    let src = meta.source_address;
-                    let event = match s {
-                        Sal::AccessControl(message) => Some(CBusEvent::AccessControl {
-                            source: src,
-                            message,
-                        }),
-                        Sal::Aircon(command) => Some(CBusEvent::AirconCommand {
-                            source: src,
-                            command,
-                        }),
-                        Sal::AirconStatus(status) => Some(CBusEvent::AirconStatus {
-                            source: src,
-                            status,
-                        }),
-                        Sal::AudioCommand(command) => Some(CBusEvent::AudioCommand {
-                            source: src,
-                            command,
-                        }),
-                        Sal::AudioEvent(event) => {
-                            Some(CBusEvent::AudioEvent { source: src, event })
-                        }
-                        Sal::SecurityCommand(command) => Some(CBusEvent::SecurityCommand {
-                            source: src,
-                            command,
-                        }),
-                        Sal::SecurityEvent(event) => {
-                            Some(CBusEvent::SecurityEvent { source: src, event })
-                        }
-                        Sal::MeasurementData(measurement) => Some(CBusEvent::MeasurementData {
-                            source: src,
-                            measurement,
-                        }),
-                        Sal::MediaTransport(message) => Some(CBusEvent::MediaTransport {
-                            source: src,
-                            message,
-                        }),
-                        Sal::NetworkLocate(command) => Some(CBusEvent::NetworkLocate {
-                            source: src,
-                            command,
-                        }),
-                        Sal::LearnMode(command) => Some(CBusEvent::LearnMode {
-                            source: src,
-                            command,
-                        }),
-                        Sal::TelephonyCommand(command) => Some(CBusEvent::TelephonyCommand {
-                            source: src,
-                            command,
-                        }),
-                        Sal::TelephonyEvent(event) => {
-                            Some(CBusEvent::TelephonyEvent { source: src, event })
-                        }
-                        Sal::Identify(command) => Some(CBusEvent::Identify {
-                            source: src,
-                            command,
-                        }),
-                        Sal::ShortMessageEvent(event) => {
-                            Some(CBusEvent::ShortMessage { source: src, event })
-                        }
-                        Sal::ErrorReport(message) => Some(CBusEvent::ErrorReport {
-                            source: src,
-                            message,
-                        }),
-                        Sal::LightingRamp {
-                            application,
-                            group_address,
-                            duration,
-                            level,
-                        } => Some(CBusEvent::LightingRamp {
-                            source: src,
-                            app: application,
-                            group: group_address,
-                            duration,
-                            level,
-                        }),
-                        Sal::LightingOn {
-                            application,
-                            group_address,
-                        } => Some(CBusEvent::LightingOn {
-                            source: src,
-                            app: application,
-                            group: group_address,
-                        }),
-                        Sal::LightingOff {
-                            application,
-                            group_address,
-                        } => Some(CBusEvent::LightingOff {
-                            source: src,
-                            app: application,
-                            group: group_address,
-                        }),
-                        Sal::TriggerEvent {
-                            group_address,
-                            action_selector,
-                        } => Some(CBusEvent::TriggerEvent {
-                            source: src,
-                            group: group_address,
-                            selector: action_selector,
-                        }),
-                        Sal::TriggerMin { group_address } => Some(CBusEvent::TriggerEvent {
-                            source: src,
-                            group: group_address,
-                            selector: 0,
-                        }),
-                        Sal::TriggerMax { group_address } => Some(CBusEvent::TriggerEvent {
-                            source: src,
-                            group: group_address,
-                            selector: 255,
-                        }),
-                        Sal::TriggerIndicatorKill { group_address } => {
-                            Some(CBusEvent::TriggerIndicatorKill {
-                                source: src,
-                                group: group_address,
-                            })
-                        }
-                        Sal::EnableSetNetworkVariable { variable, value } => {
-                            Some(CBusEvent::EnableSet {
-                                source: src,
-                                variable,
-                                value,
-                            })
-                        }
-                        Sal::TemperatureBroadcast {
-                            group_address,
-                            temperature,
-                        } => Some(CBusEvent::TemperatureBroadcast {
-                            source: src,
-                            group: group_address,
-                            temperature,
-                        }),
-                        Sal::ClockUpdateDate { year, month, day } => Some(CBusEvent::ClockDate {
-                            source: src,
-                            year,
-                            month,
-                            day,
-                        }),
-                        Sal::ClockUpdateTime {
-                            hour,
-                            minute,
-                            second,
-                        } => Some(CBusEvent::ClockTime {
-                            source: src,
-                            hour,
-                            minute,
-                            second,
-                        }),
-                        Sal::ClockRequest => Some(CBusEvent::ClockRequest { source: src }),
-                        Sal::DynamicLabel {
-                            application,
-                            payload,
-                        } => Some(CBusEvent::DynamicLabel {
-                            source: src,
-                            application,
-                            payload,
-                        }),
-                        _ => None,
-                    };
-                    if let Some(e) = event {
+                    if let Some(e) = sal_event(s, meta.source_address) {
                         let _ = self.events.send(e);
                     }
                 }
@@ -1659,6 +1503,157 @@ fn classify(cmd: &Packet, conf: Option<u8>) -> (Priority, ResponseKind) {
         ResponseKind::Silent
     };
     (priority, kind)
+}
+
+/// The transport event for one point-to-multipoint SAL from `source`.
+///
+/// Applications without an event (status requests, TERMINATERAMP, Lighting
+/// label and similar) map to `None`. Replay tests use this to feed captured
+/// monitor lines through the same mapping as the PCI reader.
+pub fn sal_event(s: Sal, src: Option<u8>) -> Option<CBusEvent> {
+    match s {
+        Sal::AccessControl(message) => Some(CBusEvent::AccessControl {
+            source: src,
+            message,
+        }),
+        Sal::Aircon(command) => Some(CBusEvent::AirconCommand {
+            source: src,
+            command,
+        }),
+        Sal::AirconStatus(status) => Some(CBusEvent::AirconStatus {
+            source: src,
+            status,
+        }),
+        Sal::AudioCommand(command) => Some(CBusEvent::AudioCommand {
+            source: src,
+            command,
+        }),
+        Sal::AudioEvent(event) => Some(CBusEvent::AudioEvent { source: src, event }),
+        Sal::SecurityCommand(command) => Some(CBusEvent::SecurityCommand {
+            source: src,
+            command,
+        }),
+        Sal::SecurityEvent(event) => Some(CBusEvent::SecurityEvent { source: src, event }),
+        Sal::MeasurementData(measurement) => Some(CBusEvent::MeasurementData {
+            source: src,
+            measurement,
+        }),
+        Sal::MediaTransport(message) => Some(CBusEvent::MediaTransport {
+            source: src,
+            message,
+        }),
+        Sal::NetworkLocate(command) => Some(CBusEvent::NetworkLocate {
+            source: src,
+            command,
+        }),
+        Sal::LearnMode(command) => Some(CBusEvent::LearnMode {
+            source: src,
+            command,
+        }),
+        Sal::TelephonyCommand(command) => Some(CBusEvent::TelephonyCommand {
+            source: src,
+            command,
+        }),
+        Sal::TelephonyEvent(event) => Some(CBusEvent::TelephonyEvent { source: src, event }),
+        Sal::Identify(command) => Some(CBusEvent::Identify {
+            source: src,
+            command,
+        }),
+        Sal::ShortMessageEvent(event) => Some(CBusEvent::ShortMessage { source: src, event }),
+        Sal::ErrorReport(message) => Some(CBusEvent::ErrorReport {
+            source: src,
+            message,
+        }),
+        Sal::LightingRamp {
+            application,
+            group_address,
+            duration,
+            level,
+        } => Some(CBusEvent::LightingRamp {
+            source: src,
+            app: application,
+            group: group_address,
+            duration,
+            level,
+        }),
+        Sal::LightingOn {
+            application,
+            group_address,
+        } => Some(CBusEvent::LightingOn {
+            source: src,
+            app: application,
+            group: group_address,
+        }),
+        Sal::LightingOff {
+            application,
+            group_address,
+        } => Some(CBusEvent::LightingOff {
+            source: src,
+            app: application,
+            group: group_address,
+        }),
+        Sal::TriggerEvent {
+            group_address,
+            action_selector,
+        } => Some(CBusEvent::TriggerEvent {
+            source: src,
+            group: group_address,
+            selector: action_selector,
+        }),
+        Sal::TriggerMin { group_address } => Some(CBusEvent::TriggerEvent {
+            source: src,
+            group: group_address,
+            selector: 0,
+        }),
+        Sal::TriggerMax { group_address } => Some(CBusEvent::TriggerEvent {
+            source: src,
+            group: group_address,
+            selector: 255,
+        }),
+        Sal::TriggerIndicatorKill { group_address } => Some(CBusEvent::TriggerIndicatorKill {
+            source: src,
+            group: group_address,
+        }),
+        Sal::EnableSetNetworkVariable { variable, value } => Some(CBusEvent::EnableSet {
+            source: src,
+            variable,
+            value,
+        }),
+        Sal::TemperatureBroadcast {
+            group_address,
+            temperature,
+        } => Some(CBusEvent::TemperatureBroadcast {
+            source: src,
+            group: group_address,
+            temperature,
+        }),
+        Sal::ClockUpdateDate { year, month, day } => Some(CBusEvent::ClockDate {
+            source: src,
+            year,
+            month,
+            day,
+        }),
+        Sal::ClockUpdateTime {
+            hour,
+            minute,
+            second,
+        } => Some(CBusEvent::ClockTime {
+            source: src,
+            hour,
+            minute,
+            second,
+        }),
+        Sal::ClockRequest => Some(CBusEvent::ClockRequest { source: src }),
+        Sal::DynamicLabel {
+            application,
+            payload,
+        } => Some(CBusEvent::DynamicLabel {
+            source: src,
+            application,
+            payload,
+        }),
+        _ => None,
+    }
 }
 
 #[cfg(test)]

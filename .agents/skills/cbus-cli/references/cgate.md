@@ -567,8 +567,10 @@ The exact SAL order is `0E device channel units multiplier value-msb
 value-lsb`. A 200 proves only correlated PCI confirmation. With the optional
 LOGIN gate armed, authenticate before DATA. Routed writes are exact-once through one to six bridges and have no application-level readback. Do not claim physical sensor acceptance.
 
-Incoming application-228 samples appear on `EVENT ON` as
-`#e# measurement data //PROJECT/NETWORK/228/DEVICE/CHANNEL VALUE MULTIPLIER UNITS sourceUnit=SOURCE`.
+Incoming application-228 samples appear at event level 8 (for example
+`EVENT e9s9c0`) as the native row
+`702 //PROJECT/NETWORK/228/DEVICE/CHANNEL - [measurement] data VALUE MULTIPLIER UNITS sourceUnit=SOURCE`
+plus a `#s# measurement data ...` status row.
 They lazily create native-shaped dynamic objects. Query application
 `State`/`Devices`, device `State`/`Channels`, and channel `State`/`Data` with
 `GET`; Data is `value,multiplier,units,age-ms`. An existing channel without a
@@ -613,8 +615,8 @@ even though its outbound command parser reserves those two values.
 armed. Controls and bus-report injection require LOGIN. Every admitted command is sent exactly once and
 waits for a positive correlated confirmation from the active shared PCI
 generation. A 200 proves interface delivery only, not media-device acceptance
-or resulting state. Incoming commands/reports fan out as `#e# mediatransport`
-events. cmqttd exposes no MQTT Media Transport entity or state. Topology-resolved routes through one to six bridges use exact-once PPM delivery with no media-device readback. Ground exact behavior in
+or resulting state. Incoming commands/reports fan out as native level-8
+`702 ... - [mediatransport] NAME group=G ...` events and `#s# mediatransport` rows. cmqttd exposes no MQTT Media Transport entity or state. Topology-resolved routes through one to six bridges use exact-once PPM delivery with no media-device readback. Ground exact behavior in
 `rust/testdata/fixtures/native_cgate_mediatransport.json`,
 `rust/testdata/vectors/mediatransport.jsonl`, and
 `rust/cmqttd/tests/system_cgate_mediatransport.rs`. `CMQTT CAPABILITIES` advertises application 192, `pci-confirmed-broadcast`, `exactly-once-no-replay`, all 21 message names, event fanout, and `mediatransport_mqtt_state: false`.
@@ -681,8 +683,8 @@ point values before I/O, encodes the retained `0x02` CLOSE or `0x0A` LOCK SAL,
 sends it exactly once, and requires the correlated confirmation on the current
 PCI generation. A 200 proves interface delivery only; it does not prove a door
 or controller changed state or persisted it. Routed Access Control delivery is exact-once and has no controller readback. TLS-client-certificate identity mapping remains outside the evidenced scope. Inbound Access Control traffic fans out to EVENT clients as
-`#e# accesscontrol NAME //PROJECT/NETWORK/213 ZONE POINT [DIRECTION REQUESTER-HEX] sourceUnit=N`
-for the eight native message names; malformed or native-out-of-range SAL emits nothing and no MQTT state is published.
+native level-8 `702 //PROJECT/NETWORK/213 - [accesscontrol] NAME zone=Z point=P[ direction=D requester=HEX] sourceUnit=N`
+rows and `#s# [# ]accesscontrol` status rows for the eight native message names; malformed or native-out-of-range SAL emits nothing and no MQTT state is published.
 
 ### Telephony commands
 

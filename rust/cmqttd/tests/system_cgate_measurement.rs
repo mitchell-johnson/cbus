@@ -239,7 +239,7 @@ async fn measurement_native_family_is_confirmed_authenticated_and_keeps_mqtt_liv
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -254,8 +254,8 @@ async fn measurement_native_family_is_confirmed_authenticated_and_keeps_mqtt_liv
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# measurement data //HARNESS/254/228/1/1 10234 -2 2 sourceUnit=100"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/228/1/1 - [measurement] data 10234 -2 2 sourceUnit=100"
     );
     let data = command(
         &mut reader,

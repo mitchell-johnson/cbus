@@ -2218,6 +2218,7 @@ impl Service {
         };
         let mut updates = Vec::new();
         let mut lighting_change = None;
+        let mut identify_change = None;
         let mut application_update = None;
         match event {
             CBusEvent::MeasurementData {
@@ -2231,80 +2232,89 @@ impl Service {
                         observed_at: Instant::now(),
                     }),
                 );
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# measurement data //{}/{}/228/{}/{} {} sourceUnit={source}",
-                    self.project,
-                    self.network,
+                let address = format!(
+                    "{}/228/{}/{}",
+                    self.network_address(),
                     measurement.device,
-                    measurement.channel,
-                    measurement.event_arguments()
-                ));
+                    measurement.channel
+                );
+                let values = measurement.event_arguments();
+                self.send_application_event(
+                    &address,
+                    "measurement",
+                    "data",
+                    &values,
+                    &values,
+                    false,
+                    *source,
+                );
             }
             CBusEvent::AccessControl { source, message } => {
-                // Build 2001 CBusAccessControlApplication emits
-                //   this.d(name + " " + s2.a() + " sourceUnit=" + n2 + ...);
-                //   BL.a(bl2, this.p(), name, aT, s2.b(), n2, ...);
-                // captured as `702 //P/N/213 - [accesscontrol] NAME zone=Z
-                // point=P ... sourceUnit=N` and `#s# [# ]accesscontrol NAME
-                // //P/N/213 VALUES #sourceunit=N OID=`. cmqttd keeps the
-                // shared untimed application layout with those values; see
-                // testdata/fixtures/native_cgate_access_control.json.
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# accesscontrol {} //{}/{}/213 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/213", self.network_address()),
+                    "accesscontrol",
                     message.event_name(),
-                    self.project,
-                    self.network,
-                    message.event_arguments()
-                ));
+                    &message.event_detail(),
+                    &message.event_arguments(),
+                    message.is_report(),
+                    *source,
+                );
             }
             CBusEvent::AirconCommand { source, command } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# aircon {} //{}/{}/172 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/172", self.network_address()),
+                    "aircon",
                     command.event_name(),
-                    self.project,
-                    self.network,
-                    command.event_arguments()
-                ));
+                    &command.event_detail(),
+                    &command.event_arguments(),
+                    false,
+                    *source,
+                );
             }
             CBusEvent::AirconStatus { source, status } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# aircon {} //{}/{}/172 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/172", self.network_address()),
+                    "aircon",
                     status.event_name(),
-                    self.project,
-                    self.network,
-                    status.event_arguments()
-                ));
+                    &status.event_detail(),
+                    &status.event_arguments(),
+                    true,
+                    *source,
+                );
             }
             CBusEvent::AudioCommand { source, command } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# audio {} //{}/{}/205 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/205", self.network_address()),
+                    "audio",
                     command.event_name(),
-                    self.project,
-                    self.network,
-                    command.event_arguments()
-                ));
+                    &command.event_detail(),
+                    &command.event_arguments(),
+                    false,
+                    *source,
+                );
             }
+            // Native build 2001 drops valid A0 label and load-icon SALs (a
+            // documented decoder defect); cmqttd reports them as an extension
+            // in the shared application layout with positional values.
             CBusEvent::AudioEvent { source, event } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# audio {} //{}/{}/205 {} sourceUnit={source}",
+                let values = event.event_arguments();
+                self.send_application_event(
+                    &format!("{}/205", self.network_address()),
+                    "audio",
                     event.event_name(),
-                    self.project,
-                    self.network,
-                    event.event_arguments()
-                ));
+                    &values,
+                    &values,
+                    false,
+                    *source,
+                );
             }
             CBusEvent::SecurityCommand { source, command } => {
                 self.send_security_event(
                     command.event_name(),
                     command.zone(),
                     &command.event_arguments(),
-                    source.unwrap_or(0),
+                    false,
+                    *source,
                 );
             }
             CBusEvent::SecurityEvent { source, event } => {
@@ -2312,18 +2322,20 @@ impl Service {
                     event.event_name(),
                     event.zone(),
                     &event.event_arguments(),
-                    source.unwrap_or(0),
+                    true,
+                    *source,
                 );
             }
             CBusEvent::MediaTransport { source, message } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# mediatransport {} //{}/{}/192 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/192", self.network_address()),
+                    "mediatransport",
                     message.event_name(),
-                    self.project,
-                    self.network,
-                    message.event_arguments()
-                ));
+                    &message.event_arguments(),
+                    &message.status_values(),
+                    false,
+                    *source,
+                );
             }
             CBusEvent::NetworkLocate { source, command } => {
                 let target = match &command.target {
@@ -2353,35 +2365,43 @@ impl Service {
                 ));
             }
             CBusEvent::TelephonyCommand { source, command } => {
-                self.send_telephony_event(
+                let values = command.event_arguments();
+                self.send_application_event(
+                    &format!("{}/224", self.network_address()),
+                    "telephony",
                     command.event_name(),
-                    &command.event_arguments(),
-                    source.unwrap_or(0),
+                    &values,
+                    &values,
+                    false,
+                    *source,
                 );
             }
             CBusEvent::TelephonyEvent { source, event } => {
-                self.send_telephony_event(
+                let values = event.event_arguments();
+                self.send_application_event(
+                    &format!("{}/224", self.network_address()),
+                    "telephony",
                     event.event_name(),
-                    &event.event_arguments(),
-                    source.unwrap_or(0),
+                    &values,
+                    &values,
+                    false,
+                    *source,
                 );
             }
             CBusEvent::Identify { source, command } => {
+                // Build 2001 reports Identify through the Lighting group
+                // class: level-7 event 730 plus an `identify` load-change row.
                 let source = source.unwrap_or(0);
                 let group = command.group();
-                let address = format!("//{}/{}/251/{group}", self.project, self.network);
+                let address = format!("{}/251/{group}", self.network_address());
                 match command {
                     IdentifyCommand::On { .. } => {
                         net.levels.insert((APP_IDENTIFY, group), 255);
-                        let _ = self
-                            .events
-                            .send(format!("#e# identify on {address} sourceUnit={source}"));
+                        identify_change = Some((address, 255, 0, source));
                     }
                     IdentifyCommand::Off { .. } => {
                         net.levels.insert((APP_IDENTIFY, group), 0);
-                        let _ = self
-                            .events
-                            .send(format!("#e# identify off {address} sourceUnit={source}"));
+                        identify_change = Some((address, 0, 0, source));
                     }
                     IdentifyCommand::Ramp {
                         duration, level, ..
@@ -2391,35 +2411,45 @@ impl Service {
                         } else {
                             net.levels.remove(&(APP_IDENTIFY, group));
                         }
-                        let _ = self.events.send(format!(
-                            "#e# identify ramp {address} {level} {duration} sourceUnit={source}"
-                        ));
+                        identify_change = Some((address, *level, *duration, source));
                     }
                     IdentifyCommand::TerminateRamp { .. } => {
+                        // Native interpolates an in-progress ramp; cmqttd
+                        // reports the last settled level (0 when unknown).
                         let level = net.levels.get(&(APP_IDENTIFY, group)).copied().unwrap_or(0);
+                        let timestamp = self.event_timestamp();
                         let _ = self.events.send(format!(
-                            "#e# identify terminateramp {address} #level={level} sourceUnit={source}"
+                            "#e# {timestamp} 730 {address} - ramp terminated new level={level} sourceunit={source}"
+                        ));
+                        let _ = self.events.send(format!(
+                            "#s# identify terminateramp {address} #level={level} #sourceunit={source} OID="
                         ));
                     }
                 }
             }
             CBusEvent::ShortMessage { source, event } => {
-                let source = source.unwrap_or(0);
-                let _ = self.events.send(format!(
-                    "#e# shortmessage {} //{}/{}/173 {} sourceUnit={source}",
+                self.send_application_event(
+                    &format!("{}/173", self.network_address()),
+                    "shortmessage",
                     event.event_name(),
-                    self.project,
-                    self.network,
-                    event.event_arguments()
-                ));
+                    &event.event_arguments(),
+                    &event.status_values(),
+                    false,
+                    *source,
+                );
             }
             CBusEvent::ErrorReport { source, message } => {
+                // Native's Error Reporting event omits the source unit and
+                // keeps a trailing space: `[ereport] ereport message VALUES `.
                 let source = source.unwrap_or(0);
+                let address = format!("{}/206", self.network_address());
+                let values = message.event_arguments();
+                let timestamp = self.event_timestamp();
                 let _ = self.events.send(format!(
-                    "#e# ereport message //{}/{}/206 {} sourceUnit={source}",
-                    self.project,
-                    self.network,
-                    message.event_arguments()
+                    "#e# {timestamp} 702 {address} - [ereport] ereport message {values} "
+                ));
+                let _ = self.events.send(format!(
+                    "#s# ereport message {address} {values} #sourceunit={source} OID="
                 ));
             }
             // An attributed Lighting SAL is reported in the native load-change
@@ -2494,19 +2524,29 @@ impl Service {
                 selector,
             } => {
                 net.levels.insert((202, *group), *selector);
-                let _ = self.events.send(format!(
-                    "#e# trigger //{}/{}/202/{group} event action={selector} sourceUnit={source}",
-                    self.project, self.network
-                ));
+                self.send_application_event(
+                    &format!("{}/202/{group}", self.network_address()),
+                    "trigger",
+                    "event",
+                    &format!("action={selector}"),
+                    &selector.to_string(),
+                    false,
+                    Some(*source),
+                );
             }
             CBusEvent::TriggerIndicatorKill {
                 source: Some(source),
                 group,
             } => {
-                let _ = self.events.send(format!(
-                    "#e# trigger //{}/{}/202/{group} indicatorkill action=-1 sourceUnit={source}",
-                    self.project, self.network
-                ));
+                self.send_application_event(
+                    &format!("{}/202/{group}", self.network_address()),
+                    "trigger",
+                    "indicatorkill",
+                    "action=-1",
+                    "",
+                    true,
+                    Some(*source),
+                );
             }
             CBusEvent::EnableSet {
                 source: Some(source),
@@ -2514,28 +2554,79 @@ impl Service {
                 value,
             } => {
                 net.levels.insert((203, *variable), *value);
-                let _ = self.events.send(format!(
-                    "#e# enable //{}/{}/203/{variable} set value={value} sourceUnit={source}",
-                    self.project, self.network
-                ));
+                self.send_application_event(
+                    &format!("{}/203/{variable}", self.network_address()),
+                    "enable",
+                    "set",
+                    &format!("value={value}"),
+                    &value.to_string(),
+                    false,
+                    Some(*source),
+                );
             }
             CBusEvent::ClockDate {
-                year, month, day, ..
+                source,
+                year,
+                month,
+                day,
             } => {
                 application_update = Some((
                     "CLOCK DATE".to_string(),
                     format!("{year:04}-{month:02}-{day:02}"),
                 ));
+                // Native echoes the wire weekday byte; the decoded date keeps
+                // only the derived Monday-based weekday, equal for any
+                // conforming clock.
+                let weekday = chrono::NaiveDate::from_ymd_opt(
+                    i32::from(*year),
+                    u32::from(*month),
+                    u32::from(*day),
+                )
+                .map_or(0, |date| date.weekday().num_days_from_monday());
+                let values = format!("{year}-{month:02}-{day:02} {weekday}");
+                self.send_application_event(
+                    &format!("{}/223", self.network_address()),
+                    "clock",
+                    "date",
+                    &values,
+                    &values,
+                    false,
+                    *source,
+                );
             }
             CBusEvent::ClockTime {
+                source,
                 hour,
                 minute,
                 second,
-                ..
             } => {
                 application_update = Some((
                     "CLOCK TIME".to_string(),
                     format!("{hour:02}:{minute:02}:{second:02}"),
+                ));
+                // The decoded time keeps no daylight-saving byte; cmqttd's
+                // own encoder and the captured vectors carry 255.
+                let values = format!("{hour:02}:{minute:02}:{second:02} 255");
+                self.send_application_event(
+                    &format!("{}/223", self.network_address()),
+                    "clock",
+                    "time",
+                    &values,
+                    &values,
+                    false,
+                    *source,
+                );
+            }
+            CBusEvent::ClockRequest { source } => {
+                // Native appends a comma to the empty request detail.
+                let source = source.unwrap_or(0);
+                let address = format!("{}/223", self.network_address());
+                let timestamp = self.event_timestamp();
+                let _ = self.events.send(format!(
+                    "#e# {timestamp} 702 {address} - [clock] request_refresh, sourceUnit={source}"
+                ));
+                let _ = self.events.send(format!(
+                    "#s# clock request_refresh {address}  #sourceunit={source} OID="
                 ));
             }
             CBusEvent::TemperatureBroadcast {
@@ -2543,16 +2634,22 @@ impl Service {
                 group,
                 temperature,
             } => {
-                let address = format!("//{}/{}/25/{group}", self.project, self.network);
-                let value = format_temperature(*temperature);
+                let address = format!("{}/25/{group}", self.network_address());
                 application_update = Some((
                     "TEMPERATURE BROADCAST".to_string(),
-                    format!("{address} {value}"),
+                    format!("{address} {}", format_temperature(*temperature)),
                 ));
-                let source = source.map_or_else(|| "0".to_string(), |value| value.to_string());
-                let _ = self.events.send(format!(
-                    "#e# temperature broadcast {address} {value} sourceUnit={source}"
-                ));
+                // Native prints the Java double: `5.0`, `1.25`.
+                let value = format!("{temperature:?}");
+                self.send_application_event(
+                    &address,
+                    "temperature",
+                    "broadcast",
+                    &value,
+                    &value,
+                    false,
+                    *source,
+                );
             }
             _ => {}
         }
@@ -2568,8 +2665,22 @@ impl Service {
             let oid = model.lighting_group_oid(&self.project, &address);
             for line in lighting_change_events(
                 &self.event_timestamp(),
+                "lighting",
                 &address,
                 oid,
+                level,
+                ramptime,
+                source,
+            ) {
+                let _ = self.events.send(line);
+            }
+        }
+        if let Some((address, level, ramptime, source)) = identify_change {
+            for line in lighting_change_events(
+                &self.event_timestamp(),
+                "identify",
+                &address,
+                None,
                 level,
                 ramptime,
                 source,
@@ -2582,29 +2693,63 @@ impl Service {
         }
     }
 
-    fn send_security_event(&self, name: &str, zone: Option<u8>, arguments: &str, source: u8) {
-        let zone = zone.map_or_else(String::new, |zone| format!("/{zone}"));
-        let arguments = if arguments.is_empty() {
+    /// `//PROJECT/NETWORK` of the bound network.
+    fn network_address(&self) -> String {
+        format!("//{}/{}", self.project, self.network)
+    }
+
+    /// Native rows for one inbound specialist-application SAL.
+    ///
+    /// Build 2001 `CBusBaseApplication.d` logs level-8 event 702 `ADDRESS -
+    /// [TAG] NAME DETAIL sourceUnit=N` and load-change formatter `BL` writes
+    /// `#s# [# ]TAG NAME ADDRESS VALUES #sourceunit=N OID=`; `# ` marks
+    /// device reports rather than commands. `native_cgate_specialist_events.json`
+    /// pins each application's detail, values and report marker.
+    #[allow(clippy::too_many_arguments)]
+    fn send_application_event(
+        &self,
+        address: &str,
+        tag: &str,
+        name: &str,
+        detail: &str,
+        values: &str,
+        report: bool,
+        source: Option<u8>,
+    ) {
+        let source = source.unwrap_or(0);
+        let detail = if detail.is_empty() {
             String::new()
         } else {
-            format!(" {arguments}")
+            format!(" {detail}")
         };
+        let marker = if report { "# " } else { "" };
+        let timestamp = self.event_timestamp();
         let _ = self.events.send(format!(
-            "#e# security {name} //{}/{}/208{zone}{arguments} sourceUnit={source}",
-            self.project, self.network
+            "#e# {timestamp} 702 {address} - [{tag}] {name}{detail} sourceUnit={source}"
+        ));
+        let _ = self.events.send(format!(
+            "#s# {marker}{tag} {name} {address} {values} #sourceunit={source} OID="
         ));
     }
 
-    fn send_telephony_event(&self, name: &str, arguments: &str, source: u8) {
-        let arguments = if arguments.is_empty() {
-            String::new()
-        } else {
-            format!(" {arguments}")
-        };
-        let _ = self.events.send(format!(
-            "#e# telephony {name} //{}/{}/224{arguments} sourceUnit={source}",
-            self.project, self.network
-        ));
+    fn send_security_event(
+        &self,
+        name: &str,
+        zone: Option<u8>,
+        arguments: &str,
+        report: bool,
+        source: Option<u8>,
+    ) {
+        let zone = zone.map_or_else(String::new, |zone| format!("/{zone}"));
+        self.send_application_event(
+            &format!("{}/208{zone}", self.network_address()),
+            "security",
+            name,
+            arguments,
+            arguments,
+            report,
+            source,
+        );
     }
 
     async fn record_label(
@@ -14595,6 +14740,7 @@ fn cgate_event_delivery(mode: EventMode, default: u8, event: &str) -> Option<&st
 /// each form, including the double space left by an empty argument field.
 fn lighting_change_events(
     timestamp: &str,
+    tag: &str,
     address: &str,
     oid: Option<&str>,
     level: u8,
@@ -14612,7 +14758,7 @@ fn lighting_change_events(
             oid.unwrap_or("-")
         ),
         format!(
-            "#s# lighting {action} {address} {arguments} #sourceunit={source} OID={}",
+            "#s# {tag} {action} {address} {arguments} #sourceunit={source} OID={}",
             oid.unwrap_or("")
         ),
     ]

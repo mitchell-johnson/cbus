@@ -31,6 +31,21 @@ pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
 /// and command sessions add 803/804 lifecycle rows, to an enabled EVENT
 /// stream. Application tests read past those independently covered rows so
 /// their next assertion still targets the injected SAL.
+/// A C-Gate event line with its native timestamp replaced by `<timestamp>`
+/// and line ending removed, for comparison with captured native rows.
+pub fn untimed_event(line: &str) -> String {
+    let line = line.trim_end_matches(['\r', '\n']);
+    match line
+        .strip_prefix("#e# ")
+        .and_then(|body| body.split_once(' '))
+    {
+        Some((stamp, rest)) if stamp.starts_with(|c: char| c.is_ascii_digit()) => {
+            format!("#e# <timestamp> {rest}")
+        }
+        _ => line.to_string(),
+    }
+}
+
 pub async fn read_cgate_nontrace_into<R: AsyncBufRead + Unpin>(
     reader: &mut R,
     line: &mut String,

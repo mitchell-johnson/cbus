@@ -236,7 +236,7 @@ async fn telephony_native_family_is_confirmed_authenticated_and_keeps_mqtt_live(
     assert_eq!(sys.pci.frames().len(), before_frames);
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -251,8 +251,8 @@ async fn telephony_native_family_is_confirmed_authenticated_and_keeps_mqtt_live(
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# telephony line_off_hook //HARNESS/254/224 out data 12 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/224 - [telephony] line_off_hook out data 12 sourceUnit=4"
     );
     sys.pci.inject(&pci_wire(&[5, 4, 0xe0, 0, 0x09, 0x84]));
     event.clear();
@@ -261,8 +261,8 @@ async fn telephony_native_family_is_confirmed_authenticated_and_keeps_mqtt_live(
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# telephony clear_diversion //HARNESS/254/224 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/224 - [telephony] clear_diversion sourceUnit=4"
     );
     assert_eq!(
         command(&mut reader, &mut writer, "events-off", "EVENT OFF")

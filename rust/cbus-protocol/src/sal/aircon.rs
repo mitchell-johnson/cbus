@@ -314,6 +314,20 @@ pub enum AirconSal {
     Status(AirconStatus),
 }
 
+/// Native `702` keys shared by zone-mode commands and plant-level reports.
+const MODE_KEYS: &[&str] = &[
+    "ward",
+    "zones",
+    "mode",
+    "rawlevel",
+    "setbackenabled",
+    "guardenabled",
+    "useauxlevel",
+    "type",
+    "level",
+    "auxlevel",
+];
+
 impl AirconCommand {
     /// Native opcode for this command.
     pub fn opcode(&self) -> u8 {
@@ -433,6 +447,16 @@ impl AirconCommand {
                 u8::from(*raw_level)
             ),
         }
+    }
+
+    /// Native `702` event detail: the positional values with their keys.
+    pub fn event_detail(&self) -> String {
+        let keys: &[&str] = match self {
+            Self::WardOff { .. } | Self::Refresh { .. } | Self::WardOn { .. } => &["ward"],
+            Self::ZoneHvacMode { .. } | Self::ZoneHumidityMode { .. } => MODE_KEYS,
+            _ => &["ward", "zones", "limit", "mode", "rawlevel"],
+        };
+        super::keyed_event_text(keys, &self.event_arguments())
     }
 
     /// Exact SAL bytes, excluding the point-to-multipoint envelope.
@@ -646,6 +670,33 @@ impl AirconStatus {
                 u8::from(*use_aux_level),
             ),
         }
+    }
+
+    /// Native `702` event detail: the positional values with their keys.
+    pub fn event_detail(&self) -> String {
+        let keys: &[&str] = match self {
+            Self::HvacScheduleEntry { .. } | Self::HumidityScheduleEntry { .. } => &[
+                "ward",
+                "zones",
+                "entry",
+                "format",
+                "mode",
+                "rawlevel",
+                "setbackenabled",
+                "guardenabled",
+                "useauxlevel",
+                "starttime",
+                "setlevel",
+            ],
+            Self::ZoneHvacPlantStatus { .. } | Self::ZoneHumidityPlantStatus { .. } => {
+                &["ward", "zones", "type", "status", "error"]
+            }
+            Self::ZoneTemperature { .. } | Self::ZoneHumidity { .. } => {
+                &["ward", "zones", "level", "sensorstatus"]
+            }
+            Self::PlantHvacLevel { .. } | Self::PlantHumidityLevel { .. } => MODE_KEYS,
+        };
+        super::keyed_event_text(keys, &self.event_arguments())
     }
 
     /// Exact SAL bytes, excluding the point-to-multipoint envelope.

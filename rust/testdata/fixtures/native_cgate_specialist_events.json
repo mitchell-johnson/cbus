@@ -1,0 +1,5581 @@
+{
+ "format": "native-cgate-specialist-events-v1",
+ "oracle": {
+  "product": "C-Gate",
+  "version": "3.4.0.2001",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "class_sha256": {
+   "com/clipsal/cgate/cbus/app/CBusBaseApplication.class": "30f98ca1b6af1bfe6ef7271f0bb3488061cfd423145751940a5132cb831b005b",
+   "com/clipsal/cgate/cbus/app/LabelSupportingApplication.class": "c1593f10c95203b89ed94c7ee68abd16c3e2362ac23be7db0dda9b94a4b0da27",
+   "com/clipsal/cgate/cbus/app/accesscontrol/CBusAccessControlApplication.class": "412b7ef2ddf2aeb2a6774647f35869e570fec5b4b49a6c2a50212f931e2110c0",
+   "com/clipsal/cgate/cbus/app/aircon/CBusAirConditioningApplication.class": "af34d97282d0bab1d743c7b95750d555de51f7b90640e2a59f7f792a6a6cfef6",
+   "com/clipsal/cgate/cbus/app/audio/CBusAudioApplication.class": "618d65444f7ffc4cd90160510c9b24a80a1c07251766bb257d8cfe597c1f43a7",
+   "com/clipsal/cgate/cbus/app/clock/CBusClockApplication.class": "82dc6c6d4ae8bdaef555fb885cec564ea092a03476039a5558e78bd3634880ee",
+   "com/clipsal/cgate/cbus/app/enablecontrol/CBusEnableControlApplication.class": "f021b67be9ce52593a468592a1db619b987be0e98ff7fdf6911cbbaa1e6d6a73",
+   "com/clipsal/cgate/cbus/app/ereport/CBusErrorReportingApplication.class": "83768151911ba80e44af6f8aa3842daf439e6b90ae2fa8820c25446cf7d77699",
+   "com/clipsal/cgate/cbus/app/identify/CBusIdentifyApplication.class": "cedf3f6da15134ee3832fe01d1ce15b291a00d93bde80406e89c53d43bee52b8",
+   "com/clipsal/cgate/cbus/app/lighting/CBusLightingApplication.class": "9936b888911bad520e14fa8fc1305cfe23b463719ba4ee72e2e9137716fd91c6",
+   "com/clipsal/cgate/cbus/app/measurement/CBusMeasurementApplication.class": "aef9af839c23d15c336a04b53811179b6bb0dfebe4cf467c13d8a4b5af5d9dd4",
+   "com/clipsal/cgate/cbus/app/mediatransport/CBusMediaTransportApplication.class": "9360581e083552cc6343a9adaa9ca4f4cc4f2220b6ce530c95327d28f9fe5ce1",
+   "com/clipsal/cgate/cbus/app/netmanagement/CBusNetManagementApplication.class": "a658e3e1cdd004983a0de829f956831ab3b82274cd402ed8ba94e55e5382cede",
+   "com/clipsal/cgate/cbus/app/security/CBusSecurityApplication.class": "f36644080d88f63bc71fd4255c1b71c1ae0083443d023fa4bd7e67fc9c63e923",
+   "com/clipsal/cgate/cbus/app/shortmessage/CBusShortMessageApplication.class": "e6a3d80641c3a0121eb73ce31aa60f18468a3c7387d8a68df451efe00f057eaf",
+   "com/clipsal/cgate/cbus/app/telephony/CBusTelephonyApplication.class": "28ad2e8a533c5eca19519441ed8159fc679a56e389d4fd09456f44ab8652cbdd",
+   "com/clipsal/cgate/cbus/app/temperature/CBusTemperatureBroadcastApplication.class": "2c0c687ce0258c4a628fa9d7a4140bbf8bae7afaa6ef0b75c74cbf4d437ef9b9",
+   "com/clipsal/cgate/cbus/app/triggercontrol/CBusTriggerControlApplication.class": "47d1cb7c720182398795c9924a132687f28ef33c22422455d614756468654a1f",
+   "BL.class": "3cdf66aa284e67717123bcfcbe9e3dc8e19f0c255529ed16291e8168b3f82626",
+   "bq.class": "25763e12caeb1b45dfa28a31c162ba7bb8738ea79beba7d8f12dec714eebeb79"
+  },
+  "captured_at": "2026-09-29T22:56:55Z",
+  "raw_probe_report_sha256": "adc844a500e1af6bbbd73cae9d266c643962d82093dc7f7d0b4ded09a921d427",
+  "listener_ownership_verified": true,
+  "cleanup_complete": true,
+  "process_exit_confirmed": true
+ },
+ "probe": "rust/cbus-cgate/research/native_specialist_event_probe.py",
+ "scope": "Captured from an isolated owned C-Gate 3.4 daemon whose only network is a disposable project on the ephemeral Toolkit PCI simulator; synthetic monitor-mode SAL lines ('05 <source> <application> 00 <SAL> <checksum>') were written on that loopback connection. No site project, specialist hardware, Docker service, or live C-Bus network was used. Project names are replaced by PROJECT, the generated network OID in the per-packet 734 trace by <network-oid>, and timestamps by <timestamp>. Each #e# row's level is the lowest of nine EVENT e1..e9 sessions that delivered it; status rows carry no event level.",
+ "session_event_mode": "EVENT e9s9c0",
+ "native_shape": {
+  "event_row": "702 <address> - [<tag>] <name>[ <detail>] sourceUnit=N at level 8 (CBusBaseApplication.d); Identify uses the Lighting group class: 730 <address> - new level=L sourceunit=N ramptime=T at level 7",
+  "status_row": "#s# [# ]<tag> <name> <address> <values> #sourceunit=N OID=; '# ' marks device reports (Air-Conditioning reports, Security events, Trigger indicator kill/min, Access Control observations)",
+  "per_packet_trace": "every monitor packet also logs level-8 734 <network> <network-oid> C-Bus(<base64 'response: HEX processed by network.'>)",
+  "invalid": "rejected or trailing SAL bytes log level-4 824 '<reason>: HEX' rows; a truncated Clock update raised 903 'Critical Server Exception' and stopped all later monitor decoding, so it is captured last"
+ },
+ "lazy_rows": [
+  {
+   "application": 172,
+   "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] loaded application"
+  },
+  {
+   "application": 205,
+   "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] loaded application"
+  },
+  {
+   "application": 223,
+   "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] loaded application"
+  },
+  {
+   "application": 25,
+   "row": "#e# <timestamp> 702 //PROJECT/254/25 - [temperature] loaded application"
+  },
+  {
+   "application": 203,
+   "row": "#e# <timestamp> 702 //PROJECT/254/203 - [enable] loaded application"
+  },
+  {
+   "application": 202,
+   "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] loaded application"
+  },
+  {
+   "application": 206,
+   "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] loaded application"
+  },
+  {
+   "application": 251,
+   "row": "#e# <timestamp> 702 //PROJECT/254/251 - [identify] loaded application"
+  },
+  {
+   "application": 228,
+   "row": "#e# <timestamp> 702 //PROJECT/254/228 - [measurement] loaded application"
+  },
+  {
+   "application": 192,
+   "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] loaded application"
+  },
+  {
+   "application": 208,
+   "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] loaded application"
+  },
+  {
+   "application": 173,
+   "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] loaded application"
+  },
+  {
+   "application": 224,
+   "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] loaded application"
+  }
+ ],
+ "cases": [
+  {
+   "application": 172,
+   "label": "aircon-refresh",
+   "source": 4,
+   "sal_hex": "2101",
+   "pci_line": "0504AC00210129",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwMjEwMTI5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] refresh ward=1 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon refresh //PROJECT/254/172 1 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-ward-off",
+   "source": 5,
+   "sal_hex": "0101",
+   "pci_line": "0505AC00010148",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwMDEwMTQ4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_ward_off ward=1 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_ward_off //PROJECT/254/172 1 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-ward-on",
+   "source": 6,
+   "sal_hex": "7901",
+   "pci_line": "0506AC007901CF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwNzkwMUNGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_ward_on ward=1 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_ward_on //PROJECT/254/172 1 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-zone-hvac-mode",
+   "source": 4,
+   "sal_hex": "2F010753FF001740",
+   "pci_line": "0504AC002F010753FF0017406B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwMkYwMTA3NTNGRjAwMTc0MDZCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_zone_hvac_mode ward=1 zones=0,1,2 mode=3 rawlevel=0 setbackenabled=1 guardenabled=0 useauxlevel=1 type=255 level=23 auxlevel=64 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_zone_hvac_mode //PROJECT/254/172 1 0,1,2 3 0 1 0 1 255 23 64 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-zone-humidity-mode",
+   "source": 5,
+   "sal_hex": "4701074302002840",
+   "pci_line": "0505AC0047010743020028404E",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwNDcwMTA3NDMwMjAwMjg0MDRFIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_zone_humidity_mode ward=1 zones=0,1,2 mode=3 rawlevel=0 setbackenabled=0 guardenabled=0 useauxlevel=1 type=2 level=40 auxlevel=64 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_zone_humidity_mode //PROJECT/254/172 1 0,1,2 3 0 0 0 1 2 40 64 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 899 //PROJECT/254 <network-oid> Debug: Old command discarded (time-out): \\4610001A2001 ",
+     "level": 9
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-hvac-upper-guard",
+   "source": 6,
+   "sal_hex": "550106001B03",
+   "pci_line": "0506AC00550106001B03CF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwNTUwMTA2MDAxQjAzQ0YgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_hvac_upper_guard_limit ward=1 zones=1,2 limit=27 mode=3 rawlevel=0 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_hvac_upper_guard_limit //PROJECT/254/172 1 1,2 27 3 0 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-hvac-lower-guard",
+   "source": 4,
+   "sal_hex": "5D0107001203",
+   "pci_line": "0504AC005D0107001203D1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwNUQwMTA3MDAxMjAzRDEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_hvac_lower_guard_limit ward=1 zones=0,1,2 limit=18 mode=3 rawlevel=0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_hvac_lower_guard_limit //PROJECT/254/172 1 0,1,2 18 3 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-hvac-setback",
+   "source": 5,
+   "sal_hex": "650107000203",
+   "pci_line": "0505AC00650107000203D8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwNjUwMTA3MDAwMjAzRDggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_hvac_setback_limit ward=1 zones=0,1,2 limit=2 mode=3 rawlevel=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_hvac_setback_limit //PROJECT/254/172 1 0,1,2 2 3 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-humidity-upper-guard",
+   "source": 6,
+   "sal_hex": "6D0106004603",
+   "pci_line": "0506AC006D01060046038C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwNkQwMTA2MDA0NjAzOEMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_humidity_upper_guard_limit ward=1 zones=1,2 limit=70 mode=3 rawlevel=0 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_humidity_upper_guard_limit //PROJECT/254/172 1 1,2 70 3 0 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-humidity-lower-guard",
+   "source": 4,
+   "sal_hex": "750107001403",
+   "pci_line": "0504AC00750107001403B7",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwNzUwMTA3MDAxNDAzQjcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_humidity_lower_guard_limit ward=1 zones=0,1,2 limit=20 mode=3 rawlevel=0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_humidity_lower_guard_limit //PROJECT/254/172 1 0,1,2 20 3 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-set-humidity-setback",
+   "source": 5,
+   "sal_hex": "7D0118000F01",
+   "pci_line": "0505AC007D0118000F01A4",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwN0QwMTE4MDAwRjAxQTQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_humidity_setback_limit ward=1 zones=3,4 limit=15 mode=1 rawlevel=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# aircon set_humidity_setback_limit //PROJECT/254/172 1 3,4 15 1 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-hvac-schedule",
+   "source": 6,
+   "sal_hex": "89010700070305DC1400",
+   "pci_line": "0506AC0089010700070305DC1400B9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwODkwMTA3MDAwNzAzMDVEQzE0MDBCOSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] hvac_schedule_entry ward=1 zones=0,1,2 entry=0 format=7 mode=3 rawlevel=0 setbackenabled=0 guardenabled=0 useauxlevel=0 starttime=1500 setlevel=5120 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon hvac_schedule_entry //PROJECT/254/172 1 0,1,2 0 7 3 0 0 0 0 1500 5120 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-humidity-schedule",
+   "source": 4,
+   "sal_hex": "A9010700010302EE3333",
+   "pci_line": "0504AC00A9010700010302EE333340",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwQTkwMTA3MDAwMTAzMDJFRTMzMzM0MCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon humidity_schedule_entry //PROJECT/254/172 1 0,1,2 0 1 3 0 0 0 0 750 13107 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] humidity_schedule_entry ward=1 zones=0,1,2 entry=0 format=1 mode=3 rawlevel=0 setbackenabled=0 guardenabled=0 useauxlevel=0 starttime=750 setlevel=13107 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-zone-hvac-plant",
+   "source": 5,
+   "sal_hex": "050107030100",
+   "pci_line": "0505AC0005010703010039",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwMDUwMTA3MDMwMTAwMzkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_hvac_plant_status ward=1 zones=0,1,2 type=3 status=1 error=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_hvac_plant_status //PROJECT/254/172 1 0,1,2 3 1 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-zone-humidity-plant",
+   "source": 6,
+   "sal_hex": "0D0106030100",
+   "pci_line": "0506AC000D010603010031",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwMEQwMTA2MDMwMTAwMzEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_humidity_plant_status ward=1 zones=1,2 type=3 status=1 error=0 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_humidity_plant_status //PROJECT/254/172 1 1,2 3 1 0 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-zone-temperature",
+   "source": 4,
+   "sal_hex": "150107140000",
+   "pci_line": "0504AC001501071400001A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwMTUwMTA3MTQwMDAwMUEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_temperature ward=1 zones=0,1,2 level=5120 sensorstatus=0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_temperature //PROJECT/254/172 1 0,1,2 5120 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-zone-humidity",
+   "source": 5,
+   "sal_hex": "1D010728F500",
+   "pci_line": "0505AC001D010728F50008",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwMUQwMTA3MjhGNTAwMDggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_humidity ward=1 zones=0,1,2 level=10485 sensorstatus=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_humidity //PROJECT/254/172 1 0,1,2 10485 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-plant-hvac-level",
+   "source": 6,
+   "sal_hex": "36010773FF40FF",
+   "pci_line": "0506AC0036010773FF40FF5A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwMzYwMTA3NzNGRjQwRkY1QSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon set_plant_hvac_level //PROJECT/254/172 1 0,1,2 3 0 1 1 1 255 64 255 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_plant_hvac_level ward=1 zones=0,1,2 mode=3 rawlevel=0 setbackenabled=1 guardenabled=1 useauxlevel=1 type=255 level=64 auxlevel=255 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "aircon-status-plant-humidity-level",
+   "source": 4,
+   "sal_hex": "4E010773024064",
+   "pci_line": "0504AC004E010773024064DC",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwNEUwMTA3NzMwMjQwNjREQyBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] set_plant_humidity_level ward=1 zones=0,1,2 mode=3 rawlevel=0 setbackenabled=1 guardenabled=1 useauxlevel=1 type=2 level=64 auxlevel=100 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon set_plant_humidity_level //PROJECT/254/172 1 0,1,2 3 0 1 1 1 2 64 100 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-current-feed",
+   "source": 5,
+   "sal_hex": "22E854",
+   "pci_line": "0505CD0022E854CB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMjJFODU0Q0IgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] current_feed multiplexer=1 zone=2 feed=4 gain=4 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio current_feed //PROJECT/254/205 1 2 4 4 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-dynamic-1",
+   "source": 6,
+   "sal_hex": "025600",
+   "pci_line": "0506CD00025600D0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDI1NjAwRDAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] dynamic_1 multiplexer=1 zone=2 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio dynamic_1 //PROJECT/254/205 1 2 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-dynamic-2",
+   "source": 4,
+   "sal_hex": "0256FF",
+   "pci_line": "0504CD000256FFD3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMDI1NkZGRDMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] dynamic_2 multiplexer=1 zone=2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio dynamic_2 //PROJECT/254/205 1 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-high-priority",
+   "source": 5,
+   "sal_hex": "3AC263",
+   "pci_line": "0505CD003AC263CA",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwM0FDMjYzQ0EgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] high_priority multiplexer=2 level=99 feed=7 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio high_priority //PROJECT/254/205 2 99 7 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-mute",
+   "source": 6,
+   "sal_hex": "0255FF",
+   "pci_line": "0506CD000255FFD2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDI1NUZGRDIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] mute multiplexer=1 zone=2 mutefunction=255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio mute //PROJECT/254/205 1 2 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-next-feed",
+   "source": 4,
+   "sal_hex": "025602",
+   "pci_line": "0504CD00025602D0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMDI1NjAyRDAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] next_feed multiplexer=1 zone=2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio next_feed //PROJECT/254/205 1 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-next-language",
+   "source": 5,
+   "sal_hex": "025611",
+   "pci_line": "0505CD00025611C0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDI1NjExQzAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] next_language multiplexer=1 zone=2 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio next_language //PROJECT/254/205 1 2 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-off",
+   "source": 6,
+   "sal_hex": "0154",
+   "pci_line": "0506CD000154D3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDE1NEQzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] off multiplexer=1 zone=2 functioncode=4 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio off //PROJECT/254/205 1 2 4 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-on-z-function",
+   "source": 4,
+   "sal_hex": "79C8",
+   "pci_line": "0504CD0079C8E9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwNzlDOEU5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] on multiplexer=Z function=200 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio on //PROJECT/254/205 Z 200 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-output-common-control",
+   "source": 5,
+   "sal_hex": "02E500",
+   "pci_line": "0505CD0002E50042",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDJFNTAwNDIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] output_common_control parameter=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio output_common_control //PROJECT/254/205 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-output-device-status-request",
+   "source": 6,
+   "sal_hex": "02E300",
+   "pci_line": "0506CD0002E30043",
+   "native_rows": [
+    {
+     "row": "#s# audio output_device_status_request //PROJECT/254/205 0 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDJFMzAwNDMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] output_device_status_request parameter=0 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-output-error-code",
+   "source": 4,
+   "sal_hex": "02E651",
+   "pci_line": "0504CD0002E651F1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMDJFNjUxRjEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] output_error_code multiplexer=1 zone=2 error=1 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio output_error_code //PROJECT/254/205 1 2 1 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-previous-feed",
+   "source": 5,
+   "sal_hex": "025605",
+   "pci_line": "0505CD00025605CC",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDI1NjA1Q0MgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] previous_feed multiplexer=1 zone=2 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio previous_feed //PROJECT/254/205 1 2 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-ramp",
+   "source": 6,
+   "sal_hex": "7A547B",
+   "pci_line": "0506CD007A547BDF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwN0E1NDdCREYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] ramp multiplexer=1 zone=2 functioncode=4 level=123 ramprate=15 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio ramp //PROJECT/254/205 1 2 4 123 15 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-request-current-feed",
+   "source": 4,
+   "sal_hex": "02E750",
+   "pci_line": "0504CD0002E750F1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMDJFNzUwRjEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] request_current_feed multiplexer=1 zone=2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio request_current_feed //PROJECT/254/205 1 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-set-feed",
+   "source": 5,
+   "sal_hex": "0AE954",
+   "pci_line": "0505CD000AE954E2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMEFFOTU0RTIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] set_feed multiplexer=1 zone=2 feed=4 option=1 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio set_feed //PROJECT/254/205 1 2 4 1 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-terminate-ramp",
+   "source": 6,
+   "sal_hex": "0954",
+   "pci_line": "0506CD000954CB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDk1NENCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] terminateramp multiplexer=1 zone=2 functioncode=4 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio terminateramp //PROJECT/254/205 1 2 4 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-zone-descriptor-request",
+   "source": 4,
+   "sal_hex": "02E050",
+   "pci_line": "0504CD0002E050F8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMDJFMDUwRjggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] zone_descriptor_request multiplexer=1 zone=2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio zone_descriptor_request //PROJECT/254/205 1 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-zone-feed-label-request",
+   "source": 5,
+   "sal_hex": "02E250",
+   "pci_line": "0505CD0002E250F5",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDJFMjUwRjUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] zone_feed_label_request multiplexer=1 zone=2 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio zone_feed_label_request //PROJECT/254/205 1 2 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-event-label",
+   "source": 6,
+   "sal_hex": "A74C200145444C54",
+   "pci_line": "0506CD00A74C200145444C54EB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwQTc0QzIwMDE0NTQ0NEM1NEVCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_audio_label_extension",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/205 - [audio] label 1 1 4 0 1 1 45444C54 sourceUnit=6",
+    "#s# audio label //PROJECT/254/205 1 1 4 0 1 1 45444C54 #sourceunit=6 OID="
+   ],
+   "note": "Native's A0 decoder compares a byte count with a hex-character count and drops valid label/load-icon SALs; cmqttd reports them as a documented extension in the shared application layout."
+  },
+  {
+   "application": 205,
+   "label": "audio-event-load-icon",
+   "source": 4,
+   "sal_hex": "A54C44010203",
+   "pci_line": "0504CD00A54C44010203EF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwQTU0QzQ0MDEwMjAzRUYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_audio_label_extension",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/205 - [audio] load_icon 1 1 4 68 2 010203 sourceUnit=4",
+    "#s# audio load_icon //PROJECT/254/205 1 1 4 68 2 010203 #sourceunit=4 OID="
+   ]
+  },
+  {
+   "application": 223,
+   "label": "en-0119-pm-clock-t000000",
+   "source": 5,
+   "sal_hex": "0D01000000FF",
+   "pci_line": "0505DF000D01000000FF0A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEQwMTAwMDAwMEZGMEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] time 00:00:00 255 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock time //PROJECT/254/223 00:00:00 255 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0120-pm-clock-t235959",
+   "source": 6,
+   "sal_hex": "0D01173B3BFF",
+   "pci_line": "0506DF000D01173B3BFF7C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEQwMTE3M0IzQkZGN0MgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] time 23:59:59 255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock time //PROJECT/254/223 23:59:59 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0121-pm-clock-t112233",
+   "source": 4,
+   "sal_hex": "0D010B1621FF",
+   "pci_line": "0504DF000D010B1621FFC9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEQwMTBCMTYyMUZGQzkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] time 11:22:33 255 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock time //PROJECT/254/223 11:22:33 255 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0122-pm-clock-d2026-07-20",
+   "source": 5,
+   "sal_hex": "0E0207EA071400",
+   "pci_line": "0505DF000E0207EA071400FB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEUwMjA3RUEwNzE0MDBGQiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-20 0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-20 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0123-pm-clock-d2026-07-21",
+   "source": 6,
+   "sal_hex": "0E0207EA071501",
+   "pci_line": "0506DF000E0207EA071501F8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjA3RUEwNzE1MDFGOCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-21 1 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-21 1 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0124-pm-clock-d2026-07-22",
+   "source": 4,
+   "sal_hex": "0E0207EA071602",
+   "pci_line": "0504DF000E0207EA071602F8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEUwMjA3RUEwNzE2MDJGOCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-22 2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-22 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0125-pm-clock-d2026-07-23",
+   "source": 5,
+   "sal_hex": "0E0207EA071703",
+   "pci_line": "0505DF000E0207EA071703F5",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEUwMjA3RUEwNzE3MDNGNSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-23 3 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-23 3 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0126-pm-clock-d2026-07-24",
+   "source": 6,
+   "sal_hex": "0E0207EA071804",
+   "pci_line": "0506DF000E0207EA071804F2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjA3RUEwNzE4MDRGMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-24 4 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-24 4 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0127-pm-clock-d2026-07-25",
+   "source": 4,
+   "sal_hex": "0E0207EA071905",
+   "pci_line": "0504DF000E0207EA071905F2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEUwMjA3RUEwNzE5MDVGMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-25 5 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-25 5 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0128-pm-clock-d2026-07-26",
+   "source": 5,
+   "sal_hex": "0E0207EA071A06",
+   "pci_line": "0505DF000E0207EA071A06EF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEUwMjA3RUEwNzFBMDZFRiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-26 6 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-26 6 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0129-pm-clock-d2000-01-01",
+   "source": 6,
+   "sal_hex": "0E0207D0010105",
+   "pci_line": "0506DF000E0207D001010528",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjA3RDAwMTAxMDUyOCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2000-01-01 5 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2000-01-01 5 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0130-pm-clock-d2099-12-31",
+   "source": 4,
+   "sal_hex": "0E0208330C1F03",
+   "pci_line": "0504DF000E0208330C1F039F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEUwMjA4MzMwQzFGMDM5RiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2099-12-31 3 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2099-12-31 3 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0131-pm-clock-d2024-02-29",
+   "source": 5,
+   "sal_hex": "0E0207E8021D03",
+   "pci_line": "0505DF000E0207E8021D03F6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEUwMjA3RTgwMjFEMDNGNiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2024-02-29 3 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2024-02-29 3 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0132-pm-clock-datetime",
+   "source": 6,
+   "sal_hex": "0E0207EA0714000D010A141EFF",
+   "pci_line": "0506DF000E0207EA0714000D010A141EFFB1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjA3RUEwNzE0MDAwRDAxMEExNDFFRkZCMSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 2026-07-20 0 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 2026-07-20 0 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] time 10:20:30 255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock time //PROJECT/254/223 10:20:30 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "en-0133-pm-clock-request",
+   "source": 4,
+   "sal_hex": "1103",
+   "pci_line": "0504DF00110304",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMTEwMzA0IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] request_refresh, sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock request_refresh //PROJECT/254/223  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0134-pm-temp-0",
+   "source": 5,
+   "sal_hex": "021400",
+   "pci_line": "05051900021400C7",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUxOTAwMDIxNDAwQzcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "native_swallows_first_group_broadcast",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 0.0 sourceUnit=5",
+    "#s# temperature broadcast //PROJECT/254/25/20 0.0 #sourceunit=5 OID="
+   ],
+   "note": "Native lazily creates an unknown Temperature group on its first broadcast and reports nothing for that SAL; cmqttd reports every broadcast."
+  },
+  {
+   "application": 25,
+   "label": "en-0135-pm-temp-5",
+   "source": 6,
+   "sal_hex": "021405",
+   "pci_line": "05061900021405C1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYxOTAwMDIxNDA1QzEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 1.25 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 1.25 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0136-pm-temp-10",
+   "source": 4,
+   "sal_hex": "02140A",
+   "pci_line": "0504190002140ABE",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQxOTAwMDIxNDBBQkUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 2.5 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 2.5 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0137-pm-temp-15",
+   "source": 5,
+   "sal_hex": "02140F",
+   "pci_line": "0505190002140FB8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUxOTAwMDIxNDBGQjggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 3.75 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 3.75 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0138-pm-temp-20",
+   "source": 6,
+   "sal_hex": "021414",
+   "pci_line": "05061900021414B2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYxOTAwMDIxNDE0QjIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 5.0 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 5.0 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0139-pm-temp-25",
+   "source": 4,
+   "sal_hex": "021419",
+   "pci_line": "05041900021419AF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQxOTAwMDIxNDE5QUYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 6.25 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 6.25 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0140-pm-temp-30",
+   "source": 5,
+   "sal_hex": "02141E",
+   "pci_line": "0505190002141EA9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUxOTAwMDIxNDFFQTkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 7.5 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 7.5 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "en-0141-pm-temp-35",
+   "source": 6,
+   "sal_hex": "021423",
+   "pci_line": "05061900021423A3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYxOTAwMDIxNDIzQTMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/20 8.75 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/20 - [temperature] broadcast 8.75 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 203,
+   "label": "en-0186-pm-enable-0-0",
+   "source": 4,
+   "sal_hex": "020000",
+   "pci_line": "0504CB000200002A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDQjAwMDIwMDAwMkEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203 - [enable] automatic phantom group created at address 0",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/0 - [enable] set value=0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/0 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 203,
+   "label": "en-0187-pm-enable-255-255",
+   "source": 5,
+   "sal_hex": "02FFFF",
+   "pci_line": "0505CB0002FFFF2B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQjAwMDJGRkZGMkIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203 - [enable] automatic phantom group created at address 255",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/255 - [enable] set value=255 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/255 255 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 203,
+   "label": "en-0188-pm-enable-33-66",
+   "source": 6,
+   "sal_hex": "022142",
+   "pci_line": "0506CB00022142C5",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQjAwMDIyMTQyQzUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203 - [enable] automatic phantom group created at address 33",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/33 - [enable] set value=66 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/33 66 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "en-0517-pm-trigger-event-1-123",
+   "source": 4,
+   "sal_hex": "02017B",
+   "pci_line": "0504CA0002017BAF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDQTAwMDIwMTdCQUYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] automatic phantom group created at address 1",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/1 - [trigger] event action=123 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/1 123 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "en-0518-pm-trigger-indicator-kill-1",
+   "source": 5,
+   "sal_hex": "0901",
+   "pci_line": "0505CA00090122",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQTAwMDkwMTIyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/1 - [trigger] indicatorkill action=-1 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # trigger indicatorkill //PROJECT/254/202/1  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "ereport-ack-maximum",
+   "source": 6,
+   "sal_hex": "25FFC7FFFFFF",
+   "pci_line": "0506CE0025FFC7FFFFFF3F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRTAwMjVGRkM3RkZGRkZGM0YgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# ereport message //PROJECT/254/206 ACK 1023 n n n 7 255 255 255 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] ereport message ACK 1023 n n n 7 255 255 255 ",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "ereport-error-report",
+   "source": 4,
+   "sal_hex": "15006C0102FF",
+   "pci_line": "0504CE0015006C0102FFA6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRTAwMTUwMDZDMDEwMkZGQTYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# ereport message //PROJECT/254/206 ERROR_REPORT 1 y n y 4 1 2 255 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] ereport message ERROR_REPORT 1 y n y 4 1 2 255 ",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "ereport-clear",
+   "source": 5,
+   "sal_hex": "35009B020304",
+   "pci_line": "0505CE0035009B0203044F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRTAwMzUwMDlCMDIwMzA0NEYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# ereport message //PROJECT/254/206 CLEAR 2 n y y 3 2 3 4 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] ereport message CLEAR 2 n y y 3 2 3 4 ",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "identify-on",
+   "source": 6,
+   "sal_hex": "7901",
+   "pci_line": "0506FB00790180",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZGQjAwNzkwMTgwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/251 - [identify] automatic phantom group created at address 1",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=255 sourceunit=6 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify on //PROJECT/254/251/1  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "identify-off",
+   "source": 4,
+   "sal_hex": "0101",
+   "pci_line": "0504FB000101FA",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRGQjAwMDEwMUZBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=0 sourceunit=4 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify off //PROJECT/254/251/1  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "identify-ramp-20-seconds",
+   "source": 5,
+   "sal_hex": "220180",
+   "pci_line": "0505FB0022018058",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVGQjAwMjIwMTgwNTggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=128 sourceunit=5 ramptime=20",
+     "level": 7
+    },
+    {
+     "row": "#s# identify ramp //PROJECT/254/251/1 128 20 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "identify-terminate-ramp",
+   "source": 6,
+   "sal_hex": "0901",
+   "pci_line": "0506FB000901F0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZGQjAwMDkwMUYwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - ramp terminated new level=11 sourceunit=6",
+     "level": 7
+    },
+    {
+     "row": "#s# identify terminateramp //PROJECT/254/251/1 #level=11 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_reports_settled_level",
+   "cmqttd_rows": [
+    "#e# <timestamp> 730 //PROJECT/254/251/1 - ramp terminated new level=0 sourceunit=6",
+    "#s# identify terminateramp //PROJECT/254/251/1 #level=0 #sourceunit=6 OID="
+   ],
+   "note": "Native interpolates the in-progress 20 s ramp at the moment of TERMINATERAMP; cmqttd reports the last settled level, 0 while a timed ramp is unresolved."
+  },
+  {
+   "application": 228,
+   "label": "measurement-data-native-sample",
+   "source": 4,
+   "sal_hex": "0E010102FE27FA",
+   "pci_line": "0504E4000E010102FE27FAE2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFNDAwMEUwMTAxMDJGRTI3RkFFMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/1/1 10234 -2 2 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/1/1 - [measurement] data 10234 -2 2 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 228,
+   "label": "measurement-data-minimums",
+   "source": 5,
+   "sal_hex": "0E000000808000",
+   "pci_line": "0505E4000E00000080800004",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFNDAwMEUwMDAwMDA4MDgwMDAwNCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/0/0 -32768 -128 0 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/0/0 - [measurement] data -32768 -128 0 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 228,
+   "label": "measurement-data-maximums",
+   "source": 6,
+   "sal_hex": "0EFFFFFF7F7FFF",
+   "pci_line": "0506E4000EFFFFFF7F7FFF09",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFNDAwMEVGRkZGRkY3RjdGRkYwOSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/255/255 32767 127 255 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/255/255 - [measurement] data 32767 127 255 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 228,
+   "label": "measurement-data-negative-one",
+   "source": 4,
+   "sal_hex": "0E020301FFFFFF",
+   "pci_line": "0504E4000E020301FFFFFF02",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFNDAwMEUwMjAzMDFGRkZGRkYwMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/2/3 -1 -1 1 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/2/3 - [measurement] data -1 -1 1 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-stop",
+   "source": 5,
+   "sal_hex": "0102",
+   "pci_line": "0505C000010233",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwMDEwMjMzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] stop group=2 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport stop //PROJECT/254/192 2 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-play",
+   "source": 6,
+   "sal_hex": "7902",
+   "pci_line": "0506C0007902BA",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwNzkwMkJBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] play group=2 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport play //PROJECT/254/192 2 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-pause-off",
+   "source": 4,
+   "sal_hex": "0A0200",
+   "pci_line": "0504C0000A02002B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwMEEwMjAwMkIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport pause //PROJECT/254/192 2 0 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] pause group=2 operation=0 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-pause-on",
+   "source": 5,
+   "sal_hex": "0AFFFF",
+   "pci_line": "0505C0000AFFFF2E",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwMEFGRkZGMkUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] pause group=255 operation=255 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport pause //PROJECT/254/192 255 255 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-set-category-max",
+   "source": 6,
+   "sal_hex": "12027F",
+   "pci_line": "0506C00012027FA2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwMTIwMjdGQTIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] set_category group=2 category=127 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport set_category //PROJECT/254/192 2 127 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-set-selection-max",
+   "source": 4,
+   "sal_hex": "1B027FFF",
+   "pci_line": "0504C0001B027FFF9C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwMUIwMjdGRkY5QyBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] set_selection group=2 selection=32767 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport set_selection //PROJECT/254/192 2 32767 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-set-track-max",
+   "source": 5,
+   "sal_hex": "25027FFFFFFF",
+   "pci_line": "0505C00025027FFFFFFF93",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwMjUwMjdGRkZGRkZGOTMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] set_track group=2 track=2147483647 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport set_track //PROJECT/254/192 2 2147483647 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-shuffle",
+   "source": 6,
+   "sal_hex": "2A02FF",
+   "pci_line": "0506C0002A02FF0A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwMkEwMkZGMEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] shuffle group=2 operation=255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport shuffle //PROJECT/254/192 2 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-repeat",
+   "source": 4,
+   "sal_hex": "320280",
+   "pci_line": "0504C00032028083",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwMzIwMjgwODMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport repeat //PROJECT/254/192 2 128 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] repeat group=2 operation=128 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-next-category",
+   "source": 5,
+   "sal_hex": "3A0201",
+   "pci_line": "0505C0003A0201F9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwM0EwMjAxRjkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] next_category group=2 operation=1 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport next_category //PROJECT/254/192 2 1 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-next-selection",
+   "source": 6,
+   "sal_hex": "420200",
+   "pci_line": "0506C000420200F1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwNDIwMjAwRjEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport next_selection //PROJECT/254/192 2 0 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] next_selection group=2 operation=0 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-next-track",
+   "source": 4,
+   "sal_hex": "4A02FF",
+   "pci_line": "0504C0004A02FFEC",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwNEEwMkZGRUMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] next_track group=2 operation=255 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport next_track //PROJECT/254/192 2 255 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-forward",
+   "source": 5,
+   "sal_hex": "52020C",
+   "pci_line": "0505C00052020CD6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwNTIwMjBDRDYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] forward group=2 operation=12 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport forward //PROJECT/254/192 2 12 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-rewind",
+   "source": 6,
+   "sal_hex": "5A020A",
+   "pci_line": "0506C0005A020ACF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwNUEwMjBBQ0YgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] rewind group=2 operation=10 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport rewind //PROJECT/254/192 2 10 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-source-power",
+   "source": 4,
+   "sal_hex": "6202FF",
+   "pci_line": "0504C0006202FFD4",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwNjIwMkZGRDQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] source_power group=2 operation=255 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport source_power //PROJECT/254/192 2 255 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-total-tracks-max",
+   "source": 5,
+   "sal_hex": "6D027FFFFFFF",
+   "pci_line": "0505C0006D027FFFFFFF4B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwNkQwMjdGRkZGRkZGNEIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] total_tracks group=2 tracks=2147483647 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport total_tracks //PROJECT/254/192 2 2147483647 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-status-request",
+   "source": 6,
+   "sal_hex": "7102",
+   "pci_line": "0506C0007102C2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwNzEwMkMyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] status_request group=2 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport status_request //PROJECT/254/192 2 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-enumerate",
+   "source": 4,
+   "sal_hex": "730202FF",
+   "pci_line": "0504C000730202FFC1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwNzMwMjAyRkZDMSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] enumerate group=2 type=2 start=255 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport enumerate //PROJECT/254/192 2 2 255 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-enumeration-size",
+   "source": 5,
+   "sal_hex": "740201FE0F",
+   "pci_line": "0505C000740201FE0FB2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwNzQwMjAxRkUwRkIyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] enumeration_size group=2 type=1 start=254 size=15 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport enumeration_size //PROJECT/254/192 2 1 254 15 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-category-name",
+   "source": 6,
+   "sal_hex": "C6021469506F64",
+   "pci_line": "0506C000C6021469506F64CD",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwQzYwMjE0Njk1MDZGNjRDRCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] category_name group=2 wni=1 total=1 sequence=0 text=\"iPod\" sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport category_name //PROJECT/254/192 2 1 1 0 \"iPod\" #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-selection-name",
+   "source": 4,
+   "sal_hex": "AC027E416C7068612042657461",
+   "pci_line": "0504C000AC027E416C706861204265746189",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwQUMwMjdFNDE2QzcwNjg2MTIwNDI2NTc0NjE4OSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] selection_name group=2 wni=7 total=3 sequence=2 text=\"Alpha Beta\" sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport selection_name //PROJECT/254/192 2 7 3 2 \"Alpha Beta\" #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-track-name-max",
+   "source": 5,
+   "sal_hex": "8D02003132333435363738393031",
+   "pci_line": "0505C0008D0200313233343536373839303169",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwOEQwMjAwMzEzMjMzMzQzNTM2MzczODM5MzAzMTY5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] track_name group=2 wni=0 total=0 sequence=0 text=\"12345678901\" sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport track_name //PROJECT/254/192 2 0 0 0 \"12345678901\" #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-category-name-empty",
+   "source": 6,
+   "sal_hex": "C20200",
+   "pci_line": "0506C000C2020071",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwQzIwMjAwNzEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] category_name group=2 wni=0 total=0 sequence=0 text=\"\" sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport category_name //PROJECT/254/192 2 0 0 0 \"\" #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "mediatransport-track-name-raw-nonascii",
+   "source": 4,
+   "sal_hex": "8C0000FFFFFFFFFFFFFFFFFFFF",
+   "pci_line": "0504C0008C0000FFFFFFFFFFFFFFFFFFFFB5",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwOEMwMDAwRkZGRkZGRkZGRkZGRkZGRkZGRkZCNSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport track_name //PROJECT/254/192 0 0 0 0 \"����������\" #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] track_name group=0 wni=0 total=0 sequence=0 text=\"����������\" sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_ascii_escapes_text",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] track_name group=0 wni=0 total=0 sequence=0 text=\"\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\" sourceUnit=4",
+    "#s# mediatransport track_name //PROJECT/254/192 0 0 0 0 \"\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\\u{fffd}\" #sourceunit=4 OID="
+   ],
+   "note": "Invalid UTF-8 name bytes: native wrote replacement characters; cmqttd writes the ASCII escape \\u{fffd} used by its lossless Media Transport text."
+  },
+  {
+   "application": 208,
+   "label": "network-management-locate-unit",
+   "source": 5,
+   "sal_hex": "13FF0101",
+   "pci_line": "0505D00013FF010112",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMTNGRjAxMDExMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown SAL command: 13FF010112",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 13FF010112",
+     "level": 4
+    }
+   ],
+   "cmqttd": "cmqttd_network_locate_row",
+   "cmqttd_rows": [
+    "#e# network locate //PROJECT/254/208 unit=1 mode=1 sourceUnit=5"
+   ],
+   "note": "Native Security rejects the 0x13/0x16 locate SAL with 824 rows; cmqttd decodes it as network locate and emits its own untimed row."
+  },
+  {
+   "application": 208,
+   "label": "network-management-locate-application",
+   "source": 6,
+   "sal_hex": "1338FF02",
+   "pci_line": "0506D0001338FF02D9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMTMzOEZGMDJEOSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown SAL command: 1338FF02D9",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 1338FF02D9",
+     "level": 4
+    }
+   ],
+   "cmqttd": "cmqttd_network_locate_row",
+   "cmqttd_rows": [
+    "#e# network locate //PROJECT/254/208 application=56 mode=2 sourceUnit=6"
+   ]
+  },
+  {
+   "application": 208,
+   "label": "network-management-locate-group",
+   "source": 4,
+   "sal_hex": "13380100",
+   "pci_line": "0504D00013380100DB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMTMzODAxMDBEQiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown SAL command: 13380100DB",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 13380100DB",
+     "level": 4
+    }
+   ],
+   "cmqttd": "cmqttd_network_locate_row",
+   "cmqttd_rows": [
+    "#e# network locate //PROJECT/254/208 application=56 group=1 mode=0 sourceUnit=4"
+   ]
+  },
+  {
+   "application": 208,
+   "label": "network-management-locate-serial",
+   "source": 5,
+   "sal_hex": "160103039043FF",
+   "pci_line": "0505D000160103039043FF37",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMTYwMTAzMDM5MDQzRkYzNyBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown SAL command: 160103039043FF37",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 160103039043FF37",
+     "level": 4
+    }
+   ],
+   "cmqttd": "cmqttd_network_locate_row",
+   "cmqttd_rows": [
+    "#e# network locate //PROJECT/254/208 manufacturer=1 serial=12345.67 mode=255 sourceUnit=5"
+   ]
+  },
+  {
+   "application": 208,
+   "label": "security-status-request-1",
+   "source": 6,
+   "sal_hex": "09A0",
+   "pci_line": "0506D00009A07C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMDlBMDdDIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] status_request 1 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# security status_request //PROJECT/254/208 1 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-status-request-2",
+   "source": 4,
+   "sal_hex": "09A1",
+   "pci_line": "0504D00009A17D",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDlBMTdEIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] status_request 2 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security status_request //PROJECT/254/208 2 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-arm-away",
+   "source": 5,
+   "sal_hex": "0AA201",
+   "pci_line": "0505D0000AA20179",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEFBMjAxNzkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm away sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security arm //PROJECT/254/208 away #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-arm-night",
+   "source": 6,
+   "sal_hex": "0AA202",
+   "pci_line": "0506D0000AA20277",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEFBMjAyNzcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm night sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# security arm //PROJECT/254/208 night #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-arm-day",
+   "source": 4,
+   "sal_hex": "0AA203",
+   "pci_line": "0504D0000AA20378",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEFBMjAzNzggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm day sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security arm //PROJECT/254/208 day #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-arm-vacation",
+   "source": 5,
+   "sal_hex": "0AA204",
+   "pci_line": "0505D0000AA20476",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEFBMjA0NzYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm vacation sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security arm //PROJECT/254/208 vacation #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-arm-highest",
+   "source": 6,
+   "sal_hex": "0AA2FF",
+   "pci_line": "0506D0000AA2FF7A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEFBMkZGN0EgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm highest sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# security arm //PROJECT/254/208 highest #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-tamper-raise",
+   "source": 4,
+   "sal_hex": "79A3",
+   "pci_line": "0504D00079A30B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwNzlBMzBCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] tamper raise sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security tamper //PROJECT/254/208 raise #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-tamper-drop",
+   "source": 5,
+   "sal_hex": "01A3",
+   "pci_line": "0505D00001A382",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMDFBMzgyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] tamper drop sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security tamper //PROJECT/254/208 drop #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-raise-alarm",
+   "source": 6,
+   "sal_hex": "79A4",
+   "pci_line": "0506D00079A408",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwNzlBNDA4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# security raise_alarm //PROJECT/254/208  #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] raise_alarm sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-emulate-keypad-0",
+   "source": 4,
+   "sal_hex": "0AA500",
+   "pci_line": "0504D0000AA50078",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEFBNTAwNzggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] emulate_keypad 0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security emulate_keypad //PROJECT/254/208 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-emulate-keypad-65",
+   "source": 5,
+   "sal_hex": "0AA541",
+   "pci_line": "0505D0000AA54136",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEFBNTQxMzYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] emulate_keypad 65 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security emulate_keypad //PROJECT/254/208 65 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-emulate-keypad-255",
+   "source": 6,
+   "sal_hex": "0AA5FF",
+   "pci_line": "0506D0000AA5FF77",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEFBNUZGNzcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# security emulate_keypad //PROJECT/254/208 255 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] emulate_keypad 255 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-display-message-empty",
+   "source": 4,
+   "sal_hex": "E1A6",
+   "pci_line": "0504D000E1A6A0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwRTFBNkEwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] display_message sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security display_message //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-display-message-hello",
+   "source": 5,
+   "sal_hex": "E6A648454C4C4F",
+   "pci_line": "0505D000E6A648454C4C4F26",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwRTZBNjQ4NDU0QzRDNEYyNiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] display_message HELLO sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security display_message //PROJECT/254/208 HELLO #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-display-message-maximum",
+   "source": 6,
+   "sal_hex": "F2A63132333435363738393031323334353637",
+   "pci_line": "0506D000F2A6313233343536373839303132333435363714",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwRjJBNjMxMzIzMzM0MzUzNjM3MzgzOTMwMzEzMjMzMzQzNTM2MzcxNCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# security display_message //PROJECT/254/208 12345678901234567 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] display_message 12345678901234567 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-observed-display-message-18-bytes",
+   "source": 4,
+   "sal_hex": "F3A6414141414141414141414141414141414141",
+   "pci_line": "0504D000F3A6414141414141414141414141414141414141FC",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwRjNBNjQxNDE0MTQxNDE0MTQxNDE0MTQxNDE0MTQxNDE0MTQxNDE0MUZDIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] display_message AAAAAAAAAAAAAAAAAA sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# security display_message //PROJECT/254/208 AAAAAAAAAAAAAAAAAA #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-request-zone-name-1",
+   "source": 5,
+   "sal_hex": "0AA701",
+   "pci_line": "0505D0000AA70174",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEFBNzAxNzQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] request_zone_name sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# security request_zone_name //PROJECT/254/208/1  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-request-zone-name-127",
+   "source": 6,
+   "sal_hex": "0AA77F",
+   "pci_line": "0506D0000AA77FF5",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEFBNzdGRjUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/127 - [security] request_zone_name sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# security request_zone_name //PROJECT/254/208/127  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-system-disarmed",
+   "source": 4,
+   "sal_hex": "0180",
+   "pci_line": "0504D0000180A6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDE4MEE2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] system_arm 0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security system_arm //PROJECT/254/208 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-system-armed",
+   "source": 5,
+   "sal_hex": "7A807F",
+   "pci_line": "0505D0007A807FAD",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwN0E4MDdGQUQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] system_arm 127 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security system_arm //PROJECT/254/208 127 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-exit-delay",
+   "source": 6,
+   "sal_hex": "0981",
+   "pci_line": "0506D00009819B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMDk4MTlCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] exit_delay_started sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security exit_delay_started //PROJECT/254/208  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-entry-delay",
+   "source": 4,
+   "sal_hex": "0982",
+   "pci_line": "0504D00009829C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDk4MjlDIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] entry_delay_started sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security entry_delay_started //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-alarm-on",
+   "source": 5,
+   "sal_hex": "7983",
+   "pci_line": "0505D00079832A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwNzk4MzJBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# # security alarm_on //PROJECT/254/208  #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] alarm_on sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-alarm-off",
+   "source": 6,
+   "sal_hex": "0183",
+   "pci_line": "0506D0000183A1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMDE4M0ExIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] alarm_off sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security alarm_off //PROJECT/254/208  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-tamper-on",
+   "source": 4,
+   "sal_hex": "7984",
+   "pci_line": "0504D00079842A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwNzk4NDJBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] tamper_on sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security tamper_on //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-tamper-off",
+   "source": 5,
+   "sal_hex": "0184",
+   "pci_line": "0505D0000184A1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMDE4NEExIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] tamper_off sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security tamper_off //PROJECT/254/208  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-panic-on",
+   "source": 6,
+   "sal_hex": "7985",
+   "pci_line": "0506D000798527",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwNzk4NTI3IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] panic_activated sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security panic_activated //PROJECT/254/208  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-panic-off",
+   "source": 4,
+   "sal_hex": "0185",
+   "pci_line": "0504D0000185A1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDE4NUExIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] panic_cleared sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security panic_cleared //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-unsealed",
+   "source": 5,
+   "sal_hex": "0A8601",
+   "pci_line": "0505D0000A860195",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE4NjAxOTUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_unsealed sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_unsealed //PROJECT/254/208/1  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-sealed",
+   "source": 6,
+   "sal_hex": "0A8701",
+   "pci_line": "0506D0000A870193",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE4NzAxOTMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_sealed sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_sealed //PROJECT/254/208/1  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-open",
+   "source": 4,
+   "sal_hex": "0A8801",
+   "pci_line": "0504D0000A880194",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEE4ODAxOTQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_open sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_open //PROJECT/254/208/1  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-short",
+   "source": 5,
+   "sal_hex": "0A8901",
+   "pci_line": "0505D0000A890192",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE4OTAxOTIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_short sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_short //PROJECT/254/208/1  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-isolated",
+   "source": 6,
+   "sal_hex": "0A8A01",
+   "pci_line": "0506D0000A8A0190",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE4QTAxOTAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_isolated sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_isolated //PROJECT/254/208/1  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-low-battery",
+   "source": 4,
+   "sal_hex": "798B",
+   "pci_line": "0504D000798B23",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwNzk4QjIzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] low_battery_detected sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security low_battery_detected //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-battery-corrected",
+   "source": 5,
+   "sal_hex": "018B",
+   "pci_line": "0505D000018B9A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMDE4QjlBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] low_battery_corrected sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security low_battery_corrected //PROJECT/254/208  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-charging-started",
+   "source": 6,
+   "sal_hex": "0A8CFF",
+   "pci_line": "0506D0000A8CFF90",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE4Q0ZGOTAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] battery_charging started sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security battery_charging //PROJECT/254/208 started #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-charging-stopped",
+   "source": 4,
+   "sal_hex": "0A8C00",
+   "pci_line": "0504D0000A8C0091",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEE4QzAwOTEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] battery_charging stopped sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security battery_charging //PROJECT/254/208 stopped #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-zone-name",
+   "source": 5,
+   "sal_hex": "AD8D014120425C43007F31323334",
+   "pci_line": "0505D000AD8D014120425C43007F3132333460",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwQUQ4RDAxNDEyMDQyNUM0MzAwN0YzMTMyMzMzNDYwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/1 - [security] zone_name A\\x20B\\\\C\\x00\\x7F1234 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_name //PROJECT/254/208/1 A\\x20B\\\\C\\x00\\x7F1234 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-status-report-1",
+   "source": 6,
+   "sal_hex": "AC8E04FF001B1B1B1B1B1B1B1B",
+   "pci_line": "0506D000AC8E04FF001B1B1B1B1B1B1B1B10",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwQUM4RTA0RkYwMDFCMUIxQjFCMUIxQjFCMUIxMCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] status_report_1 4 255 0 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security status_report_1 //PROJECT/254/208 4 255 0 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-status-report-2",
+   "source": 4,
+   "sal_hex": "AD8F6C6C6C6C6C6C6C6C6C6C6C6C",
+   "pci_line": "0504D000AD8F6C6C6C6C6C6C6C6C6C6C6C6CDB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwQUQ4RjZDNkM2QzZDNkM2QzZDNkM2QzZDNkM2Q0RCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] status_report_2  1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security status_report_2 //PROJECT/254/208  1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-password-entry",
+   "source": 5,
+   "sal_hex": "0A9004",
+   "pci_line": "0505D0000A900488",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE5MDA0ODggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] password_entry_status 4 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security password_entry_status //PROJECT/254/208 4 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-mains-failure",
+   "source": 6,
+   "sal_hex": "7991",
+   "pci_line": "0506D00079911B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwNzk5MTFCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] mains_failure sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security mains_failure //PROJECT/254/208  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-mains-restored",
+   "source": 4,
+   "sal_hex": "0191",
+   "pci_line": "0504D000019195",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDE5MTk1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] mains_restored sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security mains_restored //PROJECT/254/208  #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-arm-ready",
+   "source": 5,
+   "sal_hex": "0A9200",
+   "pci_line": "0505D0000A92008A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE5MjAwOEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm_ready sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security arm_ready //PROJECT/254/208  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-arm-not-ready",
+   "source": 6,
+   "sal_hex": "0A927F",
+   "pci_line": "0506D0000A927F0A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE5MjdGMEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/127 - [security] arm_not_ready sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security arm_not_ready //PROJECT/254/208/127  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-current-alarm-type",
+   "source": 4,
+   "sal_hex": "0A93FE",
+   "pci_line": "0504D0000A93FE8C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEE5M0ZFOEMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] current_alarm_type 254 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security current_alarm_type //PROJECT/254/208 254 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-line_cut_alarm-raised",
+   "source": 5,
+   "sal_hex": "7994",
+   "pci_line": "0505D000799419",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwNzk5NDE5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# # security line_cut_alarm //PROJECT/254/208 line_cut_alarm_raised #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] line_cut_alarm line_cut_alarm_raised sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-arm_failed-raised",
+   "source": 6,
+   "sal_hex": "7995",
+   "pci_line": "0506D000799517",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwNzk5NTE3IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] arm_failed arm_failed_raised sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security arm_failed //PROJECT/254/208 arm_failed_raised #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-fire_alarm-raised",
+   "source": 4,
+   "sal_hex": "7996",
+   "pci_line": "0504D000799618",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwNzk5NjE4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] fire_alarm fire_alarm_raised sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# # security fire_alarm //PROJECT/254/208 fire_alarm_raised #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-gas_alarm-raised",
+   "source": 5,
+   "sal_hex": "7997",
+   "pci_line": "0505D000799716",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwNzk5NzE2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] gas_alarm gas_alarm_raised sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # security gas_alarm //PROJECT/254/208 gas_alarm_raised #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "security-event-other_alarm-raised",
+   "source": 6,
+   "sal_hex": "7998",
+   "pci_line": "0506D000799814",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwNzk5ODE0IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208 - [security] other_alarm other_alarm_raised sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security other_alarm //PROJECT/254/208 other_alarm_raised #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "shortmessage-refresh",
+   "source": 4,
+   "sal_hex": "0104",
+   "pci_line": "0504AD00010445",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBRDAwMDEwNDQ1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] refresh info-type=4 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# shortmessage refresh //PROJECT/254/173 4 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "shortmessage-send-coherent-no-optionals",
+   "source": 5,
+   "sal_hex": "86080474657374",
+   "pci_line": "0505AD0086080474657374F7",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBRDAwODYwODA0NzQ2NTczNzRGNyBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] send total=8 sequence=0 info-type=4 number=-1 symbol=-1 text=\"test\" sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# shortmessage send //PROJECT/254/173 8 0 4 -1 -1 \"test\" #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "shortmessage-send-coherent-number-symbol",
+   "source": 6,
+   "sal_hex": "872BD11234564142",
+   "pci_line": "0506AD00872BD11234564142A6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBRDAwODcyQkQxMTIzNDU2NDE0MkE2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] send total=40 sequence=3 info-type=17 number=4660 symbol=86 text=\"AB\" sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# shortmessage send //PROJECT/254/173 40 3 17 4660 86 \"AB\" #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "shortmessage-send-empty",
+   "source": 4,
+   "sal_hex": "820000",
+   "pci_line": "0504AD00820000C8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBRDAwODIwMDAwQzggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] send total=0 sequence=0 info-type=0 number=-1 symbol=-1 text=\"\" sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# shortmessage send //PROJECT/254/173 0 0 0 -1 -1 \"\" #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-clear-diversion",
+   "source": 5,
+   "sal_hex": "0984",
+   "pci_line": "0505E000098489",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMDk4NDg5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] clear_diversion sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony clear_diversion //PROJECT/254/224  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-reject-incoming-call",
+   "source": 6,
+   "sal_hex": "0982",
+   "pci_line": "0506E00009828A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMDk4MjhBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] reject_incoming_call sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony reject_incoming_call //PROJECT/254/224  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-isolate-secondary-outlet",
+   "source": 4,
+   "sal_hex": "0A8001",
+   "pci_line": "0504E0000A80018C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwMEE4MDAxOEMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] isolate_secondary_outlet isolate sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony isolate_secondary_outlet //PROJECT/254/224 isolate #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-recall-last-number-in",
+   "source": 5,
+   "sal_hex": "0A8102",
+   "pci_line": "0505E0000A810289",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEE4MTAyODkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] recall_last_number_request in sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony recall_last_number_request //PROJECT/254/224 in #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-divert-one-digit",
+   "source": 6,
+   "sal_hex": "A28331",
+   "pci_line": "0506E000A28331BF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwQTI4MzMxQkYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] divert 1 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony divert //PROJECT/254/224 1 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-divert-sixteen-digits",
+   "source": 4,
+   "sal_hex": "B18331323334353637383930313233343536",
+   "pci_line": "0504E000B18331323334353637383930313233343536A1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwQjE4MzMxMzIzMzM0MzUzNjM3MzgzOTMwMzEzMjMzMzQzNTM2QTEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] divert 1234567890123456 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony divert //PROJECT/254/224 1234567890123456 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-native-nonascii-defect",
+   "source": 5,
+   "sal_hex": "A283FFFF",
+   "pci_line": "0505E000A283FFFFF3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwQTI4M0ZGRkZGMyBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] divert ÿ sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown response: A283FFFFF3",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown cbus response: A283FFFFF3",
+     "level": 4
+    },
+    {
+     "row": "#s# telephony divert //PROJECT/254/224 ÿ #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reports a non-ASCII divert number and then logs 824; cmqttd rejects the SAL."
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-line-on-hook",
+   "source": 6,
+   "sal_hex": "0901",
+   "pci_line": "0506E00009010B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMDkwMTBCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] line_on_hook sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony line_on_hook //PROJECT/254/224  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-line-off-hook",
+   "source": 4,
+   "sal_hex": "0C02203132",
+   "pci_line": "0504E0000C0220313286",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwMEMwMjIwMzEzMjg2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] line_off_hook out data 12 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony line_off_hook //PROJECT/254/224 out data 12 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-dial-out-failure",
+   "source": 5,
+   "sal_hex": "0A0305",
+   "pci_line": "0505E0000A030504",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEEwMzA1MDQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] dial_out_failure busy sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony dial_out_failure //PROJECT/254/224 busy #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-dial-in-failure",
+   "source": 6,
+   "sal_hex": "0904",
+   "pci_line": "0506E000090408",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMDkwNDA4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] dial_in_failure no_answer sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony dial_in_failure //PROJECT/254/224 no_answer #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-ringing",
+   "source": 4,
+   "sal_hex": "0C05003132",
+   "pci_line": "0504E0000C05003132A3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwMEMwNTAwMzEzMkEzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] ringing 12 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony ringing //PROJECT/254/224 12 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-last-number",
+   "source": 5,
+   "sal_hex": "0C06013132",
+   "pci_line": "0505E0000C06013132A0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEMwNjAxMzEzMkEwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] last_number out 12 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony last_number //PROJECT/254/224 out 12 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-internet-request",
+   "source": 6,
+   "sal_hex": "0907",
+   "pci_line": "0506E000090705",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMDkwNzA1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] internet_connection_request_made sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony internet_connection_request_made //PROJECT/254/224  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-line-off-hook-one-digit",
+   "source": 4,
+   "sal_hex": "0B022031",
+   "pci_line": "0504E0000B022031B9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwMEIwMjIwMzFCOSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] line_off_hook out data1 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony line_off_hook //PROJECT/254/224 out data1 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-event-last-number-one-digit",
+   "source": 5,
+   "sal_hex": "0B060231",
+   "pci_line": "0505E0000B060231D2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEIwNjAyMzFEMiBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] last_number in1 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony last_number //PROJECT/254/224 in1 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-report-1",
+   "source": 6,
+   "sal_hex": "0A0201",
+   "pci_line": "0506E0000A020108",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMEEwMjAxMDggcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] line_off_hook in voice sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony line_off_hook //PROJECT/254/224 in voice #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-report-10",
+   "source": 6,
+   "sal_hex": "0A8000",
+   "pci_line": "0506E0000A80008B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwMEE4MDAwOEIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] isolate_secondary_outlet normal sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony isolate_secondary_outlet //PROJECT/254/224 normal #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-report-12",
+   "source": 5,
+   "sal_hex": "0A8101",
+   "pci_line": "0505E0000A81018A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEE4MTAxOEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] recall_last_number_request out sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony recall_last_number_request //PROJECT/254/224 out #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "telephony-report-15",
+   "source": 5,
+   "sal_hex": "A3833132",
+   "pci_line": "0505E000A38331328D",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwQTM4MzMxMzI4RCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# telephony divert //PROJECT/254/224 12 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/224 - [telephony] divert 12 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-current_feed",
+   "source": 4,
+   "sal_hex": "22E8BF",
+   "pci_line": "0504CD0022E8BF61",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMjJFOEJGNjEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] current_feed multiplexer=2 zone=7 feed=7 gain=4 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio current_feed //PROJECT/254/205 2 7 7 4 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-high_priority",
+   "source": 4,
+   "sal_hex": "3AC2FF",
+   "pci_line": "0504CD003AC2FF2F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwM0FDMkZGMkYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] high_priority multiplexer=2 level=255 feed=7 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio high_priority //PROJECT/254/205 2 255 7 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-mute",
+   "source": 5,
+   "sal_hex": "025507",
+   "pci_line": "0505CD00025507CB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDI1NTA3Q0IgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] mute multiplexer=1 zone=2 mutefunction=7 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio mute //PROJECT/254/205 1 2 7 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-off",
+   "source": 5,
+   "sal_hex": "0157",
+   "pci_line": "0505CD000157D1",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDE1N0QxIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] off multiplexer=1 zone=2 functioncode=7 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio off //PROJECT/254/205 1 2 7 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-on",
+   "source": 6,
+   "sal_hex": "7957",
+   "pci_line": "0506CD00795758",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwNzk1NzU4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] on multiplexer=1 zone=2 functioncode=7 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio on //PROJECT/254/205 1 2 7 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-output_error_code",
+   "source": 6,
+   "sal_hex": "02E657",
+   "pci_line": "0506CD0002E657E9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwMDJFNjU3RTkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# audio output_error_code //PROJECT/254/205 1 2 7 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] output_error_code multiplexer=1 zone=2 error=7 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-ramp",
+   "source": 5,
+   "sal_hex": "7A57FF",
+   "pci_line": "0505CD007A57FF59",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwN0E1N0ZGNTkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] ramp multiplexer=1 zone=2 functioncode=7 level=255 ramprate=15 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio ramp //PROJECT/254/205 1 2 7 255 15 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-set_feed",
+   "source": 4,
+   "sal_hex": "0AE957",
+   "pci_line": "0504CD000AE957E0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwMEFFOTU3RTAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] set_feed multiplexer=1 zone=2 feed=7 option=1 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio set_feed //PROJECT/254/205 1 2 7 1 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "audio-report-terminateramp",
+   "source": 5,
+   "sal_hex": "0957",
+   "pci_line": "0505CD000957C9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDk1N0M5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] terminateramp multiplexer=1 zone=2 functioncode=7 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# audio terminateramp //PROJECT/254/205 1 2 7 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "trigger_min",
+   "source": 5,
+   "sal_hex": "020000",
+   "pci_line": "0505CA000200002A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQTAwMDIwMDAwMkEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] automatic phantom group created at address 0",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/0 0 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/0 - [trigger] event action=0 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "trigger_max",
+   "source": 6,
+   "sal_hex": "02FFFF",
+   "pci_line": "0506CA0002FFFF2B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQTAwMDJGRkZGMkIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/255 255 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] automatic phantom group created at address 255",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/255 - [trigger] event action=255 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "trigger_group_1_action_7",
+   "source": 4,
+   "sal_hex": "020107",
+   "pci_line": "0504CA0002010723",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDQTAwMDIwMTA3MjMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/1 - [trigger] event action=7 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/1 7 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "min_group_5",
+   "source": 5,
+   "sal_hex": "0105",
+   "pci_line": "0505CA00010526",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQTAwMDEwNTI2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] automatic phantom group created at address 5",
+     "level": 8
+    },
+    {
+     "row": "#s# # trigger min //PROJECT/254/202/5  #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/5 - [trigger] min action=0 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_trigger_min_as_event",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/202/5 - [trigger] event action=0 sourceUnit=5",
+    "#s# trigger event //PROJECT/254/202/5 0 #sourceunit=5 OID="
+   ],
+   "note": "Native reports opcode 0x01 as `min action=0` with a report marker; the transport maps it to a Trigger event with action 0."
+  },
+  {
+   "application": 202,
+   "label": "label_short",
+   "source": 6,
+   "sal_hex": "A50500004142",
+   "pci_line": "0506CA00A50500004142FE",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQTAwQTUwNTAwMDA0MTQyRkUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202 - [trigger] label 0 5 - F0 0 4142 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger label //PROJECT/254/202  0 5 - F0 0 4142 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_label_observation",
+   "cmqttd_rows": [],
+   "note": "Native reports a Trigger label row; cmqttd records the SAL as a dynamic-label observation without an event row."
+  },
+  {
+   "application": 202,
+   "label": "indicator_kill_group_5",
+   "source": 4,
+   "sal_hex": "0905",
+   "pci_line": "0504CA0009051F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDQTAwMDkwNTFGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# # trigger indicatorkill //PROJECT/254/202/5  #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/5 - [trigger] indicatorkill action=-1 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 202,
+   "label": "truncated_trigger",
+   "source": 5,
+   "sal_hex": "0205",
+   "pci_line": "0505CA00020525",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQTAwMDIwNTI1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/5 37 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/5 - [trigger] event action=37 sourceUnit=5",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reads the PCI checksum byte as the missing action; cmqttd rejects the truncated SAL."
+  },
+  {
+   "application": 202,
+   "label": "trailing_byte",
+   "source": 6,
+   "sal_hex": "02050799",
+   "pci_line": "0506CA000205079984",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQTAwMDIwNTA3OTk4NCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#s# trigger event //PROJECT/254/202/5 7 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/202/5 - [trigger] event action=7 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/202 - unknown SAL command: 0205079984",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/202 - unknown cbus response: 0205079984",
+     "level": 4
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reports the valid prefix and logs 824 for the trailing byte; cmqttd rejects the whole SAL stream."
+  },
+  {
+   "application": 203,
+   "label": "enable_mid",
+   "source": 6,
+   "sal_hex": "020A80",
+   "pci_line": "0506CB00020A809E",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQjAwMDIwQTgwOUUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203 - [enable] automatic phantom group created at address 10",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/10 - [enable] set value=128 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/10 128 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 203,
+   "label": "unknown_opcode",
+   "source": 4,
+   "sal_hex": "0A0A",
+   "pci_line": "0504CB000A0A18",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDQjAwMEEwQTE4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/10 - [enable] set value=24 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/10 24 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native decodes any opcode with length bits 2 as SET; cmqttd accepts only 0x02."
+  },
+  {
+   "application": 203,
+   "label": "truncated",
+   "source": 5,
+   "sal_hex": "020A",
+   "pci_line": "0505CB00020A1F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDQjAwMDIwQTFGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/10 - [enable] set value=31 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/10 31 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reads the PCI checksum byte as the missing value; cmqttd rejects the truncated SAL."
+  },
+  {
+   "application": 203,
+   "label": "trailing_byte",
+   "source": 6,
+   "sal_hex": "020A8099",
+   "pci_line": "0506CB00020A809905",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDQjAwMDIwQTgwOTkwNSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/203/10 - [enable] set value=128 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/203 - unknown SAL command: 020A809905",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/203 - unknown cbus response: 020A809905",
+     "level": 4
+    },
+    {
+     "row": "#s# enable set //PROJECT/254/203/10 128 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "date_min",
+   "source": 6,
+   "sal_hex": "0E020000010100",
+   "pci_line": "0506DF000E02000001010004",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjAwMDAwMTAxMDAwNCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 0-01-01 0 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 0-01-01 0 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reports year 0; cmqttd accepts only valid calendar dates in years 1..9999."
+  },
+  {
+   "application": 223,
+   "label": "date_max",
+   "source": 4,
+   "sal_hex": "0E02FFFF0C1F06",
+   "pci_line": "0504DF000E02FFFF0C1F06D9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEUwMkZGRkYwQzFGMDZEOSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] date 65535-12-31 6 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# clock date //PROJECT/254/223 65535-12-31 6 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reports year 65535; cmqttd accepts only years 1..9999."
+  },
+  {
+   "application": 223,
+   "label": "time_out_of_range",
+   "source": 5,
+   "sal_hex": "0D01183C3CFF",
+   "pci_line": "0505DF000D01183C3CFF7A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEQwMTE4M0MzQ0ZGN0EgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/223 - unknown response: 0D01183C3CFF7A",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/223 - unknown cbus response: 0D01183C3CFF7A",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "date_month_13",
+   "source": 6,
+   "sal_hex": "0E0207E90D0100",
+   "pci_line": "0506DF000E0207E90D010008",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZERjAwMEUwMjA3RTkwRDAxMDAwOCBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/223 - unknown response: 0E0207E90D010008",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/223 - unknown cbus response: 0E0207E90D010008",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "unknown_variable",
+   "source": 5,
+   "sal_hex": "0D09000000FF",
+   "pci_line": "0505DF000D09000000FF02",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVERjAwMEQwOTAwMDAwMEZGMDIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/223 - [clock] time 00:00:00 255 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# clock time //PROJECT/254/223 00:00:00 255 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native treats clock variable 9 as a time update; cmqttd skips unknown variables."
+  },
+  {
+   "application": 25,
+   "label": "broadcast_zero",
+   "source": 6,
+   "sal_hex": "020100",
+   "pci_line": "05061900020100D9",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYxOTAwMDIwMTAwRDkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "native_swallows_first_group_broadcast",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/25/1 - [temperature] broadcast 0.0 sourceUnit=6",
+    "#s# temperature broadcast //PROJECT/254/25/1 0.0 #sourceunit=6 OID="
+   ]
+  },
+  {
+   "application": 25,
+   "label": "broadcast_max",
+   "source": 4,
+   "sal_hex": "02FFFF",
+   "pci_line": "0504190002FFFFDE",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQxOTAwMDJGRkZGREUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "native_swallows_first_group_broadcast",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/25/255 - [temperature] broadcast 63.75 sourceUnit=4",
+    "#s# temperature broadcast //PROJECT/254/25/255 63.75 #sourceunit=4 OID="
+   ]
+  },
+  {
+   "application": 25,
+   "label": "broadcast_group_0",
+   "source": 5,
+   "sal_hex": "020080",
+   "pci_line": "050519000200805B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUxOTAwMDIwMDgwNUIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "native_swallows_first_group_broadcast",
+   "cmqttd_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/25/0 - [temperature] broadcast 32.0 sourceUnit=5",
+    "#s# temperature broadcast //PROJECT/254/25/0 32.0 #sourceunit=5 OID="
+   ]
+  },
+  {
+   "application": 25,
+   "label": "unknown_opcode",
+   "source": 6,
+   "sal_hex": "090100",
+   "pci_line": "05061900090100D2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYxOTAwMDkwMTAwRDIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/25 - unknown SAL command: 090100D2",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/25 - unknown cbus response: 090100D2",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 25,
+   "label": "truncated",
+   "source": 4,
+   "sal_hex": "0201",
+   "pci_line": "050419000201DB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQxOTAwMDIwMURCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# temperature broadcast //PROJECT/254/25/1 54.75 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/25/1 - [temperature] broadcast 54.75 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reads the PCI checksum byte as the missing value; cmqttd rejects the truncated SAL."
+  },
+  {
+   "application": 251,
+   "label": "on_group_0",
+   "source": 5,
+   "sal_hex": "7900",
+   "pci_line": "0505FB00790082",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVGQjAwNzkwMDgyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/251 - [identify] automatic phantom group created at address 0",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/0 - new level=255 sourceunit=5 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify on //PROJECT/254/251/0  #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "off_group_255",
+   "source": 6,
+   "sal_hex": "01FF",
+   "pci_line": "0506FB0001FFFA",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZGQjAwMDFGRkZBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/251 - [identify] automatic phantom group created at address 255",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/255 - new level=0 sourceunit=6 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify off //PROJECT/254/251/255  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "ramp_instant_128",
+   "source": 4,
+   "sal_hex": "020180",
+   "pci_line": "0504FB0002018079",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRGQjAwMDIwMTgwNzkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=128 sourceunit=4 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify ramp //PROJECT/254/251/1 128 0 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "ramp_max_duration",
+   "source": 5,
+   "sal_hex": "7A01FF",
+   "pci_line": "0505FB007A01FF81",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVGQjAwN0EwMUZGODEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=255 sourceunit=5 ramptime=1020",
+     "level": 7
+    },
+    {
+     "row": "#s# identify ramp //PROJECT/254/251/1 255 1020 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "unknown_opcode",
+   "source": 4,
+   "sal_hex": "0301",
+   "pci_line": "0504FB000301F8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRGQjAwMDMwMUY4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/251 - unknown response (malformed learn): 0301F8",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/251 - unknown cbus response: 0301F8",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 251,
+   "label": "truncated_ramp",
+   "source": 5,
+   "sal_hex": "0201",
+   "pci_line": "0505FB000201F8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVGQjAwMDIwMUY4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 730 //PROJECT/254/251/1 - new level=248 sourceunit=5 ramptime=0",
+     "level": 7
+    },
+    {
+     "row": "#s# identify ramp //PROJECT/254/251/1 248 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reads the PCI checksum byte as the missing level; cmqttd rejects the truncated SAL."
+  },
+  {
+   "application": 228,
+   "label": "data_units_max",
+   "source": 6,
+   "sal_hex": "0EFFFF027FFF7FFF",
+   "pci_line": "0506E4000EFFFF027FFF7FFF07",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFNDAwMEVGRkZGMDI3RkZGN0ZGRjA3IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/255/255 -129 127 2 #sourceunit=6 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/255/255 - [measurement] data -129 127 2 sourceUnit=6",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Eight-byte SAL: native decodes the first seven bytes and ignores the rest; cmqttd rejects a length that is not a multiple of seven."
+  },
+  {
+   "application": 228,
+   "label": "data_zero",
+   "source": 4,
+   "sal_hex": "0E00000200000000",
+   "pci_line": "0504E4000E0000020000000003",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFNDAwMEUwMDAwMDIwMDAwMDAwMDAzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#s# measurement data //PROJECT/254/228/0/0 0 0 2 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/228/0/0 - [measurement] data 0 0 2 sourceUnit=4",
+     "level": 8
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": []
+  },
+  {
+   "application": 228,
+   "label": "unknown_opcode",
+   "source": 5,
+   "sal_hex": "0F01010200000000",
+   "pci_line": "0505E4000F01010200000000FF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFNDAwMEYwMTAxMDIwMDAwMDAwMEZGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/228 - unknown SAL command: 0F01010200000000FF",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/228 - unknown cbus response: 0F01010200000000FF",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 228,
+   "label": "truncated",
+   "source": 6,
+   "sal_hex": "0E01010227",
+   "pci_line": "0506E4000E01010227D8",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFNDAwMEUwMTAxMDIyN0Q4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "minimum",
+   "source": 4,
+   "sal_hex": "050000000000",
+   "pci_line": "0504CE0005000000000024",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRTAwMDUwMDAwMDAwMDAwMjQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# ereport message //PROJECT/254/206 RECENT 0 n n n 0 0 0 0 #sourceunit=4 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] ereport message RECENT 0 n n n 0 0 0 0 ",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "unknown_opcode",
+   "source": 5,
+   "sal_hex": "0D0000000000",
+   "pci_line": "0505CE000D00000000001B",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRTAwMEQwMDAwMDAwMDAwMUIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#s# ereport message //PROJECT/254/206 13 0 n n n 0 0 0 0 #sourceunit=5 OID="
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/206 - [ereport] ereport message 13 0 n n n 0 0 0 0 ",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 206,
+   "label": "truncated",
+   "source": 6,
+   "sal_hex": "050000",
+   "pci_line": "0506CE0005000022",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRTAwMDUwMDAwMjIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "refresh_max",
+   "source": 4,
+   "sal_hex": "01FF",
+   "pci_line": "0504AD0001FF4A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBRDAwMDFGRjRBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/173 - [shortmessage] refresh info-type=63 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# shortmessage refresh //PROJECT/254/173 63 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native masks info type 255 to 63; cmqttd rejects info types above 63."
+  },
+  {
+   "application": 173,
+   "label": "unknown_opcode",
+   "source": 5,
+   "sal_hex": "0901",
+   "pci_line": "0505AD0009013F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBRDAwMDkwMTNGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/173 - unknown SAL command: 09013F",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/173 - unknown cbus response: 09013F",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 173,
+   "label": "truncated_message",
+   "source": 6,
+   "sal_hex": "A50102",
+   "pci_line": "0506AD00A50102A0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBRDAwQTUwMTAyQTAgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/173 - bad SAL command: A50102A0",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/173 - unknown cbus response: A50102A0",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "zone_temperature_max",
+   "source": 4,
+   "sal_hex": "15FFFF7FFFFF",
+   "pci_line": "0504AC0015FFFF7FFFFFBB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwMTVGRkZGN0ZGRkZGQkIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/172 - bad SAL parameter: 15FFFF7FFFFFBB - SensorStatus out of range",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "zone_humidity_min",
+   "source": 5,
+   "sal_hex": "1D0000000000",
+   "pci_line": "0505AC001D00000000002D",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwMUQwMDAwMDAwMDAwMkQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_humidity ward=0 zones=-1 level=0 sensorstatus=0 sourceUnit=5",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_humidity //PROJECT/254/172 0 -1 0 0 #sourceunit=5 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "plant_status_all",
+   "source": 6,
+   "sal_hex": "05FFFFFFFFFF",
+   "pci_line": "0506AC0005FFFFFFFFFF49",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZBQzAwMDVGRkZGRkZGRkZGNDkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/172 - [aircon] zone_hvac_plant_status ward=255 zones=0,1,2,3,4,5,6 type=255 status=255 error=255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # aircon zone_hvac_plant_status //PROJECT/254/172 255 0,1,2,3,4,5,6 255 255 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native masks zone bitmap 0xFF to zones 0..6; cmqttd rejects the reserved bit."
+  },
+  {
+   "application": 172,
+   "label": "unknown_opcode",
+   "source": 4,
+   "sal_hex": "7F01",
+   "pci_line": "0504AC007F01CB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRBQzAwN0YwMUNCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/172 - bad SAL command: 7F01CB",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/172 - unknown cbus response: 7F01CB",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 172,
+   "label": "truncated_status",
+   "source": 5,
+   "sal_hex": "0501",
+   "pci_line": "0505AC00050144",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVBQzAwMDUwMTQ0IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/172 - bad SAL command: 050144",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/172 - unknown cbus response: 050144",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "on_mux2_zone7",
+   "source": 6,
+   "sal_hex": "79BF",
+   "pci_line": "0506CD0079BFF0",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwNzlCRkYwIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] on multiplexer=2 zone=7 functioncode=7 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio on //PROJECT/254/205 2 7 7 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "ramp_level_0",
+   "source": 4,
+   "sal_hex": "7A5700",
+   "pci_line": "0504CD007A570059",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDRDAwN0E1NzAwNTkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] ramp multiplexer=1 zone=2 functioncode=7 level=0 ramprate=15 sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# audio ramp //PROJECT/254/205 1 2 7 0 15 #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "unknown_opcode",
+   "source": 5,
+   "sal_hex": "0357",
+   "pci_line": "0505CD000357CF",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDRDAwMDM1N0NGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/205 - bad SAL command: 0357CF",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/205 - unknown cbus response: 0357CF",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 205,
+   "label": "truncated_ramp",
+   "source": 6,
+   "sal_hex": "7A57",
+   "pci_line": "0506CD007A5757",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDRDAwN0E1NzU3IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/205 - [audio] ramp multiplexer=1 zone=2 functioncode=7 level=87 ramprate=15 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# audio ramp //PROJECT/254/205 1 2 7 87 15 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "cmqttd_rows": [],
+   "note": "Native reads the PCI checksum byte as the missing level; cmqttd rejects the truncated SAL."
+  },
+  {
+   "application": 208,
+   "label": "zone_unsealed_0",
+   "source": 5,
+   "sal_hex": "0A8600",
+   "pci_line": "0505D0000A860096",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE4NjAwOTYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 0A860096 - bad zone value",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "zone_unsealed_127",
+   "source": 6,
+   "sal_hex": "0A867F",
+   "pci_line": "0506D0000A867F16",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE4NjdGMTYgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/208/127 - [security] zone_unsealed sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# # security zone_unsealed //PROJECT/254/208/127  #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "zone_unsealed_128",
+   "source": 4,
+   "sal_hex": "0A8680",
+   "pci_line": "0504D0000A868017",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEE4NjgwMTcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 0A868017 - bad zone value",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "system_arm_128",
+   "source": 6,
+   "sal_hex": "7A8080",
+   "pci_line": "0506D0007A8080AB",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwN0E4MDgwQUIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 7A8080AB - Arm state out of range",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "battery_charging_5",
+   "source": 4,
+   "sal_hex": "0A8C05",
+   "pci_line": "0504D0000A8C058C",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMEE4QzA1OEMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 0A8C058C - bad charging state",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "password_status_5",
+   "source": 5,
+   "sal_hex": "0A9005",
+   "pci_line": "0505D0000A900587",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE5MDA1ODcgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL response: 0A900587",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 0A900587",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "alarm_type_255",
+   "source": 6,
+   "sal_hex": "0A93FF",
+   "pci_line": "0506D0000A93FF89",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZEMDAwMEE5M0ZGODkgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 0A93FF89 - bad charging state",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "unknown_event",
+   "source": 4,
+   "sal_hex": "099F",
+   "pci_line": "0504D000099F7F",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDREMDAwMDk5RjdGIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown SAL command: 099F7F",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - unknown cbus response: 099F7F",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 208,
+   "label": "truncated_zone",
+   "source": 5,
+   "sal_hex": "0A86",
+   "pci_line": "0505D0000A8696",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVEMDAwMEE4Njk2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/208 - bad SAL parameter: 0A8696 - bad zone value",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "play_group_255",
+   "source": 6,
+   "sal_hex": "79FF",
+   "pci_line": "0506C00079FFBD",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwNzlGRkJEIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] play group=255 sourceUnit=6",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport play //PROJECT/254/192 255 #sourceunit=6 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "track_name_empty",
+   "source": 4,
+   "sal_hex": "820200",
+   "pci_line": "0504C000820200B3",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRDMDAwODIwMjAwQjMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 702 //PROJECT/254/192 - [mediatransport] track_name group=2 wni=0 total=0 sequence=0 text=\"\" sourceUnit=4",
+     "level": 8
+    },
+    {
+     "row": "#s# mediatransport track_name //PROJECT/254/192 2 0 0 0 \"\" #sourceunit=4 OID="
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "unknown_opcode",
+   "source": 5,
+   "sal_hex": "0B02",
+   "pci_line": "0505C0000B0229",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVDMDAwMEIwMjI5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/192 - bad SAL command: 0B0229",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/192 - unknown cbus response: 0B0229",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 192,
+   "label": "truncated_track",
+   "source": 6,
+   "sal_hex": "8D02",
+   "pci_line": "0506C0008D02A6",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZDMDAwOEQwMkE2IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/192 - bad SAL command: 8D02A6",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/192 - unknown cbus response: 8D02A6",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "unknown_event",
+   "source": 4,
+   "sal_hex": "0909",
+   "pci_line": "0504E000090905",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRFMDAwMDkwOTA1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown SAL command: 090905",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown cbus response: 090905",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "truncated_off_hook",
+   "source": 5,
+   "sal_hex": "0A02",
+   "pci_line": "0505E0000A020A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDVFMDAwMEEwMjBBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - bad SAL response: 0A020A",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown cbus response: 0A020A",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 224,
+   "label": "divert_empty",
+   "source": 6,
+   "sal_hex": "A083",
+   "pci_line": "0506E000A083F2",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDZFMDAwQTA4M0YyIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown response: A083F2",
+     "level": 4
+    },
+    {
+     "row": "#e# <timestamp> 824 //PROJECT/254/224 - unknown cbus response: A083F2",
+     "level": 4
+    }
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "application": 223,
+   "label": "truncated",
+   "source": 4,
+   "sal_hex": "0D0100",
+   "pci_line": "0504DF000D01000A",
+   "native_rows": [
+    {
+     "row": "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDRERjAwMEQwMTAwMEEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+     "level": 8
+    },
+    {
+     "row": "#e# <timestamp> 903 sys Critical Server Exception: refer exception.info for details",
+     "level": 1
+    }
+   ],
+   "cmqttd": "same"
+  }
+ ]
+}

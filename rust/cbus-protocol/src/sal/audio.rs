@@ -324,6 +324,45 @@ impl AudioCommand {
         }
     }
 
+    /// Native `702` event detail: the positional values with their keys.
+    /// A `Z` function address replaces the multiplexer, zone and coded
+    /// field with `multiplexer=Z function=N`; only Z-form ON is captured.
+    pub fn event_detail(&self) -> String {
+        // (keys, number of keys covered by the address)
+        let (keys, width): (&[&str], usize) = match self {
+            Self::CurrentFeed { .. } => (&["multiplexer", "zone", "feed", "gain"], 3),
+            Self::Dynamic1 { .. }
+            | Self::Dynamic2 { .. }
+            | Self::NextFeed { .. }
+            | Self::NextLanguage { .. }
+            | Self::PreviousFeed { .. }
+            | Self::RequestCurrentFeed { .. }
+            | Self::ZoneDescriptorRequest { .. }
+            | Self::ZoneFeedLabelRequest { .. } => (&["multiplexer", "zone"], 2),
+            Self::HighPriority { .. } => (&["multiplexer", "level", "feed"], 0),
+            Self::Mute { .. } => (&["multiplexer", "zone", "mutefunction"], 2),
+            Self::Off { .. } | Self::On { .. } | Self::TerminateRamp { .. } => {
+                (&["multiplexer", "zone", "functioncode"], 3)
+            }
+            Self::OutputCommonControl { .. } | Self::OutputDeviceStatusRequest { .. } => {
+                (&["parameter"], 0)
+            }
+            Self::OutputErrorCode { .. } => (&["multiplexer", "zone", "error"], 3),
+            Self::Ramp { .. } => (
+                &["multiplexer", "zone", "functioncode", "level", "ramprate"],
+                3,
+            ),
+            Self::SetFeed { .. } => (&["multiplexer", "zone", "feed", "option"], 3),
+        };
+        let values = self.event_arguments();
+        if width > 0 && values.starts_with("Z ") {
+            let mut keyed = vec!["multiplexer", "function"];
+            keyed.extend_from_slice(&keys[width..]);
+            return super::keyed_event_text(&keyed, &values);
+        }
+        super::keyed_event_text(keys, &values)
+    }
+
     /// Encode exact Audio SAL bytes without the application envelope.
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         let three = |opcode, first, second| Ok(vec![opcode, first, second]);

@@ -293,6 +293,11 @@ impl MediaTransportMessage {
         }
     }
 
+    /// Positional values of the native `#s#` status row.
+    pub fn status_values(&self) -> String {
+        super::positional_values(&self.event_arguments())
+    }
+
     /// Exact SAL bytes excluding the point-to-multipoint envelope.
     pub fn encode(&self) -> Result<Vec<u8>, EncodeError> {
         match self {

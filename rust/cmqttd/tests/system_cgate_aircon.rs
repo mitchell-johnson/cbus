@@ -237,7 +237,7 @@ async fn aircon_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
     }
 
     assert_eq!(
-        command(&mut reader, &mut writer, "events", "EVENT ON")
+        command(&mut reader, &mut writer, "events", "EVENT e9s0c0")
             .await
             .last()
             .unwrap(),
@@ -251,8 +251,8 @@ async fn aircon_native_family_is_confirmed_authenticated_and_keeps_mqtt_live() {
         .unwrap()
         .unwrap();
     assert_eq!(
-        event.trim_end_matches(['\r', '\n']),
-        "#e# aircon zone_hvac_plant_status //HARNESS/254/172 1 0,1,2 3 1 0 sourceUnit=4"
+        untimed_event(&event),
+        "#e# <timestamp> 702 //HARNESS/254/172 - [aircon] zone_hvac_plant_status ward=1 zones=0,1,2 type=3 status=1 error=0 sourceUnit=4"
     );
     assert_eq!(
         command(&mut reader, &mut writer, "events-off", "EVENT OFF")
