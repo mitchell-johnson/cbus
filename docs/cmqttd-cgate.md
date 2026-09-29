@@ -600,11 +600,18 @@ request to a fresh complete inventory and expected serial.
 //PROJECT/NETWORK UNITS [MATCHDB]` share one guarded direct or topology-routed planner.
 It first completes installation MMI and known-serial identity inventory for
 every present target-network address. Routed observations accept only the exact
-one-to-six-bridge Reply Network. Healthy singletons stay put. All units at address 255
-move, while each ordinary duplicate keeps a deterministic unit; when possible
-the keeper is the serial already matching that database address, and the local
-PCI is never selected for movement. `MATCHDB` prefers a unique serial-matched
-database destination, then assigns the lowest free address.
+one-to-six-bridge Reply Network. Planning follows the owned native captures in
+`rust/testdata/fixtures/native_cgate_unravel_cases.json`. Healthy singletons
+stay put, so a two-unit address swap is not resolved. All units at address 255
+move. An ordinary duplicate keeps the local PCI at its own address; otherwise
+it keeps the serial the database places there under `MATCHDB` (none if no serial
+matches) or the numerically lowest serial without it. Moving serials are
+processed in descending numeric order. `MATCHDB` sends a serial with one
+database address there. If that address holds one physically present unit,
+that unit is first displaced to a free address, and its target is proved empty
+again before the dependent move. Free addresses are the lowest in 2..254 absent
+from both network and database, then absent from the network. A target held by
+several units or by the local PCI returns 409.
 
 Before any mutation, the planner proves local PCI parameter 66 equals `05`,
 allocates a unique destination for every move, and independently identifies
@@ -972,6 +979,7 @@ CFR 0.152 decompilation; no decompiled code is committed.
 | Short Message `SEND` | The encoder appends the text as PCI ASCII-hex, overstates the extended length and swaps the number and symbol flags, yet reports success | Uses the coherent inbound layout: exact extended length, number flag `0x40`, symbol flag `0x80` and real UTF-8 bytes | `rust/testdata/vectors/shortmessage.jsonl`, `native_cgate_shortmessage_flags.json` |
 | Audio A0 label/load-icon events | The decoder compares a byte count with a hexadecimal character count, so valid standard label/icon frames are dropped | Decodes the retained A0 layout and fans the events out as an extension; C0 Unicode is not accepted as Audio traffic | `native_cgate_audio.json`, `rust/testdata/vectors/audio.jsonl` |
 | Named `SCENE PLAY`/`RECORD` | Returns 401 for every named scene. Command class `nJ` (class SHA-256 `bb3203a1…8885d0`) looks names up in table `BS` (`8418cef8…1be526`), whose only insert method is private and never called. The loader `AY` (`eda7e21e…804ae8`) registers scenes in `Bm` (`4d0d643b…a49e02`) instead | `RECORD` persists the configured network's observed lighting levels; `PLAY` sends them as confirmed zero-time ramps. An unrecorded scene keeps the native 401 | `named_scene_record_and_play_deliberately_extend_native_401` in `service/tests.rs`; `system_cgate.rs`; [Toolkit scene limitation](../toolkit-cli/docs/scenes.md#native-limitation-and-verification) |
+| UNRAVEL move mechanism and text | Moves a single scanned unit, including a displaced MATCHDB-target occupant, with the legacy protected address STORE and omits its serial from the progress line; prints `Updating network model` lines | Every move is a selected-serial broadcast with a correlated receipt and destination readback, so every progress line names the serial; model-update lines are not printed. A local PCI with an unknown project serial at a duplicated PCI address, and an occupied target that holds several units, return 409 instead of native's unobserved recursive clearing | `native_cgate_unravel_cases.json`, `planner_matches_every_native_unravel_capture`, `matchdb_unravel_displaces_single_occupant_of_database_target` |
 | Credentials in events and `ACCESS LIST` | Command and response events echo the command text; `ACCESS LIST` prints plaintext passwords | Redacts credential-bearing command and response event payloads (a command becomes `<redacted command>`); ACCESS stores digests only and lists `<redacted>` | `config_command_trace_redacts_credentials`, `native_cgate_access.json`, `system_cgate_access.rs` |
 | `CONFIG OBGET` on an unknown or wrong-scope name | Sends no response | Returns deterministic 408 so the connection stays usable | `native_cgate_config.json` |
 | Event-server admission | A plaintext event peer receives broadcasts even when command admission denies it | The event port follows `accept-connections-from` and binds loopback only beside a TLS command listener | `native_cgate_config_event_listener_admission.json` |

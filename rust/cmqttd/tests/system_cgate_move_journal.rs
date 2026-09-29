@@ -172,7 +172,7 @@ async fn killed_unravel_after_store_is_refused_on_restart_until_verify_and_clear
     )
     .unwrap();
     let store =
-        cbus_protocol::serial_address::encode_serial_address("101136.1558", 6, true, b'g').unwrap();
+        cbus_protocol::serial_address::encode_serial_address("101136.1559", 7, true, b'g').unwrap();
     let store = std::str::from_utf8(&store[1..store.len() - 2])
         .unwrap()
         .to_string();
@@ -193,8 +193,9 @@ async fn killed_unravel_after_store_is_refused_on_restart_until_verify_and_clear
     wait_for_payload(&sys, "local PCI option request", "4610001A4201", 1).await;
     sys.pci
         .inject(&pci_wire(&[0x86, 16, 0x10, 0x00, 0x82, 0x42, 5]));
-    answer_identity(&sys, 6, 1, &[]).await;
+    // Native order: descending numeric serial, so 101136.1559 moves first.
     answer_identity(&sys, 7, 1, &[]).await;
+    answer_identity(&sys, 6, 1, &[]).await;
     wait_for_payload(&sys, "selected-serial STORE", &store, 1).await;
     sys.daemon.signal("KILL");
     assert!(sys.daemon.wait_exit(STARTUP).await.is_some());
@@ -250,10 +251,10 @@ async fn killed_unravel_after_store_is_refused_on_restart_until_verify_and_clear
 
     // Read-only verification: the first unit moved before the kill.
     send(&mut writer, "7", &format!("CMQTT MOVE-JOURNAL VERIFY {id}")).await;
-    inject_mmi(&sys, 1, &[6, 16, 255]).await;
-    answer_identity(&sys, 6, 1, &["101136.1558"]).await;
+    inject_mmi(&sys, 1, &[7, 16, 255]).await;
+    answer_identity(&sys, 7, 1, &["101136.1559"]).await;
     answer_identity(&sys, 16, 1, &["100966.1187"]).await;
-    answer_identity(&sys, 255, 1, &["101136.1559"]).await;
+    answer_identity(&sys, 255, 1, &["101136.1558"]).await;
     let verified = response(&mut reader, "7").await;
     assert!(verified.last().unwrap().starts_with("200 "), "{verified:?}");
     let verified = json_line(&verified);

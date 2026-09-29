@@ -12,6 +12,7 @@ mod move_journal;
 mod net_lifecycle;
 mod pp_patch;
 mod transform;
+mod unravel_plan;
 
 /// Stream an operator-supplied application catalogue with the native
 /// 343/347/344 XML-snippet envelope. The configured unit-specification
@@ -7391,85 +7392,23 @@ impl Service {
             );
         }
 
-        let mut occupied = before.keys().copied().collect::<HashSet<_>>();
-        let mut reserved = HashSet::new();
-        let mut plan = Vec::<(u8, String, u8)>::new();
-        for source in &selected {
-            let serials = &before[source];
-            let keeper =
-                if *source == 255 {
-                    None
-                } else if serials.len() == 1 {
-                    serials.first().cloned()
-                } else if direct && *source == local {
-                    local_serial.clone()
-                } else if match_database {
-                    serials
-                        .iter()
-                        .find(|serial| {
-                            database_units.iter().any(|unit| {
-                                unit.address == *source
-                                    && parse_native_serial(&unit.serial).ok().is_some_and(
-                                        |parsed| parsed.known && parsed.canonical == **serial,
-                                    )
-                            })
-                        })
-                        .cloned()
-                        .or_else(|| serials.first().cloned())
-                } else {
-                    serials.first().cloned()
-                };
-            let moving = serials
-                .iter()
-                .filter(|serial| keeper.as_ref() != Some(*serial))
-                .cloned()
-                .collect::<Vec<_>>();
-            for serial in moving {
-                let database_matches = database_units
-                    .iter()
-                    .filter(|unit| {
-                        parse_native_serial(&unit.serial)
-                            .ok()
-                            .is_some_and(|parsed| parsed.known && parsed.canonical == serial)
-                    })
-                    .collect::<Vec<_>>();
-                let preferred = if match_database {
-                    match database_matches.as_slice() {
-                        [unit]
-                            if (2..=254).contains(&unit.address)
-                                && (!direct || unit.address != local)
-                                && !occupied.contains(&unit.address)
-                                && !reserved.contains(&unit.address) =>
-                        {
-                            Some(unit.address)
-                        }
-                        _ => None,
-                    }
-                } else {
-                    None
-                };
-                let destination = preferred.or_else(|| {
-                    (2u8..=254).find(|candidate| {
-                        (!direct || *candidate != local)
-                            && !occupied.contains(candidate)
-                            && !reserved.contains(candidate)
-                    })
-                });
-                let Some(destination) = destination else {
-                    return err(
-                        tag,
-                        409,
-                        "409 No free unit address is available for unravel",
-                    );
-                };
-                reserved.insert(destination);
-                plan.push((*source, serial, destination));
-            }
-            if keeper.is_none() {
-                occupied.remove(source);
-            }
-        }
-        plan.sort_by_key(|(source, _, destination)| (*source, *destination));
+        let database = database_units
+            .iter()
+            .map(|unit| (unit.address, unit.serial.clone()))
+            .collect::<Vec<_>>();
+        let unravel = match unravel_plan::plan_unravel(&unravel_plan::UnravelInputs {
+            before: &before,
+            database: &database,
+            selection: selection.as_ref(),
+            match_database,
+            local,
+            direct,
+            local_serial: local_serial.as_deref(),
+        }) {
+            Ok(unravel) => unravel,
+            Err(refusal) => return err(tag, 409, &refusal),
+        };
+        let plan = &unravel.moves;
 
         if !plan.is_empty() {
             match pci.recall_parameter(local, 66, 1).await {
@@ -7490,9 +7429,20 @@ impl Service {
                 }
             }
         }
-        for (_, serial, destination) in &plan {
-            match identify_all_for_route(&pci, &route, *destination, 4).await {
-                Ok(replies) if replies.is_empty() => {}
+        // Every destination is empty, except a database target whose single
+        // planned occupant a preceding displacement move removes.
+        for planned in plan {
+            let (serial, destination) = (&planned.serial, planned.destination);
+            match identify_all_for_route(&pci, &route, destination, 4).await {
+                Ok(replies)
+                    if match &planned.displaced {
+                        None => replies.is_empty(),
+                        Some(occupant) => {
+                            replies.len() == 1
+                                && serial_number(&replies[0]).ok().flatten().as_ref()
+                                    == Some(occupant)
+                        }
+                    } => {}
                 Ok(_) => {
                     return err(
                         tag,
@@ -7516,8 +7466,21 @@ impl Service {
         let mut journal = if plan.is_empty() {
             None
         } else {
+            let planned_moves = plan
+                .iter()
+                .map(|planned| move_journal::PlannedMove {
+                    source: planned.source,
+                    serial: planned.serial.clone(),
+                    destination: planned.destination,
+                })
+                .collect::<Vec<_>>();
             let mut expected_after = before.clone();
-            for (source, serial, destination) in &plan {
+            for move_journal::PlannedMove {
+                source,
+                serial,
+                destination,
+            } in &planned_moves
+            {
                 if let Some(serials) = expected_after.get_mut(source) {
                     serials.retain(|candidate| candidate != serial);
                     if serials.is_empty() {
@@ -7541,14 +7504,7 @@ impl Service {
                     pci_generation: generation,
                     verification_scope: "full_inventory",
                     scope_addresses: Vec::new(),
-                    moves: plan
-                        .iter()
-                        .map(|(source, serial, destination)| move_journal::PlannedMove {
-                            source: *source,
-                            serial: serial.clone(),
-                            destination: *destination,
-                        })
-                        .collect(),
+                    moves: planned_moves,
                     before: before.clone(),
                     expected_after,
                 },
@@ -7570,32 +7526,30 @@ impl Service {
         let mut expected = before.clone();
         let mut completed = 0usize;
         let mut move_events = Vec::new();
-        let mut progress = vec![
-            "120-completed MMI 1 of 1.".to_string(),
-            format!(
-                "120-Unravel: Unit count: {}",
-                before.values().map(Vec::len).sum::<usize>()
-            ),
-            format!(
-                "120-Unravel: Units at: {}",
-                before
-                    .keys()
-                    .map(u8::to_string)
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
-        ];
-        for (index, source) in selected.iter().enumerate() {
-            progress.push(format!(
-                "120-Unravel: Scanning unit {} of {} at address {} (0x{:02X}).",
-                index + 1,
-                selected.len(),
-                source,
-                source
-            ));
-        }
-        for (source, serial, destination) in &plan {
+        let mut readdressed = Vec::new();
+        for planned in plan {
+            let (source, serial, destination) =
+                (&planned.source, &planned.serial, &planned.destination);
             let source_state = expected_states[usize::from(*source)];
+            // A displaced database target must be proved empty again before
+            // its new unit is sent there; nothing already sent is repeated.
+            if planned.displaced.is_some()
+                && !identify_all_for_route(&pci, &route, *destination, 4)
+                    .await
+                    .is_ok_and(|replies| replies.is_empty())
+            {
+                return uncertain(
+                    &mut journal,
+                    err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Displaced destination {destination} was not proved empty after {completed} of {} verified movement(s)",
+                            plan.len()
+                        ),
+                    ),
+                );
+            }
             let sent = if direct {
                 pci.address_selected_serial(serial, *destination).await
             } else {
@@ -7663,9 +7617,9 @@ impl Service {
             }
             expected.insert(*destination, vec![serial.clone()]);
             expected_states[usize::from(*destination)] = source_state;
-            progress.push(format!(
+            readdressed.push((planned.group, format!(
                 "120-Unravel: Readdressed unit with serial number {serial} from address {source} (0x{source:02X}) to address {destination} (0x{destination:02X})."
-            ));
+            )));
             move_events.push(format!(
                 "#e# unit moved serial={serial} {source} {destination}"
             ));
@@ -7793,6 +7747,38 @@ impl Service {
             let _ = self.events.send(event);
         }
         let _ = self.events.send(format!("#e# net {target} unravel ok"));
+        // Native progress order: unit and address counts over every present
+        // address, then per scanned address its moves and any kept unit.
+        let mut progress = vec![
+            "120-completed MMI 1 of 1.".to_string(),
+            format!("120-Unravel: Unit count: {}", before.len()),
+            format!(
+                "120-Unravel: Units at: {}",
+                before
+                    .keys()
+                    .map(u8::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+        ];
+        for (index, group) in selected.iter().enumerate() {
+            progress.push(format!(
+                "120-Unravel: Scanning unit {} of {} at address {group} (0x{group:02X}).",
+                index + 1,
+                before.len(),
+            ));
+            progress.extend(
+                readdressed
+                    .iter()
+                    .filter(|(moved_group, _)| moved_group == group)
+                    .map(|(_, line)| line.clone()),
+            );
+            if let Some((_, serial)) = unravel.kept.iter().find(|(kept, _)| kept == group) {
+                progress.push(format!(
+                    "120-Unravel: Unit at address {group} (0x{group:02X}) with serial number {serial} left in place."
+                ));
+            }
+        }
         progress.push("120-completed MMI 1 of 1.".to_string());
         progress.push("120-Unravel: Complete.".to_string());
         ok(tag, progress, "200 OK.")

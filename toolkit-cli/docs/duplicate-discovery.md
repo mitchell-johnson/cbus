@@ -87,6 +87,47 @@ CBUS_CGATE_TEST_HOST=127.0.0.1 CBUS_DUPLICATE_DISCOVERY_REPORT=docs/native-dupli
 
 The next commissioning extension requires a serial-keyed persistent topology
 and independently verified serial-broadcast replies before any mutation is
-enabled. Occupied displacement, cycles, duplicate local PCI addresses, bridge
-relocation, analogue collisions and physical hardware commissioning remain
-outside this fixture's coverage.
+enabled. Bridge relocation, analogue collisions and physical hardware
+commissioning remain outside this fixture's coverage.
+
+## General native UNRAVEL captures
+
+The research-only `research/unravel_bus_fixture.py` holds any number of
+synthetic KEYE1 2.5.00 nodes, including nodes sharing the PCI address. Its move
+policies are fixture choices, not firmware claims: `co` and the protected
+address STORE move every matching node even into an occupied address, and
+every such move, rejected write and silent read is recorded.
+`research/native_unravel_cases.py` drives owned loopback C-Gate 3.4.0 build 2001
+(`LocalCGate`) through 14 `NET UNRAVELUNIT` cases. The sanitized result, with
+exact reply text, the complete unravel PCI transcript and final fixture state,
+is `rust/testdata/fixtures/native_cgate_unravel_cases.json`. Raw artifacts stay
+in ignored `research/runtime`. Every case returned 200, left the database
+unchanged and never moved a unit into an occupied address.
+
+| Case | Native outcome |
+|---|---|
+| Three or four units at 255, MATCHDB | Each serial with one database address goes there; the rest take the lowest free addresses |
+| Three units at 20, no MATCHDB | The numerically lowest serial stays; the others move |
+| Four units at 20, MATCHDB | The serial the database places at 20 stays; one moves to its database address 9 |
+| Three units at 20, MATCHDB, none placed at 20 | All three move; 20 is left empty |
+| MATCHDB target 6 held by another unit | The occupant is first moved to the lowest free address (2), even when the database places it at 9; then the 255 unit moves to 6 |
+| Two-unit swap between database addresses 6 and 7 | No move; 200 |
+| Serial absent from the database at 255 / at 20 | Moves to the lowest free address / no move |
+| KEYE1 sharing the PCI address 16 | The PCI stays; the KEYE1 moves to its database address |
+| Database-assigned addresses 2 and 3 | Free-address search skips them and chooses 4 |
+| Response order 1560, 1558, 1559 | Processing is still descending numeric serial order |
+
+Moves use the selected-serial broadcast when the scanned address held more
+than one serial, otherwise the legacy protected address STORE. The
+[`duplicate_resolution`](../src/cbus_toolkit/duplicate_resolution.py) module
+is an executable, write-free description of these rules;
+`tests/test_native_unravel_cases.py` replays every capture against it. With
+the pinned Java11 and vendor directory selected, the same test re-captures all
+cases natively and compares them with the committed fixture:
+
+```sh
+CBUS_CGATE_JAVA=... CBUS_LOCAL_CGATE_VENDOR=... PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_native_unravel_cases.py
+```
+
+This is simulator and owned-native evidence only: no bridge, analogue
+collision, hardware or power-cycle claim.

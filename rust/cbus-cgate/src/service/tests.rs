@@ -8490,13 +8490,14 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     )
     .await;
     local_options(&mut remote_read, &mut remote_write).await;
-    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
+    // Native order: moving serials in descending numeric serial order.
     identify(&mut remote_read, &mut remote_write, 7, &[]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
 
-    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
-    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
     selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
     identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
 
     mmi(&mut remote_read, &mut remote_write, &[6, 7, 16]).await;
     identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
@@ -8563,12 +8564,12 @@ async fn bounded_matchdb_unravel_uses_selected_serial_and_verifies_full_inventor
     )
     .await;
     local_options(&mut remote_read, &mut remote_write).await;
-    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
     identify(&mut remote_read, &mut remote_write, 7, &[]).await;
-    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
-    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
     selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
     identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
     mmi(&mut remote_read, &mut remote_write, &[6, 7, 16]).await;
     identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
     identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
@@ -8777,12 +8778,12 @@ async fn routed_matchdb_unravel_correlates_every_reply_and_commits_only_target()
     )
     .await;
     local_options(&mut remote_read, &mut remote_write).await;
-    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
     identify(&mut remote_read, &mut remote_write, 7, &[]).await;
-    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
-    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
+    identify(&mut remote_read, &mut remote_write, 6, &[]).await;
     selected(&mut remote_read, &mut remote_write, "101136.1559", 7).await;
     identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
+    selected(&mut remote_read, &mut remote_write, "101136.1558", 6).await;
+    identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
     mmi(&mut remote_read, &mut remote_write, &[6, 7]).await;
     identify(&mut remote_read, &mut remote_write, 6, &["101136.1558"]).await;
     identify(&mut remote_read, &mut remote_write, 7, &["101136.1559"]).await;
@@ -20024,8 +20025,9 @@ mod move_journal_peer {
         identify(reader, writer, 16, &["100966.1187"]).await;
         identify(reader, writer, 255, &["101136.1558", "101136.1559"]).await;
         local_options(reader, writer).await;
-        identify(reader, writer, 6, &[]).await;
+        // Native order: descending numeric serial, so 101136.1559 first.
         identify(reader, writer, 7, &[]).await;
+        identify(reader, writer, 6, &[]).await;
     }
 
     pub(super) async fn silent(reader: &mut Reader) -> bool {
@@ -20076,7 +20078,7 @@ async fn move_journal_is_durable_before_store_and_complete_after_verified_unrave
 
     // The STORE is on the wire: the record already exists durably and is
     // conservative about the send.
-    let code = selected_request(&mut reader, "101136.1558").await;
+    let code = selected_request(&mut reader, "101136.1559").await;
     let records = journals(&service);
     assert_eq!(records.len(), 1);
     let record = &records[0];
@@ -20092,20 +20094,20 @@ async fn move_journal_is_durable_before_store_and_complete_after_verified_unrave
             .iter()
             .map(|planned| (planned.source, planned.serial.as_str(), planned.destination))
             .collect::<Vec<_>>(),
-        [(255, "101136.1558", 6), (255, "101136.1559", 7)]
+        [(255, "101136.1559", 7), (255, "101136.1558", 6)]
     );
     assert!(record.attempt_id.starts_with("sha256:"));
 
-    selected_ack(&mut writer, code, "101136.1558", 6).await;
-    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
-    let code = selected_request(&mut reader, "101136.1559").await;
+    selected_ack(&mut writer, code, "101136.1559", 7).await;
+    identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
+    let code = selected_request(&mut reader, "101136.1558").await;
     let record = journals(&service).remove(0);
     assert_eq!(
         (record.state.as_str(), record.confirmed_moves),
         ("moving", 1)
     );
-    selected_ack(&mut writer, code, "101136.1559", 7).await;
-    identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
+    selected_ack(&mut writer, code, "101136.1558", 6).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
     mmi(&mut reader, &mut writer, &[6, 7, 16]).await;
     identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
     identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
@@ -20146,7 +20148,7 @@ async fn interrupted_unravel_blocks_restart_until_read_only_verify_and_clear() {
         }
     });
     preflight(&mut reader, &mut writer).await;
-    selected_request(&mut reader, "101136.1558").await;
+    selected_request(&mut reader, "101136.1559").await;
     // Crash: the STORE was sent but nothing after it is observed.
     command.abort();
     assert!(command.await.unwrap_err().is_cancelled());
@@ -20211,10 +20213,10 @@ async fn interrupted_unravel_blocks_restart_until_read_only_verify_and_clear() {
                 .await
         }
     });
-    mmi(&mut reader, &mut writer, &[6, 16, 255]).await;
-    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    mmi(&mut reader, &mut writer, &[7, 16, 255]).await;
+    identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
     identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
-    identify(&mut reader, &mut writer, 255, &["101136.1559"]).await;
+    identify(&mut reader, &mut writer, 255, &["101136.1558"]).await;
     let verified = verify.await.unwrap();
     assert_eq!(verified.status, 200, "{verified:?}");
     let evidence: serde_json::Value =
@@ -20283,7 +20285,7 @@ async fn move_journal_verify_classifies_unchanged_and_expected() {
             }
         });
         preflight(&mut reader, &mut writer).await;
-        selected_request(&mut reader, "101136.1558").await;
+        selected_request(&mut reader, "101136.1559").await;
         command.abort();
         let _ = command.await;
         drop(service);
@@ -20339,7 +20341,7 @@ async fn move_journal_verify_failure_is_inconclusive_and_keeps_the_block() {
         }
     });
     preflight(&mut reader, &mut writer).await;
-    selected_request(&mut reader, "101136.1558").await;
+    selected_request(&mut reader, "101136.1559").await;
     command.abort();
     let _ = command.await;
     drop(service);
@@ -20702,4 +20704,110 @@ async fn psync_refreshes_native_burden_and_voltage_and_fails_silent_units() {
         get("NetVoltage").await,
         "300 //HARNESS/254/p/5: NetVoltage=31.8"
     );
+}
+
+/// Native C-Gate clears an occupied MATCHDB target by moving its single
+/// occupant to the lowest free address first (native capture
+/// `matchdb_target_occupied_unknown`). cmqttd does the same with
+/// selected-serial moves, journals both moves in order and proves the
+/// displaced target empty before the dependent move.
+#[tokio::test(start_paused = true)]
+async fn matchdb_unravel_displaces_single_occupant_of_database_target() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    mmi(&mut reader, &mut writer, &[6, 16, 255]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1562"]).await;
+    identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
+    identify(&mut reader, &mut writer, 255, &["101136.1558"]).await;
+    local_options(&mut reader, &mut writer).await;
+    identify(&mut reader, &mut writer, 2, &[]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1562"]).await;
+
+    let code = selected_request(&mut reader, "101136.1562").await;
+    let record = journals(&service).remove(0);
+    assert_eq!(
+        record
+            .moves
+            .iter()
+            .map(|planned| (planned.source, planned.serial.as_str(), planned.destination))
+            .collect::<Vec<_>>(),
+        [(6, "101136.1562", 2), (255, "101136.1558", 6)]
+    );
+    selected_ack(&mut writer, code, "101136.1562", 2).await;
+    identify(&mut reader, &mut writer, 2, &["101136.1562"]).await;
+    identify(&mut reader, &mut writer, 6, &[]).await;
+    let code = selected_request(&mut reader, "101136.1558").await;
+    selected_ack(&mut writer, code, "101136.1558", 6).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    mmi(&mut reader, &mut writer, &[2, 6, 16]).await;
+    identify(&mut reader, &mut writer, 2, &["101136.1562"]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
+    local_options(&mut reader, &mut writer).await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    let moves = response
+        .lines
+        .iter()
+        .filter(|line| line.contains("Readdressed"))
+        .cloned()
+        .collect::<Vec<_>>();
+    assert_eq!(
+        moves,
+        [
+            "120-Unravel: Readdressed unit with serial number 101136.1562 from address 6 (0x06) to address 2 (0x02).",
+            "120-Unravel: Readdressed unit with serial number 101136.1558 from address 255 (0xFF) to address 6 (0x06).",
+        ]
+    );
+    assert!(response
+        .lines
+        .contains(&"120-Unravel: Units at: 6, 16, 255".to_string()));
+    let record = journals(&service).remove(0);
+    assert!(record.complete && record.confirmed_moves == 2);
+    cleanup(&service, &path);
+}
+
+/// A database target holding several units is outside the observed native
+/// subset: cmqttd refuses before any write.
+#[tokio::test(start_paused = true)]
+async fn matchdb_unravel_refuses_ambiguous_occupied_database_target() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    mmi(&mut reader, &mut writer, &[6, 16, 255]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1562", "101136.1563"]).await;
+    identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
+    identify(&mut reader, &mut writer, 255, &["101136.1558"]).await;
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 409, "{response:?}");
+    assert!(response
+        .final_text
+        .contains("cannot be cleared unambiguously"));
+    assert!(silent(&mut reader).await);
+    assert!(journals(&service).is_empty());
+    cleanup(&service, &path);
 }

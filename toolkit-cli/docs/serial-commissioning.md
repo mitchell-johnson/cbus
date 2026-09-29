@@ -29,9 +29,10 @@ accepts only an exact two-serial collision at 255 with two unique empty database
 destinations on a direct network, checks local PCI parameter 66=`05`, sends one
 selected-serial broadcast per identity without replay, and performs complete
 before/after MMI plus serial inventories with an independent destination check
-after each move. Other raw unravel shapes return 502. This avoids native
-C-Gate's free-address fallback but does not replace the scalar single-unit
-workflow above or establish general duplicate/cycle/bridge support.
+after each move. Its planner follows the [captured native rules](duplicate-discovery.md#general-native-unravel-captures)
+for larger duplicate sets, occupied MATCHDB targets and free-address choice.
+This avoids native C-Gate's internal-scan free-address fallback but does not
+replace the scalar single-unit workflow above or establish bridge support.
 cmqttd journals every such move durably before its first address write. After an interruption, it refuses new moves on that network until `CMQTT MOVE-JOURNAL VERIFY` and `CLEAR` complete; see [cmqttd C-Gate](../../docs/cmqttd-cgate.md). Treat a 409 journal refusal as an uncertain earlier move and never retry it blindly.
 
 Raw `MATCHDB` also leaves a healthy singleton at a normal address in place: an isolated probe with physical KEYE1 at 4 and its database serial at 6 returned 200 with no move. Native `CBusNetworkUnraveller` selects duplicate/problem addresses or addresses marked for clearing, including 255. Single KEYE1 moves use `dc/dd/cu` unlock/STORE; native uses `co` broadcasts for other branches. The typed helper rejects normal source addresses; use the separately tested [physical Address workflow](physical-addressing.md) for those.

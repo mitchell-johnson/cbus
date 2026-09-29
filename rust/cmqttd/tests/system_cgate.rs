@@ -2028,13 +2028,14 @@ async fn bounded_matchdb_unravel_runs_through_real_daemon_and_shared_pci() {
         answer_identity(&sys, 16, 1, &["100966.1187"]).await;
         answer_identity(&sys, 255, 1, &["101136.1558", "101136.1559"]).await;
         answer_local_options(&sys, 1).await;
-        answer_identity(&sys, 6, 1, &[]).await;
+        // Native order: descending numeric serial, so 101136.1559 first.
         answer_identity(&sys, 7, 1, &[]).await;
+        answer_identity(&sys, 6, 1, &[]).await;
 
-        answer_selected_serial(&sys, "101136.1558", 6).await;
-        answer_identity(&sys, 6, 2, &["101136.1558"]).await;
         answer_selected_serial(&sys, "101136.1559", 7).await;
         answer_identity(&sys, 7, 2, &["101136.1559"]).await;
+        answer_selected_serial(&sys, "101136.1558", 6).await;
+        answer_identity(&sys, 6, 2, &["101136.1558"]).await;
 
         inject_mmi(&sys, 2, &[6, 7, 16]).await;
         answer_identity(&sys, 6, 3, &["101136.1558"]).await;
