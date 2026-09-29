@@ -50,3 +50,26 @@ equals sign, left its project directory empty, and confirmed process cleanup.
 The 34 loaded package sources and six test/helper inputs matched across both
 runs; their exact bytes are archived with the reports. These checks do not
 establish repository selection, project repair or physical-device behavior.
+
+## Project archives per repository
+
+Native `PROJECT ARCHIVE` copies the current repository's project file, so the
+archive payload depends on the repository type rather than the archive name.
+The container follows the case-insensitive suffix: `.zip` holds one deflated
+entry, `.gz` one GZIP member, and any other name raw bytes. Relative names land
+under `Projects/archived/`. In the default `sqlite-file` repository every form
+carries the private Schneider SQLite database (schema version 14), in a
+`tagdb.db` entry for ZIP. Only the legacy `file` repository (`REPOSITORY USE 2`)
+carries Installation XML, in a `tagdb.xml` entry. `CONFIG SET tag-use-zip yes`
+leaves both the payload and the saved project unchanged, and `DBSAVE` returns
+`441 Error writing tag database: null`. A `sqlite-file` repository refuses an XML
+archive on `PROJECT RESTORE` with `Zip entry tagdb.db not found`; restore XML
+archives into the `file` repository instead.
+
+These facts come from one run of
+`rust/cbus-cgate/research/native_project_archive_probe.py` against an owned
+C-Gate 3.4.0.2001 child, recorded in
+`rust/testdata/fixtures/native_cgate_project_archive.json`. The database and
+schema text are not committed. `tests/test_native_cgate_project_interchange.py`
+exchanges these archives with cmqttd in both directions and is part of the
+native release gate.

@@ -11,6 +11,9 @@
     "CBUS_CGATE_JAVAC": {
       "kind": "executable"
     },
+    "CBUS_CMQTTD_BIN": {
+      "kind": "executable"
+    },
     "CBUS_LOCAL_CGATE_VENDOR": {
       "kind": "directory",
       "contains": [
@@ -111,6 +114,7 @@
     "tests/test_memory_fragment_acceptance.py",
     "tests/test_native.py",
     "tests/test_native_cgate_database_xml_file_cli.py",
+    "tests/test_native_cgate_project_interchange.py",
     "tests/test_native_global_factory.py",
     "tests/test_native_global_programming.py",
     "tests/test_native_network_oracle.py",

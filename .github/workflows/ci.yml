@@ -202,6 +202,15 @@ jobs:
         with:
           python-version: '3.13'
 
+      - uses: dtolnay/rust-toolchain@stable
+
+      # The native/cmqttd PROJECT ARCHIVE interchange test needs cmqttd.
+      - name: Build the cmqttd binary under test
+        working-directory: rust
+        run: |
+          cargo build -p cmqttd
+          printf 'CBUS_CMQTTD_BIN=%s\n' "${GITHUB_WORKSPACE}/rust/target/debug/cmqttd" >> "$GITHUB_ENV"
+
       - name: Build and install the exact Toolkit wheel under test
         run: |
           python -m pip wheel --no-deps --wheel-dir "${RUNNER_TEMP}/gate-dist" ./toolkit-cli

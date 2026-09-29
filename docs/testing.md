@@ -97,7 +97,10 @@ labelled `cbus-native` and the `cbus-native` environment. Its environment must
 supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths, the original
 C-Gate application directory in `CBUS_LOCAL_CGATE_VENDOR`, including
 `cgate.jar`, `CBUS_UNITSPEC_DIR`, `CBUS_NATIVE_SERVICE_BACKEND=local`, and the
-`CBUS_NATIVE_TLS_TEST=1` and `CBUS_SCENE_NATIVE=1` opt-ins. With the local
+`CBUS_NATIVE_TLS_TEST=1` and `CBUS_SCENE_NATIVE=1` opt-ins. The job builds
+`cmqttd` itself and exports it as the executable `CBUS_CMQTTD_BIN`, which the
+native/cmqttd `PROJECT ARCHIVE`/`RESTORE` interchange test needs; `sqlite3`
+must be on the runner's `PATH`. With the local
 backend selected, `tests/conftest.py` starts one owned loopback `LocalCGate`
 before the first module that reads `CBUS_CGATE_TEST_HOST`, publishes its
 ephemeral port and loopback simulator routing, and refuses an externally set
@@ -108,7 +111,7 @@ module's skip gates by provisioning into the committed
 that profile is missing from the committed
 `research/release-gates/native.json` selection, or if the selection covers a
 test the profile would skip. Modules that need the original Toolkit, Windows,
-hardware, vendor firmware, Rust binaries, private evidence inputs or a
+hardware, vendor firmware, other Rust binaries, private evidence inputs or a
 pre-provisioned project stay out, with the reason in the census. Both manual jobs build and
 install a non-editable wheel, then set `CBUS_TOOLKIT_WHEEL` to that exact
 archive. A missing or substituted wheel, missing provision, unsupported host,

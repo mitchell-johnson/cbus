@@ -8,8 +8,10 @@ evaluated by a small three-valued interpreter under the native release-gate
 profile: an owned JDK, the original C-Gate application directory, decoded unit
 specifications, ``CBUS_NATIVE_SERVICE_BACKEND=local`` and the loopback
 ``CBUS_CGATE_TEST_HOST`` that ``tests/conftest.py`` publishes for its owned
-LocalCGate.  Nothing else (original Toolkit, Windows, hardware, vendor
-firmware, Rust binaries or private evidence inputs) is provisioned.
+LocalCGate, plus the built cmqttd binary (``CBUS_CMQTTD_BIN``) that the
+native/cmqttd project archive interchange needs.  Nothing else (original
+Toolkit, Windows, hardware, vendor firmware, other Rust binaries or private
+evidence inputs) is provisioned.
 
 The committed census records every gated site and why each test node is or is
 not runnable under that profile.  ``--check`` also fails when a node that the
@@ -53,7 +55,7 @@ NATIVE_ENVIRONMENT = {
     "CBUS_CATALOG_PATH": PROVIDED,
 }
 PLATFORM = {"sys.platform": "darwin", "os.name": "posix", "platform.system": "Darwin"}
-HOST_TOOLS = {"openssl", "lsof"}
+HOST_TOOLS = {"openssl", "lsof", "sqlite3"}
 INSTALLED_EXTRAS = {"serial", "usb", "cryptography", "pefile", "unicorn"}
 
 CATEGORIES = {
@@ -131,6 +133,9 @@ UNKNOWN_RESOLUTIONS: dict[str, tuple[str, str]] = {
     "tests/test_rust_cgate_interop.py": _RUST_BINARIES,
     "tests/test_toolkit_database_csv_project_interop.py": _RUST_BINARIES,
     "tests/test_conversion_pairs_native.py::RustConversionPairTests": _RUST_BINARIES,
+    "tests/test_native_cgate_project_interchange.py": (
+        "runs", "the native gate provisions the cmqttd binary as CBUS_CMQTTD_BIN for this cross-server "
+                "PROJECT ARCHIVE/RESTORE interchange; other Rust interop stays with make check-interop"),
 }
 
 
