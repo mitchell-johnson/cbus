@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "purpose": "Machine-readable closure receipts. A roadmap work item is reported closed only with a receipt that carries the five fields in docs/parity-review-and-roadmap.md: scope and cases, integration and runs, independent layered behavior, documentation, and limitations with invalidation rules.",
+  "receipts": [
+    {
+      "work_item_id": "P9.01",
+      "issue": 60,
+      "receipt_artifact": {
+        "path": "research/experiments/2026-09-28/update-diagnostic-bundle-review.json",
+        "sha256": "978318a9598846645703d8f8cf183df758abdba256679dc9c4900705dac4c6b9"
+      },
+      "scope": {
+        "obligation_ids": [
+          "P9.01.RAW",
+          "P9.01.CAT-META",
+          "P9.01.META-COND",
+          "P9.01.META-REV",
+          "P9.01.CLAIMS"
+        ],
+        "parent_obligation_ids": [
+          "ledger:preferences-and-update-workflow"
+        ],
+        "native_scope": "No original Toolkit composer exists; original native comparisons belong to the four producer reports and later P9 trust/install work. The composer is local read-only report composition.",
+        "required_case_ids": [
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_alternate_declared_installed_version_with_its_request_receipt_is_allowed",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_canonical_digest_from_another_same_id_version_does_not_link",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_canonical_receipts_bind_both_digest_representations",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_captured_stage_reports_bind_their_actual_der_sources",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_catalogue_candidate_boolean_cannot_be_replaced_by_equal_json_number",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_catalogue_request_and_endpoint_receipt_bind_installed_version",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_catalogue_status_and_message_receipts_must_match_source",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_catalogue_summary_and_canonical_stage_must_match_source",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_certificate_digest_and_thumbprint_receipts_both_match_exact_bytes",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_certificate_sources_are_required_for_revocation_subject_link",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_condition_and_context_reports_are_bound_to_source_contents",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_condition_source_representation_claim_must_match_producer",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_context_boolean_cannot_be_replaced_by_equal_json_number",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_contradictory_catalogue_http_receipt_cannot_link",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_duplicate_json_keys_are_rejected_before_schema_validation",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_duplicate_selected_identity_in_raw_response_is_rejected",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_failed_stage_is_retained_as_incomplete",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_false_condition_is_a_complete_calculation_not_applicability",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_forged_trust_or_availability_claim_is_rejected",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_malformed_or_oversize_certificate_source_is_rejected",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_mismatched_catalogue_source_keeps_linked_completion_false",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_missing_condition_receipt_keeps_linked_completion_false",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_missing_metadata_receipt_keeps_linked_completion_false",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_report_only_provenance_cannot_claim_linked_completion",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_revocation_cannot_forge_request_subject_association",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_revocation_claims_cannot_differ_from_evaluated_canonical_input",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_revocation_response_selection_is_bound_to_exact_source",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_same_id_different_source_node_cannot_borrow_metadata_receipt",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_same_identity_with_different_versions_is_ambiguous",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_same_reported_subject_cannot_borrow_substituted_certificate_bytes",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_substituted_report_bytes_are_parsed_instead_of_a_separate_object",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_substituted_source_bytes_and_duplicate_source_keys_fail_closed",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_unrelated_condition_model_keeps_linked_completion_false",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_unrelated_revocation_subject_keeps_linked_completion_false",
+          "tests/test_toolkit_update_bundle.py::UpdateDiagnosticBundleTests::test_valid_exact_reports_link_all_three_relationships",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_changed_installed_version_does_not_link",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_complete_public_bundle",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_duplicate_key_fails_closed_at_public_boundary",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_equal_boolean_and_integer_candidate_does_not_link",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_equal_boolean_and_integer_context_fact_does_not_link",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_mismatched_canonical_digest_receipt_is_public_nonzero_evidence",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_public_malformed_certificate_is_input_error",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_public_missing_certificate_preserves_independent_links",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_report_only_public_bundle_retains_unverified_provenance",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_substituted_catalogue_source_is_public_nonzero_evidence",
+          "tests/test_cli_toolkit_update_bundle.py::UpdateDiagnosticBundleCLITests::test_unrelated_revocation_is_public_nonzero_evidence",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_changed_local_file_recomputes_observed_digest_and_fails",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_duplicate_file_id_fails_closed",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_duplicate_json_key_in_supplied_receipt_is_rejected",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_forged_trust_claim_or_json_type_change_does_not_reproduce",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_matching_reports_source_descriptor_and_bytes_link_without_trust",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_missing_certificate_breaks_joined_diagnostic_but_not_package_source",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_missing_metadata_receipt_or_incomplete_http_keeps_only_source_package_link",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_negative_metadata_stage_preserves_independent_package_link",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_other_version_canonical_metadata_does_not_borrow_package_link",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_same_id_other_version_bundle_cannot_replace_selected_report",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_same_id_other_version_package_receipt_cannot_replace_selected_file",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_substituted_raw_catalogue_rejects_cross_source_join",
+          "tests/test_toolkit_update_package_bundle.py::UpdatePackageBundleTests::test_supplied_descriptor_identity_and_observed_fields_are_rechecked",
+          "tests/test_cli_toolkit_update_package_bundle.py::UpdatePackageBundleCLITests::test_public_exact_source_join_and_false_trust_flags",
+          "tests/test_cli_toolkit_update_package_bundle.py::UpdatePackageBundleCLITests::test_public_failed_stage_keeps_exact_package_link_but_exits_one",
+          "tests/test_cli_toolkit_update_package_bundle.py::UpdatePackageBundleCLITests::test_public_substituted_receipt_is_negative_evidence"
+        ],
+        "decisions": [
+          {
+            "id": "original_composer_comparison",
+            "decision": "not_applicable",
+            "reason": "not applicable: this is a bounded diagnostic composer, not an original Toolkit operation; underlying metadata, revocation and condition cases retain separate native evidence"
+          },
+          {
+            "id": "hardware_or_physical_effect",
+            "decision": "not_applicable",
+            "reason": "not applicable: no physical I/O"
+          },
+          {
+            "id": "persistence_recovery",
+            "decision": "not_applicable",
+            "reason": "not applicable: read-only local composition"
+          }
+        ]
+      },
+      "integration": {
+        "revisions": [
+          "656f09f44685a3459facb151fc341048497efb4a",
+          "97141b2211a829904bcc6fe23b9ecf11e51396f4",
+          "16c1ec54eba36b02c23ae15bdabe984a1ef5afcf"
+        ],
+        "source_changes": [
+          {
+            "path": "toolkit-cli/src/cbus_toolkit/toolkit_update_bundle.py",
+            "sha256": "df82c64c0fbe46416243549a592593c7f4377448bf0e556c40ede99842e3f172"
+          },
+          {
+            "path": "toolkit-cli/src/cbus_toolkit/toolkit_update_package_bundle.py",
+            "sha256": "4b48f5942dc33608a09a7573b19cf730273d085ee6a01c0b9404d01fe46c57a8"
+          },
+          {
+            "path": "toolkit-cli/tests/test_cli_toolkit_update_bundle.py",
+            "sha256": "fb544e3d8fbc0775635515529f6594a965e293fc2d32aec8ef2bb8ca587d4893"
+          },
+          {
+            "path": "toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py",
+            "sha256": "c5d23c2b4ea545de963c2b99f9a2c972066a52d1ff4ed2dc33f631f40549ffd3"
+          },
+          {
+            "path": "toolkit-cli/tests/test_toolkit_update_bundle.py",
+            "sha256": "9a95e18114aef428c7c87025d8d935108b3b27e8213907f19bfcf41596e8ae0d"
+          },
+          {
+            "path": "toolkit-cli/tests/test_toolkit_update_package_bundle.py",
+            "sha256": "dc1dc54627e594fd500e9041f587b696653658ef464e74fa335e529db5e7b017"
+          }
+        ],
+        "installed_artifacts": [
+          {
+            "name": "cbus_toolkit_cli-0.1.0-py3-none-any.whl (source validation 656f09f)",
+            "sha256": "43c18bd55580a9c587adcdabfc510f1a4200b6469bf3322bb660f4e8fb02deeb"
+          },
+          {
+            "name": "cbus_toolkit_cli-0.1.0-py3-none-any.whl (final CI 16c1ec5)",
+            "sha256": "6924446101a6019595d7d3b6fb0ea7aa7a195badd996f76e78cb7a1b1daf5625"
+          },
+          {
+            "name": "cbus_toolkit_cli-0.1.0-py3-none-any.whl (closure metadata 16c1ec5)",
+            "sha256": "2d0d5edbd686903109e741887e5d3f20ad950a8c917fc28c1ec6bea34fbe104b"
+          },
+          {
+            "name": "cbus_toolkit_cli-0.1.0-py3-none-any.whl (post-closure regression)",
+            "sha256": "758b188aa310b8aecb0373bb460326d694913b009e7b43807d05fcafe513eef9"
+          }
+        ],
+        "commands": [
+          {
+            "command": "PYTHONPATH=src /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
+            "scope": "source checkout: four diagnostic/package-bundle modules",
+            "passed": 62,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "exit_status": 0
+          },
+          {
+            "command": "PYTHONPATH=/private/tmp/cbus-p9-wheel-integrated-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_preferences_user_guard.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_windows_process_token.py -p no:cacheprovider",
+            "scope": "installed wheel: four diagnostic/package-bundle test files (62 cases) and two preference user/token test files (39 cases)",
+            "passed": 101,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "exit_status": 0
+          },
+          {
+            "command": "PYTHONPATH=/private/tmp/cbus-p901-closure-wheel-final-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_parity_register.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_coverage_require_complete.py -p no:cacheprovider",
+            "scope": "installed closure wheel: four P9.01 diagnostic/package-bundle API/CLI modules plus parity-register and require-complete contract modules",
+            "passed": 100,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "exit_status": 0
+          }
+        ],
+        "failed_attempts": [
+          {
+            "reference": "https://github.com/mitchell-johnson/cbus/actions/runs/36367130850",
+            "outcome": "failed outside P9.01 on stale DBSETXML Rust/Python test expectations; installed-wheel P9.01 cases passed; corrected in later integration"
+          },
+          {
+            "reference": "https://github.com/mitchell-johnson/cbus/actions/runs/36369347867",
+            "outcome": "cancelled after stale cmqttd system test assertion found and fixed; it had a Rust failure"
+          },
+          {
+            "reference": "https://github.com/mitchell-johnson/cbus/actions/runs/36369788023",
+            "outcome": "cancelled after source-bound differential receipts were found stale from parser and Rust test changes; all six receipts regenerated before final run"
+          }
+        ],
+        "required_skips": []
+      },
+      "expected_behavior": {
+        "independent_basis": "Synthetic producer reports and source bytes with pinned SHA-256 (fixture_source_sha256, fixture_report_sha256) define the expected links; substituted, duplicate-key, same-ID/different-version, missing and unrelated inputs must keep linked completion false.",
+        "layers": {
+          "transport": "not applicable: local file composition with no network or bus transport",
+          "service": "62 required API/CLI cases passed from source and from the installed wheel with zero P9.01 skips",
+          "physical_effect": "not applicable: no physical I/O",
+          "persistence": "not applicable: read-only local composition",
+          "recovery": "not applicable: No physical I/O, durable mutation or recovery transition occurs in this command."
+        }
+      },
+      "documentation": {
+        "capability_rows": [
+          "preferences-and-update-workflow"
+        ],
+        "feature_docs": [
+          "toolkit-cli/docs/toolkit-update-diagnostic-bundle.md",
+          "toolkit-cli/docs/implementation-status.md"
+        ],
+        "ai_references": [
+          ".agents/skills/cbus-cli/references/toolkit.md"
+        ],
+        "issue_links": [
+          "https://github.com/mitchell-johnson/cbus/issues/60"
+        ]
+      },
+      "limitations": {
+        "remaining": [
+          "Publisher chain/current trust, current revocation decision, applicability, version ordering, update availability, package download and installation remain P9.03/P9.04 and broad P9 exit work.",
+          "ledger:preferences-and-update-workflow remains provisional and open"
+        ],
+        "within_required_scope": [],
+        "invalidation": {
+          "conditions": "Any change to composer or producer receipt schemas, selected-source parsing, the 62 case tests, synthetic fixture bytes, capability claim boundary or packaged parity metadata requires refreshed affected evidence and installed-artifact validation. The fingerprint covers the composer, the package-bundle producer and the four case modules, which are unchanged since 16c1ec5; schema, fixture-byte, claim-boundary and parity-metadata changes still require review.",
+          "inputs": [
+            "toolkit-cli/src/cbus_toolkit/toolkit_update_bundle.py",
+            "toolkit-cli/src/cbus_toolkit/toolkit_update_package_bundle.py",
+            "toolkit-cli/tests/test_cli_toolkit_update_bundle.py",
+            "toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py",
+            "toolkit-cli/tests/test_toolkit_update_bundle.py",
+            "toolkit-cli/tests/test_toolkit_update_package_bundle.py"
+          ],
+          "fingerprint_sha256": "212adaa708ae510d26c68c86f903965b522830740f845b9bd5372ad13b347fc8"
+        }
+      }
+    }
+  ]
+}

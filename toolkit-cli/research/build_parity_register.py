@@ -50,6 +50,9 @@ SESSION_PHYSICAL_PATH = (
 )
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
 HARDWARE_FIXTURE_MATRIX_PATH = ROOT / "research" / "hardware-fixture-matrix.json"
+WORKFLOW_CRITERIA_PATH = ROOT / "research" / "workflow-completion-criteria.json"
+DENOMINATOR_HISTORY_PATH = ROOT / "research" / "parity-denominator-history.json"
+CLOSURE_RECEIPTS_PATH = ROOT / "research" / "closure-receipts.json"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
 
@@ -225,6 +228,48 @@ def roadmap_maps() -> tuple[dict[str, list[str]], dict[str, list[str]]]:
         package_ids = re.findall(r'P(?:1[01]|[0-9])', packages)
         ledger_packages[ledger_id] = package_ids
     return items, ledger_packages
+
+
+def closed_work_items() -> list[str]:
+    """Return roadmap items whose check box claims closure."""
+    text = ROADMAP_PATH.read_text(encoding="utf-8")
+    return sorted(re.findall(r"^- \[[xX]\] \*\*(P\d+\.\d{2})\*\*", text, re.M))
+
+
+def invalidation_rule(fingerprint: dict[str, str], context: str) -> dict:
+    """Bind a receipt's declared source closure to current checkout bytes.
+
+    The same rule serves every evidence record: the declared inputs are
+    repository-relative, and the builder refuses to credit a receipt whose
+    inputs have changed since it was produced.
+    """
+    from cbus_toolkit.parity import input_fingerprint
+
+    inputs = sorted(fingerprint)
+    declared = canonical_digest(fingerprint)
+    if input_fingerprint(REPOSITORY, inputs) != declared:
+        raise ValueError(f"{context} is stale: its source fingerprint changed")
+    return {"inputs": inputs, "fingerprint_sha256": declared}
+
+
+def workflow_criteria(surface: dict, ledger_ids: set[str]) -> dict:
+    """Load reviewed workflow criteria and check them against the census."""
+    criteria = load_json(WORKFLOW_CRITERIA_PATH)
+    workflows = criteria.get("workflows")
+    families = {row["id"] for row in surface["workflow_families"]}
+    declared = {
+        row["family_id"]
+        for row in workflows
+        if row.get("source") == "toolkit_help_workflow_family"
+    }
+    if declared != families or len(families) != surface["counts"]["workflow_families"]:
+        raise ValueError("Workflow criteria differ from the Toolkit workflow families")
+    allocation = criteria.get("ledger_workflows")
+    if not isinstance(allocation, dict) or set(allocation) != ledger_ids:
+        raise ValueError("Every ledger row needs exactly one workflow allocation")
+    if set(allocation.values()) - {row["id"] for row in workflows}:
+        raise ValueError("A ledger row is allocated to an unknown workflow")
+    return criteria
 
 
 def capability_paths() -> tuple[list[dict], list[dict]]:
@@ -650,6 +695,9 @@ def session_differential_evidence() -> dict:
         "source_revision": receipt["source_revision"],
         "command": command,
         "exit_code": 0,
+        "invalidates_on": invalidation_rule(
+            receipt["source_fingerprint"], "Scoped SESSION_ID differential"
+        ),
         "report_verification": {
             "format": "cgate-session-differential-v2",
             "path": SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
@@ -718,6 +766,9 @@ def session_tagged_wire_evidence() -> dict:
         "source_revision": receipt["source_revision"],
         "command": command,
         "exit_code": 0,
+        "invalidates_on": invalidation_rule(
+            receipt["source_fingerprint"], "Scoped tagged SESSION_ID differential"
+        ),
         "report_verification": {
             "format": "cgate-tagged-session-differential-v1",
             "path": TAGGED_SESSION_DIFFERENTIAL_PATH.relative_to(ROOT).as_posix(),
@@ -745,6 +796,7 @@ def session_physical_applicability_evidence() -> dict:
     from cbus_toolkit.parity import CGATE_SESSION_PILOT_IDS
 
     sys.path.insert(0, str(ROOT / "research"))
+    import cgate_session_physical_applicability as applicability
     from cgate_session_physical_applicability import COMMAND, decisions, inputs
 
     report = load_json(SESSION_PHYSICAL_PATH)
@@ -780,6 +832,19 @@ def session_physical_applicability_evidence() -> dict:
         "source_revision": revision,
         "command": COMMAND,
         "exit_code": 0,
+        "invalidates_on": invalidation_rule(
+            {
+                path.resolve().relative_to(REPOSITORY).as_posix(): digest(path)
+                for path in (
+                    applicability.NATIVE,
+                    applicability.PILOT,
+                    applicability.CONTRACTS,
+                    applicability.MATRIX,
+                    Path(applicability.__file__),
+                )
+            },
+            "Scoped SESSION_ID physical applicability",
+        ),
         "report_verification": {
             "format": "cbus-parity-test-report-v1",
             "path": SESSION_PHYSICAL_PATH.relative_to(ROOT).as_posix(),
@@ -1159,6 +1224,38 @@ def build() -> tuple[dict, dict]:
             function["evidence_ids"].append(session_physical_evidence["id"])
         obligations.append(function)
 
+    criteria = workflow_criteria(surface, ledger_ids)
+    minimum_by_workflow = {
+        row["id"]: row["minimum_dimensions"] for row in criteria["workflows"]
+    }
+    for obligation in obligations:
+        workflow_id = criteria["ledger_workflows"][obligation["ledger_id"]]
+        obligation["workflow_id"] = workflow_id
+        # A blocked dimension is required by definition; the workflow
+        # minimum can only be widened, never waived, by one obligation.
+        obligation["required_dimensions"] = [
+            dimension
+            for dimension in obligation["acceptance"]
+            if dimension in minimum_by_workflow[workflow_id]
+            or obligation["acceptance"][dimension] == "blocked"
+        ]
+    from cbus_toolkit.parity import denominator_digest
+
+    history = load_json(DENOMINATOR_HISTORY_PATH)["history"]
+    counts = {
+        "obligations": len(obligations),
+        "scope_items": len(scope_items),
+        "workflows": len(criteria["workflows"]),
+    }
+    membership = denominator_digest(obligations, scope_items)
+    if history[-1]["counts"] != counts or history[-1]["digest"] != membership:
+        raise ValueError(
+            "Parity denominator changed without a history entry: append "
+            f"{{version, counts: {counts}, digest: {membership}, reason}} to "
+            f"{DENOMINATOR_HISTORY_PATH.relative_to(ROOT)}"
+        )
+    closure_receipts = load_json(CLOSURE_RECEIPTS_PATH)["receipts"]
+
     by_kind: dict[str, int] = {}
     for item in scope_items:
         by_kind[item["kind"]] = by_kind.get(item["kind"], 0) + 1
@@ -1202,7 +1299,7 @@ def build() -> tuple[dict, dict]:
     register = {
         "schema_version": 1,
         "target": ledger["target"],
-        "denominator_version": "provisional-2026-09-28.1",
+        "denominator_version": history[-1]["version"],
         "census_complete": False,
         "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
         "source_digests": {
@@ -1225,9 +1322,16 @@ def build() -> tuple[dict, dict]:
             "cgate_session_physical_applicability": digest(SESSION_PHYSICAL_PATH),
             "roadmap": digest(ROADMAP_PATH),
             "hardware_fixture_matrix": sha256(fixture_matrix_raw).hexdigest(),
+            "workflow_completion_criteria": digest(WORKFLOW_CRITERIA_PATH),
+            "parity_denominator_history": digest(DENOMINATOR_HISTORY_PATH),
+            "closure_receipts": digest(CLOSURE_RECEIPTS_PATH),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),
         "work_item_ids": sorted(WORK_ITEM_IDS),
+        "closed_work_item_ids": closed_work_items(),
+        "closure_receipts": closure_receipts,
+        "denominator_history": history,
+        "workflows": criteria["workflows"],
         "hardware_fixture_roster": [
             {"id": row["id"], "family": row["family"], "status": row["status"]}
             for row in fixture_matrix["fixtures"]

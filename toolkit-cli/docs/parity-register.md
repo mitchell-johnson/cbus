@@ -46,12 +46,18 @@ changes no provisional source count, and supplies no physical cache readback.
 - `src/cbus_toolkit/parity-obligations.json` contains the source inventory,
   provisional scope mappings and obligation records. It contains one
   source-bound provisional obligation for each of the 442 C-Gate paths, the
-  39 historical umbrella obligations, and three scoped `SESSION_ID` functions.
+  42 historical umbrella obligations, and three scoped `SESSION_ID` functions.
 - `src/cbus_toolkit/parity-evidence.json` contains a scoped, source-bound
   `SESSION_ID` original-differential receipt and a separate physical
   applicability decision. Historical paths and test filenames remain outside
   acceptance evidence.
 - `src/cbus_toolkit/parity.py` validates both documents and derives progress.
+- `research/workflow-completion-criteria.json` holds the reviewed completion
+  criteria for each workflow and allocates every ledger row to one workflow.
+- `research/parity-denominator-history.json` versions the denominator. The
+  register's `denominator_version` is its last entry.
+- `research/closure-receipts.json` holds machine-readable roadmap closure
+  receipts. The builder copies all three into the packaged register.
 - `src/cbus_toolkit/cgate-contract-inventory.json` contains one versioned,
   digest-bound contract record for each of the 431 primary and 11 supplement
   C-Gate paths.
@@ -67,8 +73,9 @@ changes no provisional source count, and supplies no physical cache readback.
   public-help syntax, path-contract and owned native-session capture hashes.
 - [The `SESSION_ID` differential](cgate-session-differential.md) retains a red
   pre-fix mock receipt and separate green mock and production cmqttd receipts.
-  The builder checks the nine-case cmqttd receipt against the current source
-  fingerprint before crediting the three scoped functions.
+  Each evidence record carries the report's recorded source closure as its
+  `invalidates_on` rule; the builder refuses to credit a receipt whose inputs
+  changed.
 - `research/cgate_session_physical_applicability.py` verifies the retained
   native loopback capture, the three pinned path contracts and their resolved
   no-bus-I/O boundary. Its report records a separate physical
@@ -137,6 +144,111 @@ power-cycle rig is named. Blocked cases stay in the required denominator, and
 `physical_acceptance` reports the number of unavailable fixtures behind them. A
 blocked dimension is never accepted or not applicable. `unassessed` means that
 no requirement or blocker has been decided.
+
+## Workflow completion criteria
+
+Criteria are fixed per workflow before any status changes. There is one record
+for each of the 26 Toolkit help workflow families in `toolkit-surface.json`,
+one for the C-Gate command service, which is not a Toolkit help family, and
+one placeholder, `workflow:unallocated-umbrella`. Each record names:
+
+- `minimum_dimensions`: the acceptance dimensions every member obligation must
+  require. Nominal, error and invalid-input behavior are always required.
+- `oracles`: which of `gui` (original Toolkit), `model` (original project,
+  database or unit-specification model), `cgate` (native C-Gate) and
+  `physical` judge the workflow. An original-differential minimum needs a GUI,
+  model or C-Gate oracle.
+- `physical_evidence` and `persistence_evidence`: `required`, `conditional` or
+  `not_required`. `required` must match the minimum dimensions, and required
+  physical evidence needs a physical oracle. `conditional` means each
+  obligation declares the dimension when it applies, for example a bus-routed
+  C-Gate path or a database operation that writes a unit.
+
+`ledger_workflows` allocates each of the 42 ledger rows to one workflow. The
+derived C-Gate path and function obligations inherit their row's workflow.
+Every obligation carries one `workflow_id` and a `required_dimensions` list.
+The validator rejects an obligation with no workflow, an unknown workflow, a
+list of workflows, or required dimensions that omit a workflow minimum. A required
+dimension cannot be `not_applicable`, and a `blocked` dimension must be
+required. The builder also rejects criteria that do not cover exactly the
+Toolkit workflow families, or a ledger row without exactly one allocation.
+
+`coverage` reports each workflow's criteria and its obligation, defined,
+implemented, accepted and blocked counts. Its accepted percentage is `null`
+under the same rule as the overall percentage. Four cross-workflow rows
+(`toolkit-surface-census`, `toolkit-differential-acceptance`,
+`unit-hardware-acceptance` and `preferences-and-update-workflow`) are
+placeholder members. Seven families have no obligation yet: Application log,
+Barcode, Controllers, Relay and dimmer logic, Protocol reference, Timers and
+Wireless. The denominator is not ready while any workflow is empty or any
+obligation remains in the placeholder.
+
+## Denominator versioning
+
+`denominator_history` lists every denominator as `version`, `counts`
+(obligations, scope items and workflows), `digest` and `reason`. The digest is
+the SHA-256 of canonical JSON containing the sorted obligation IDs, sorted
+scope-item IDs and each obligation's workflow allocation. The last entry must
+match `denominator_version` and the register's current counts and digest.
+Changing the version, counts, membership or workflow allocation without
+appending a reasoned entry fails both the builder and the packaged validator.
+Versions must be unique.
+
+The earlier entries were reconstructed from the Git history of
+`parity-obligations.json`: 39 umbrella obligations (two versions), 481 after
+the C-Gate path expansion, 484 after the `SESSION_ID` pilot, 486 after the
+topology and project-documentation rows and 487 after the DALI row. The last
+two changes reused the label `provisional-2026-09-28.1`; their history entries
+version them retroactively as `provisional-2026-09-29.1` and `.2`. The
+current version, `provisional-2026-09-30.1`, adds workflow allocation without
+changing membership.
+
+## Evidence invalidation
+
+Every evidence record has an `invalidates_on` rule: sorted,
+repository-relative `inputs` and a `fingerprint_sha256` over their bytes,
+computed as the canonical JSON of `{path: sha256}`. When the attached report
+records its own `source_fingerprint`, the rule must name exactly those inputs
+and digest; a declaration cannot narrow the recorded source closure.
+
+With a source checkout, the validator recomputes each fingerprint and rejects
+a stale record or a missing input. `coverage --evidence-root <toolkit-cli>`
+uses the checkout only when the evidence root is the `toolkit-cli` directory
+of a Git checkout and the running `cbus_toolkit` package was loaded from that
+checkout. An installed wheel refuses to recompute: it reports
+`evidence_fingerprints_verified: false` with an
+`evidence_fingerprint_refusal` reason, withholds percentages and cannot
+report `complete: true`.
+
+## Closure receipts
+
+A roadmap check box is only a claim. The builder records checked items as
+`closed_work_item_ids`, and each needs a `closure_receipts` entry with the five
+fields from the roadmap's closure-receipt rule:
+
+1. `scope`: the receipt's obligation IDs, parent register obligations, native
+   scope, required case IDs and reasoned `not_applicable` or `rejected`
+   decisions.
+2. `integration`: 40-hex integrated revisions, hash-bound source changes and
+   installed artifacts, exact commands with pass, failure, error, skip and
+   exit counts, preserved failed attempts, and `required_skips`, which must be
+   empty. A command with skips needs a skip disposition.
+3. `expected_behavior`: the independent basis and a statement for each of the
+   transport, service, physical-effect, persistence and recovery layers.
+4. `documentation`: capability rows, feature documents, AI references and
+   issue links. From a source checkout, the documents must exist.
+5. `limitations`: remaining limitations, an empty `within_required_scope`
+   list and an invalidation rule with conditions, inputs and fingerprint.
+
+The receipt artifact is bound by SHA-256. Under a trusted root, its
+`work_item` and `required_case_ids` must match the record. `coverage` reports
+`closed` only when the receipt is valid, its artifact bytes are verified and
+its fingerprint is recomputed and current. Otherwise it reports
+`receipt_unverified`, `stale_receipt` or `claimed_without_receipt`, and the
+last two are listed as blockers. A receipt for an unchecked item is rejected.
+P9.01 ([#60](https://github.com/mitchell-johnson/cbus/issues/60)) is the only
+closed item. Its fingerprint covers the diagnostic composer, the package-bundle
+producer and the four case modules.
 
 ## Validation rules
 
@@ -338,9 +450,12 @@ evidence.
 
 ## Current result
 
-The current register has 39 provisional umbrella obligations, 442 provisional
-C-Gate path obligations and three defined `SESSION_ID` functions, with zero
-fully accepted obligations and three evidence records. Two accept only
+The current register, denominator version `provisional-2026-09-30.1`, has 28
+workflows, of which 21 have members. It has 42 provisional umbrella
+obligations, 442 provisional C-Gate path obligations and three defined
+`SESSION_ID` functions, with zero fully accepted obligations and three
+evidence records. One work item, P9.01, has a verified closure receipt. Two
+evidence records accept only
 the original-differential dimension of the three scoped functions: the
 nine-case payload comparison and the eleven-case exact numeric-tag wire
 comparison. The third marks their physical dimension not applicable to the

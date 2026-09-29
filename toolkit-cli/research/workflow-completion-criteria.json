@@ -1,0 +1,700 @@
+{
+  "schema_version": 1,
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "purpose": "Reviewed workflow completion criteria. Each Toolkit help workflow family, plus the C-Gate command service, names the acceptance dimensions every member obligation must require, the oracles that judge them, and whether physical and persistence/recovery evidence is required. Ledger rows are allocated to exactly one workflow; derived C-Gate path and function obligations inherit their row's workflow.",
+  "workflows": [
+    {
+      "id": "workflow:projects",
+      "family_id": "projects",
+      "source": "toolkit_help_workflow_family",
+      "name": "Project lifecycle and backup",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "not_required",
+      "persistence_evidence": "required",
+      "rationale": "Project create/open/backup/restore is judged against original Toolkit project files and C-Gate project state; saved files must survive reopen and interrupted writes. Bus effects belong to the commissioning and programming workflows."
+    },
+    {
+      "id": "workflow:networks",
+      "family_id": "networks",
+      "source": "toolkit_help_workflow_family",
+      "name": "Network configuration and connections",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Network and interface configuration only completes when a real CNI/PCI/USB interface connects, across interface profiles, and the saved network definition reconnects after restart."
+    },
+    {
+      "id": "workflow:applications",
+      "family_id": "applications",
+      "source": "toolkit_help_workflow_family",
+      "name": "Applications, groups and levels",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Application, group and level edits are persisted in the project model and must produce the corresponding bus traffic and unit response on a reference network."
+    },
+    {
+      "id": "workflow:application_log",
+      "family_id": "application_log",
+      "source": "toolkit_help_workflow_family",
+      "name": "Application log",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential",
+        "physical"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "not_required",
+      "rationale": "The application log records live bus traffic, so acceptance compares the original log view and C-Gate event stream for traffic produced on a physical network. The log is not durable project state."
+    },
+    {
+      "id": "workflow:unit_database",
+      "family_id": "unit_database",
+      "source": "toolkit_help_workflow_family",
+      "name": "Database unit lifecycle",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "required",
+      "rationale": "Database unit lifecycle is judged against original project/database XML across unit types and must persist. Physical evidence is required only for obligations that read or write a unit."
+    },
+    {
+      "id": "workflow:commissioning",
+      "family_id": "commissioning",
+      "source": "toolkit_help_workflow_family",
+      "name": "Physical unit commissioning and addressing",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Addressing and commissioning change real units; acceptance needs the physical unit state, the original Toolkit/C-Gate result, and recovery after interrupted commissioning or power loss."
+    },
+    {
+      "id": "workflow:global_programming",
+      "family_id": "global_programming",
+      "source": "toolkit_help_workflow_family",
+      "name": "Global programming",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Global programming writes unit parameters; acceptance needs readback from physical units across unit profiles and recovery from interrupted writes."
+    },
+    {
+      "id": "workflow:templates",
+      "family_id": "templates",
+      "source": "toolkit_help_workflow_family",
+      "name": "Unit templates",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "required",
+      "rationale": "Templates are database objects judged against the original Toolkit model and must persist. Applying a template to a live unit additionally needs physical evidence."
+    },
+    {
+      "id": "workflow:conversion",
+      "family_id": "conversion",
+      "source": "toolkit_help_workflow_family",
+      "name": "Unit conversion",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "required",
+      "rationale": "Unit conversion is a model transformation compared with the original Toolkit result and persisted. Writing the converted unit to hardware additionally needs physical evidence."
+    },
+    {
+      "id": "workflow:dynamic_labels",
+      "family_id": "dynamic_labels",
+      "source": "toolkit_help_workflow_family",
+      "name": "Dynamic labels",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Dynamic labels are only complete when the label data is persisted and the physical DLT/eDLT display shows it after programming and power cycling."
+    },
+    {
+      "id": "workflow:scenes",
+      "family_id": "scenes",
+      "source": "toolkit_help_workflow_family",
+      "name": "Scene programming",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Scenes are persisted in units and the project; acceptance needs recall on physical units and survival of a power cycle."
+    },
+    {
+      "id": "workflow:timers",
+      "family_id": "timers",
+      "source": "toolkit_help_workflow_family",
+      "name": "Timer programming",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Timer programming is stored in units and must be observed firing on physical hardware and surviving restart."
+    },
+    {
+      "id": "workflow:output_logic",
+      "family_id": "output_logic",
+      "source": "toolkit_help_workflow_family",
+      "name": "Relay and dimmer logic control",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Relay and dimmer logic executes inside output units; acceptance needs physical output behaviour and persisted logic after restart."
+    },
+    {
+      "id": "workflow:thermostat_schedule",
+      "family_id": "thermostat_schedule",
+      "source": "toolkit_help_workflow_family",
+      "name": "Thermostat scheduling",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Thermostat schedules are programmed into thermostats; acceptance needs physical readback and schedule retention after power loss."
+    },
+    {
+      "id": "workflow:macros",
+      "family_id": "macros",
+      "source": "toolkit_help_workflow_family",
+      "name": "Key macro and micro functions",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Key macro and micro functions execute on key units; acceptance needs physical key presses and retained programming."
+    },
+    {
+      "id": "workflow:wireless",
+      "family_id": "wireless",
+      "source": "toolkit_help_workflow_family",
+      "name": "Wireless units and commissioning",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Wireless commissioning requires a wireless gateway and units; acceptance needs physical pairing, traffic and retained configuration."
+    },
+    {
+      "id": "workflow:controllers",
+      "family_id": "controllers",
+      "source": "toolkit_help_workflow_family",
+      "name": "Controller integration",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Controller integration configures external controllers that act on the bus; acceptance needs controller behaviour on a reference network and retained configuration."
+    },
+    {
+      "id": "workflow:cgl",
+      "family_id": "cgl",
+      "source": "toolkit_help_workflow_family",
+      "name": "Automation controller CGL exchange",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "not_required",
+      "persistence_evidence": "required",
+      "rationale": "CGL exchange is a file import/export compared byte- or model-exactly with the original Toolkit and must persist through reload. It performs no bus I/O."
+    },
+    {
+      "id": "workflow:reports",
+      "family_id": "reports",
+      "source": "toolkit_help_workflow_family",
+      "name": "Project, database and topology documentation",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential"
+      ],
+      "oracles": [
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "not_required",
+      "persistence_evidence": "conditional",
+      "rationale": "Project, database and topology documentation is an output compared with the original Toolkit report. Persistence applies only to saved report files."
+    },
+    {
+      "id": "workflow:topology",
+      "family_id": "topology",
+      "source": "toolkit_help_workflow_family",
+      "name": "Topology navigation",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "not_required",
+      "rationale": "Topology navigation is judged against the original project view and C-Gate tree. Physical evidence applies only where the topology is discovered from a live network."
+    },
+    {
+      "id": "workflow:firmware",
+      "family_id": "firmware",
+      "source": "toolkit_help_workflow_family",
+      "name": "eDLT firmware update",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Firmware update changes device firmware; acceptance needs the bootloader, a physical device across firmware profiles, and recovery from interrupted or power-lost updates."
+    },
+    {
+      "id": "workflow:diagnostics",
+      "family_id": "diagnostics",
+      "source": "toolkit_help_workflow_family",
+      "name": "Network diagnosis and recovery",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "conditional",
+      "rationale": "Network diagnosis measures a live network, so acceptance needs an electrical/reference rig across network profiles. Persistence applies only to recovery actions that change units."
+    },
+    {
+      "id": "workflow:barcode",
+      "family_id": "barcode",
+      "source": "toolkit_help_workflow_family",
+      "name": "Barcode scanner workflow",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "The barcode workflow reads physical unit labels with a scanner and stores serials in the database, so it needs a scanner and persisted results."
+    },
+    {
+      "id": "workflow:protocol_reference",
+      "family_id": "protocol_reference",
+      "source": "toolkit_help_workflow_family",
+      "name": "C-Bus application concepts and messages",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential"
+      ],
+      "oracles": [
+        "cgate",
+        "model"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "not_required",
+      "rationale": "Application concepts and messages are compared with the original C-Gate and message model. Physical evidence applies only to obligations that put a message on the bus."
+    },
+    {
+      "id": "workflow:unit_types",
+      "family_id": "unit_types",
+      "source": "toolkit_help_workflow_family",
+      "name": "Unit type reference",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential"
+      ],
+      "oracles": [
+        "gui",
+        "model"
+      ],
+      "physical_evidence": "not_required",
+      "persistence_evidence": "not_required",
+      "rationale": "The unit type reference is compared with the original catalogue and unit specifications across unit profiles. It is reference data without bus effect or durable state."
+    },
+    {
+      "id": "workflow:device_configuration",
+      "family_id": "device_configuration",
+      "source": "toolkit_help_workflow_family",
+      "name": "Device configuration and device operation",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Device configuration writes unit parameters; acceptance needs physical readback across unit profiles and retention after power loss."
+    },
+    {
+      "id": "workflow:cgate-command-service",
+      "family_id": null,
+      "source": "cgate_command_reference",
+      "name": "C-Gate command service",
+      "allocation": "final",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "original_differential"
+      ],
+      "oracles": [
+        "cgate",
+        "physical"
+      ],
+      "physical_evidence": "conditional",
+      "persistence_evidence": "conditional",
+      "rationale": "The C-Gate command surface is not a Toolkit help family. Every path is compared with native C-Gate 3.4.0.2001. Bus-routed paths add physical evidence and project/configuration-changing paths add persistence evidence; each obligation declares those dimensions itself."
+    },
+    {
+      "id": "workflow:unallocated-umbrella",
+      "family_id": null,
+      "source": "unallocated_umbrella",
+      "name": "Unallocated cross-workflow umbrella",
+      "allocation": "placeholder",
+      "minimum_dimensions": [
+        "nominal",
+        "error",
+        "invalid_input",
+        "profile_variation",
+        "original_differential",
+        "physical",
+        "persistence_recovery"
+      ],
+      "oracles": [
+        "cgate",
+        "gui",
+        "model",
+        "physical"
+      ],
+      "physical_evidence": "required",
+      "persistence_evidence": "required",
+      "rationale": "Temporary home for historical ledger rows that span several workflows or have no Toolkit help family. It requires every dimension, and any member keeps the denominator unready until it is split into workflow-owned obligations."
+    }
+  ],
+  "ledger_workflows": {
+    "legacy-project-editing": "workflow:projects",
+    "native-cgate3-projects": "workflow:projects",
+    "native-project-repair": "workflow:projects",
+    "cgate-command-transport": "workflow:cgate-command-service",
+    "pci-command-transport": "workflow:networks",
+    "vendor-catalog-inventory": "workflow:unit_types",
+    "toolkit-surface-census": "workflow:unallocated-umbrella",
+    "interface-discovery-and-setup": "workflow:networks",
+    "network-scan-unravel-routing": "workflow:networks",
+    "all-unit-parameter-encoding": "workflow:device_configuration",
+    "native-unit-defaults-and-database-editing": "workflow:unit_database",
+    "unit-read-write-verify": "workflow:global_programming",
+    "unit-copy-convert-reset": "workflow:conversion",
+    "classic-key-presets": "workflow:macros",
+    "groups-applications-control": "workflow:applications",
+    "scenes-triggers-labels": "workflow:scenes",
+    "dlt-edlt-widgets-and-labels": "workflow:dynamic_labels",
+    "edlt-parent-automatic-application-cache": "workflow:dynamic_labels",
+    "edlt-reset-controls": "workflow:device_configuration",
+    "edlt-global-category-programming": "workflow:device_configuration",
+    "edlt-retained-scene-editing": "workflow:scenes",
+    "edlt-scene-live": "workflow:scenes",
+    "sensors-wizard-semantics": "workflow:device_configuration",
+    "firmware-update": "workflow:firmware",
+    "cgl-import-export": "workflow:cgl",
+    "network-calculator-diagnostics": "workflow:diagnostics",
+    "preferences-and-update-workflow": "workflow:unallocated-umbrella",
+    "toolkit-differential-acceptance": "workflow:unallocated-umbrella",
+    "unit-hardware-acceptance": "workflow:unallocated-umbrella",
+    "neo-core-key-presets": "workflow:macros",
+    "database-unit-addressing": "workflow:unit_database",
+    "native-serial-retrieval": "workflow:commissioning",
+    "database-serial-population": "workflow:unit_database",
+    "physical-unit-addressing": "workflow:commissioning",
+    "toolkit-unit-templates": "workflow:templates",
+    "serial-directed-commissioning": "workflow:commissioning",
+    "edlt-usb-read-only-diagnostics": "workflow:firmware",
+    "toolkit-database-report-export": "workflow:reports",
+    "thermostat-configuration": "workflow:thermostat_schedule",
+    "topology-navigation": "workflow:topology",
+    "project-documentation": "workflow:reports",
+    "dali-commissioning": "workflow:commissioning"
+  }
+}

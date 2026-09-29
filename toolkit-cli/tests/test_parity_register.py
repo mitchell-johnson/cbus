@@ -28,6 +28,15 @@ FIXTURE_REPORT = (json.dumps({
 }, sort_keys=True) + "\n").encode()
 
 
+FIXTURE_FINGERPRINT = sha256(
+    json.dumps(
+        {"oracle.txt": sha256(b"fixture original").hexdigest()},
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+).hexdigest()
+
+
 def record_digest(record: dict) -> str:
     content = {key: value for key, value in record.items() if key != "record_sha256"}
     return sha256(
@@ -84,6 +93,11 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
         "source_revision": "1" * 40,
         "command": "python -m pytest tests/test_one.py",
         "exit_code": 0,
+        # Fixture tests use the artifact folder as their source checkout.
+        "invalidates_on": {
+            "inputs": ["oracle.txt"],
+            "fingerprint_sha256": FIXTURE_FINGERPRINT,
+        },
         "report_verification": {
             "format": "cbus-parity-test-report-v1",
             "path": "result.txt",
@@ -122,6 +136,8 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
         "source_refs": ["fixture"],
         "acceptance": {dimension: "accepted" for dimension in parity.REQUIRED_DIMENSIONS},
         "evidence_ids": ["evidence:one"],
+        "workflow_id": "workflow:fixture",
+        "required_dimensions": list(parity.BASELINE_DIMENSIONS),
     }
     register = {
         "schema_version": 1,
@@ -144,8 +160,44 @@ def fixture_documents() -> tuple[dict, dict, dict, bytes]:
             }
         ],
         "obligations": [obligation],
+        "closed_work_item_ids": [],
+        "closure_receipts": [],
+        "workflows": [fixture_workflow()],
     }
+    register["denominator_history"] = [{
+        "version": "fixture-1",
+        "counts": {"obligations": 1, "scope_items": 1, "workflows": 1},
+        "digest": parity.denominator_digest(register["obligations"], register["scope_items"]),
+        "reason": "fixture denominator",
+    }]
     return register, evidence, ledger, evidence_raw
+
+
+def fixture_workflow() -> dict:
+    return {
+        "id": "workflow:fixture",
+        "family_id": None,
+        "source": "cgate_command_reference",
+        "name": "Fixture workflow",
+        "allocation": "final",
+        "minimum_dimensions": list(parity.BASELINE_DIMENSIONS),
+        "oracles": ["cgate"],
+        "physical_evidence": "not_required",
+        "persistence_evidence": "not_required",
+        "rationale": "fixture criteria",
+    }
+
+
+def rebase_denominator(register: dict) -> None:
+    """Record an intentional fixture denominator change in its history."""
+    register["denominator_history"][-1].update(
+        counts={
+            "obligations": len(register["obligations"]),
+            "scope_items": len(register["scope_items"]),
+            "workflows": len(register["workflows"]),
+        },
+        digest=parity.denominator_digest(register["obligations"], register["scope_items"]),
+    )
 
 
 def packaged_documents() -> tuple[dict, dict, dict, bytes, dict, bytes, bytes]:
@@ -658,6 +710,7 @@ class ParityRegisterTests(unittest.TestCase):
                 evidence_raw=evidence_raw,
                 ledger_raw=ledger_raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )["complete"]
         )
         changed = ledger_raw.replace(b'"fixture"', b'"changed"')
@@ -676,6 +729,7 @@ class ParityRegisterTests(unittest.TestCase):
             parity.evaluate(
                 register, evidence, ledger, evidence_raw=evidence_raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )["complete"]
         )
 
@@ -741,6 +795,7 @@ class ParityRegisterTests(unittest.TestCase):
                     ledger,
                     evidence_raw=evidence_raw,
                     artifact_root=Path(folder),
+                    source_root=Path(folder),
                 )
                 self.assertTrue(report["complete"])
                 self.assertTrue(report["evidence_artifacts_verified"])
@@ -810,6 +865,11 @@ class ParityRegisterTests(unittest.TestCase):
             ]
             obligation = register["obligations"][0]
             obligation["acceptance"][dimension] = "blocked"
+            if dimension not in obligation["required_dimensions"]:
+                obligation["required_dimensions"] = [
+                    item for item in parity.REQUIRED_DIMENSIONS
+                    if item in obligation["required_dimensions"] or item == dimension
+                ]
             obligation["acceptance_blockers"] = {
                 dimension: {"reason_kind": reason, "blocker_ids": ["fixture:unit:DIMX"]}
             }
@@ -818,6 +878,7 @@ class ParityRegisterTests(unittest.TestCase):
             return parity.evaluate(
                 register, evidence, ledger, evidence_raw=evidence_raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )
 
         report = blocked()
@@ -953,6 +1014,7 @@ class ParityRegisterTests(unittest.TestCase):
             parity.evaluate(
                 register, evidence, ledger, evidence_raw=evidence_raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )["complete"]
         )
 
@@ -1263,6 +1325,7 @@ class ParityRegisterTests(unittest.TestCase):
             return parity.evaluate(
                 register, evidence, ledger, evidence_raw=raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )
 
         # A passed physical test is not a reason to remove a physical test
@@ -1342,6 +1405,7 @@ class ParityRegisterTests(unittest.TestCase):
             return parity.evaluate(
                 register, evidence, ledger, evidence_raw=raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )
 
         self.assertTrue(evaluate_current()["complete"])
@@ -1439,6 +1503,7 @@ class ParityRegisterTests(unittest.TestCase):
             parity.evaluate(
                 register, evidence, ledger, evidence_raw=evidence_raw,
                 artifact_root=self.artifact_root,
+                source_root=self.artifact_root,
             )[
                 "complete"
             ]
@@ -1470,6 +1535,538 @@ class ParityRegisterTests(unittest.TestCase):
         register["source_inventory"][0]["scope_kind"] = ""
         with self.assertRaisesRegex(ValueError, "scope_kind must be a nonempty string"):
             parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+
+    def evaluate_fixture(self, register, evidence, ledger, **kwargs):
+        raw = (json.dumps(evidence, indent=2) + "\n").encode()
+        register["evidence_bundle_sha256"] = sha256(raw).hexdigest()
+        return parity.evaluate(register, evidence, ledger, evidence_raw=raw, **kwargs)
+
+    def test_every_obligation_belongs_to_one_workflow_with_its_minimum_dimensions(self):
+        register, evidence, ledger, _ = fixture_documents()
+        report = self.evaluate_fixture(
+            register, evidence, ledger,
+            artifact_root=self.artifact_root, source_root=self.artifact_root,
+        )
+        self.assertTrue(report["complete"])
+        self.assertEqual(report["workflows"]["by_id"]["workflow:fixture"]["obligations"], 1)
+        self.assertEqual(report["workflows"]["by_id"]["workflow:fixture"]["accepted"], 1)
+        self.assertEqual(
+            report["workflows"]["by_id"]["workflow:fixture"]["accepted_percent"], 100.0
+        )
+
+        def reject(mutate, expected):
+            register, evidence, ledger, _ = fixture_documents()
+            mutate(register["obligations"][0], register)
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                self.evaluate_fixture(register, evidence, ledger)
+
+        reject(lambda item, _: item.pop("workflow_id"), "exactly one known workflow")
+        reject(lambda item, _: item.update(workflow_id="workflow:other"), "exactly one known workflow")
+        reject(
+            lambda item, _: item.update(workflow_id=["workflow:fixture", "workflow:other"]),
+            "exactly one known workflow",
+        )
+        reject(lambda item, _: item.pop("required_dimensions"), "required_dimensions")
+        reject(
+            lambda item, _: item.update(required_dimensions=["nominal", "error"]),
+            r"omits workflow:fixture minimum dimensions: \['invalid_input'\]",
+        )
+        reject(
+            lambda item, _: item.update(required_dimensions=["error", "nominal", "invalid_input"]),
+            "unknown or unordered",
+        )
+
+        def waive_required(item, register):
+            register["workflows"][0]["minimum_dimensions"].append("physical")
+            register["workflows"][0]["oracles"] = ["cgate", "physical"]
+            register["workflows"][0]["physical_evidence"] = "required"
+            item["required_dimensions"].append("physical")
+            item["acceptance"]["physical"] = "not_applicable"
+
+        reject(waive_required, "physical is required and cannot be waived")
+
+        def block_unrequired(item, register):
+            register["source_digests"]["hardware_fixture_matrix"] = "0" * 64
+            register["hardware_fixture_roster"] = [
+                {"id": "fixture:unit:DIMX", "family": "dimmer", "status": "unavailable"}
+            ]
+            item["acceptance"]["physical"] = "blocked"
+            item["acceptance_blockers"] = {
+                "physical": {
+                    "reason_kind": "hardware_fixture_unavailable",
+                    "blocker_ids": ["fixture:unit:DIMX"],
+                }
+            }
+
+        reject(block_unrequired, "physical is blocked but not required")
+
+    def test_workflow_criteria_are_strict(self):
+        cases = {
+            "duplicate": (
+                lambda workflows: workflows.append(dict(workflows[0])),
+                "Duplicate workflow id",
+            ),
+            "unknown oracle": (
+                lambda workflows: workflows[0].update(oracles=["cgate", "guess"]),
+                "oracles are unknown",
+            ),
+            "baseline": (
+                lambda workflows: workflows[0].update(minimum_dimensions=["nominal", "error"]),
+                "nominal, error and invalid-input",
+            ),
+            "physical flag": (
+                lambda workflows: workflows[0].update(physical_evidence="required"),
+                "physical_evidence differs from its minimum physical",
+            ),
+            "persistence flag": (
+                lambda workflows: workflows[0]["minimum_dimensions"].append("persistence_recovery"),
+                "persistence_evidence differs",
+            ),
+            "physical oracle": (
+                lambda workflows: workflows[0].update(
+                    minimum_dimensions=["nominal", "error", "invalid_input", "physical"],
+                    physical_evidence="required",
+                ),
+                "without a physical oracle",
+            ),
+            "original oracle": (
+                lambda workflows: workflows[0].update(
+                    minimum_dimensions=[
+                        "nominal", "error", "invalid_input", "original_differential"
+                    ],
+                    oracles=["physical"],
+                ),
+                "requires an original oracle",
+            ),
+            "placeholder": (
+                lambda workflows: workflows[0].update(allocation="placeholder"),
+                "placeholder allocation differs",
+            ),
+            "family identity": (
+                lambda workflows: workflows[0].update(
+                    source="toolkit_help_workflow_family", family_id="projects"
+                ),
+                "must name its Toolkit workflow family",
+            ),
+            "unknown key": (
+                lambda workflows: workflows[0].update(note="unbound"),
+                "must contain exactly",
+            ),
+            "empty": (lambda workflows: workflows.clear(), "nonempty workflows"),
+        }
+        for label, (mutate, expected) in cases.items():
+            register, evidence, ledger, evidence_raw = fixture_documents()
+            mutate(register["workflows"])
+            with self.subTest(label), self.assertRaisesRegex(ValueError, expected):
+                parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+    def test_empty_or_placeholder_workflows_withhold_the_denominator(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["workflows"].append({**fixture_workflow(), "id": "workflow:empty"})
+        with self.assertRaisesRegex(ValueError, "counts changed without a history entry"):
+            parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+        rebase_denominator(register)
+        report = parity.evaluate(
+            register, evidence, ledger, evidence_raw=evidence_raw,
+            artifact_root=self.artifact_root, source_root=self.artifact_root,
+        )
+        self.assertFalse(report["complete"])
+        self.assertFalse(report["denominator_ready"])
+        self.assertIsNone(report["obligations"]["accepted_percent"])
+        self.assertEqual(report["workflows"]["without_obligations"], ["workflow:empty"])
+        self.assertIn("1 workflows have no mapped obligation", report["blockers"])
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["workflows"][0].update(
+            source="unallocated_umbrella",
+            allocation="placeholder",
+        )
+        report = parity.evaluate(
+            register, evidence, ledger, evidence_raw=evidence_raw,
+            artifact_root=self.artifact_root, source_root=self.artifact_root,
+        )
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["workflows"]["placeholder_obligations"], 1)
+        self.assertIn(
+            "1 obligations remain in a placeholder workflow allocation", report["blockers"]
+        )
+
+    def test_denominator_history_versions_every_change(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+
+        def evaluate():
+            return parity.evaluate(register, evidence, ledger, evidence_raw=evidence_raw)
+
+        register["denominator_version"] = "fixture-2"
+        with self.assertRaisesRegex(ValueError, "denominator_version changed without"):
+            evaluate()
+        register["denominator_history"].append(
+            {**register["denominator_history"][0], "version": "fixture-2", "reason": "relabel"}
+        )
+        self.assertEqual(evaluate()["denominator"]["history_versions"], ["fixture-1", "fixture-2"])
+
+        register["scope_items"][0]["id"] = "scope:renamed"
+        with self.assertRaisesRegex(ValueError, "membership changed without a history entry"):
+            evaluate()
+        register["scope_items"][0]["id"] = "scope:one"
+
+        register["obligations"][0]["workflow_id"] = "workflow:second"
+        register["workflows"].append({**fixture_workflow(), "id": "workflow:second"})
+        with self.assertRaisesRegex(ValueError, "counts changed without a history entry"):
+            evaluate()
+        register["denominator_history"].append({
+            "version": "fixture-3",
+            "counts": {"obligations": 1, "scope_items": 1, "workflows": 2},
+            "digest": register["denominator_history"][-1]["digest"],
+            "reason": "added a workflow",
+        })
+        register["denominator_version"] = "fixture-3"
+        with self.assertRaisesRegex(ValueError, "membership changed"):
+            evaluate()
+        register["denominator_history"][-1]["digest"] = parity.denominator_digest(
+            register["obligations"], register["scope_items"]
+        )
+        self.assertEqual(evaluate()["denominator"]["version"], "fixture-3")
+
+        for mutate, expected in (
+            (lambda history: history.append(dict(history[-1])), "Duplicate denominator version"),
+            (lambda history: history[-1].update(reason=" "), "requires a reason"),
+            (lambda history: history[-1]["counts"].pop("workflows"), "invalid counts"),
+            (lambda history: history[-1].update(digest="x"), "denominator SHA-256"),
+            (lambda history: history[-1].update(extra=True), "exactly version"),
+            (lambda history: history.clear(), "nonempty denominator_history"),
+        ):
+            changed = json.loads(json.dumps(register))
+            mutate(changed["denominator_history"])
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                parity.evaluate(changed, evidence, ledger, evidence_raw=evidence_raw)
+
+    def test_packaged_denominator_history_reconstructs_prior_versions(self):
+        register, *_ = packaged_documents()
+        history = register["denominator_history"]
+        self.assertEqual(
+            [entry["counts"]["obligations"] for entry in history],
+            [39, 39, 481, 484, 486, 487, 487],
+        )
+        self.assertEqual(register["denominator_version"], history[-1]["version"])
+        self.assertEqual(
+            history[-1]["counts"], {"obligations": 487, "scope_items": 22156, "workflows": 28}
+        )
+        self.assertEqual(len({entry["version"] for entry in history}), len(history))
+        ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
+        report = parity.evaluate_packaged(ledger)
+        self.assertEqual(report["denominator"]["version"], history[-1]["version"])
+
+        # Reallocating an obligation between workflows with equal minimum
+        # criteria still changes the versioned denominator.
+        changed = json.loads(json.dumps(register))
+        moved = next(
+            item for item in changed["obligations"]
+            if item["id"] == "ledger:project-documentation"
+        )
+        self.assertEqual(moved["workflow_id"], "workflow:reports")
+        moved["workflow_id"] = "workflow:topology"
+        with self.assertRaisesRegex(ValueError, "membership changed without a history entry"):
+            evaluate_packaged_change(changed)
+
+        changed = json.loads(json.dumps(register))
+        changed["workflows"] = [
+            row for row in changed["workflows"] if row["id"] != "workflow:timers"
+        ]
+        with self.assertRaisesRegex(ValueError, "counts changed without a history entry"):
+            evaluate_packaged_change(changed)
+
+    def test_packaged_workflows_cover_toolkit_families_and_every_obligation(self):
+        register, *_ = packaged_documents()
+        surface = json.loads((ROOT / "docs/toolkit-surface.json").read_text())
+        families = {row["id"] for row in surface["workflow_families"]}
+        workflows = {row["id"]: row for row in register["workflows"]}
+        self.assertEqual(len(families), 26)
+        self.assertEqual(
+            {row["family_id"] for row in workflows.values() if row["family_id"]}, families
+        )
+        self.assertEqual(len(workflows), 28)
+        for obligation in register["obligations"]:
+            workflow = workflows[obligation["workflow_id"]]
+            self.assertTrue(
+                set(workflow["minimum_dimensions"]).issubset(obligation["required_dimensions"]),
+                obligation["id"],
+            )
+        session = [
+            item for item in register["obligations"] if item["id"].startswith("cgate-function:")
+        ]
+        self.assertEqual(len(session), 3)
+        for item in session:
+            self.assertEqual(item["workflow_id"], "workflow:cgate-command-service")
+            self.assertNotIn("physical", item["required_dimensions"])
+
+        ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
+        report = parity.evaluate_packaged(ledger)["workflows"]
+        self.assertEqual(report["total"], 28)
+        self.assertEqual(report["by_id"]["workflow:cgate-command-service"]["obligations"], 446)
+        self.assertEqual(report["placeholder_obligations"], 4)
+        self.assertEqual(
+            sum(row["obligations"] for row in report["by_id"].values()), 487
+        )
+        self.assertIsNone(report["by_id"]["workflow:projects"]["accepted_percent"])
+
+        ledger_ids = {row["id"] for row in ledger["features"]}
+        criteria_path = ROOT / "research/workflow-completion-criteria.json"
+        for mutate, expected in (
+            (
+                lambda criteria: criteria["workflows"].pop(0),
+                "differ from the Toolkit workflow families",
+            ),
+            (
+                lambda criteria: criteria["ledger_workflows"].pop("dali-commissioning"),
+                "exactly one workflow allocation",
+            ),
+            (
+                lambda criteria: criteria["ledger_workflows"].update(
+                    {"dali-commissioning": "workflow:unknown"}
+                ),
+                "unknown workflow",
+            ),
+        ):
+            criteria = json.loads(criteria_path.read_text())
+            mutate(criteria)
+            with self.subTest(expected=expected), patch.object(
+                register_builder, "load_json", return_value=criteria
+            ), self.assertRaisesRegex(ValueError, expected):
+                register_builder.workflow_criteria(surface, ledger_ids)
+
+    def test_evidence_invalidation_is_recomputed_from_a_source_checkout(self):
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        report = parity.evaluate(
+            register, evidence, ledger, evidence_raw=evidence_raw,
+            artifact_root=self.artifact_root,
+        )
+        self.assertFalse(report["complete"])
+        self.assertFalse(report["evidence_fingerprints_verified"])
+        self.assertIsNone(report["obligations"]["accepted_percent"])
+        self.assertIn(
+            "evidence invalidation fingerprints were not recomputed from a source checkout",
+            report["blockers"],
+        )
+
+        with TemporaryDirectory() as folder:
+            source = Path(folder)
+            with self.assertRaisesRegex(ValueError, "Invalidation input is missing: oracle.txt"):
+                parity.evaluate(
+                    register, evidence, ledger, evidence_raw=evidence_raw,
+                    source_root=source,
+                )
+            (source / "oracle.txt").write_bytes(b"changed original")
+            with self.assertRaisesRegex(ValueError, "evidence:one is stale"):
+                parity.evaluate(
+                    register, evidence, ledger, evidence_raw=evidence_raw,
+                    source_root=source,
+                )
+
+        for invalidation, expected in (
+            (None, "invalidates_on must contain exactly"),
+            ({"inputs": [], "fingerprint_sha256": FIXTURE_FINGERPRINT}, "must not be empty"),
+            ({"inputs": ["../oracle.txt"], "fingerprint_sha256": FIXTURE_FINGERPRINT}, "safe repository paths"),
+            ({"inputs": ["b", "a"], "fingerprint_sha256": FIXTURE_FINGERPRINT}, "sorted safe"),
+            ({"inputs": ["oracle.txt"], "fingerprint_sha256": "0"}, "fingerprint SHA-256"),
+        ):
+            _, evidence, _, _ = fixture_documents()
+            record = evidence["records"][0]
+            if invalidation is None:
+                del record["invalidates_on"]
+            else:
+                record["invalidates_on"] = invalidation
+            record["record_sha256"] = record_digest(record)
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                parity.validate_evidence_bundle(evidence)
+
+    def test_packaged_invalidation_rules_match_their_reports_and_checkout(self):
+        _, evidence, *_ = packaged_documents()
+        parity.validate_evidence_bundle(evidence, artifact_root=ROOT, source_root=ROOT.parent)
+        expected_inputs = {
+            "evidence:cgate-session-id-loopback-differential-v1": "rust/cbus-cgate/src/service.rs",
+            "evidence:cgate-session-id-tagged-wire-differential-v1": "rust/cbus-cgate/src/service.rs",
+            "evidence:cgate-session-id-physical-applicability-v1": "rust/cbus-cgate/src/capability_matrix.rs",
+        }
+        self.assertEqual({record["id"] for record in evidence["records"]}, set(expected_inputs))
+        for record in evidence["records"]:
+            with self.subTest(record=record["id"]):
+                self.assertIn(expected_inputs[record["id"]], record["invalidates_on"]["inputs"])
+        # A declaration cannot narrow the source closure its report recorded.
+        record = json.loads(json.dumps(evidence["records"][0]))
+        dropped = record["invalidates_on"]["inputs"].pop()
+        record["invalidates_on"]["fingerprint_sha256"] = parity.input_fingerprint(
+            ROOT.parent, record["invalidates_on"]["inputs"]
+        )
+        record["record_sha256"] = record_digest(record)
+        self.assertTrue(dropped)
+        with self.assertRaisesRegex(ValueError, "differs from its invalidation rule"):
+            parity.validate_evidence_bundle(
+                {**evidence, "records": [record]}, artifact_root=ROOT, source_root=ROOT.parent
+            )
+
+    def test_installed_wheel_refuses_to_recompute_fingerprints(self):
+        self.assertEqual(parity.source_checkout_root(ROOT), (ROOT.parent, None))
+        root, reason = parity.source_checkout_root(
+            ROOT, package_dir=Path("/opt/site-packages/cbus_toolkit")
+        )
+        self.assertIsNone(root)
+        self.assertIn("not loaded from this source checkout", reason)
+        root, reason = parity.source_checkout_root(self.artifact_root)
+        self.assertIsNone(root)
+        self.assertIn("not the toolkit-cli directory", reason)
+        self.assertEqual(
+            parity.source_checkout_root(None), (None, "no trusted evidence root was supplied")
+        )
+
+        ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
+        with patch.object(parity, "__file__", "/opt/site-packages/cbus_toolkit/parity.py"):
+            report = parity.evaluate_packaged(ledger, artifact_root=ROOT)
+        self.assertTrue(report["evidence_artifacts_verified"])
+        self.assertFalse(report["evidence_fingerprints_verified"])
+        self.assertIn("not loaded from this source checkout", report["evidence_fingerprint_refusal"])
+        self.assertEqual(report["work_items"]["status"], {"P9.01": "receipt_unverified"})
+
+    def test_packaged_closure_receipt_closes_only_verified_items(self):
+        ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
+        unverified = parity.evaluate_packaged(ledger)["work_items"]
+        self.assertEqual(unverified["claimed_closed"], 1)
+        self.assertEqual(unverified["closed"], [])
+        self.assertEqual(unverified["status"], {"P9.01": "receipt_unverified"})
+        verified = parity.evaluate_packaged(ledger, artifact_root=ROOT)
+        self.assertTrue(verified["evidence_fingerprints_verified"])
+        self.assertEqual(verified["work_items"]["closed"], ["P9.01"])
+        self.assertEqual(verified["work_items"]["total"], 59)
+
+        register, *_ = packaged_documents()
+        self.assertEqual(register["closed_work_item_ids"], ["P9.01"])
+        receipt = register["closure_receipts"][0]
+        self.assertEqual(receipt["work_item_id"], "P9.01")
+        self.assertEqual(len(receipt["scope"]["required_case_ids"]), 62)
+
+        missing = json.loads(json.dumps(register))
+        missing["closure_receipts"] = []
+        report = evaluate_packaged_change(missing)
+        self.assertEqual(report["work_items"]["status"], {"P9.01": "claimed_without_receipt"})
+        self.assertEqual(report["work_items"]["closed"], [])
+        self.assertIn(
+            "1 work items are marked closed without a closure receipt", report["blockers"]
+        )
+
+        def reject(mutate, expected):
+            changed = json.loads(json.dumps(register))
+            mutate(changed, changed["closure_receipts"][0])
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                evaluate_packaged_change(changed)
+
+        for field in sorted(parity.CLOSURE_RECEIPT_KEYS):
+            reject(lambda _, item, field=field: item.pop(field), "must contain exactly")
+        reject(lambda _, item: item["scope"].pop("native_scope"), "invalid scope field")
+        reject(lambda _, item: item["scope"].update(required_case_ids=[]), "must not be empty")
+        reject(
+            lambda _, item: item["scope"]["decisions"][0].update(reason=""),
+            "require reasons",
+        )
+        reject(
+            lambda _, item: item["scope"].update(parent_obligation_ids=["ledger:unknown"]),
+            "unknown parent obligations",
+        )
+        reject(lambda _, item: item["integration"].update(revisions=["abc"]), "40-hex")
+        reject(lambda _, item: item["integration"].update(installed_artifacts=[]), "installed_artifacts")
+        reject(
+            lambda _, item: item["integration"]["commands"][0].update(failures=1),
+            "accepting command did not pass",
+        )
+        reject(
+            lambda _, item: item["integration"]["commands"][0].update(skipped=2),
+            "skips require a disposition",
+        )
+        reject(
+            lambda _, item: item["integration"].update(
+                required_skips=["tests/test_toolkit_update_bundle.py::case"]
+            ),
+            "cannot close with a required skip",
+        )
+        reject(
+            lambda _, item: item["expected_behavior"]["layers"].pop("recovery"),
+            "independent behavior for every layer",
+        )
+        reject(
+            lambda _, item: item["documentation"].update(ai_references=[]),
+            "must not be empty",
+        )
+        reject(
+            lambda _, item: item["documentation"].update(capability_rows=["unknown-row"]),
+            "unknown capability rows",
+        )
+        reject(
+            lambda _, item: item["limitations"].update(within_required_scope=["open case"]),
+            "limitation inside its native scope",
+        )
+        reject(
+            lambda _, item: item["limitations"]["invalidation"].pop("conditions"),
+            "must contain exactly",
+        )
+        reject(
+            lambda changed, _: changed.update(closed_work_item_ids=[]),
+            "not claimed closed",
+        )
+        reject(
+            lambda changed, item: changed["closure_receipts"].append(dict(item)),
+            "Duplicate closure receipt",
+        )
+
+    def test_closure_receipt_artifact_and_fingerprint_bind_closure(self):
+        register, *_ = packaged_documents()
+        ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())
+        ledger_ids = {row["id"] for row in ledger["features"]}
+        obligations = {item["id"]: item for item in register["obligations"]}
+        receipt = register["closure_receipts"][0]
+
+        def status(changed_register, *, artifact_root=ROOT, source_root=ROOT.parent):
+            return parity._validate_closure_receipts(
+                changed_register,
+                obligations_by_id=obligations,
+                ledger_ids=ledger_ids,
+                artifact_root=artifact_root,
+                source_root=source_root,
+            )["P9.01"]["status"]
+
+        self.assertEqual(status(register), "closed")
+        self.assertEqual(status(register, source_root=None), "receipt_unverified")
+        self.assertEqual(status(register, artifact_root=None), "receipt_unverified")
+
+        with TemporaryDirectory() as folder:
+            source = Path(folder)
+            for path in receipt["limitations"]["invalidation"]["inputs"]:
+                target = source / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT.parent / path).read_bytes())
+            for path in receipt["documentation"]["feature_docs"] + receipt["documentation"]["ai_references"]:
+                target = source / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(b"doc")
+            self.assertEqual(status(register, source_root=source), "closed")
+            composer = source / receipt["limitations"]["invalidation"]["inputs"][0]
+            composer.write_bytes(composer.read_bytes() + b"\n# changed\n")
+            self.assertEqual(status(register, source_root=source), "stale_receipt")
+            composer.unlink()
+            with self.assertRaisesRegex(ValueError, "Invalidation input is missing"):
+                status(register, source_root=source)
+
+        changed = json.loads(json.dumps(register))
+        changed["closure_receipts"][0]["receipt_artifact"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "artifact digest changed"):
+            status(changed)
+        changed = json.loads(json.dumps(register))
+        changed["closure_receipts"][0]["scope"]["required_case_ids"].pop()
+        with self.assertRaisesRegex(ValueError, "required cases differ from its artifact"):
+            status(changed)
+        changed = json.loads(json.dumps(register))
+        changed["closure_receipts"][0]["documentation"]["feature_docs"] = ["docs/missing.md"]
+        with self.assertRaisesRegex(ValueError, "documentation is missing"):
+            status(changed)
 
 
 if __name__ == "__main__":

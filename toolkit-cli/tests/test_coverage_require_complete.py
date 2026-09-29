@@ -25,7 +25,11 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 1, proc.stderr)
         payload = json.loads(proc.stdout)
         self.assertTrue(payload["progress"]["evidence_artifacts_verified"])
+        self.assertTrue(payload["progress"]["evidence_fingerprints_verified"])
+        self.assertIsNone(payload["progress"]["evidence_fingerprint_refusal"])
         self.assertFalse(payload["progress"]["complete"])
+        # Only a hash-verified, fresh closure receipt shows an item as closed.
+        self.assertEqual(payload["progress"]["work_items"]["closed"], ["P9.01"])
 
         missing = subprocess.run(
             [sys.executable, "-m", "cbus_toolkit", "coverage",
@@ -76,11 +80,13 @@ class CoverageRequireCompleteTests(unittest.TestCase):
             (root / "oracle.txt").write_bytes(b"fixture original")
             (root / "result.txt").write_bytes(FIXTURE_REPORT)
             complete = parity.evaluate(
-                register, evidence, ledger, evidence_raw=evidence_raw, artifact_root=root
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=root, source_root=root,
             )
             self.assertTrue(complete["complete"])
             obligation = register["obligations"][0]
             obligation["acceptance"]["physical"] = "blocked"
+            obligation["required_dimensions"].append("physical")
             obligation["acceptance_blockers"] = {
                 "physical": {
                     "reason_kind": "hardware_fixture_unavailable",
@@ -88,7 +94,8 @@ class CoverageRequireCompleteTests(unittest.TestCase):
                 }
             }
             report = parity.evaluate(
-                register, evidence, ledger, evidence_raw=evidence_raw, artifact_root=root
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=root, source_root=root,
             )
         self.assertFalse(report["complete"])
         self.assertEqual(report["obligations"]["accepted"], 0)
@@ -119,6 +126,29 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertFalse(progress["denominator_ready"])
         self.assertFalse(progress["functional_percent_available"])
         self.assertFalse(progress["evidence_artifacts_verified"])
+        self.assertFalse(progress["evidence_fingerprints_verified"])
+        self.assertEqual(
+            progress["evidence_fingerprint_refusal"], "no trusted evidence root was supplied"
+        )
+        self.assertEqual(progress["work_items"]["closed"], [])
+        self.assertEqual(progress["work_items"]["status"], {"P9.01": "receipt_unverified"})
+        self.assertEqual(progress["denominator"]["counts"]["obligations"], 487)
+        self.assertEqual(
+            progress["denominator"]["version"], progress["denominator"]["history_versions"][-1]
+        )
+        workflows = progress["workflows"]
+        self.assertEqual(workflows["total"], 28)
+        self.assertEqual(
+            sum(row["obligations"] for row in workflows["by_id"].values()),
+            progress["obligations"]["total"],
+        )
+        self.assertTrue(workflows["without_obligations"])
+        for workflow_id, row in workflows["by_id"].items():
+            with self.subTest(workflow=workflow_id):
+                self.assertIsNone(row["accepted_percent"])
+                self.assertTrue(
+                    {"nominal", "error", "invalid_input"}.issubset(row["minimum_dimensions"])
+                )
         self.assertIsNone(progress["obligations"]["implementation_percent"])
         self.assertIsNone(progress["obligations"]["accepted_percent"])
         self.assertEqual(progress["legacy_category_summary"]["implemented"], 18)

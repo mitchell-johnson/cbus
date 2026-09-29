@@ -244,29 +244,41 @@ def evidence_artifact_files():
     records = document.get("records") if isinstance(document, dict) else None
     if not isinstance(records, list):
         raise ValueError("Parity evidence bundle requires a records array")
-    paths = set()
+    names = []
     for record in records:
         artifacts = record.get("artifacts") if isinstance(record, dict) else None
         if not isinstance(artifacts, list):
             raise ValueError("Parity evidence record requires an artifacts array")
-        for artifact in artifacts:
-            name = artifact.get("path") if isinstance(artifact, dict) else None
-            if not isinstance(name, str) or not name or "\\" in name or any(ord(c) < 32 for c in name):
-                raise ValueError("Parity evidence has an unsafe artifact path")
-            relative = PurePosixPath(name)
-            if (relative.is_absolute() or relative.as_posix() != name
-                    or ".." in relative.parts or PureWindowsPath(name).drive):
-                raise ValueError("Parity evidence has an unsafe artifact path: " + name)
-            candidate = ROOT.joinpath(*relative.parts)
-            try:
-                resolved = candidate.resolve(strict=True)
-            except (OSError, RuntimeError) as error:
-                raise ValueError("Parity evidence artifact is missing: " + name) from error
-            if not resolved.is_relative_to(root):
-                raise ValueError("Parity evidence artifact escapes its root: " + name)
-            if not resolved.is_file():
-                raise ValueError("Parity evidence artifact is not a file: " + name)
-            paths.add(candidate)
+        names.extend(artifact.get("path") if isinstance(artifact, dict) else None
+                     for artifact in artifacts)
+    # Closure receipts are verified against the same trusted root, so their
+    # artifacts must be copied with the evidence they close.
+    register = ROOT / "src/cbus_toolkit/parity-obligations.json"
+    if register.is_file():
+        receipts = parse_json_document(
+            register.read_bytes(), context="parity-obligations.json").get("closure_receipts", [])
+        if not isinstance(receipts, list):
+            raise ValueError("Parity register closure_receipts must be an array")
+        names.extend((receipt.get("receipt_artifact") or {}).get("path") if isinstance(receipt, dict) else None
+                     for receipt in receipts)
+    paths = set()
+    for name in names:
+        if not isinstance(name, str) or not name or "\\" in name or any(ord(c) < 32 for c in name):
+            raise ValueError("Parity evidence has an unsafe artifact path")
+        relative = PurePosixPath(name)
+        if (relative.is_absolute() or relative.as_posix() != name
+                or ".." in relative.parts or PureWindowsPath(name).drive):
+            raise ValueError("Parity evidence has an unsafe artifact path: " + name)
+        candidate = ROOT.joinpath(*relative.parts)
+        try:
+            resolved = candidate.resolve(strict=True)
+        except (OSError, RuntimeError) as error:
+            raise ValueError("Parity evidence artifact is missing: " + name) from error
+        if not resolved.is_relative_to(root):
+            raise ValueError("Parity evidence artifact escapes its root: " + name)
+        if not resolved.is_file():
+            raise ValueError("Parity evidence artifact is not a file: " + name)
+        paths.add(candidate)
     return paths
 
 

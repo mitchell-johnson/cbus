@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "purpose": "Versioned parity denominator. Every change to obligation or scope-item membership, their counts, the workflow count, or workflow allocation needs a new entry with a unique version and reason; the register's denominator_version is the last entry. Earlier entries were reconstructed from the Git history of parity-obligations.json; their digests use the same definition with no workflow allocation.",
+  "digest_definition": "SHA-256 of canonical JSON {obligation_ids: sorted, scope_item_ids: sorted, workflow_assignments: {obligation_id: workflow_id}}",
+  "history": [
+    {
+      "version": "provisional-2026-09-27.2",
+      "counts": {
+        "obligations": 39,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "97b9b9bcfcb8c70566dbabcfee144f24c022d892150ad577ace9b347177b02ad",
+      "reason": "Reconstructed from 8797995: first evidence-derived register with one umbrella obligation per historical ledger row and the executable census scope."
+    },
+    {
+      "version": "provisional-2026-09-27.3",
+      "counts": {
+        "obligations": 39,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "97b9b9bcfcb8c70566dbabcfee144f24c022d892150ad577ace9b347177b02ad",
+      "reason": "Reconstructed from 32912ee: C-Gate contract axes were attached to existing scope items; obligation and scope membership were unchanged."
+    },
+    {
+      "version": "provisional-2026-09-27.4",
+      "counts": {
+        "obligations": 481,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "05e70445d49281ead87c4b1c7c10c104e5281e8130577ed516a58cd495f4c803",
+      "reason": "Reconstructed from 9a099e9: added one source-bound provisional obligation for each of the 442 maintained C-Gate paths."
+    },
+    {
+      "version": "provisional-2026-09-28.1",
+      "counts": {
+        "obligations": 484,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "0721b389736eb7fa0395cc1a626f3f41ff93cd710b3aaccf3c95bf3c1d93cd5e",
+      "reason": "Reconstructed from fec6a60: added the three defined SESSION_ID function obligations of the functional pilot."
+    },
+    {
+      "version": "provisional-2026-09-29.1",
+      "counts": {
+        "obligations": 486,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "d11f51c8071e585cf7ec64a580b2be74b53c94d1790ff6cd46cdb0b76bd1703b",
+      "reason": "Reconstructed from 1109dea: added ledger:topology-navigation and ledger:project-documentation. That commit reused the label provisional-2026-09-28.1; this entry versions the change retroactively."
+    },
+    {
+      "version": "provisional-2026-09-29.2",
+      "counts": {
+        "obligations": 487,
+        "scope_items": 22156,
+        "workflows": 0
+      },
+      "digest": "19ac792bd3a25cd0b38a4f9127dfaad0c02bdcbebbc667fb6b6ce86a425e8ce4",
+      "reason": "Reconstructed from 3f1f130: added ledger:dali-commissioning. That commit also reused the label provisional-2026-09-28.1; this entry versions the change retroactively."
+    },
+    {
+      "version": "provisional-2026-09-30.1",
+      "counts": {
+        "obligations": 487,
+        "scope_items": 22156,
+        "workflows": 28
+      },
+      "digest": "626d16c43308095f45b19db1284f573de44f23c85e835659ea8d34ba6d0841dd",
+      "reason": "Allocated every obligation to one of 28 workflows (26 Toolkit help families, the C-Gate command service and a placeholder for four cross-workflow umbrella rows). Obligation and scope membership are unchanged from provisional-2026-09-29.2."
+    }
+  ]
+}

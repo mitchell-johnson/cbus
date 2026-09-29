@@ -164,11 +164,13 @@ class WheelAcceptanceAuditTests(unittest.TestCase):
             self.report['input_sha256'][snapshot_name] = value
             entries[f'cbus_toolkit/{resource_name}'] = raw
         evidence = json.loads((package / 'parity-evidence.json').read_bytes())
-        for record in evidence['records']:
-            for artifact in record['artifacts']:
-                name = artifact['path']
-                value = self.add_snapshot_input(name, (source_root / name).read_bytes())
-                self.report['input_sha256'][name] = value
+        register = json.loads((package / 'parity-obligations.json').read_bytes())
+        artifact_names = [
+            artifact['path'] for record in evidence['records'] for artifact in record['artifacts']
+        ] + [receipt['receipt_artifact']['path'] for receipt in register['closure_receipts']]
+        for name in artifact_names:
+            value = self.add_snapshot_input(name, (source_root / name).read_bytes())
+            self.report['input_sha256'][name] = value
         with zipfile.ZipFile(wheel_path, 'w') as wheel:
             for entry, contents in entries.items():
                 wheel.writestr(entry, contents)

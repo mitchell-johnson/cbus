@@ -375,12 +375,15 @@ class AcceptanceRunnerTests(unittest.TestCase):
             ):
                 (package / name).write_bytes((real_package / name).read_bytes())
             evidence = json.loads((package / 'parity-evidence.json').read_text())
-            for record in evidence['records']:
-                for artifact in record['artifacts']:
-                    name = artifact['path']
-                    destination = root / name
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    destination.write_bytes((real_package.parents[1] / name).read_bytes())
+            register = json.loads((package / 'parity-obligations.json').read_text())
+            names = [
+                artifact['path'] for record in evidence['records']
+                for artifact in record['artifacts']
+            ] + [receipt['receipt_artifact']['path'] for receipt in register['closure_receipts']]
+            for name in names:
+                destination = root / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((real_package.parents[1] / name).read_bytes())
             contract = package / 'cgate-contract-inventory.json'
             changed = contract.read_bytes().replace(
                 b'Evidence-bounded per-path contracts',

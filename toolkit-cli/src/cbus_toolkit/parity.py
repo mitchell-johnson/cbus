@@ -138,6 +138,29 @@ REQUIRED_DIMENSIONS = (
     "physical",
     "persistence_recovery",
 )
+# Every workflow must test the nominal outcome, the error outcome and invalid
+# input; the other dimensions come from the workflow's reviewed criteria.
+BASELINE_DIMENSIONS = ("nominal", "error", "invalid_input")
+WORKFLOW_ORACLES = frozenset({"gui", "model", "cgate", "physical"})
+WORKFLOW_SOURCES = frozenset(
+    {"toolkit_help_workflow_family", "cgate_command_reference", "unallocated_umbrella"}
+)
+WORKFLOW_EVIDENCE_REQUIREMENTS = frozenset({"required", "conditional", "not_required"})
+WORKFLOW_KEYS = frozenset(
+    {
+        "id", "family_id", "source", "name", "allocation", "minimum_dimensions",
+        "oracles", "physical_evidence", "persistence_evidence", "rationale",
+    }
+)
+DENOMINATOR_COUNT_KEYS = frozenset({"obligations", "scope_items", "workflows"})
+CLOSURE_RECEIPT_KEYS = frozenset(
+    {
+        "work_item_id", "issue", "receipt_artifact", "scope", "integration",
+        "expected_behavior", "documentation", "limitations",
+    }
+)
+CLOSURE_LAYERS = ("transport", "service", "physical_effect", "persistence", "recovery")
+CLOSURE_DECISIONS = frozenset({"not_applicable", "rejected"})
 CGATE_CONTRACT_AXIS_SCHEMA = {
     "selector_grammar": ("command_path", "argument_arity", "value_domains"),
     "session_states": ("connection", "recovery_mode", "selection_and_locks"),
@@ -198,6 +221,97 @@ TAGGED_EXTERNAL_RE = re.compile(
 def cgate_path_obligation_id(path: str) -> str:
     """Stable, version-independent identity for one maintained command path."""
     return f"cgate-path:{sha256(path.encode('utf-8')).hexdigest()[:16]}"
+
+
+def _safe_relative_path(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and not Path(value).is_absolute()
+        and ".." not in Path(value).parts
+        and "\\" not in value
+    )
+
+
+def input_fingerprint(source_root: Path, inputs: list[str]) -> str:
+    """Recompute one invalidation fingerprint from source-checkout bytes.
+
+    The digest is the canonical JSON of ``{path: sha256(bytes)}`` over the
+    declared repository-relative inputs. A missing or escaping input is an
+    error, never an omitted term.
+    """
+    root = source_root.resolve()
+    digests: dict[str, str] = {}
+    for path in inputs:
+        candidate = (root / path).resolve()
+        if not candidate.is_relative_to(root):
+            raise ValueError(f"Invalidation input escapes the source checkout: {path}")
+        if not candidate.is_file():
+            raise ValueError(f"Invalidation input is missing: {path}")
+        digests[path] = sha256(candidate.read_bytes()).hexdigest()
+    return _canonical_object_digest(digests)
+
+
+def source_checkout_root(
+    evidence_root: Path | None, *, package_dir: Path | None = None
+) -> tuple[Path | None, str | None]:
+    """Return the repository root that may recompute evidence fingerprints.
+
+    Recomputation is allowed only when the trusted evidence root is the
+    ``toolkit-cli`` directory of a source checkout and this parity module was
+    loaded from that same checkout. An installed wheel refuses: comparing
+    its packaged records with some other tree's bytes would trust sources the
+    wheel was not built from.
+    """
+    if evidence_root is None:
+        return None, "no trusted evidence root was supplied"
+    toolkit_root = evidence_root.resolve()
+    repository = toolkit_root.parent
+    if not (
+        (toolkit_root / "pyproject.toml").is_file()
+        and (repository / "rust" / "Cargo.toml").is_file()
+        and (repository / ".git").exists()
+    ):
+        return None, "the evidence root is not the toolkit-cli directory of a source checkout"
+    loaded = (package_dir or Path(__file__).parent).resolve()
+    if loaded != (toolkit_root / "src" / "cbus_toolkit").resolve():
+        return None, "the running package is not loaded from this source checkout"
+    return repository, None
+
+
+def denominator_digest(
+    obligations: list[dict[str, Any]], scope_items: list[dict[str, Any]]
+) -> str:
+    """Identify the counted denominator, including workflow allocation."""
+    return _canonical_object_digest(
+        {
+            "obligation_ids": sorted(item["id"] for item in obligations),
+            "scope_item_ids": sorted(item["id"] for item in scope_items),
+            "workflow_assignments": {
+                item["id"]: item["workflow_id"]
+                for item in obligations
+                if "workflow_id" in item
+            },
+        }
+    )
+
+
+def _validate_invalidation(
+    value: Any, *, context: str, keys: frozenset[str] = frozenset({"inputs", "fingerprint_sha256"})
+) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != keys:
+        raise ValueError(f"{context} must contain exactly {sorted(keys)}")
+    inputs = _strings(value["inputs"], field=f"{context}.inputs", nonempty=True)
+    if inputs != sorted(inputs) or not all(_safe_relative_path(path) for path in inputs):
+        raise ValueError(f"{context}.inputs must be sorted safe repository paths")
+    digest = value["fingerprint_sha256"]
+    if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
+        raise ValueError(f"{context} requires a lowercase fingerprint SHA-256")
+    if "conditions" in keys and (
+        not isinstance(value["conditions"], str) or not value["conditions"].strip()
+    ):
+        raise ValueError(f"{context} requires invalidation conditions")
+    return value
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -348,6 +462,18 @@ def _validate_execution_report(
         raise ValueError(f"{evidence_id} report source revision differs from evidence")
     if report.get("command") != record["command"]:
         raise ValueError(f"{evidence_id} report command differs from evidence")
+    # A report that records its own source closure must be invalidated by
+    # exactly that closure; the declaration cannot narrow it.
+    reported_fingerprint = report.get("source_fingerprint")
+    if reported_fingerprint is not None and (
+        not isinstance(reported_fingerprint, dict)
+        or sorted(reported_fingerprint) != record["invalidates_on"]["inputs"]
+        or _canonical_object_digest(reported_fingerprint)
+        != record["invalidates_on"]["fingerprint_sha256"]
+    ):
+        raise ValueError(
+            f"{evidence_id} report source fingerprint differs from its invalidation rule"
+        )
     cases = report.get("cases")
     if not isinstance(cases, list) or not cases:
         raise ValueError(f"{evidence_id} report requires executed cases")
@@ -879,8 +1005,18 @@ def validate_cgate_contract_inventory(
 
 
 def validate_evidence_bundle(
-    bundle: dict[str, Any], *, artifact_root: Path | None = None
+    bundle: dict[str, Any],
+    *,
+    artifact_root: Path | None = None,
+    source_root: Path | None = None,
 ) -> dict[str, dict[str, Any]]:
+    """Validate evidence records and, from a source checkout, their freshness.
+
+    Every record declares ``invalidates_on``: the repository-relative inputs
+    whose change makes it stale and their fingerprint. With ``source_root``
+    the fingerprint is recomputed and a stale record is rejected; without it
+    the caller must report freshness as unverified.
+    """
     if bundle.get("schema_version") != 1:
         raise ValueError("Evidence bundle requires schema_version 1")
     if not isinstance(bundle.get("target"), str) or not bundle["target"].strip():
@@ -1006,6 +1142,15 @@ def validate_evidence_bundle(
         command = record.get("command")
         if not isinstance(command, str) or not command.strip():
             raise ValueError(f"{evidence_id} requires the exact nonempty command")
+        invalidation = _validate_invalidation(
+            record.get("invalidates_on"), context=f"{evidence_id}.invalidates_on"
+        )
+        if source_root is not None and input_fingerprint(
+            source_root, invalidation["inputs"]
+        ) != invalidation["fingerprint_sha256"]:
+            raise ValueError(
+                f"{evidence_id} is stale: its invalidation inputs changed since the receipt"
+            )
         exit_code = record.get("exit_code")
         if isinstance(exit_code, bool) or not isinstance(exit_code, int):
             raise ValueError(f"{evidence_id} requires an integer exit_code")
@@ -1185,6 +1330,376 @@ def _validate_acceptance_blockers(
             )
 
 
+def _validate_workflows(register: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Validate the reviewed completion criteria for each workflow."""
+    workflows = register.get("workflows")
+    if not isinstance(workflows, list) or not workflows:
+        raise ValueError("Parity register requires a nonempty workflows array")
+    by_id: dict[str, dict[str, Any]] = {}
+    family_ids: set[str] = set()
+    for index, workflow in enumerate(workflows):
+        if not isinstance(workflow, dict) or set(workflow) != WORKFLOW_KEYS:
+            raise ValueError(f"workflow {index} must contain exactly {sorted(WORKFLOW_KEYS)}")
+        workflow_id = workflow["id"]
+        if not isinstance(workflow_id, str) or not re.fullmatch(
+            r"workflow:[a-z0-9][a-z0-9_-]*", workflow_id
+        ):
+            raise ValueError(f"workflow {index} has an invalid id")
+        if workflow_id in by_id:
+            raise ValueError(f"Duplicate workflow id: {workflow_id}")
+        source = workflow["source"]
+        if source not in WORKFLOW_SOURCES:
+            raise ValueError(f"{workflow_id} has an unknown source")
+        family_id = workflow["family_id"]
+        if source == "toolkit_help_workflow_family":
+            if not isinstance(family_id, str) or workflow_id != f"workflow:{family_id}":
+                raise ValueError(f"{workflow_id} must name its Toolkit workflow family")
+            if family_id in family_ids:
+                raise ValueError(f"Duplicate workflow family: {family_id}")
+            family_ids.add(family_id)
+        elif family_id is not None:
+            raise ValueError(f"{workflow_id} is not a Toolkit workflow family")
+        if workflow["allocation"] not in {"final", "placeholder"}:
+            raise ValueError(f"{workflow_id} has an unknown allocation")
+        if (workflow["allocation"] == "placeholder") != (source == "unallocated_umbrella"):
+            raise ValueError(f"{workflow_id} placeholder allocation differs from its source")
+        for key in ("name", "rationale"):
+            if not isinstance(workflow[key], str) or not workflow[key].strip():
+                raise ValueError(f"{workflow_id} requires a nonempty {key}")
+        minimum = _strings(
+            workflow["minimum_dimensions"],
+            field=f"{workflow_id}.minimum_dimensions",
+            nonempty=True,
+        )
+        if minimum != [item for item in REQUIRED_DIMENSIONS if item in minimum]:
+            raise ValueError(f"{workflow_id} minimum dimensions are unknown or unordered")
+        if not set(BASELINE_DIMENSIONS).issubset(minimum):
+            raise ValueError(
+                f"{workflow_id} must require nominal, error and invalid-input acceptance"
+            )
+        oracles = _strings(workflow["oracles"], field=f"{workflow_id}.oracles", nonempty=True)
+        if set(oracles) - WORKFLOW_ORACLES or oracles != sorted(oracles):
+            raise ValueError(f"{workflow_id} oracles are unknown or unsorted")
+        if "original_differential" in minimum and not set(oracles) & {"gui", "model", "cgate"}:
+            raise ValueError(f"{workflow_id} original differential requires an original oracle")
+        for key, dimension in (
+            ("physical_evidence", "physical"),
+            ("persistence_evidence", "persistence_recovery"),
+        ):
+            requirement = workflow[key]
+            if requirement not in WORKFLOW_EVIDENCE_REQUIREMENTS:
+                raise ValueError(f"{workflow_id}.{key} is unknown")
+            if (requirement == "required") != (dimension in minimum):
+                raise ValueError(
+                    f"{workflow_id}.{key} differs from its minimum {dimension} dimension"
+                )
+        if workflow["physical_evidence"] == "required" and "physical" not in oracles:
+            raise ValueError(f"{workflow_id} requires physical evidence without a physical oracle")
+        by_id[workflow_id] = workflow
+    return by_id
+
+
+def _validate_obligation_workflow(
+    obligation_id: str,
+    obligation: dict[str, Any],
+    acceptance: dict[str, str],
+    workflows_by_id: dict[str, dict[str, Any]],
+) -> None:
+    """Bind one obligation to exactly one workflow and its minimum dimensions."""
+    workflow_id = obligation.get("workflow_id")
+    if not isinstance(workflow_id, str) or workflow_id not in workflows_by_id:
+        raise ValueError(f"{obligation_id} must belong to exactly one known workflow")
+    required = _strings(
+        obligation.get("required_dimensions"),
+        field=f"{obligation_id}.required_dimensions",
+        nonempty=True,
+    )
+    if required != [item for item in REQUIRED_DIMENSIONS if item in required]:
+        raise ValueError(f"{obligation_id} required dimensions are unknown or unordered")
+    missing = [
+        item
+        for item in workflows_by_id[workflow_id]["minimum_dimensions"]
+        if item not in required
+    ]
+    if missing:
+        raise ValueError(
+            f"{obligation_id} omits {workflow_id} minimum dimensions: {missing}"
+        )
+    for dimension, state in acceptance.items():
+        if state == "not_applicable" and dimension in required:
+            raise ValueError(f"{obligation_id}.{dimension} is required and cannot be waived")
+        if state == "blocked" and dimension not in required:
+            raise ValueError(f"{obligation_id}.{dimension} is blocked but not required")
+
+
+def _validate_denominator_history(
+    register: dict[str, Any], counts: dict[str, int], digest: str
+) -> list[dict[str, Any]]:
+    """Require a reasoned, versioned entry for every denominator change."""
+    history = register.get("denominator_history")
+    if not isinstance(history, list) or not history:
+        raise ValueError("Parity register requires a nonempty denominator_history")
+    versions: set[str] = set()
+    for index, entry in enumerate(history):
+        context = f"denominator_history[{index}]"
+        if not isinstance(entry, dict) or set(entry) != {"version", "counts", "digest", "reason"}:
+            raise ValueError(f"{context} must contain exactly version, counts, digest and reason")
+        version = entry["version"]
+        if not isinstance(version, str) or not version.strip():
+            raise ValueError(f"{context} requires a version")
+        if version in versions:
+            raise ValueError(f"Duplicate denominator version: {version}")
+        versions.add(version)
+        entry_counts = entry["counts"]
+        if (
+            not isinstance(entry_counts, dict)
+            or set(entry_counts) != DENOMINATOR_COUNT_KEYS
+            or any(
+                isinstance(value, bool) or not isinstance(value, int) or value < 0
+                for value in entry_counts.values()
+            )
+        ):
+            raise ValueError(f"{context} has invalid counts")
+        if not isinstance(entry["digest"], str) or not SHA256_RE.fullmatch(entry["digest"]):
+            raise ValueError(f"{context} requires a denominator SHA-256")
+        if not isinstance(entry["reason"], str) or not entry["reason"].strip():
+            raise ValueError(f"{context} requires a reason")
+    current = history[-1]
+    if current["version"] != register["denominator_version"]:
+        raise ValueError("denominator_version changed without a matching history entry")
+    if current["counts"] != counts:
+        raise ValueError(
+            f"Denominator counts changed without a history entry: {counts} != {current['counts']}"
+        )
+    if current["digest"] != digest:
+        raise ValueError("Denominator membership changed without a history entry")
+    return history
+
+
+def _validate_closure_receipts(
+    register: dict[str, Any],
+    *,
+    obligations_by_id: dict[str, dict[str, Any]],
+    ledger_ids: set[str],
+    artifact_root: Path | None,
+    source_root: Path | None,
+) -> dict[str, dict[str, Any]]:
+    """Validate the five closure-receipt fields and derive work-item status.
+
+    A roadmap check mark is only a claim. A work item is shown as closed only
+    when its receipt is structurally complete, its receipt artifact bytes are
+    verified under a trusted root, and its invalidation fingerprint is
+    recomputed from a source checkout.
+    """
+    roster = set(register["work_item_ids"])
+    claimed = _strings(
+        register.get("closed_work_item_ids"), field="Parity register closed_work_item_ids"
+    )
+    if set(claimed) - roster:
+        raise ValueError("closed_work_item_ids names unknown work items")
+    receipts = register.get("closure_receipts")
+    if not isinstance(receipts, list):
+        raise ValueError("Parity register requires a closure_receipts array")
+    statuses: dict[str, dict[str, Any]] = {}
+    for index, receipt in enumerate(receipts):
+        context = f"closure receipt {index}"
+        if not isinstance(receipt, dict) or set(receipt) != CLOSURE_RECEIPT_KEYS:
+            raise ValueError(f"{context} must contain exactly {sorted(CLOSURE_RECEIPT_KEYS)}")
+        item = receipt["work_item_id"]
+        if item not in roster:
+            raise ValueError(f"{context} names an unknown work item")
+        if item in statuses:
+            raise ValueError(f"Duplicate closure receipt for {item}")
+        if item not in claimed:
+            raise ValueError(f"{item} has a closure receipt but is not claimed closed")
+        context = f"{item} closure receipt"
+        if isinstance(receipt["issue"], bool) or not isinstance(receipt["issue"], int) or receipt["issue"] < 1:
+            raise ValueError(f"{context} requires its issue number")
+        artifact = receipt["receipt_artifact"]
+        if (
+            not isinstance(artifact, dict)
+            or set(artifact) != {"path", "sha256"}
+            or not _safe_relative_path(artifact["path"])
+            or not isinstance(artifact["sha256"], str)
+            or not SHA256_RE.fullmatch(artifact["sha256"])
+        ):
+            raise ValueError(f"{context} requires a safe, hash-bound receipt artifact")
+
+        # 1. Work item, obligation IDs, native scope, cases and decisions.
+        scope = receipt["scope"]
+        if not isinstance(scope, dict) or set(scope) != {
+            "obligation_ids", "parent_obligation_ids", "native_scope",
+            "required_case_ids", "decisions",
+        }:
+            raise ValueError(f"{context} has an invalid scope field")
+        _strings(scope["obligation_ids"], field=f"{context}.scope.obligation_ids", nonempty=True)
+        parents = _strings(
+            scope["parent_obligation_ids"], field=f"{context}.scope.parent_obligation_ids"
+        )
+        if set(parents) - set(obligations_by_id):
+            raise ValueError(f"{context} names unknown parent obligations")
+        if not isinstance(scope["native_scope"], str) or not scope["native_scope"].strip():
+            raise ValueError(f"{context} requires its native scope")
+        case_ids = _strings(
+            scope["required_case_ids"], field=f"{context}.scope.required_case_ids", nonempty=True
+        )
+        decisions = scope["decisions"]
+        if not isinstance(decisions, list) or any(
+            not isinstance(decision, dict)
+            or set(decision) != {"id", "decision", "reason"}
+            or not isinstance(decision["id"], str)
+            or not decision["id"]
+            or decision["decision"] not in CLOSURE_DECISIONS
+            or not isinstance(decision["reason"], str)
+            or not decision["reason"].strip()
+            for decision in decisions
+        ):
+            raise ValueError(f"{context} rejected or not-applicable cases require reasons")
+        if len({decision["id"] for decision in decisions}) != len(decisions):
+            raise ValueError(f"{context} has duplicate case decisions")
+
+        # 2. Integrated revisions, changed sources, installed artifacts, runs.
+        integration = receipt["integration"]
+        if not isinstance(integration, dict) or set(integration) != {
+            "revisions", "source_changes", "installed_artifacts", "commands",
+            "failed_attempts", "required_skips",
+        }:
+            raise ValueError(f"{context} has an invalid integration field")
+        revisions = _strings(
+            integration["revisions"], field=f"{context}.integration.revisions", nonempty=True
+        )
+        if not all(REVISION_RE.fullmatch(revision) for revision in revisions):
+            raise ValueError(f"{context} revisions must be 40-hex commits")
+        for key, name_key in (("source_changes", "path"), ("installed_artifacts", "name")):
+            rows = integration[key]
+            if not isinstance(rows, list) or not rows or any(
+                not isinstance(row, dict)
+                or set(row) != {name_key, "sha256"}
+                or not isinstance(row[name_key], str)
+                or not row[name_key]
+                or not isinstance(row["sha256"], str)
+                or not SHA256_RE.fullmatch(row["sha256"])
+                for row in rows
+            ):
+                raise ValueError(f"{context} requires hash-bound {key}")
+        commands = integration["commands"]
+        if not isinstance(commands, list) or not commands:
+            raise ValueError(f"{context} requires exact test commands and results")
+        for command in commands:
+            counts = ("passed", "failures", "errors", "skipped", "exit_status")
+            if (
+                not isinstance(command, dict)
+                or not {"command", "scope", *counts} <= set(command)
+                or set(command) - {"command", "scope", "skip_disposition", *counts}
+                or not isinstance(command["command"], str)
+                or not command["command"].strip()
+                or not isinstance(command["scope"], str)
+                or not command["scope"].strip()
+                or any(
+                    isinstance(command[key], bool)
+                    or not isinstance(command[key], int)
+                    or command[key] < 0
+                    for key in counts
+                )
+            ):
+                raise ValueError(f"{context} has an invalid command result")
+            if command["failures"] or command["errors"] or command["exit_status"] or not command["passed"]:
+                raise ValueError(f"{context} accepting command did not pass")
+            if command["skipped"] and (
+                not isinstance(command.get("skip_disposition"), str)
+                or not command["skip_disposition"].strip()
+            ):
+                raise ValueError(f"{context} command skips require a disposition")
+        attempts = integration["failed_attempts"]
+        if not isinstance(attempts, list) or any(
+            not isinstance(attempt, dict)
+            or set(attempt) != {"reference", "outcome"}
+            or not all(isinstance(value, str) and value.strip() for value in attempt.values())
+            for attempt in attempts
+        ):
+            raise ValueError(f"{context} failed attempts must be preserved with outcomes")
+        if integration["required_skips"] != []:
+            raise ValueError(f"{context} cannot close with a required skip")
+
+        # 3. Independent expected behavior and per-layer evidence.
+        behavior = receipt["expected_behavior"]
+        if (
+            not isinstance(behavior, dict)
+            or set(behavior) != {"independent_basis", "layers"}
+            or not isinstance(behavior["independent_basis"], str)
+            or not behavior["independent_basis"].strip()
+            or not isinstance(behavior["layers"], dict)
+            or set(behavior["layers"]) != set(CLOSURE_LAYERS)
+            or not all(
+                isinstance(value, str) and value.strip()
+                for value in behavior["layers"].values()
+            )
+        ):
+            raise ValueError(f"{context} requires independent behavior for every layer")
+
+        # 4. Status output, feature documentation, AI references, issues.
+        documentation = receipt["documentation"]
+        if not isinstance(documentation, dict) or set(documentation) != {
+            "capability_rows", "feature_docs", "ai_references", "issue_links",
+        }:
+            raise ValueError(f"{context} has an invalid documentation field")
+        for key in ("capability_rows", "feature_docs", "ai_references", "issue_links"):
+            _strings(documentation[key], field=f"{context}.documentation.{key}", nonempty=True)
+        if set(documentation["capability_rows"]) - ledger_ids:
+            raise ValueError(f"{context} names unknown capability rows")
+        for key in ("feature_docs", "ai_references"):
+            for path in documentation[key]:
+                if not _safe_relative_path(path):
+                    raise ValueError(f"{context} has an unsafe documentation path")
+                if source_root is not None and not (source_root / path).is_file():
+                    raise ValueError(f"{context} documentation is missing: {path}")
+
+        # 5. Remaining limitations and invalidation conditions.
+        limitations = receipt["limitations"]
+        if not isinstance(limitations, dict) or set(limitations) != {
+            "remaining", "within_required_scope", "invalidation",
+        }:
+            raise ValueError(f"{context} has an invalid limitations field")
+        _strings(limitations["remaining"], field=f"{context}.limitations.remaining")
+        if limitations["within_required_scope"] != []:
+            raise ValueError(f"{context} cannot close with a limitation inside its native scope")
+        invalidation = _validate_invalidation(
+            limitations["invalidation"],
+            context=f"{context}.limitations.invalidation",
+            keys=frozenset({"conditions", "inputs", "fingerprint_sha256"}),
+        )
+
+        artifact_verified = False
+        if artifact_root is not None:
+            candidate = (artifact_root / artifact["path"]).resolve()
+            if not candidate.is_relative_to(artifact_root.resolve()) or not candidate.is_file():
+                raise ValueError(f"{context} artifact is missing: {artifact['path']}")
+            raw = candidate.read_bytes()
+            if sha256(raw).hexdigest() != artifact["sha256"]:
+                raise ValueError(f"{context} artifact digest changed: {artifact['path']}")
+            document = parse_json_document(raw, context=f"{context} artifact")
+            if document.get("work_item") != item:
+                raise ValueError(f"{context} artifact names a different work item")
+            if document.get("required_case_ids", case_ids) != case_ids:
+                raise ValueError(f"{context} required cases differ from its artifact")
+            artifact_verified = True
+        fresh: bool | None = None
+        if source_root is not None:
+            fresh = input_fingerprint(source_root, invalidation["inputs"]) == invalidation[
+                "fingerprint_sha256"
+            ]
+        if fresh is False:
+            status = "stale_receipt"
+        elif artifact_verified and fresh:
+            status = "closed"
+        else:
+            status = "receipt_unverified"
+        statuses[item] = {"status": status, "issue": receipt["issue"]}
+    for item in claimed:
+        statuses.setdefault(item, {"status": "claimed_without_receipt", "issue": None})
+    return statuses
+
+
 def validate_register(
     register: dict[str, Any],
     evidence: dict[str, Any],
@@ -1195,6 +1710,7 @@ def validate_register(
     cgate_contract_inventory: dict[str, Any] | None = None,
     cgate_contract_raw: bytes | None = None,
     artifact_root: Path | None = None,
+    source_root: Path | None = None,
 ) -> dict[str, Any]:
     if register.get("schema_version") != 1:
         raise ValueError("Parity register requires schema_version 1")
@@ -1248,7 +1764,9 @@ def validate_register(
             raise ValueError("Parsed parity evidence differs from supplied evidence")
         if sha256(evidence_raw).hexdigest() != expected_bundle_digest:
             raise ValueError("Parity evidence bundle digest changed")
-    evidence_by_id = validate_evidence_bundle(evidence, artifact_root=artifact_root)
+    evidence_by_id = validate_evidence_bundle(
+        evidence, artifact_root=artifact_root, source_root=source_root
+    )
     if evidence["target"] != register["target"]:
         raise ValueError("Parity evidence target does not match register target")
 
@@ -1279,6 +1797,7 @@ def validate_register(
         if feature.get("status") not in IMPLEMENTATION_STATES:
             raise ValueError(f"{feature_id} has an unknown feature status")
         ledger_by_id[feature_id] = feature
+    workflows_by_id = _validate_workflows(register)
 
     obligations = register.get("obligations")
     if not isinstance(obligations, list) or not obligations:
@@ -1461,6 +1980,7 @@ def validate_register(
             raise ValueError(
                 f"{obligation_id} acceptance must define exactly {REQUIRED_DIMENSIONS}"
             )
+        _validate_obligation_workflow(obligation_id, obligation, acceptance, workflows_by_id)
         for dimension, state in acceptance.items():
             if state not in ACCEPTANCE_STATES:
                 raise ValueError(f"{obligation_id}.{dimension} has an unknown state")
@@ -1793,8 +2313,27 @@ def validate_register(
         )
     if register["census_complete"] and (unresolved_scope or unresolved_domains):
         raise ValueError("census_complete cannot hide unresolved scope")
+    denominator_history = _validate_denominator_history(
+        register,
+        {
+            "obligations": len(obligations_by_id),
+            "scope_items": len(scope_by_id),
+            "workflows": len(workflows_by_id),
+        },
+        denominator_digest(list(obligations_by_id.values()), list(scope_by_id.values())),
+    )
+    work_item_status = _validate_closure_receipts(
+        register,
+        obligations_by_id=obligations_by_id,
+        ledger_ids=set(ledger_by_id),
+        artifact_root=artifact_root,
+        source_root=source_root,
+    )
 
     return {
+        "workflows_by_id": workflows_by_id,
+        "denominator_history": denominator_history,
+        "work_item_status": work_item_status,
         "ledger_by_id": ledger_by_id,
         "obligations_by_id": obligations_by_id,
         "evidence_by_id": evidence_by_id,
@@ -1821,6 +2360,7 @@ def evaluate(
     cgate_contract_inventory: dict[str, Any] | None = None,
     cgate_contract_raw: bytes | None = None,
     artifact_root: Path | None = None,
+    source_root: Path | None = None,
 ) -> dict[str, Any]:
     validated = validate_register(
         register,
@@ -1831,6 +2371,7 @@ def evaluate(
         cgate_contract_inventory=cgate_contract_inventory,
         cgate_contract_raw=cgate_contract_raw,
         artifact_root=artifact_root,
+        source_root=source_root,
     )
     obligations = list(validated["obligations_by_id"].values())
     defined = [item for item in obligations if item["definition_status"] == "defined"]
@@ -1846,11 +2387,30 @@ def evaluate(
             for state in item["acceptance"].values()
         )
     ]
+    accepted_ids = {item["id"] for item in accepted}
+    workflows_by_id = validated["workflows_by_id"]
+    workflow_members: dict[str, list[dict[str, Any]]] = {
+        workflow_id: [] for workflow_id in workflows_by_id
+    }
+    for item in obligations:
+        workflow_members[item["workflow_id"]].append(item)
+    empty_workflows = sorted(
+        workflow_id for workflow_id, members in workflow_members.items() if not members
+    )
+    placeholder_obligations = sum(
+        len(members)
+        for workflow_id, members in workflow_members.items()
+        if workflows_by_id[workflow_id]["allocation"] == "placeholder"
+    )
+    # A fixed denominator also needs every workflow to have reviewed members
+    # and no obligation left in an unallocated umbrella.
     denominator_ready = (
         register["census_complete"]
         and not validated["unresolved_scope_items"]
         and not validated["unresolved_domains"]
         and len(defined) == len(obligations)
+        and not empty_workflows
+        and not placeholder_obligations
     )
 
     # The register binds declared hashes, but only a caller with a trusted
@@ -1858,17 +2418,42 @@ def evaluate(
     # still have those bytes. A wheel's embedded declarations alone cannot
     # establish a completed release.
     evidence_artifacts_verified = artifact_root is not None
+    # Freshness is recomputed only from a source checkout; otherwise the
+    # declared invalidation fingerprints are not trusted.
+    evidence_fingerprints_verified = source_root is not None
+    percentages_available = (
+        denominator_ready and evidence_artifacts_verified and evidence_fingerprints_verified
+    )
 
     def percent(count: int, total: int) -> float | None:
-        if not denominator_ready or not evidence_artifacts_verified or not total:
+        if not percentages_available or not total:
             return None
         return round(count * 100.0 / total, 2)
 
-    complete = (
-        denominator_ready
-        and evidence_artifacts_verified
-        and len(accepted) == len(obligations)
-    )
+    complete = percentages_available and len(accepted) == len(obligations)
+    workflow_report = {}
+    for workflow_id, members in workflow_members.items():
+        workflow = workflows_by_id[workflow_id]
+        workflow_report[workflow_id] = {
+            "name": workflow["name"],
+            "allocation": workflow["allocation"],
+            "minimum_dimensions": workflow["minimum_dimensions"],
+            "oracles": workflow["oracles"],
+            "physical_evidence": workflow["physical_evidence"],
+            "persistence_evidence": workflow["persistence_evidence"],
+            "obligations": len(members),
+            "defined": sum(item["definition_status"] == "defined" for item in members),
+            "implemented": sum(
+                item["implementation_status"] == "implemented" for item in members
+            ),
+            "accepted": sum(item["id"] in accepted_ids for item in members),
+            "blocked": sum("blocked" in item["acceptance"].values() for item in members),
+            "accepted_percent": percent(
+                sum(item["id"] in accepted_ids for item in members), len(members)
+            ),
+        }
+    work_item_status = validated["work_item_status"]
+    closure_counts = Counter(entry["status"] for entry in work_item_status.values())
     status_counts = Counter(feature["status"] for feature in ledger["features"])
     ledger_total = len(ledger["features"])
     acceptance_by_dimension = {}
@@ -1876,7 +2461,7 @@ def evaluate(
         states = Counter(item["acceptance"][dimension] for item in obligations)
         required = len(obligations) - states["not_applicable"]
         dimension_percent = None
-        if denominator_ready and evidence_artifacts_verified:
+        if percentages_available:
             dimension_percent = (
                 100.0
                 if required == 0
@@ -1933,13 +2518,54 @@ def evaluate(
         )
     if not evidence_artifacts_verified:
         blockers.append("evidence artifacts have not been verified against a trusted root")
+    if not evidence_fingerprints_verified:
+        blockers.append(
+            "evidence invalidation fingerprints were not recomputed from a source checkout"
+        )
+    if empty_workflows:
+        blockers.append(f"{len(empty_workflows)} workflows have no mapped obligation")
+    if placeholder_obligations:
+        blockers.append(
+            f"{placeholder_obligations} obligations remain in a placeholder workflow allocation"
+        )
+    for status, message in (
+        ("claimed_without_receipt", "work items are marked closed without a closure receipt"),
+        ("stale_receipt", "work item closure receipts are stale"),
+    ):
+        if closure_counts[status]:
+            blockers.append(f"{closure_counts[status]} {message}")
+    history = validated["denominator_history"]
     return {
         "schema_version": register["schema_version"],
         "denominator_version": register["denominator_version"],
         "census_complete": register["census_complete"],
         "denominator_ready": denominator_ready,
-        "functional_percent_available": denominator_ready and evidence_artifacts_verified,
+        "functional_percent_available": percentages_available,
         "evidence_artifacts_verified": evidence_artifacts_verified,
+        "evidence_fingerprints_verified": evidence_fingerprints_verified,
+        "denominator": {
+            "version": register["denominator_version"],
+            "counts": history[-1]["counts"],
+            "digest": history[-1]["digest"],
+            "history_versions": [entry["version"] for entry in history],
+        },
+        "workflows": {
+            "total": len(workflows_by_id),
+            "with_obligations": len(workflows_by_id) - len(empty_workflows),
+            "without_obligations": empty_workflows,
+            "placeholder_obligations": placeholder_obligations,
+            "by_id": workflow_report,
+        },
+        "work_items": {
+            "total": len(register["work_item_ids"]),
+            "claimed_closed": len(work_item_status),
+            "closed": sorted(
+                item for item, entry in work_item_status.items() if entry["status"] == "closed"
+            ),
+            "status": {
+                item: entry["status"] for item, entry in sorted(work_item_status.items())
+            },
+        },
         "obligations": {
             "total": len(obligations),
             "defined": len(defined),
@@ -2022,7 +2648,8 @@ def evaluate_packaged(
     packaged_ledger = parse_json_document(ledger_raw, context="capabilities.json")
     if packaged_ledger != ledger:
         raise ValueError("Caller feature ledger differs from packaged capabilities.json")
-    return evaluate(
+    source_root, refusal = source_checkout_root(artifact_root)
+    progress = evaluate(
         register,
         evidence,
         ledger,
@@ -2031,4 +2658,7 @@ def evaluate_packaged(
         cgate_contract_inventory=cgate_contract_inventory,
         cgate_contract_raw=cgate_contract_raw,
         artifact_root=artifact_root,
+        source_root=source_root,
     )
+    progress["evidence_fingerprint_refusal"] = refusal
+    return progress
