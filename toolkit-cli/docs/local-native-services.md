@@ -51,3 +51,7 @@ The separately accepted [local network runner](local-native-network.md) adds
 original C-Gate discovery and independent simulator write/disk-restoration
 checks. Its two tests pass on both Python versions; they are separate from
 the 35-test TLS/scene/service checkpoint described above.
+
+Serial PCI probing (`interface probe-serial`) has no native C-Gate
+differential yet; its pseudo-terminal evidence and limits are in
+[serial-interface-probe.md](serial-interface-probe.md).

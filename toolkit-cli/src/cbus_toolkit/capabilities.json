@@ -170,9 +170,11 @@
         "research/verify_network.py",
         "tests/test_cni_discovery.py",
         "docs/cni-discovery.md",
-        "../rust/testdata/vectors/cni_discovery.jsonl"
+        "../rust/testdata/vectors/cni_discovery.jsonl",
+        "tests/test_pci_serial_probe.py",
+        "docs/serial-interface-probe.md"
       ],
-      "limits": "Exact captured 19-byte IPv4 UDP query and strict 30-byte CNI2/Wiser reply decoding are shared by the Python and Rust CLIs, with bounded loopback transport, hidden-product handling, deterministic evidence and no TCP/project mutation. Both CLIs support explicit multi-route scans and OS adapter enumeration, derive bounded directed-broadcast routes, expose a no-I/O plan and retain per-route outcomes; the named adapter is planning provenance and actual packet egress is unverified. Existing native Serial/CNI/Bridge network creation remains explicit. Fresh original Toolkit differential, automatic-mode Windows and broad physical-interface acceptance, firewall/subnet behavior, physical egress verification and complete Toolkit interface setup remain incomplete; a zero-reply run does not prove absence."
+      "limits": "Exact captured 19-byte IPv4 UDP query and strict 30-byte CNI2/Wiser reply decoding are shared by the Python and Rust CLIs, with bounded loopback transport, hidden-product handling, deterministic evidence and no TCP/project mutation. Both CLIs support explicit multi-route scans and OS adapter enumeration, derive bounded directed-broadcast routes, expose a no-I/O plan and retain per-route outcomes; the named adapter is planning provenance and actual packet egress is unverified. `interface probe-serial` exclusively opens one explicit serial port, sends only the existing transport reset and PCIClient identify/RECALL frames, and classifies present/absent/timeout/busy/malformed/not_found/rejected/error; `--setup` applies cmqttd's four interface options only after a present result and verifies them by readback. It is pseudo-terminal/simulator evidence only, without physical PCI, native serial differential or alternate-rate acceptance. Existing native Serial/CNI/Bridge network creation remains explicit. Fresh original Toolkit differential, automatic-mode Windows and broad physical-interface acceptance, firewall/subnet behavior, physical egress verification and complete Toolkit interface setup remain incomplete; a zero-reply run does not prove absence."
     },
     {
       "id": "network-scan-unravel-routing",

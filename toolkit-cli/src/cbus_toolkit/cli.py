@@ -1344,7 +1344,7 @@ def build_parser():
     thermostat_template_options(commands)
 
     interface = commands.add_parser(
-        "interface", help="Discover CNI network interfaces without opening their TCP service"
+        "interface", help="Discover CNI network interfaces and probe local serial PCIs"
     )
     interface_ops = interface.add_subparsers(dest="action", required=True)
     discover = interface_ops.add_parser(
@@ -1383,6 +1383,16 @@ def build_parser():
                       help="Per-probe bound in 1..4096; reaching it marks the scan incomplete")
     scan.add_argument("--include-hidden", action="store_true",
                       help="Include product-id 2 replies hidden by captured Toolkit behavior")
+    probe_serial = interface_ops.add_parser(
+        "probe-serial", help="Exclusively open one serial port, reset and identify its attached PCI"
+    )
+    probe_serial.add_argument("port", help="Explicit serial device, for example /dev/ttyUSB0 or COM3")
+    probe_serial.add_argument("--baud", type=int, default=9600,
+                              help="PCI rate: 9600, 4800, 2400, 1200, 600 or 300")
+    probe_serial.add_argument("--timeout", type=float, default=5.0,
+                              help="Budget in seconds for the probe and for setup, in [1, 60]")
+    probe_serial.add_argument("--setup", action="store_true",
+                              help="After a present result, apply cmqttd's four interface options and verify by readback")
 
     project = commands.add_parser("project", help="Edit legacy Toolkit XML/CBZ projects without discarding unknown data")
     ops = project.add_subparsers(dest="action", required=True)
@@ -3642,6 +3652,11 @@ def run(args):
     if args.area == "interface":
         from .cni_discovery import (discover_cni, plan_host_cni_probes, scan_cni,
                                     scan_host_cni, validate_scan_cni)
+        if args.action == "probe-serial":
+            from .pci_serial_probe import exit_status, probe_serial_interface
+            result = probe_serial_interface(args.port, baud=args.baud, timeout=args.timeout,
+                                            setup=args.setup)
+            return result, exit_status(result)
         if args.action == "discover-cni":
             return discover_cni(
                 bind=args.bind,
