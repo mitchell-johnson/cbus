@@ -157,11 +157,20 @@ class DialogMapTests(unittest.TestCase):
             (ROOT / "docs/toolkit-executable-surface.json").read_text(encoding="utf-8")
         )
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text(encoding="utf-8"))
-        feature = next(row for row in ledger["features"] if row["id"] == "neo-core-key-presets")
-        feature["limits"] = feature["limits"].replace("KEYM4", "KEYMX")
+        feature = next(
+            row for row in ledger["features"] if row["id"] == "dlt-edlt-widgets-and-labels"
+        )
+        feature["limits"] = feature["limits"].replace("KEYGL5", "KEYGLX")
         triage = {row["dialog_id"]: row["ledger_id"] for row in device_dialogs.list_dialogs()}
-        with self.assertRaisesRegex(ValueError, "no longer name KEYM4"):
+        with self.assertRaisesRegex(ValueError, "no longer name KEYGL5"):
             dialog_map.assemble_dialogs(surface, executable, ledger, facts_of(document), triage)
+
+    def test_key_preset_exact_types_follow_the_family_receipt(self):
+        admitted = dialog_map._admitted_key_preset_types()
+        self.assertTrue({"KEY1", "KEY2", "KEY4"} <= admitted["classic-key-presets"])
+        self.assertTrue(
+            {"KEYA3", "KEYB4", "KEYE1", "KEYM4"} <= admitted["neo-core-key-presets"]
+        )
 
     def test_static_factory_recovery_is_pinned(self):
         document = committed()
