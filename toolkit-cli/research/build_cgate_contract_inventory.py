@@ -115,6 +115,207 @@ NATIVE_DALI_HELP_PATH = (
     REPOSITORY / "rust" / "testdata" / "fixtures"
     / "native_cgate_dali_help.json"
 )
+FIXTURE_DIRECTORY = REPOSITORY / "rust" / "testdata" / "fixtures"
+# Application-family fixtures captured from owned native C-Gate 3.4.0.2001
+# with a fake PCI. Each is pinned by digest; a changed fixture must be
+# reviewed and re-pinned before any selector or envelope claim is rebuilt.
+NATIVE_APPLICATION_FIXTURES: dict[str, dict[str, str | None]] = {
+    "AIRCON": {
+        "file": "native_cgate_aircon.json",
+        "format": "native-cgate-aircon-evidence-v1",
+        "sha256": "6b49eedb5b0ae3cf23085d33c04f6527151c6a41e2424b345e59ac7b3cef8315",
+        "boundaries": "validated_boundaries",
+    },
+    "AUDIO": {
+        "file": "native_cgate_audio.json",
+        "format": "native-cgate-audio-evidence-v1",
+        "sha256": "e68380c542c3902553f606a2f1783dd7b0e8371206107076936ac871d718fc87",
+        "boundaries": "validated_boundaries",
+    },
+    "MEASUREMENT": {
+        "file": "native_cgate_measurement.json",
+        "format": None,
+        "sha256": "6ef5b207f7cad5745aef425f674331667d5e03ed1795a7370b3a8163c576fbd2",
+        "boundaries": "bounds",
+    },
+    "MEDIATRANSPORT": {
+        "file": "native_cgate_mediatransport.json",
+        "format": "native-cgate-mediatransport-evidence-v1",
+        "sha256": "12c46dd05d6c7083cdefb28dd7ab4580b131757cf6fb044bf9298a68eed36692",
+        "boundaries": "validated_boundaries",
+    },
+    "SECURITY": {
+        "file": "native_cgate_security.json",
+        "format": "native-cgate-security-evidence-v1",
+        "sha256": "ea163445585448b369e30de0a43b7fb7c9d1fe2212dff08813c90271771d5d42",
+        "boundaries": "validated_boundaries",
+    },
+    "TELEPHONY": {
+        "file": "native_cgate_telephony.json",
+        "format": "native-cgate-telephony-evidence-v1",
+        "sha256": "42c34c046d6fc7773540e3be2c57adbbcd1779eb760e96b7714841f0f3e1b6ef",
+        "boundaries": "validated_boundaries",
+    },
+}
+# Service-family fixtures that retain reply shapes rather than one uniform
+# invocation list. Each shape is attributed to a path by an explicit JSON
+# pointer and class; the attribution basis is recorded with the evidence.
+NATIVE_SHAPE_FIXTURES: dict[str, dict] = {
+    "DEPLOY_QUEUE": {
+        "file": "native_cgate_deploy_queue.json",
+        "sha256": "5b25610c9bcbcc814472a36cf9bc61ae38d520560f7ed3d21a88d70c15c0d7f1",
+        "oracle": {"version": "3.4.0.2001"},
+        "attribution": "fixture shape keys and retained subcommand_help syntax",
+        "paths": {
+            "DEPLOY_QUEUE ADD": (
+                ("accepted", "/native_shapes/add_success"),
+                ("arity", "/native_shapes/missing_or_extra_single_name"),
+                ("target", "/native_shapes/missing_programmer"),
+                ("other", "/native_shapes/duplicate_add"),
+            ),
+            "DEPLOY_QUEUE DELETE": (
+                ("accepted", "/native_shapes/delete_success"),
+                ("arity", "/native_shapes/missing_or_extra_single_name"),
+                ("other", "/native_shapes/delete_not_queued"),
+            ),
+            "DEPLOY_QUEUE DELETE_ALL": (
+                ("accepted", "/native_shapes/empty_delete_all"),
+                ("accepted", "/native_shapes/delete_all_rows"),
+                ("arity", "/native_shapes/delete_all_extra_parameter"),
+                ("value_domain", "/native_shapes/invalid_delete_type"),
+            ),
+            "DEPLOY_QUEUE LIST": (("accepted", "/native_shapes/empty_list"),),
+            "DEPLOY_QUEUE RETRY": (
+                ("accepted", "/native_shapes/retry_success_native"),
+                ("arity", "/native_shapes/missing_or_extra_single_name"),
+                ("target", "/native_shapes/missing_programmer"),
+                ("other", "/native_shapes/retry_init"),
+            ),
+        },
+    },
+    "FILE": {
+        "file": "native_cgate_file.json",
+        "sha256": "ffe617d02e687834253f7bd54dfa3863f03528d0f67748652a35c25f9afa84ef",
+        "oracle": {"version": "3.4.0.2001"},
+        "attribution": "fixture shape keys; LS reuses DIR shapes only because ls_alias_exact is true",
+        "paths": {
+            "FILE DELETE": (
+                ("accepted", "/directory/empty_directory_delete"),
+                ("other", "/directory/nonempty_directory_delete"),
+                ("target", "/errors/delete_missing"),
+                ("value_domain", "/path_guard/delete_error"),
+            ),
+            "FILE DIR": (
+                ("accepted", "/directory/empty"),
+                ("accepted", "/directory/populated"),
+                ("value_domain", "/path_guard/dir_error"),
+            ),
+            "FILE DOWNLOAD": (
+                ("accepted", "/round_trip/download_envelope"),
+                ("target", "/errors/download_missing"),
+            ),
+            "FILE LS": (
+                ("accepted", "/directory/empty"),
+                ("accepted", "/directory/populated"),
+                ("value_domain", "/path_guard/dir_error"),
+            ),
+            "FILE MKDIR": (
+                ("value_domain", "/path_guard/mkdir_error"),
+                ("other", "/errors/mkdir_existing"),
+            ),
+            "FILE SHA256": (
+                ("accepted", "/round_trip/sha256_response"),
+                ("accepted", "/sha256/multiple_success"),
+                ("target", "/sha256/missing"),
+            ),
+            "FILE UPLOAD": (
+                ("accepted", "/round_trip/upload_response"),
+                ("value_domain", "/errors/invalid_base64_character"),
+                ("value_domain", "/errors/invalid_base64_padding"),
+                ("other", "/errors/upload_without_document"),
+            ),
+        },
+    },
+    "PORT": {
+        "file": "native_cgate_port.json",
+        "sha256": "9e4231409117c5a2e9ba8c0c203a56b7a1c1748c70e0961cc25d2de139aa9a66",
+        "oracle": {"version": "3.4.0 build 2001"},
+        "attribution": "fixture shape keys named for each PORT subcommand",
+        "paths": {
+            "PORT CNISCAN": (
+                ("accepted", "/legacy_discovery/row"),
+                ("accepted", "/legacy_discovery/empty"),
+                ("value_domain", "/legacy_discovery/observed_invalid_destination_prefix"),
+                ("value_domain", "/legacy_discovery/observed_invalid_interface"),
+            ),
+            "PORT CNISCAN2": (("accepted", "/cni2_discovery/synthetic_native_response"),),
+            "PORT IFLIST": (
+                ("accepted", "/local_enumeration/iflist_row"),
+                ("accepted", "/local_enumeration/iflist_empty"),
+                ("arity", "/syntax_observations/iflist_extra_argument"),
+            ),
+            "PORT LIST": (
+                ("accepted", "/local_enumeration/list_row"),
+                ("accepted", "/local_enumeration/list_empty"),
+                ("arity", "/syntax_observations/list_extra_argument"),
+            ),
+            "PORT PROBE": (
+                ("accepted", "/probe/success"),
+                ("accepted", "/probe/observed_synthetic_success"),
+                ("arity", "/syntax_observations/probe_missing_type_or_address"),
+                ("value_domain", "/probe/observed_unknown_type"),
+                ("value_domain", "/syntax_observations/etherlite_malformed_or_negative_port"),
+                ("other", "/probe/observed_connected_without_echo"),
+                ("other", "/probe/observed_refused_loopback"),
+            ),
+            "PORT REFRESH": (
+                ("arity", "/syntax_observations/refresh_extra_argument"),
+                ("other", "/local_enumeration/refresh"),
+            ),
+        },
+    },
+    "PP_PROGRAMMER": {
+        "file": "native_cgate_pp_programmer.json",
+        "sha256": "a11854d5cfb7087383864a8ffa0ee52fa3e141532675acbf3bc59690aeaf64bf",
+        "oracle": {"version": "3.4.0.2001"},
+        "attribution": "fixture shape keys naming one PP or PROGRAMMER subcommand",
+        "paths": {
+            "PP CATALOG_INFO": (("accepted", "/native_shapes/catalog_metadata"),),
+            "PP GET_RAW_DATA": (
+                ("accepted", "/native_shapes/raw_initial"),
+                ("accepted", "/native_shapes/raw_after_set"),
+            ),
+            "PP LIST_LOCK": (
+                ("accepted", "/native_shapes/empty_lists/0"),
+                ("accepted", "/native_shapes/lock_row"),
+            ),
+            "PP WRITE_PATCH": (
+                ("arity", "/native_shapes/write_patch_selector/too_few"),
+                ("target", "/native_shapes/write_patch_selector/bad_address"),
+                ("value_domain", "/native_shapes/write_patch_selector/bad_patch_version"),
+            ),
+            "PROGRAMMER CREATE": (("accepted", "/native_shapes/programmer_create"),),
+            "PROGRAMMER LIST": (("accepted", "/native_shapes/empty_lists/2"),),
+            "PROGRAMMER STATUS": (("accepted", "/native_shapes/programmer_empty_status"),),
+            "PROGRAMMER TRIGGER": (("accepted", "/native_shapes/programmer_start_receipt"),),
+        },
+    },
+}
+NATIVE_NET_FIXTURE = {
+    "file": "native_cgate_net_lifecycle.json",
+    "sha256": "8004c25aaccbaa7fd0993099be37dcab08751e7741097ccae61ed90eabe3d332",
+    "format": "native-cgate-net-lifecycle-v1",
+}
+# Declarative-model form rules that dispose of a native counterexample the
+# flat min/max arity cannot express. The marker must remain in manual.rs.
+DECLARATIVE_FORM_RULES = {
+    "AUDIO OUTPUT_ERROR_CODE": 'spec.name == "AUDIO OUTPUT_ERROR_CODE"',
+}
+NATIVE_FIXTURE_ADAPTER_RULE = (
+    "A subaxis is resolved only when its pinned native fixture retains both an "
+    "accepted (200) and a rejected native observation of that class for the "
+    "path; otherwise it is partial with the retained observations."
+)
 LOCAL_CGATE_HARNESS_PATH = ROOT / "research" / "local_cgate.py"
 OUTPUT_PATH = ROOT / "src" / "cbus_toolkit" / "cgate-contract-inventory.json"
 
@@ -240,6 +441,16 @@ def unresolved(reason: str, *source_refs: str, known: object | None = None) -> d
     if known is not None:
         result["known"] = known
     return result
+
+
+def partial(reason: str, *source_refs: str, known: object) -> dict:
+    """Native evidence exists but does not bracket the subaxis."""
+    return {
+        "status": "partial",
+        "reason": reason,
+        "source_refs": list(source_refs),
+        "known": known,
+    }
 
 
 def capability_paths() -> tuple[list[dict], list[dict]]:
@@ -570,7 +781,7 @@ def axis(subaxes: dict[str, dict]) -> dict:
         "resolved"
         if statuses["resolved"] == len(subaxes)
         else "unresolved"
-        if statuses["resolved"] == 0
+        if statuses["unresolved"] == len(subaxes)
         else "partial"
     )
     return {"status": status, "subaxes": subaxes}
@@ -1173,11 +1384,428 @@ def apply_native_session_contract(path: str, axes: dict[str, dict]) -> None:
         axes[axis_name] = axis(axes[axis_name]["subaxes"])
 
 
+def _fixture_ref(file_name: str) -> str:
+    return f"rust/testdata/fixtures/{file_name}"
+
+
+def _negative_class(response: str) -> str:
+    if "Missing parameter" in response or "Too many parameters" in response:
+        return "arity"
+    if response.startswith(("401 ", "402 ")):
+        return "target"
+    if response.startswith(("400 ", "405 ", "408 ")):
+        return "value_domain"
+    raise ValueError(f"Unclassified native application response: {response!r}")
+
+
+def _load_pinned_fixture(label: str, file_name: str, pinned: str) -> tuple[dict, dict]:
+    fixture_path = FIXTURE_DIRECTORY / file_name
+    fixture_digest = digest(fixture_path)
+    if fixture_digest != pinned:
+        raise ValueError(f"Native C-Gate {label} fixture changed")
+    report = json.loads(fixture_path.read_text(encoding="utf-8"))
+    if report.get("oracle", {}).get("jar_sha256") != NATIVE_CGATE_JAR_SHA256:
+        raise ValueError(f"Native C-Gate {label} provenance changed")
+    return report, {"path": _fixture_ref(file_name), "sha256": fixture_digest}
+
+
+def _application_fixture_rows(family: str, report: dict) -> list[dict]:
+    """Normalize exact invocations and, for MEASUREMENT, its error contract."""
+    rows: list[dict] = []
+    keys = ("commands", "negative_examples", "boundary_examples")
+    for key in keys:
+        for entry in report.get(key, []):
+            command = entry.get("command")
+            response = entry.get("status" if family == "MEASUREMENT" else "response")
+            if not isinstance(command, str) or not isinstance(response, str):
+                raise ValueError(f"Native C-Gate {family} fixture row is malformed")
+            words = command.split()
+            if words[0] != family or not re.match(r"^[0-9]{3}[ .]", response):
+                raise ValueError(f"Native C-Gate {family} fixture row changed: {command}")
+            arguments = words[2:]
+            form = None
+            if family == "AUDIO" and len(arguments) > 1:
+                form = "Z" if arguments[1].upper() == "Z" else "multiplexer"
+            rows.append({
+                "path": " ".join(words[:2]).upper() if len(words) > 1 else family,
+                "invocation": command,
+                "arguments": len(arguments),
+                "form": form,
+                "response": response,
+                "class": "accepted" if response.startswith("200 ") else _negative_class(response),
+            })
+    if family == "MEASUREMENT":
+        contract = report.get("error_contract")
+        if (
+            not isinstance(contract, dict)
+            or contract.get("missing") != ["channel", "value", "multiplier", "units"]
+            or contract.get("extra") != "400 Syntax Error: Too many parameters"
+        ):
+            raise ValueError("Native C-Gate MEASUREMENT error contract changed")
+        # The retained report keeps exact messages with ADDRESS/NAME
+        # placeholders, not exact invocations; argument counts stay unknown.
+        for name in contract["missing"]:
+            rows.append({
+                "path": "MEASUREMENT DATA", "missing_parameter": name,
+                "pointer": "/error_contract/missing", "class": "arity",
+            })
+        for key in ("extra", "bad_integer", "out_of_range", "wrong_application",
+                    "bad_device", "bad_channel"):
+            response = contract.get(key)
+            if not isinstance(response, str):
+                raise ValueError("Native C-Gate MEASUREMENT error contract changed")
+            rows.append({
+                "path": "MEASUREMENT DATA", "response": response,
+                "pointer": f"/error_contract/{key}", "class": _negative_class(response),
+            })
+    return rows
+
+
+def _pointer(report: dict, pointer: str) -> object:
+    value: object = report
+    for part in pointer.strip("/").split("/"):
+        if isinstance(value, list) and part.isdigit() and int(part) < len(value):
+            value = value[int(part)]
+        elif isinstance(value, dict) and part in value:
+            value = value[part]
+        else:
+            raise KeyError(pointer)
+    return value
+
+
+def _shape_fixture_rows(family: str, spec: dict, report: dict) -> list[dict]:
+    """Read explicitly attributed reply shapes; a list keeps its terminal line."""
+    oracle = report.get("oracle", {})
+    if any(oracle.get(key) != value for key, value in spec["oracle"].items()):
+        raise ValueError(f"Native C-Gate {family} provenance changed")
+    if family == "FILE" and report.get("directory", {}).get("ls_alias_exact") is not True:
+        raise ValueError("Native C-Gate FILE LS alias evidence changed")
+    rows: list[dict] = []
+    for path, shapes in spec["paths"].items():
+        for kind, pointer in shapes:
+            try:
+                value = _pointer(report, pointer)
+            except KeyError:
+                raise ValueError(f"Native C-Gate {family} fixture shape changed: {pointer}") from None
+            lines = value if isinstance(value, list) else [value]
+            if not lines or not all(isinstance(line, str) and line for line in lines):
+                raise ValueError(f"Native C-Gate {family} fixture shape changed: {pointer}")
+            rows.append({
+                "path": path, "response": lines[-1], "pointer": pointer, "class": kind,
+            })
+    return rows
+
+
+def _net_fixture_rows(report: dict) -> list[dict]:
+    """Exact owned-loopback NET invocations; obsolete paths stay with the matrix."""
+    oracle = report.get("oracle", {})
+    if (
+        report.get("schema") != NATIVE_NET_FIXTURE["format"]
+        or oracle.get("version") != "3.4.0"
+        or oracle.get("build") != 2001
+        or oracle.get("site_project_used") is not False
+        or oracle.get("real_cbus_contacted") is not False
+    ):
+        raise ValueError("Native C-Gate NET lifecycle provenance changed")
+    rows: list[dict] = []
+    for key in ("no_project_and_obsolete", "disposable_project", "cross_project_and_errors"):
+        for entry in report.get("runtime", {}).get(key, []):
+            command, code, final = entry.get("command"), entry.get("code"), entry.get("final")
+            if (
+                not isinstance(command, str)
+                or type(code) is not int
+                or not isinstance(final, str)
+                or not final.startswith(f"{code}")
+            ):
+                raise ValueError(f"Native C-Gate NET lifecycle row changed: {command!r}")
+            words = command.split()
+            if words[0] != "NET" or "This command is obsolete." in final:
+                continue
+            kind = (
+                "accepted" if code < 400
+                else "value_domain" if code == 400
+                else "target" if code == 401
+                else "other"
+            )
+            rows.append({
+                "path": " ".join(words[:2]).upper(),
+                "invocation": command,
+                "arguments": len(words) - 2,
+                "response": final,
+                "class": kind,
+            })
+    return rows
+
+
+def _observation(row: dict) -> dict:
+    return {
+        key: row[key]
+        for key in (
+            "invocation", "arguments", "form", "response", "missing_parameter", "pointer"
+        )
+        if row.get(key) is not None
+    }
+
+
+def _arity_bounds(accepted: list[dict], rejected: list[dict]) -> dict:
+    """Report a bound only where a counted native rejection brackets it."""
+    bounds: dict[str, dict] = {}
+    counted = [row for row in accepted if row.get("arguments") is not None]
+    for form in sorted({row.get("form") or "all" for row in counted}):
+        counts = [row["arguments"] for row in counted if (row.get("form") or "all") == form]
+        applicable = [
+            row for row in rejected
+            if row.get("arguments") is not None
+            and row.get("form") in (None, form if form != "all" else None)
+        ]
+        missing = {
+            row["arguments"] for row in applicable
+            if "Missing parameter" in row["response"]
+        }
+        extra = {
+            row["arguments"] for row in applicable
+            if "Too many parameters" in row["response"]
+        }
+        bounds[form] = {
+            "minimum": min(counts) if min(counts) - 1 in missing else None,
+            "maximum": max(counts) if max(counts) + 1 in extra else None,
+        }
+    return bounds
+
+
+def _declarative_reconciliation(
+    path: str, arity: dict | None, accepted: list[dict], rejected: list[dict],
+    manual_text: str,
+) -> dict | None:
+    if arity is None:
+        return None
+    low = arity["minimum_after_command"]
+    high = arity["maximum_after_command"]
+
+    def inside(count: int) -> bool:
+        return count >= low and (high is None or count <= high)
+
+    contradictions = [
+        {**_observation(row), "model": "rejects"}
+        for row in accepted
+        if row.get("arguments") is not None and not inside(row["arguments"])
+    ] + [
+        {**_observation(row), "model": "accepts"}
+        for row in rejected
+        if row.get("arguments") is not None and inside(row["arguments"])
+    ]
+    counted = [row for row in accepted + rejected if row.get("arguments") is not None]
+    result: dict[str, object] = {
+        "declarative_model_arity": arity,
+        "status": (
+            "contradicted_by_native"
+            if contradictions
+            else "no_native_counterexample"
+            if counted
+            else "no_counted_native_observation"
+        ),
+    }
+    if contradictions:
+        result["contradictions"] = contradictions
+        marker = DECLARATIVE_FORM_RULES.get(path)
+        result["model_disposition"] = (
+            "manual_model_form_rule_rejects_native_counterexample"
+            if marker is not None and marker in manual_text
+            else "unaddressed"
+        )
+    return result
+
+
+def _resolve_native_path(
+    path: str, observed: list[dict], fixture: dict, *,
+    boundaries_ref: str | None, attribution: str | None,
+    arity: dict | None, manual_text: str,
+) -> tuple[dict[str, dict], dict | None]:
+    """Apply the positive-and-negative rule to one path's native rows."""
+    ref = fixture["path"]
+    accepted = [row for row in observed if row["class"] == "accepted"]
+    arity_rejected = [row for row in observed if row["class"] == "arity"]
+    domain_rejected = [row for row in observed if row["class"] == "value_domain"]
+    errors = [row for row in observed if row["class"] != "accepted" and row.get("response")]
+    refs = (ref, MANUAL_REF) if arity is not None else (ref,)
+    base = {
+        "native_fixture": fixture,
+        **({"attribution": attribution} if attribution else {}),
+    }
+    reconciled = _declarative_reconciliation(
+        path, arity, accepted, arity_rejected, manual_text
+    )
+    no_accepted = "The native fixture retains no accepted invocation for this path."
+    arity_evidence = {
+        **base,
+        "argument_counting": "whitespace_words_after_subcommand_including_target",
+        "accepted": [_observation(row) for row in accepted],
+        "rejected": [_observation(row) for row in arity_rejected],
+        **({"declarative_model_reconciliation": reconciled} if reconciled else {}),
+    }
+    if accepted and arity_rejected:
+        argument_arity = resolved(
+            {**arity_evidence, "bracketed_bounds": _arity_bounds(accepted, arity_rejected)},
+            *refs,
+        )
+    else:
+        argument_arity = partial(
+            no_accepted if not accepted else
+            "The native fixture retains accepted invocations but no "
+            "Missing-parameter or Too-many-parameters rejection for this path.",
+            *refs,
+            known=arity_evidence,
+        )
+    domain_evidence = {
+        **base,
+        **({"fixture_boundaries": boundaries_ref} if boundaries_ref else {}),
+        "accepted": [_observation(row) for row in accepted],
+        "rejected": [_observation(row) for row in domain_rejected],
+    }
+    value_domains = (
+        resolved(domain_evidence, ref)
+        if accepted and domain_rejected
+        else partial(
+            no_accepted if not accepted else
+            "The native fixture retains accepted values but no value "
+            "rejection for this path.",
+            ref,
+            known=domain_evidence,
+        )
+    )
+    envelope_evidence = {
+        **base,
+        "accepted": sorted({row["response"] for row in accepted}),
+        "rejected": [_observation(row) for row in errors],
+        "scope": "native_command_reply_only; success is not device acceptance",
+    }
+    command_envelope = (
+        resolved(envelope_evidence, ref)
+        if accepted and errors
+        else partial(
+            no_accepted if not accepted else
+            "The native fixture retains only success replies for this "
+            "path; no native error envelope is captured.",
+            ref,
+            known=envelope_evidence,
+        )
+    )
+    return {
+        "argument_arity": argument_arity,
+        "value_domains": value_domains,
+        "command_envelope": command_envelope,
+    }, reconciled
+
+
+def native_application_contracts(
+    inventory_paths: set[str], arities: dict[str, dict[str, int | None]],
+) -> tuple[dict[str, dict[str, dict]], dict]:
+    """Resolve arity, value-domain and envelope subaxes from native fixtures.
+
+    Each subaxis needs an accepted and a same-class rejected native
+    observation for the path. Anything less stays partial.
+    """
+    manual_text = MANUAL_PATH.read_text(encoding="utf-8")
+    groups: list[tuple[str, str, dict, list[dict], str | None, str | None]] = []
+    for family, spec in NATIVE_APPLICATION_FIXTURES.items():
+        report, fixture = _load_pinned_fixture(
+            f"{family} application", str(spec["file"]), str(spec["sha256"])
+        )
+        if (
+            report.get("format") != spec["format"]
+            or report["oracle"].get("version") != "3.4.0.2001"
+            or not isinstance(report.get(str(spec["boundaries"])), dict)
+        ):
+            raise ValueError(f"Native C-Gate {family} application provenance changed")
+        groups.append((
+            family, f"native_{family.lower()}_application", fixture,
+            _application_fixture_rows(family, report),
+            f"{fixture['path']}#{spec['boundaries']}", None,
+        ))
+    for family, spec in NATIVE_SHAPE_FIXTURES.items():
+        report, fixture = _load_pinned_fixture(family, spec["file"], spec["sha256"])
+        groups.append((
+            family, f"native_{family.lower()}_contract", fixture,
+            _shape_fixture_rows(family, spec, report), None, spec["attribution"],
+        ))
+    report, fixture = _load_pinned_fixture(
+        "NET lifecycle", NATIVE_NET_FIXTURE["file"], NATIVE_NET_FIXTURE["sha256"]
+    )
+    groups.append((
+        "NET", "native_net_lifecycle_contract", fixture, _net_fixture_rows(report),
+        None, None,
+    ))
+
+    contracts: dict[str, dict[str, dict]] = {}
+    fixtures: dict[str, dict] = {}
+    reconciliation: dict[str, list] = {
+        "no_native_counterexample": [],
+        "contradicted_by_native": [],
+        "no_counted_native_observation": [],
+    }
+    for family, source_name, fixture, rows, boundaries_ref, attribution in groups:
+        by_path: dict[str, list[dict]] = {}
+        for row in rows:
+            if row["path"] not in inventory_paths:
+                # Unknown-subcommand probes (for example SECURITY BOGUS)
+                # belong to the family root, which this adapter leaves open.
+                if row["path"].split()[-1] != "BOGUS":
+                    raise ValueError(f"Native C-Gate fixture path is not inventoried: {row['path']}")
+                continue
+            by_path.setdefault(row["path"], []).append(row)
+        if set(by_path) & set(contracts):
+            raise ValueError(f"Native C-Gate fixture adapters overlap: {family}")
+        fixtures[family] = {
+            **fixture,
+            "source": source_name,
+            "observations": sum(len(value) for value in by_path.values()),
+            "paths": len(by_path),
+        }
+        for path, observed in sorted(by_path.items()):
+            contracts[path], reconciled = _resolve_native_path(
+                path, observed, fixture,
+                boundaries_ref=boundaries_ref, attribution=attribution,
+                arity=arities.get(path), manual_text=manual_text,
+            )
+            if reconciled is not None:
+                reconciliation[str(reconciled["status"])].append(path)
+    summary = {
+        "rule": NATIVE_FIXTURE_ADAPTER_RULE,
+        "fixtures": fixtures,
+        "declarative_arity_reconciliation": {
+            status: sorted(paths) for status, paths in reconciliation.items()
+        },
+    }
+    return contracts, summary
+
+
+def apply_native_application_contract(
+    path: str, axes: dict[str, dict], contracts: dict[str, dict[str, dict]],
+    help_digest: str | None,
+) -> None:
+    contract = contracts.get(path)
+    if contract is None:
+        return
+    selector = axes["selector_grammar"]["subaxes"]
+    selector["argument_arity"] = contract["argument_arity"]
+    selector["value_domains"] = contract["value_domains"]
+    if help_digest is not None:
+        for name in ("argument_arity", "value_domains"):
+            evidence = selector[name].get("value") or selector[name]["known"]
+            evidence["help_syntax_sha256"] = help_digest
+    axes["response_event_envelopes"]["subaxes"]["command_envelope"] = (
+        contract["command_envelope"]
+    )
+    for axis_name in ("selector_grammar", "response_event_envelopes"):
+        axes[axis_name] = axis(axes[axis_name]["subaxes"])
+
+
 def build_row(
     row: dict,
     arities: dict[str, dict[str, int | None]],
     syntax_hashes: dict[str, str],
     native_roles: dict[str, dict],
+    application_contracts: dict[str, dict[str, dict]],
 ) -> dict:
     path = row["path"]
     matrix_ref = MATRIX_REF if row["inventory"] == "primary" else SUPPLEMENT_REF
@@ -1393,6 +2021,7 @@ def build_row(
         "implementation_acceptance": axis(implementation),
     }
     apply_native_session_contract(path, axes)
+    apply_native_application_contract(path, axes, application_contracts, help_digest)
     contract = {
         "id": f"cgate-contract:{sha256(path.encode()).hexdigest()[:16]}",
         "path": path,
@@ -1414,8 +2043,11 @@ def build() -> dict:
     )
     arities = application_arities()
     syntax_hashes = public_syntax_hashes()
+    application_contracts, application_summary = native_application_contracts(
+        {row["path"] for row in primary + supplement}, arities
+    )
     contracts = [
-        build_row(row, arities, syntax_hashes, native_roles)
+        build_row(row, arities, syntax_hashes, native_roles, application_contracts)
         for row in primary + supplement
     ]
     axis_counts: dict[str, dict[str, int]] = {}
@@ -1437,7 +2069,7 @@ def build() -> dict:
     return {
         "schema_version": 1,
         "target": "C-Gate 3.4.0.2001 command endpoint",
-        "inventory_version": "cgate-contracts-2026-09-28.6",
+        "inventory_version": "cgate-contracts-2026-09-29.1",
         "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
         "sources": {
             "capability_matrix": {"sha256": digest(MATRIX_PATH)},
@@ -1459,6 +2091,10 @@ def build() -> dict:
             "native_remaining_handler_roles": {"sha256": digest(NATIVE_REMAINING_ROLE_PATH)},
             "native_unprobed_handler_roles": {"sha256": digest(NATIVE_UNPROBED_ROLE_PATH)},
             "native_final_handler_roles": {"sha256": digest(NATIVE_FINAL_ROLE_PATH)},
+            **{
+                summary["source"]: {"sha256": summary["sha256"]}
+                for summary in application_summary["fixtures"].values()
+            },
         },
         "counts": {
             "paths": len(contracts),
@@ -1478,6 +2114,7 @@ def build() -> dict:
             "subaxis_status": subaxis_counts,
         },
         "axis_schema": {key: list(value) for key, value in AXIS_SUBAXES.items()},
+        "native_application_fixture_adapters": application_summary,
         "contracts": contracts,
     }
 

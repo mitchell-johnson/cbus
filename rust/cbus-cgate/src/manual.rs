@@ -1506,7 +1506,17 @@ impl Server {
 
         if let Some(spec) = application_spec(words) {
             let args = &words[2..];
-            if args.len() < spec.min_args || spec.max_args.is_some_and(|max| args.len() > max) {
+            // Native C-Gate 3.4 has no Z (function-code) form for this
+            // command: `AUDIO OUTPUT_ERROR_CODE 254/205 Z 0 0` is rejected as
+            // too many parameters (native_cgate_audio.json).
+            let unsupported_z_form = spec.name == "AUDIO OUTPUT_ERROR_CODE"
+                && args
+                    .get(1)
+                    .is_some_and(|word| word.eq_ignore_ascii_case("Z"));
+            if unsupported_z_form
+                || args.len() < spec.min_args
+                || spec.max_args.is_some_and(|max| args.len() > max)
+            {
                 return Some(err(
                     tag,
                     status::BAD_REQUEST,
@@ -5043,6 +5053,53 @@ mod tests {
             server.handle("[11] CLOCK TIME 254/223 25:00:00").status,
             400
         );
+    }
+
+    /// Reconcile the declarative arities with every native C-Gate 3.4.0.2001
+    /// application invocation that the retained fixtures classify by arity:
+    /// a captured `200` must pass the arity check and a captured `Missing
+    /// parameter`/`Too many parameters` must fail it.
+    #[test]
+    fn declarative_arities_match_native_application_arity_observations() {
+        let fixtures = [
+            include_str!("../../testdata/fixtures/native_cgate_aircon.json"),
+            include_str!("../../testdata/fixtures/native_cgate_audio.json"),
+            include_str!("../../testdata/fixtures/native_cgate_mediatransport.json"),
+            include_str!("../../testdata/fixtures/native_cgate_security.json"),
+            include_str!("../../testdata/fixtures/native_cgate_telephony.json"),
+        ];
+        let mut checked = 0;
+        for raw in fixtures {
+            let document: serde_json::Value = serde_json::from_str(raw).unwrap();
+            let rows = ["commands", "negative_examples", "boundary_examples"]
+                .into_iter()
+                .filter_map(|key| document[key].as_array())
+                .flatten();
+            for row in rows {
+                let command = row["command"].as_str().unwrap();
+                let response = row["response"].as_str().unwrap();
+                let words: Vec<&str> = command.split_whitespace().collect();
+                let Some(spec) = application_spec(&words) else {
+                    continue;
+                };
+                let arity_rejected = response.contains("Missing parameter")
+                    || response.contains("Too many parameters");
+                if !arity_rejected && !response.starts_with("200 ") {
+                    continue;
+                }
+                let mut server = Server::new(AccessLevel::Program).with_programming(true);
+                let reply = server.handle(&format!("[1] {command}"));
+                let invalid = format!("400 {} has invalid arguments", spec.name);
+                assert_eq!(
+                    reply.final_text.ends_with(&invalid),
+                    arity_rejected,
+                    "{command}: native {response:?}, model {:?}",
+                    reply.final_text
+                );
+                checked += 1;
+            }
+        }
+        assert_eq!(checked, 106, "native arity observation set changed");
     }
 
     #[test]

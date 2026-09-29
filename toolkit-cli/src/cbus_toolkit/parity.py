@@ -155,6 +155,20 @@ CGATE_CONTRACT_AXIS_SCHEMA = {
         "functional_acceptance",
     ),
 }
+# Native fixtures whose observations may resolve selector and envelope
+# subaxes. The inventory must bind each by digest under this source name.
+CGATE_NATIVE_APPLICATION_FIXTURE_SOURCES = {
+    **{
+        f"rust/testdata/fixtures/native_cgate_{family}.json": f"native_{family}_application"
+        for family in (
+            "aircon", "audio", "measurement", "mediatransport", "security", "telephony"
+        )
+    },
+    **{
+        f"rust/testdata/fixtures/native_cgate_{family}.json": f"native_{family}_contract"
+        for family in ("deploy_queue", "file", "net_lifecycle", "port", "pp_programmer")
+    },
+}
 CGATE_SESSION_PILOT_IDS = {
     "SESSION_ID": "cgate-function:session-id-query",
     "SESSION_ID ALL": "cgate-function:session-id-all",
@@ -582,10 +596,12 @@ def _validate_contract_axes(
         if not isinstance(subaxes, dict) or tuple(subaxes) != subaxis_names:
             raise ValueError(f"{context}.{axis_name} has invalid subaxes")
         resolved_count = 0
+        partial_count = 0
         for subaxis_name, subaxis in subaxes.items():
             subaxis_context = f"{context}.{axis_name}.{subaxis_name}"
             if not isinstance(subaxis, dict) or subaxis.get("status") not in {
                 "resolved",
+                "partial",
                 "unresolved",
             }:
                 raise ValueError(f"{subaxis_context} has an invalid status")
@@ -606,12 +622,16 @@ def _validate_contract_axes(
                 or "value" in subaxis
             ):
                 raise ValueError(f"{subaxis_context} lacks an unresolved reason")
+            elif subaxis["status"] == "partial":
+                partial_count += 1
+                if not isinstance(subaxis.get("known"), dict):
+                    raise ValueError(f"{subaxis_context} lacks partial evidence")
             subaxis_status[f"{axis_name}.{subaxis_name}"] = subaxis["status"]
         expected_status = (
             "resolved"
             if resolved_count == len(subaxes)
             else "unresolved"
-            if resolved_count == 0
+            if resolved_count == 0 and partial_count == 0
             else "partial"
         )
         if axis.get("status") != expected_status:
@@ -663,6 +683,8 @@ def validate_cgate_contract_inventory(
             "native_final_handler_roles",
     } <= set(sources):
         raise ValueError("C-Gate contract native handler role sources are missing")
+    if not set(CGATE_NATIVE_APPLICATION_FIXTURE_SOURCES.values()) <= set(sources):
+        raise ValueError("C-Gate contract native application fixture sources are missing")
     contracts = inventory.get("contracts")
     if not isinstance(contracts, list) or len(contracts) != 442:
         raise ValueError("C-Gate contract inventory requires exactly 442 contracts")
@@ -709,6 +731,27 @@ def validate_cgate_contract_inventory(
         if contract.get("contract_sha256") != _canonical_object_digest(unsigned):
             raise ValueError(f"{contract_id} contract digest changed")
         statuses, substatuses = _validate_contract_axes(axes, context=contract_id)
+        for axis in axes.values():
+            for subaxis in axis["subaxes"].values():
+                evidence = subaxis.get("value", subaxis.get("known"))
+                if not isinstance(evidence, dict) or "native_fixture" not in evidence:
+                    continue
+                fixture = evidence["native_fixture"]
+                source_name = (
+                    CGATE_NATIVE_APPLICATION_FIXTURE_SOURCES.get(fixture.get("path"))
+                    if isinstance(fixture, dict)
+                    else None
+                )
+                if (
+                    source_name is None
+                    or subaxis["status"] == "unresolved"
+                    or fixture != {
+                        "path": fixture["path"],
+                        "sha256": sources[source_name]["sha256"],
+                    }
+                    or fixture["path"] not in subaxis["source_refs"]
+                ):
+                    raise ValueError(f"{contract_id} native fixture binding changed")
         roles_axis = axes["authorization"]["subaxes"]["handler_roles"]
         roles_known = roles_axis.get("known", {})
         if not isinstance(roles_known, dict):

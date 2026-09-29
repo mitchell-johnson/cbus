@@ -853,18 +853,27 @@ capture script, local harness and Rust registry is checked during generation.
 Those 431 rows retain unresolved
 handler-role subaxes and partial authorization axes: lower-role `420` denial
 and reaching a later stage at the floor do not prove other selectors,
-object-level authorization or physical success. The inventory retains 70
-model arities as unresolved known facts pending production-parser
-reconciliation. The pinned original C-Gate command-session trace and production
-parser and pinned native selector matrix now resolve five path arities, five session-state axes, five
-target-form axes, three value domains and five state effects for `SESSION_ID`
-variants, `EVENT` and `QUIT`. `EVENT` mode value domains and incomplete
-response/event cases remain open.
-Target forms for the other 437 paths, value domains for the other
-439, 44 argument-dependent programming-gate decisions, complete handler roles
-on all 442 paths (including the 431 with scoped entry observations), most
-exact response/event envelopes and 433 command-specific
-effect contracts remain open, and no path has functional acceptance evidence.
+object-level authorization or physical success. The pinned original C-Gate
+command-session trace and production parser and pinned native selector matrix
+resolve five path arities, five session-state axes, five target-form axes,
+three value domains and five state effects for `SESSION_ID` variants, `EVENT`
+and `QUIT`. `EVENT` mode value domains and incomplete response/event cases
+remain open. Digest-pinned native fixture adapters for AIRCON, AUDIO,
+MEASUREMENT, MEDIATRANSPORT, SECURITY and TELEPHONY, plus DEPLOY_QUEUE, FILE,
+NET, PORT and PP/PROGRAMMER, mark a subaxis resolved only when the fixture
+keeps both an accepted and a same-class rejected native observation for the
+path; the adapters cover 100 leaves, 92 of which keep at least one `partial`
+subaxis. Argument arity is now resolved
+for 21 paths (84 partial), value domains for 33 (70 partial) and command
+envelopes for 45 (57 partial). The 64 declarative model arities with native
+observations are reconciled: 63 have no native counterexample and
+`AUDIO OUTPUT_ERROR_CODE` is contradicted by the native Z-form rejection, which
+`cgate-mock` now also rejects; six model arities have no native fixture.
+Target forms for the other 437 paths, 337 arities, 339 value domains, 44
+argument-dependent programming-gate decisions, complete handler roles on all
+442 paths (including the 431 with scoped entry observations), 340 command
+envelopes and 433 command-specific effect contracts remain open, and no path
+has functional acceptance evidence.
 P0.02 and issue #14 therefore remain open.
 
 ### Blockers to remove early

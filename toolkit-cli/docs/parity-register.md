@@ -235,13 +235,27 @@ auditable but can never report full parity.
 Every maintained C-Gate path now has the same seven structured axes: selector
 grammar, session states, target forms, authorization, response/event
 envelopes, effects/routing, and implementation/acceptance. Each axis is split
-into named subaxes with a `resolved` value or an `unresolved` reason and source
-references. An aggregate axis is `resolved` only when all of its subaxes are
-resolved. The inventory binds every row and its axes by SHA-256, binds the
+into named subaxes with a `resolved` value, or a `partial` or `unresolved`
+reason, and source references. A `partial` subaxis carries native evidence that
+does not yet meet its resolution rule. An aggregate axis is `resolved` only
+when all of its subaxes are resolved. The inventory binds every row and its axes by SHA-256, binds the
 source files and the exact `requires_programming_auth` function, and is copied
 into the parity register by contract ID and digest. The packaged validator
 rejects altered rows, source-inventory substitution, count drift and a scope
 row that no longer matches its packaged contract.
+
+Native fixture adapters read eleven digest-pinned owned C-Gate 3.4.0.2001
+fixtures (six application families, then DEPLOY_QUEUE, FILE, NET, PORT and
+PP/PROGRAMMER) for 100 leaves. Argument arity, value domains and the command
+envelope become `resolved` only when the fixture keeps both an accepted and a
+same-class rejected native observation for the path; otherwise they are
+`partial` with the retained observations. Each value cites the fixture path and
+SHA-256, and the packaged validator rejects a fixture binding that differs from
+the inventory sources. Shape-only fixtures record the JSON pointer and
+attribution basis for every observation. The adapters also reconcile the 64
+declarative model arities that have native observations and record the one
+contradiction, `AUDIO OUTPUT_ERROR_CODE` with a Z form, in
+`native_application_fixture_adapters`.
 
 The current inventory resolves the command path for all 442 paths, connection
 and recovery-mode behavior for all 442, peer access policy for all 442, and the

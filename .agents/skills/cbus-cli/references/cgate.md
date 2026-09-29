@@ -21,7 +21,7 @@ For machine-readable per-path scope, inspect
 primary and 11 supplement paths with selector, session, target, authorization,
 response/event, effect/routing and implementation/acceptance axes. A resolved
 routing or LOGIN-gate subaxis is not path acceptance. Preserve every
-`unresolved` reason, regenerate it with
+`partial` and `unresolved` reason, regenerate it with
 `toolkit-cli/research/build_cgate_contract_inventory.py`, then regenerate the
 parity register; do not hand-edit either generated JSON file.
 

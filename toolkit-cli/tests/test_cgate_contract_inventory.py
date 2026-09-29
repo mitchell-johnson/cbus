@@ -55,20 +55,35 @@ def test_resolved_subaxes_are_exactly_counted_without_acceptance_inflation() -> 
     assert counts["subaxis_status"]["selector_grammar.command_path"] == {
         "resolved": 442
     }
+    # Native fixture adapters: 16 arity, 30 value-domain and 43 envelope
+    # subaxes have both accepted and rejected native observations; every
+    # other observed leaf stays partial.
     assert counts["subaxis_status"]["selector_grammar.argument_arity"] == {
-        "resolved": 5,
-        "unresolved": 437,
+        "partial": 84,
+        "resolved": 21,
+        "unresolved": 337,
     }
     assert counts["subaxis_status"]["selector_grammar.value_domains"] == {
-        "resolved": 3,
-        "unresolved": 439,
+        "partial": 70,
+        "resolved": 33,
+        "unresolved": 339,
+    }
+    assert counts["subaxis_status"]["response_event_envelopes.command_envelope"] == {
+        "partial": 57,
+        "resolved": 45,
+        "unresolved": 340,
     }
     assert counts["declarative_argument_arities"] == 70
+
+    def declarative(subaxis: dict) -> dict | None:
+        evidence = subaxis.get("value", subaxis.get("known")) or {}
+        return evidence.get("declarative_model_arity") or evidence.get(
+            "declarative_model_reconciliation", {}
+        ).get("declarative_model_arity")
+
     known_arities = sum(
-        "declarative_model_arity"
-        in row["axes"]["selector_grammar"]["subaxes"]["argument_arity"].get(
-            "known", {}
-        )
+        declarative(row["axes"]["selector_grammar"]["subaxes"]["argument_arity"])
+        is not None
         for row in inventory()["contracts"]
     )
     assert known_arities == 70
@@ -780,3 +795,183 @@ def test_contract_domain_cannot_resolve_while_any_axis_is_incomplete() -> None:
             cgate_contract_inventory=contracts,
             cgate_contract_raw=contract_raw,
         )
+
+
+ADAPTER_FAMILIES = {
+    "AIRCON": "AIRCON", "AUDIO": "AUDIO", "MEASUREMENT": "MEASUREMENT",
+    "MEDIATRANSPORT": "MEDIATRANSPORT", "SECURITY": "SECURITY",
+    "TELEPHONY": "TELEPHONY", "DEPLOY_QUEUE": "DEPLOY_QUEUE", "FILE": "FILE",
+    "PORT": "PORT", "PP": "PP_PROGRAMMER", "PROGRAMMER": "PP_PROGRAMMER",
+    "NET": "NET",
+}
+
+
+def adapter_fixture_files() -> list[str]:
+    return [
+        *(str(spec["file"]) for spec in contract_builder.NATIVE_APPLICATION_FIXTURES.values()),
+        *(spec["file"] for spec in contract_builder.NATIVE_SHAPE_FIXTURES.values()),
+        contract_builder.NATIVE_NET_FIXTURE["file"],
+    ]
+
+
+def copy_adapter_fixtures(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, replaced: str, content: dict
+) -> Path:
+    for name in adapter_fixture_files():
+        (tmp_path / name).write_bytes(
+            (contract_builder.FIXTURE_DIRECTORY / name).read_bytes()
+        )
+    fixture = tmp_path / replaced
+    fixture.write_text(json.dumps(content), encoding="utf-8")
+    monkeypatch.setattr(contract_builder, "FIXTURE_DIRECTORY", tmp_path)
+    return fixture
+
+
+def test_native_fixture_adapters_pin_resolved_counts_per_family() -> None:
+    document = inventory()
+    summary = document["native_application_fixture_adapters"]
+    assert summary["rule"] == contract_builder.NATIVE_FIXTURE_ADAPTER_RULE
+    assert {family: row["paths"] for family, row in summary["fixtures"].items()} == {
+        "AIRCON": 11, "AUDIO": 19, "MEASUREMENT": 1,
+        "MEDIATRANSPORT": 21, "SECURITY": 7, "TELEPHONY": 5,
+        "DEPLOY_QUEUE": 5, "FILE": 7, "PORT": 6, "PP_PROGRAMMER": 8, "NET": 10,
+    }
+    statuses: dict[str, Counter] = {}
+    for row in document["contracts"]:
+        family = ADAPTER_FAMILIES.get(row["path"].split()[0])
+        if family is None:
+            continue
+        subaxes = {
+            **row["axes"]["selector_grammar"]["subaxes"],
+            **row["axes"]["response_event_envelopes"]["subaxes"],
+        }
+        if "native_fixture" not in subaxes["command_envelope"].get(
+            "value", subaxes["command_envelope"].get("known", {})
+        ):
+            continue
+        counter = statuses.setdefault(family, Counter())
+        source = summary["fixtures"][family]
+        for name in ("argument_arity", "value_domains", "command_envelope"):
+            subaxis = subaxes[name]
+            assert subaxis["status"] in {"resolved", "partial"}, row["path"]
+            counter[subaxis["status"]] += 1
+            evidence = subaxis.get("value", subaxis.get("known"))
+            assert evidence["native_fixture"] == {
+                "path": source["path"], "sha256": source["sha256"]
+            }
+            assert source["path"] in subaxis["source_refs"]
+            assert document["sources"][source["source"]] == {"sha256": source["sha256"]}
+    # resolved/partial across the arity, value-domain and envelope subaxes.
+    assert {family: dict(counter) for family, counter in statuses.items()} == {
+        "AIRCON": {"resolved": 7, "partial": 26},
+        "AUDIO": {"resolved": 11, "partial": 46},
+        "MEASUREMENT": {"resolved": 3},
+        "MEDIATRANSPORT": {"resolved": 10, "partial": 53},
+        "SECURITY": {"resolved": 14, "partial": 7},
+        "TELEPHONY": {"resolved": 9, "partial": 6},
+        "DEPLOY_QUEUE": {"resolved": 9, "partial": 6},
+        "FILE": {"resolved": 10, "partial": 11},
+        "PORT": {"resolved": 9, "partial": 9},
+        "PP_PROGRAMMER": {"partial": 24},
+        "NET": {"resolved": 7, "partial": 23},
+    }
+
+
+def test_native_application_arity_is_bracketed_and_reconciled() -> None:
+    document = inventory()
+    arity = contract_by_path(document, "MEDIATRANSPORT PLAY")["axes"][
+        "selector_grammar"
+    ]["subaxes"]["argument_arity"]
+    assert arity["status"] == "resolved"
+    assert arity["value"]["bracketed_bounds"] == {"all": {"minimum": 2, "maximum": 2}}
+    assert arity["value"]["declarative_model_reconciliation"]["status"] == (
+        "no_native_counterexample"
+    )
+    # Native C-Gate has no Z form for OUTPUT_ERROR_CODE. The flat model
+    # arity is contradicted and the cgate-mock form rule disposes of it.
+    audio = contract_by_path(document, "AUDIO OUTPUT_ERROR_CODE")["axes"][
+        "selector_grammar"
+    ]["subaxes"]["argument_arity"]
+    reconciliation = audio["value"]["declarative_model_reconciliation"]
+    assert reconciliation["status"] == "contradicted_by_native"
+    assert reconciliation["contradictions"] == [{
+        "invocation": "AUDIO OUTPUT_ERROR_CODE 254/205 Z 0 0",
+        "arguments": 4,
+        "form": "Z",
+        "response": "400 Syntax Error: Too many parameters",
+        "model": "accepts",
+    }]
+    assert reconciliation["model_disposition"] == (
+        "manual_model_form_rule_rejects_native_counterexample"
+    )
+    reconciled = document["native_application_fixture_adapters"][
+        "declarative_arity_reconciliation"
+    ]
+    assert reconciled["contradicted_by_native"] == ["AUDIO OUTPUT_ERROR_CODE"]
+    assert len(reconciled["no_native_counterexample"]) == 63
+    assert reconciled["no_counted_native_observation"] == []
+
+
+@pytest.mark.parametrize(
+    ("file_name", "message"),
+    [
+        ("native_cgate_security.json", "SECURITY application fixture changed"),
+        ("native_cgate_deploy_queue.json", "DEPLOY_QUEUE fixture changed"),
+        ("native_cgate_net_lifecycle.json", "NET lifecycle fixture changed"),
+    ],
+)
+def test_tampered_native_fixture_hash_is_rejected(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, file_name: str, message: str
+) -> None:
+    changed = json.loads((contract_builder.FIXTURE_DIRECTORY / file_name).read_text())
+    changed["tampered"] = True
+    copy_adapter_fixtures(monkeypatch, tmp_path, file_name, changed)
+    with pytest.raises(ValueError, match=message):
+        contract_builder.build()
+
+
+def test_tampered_native_fixture_binding_is_rejected_by_the_validator() -> None:
+    document = inventory()
+    for source in ("native_audio_application", "native_port_contract"):
+        changed = deepcopy(document)
+        changed["sources"][source]["sha256"] = "0" * 64
+        with pytest.raises(ValueError, match="native fixture binding changed"):
+            parity.validate_cgate_contract_inventory(changed)
+
+
+def test_missing_native_negative_row_keeps_axis_partial(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    source = contract_builder.FIXTURE_DIRECTORY / "native_cgate_mediatransport.json"
+    changed = json.loads(source.read_text(encoding="utf-8"))
+    changed["negative_examples"] = [
+        row for row in changed["negative_examples"]
+        if not row["command"].startswith("MEDIATRANSPORT PLAY")
+    ]
+    fixture = copy_adapter_fixtures(monkeypatch, tmp_path, source.name, changed)
+    fixtures = deepcopy(contract_builder.NATIVE_APPLICATION_FIXTURES)
+    fixtures["MEDIATRANSPORT"]["sha256"] = sha256(fixture.read_bytes()).hexdigest()
+    monkeypatch.setattr(contract_builder, "NATIVE_APPLICATION_FIXTURES", fixtures)
+    rebuilt = contract_by_path(contract_builder.build(), "MEDIATRANSPORT PLAY")
+    selector = rebuilt["axes"]["selector_grammar"]["subaxes"]
+    envelope = rebuilt["axes"]["response_event_envelopes"]["subaxes"]
+    for subaxis in (selector["argument_arity"], envelope["command_envelope"]):
+        assert subaxis["status"] == "partial"
+        assert subaxis["known"]["rejected"] == []
+        assert "value" not in subaxis
+    assert rebuilt["axes"]["selector_grammar"]["status"] == "partial"
+
+
+def test_negative_only_shape_evidence_stays_partial() -> None:
+    row = contract_by_path(inventory(), "PP WRITE_PATCH")
+    for axis_name, subaxis_name in (
+        ("selector_grammar", "argument_arity"),
+        ("selector_grammar", "value_domains"),
+        ("response_event_envelopes", "command_envelope"),
+    ):
+        subaxis = row["axes"][axis_name]["subaxes"][subaxis_name]
+        assert subaxis["status"] == "partial"
+        assert subaxis["reason"] == (
+            "The native fixture retains no accepted invocation for this path."
+        )
+        assert subaxis["known"]["accepted"] == []

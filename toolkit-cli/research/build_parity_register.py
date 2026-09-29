@@ -294,6 +294,20 @@ def cgate_contract_inventory(
         "authorization_policy": authorization_policy_digest(),
         "toolkit_surface": digest(SURFACE_PATH),
         "native_session_acceptance": digest(NATIVE_SESSION_PATH),
+        **{
+            f"native_{family}_application": digest(
+                REPOSITORY / "rust" / "testdata" / "fixtures" / f"native_cgate_{family}.json"
+            )
+            for family in (
+                "aircon", "audio", "measurement", "mediatransport", "security", "telephony"
+            )
+        },
+        **{
+            f"native_{family}_contract": digest(
+                REPOSITORY / "rust" / "testdata" / "fixtures" / f"native_cgate_{family}.json"
+            )
+            for family in ("deploy_queue", "file", "net_lifecycle", "port", "pp_programmer")
+        },
     }
     if not isinstance(sources, dict):
         raise ValueError("C-Gate contract inventory requires sources")
@@ -345,9 +359,11 @@ def cgate_contract_inventory(
             if not isinstance(subaxes, dict) or list(subaxes) != subaxis_names:
                 raise ValueError(f"{path}.{axis_name} has invalid subaxes")
             resolved_count = 0
+            partial_count = 0
             for subaxis_name, subaxis in subaxes.items():
                 if not isinstance(subaxis, dict) or subaxis.get("status") not in {
                     "resolved",
+                    "partial",
                     "unresolved",
                 }:
                     raise ValueError(f"{path}.{axis_name}.{subaxis_name} has invalid status")
@@ -365,6 +381,8 @@ def cgate_contract_inventory(
                         raise ValueError(f"{path}.{axis_name}.{subaxis_name} lacks a resolved value")
                 elif not isinstance(subaxis.get("reason"), str) or not subaxis["reason"].strip():
                     raise ValueError(f"{path}.{axis_name}.{subaxis_name} lacks an unresolved reason")
+                elif subaxis["status"] == "partial":
+                    partial_count += 1
                 key = f"{axis_name}.{subaxis_name}"
                 counts = subaxis_counts.setdefault(key, {})
                 counts[subaxis["status"]] = counts.get(subaxis["status"], 0) + 1
@@ -372,7 +390,7 @@ def cgate_contract_inventory(
                 "resolved"
                 if resolved_count == len(subaxes)
                 else "unresolved"
-                if resolved_count == 0
+                if resolved_count == 0 and partial_count == 0
                 else "partial"
             )
             if axis["status"] != expected_status:
