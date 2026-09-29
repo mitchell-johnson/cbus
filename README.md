@@ -552,9 +552,9 @@ their retained non-remediating prefix, discard the staged masks, and stop
 before `ADDRESS_UNKNOWN` short-address assignment because its no-payload
 request and mask-only reply cannot prove a device-to-address allocation. Typed
 `DALI_ONLY`/`FULL` deployment validates the local session, selection, range,
-and gateway, then remains fail-closed before I/O because its ordered typed
-writes, per-field readback receipts, and combined `FULL` atomic boundary are
-not retained. Therefore
+and gateway, then remains fail-closed before I/O. Its native order and
+payload ownership are source-recovered, but the typed writes are not
+implemented. Therefore
 `dali_full_compatibility` remains false. There is no invented DALI MQTT state
 contract. See the
 [DALI command guide](docs/cgate-dali.md).

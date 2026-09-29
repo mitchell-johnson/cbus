@@ -713,10 +713,10 @@
         "no request byte identifies one unaddressed physical device",
         "the reply has no device identity or serial-to-address mapping",
         "the reply does not distinguish newly assigned bits from previously occupied bits",
-        "the retained evidence does not define collision-safe allocator choice or ordering",
-        "the retained evidence does not define the typed-model merge and post-assignment verification receipt"
+        "the native allocator runs inside the gateway; neither the request nor the reply exposes its choice or ordering"
       ],
-      "decision": "do not send ADDRESS_UNKNOWN from SESSION EXTRACT; stop after the non-remediating prefix"
+      "decision": "do not send ADDRESS_UNKNOWN from SESSION EXTRACT until the recovered conditional plan is implemented with a documented physical acceptance rule; stop after the non-remediating prefix",
+      "recovered_native_merge": "on SUCCESS native sets line containsUnaddressed false and each selected ECG isAddressKnown from the mask; a non-success status is only a warning. Later COND discovery runs when some ECG is address-known but not fully known"
     },
     "typed_deploy_evidence_audit": {
       "safe_preflight": [
@@ -761,15 +761,22 @@
           "write_chunk": 12
         }
       },
-      "missing_contract": [
-        "no retained DALI_ONLY or FULL deployment step list",
-        "no retained rule maps dirty typed-model fields to per-address versus many-address setters",
-        "no retained rule defines null, omitted, unmatched-device-type, or FF scene ownership",
-        "no retained per-field write/readback ordering or acceptance receipt",
-        "no retained failure, resume, or retry boundary for a partial typed deployment",
-        "no retained FULL atomic boundary or ordering between typed writes and EXT_ONLY chunks"
+      "decision": "perform local session, selection, range, and gateway validation; refuse before PCI I/O until the recovered plan is implemented",
+      "readback_note": "readback operations are cmqttd's candidate verification getters; the recovered native deploy performs no readback",
+      "resolved_by_recovered_source": [
+        "DALI_ONLY and FULL step lists",
+        "per-ECG setters only; no many-address setter",
+        "null, omitted, non-member and FF scene bytes",
+        "per-step ECG eligibility and device-type gates",
+        "failure boundary: abort on the first fault without rollback or resume",
+        "FULL order: typed steps, then the extended write, with no atomic boundary"
       ],
-      "decision": "perform local session, selection, range, and gateway validation; refuse before PCI I/O"
+      "remaining_before_implementation": [
+        "cmqttd does not implement the typed setters or the recovered per-ECG AUTO loop",
+        "the cmqttd session JSON must supply the native eligibility flags, emergency sub-type and scene membership used to build payloads",
+        "native accepts SUCCESS status without readback; any cmqttd readback is an extension that needs its own acceptance rule",
+        "no downstream DALI device, persistence or live gateway evidence"
+      ]
     },
     "remaining_typed_session_plans": [
       "COND_QUICK",
@@ -855,6 +862,523 @@
           "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
           "READ_GATEWAY_EXT_COND_QUICK"
         ]
+      }
+    },
+    "recovered_native_source": {
+      "decompilation": {
+        "decompiler": "CFR 0.152",
+        "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "filesystem": "private case-sensitive APFS sparse bundle; CFR --caseinsensitivefs false",
+        "earlier_tree_defect": "the previous private tree was unpacked on a case-insensitive filesystem, so ka.java and kc.java held the unrelated Command classes kA and kC",
+        "class_sha256": "SHA-256 of the raw class entry in the pinned cgate.jar",
+        "decompiled_java_sha256": "SHA-256 of the private CFR output; it identifies the reviewed text without publishing it",
+        "enum_names": "obfuscated enum fields are named from the Enum constructor strings in each class constant pool"
+      },
+      "classes": {
+        "ka": {
+          "role": "typed extraction executor; one switch arm per DaliSyncSteps value",
+          "class_sha256": "12aebdff36fa11d380db4360e94696bb2427169f94c2be6136661f0b1580bebd",
+          "decompiled_java_sha256": "52cd529380c765894b58ccbb091753286cbbc1153efbfe504f4f63e69d36a6b4"
+        },
+        "kb": {
+          "role": "ka switch map from DaliSyncSteps ordinal to executor arm",
+          "class_sha256": "16c6ef0f63ab62456dcecce6a983f6a518fb5037af3d3525cc22b9367dbea90c",
+          "decompiled_java_sha256": "d1f9fbffb635ba4257f8748f43b5add322677f407c664c552107b96484cdc1e3"
+        },
+        "kc": {
+          "role": "abstract line/ECG selector and command loop shared by ka and gq",
+          "class_sha256": "f67547064bd9ba034e2c8cfa1051bde8f53aba55e8a4167c72537a5578ef31a1",
+          "decompiled_java_sha256": "fc07031f5373f03fcf77457eb9eb3bef6f6d3a7672eed903f3af4537bddf41f6"
+        },
+        "jY": {
+          "role": "extraction plan map from DaliExtractTypeEnum to DaliSyncSteps arrays",
+          "class_sha256": "5f6308a20c449b76e6a0ed9f3927383c107cb345749101052c3c056c30455e49",
+          "decompiled_java_sha256": "4ef96ed8e494bb1c4202db57174f87f82562ce5dbff4fd5fd5edf64923437c8e"
+        },
+        "fu": {
+          "role": "DALI SESSION EXTRACT command; runs ka in place on the session and maps errors",
+          "class_sha256": "f83c4a39ec30ef1fafb04fa7edcb2b45ee8e39e6301f2547867f618835534f15",
+          "decompiled_java_sha256": "deead0161eaa07807b4edf975552cccf2216ab3ecb191421d864195aa740ab8e"
+        },
+        "gq": {
+          "role": "typed deployment executor; one switch arm per DaliDeploySteps value",
+          "class_sha256": "bf8ba4693ff00d0ca654e03ab3892db2d1ab3efe79cde0deb9be7a765d255dc6",
+          "decompiled_java_sha256": "de9a356fd7899810dd64f17ff9de67966cc113c55bed6502a942a7efed7aa943"
+        },
+        "gr": {
+          "role": "gq switch map from DaliDeploySteps ordinal to executor arm",
+          "class_sha256": "3dc07b40894a9b3d9ab14e5e123029a74014bb56518b5a386a81e2353933aee1",
+          "decompiled_java_sha256": "c80a62a515e3e0e69fda7cbad6283be3e95de00df335649abda01ebcd2bc1210"
+        },
+        "go": {
+          "role": "deployment plan map from DaliDeployTypeEnum to DaliDeploySteps arrays",
+          "class_sha256": "8b8779595d47f6155123d75f23e90fbd01c9acee4f5fdb6f4c72df8d0c9f61ab",
+          "decompiled_java_sha256": "5e7ffca4c5100234a47ce3cd42f10d70e5976f7d1db962a3ccfffc6e0c5a6e91"
+        },
+        "gp": {
+          "role": "DaliDeployTypeEnum switch map",
+          "class_sha256": "3aecd65945d6c0ae007755be04f66094555caf2e073a79603df4d24612775d16",
+          "decompiled_java_sha256": "b59f8f9e18a5a6722df886060fc0466cc816c3b38f384ea41fb09dd6a1642a14"
+        },
+        "fs": {
+          "role": "DALI SESSION DEPLOY command; records the target CDG, runs gq and maps errors",
+          "class_sha256": "22e21c0bdd5b9f0779e8919e1870f94b7760b436d7744848ea61b11171e46d87",
+          "decompiled_java_sha256": "4b9b046529110bb291a6bb8798a1a3c0efc198f24766039aca900d76aa6781eb"
+        },
+        "oL": {
+          "role": "extended-CAL DALI command base: AUTO/EXECUTE/POLL sequence and poll budget",
+          "class_sha256": "a57bb54fe61ed32797a76fe6dac366ee6a791d2f5c5eed7fe73bf5bf9fd8c99b",
+          "decompiled_java_sha256": "b6b6dacb8ef73aa3e7933c106fcdf79eaef538463b9e993ae573407dbb18a381"
+        },
+        "gb": {
+          "role": "scene-value setter base: short address plus eight levels",
+          "class_sha256": "ddb6f0efa68023eab0fd73e6d0cf93c59a416730951050b9d0f7277b81adff62",
+          "decompiled_java_sha256": "a1935c18fcf247de35c56ccb67d2b941366d2b4049c3cff4dbadc5966fd82b73"
+        },
+        "gf": {
+          "role": "per-ECG setter base: short-address argument",
+          "class_sha256": "91cd37bb59007e175ada06d6c27f8d06c1f11d30263144c893050d523e63fc84",
+          "decompiled_java_sha256": "a6b219b08ff7e08a4f634833904542417ff0815cb6233443a89d84c883cbf6ec"
+        },
+        "fF": {
+          "role": "operation 32 SET_COMMON_PARAMS payload",
+          "class_sha256": "496d73b12c15e302609811cb03d43eac592fed7300736918244454f6a9bdf4be",
+          "decompiled_java_sha256": "101a266fbe1e96e6260d7a9446e88fde0f773946800e64e4435ce1ddab98d71b"
+        },
+        "fS": {
+          "role": "operation 34 SET_SCENE_VALUES_LOW payload",
+          "class_sha256": "8c029ff5bf94f732489ac1619aed5fe3b0a7214eb9a0ecd346935389b6548517",
+          "decompiled_java_sha256": "4bc6099327578827712e3c08d13bef75b2380e0798ca70e0c8b55dabae446295"
+        },
+        "fR": {
+          "role": "operation 35 SET_SCENE_VALUES_HIGH payload",
+          "class_sha256": "cc660d46b5266c35280b2938aeb3aa89f3be4597b38a4159324be718a6496793",
+          "decompiled_java_sha256": "33b189f0eea694f0f5691033e6e9327196824bfaafcb70816ce7d48841fd53cb"
+        },
+        "fM": {
+          "role": "operation 40 SET_LED_PARAMS payload",
+          "class_sha256": "c541395ca97ebb7d3d54e0b8be5a8490aa0a0cddecc710796650e6f0f9af8443",
+          "decompiled_java_sha256": "a0d9fc97887d0bf1977464b9cc5a6cc66d73de1769a1a5c6ef86a29cc4dbdbc3"
+        },
+        "fH": {
+          "role": "operation 38 SET_EMERGENCY_PARAMS payload",
+          "class_sha256": "cd5072cff3eb2e40a4882aaf2abc63a73681a855f90b61cc5cc22626775c2581",
+          "decompiled_java_sha256": "2a2bf4ceb0c2f9f89da6b1b6a95c6127e1336219608f6b449d878d71e0924cf7"
+        },
+        "fE": {
+          "role": "operation 99 colour-temperature limits (no deploy plan uses it)",
+          "class_sha256": "916c210141e2bcf69da6ba3d39e4c2578debc4002ad8525542ff75c49293e6b5",
+          "decompiled_java_sha256": "ef68a5012feea0db8e584e43636f14f75c11cab4407adc20b4ef49b924a522a0"
+        },
+        "fD": {
+          "role": "operation 100 colour value (no deploy plan uses it)",
+          "class_sha256": "513a1e183a74491586bb36c5bc568b0929f133ad5ad2498733d16630b17b50f5",
+          "decompiled_java_sha256": "e254df57e438ec5703c30874abc055fbd2645e6f520ce0b1d3257fa33469bc7c"
+        },
+        "dG": {
+          "role": "operation 2 ADDRESS_UNKNOWN",
+          "class_sha256": "c97241786bdd497017f5e72f4abec5338d6b082dafe27d753a9616e22f6c4c59",
+          "decompiled_java_sha256": "0e8a88953f0190851e900a29119f4666ef987828b6d6a3dd0200c458e9e32558"
+        },
+        "dS": {
+          "role": "operation 4 DISCOVER_KNOWN_FULL_INFO",
+          "class_sha256": "d65991b377597efccb49fc87a67d3358e12d800e0d714558dcb06fad64b14909",
+          "decompiled_java_sha256": "88ea9559b00209e334ab327db59460d2e1ab99c5bad4dd966dadc2e57de1153d"
+        },
+        "dT": {
+          "role": "operation 3 DISCOVER_KNOWN_TYPE_INFO",
+          "class_sha256": "9856c86721c6e7e9b5199acd00e0e2809d388ead908441a4f282baef14e53cb8",
+          "decompiled_java_sha256": "7b7801d5e73b1128e53b41bb5a2602480b71d3a9716bf7816ddce8295acbe072"
+        },
+        "fc": {
+          "role": "operation 11 MISSING",
+          "class_sha256": "1b8d5ad4cc815b6af9566524ac013a13e66aa1f5bbe058655ad64aa281507e23",
+          "decompiled_java_sha256": "76f0f1e0cf19fe51ed6add42f962c8e0df0de8ce5a975cb71e4e44ee7fdc6c3e"
+        },
+        "dH": {
+          "role": "operation 10 BROKEN",
+          "class_sha256": "b34047341c6c2a20062dc1fd9bfa6841bf86c0a1931a3fa8c2d173455283fe8c",
+          "decompiled_java_sha256": "c60d1cadf3a1be50ea90f78bcee154a86d0df71717ae2bb00b0a9bfa4fd63804"
+        },
+        "dQ": {
+          "role": "operation 9 CONFLICTING",
+          "class_sha256": "670f1d4f78ff5932e85e008bb3ee5afa2665a0abb08bfe925184d81124ef4e82",
+          "decompiled_java_sha256": "df6324efcdbe6a90b5c033b6ad8f22fd742621ad7f757400e66e0cb6055e2d09"
+        },
+        "fm": {
+          "role": "operation 14 RESCAN",
+          "class_sha256": "6e0c50fb7f0fc6c41f3c136468c76d721929203e4a12e09d5e91e6e82593c848",
+          "decompiled_java_sha256": "ce7301e614cee9850c74a4d6410adc43fcfeda527837f0fc9b428df939aab3b8"
+        },
+        "eU": {
+          "role": "operation 16 GET_KNOWN_TYPE_INFO_ECG",
+          "class_sha256": "d0b3cd67b5a2ad33678b5324a4914cab64e98be0ad01ebc872d22e9128170fe1",
+          "decompiled_java_sha256": "8f063ffb860d1330681cc7ad8698749d83f892864ef7ded3699ef0432129c9fe"
+        },
+        "dO": {
+          "role": "operation 17 GET_COMMON_PARAMS_ECG",
+          "class_sha256": "1c1b44adb5ce4b7593a0005aeda3b973c90507e9836adbcae0606b6026740d19",
+          "decompiled_java_sha256": "09b6f8036f0a8db08a91adbc93d2af0e45ad94394273f7c7e1bda4ea049a40cb"
+        },
+        "dP": {
+          "role": "operation 18 GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "class_sha256": "b6a45d186eb858fdc7dba48ff49ff604bf08d3b64dfb37e7d2c28c78a1d9e132",
+          "decompiled_java_sha256": "a05e86fc55a9a688b65ca0d185ae1503f98539ded196b648fa2a1617820d8cf7"
+        },
+        "dW": {
+          "role": "operation 23 GET_EMERGENCY_PARAMS_ECG",
+          "class_sha256": "30ed470de443c183877f9db38092c4242de4be45f8217ddac9c0637d16381f16",
+          "decompiled_java_sha256": "a741ca04a360133c57544e5e70c7d206f7a26ea94de6e214e9c8847dc73f2e03"
+        },
+        "eb": {
+          "role": "operation 24 GET_EMERGENCY_STATUS_ECG",
+          "class_sha256": "d6c9ac66d2389b3581fe470b9b71d6093a283e847404c06b54bc3d85e22d3efa",
+          "decompiled_java_sha256": "daa34dc4a46585603f968ff13fc9a25e6f5875ba37292ec14dcd1670cad14c6e"
+        },
+        "gu": {
+          "role": "extended-parameter dirty-chunk writer used by WRITE_GATEWAY_EXT_FULL",
+          "class_sha256": "1c2906e32b2420364a71809d4238a3bcb602419e7d72f946e9217137e58de663",
+          "decompiled_java_sha256": "e2e2d8d688c5747ac3004a470198c735b41c5829f79cd2b0a1a1389052567315"
+        },
+        "DaliEcg": {
+          "role": "typed ECG model: status flags, clear helper and scene-byte builder",
+          "class_sha256": "50dd3d30d0794fe00bc0004ea26f125b50f7547b7cdff53a625692a4bbe00f13",
+          "decompiled_java_sha256": "8a6d10f44e95284986f51e617bb974ccb307fb134c6bf9e6a56ea66a6d5be7fe"
+        },
+        "DaliSession": {
+          "role": "session source and target CDG references",
+          "class_sha256": "a98084ccf69d7153c6b71d16de44541e41f49f730a913c6e2f598d1e10bb7f5b",
+          "decompiled_java_sha256": "d1bc8cf0909e780c23947766fea73aa0d455580ab4c6999056ed73dbebee026f"
+        },
+        "DaliSyncSteps": {
+          "role": "extraction step enum (names from constant-pool strings)",
+          "class_sha256": "726ef597c711f12b05994f881d2adb1ca3d49dad7514e9520dda3389c4c3b940",
+          "decompiled_java_sha256": "0176edf25b07ecb5da50805d5a4cff747a2fae9c83bf8bea67e9347b44fcfe5d"
+        },
+        "DaliDeploySteps": {
+          "role": "deployment step enum (names from constant-pool strings)",
+          "class_sha256": "25ad076927fe7b00e20f0222b5388573113f44a8deb7e62c9ec7d821bf249ab9",
+          "decompiled_java_sha256": "1e09f64888f0fe0ab6d05ba6475c9c292ef8323054c439af720da3be8b7213c6"
+        },
+        "DaliDeployTypeEnum": {
+          "role": "deployment type enum (EXT_ONLY, DALI_ONLY, FULL)",
+          "class_sha256": "7145c9c2bca1c2e845732e1eb3c7ef0668082ce4dff404512d2847396eb3c8da",
+          "decompiled_java_sha256": "ad43dc8e18cc749f2b6275ea57af21946e88271be0d14da55f60b38f8903d975"
+        },
+        "DaliGatewayExtParamMap": {
+          "role": "extended map: target values, excluded bytes and dirty chunks",
+          "class_sha256": "f94b23ade9dc8d0ab6219ce3096914c62efaa7292b7f3b1d09a612017cecf07d",
+          "decompiled_java_sha256": "1757fc2e21437085603c90cf2861c63edec428f38c889e49f3287f2fce4139c8"
+        },
+        "CbusCALExtCommandType": {
+          "role": "EXECUTE, POLL, STATUS, CANCEL",
+          "class_sha256": "2dbded28d4e9f28a088fdb9e3cc7967e86dcf4a1cceb8571b067b48ebc2ae03c",
+          "decompiled_java_sha256": "2f0d85c3c8d3a2d121c006433f072dddeaa232811a3a34401bf35714c7e90090"
+        },
+        "CbusDaliStatus": {
+          "role": "SUCCESS, IN_PROGRESS, FAIL_BUSY and failure statuses",
+          "class_sha256": "8db94ad6f2039bf560d12a4ee10351d36db881484efac1354bee17f5fee43700",
+          "decompiled_java_sha256": "d9923c5309b41fc34d3b28ca61a9dcebcdabf7eb88acee2ecaf29e9c01c40224"
+        }
+      },
+      "cal_sequence": {
+        "auto": "send the first mode, then POLL while the status is IN_PROGRESS or FAIL_BUSY",
+        "default": {
+          "first": "EXECUTE",
+          "max_polls": 10,
+          "poll_interval_ms": 1500
+        },
+        "single_poll_steps": [
+          "POLL_KNOWN"
+        ],
+        "step_overrides": {
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO": {
+            "operation": 4,
+            "first": "POLL",
+            "max_polls": 57,
+            "poll_interval_ms": 3000
+          },
+          "DISCOVER_KNOWN_FULL_INFO": {
+            "operation": 4,
+            "first": "EXECUTE",
+            "max_polls": 57,
+            "poll_interval_ms": 3000
+          },
+          "COND_DISCOVER_KNOWN_FULL_INFO": {
+            "operation": 4,
+            "first": "EXECUTE",
+            "max_polls": 57,
+            "poll_interval_ms": 3000
+          },
+          "DISCOVER_KNOWN_TYPE_INFO": {
+            "operation": 3,
+            "first": "EXECUTE",
+            "max_polls": 17,
+            "poll_interval_ms": 1000
+          },
+          "COND_DISCOVER_KNOWN_TYPE_INFO": {
+            "operation": 3,
+            "first": "EXECUTE",
+            "max_polls": 17,
+            "poll_interval_ms": 1000
+          },
+          "RESCAN": {
+            "operation": 14,
+            "first": "EXECUTE",
+            "max_polls": 60,
+            "poll_interval_ms": 5000
+          },
+          "ADDRESS_UNKNOWN": {
+            "operation": 2,
+            "first": "EXECUTE",
+            "max_polls": 67,
+            "poll_interval_ms": 3000
+          }
+        }
+      },
+      "session_update": "native extraction mutates the live session model step by step; there is no staged or atomic commit",
+      "conditional_extraction_steps": {
+        "RESCAN": {
+          "scope": "each selected line",
+          "operation": 14,
+          "on_non_success": "warning '[WARN] rescan replyStatus ignored'; the plan continues",
+          "model_effect": "none"
+        },
+        "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO": {
+          "scope": "each selected line",
+          "operation": 4,
+          "on_non_success": "abort with 502",
+          "model_effect": "for each selected ECG: clear isKnown, isFullyKnown, isAddressKnown, isBroken, isPreviouslyBroken, isMissing and isConflicting, then set isKnown and isFullyKnown from the 8-byte mask bit"
+        },
+        "MISSING": {
+          "scope": "each selected line",
+          "operation": 11,
+          "on_non_success": "abort with 502",
+          "model_effect": "isMissing from the mask bit of each selected ECG"
+        },
+        "ADDRESS_UNKNOWN": {
+          "scope": "each selected line",
+          "operation": 2,
+          "request_payload_bytes": 0,
+          "on_non_success": "warning '[WARN] address unknown incomplete'; no mask is applied and the plan continues",
+          "model_effect": "on SUCCESS: the line's containsUnaddressed becomes false and each selected ECG's isAddressKnown is its mask bit"
+        },
+        "COND_DISCOVER_KNOWN_TYPE_INFO": {
+          "scope": "each selected line",
+          "operation": 3,
+          "condition": "some selected-line ECG has isFullyKnown exactly false and isAddressKnown true",
+          "on_non_success": "abort with 502",
+          "model_effect": "none"
+        },
+        "COND_DISCOVER_KNOWN_FULL_INFO": {
+          "scope": "each selected line",
+          "operation": 4,
+          "condition": "re-evaluated: some selected-line ECG has isFullyKnown exactly false and isAddressKnown true",
+          "on_non_success": "abort with 502",
+          "model_effect": "isKnown and isFullyKnown from the mask bit, without clearing the other flags"
+        },
+        "BROKEN": {
+          "scope": "each selected line",
+          "operation": 10,
+          "on_non_success": "abort with 502",
+          "model_effect": "isPreviouslyBroken takes the old isBroken, then isBroken from the mask bit"
+        },
+        "CONFLICTING": {
+          "scope": "each selected line",
+          "operation": 9,
+          "on_non_success": "abort with 502",
+          "model_effect": "isConflicting from the mask bit"
+        },
+        "GET_KNOWN_TYPE_INFO_ECG": {
+          "scope": "each known selected ECG",
+          "operation": 16,
+          "on_non_success": "abort with 502",
+          "model_effect": "deviceTypes and unmatchedDeviceTypes; clears emergency, LED and colour structures for the reported types"
+        },
+        "COND_GET_COMMON_READ_ONLY_PARAMS_ECG": {
+          "scope": "each known selected EMERGENCY ECG",
+          "operation": 18,
+          "on_non_success": "abort with 502",
+          "model_effect": "commonReadOnlyParams102"
+        },
+        "GET_EMERGENCY_PARAMS_ECG": {
+          "scope": "each known selected EMERGENCY ECG",
+          "operation": 23,
+          "on_non_success": "abort with 502",
+          "model_effect": "emergencyParams202"
+        },
+        "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG": {
+          "scope": "each known selected ECG with isBroken or isPreviouslyBroken true, and either not EMERGENCY or without commonReadOnlyParams102",
+          "operation": 18,
+          "on_non_success": "abort with 502",
+          "model_effect": "commonReadOnlyParams102"
+        },
+        "COND_BROKEN_GET_EMERGENCY_STATUS_ECG": {
+          "scope": "each known selected EMERGENCY ECG with isBroken or isPreviouslyBroken true",
+          "operation": 24,
+          "on_non_success": "abort with 502",
+          "model_effect": "emergencyStatus202"
+        },
+        "READ_GATEWAY_EXT_COND_QUICK": {
+          "scope": "gateway extended map",
+          "ranges_half_open": {
+            "BOTH": [
+              [
+                256,
+                258
+              ],
+              [
+                512,
+                516
+              ],
+              [
+                7040,
+                7168
+              ],
+              [
+                8800,
+                8816
+              ]
+            ],
+            "A": [
+              [
+                256,
+                258
+              ],
+              [
+                512,
+                516
+              ],
+              [
+                7040,
+                7104
+              ],
+              [
+                8800,
+                8808
+              ]
+            ],
+            "B": [
+              [
+                256,
+                258
+              ],
+              [
+                512,
+                516
+              ],
+              [
+                7104,
+                7168
+              ],
+              [
+                8808,
+                8816
+              ]
+            ]
+          },
+          "model_effect": "recalled bytes become current values and the extended proxy is decoded again"
+        },
+        "GET_COMMON_PARAMS_ECG": {
+          "scope": "each known selected ECG",
+          "operation": 17,
+          "on_non_success": "abort with 502",
+          "model_effect": "commonParams102"
+        }
+      },
+      "typed_deploy": {
+        "plans": {
+          "EXT_ONLY": [
+            "WRITE_GATEWAY_EXT_FULL"
+          ],
+          "DALI_ONLY": [
+            "SET_COMMON_PARAMS_ECG",
+            "SET_SCENE_VALUES_ECG",
+            "SET_LED_PARAMS_ECG",
+            "SET_EMERGENCY_PARAMS_ECG"
+          ],
+          "FULL": [
+            "SET_COMMON_PARAMS_ECG",
+            "SET_SCENE_VALUES_ECG",
+            "SET_LED_PARAMS_ECG",
+            "SET_EMERGENCY_PARAMS_ECG",
+            "WRITE_GATEWAY_EXT_FULL"
+          ]
+        },
+        "unplanned_steps": [
+          "SET_COLOUR_TEMPERATURE_ECG",
+          "SET_COLOUR_POWER_ECG",
+          "SET_COLOUR_FAIL_ECG"
+        ],
+        "gateway": "the command's CDG is recorded as the session target; extraction uses the session source instead",
+        "ecg_order": "selected lines in model order (A then B), then each line's ECGs in model order",
+        "ecg_eligibility": "isKnown true, isMissing not true, isConflicting not true, and inside the optional address set",
+        "mode": "AUTO with the default 10 polls at 1500 ms",
+        "steps": {
+          "SET_COMMON_PARAMS_ECG": {
+            "operation": 32,
+            "device_type": null,
+            "payload": [
+              "short address",
+              "group mask byte 0: bit i is group i",
+              "group mask byte 1: bit i is group i + 8",
+              "minimumLevel",
+              "maximumLevel",
+              "recoveryLevel",
+              "failureLevel"
+            ],
+            "missing_model": "absent commonParams102: 501 warning, then abort"
+          },
+          "SET_SCENE_VALUES_ECG": {
+            "operations": [
+              34,
+              35
+            ],
+            "device_type": null,
+            "order": "operation 34 (scenes 0-7) for every eligible ECG, then operation 35 (scenes 8-15) for every eligible ECG",
+            "payload": [
+              "short address",
+              "eight scene bytes"
+            ],
+            "scene_byte": "the scene level only when commonParams102 exists, the scene exists and its sceneMembership bit is set; otherwise FF",
+            "missing_model": "never aborts"
+          },
+          "SET_LED_PARAMS_ECG": {
+            "operation": 40,
+            "device_type": "LED",
+            "payload": [
+              "short address",
+              "dimming curve type"
+            ],
+            "missing_model": "absent ledParams207 or dimming curve: 501 warning, then abort; a curve type other than 0 or 1 also aborts"
+          },
+          "SET_EMERGENCY_PARAMS_ECG": {
+            "operation": 38,
+            "device_type": "EMERGENCY",
+            "payload": [
+              "short address",
+              "emergencyLevel",
+              "prolongTime",
+              "timeout"
+            ],
+            "missing_model": "absent emergencyParams202 or commonReadOnlyParams102 (the emergency sub-type needs both): 501 warning, then abort"
+          },
+          "WRITE_GATEWAY_EXT_FULL": {
+            "wire": "extended-parameter programming stores",
+            "behavior": "serialize the typed extended proxy into target values, then write only dirty, non-excluded bytes in 12-byte chunks; each written chunk becomes the current value"
+          }
+        },
+        "dirty_tracking": "typed steps write every eligible ECG regardless of edits; only WRITE_GATEWAY_EXT_FULL filters dirty bytes",
+        "readback": "none; each setter is accepted on the SUCCESS status of its AUTO sequence",
+        "no_eligible_ecg": "300 warning 'no commands sent - no known ecgs'; the plan continues",
+        "failure": {
+          "non_success_status": "502 reply status error; abort the remaining plan",
+          "missing_or_invalid_model": "501 gateway model mismatch; abort the remaining plan",
+          "network": "503 network error",
+          "sync": "504 dali sync error",
+          "partial": "earlier setters and extended chunks are neither rolled back nor resumed"
+        },
+        "full_boundary": "no atomic boundary: FULL runs the four typed steps, then WRITE_GATEWAY_EXT_FULL; a typed failure prevents the extended write"
       }
     }
   }

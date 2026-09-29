@@ -4261,6 +4261,55 @@ mod tests {
             fixture["physical"]["SESSION DEPLOY"]["preflight_selectors"],
             json!(["DALI_ONLY", "FULL"])
         );
+
+        // The case-sensitive re-decompilation must describe the same class
+        // bytes that the plan evidence already pins.
+        let recovered = &fixture["safety_boundary"]["recovered_native_source"];
+        let evidence = &fixture["safety_boundary"]["native_plan_evidence"];
+        assert_eq!(
+            recovered["decompilation"]["cgate_jar_sha256"],
+            evidence["cgate_jar_sha256"]
+        );
+        for (class, pinned) in [
+            ("ka", "executor_class_sha256"),
+            ("kc", "selection_class_sha256"),
+            ("jY", "extract_plan_class_sha256"),
+            ("DaliSyncSteps", "step_enum_sha256"),
+        ] {
+            assert_eq!(
+                recovered["classes"][class]["class_sha256"], evidence[pinned],
+                "{class}"
+            );
+        }
+        assert_eq!(
+            recovered["classes"]["dG"]["class_sha256"],
+            evidence["operation_command_class_sha256"]["ADDRESS_UNKNOWN:dG"]
+        );
+        assert_eq!(
+            recovered["typed_deploy"]["plans"]["FULL"],
+            json!([
+                "SET_COMMON_PARAMS_ECG",
+                "SET_SCENE_VALUES_ECG",
+                "SET_LED_PARAMS_ECG",
+                "SET_EMERGENCY_PARAMS_ECG",
+                "WRITE_GATEWAY_EXT_FULL"
+            ])
+        );
+        assert_eq!(
+            recovered["cal_sequence"]["step_overrides"]["ADDRESS_UNKNOWN"]["max_polls"],
+            67
+        );
+        let refused = &fixture["safety_boundary"]["refused_mutation_bearing_session_plans"];
+        for plan in ["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"] {
+            for step in refused[plan]["native_plan"].as_array().unwrap() {
+                assert!(
+                    recovered["conditional_extraction_steps"]
+                        .get(step.as_str().unwrap())
+                        .is_some(),
+                    "{plan}: {step}"
+                );
+            }
+        }
     }
 
     #[test]

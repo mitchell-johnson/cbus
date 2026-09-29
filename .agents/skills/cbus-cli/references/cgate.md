@@ -827,10 +827,10 @@ source-correlated exact-once exchanges, discard every staged mask, and return
 payload bytes and returns only an eight-byte short-address mask with no
 device-to-address allocation receipt. Typed `DALI_ONLY` and `FULL` deployment
 validate the session, known-address selection, range, and gateway locally,
-then fail before I/O. Generic operations 32/34/35/38/40 and their read getters
-are individually evidenced, but no retained deploy step order, dirty-field
-ownership, per-field acceptance receipt, or `FULL` typed/extended atomic
-boundary connects them into a safe session plan.
+then fail before I/O. The native plans (operations 32, 34 then 35, 40 and
+38, then the extended write for `FULL`) and their payload ownership are
+source-recovered in `docs/cgate-dali.md`; native performs no per-field
+readback and does not roll back. cmqttd has not implemented those writes.
 
 There is no MQTT DALI state contract. Ground syntax/help in
 `rust/testdata/fixtures/native_cgate_dali_help.json`, specialized class hashes,

@@ -206,11 +206,11 @@ operation is pending and verify that it reaches the fake PCI.
 ## Known boundary
 
 The build-2001 classes show that typed session extraction/deployment is a
-multi-step model workflow rather than an extended-memory alias. cmqttd now
-implements every bounded read-only typed extraction plan. For the remaining
-selectors it executes only the retained read-only prefix, stages the returned
-masks, and discards them when the plan reaches operation 2,
-`ADDRESS_UNKNOWN`:
+multi-step model workflow rather than an extended-memory alias. cmqttd
+implements every read-only typed extraction plan. For the three
+mutation-bearing extraction selectors it executes only the retained read-only
+prefix, stages the returned masks, and discards them when the plan reaches
+operation 2, `ADDRESS_UNKNOWN`:
 
 - `COND_QUICK`: `ADDRESS_UNKNOWN` is step 3
 - `COND_EXTENDED`: `ADDRESS_UNKNOWN` is step 3
@@ -226,36 +226,241 @@ The retained operation-2 request is fully known at the CAL boundary: line A is
 `E381DA02`, line B is `E381DA82`, and neither carries payload bytes. The
 request cannot name a free short address, selected range, or one physical
 device. Its successful data is only an eight-byte assigned/discovered address
-mask; it has no device identity, serial-to-address mapping, newly-assigned
-marker, allocator ordering proof, or post-assignment model receipt. cmqttd
-therefore does not send operation 2 from these selectors and does not infer
-allocation semantics from the mask.
+mask; it has no device identity, serial-to-address mapping, or newly-assigned
+marker. Native build 2001 merges only that mask into the model, as described
+under
+[Source-recovered native plans](#source-recovered-native-plans). cmqttd does
+not yet send operation 2 from these selectors.
 
-The remaining typed deployment selectors also refuse before I/O because their
-complete configuration-write plans are not implemented:
-
-- deployment: `DALI_ONLY` and `FULL`
-
-Both selectors still perform the safe local preflight: they require an
-existing session, validate the selected known ECG addresses and optional
-range, and resolve one configured `SYS_DAL2` gateway. Retained help and the
-generic command codecs establish individual operations 32/34/35/38/40 and
-their 17/19/20/23/25 getters, but that is not a deployment plan. The retained
-evidence has no ordered `DALI_ONLY` or `FULL` step list, no rule assigning
-dirty model fields to per-address versus many-address setters, and no
-per-field readback acceptance receipt. `FULL` also lacks an atomic ordering
-and failure boundary joining typed writes to the separately evidenced
-`EXT_ONLY` chunks. Running `EXT_ONLY` first would leave a partial physical
-deployment if a later typed write failed, so cmqttd sends no PCI command for
-either selector.
+Typed `DALI_ONLY` and `FULL` deployment also refuse before I/O. Both still
+perform the safe local preflight: they require an existing session, validate
+the selected known ECG addresses and optional range, and resolve one
+configured `SYS_DAL2` gateway. The native step order, payload ownership and
+failure boundary are now source-recovered, but cmqttd has not implemented the
+typed setters. The 502 refusal text predates that recovery: it still says the
+order, ownership and readback receipts are missing. Treat it as "not
+implemented", not as a statement about native evidence.
 
 This selector boundary is narrower than a command-path gap: both SESSION paths
 are implemented, five extraction selectors and `EXT_ONLY` deployment are
 physical, and mutation-bearing selectors have a bounded physical preflight but
-return 502 before address assignment. Unevidenced deployment plans still
+return 502 before address assignment. The two typed deployment selectors
 return 502 without touching the bus.
 Live gateway and downstream DALI hardware acceptance also remains separate
 from loopback protocol acceptance.
+
+## Source-recovered native plans
+
+An earlier private decompilation was unpacked on a case-insensitive
+filesystem. There, `ka.java` and `kc.java` held the unrelated Command classes
+`kA` and `kC`, so the executor and selector bodies were missing. The pinned
+`cgate.jar` (SHA-256
+`3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630`) was
+decompiled again with CFR 0.152 into a private case-sensitive APFS volume with
+`--caseinsensitivefs false`. The obfuscated enum fields are named from the
+constructor strings in each class constant pool. The facts below come from
+that source. No decompiled code is committed.
+
+| Class | Role | Class SHA-256 | Decompiled source SHA-256 |
+| --- | --- | --- | --- |
+| `ka` | Extraction executor | `12aebdff…80bebd` | `52cd5293…36a6b4` |
+| `kc` | Line/ECG selector and command loop | `f6754706…ef31a1` | `fc07031f…df41f6` |
+| `jY` | Extraction plan map | `5f6308a2…455e49` | `4ef96ed8…437c8e` |
+| `fu` | `SESSION EXTRACT` command | `f83c4a39…534f15` | `deead016…40ab8e` |
+| `gq` | Deployment executor | `bf8ba469…255dc6` | `de9a356f…7aa943` |
+| `go` | Deployment plan map | `8b877959…9f61ab` | `5e7ffca4…5a6e91` |
+| `fs` | `SESSION DEPLOY` command | `22e21c0b…e46d87` | `4b9b0465…6781eb` |
+| `oL` | Extended-CAL DALI command base | `a57bb54f…d8c99b` | `b6b6dacb…18a381` |
+| `DaliSyncSteps` | Extraction step enum | `726ef597…c3b940` | `0176edf2…fcfe5d` |
+| `DaliDeploySteps` | Deployment step enum | `25ad0769…249ab9` | `1e09f648…7213c6` |
+| `DaliDeployTypeEnum` | `EXT_ONLY`, `DALI_ONLY`, `FULL` | `7145c9c2…b3c8da` | `ad43dc8e…03d975` |
+| `DaliEcg` | Status flags and scene bytes | `50dd3d30…e00f13` | `8a6d10f4…5be7fe` |
+| `gu` | Extended dirty-chunk writer | `1c2906e3…8de663` | `e2e2d8d6…567315` |
+
+Full 64-digit hashes for these and 28 further command, model and enum classes
+are in `safety_boundary.recovered_native_source.classes` of
+`rust/testdata/fixtures/native_cgate_dali_specialized.json`.
+
+### Native CAL sequences
+
+Every DALI command uses the base class sequence: send the first mode, then
+POLL while the gateway reports `IN_PROGRESS` or `FAIL_BUSY`. The default is
+EXECUTE followed by at most 10 polls, 1.5 seconds apart. Several extraction
+steps override that budget:
+
+| Step | Operation | First mode | Polls | Interval |
+| --- | ---: | --- | ---: | ---: |
+| `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO` | 4 | POLL | 57 | 3 s |
+| `DISCOVER_KNOWN_FULL_INFO`, `COND_DISCOVER_KNOWN_FULL_INFO` | 4 | EXECUTE | 57 | 3 s |
+| `DISCOVER_KNOWN_TYPE_INFO`, `COND_DISCOVER_KNOWN_TYPE_INFO` | 3 | EXECUTE | 17 | 1 s |
+| `RESCAN` | 14 | EXECUTE | 60 | 5 s |
+| `ADDRESS_UNKNOWN` | 2 | EXECUTE | 67 | 3 s |
+
+`POLL_KNOWN` sends a single POLL. Native extraction changes the live session
+model after each step; it has no staged or atomic commit.
+
+### Conditional extraction
+
+The three conditional plans are:
+
+```text
+COND_QUICK     POLL_FINISH_DISCOVER_KNOWN_FULL_INFO, MISSING, ADDRESS_UNKNOWN,
+               COND_DISCOVER_KNOWN_TYPE_INFO, COND_DISCOVER_KNOWN_FULL_INFO,
+               BROKEN, CONFLICTING, GET_KNOWN_TYPE_INFO_ECG,
+               COND_GET_COMMON_READ_ONLY_PARAMS_ECG, GET_EMERGENCY_PARAMS_ECG,
+               COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG,
+               COND_BROKEN_GET_EMERGENCY_STATUS_ECG,
+               READ_GATEWAY_EXT_COND_QUICK
+COND_EXTENDED  COND_QUICK, then GET_COMMON_PARAMS_ECG
+RESCAN_FAULT   RESCAN, then COND_QUICK
+```
+
+Line steps run once per selected line. ECG steps run once per ECG that is
+known and inside the optional address set. The source establishes these
+effects:
+
+- `RESCAN` ignores a non-success status with the warning
+  `[WARN] rescan replyStatus ignored` and continues.
+- `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO` first clears all seven status flags
+  on each selected ECG: `isKnown`, `isFullyKnown`, `isAddressKnown`,
+  `isBroken`, `isPreviouslyBroken`, `isMissing`, and `isConflicting`. It then
+  sets `isKnown` and `isFullyKnown` from the mask bit.
+- `ADDRESS_UNKNOWN` sends no payload. A non-success status is only the
+  warning `[WARN] address unknown incomplete`; no mask is applied, and the
+  plan continues. On success the line's `containsUnaddressed` becomes false,
+  and each selected ECG's `isAddressKnown` becomes its mask bit.
+- `COND_DISCOVER_KNOWN_TYPE_INFO` (operation 3) and
+  `COND_DISCOVER_KNOWN_FULL_INFO` (operation 4) each run only when some ECG
+  on a selected line has `isFullyKnown` exactly false and `isAddressKnown`
+  true. The address filter does not apply to that test, and it is evaluated
+  again before the second step. The type step changes no field. The full
+  step sets `isKnown` and `isFullyKnown` without clearing the other flags.
+- `BROKEN`, `CONFLICTING` and `GET_KNOWN_TYPE_INFO_ECG` behave as they do in
+  `DALI_ONLY`. The type read also clears the emergency, LED and colour
+  structures for each reported type.
+- `COND_GET_COMMON_READ_ONLY_PARAMS_ECG` (operation 18) and
+  `GET_EMERGENCY_PARAMS_ECG` (operation 23) read only ECGs typed `EMERGENCY`.
+- `COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG` (operation 18) reads ECGs
+  with `isBroken` or `isPreviouslyBroken` true that are not `EMERGENCY` or
+  have no read-only structure. `COND_BROKEN_GET_EMERGENCY_STATUS_ECG`
+  (operation 24) reads broken or previously broken `EMERGENCY` ECGs.
+- `READ_GATEWAY_EXT_COND_QUICK` recalls the half-open extended ranges
+  256–258 and 512–516, plus 7040–7168 and 8800–8816 for `BOTH`, 7040–7104
+  and 8800–8808 for line A, or 7104–7168 and 8808–8816 for line B.
+- `GET_COMMON_PARAMS_ECG` reads operation 17, as in `DALI_ONLY`.
+
+Apart from `RESCAN` and `ADDRESS_UNKNOWN`, a non-success status aborts the
+command with `502 reply status error`.
+
+### Typed deployment
+
+`go` maps the three deployment types to these plans:
+
+| Type | Steps |
+| --- | --- |
+| `EXT_ONLY` | `WRITE_GATEWAY_EXT_FULL` |
+| `DALI_ONLY` | `SET_COMMON_PARAMS_ECG`, `SET_SCENE_VALUES_ECG`, `SET_LED_PARAMS_ECG`, `SET_EMERGENCY_PARAMS_ECG` |
+| `FULL` | The four `DALI_ONLY` steps, then `WRITE_GATEWAY_EXT_FULL` |
+
+The executor `gq` also has colour-temperature, colour-power and colour-fail
+steps (operations 99 and 100), but no plan uses them. The command records its
+CDG as the session target; extraction reads from the session source instead.
+
+Each typed step visits the selected lines in model order, then each line's
+ECGs in model order. It writes an ECG only when `isKnown` is true, `isMissing`
+and `isConflicting` are not true, and the ECG is in the optional address set.
+Each setter uses AUTO with the default 10 polls at 1.5 seconds:
+
+| Step | Operation | Device type | Payload after the short address |
+| --- | ---: | --- | --- |
+| `SET_COMMON_PARAMS_ECG` | 32 | Any | Group byte 0 (bit *i* is group *i*), group byte 1 (bit *i* is group *i* + 8), minimum, maximum, recovery and failure levels |
+| `SET_SCENE_VALUES_ECG` | 34, then 35 | Any | Eight scene bytes: scenes 0–7, then 8–15 |
+| `SET_LED_PARAMS_ECG` | 40 | `LED` | Dimming curve: 0 for `LOGARITHMIC`, 1 for `LINEAR` |
+| `SET_EMERGENCY_PARAMS_ECG` | 38 | `EMERGENCY` | Emergency level, prolong time and timeout |
+
+The scene step sends operation 34 to every eligible ECG before it sends
+operation 35 to any ECG. A scene byte is the stored level only when
+`commonParams102` exists, the scene exists, and its scene-membership bit is
+set; otherwise it is `FF`. Scene bytes never abort the plan.
+
+Typed steps write every eligible ECG, whether or not its fields were edited.
+Only `WRITE_GATEWAY_EXT_FULL` filters dirty bytes: it serializes the typed
+extended proxy into target values, writes dirty non-excluded bytes in 12-byte
+chunks, and makes each written chunk the current value. Native deployment
+performs no per-field readback. A setter is accepted on the `SUCCESS` status
+of its AUTO sequence.
+
+Failures stop the rest of the plan:
+
+- A non-success status returns `502 reply status error`.
+- Missing `commonParams102`, missing `ledParams207` or curve, an unsupported
+  curve, or a missing emergency sub-type returns `501 gateway model
+  mismatch` after a 501 warning. The emergency sub-type requires both
+  `emergencyParams202` and `commonReadOnlyParams102`.
+- Network and synchronization failures return 503 and 504.
+- Earlier setters and extended chunks are neither rolled back nor resumed.
+
+`FULL` has no atomic boundary: a typed failure prevents the extended write,
+and an extended failure leaves every typed write in place. A step with no
+eligible ECG emits the warning `no commands sent - no known ecgs` and
+continues.
+
+The source therefore determines the native deployment wire order and payload
+ownership. It does not establish downstream device acceptance, persistence, or
+the state of a device after a partial plan.
+
+## Outstanding
+
+The following work remains for the three conditional selectors and typed
+deployment. No step below is implemented.
+
+Conditional extraction plan:
+
+1. Add per-step poll budgets and a POLL-first AUTO sequence to the DALI
+   transport in `cbus-transport`. It currently uses a fixed EXECUTE and 10
+   polls at 1.5 seconds. The existing read-only plans use that fixed budget
+   for operations 3 and 4, and the prefix sends one POLL for
+   `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO`. Both differ from native.
+2. Match the native prefix. `RESCAN` accepts a non-success status as a
+   warning; cmqttd currently rejects it. `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO`
+   must clear the seven flags before it applies the mask.
+3. Send `ADDRESS_UNKNOWN` exactly once per selected line with the 67-poll
+   budget. That can take more than three minutes. Never replay it after an
+   uncertain outcome or reconnect, because it can change DALI addresses.
+4. Evaluate the conditional discovery predicate over the staged model for all
+   ECGs on the selected lines, then run the remaining steps with the existing
+   decoders and the partial extended-map ranges.
+5. Decide the commit rule. Native commits step by step. cmqttd's atomic
+   snapshot would discard the address-known state after a later failure even
+   though the bus may have changed. Document the chosen rule as a deliberate
+   deviation, or commit through `ADDRESS_UNKNOWN` explicitly.
+6. Add operation-2 vectors and scripted-peer system tests for success,
+   non-success, `IN_PROGRESS` polling, both conditional branches, reconnect
+   during operation 2, and `RESCAN` failure. Physical acceptance requires a
+   real gateway with an unaddressed ballast.
+
+Typed deployment plan:
+
+1. Replace the 502 refusal with the native step lists above. Keep the local
+   preflight and resolve one PCI generation before the first write.
+2. Build payloads from the session JSON. `groupMembershipBitmask16` becomes
+   two little-endian bytes, and the scene byte uses `scene` levels with
+   `sceneMembershipBitmask16`. `dimmCurve` maps to 0 or 1. The emergency
+   fields need both the emergency and read-only structures.
+3. Apply the eligibility filter and device-type gates, and send operation 34
+   to all ECGs before operation 35.
+4. Use the default AUTO sequence. Return 502 on the first non-success status
+   and 501 on a missing field, with a completed-write count. Never roll back,
+   resume, or replay.
+5. For `FULL`, run the existing verified `EXT_ONLY` writer after the typed
+   steps. Confirm that cmqttd's staged extended bytes match native's
+   serialization of the typed extended proxy.
+6. Native performs no readback. Any cmqttd readback through operations
+   17/19/20/23/25 would be a deliberate extension with its own acceptance
+   rule, and it should be documented as one.
+7. Add exact-wire vectors and scripted-peer system tests for ordering,
+   filters, missing fields, a mid-plan failure, and reconnect. Downstream DALI
+   device state and persistence still need hardware evidence.
 
 ## Evidence and tests
 
@@ -266,6 +471,11 @@ from loopback protocol acceptance.
   plan sequences, and safety boundary from the isolated C-Gate 3.4.0.2001
   oracle. It pins the plan-map, executor, selector, step-enum, operation,
   command-type, typed-model, bit-helper and integer-helper class hashes.
+  `safety_boundary.recovered_native_source` records the case-sensitive
+  re-decompilation: class and private-source hashes, poll budgets, the
+  conditional step effects, and the typed deployment plans. A unit test binds
+  its executor, selector, plan-map, step-enum and operation-2 hashes to the
+  existing plan evidence.
 - `rust/testdata/vectors/dali.jsonl` pins request/reply and gateway/page wire
   bytes.
 - `rust/cbus-cgate/src/service/dali_specialized.rs` contains fixture, dispatch,
@@ -274,8 +484,11 @@ from loopback protocol acceptance.
   `rust/cmqttd/tests/system_cgate_dali_specialized.rs` launch the real daemon
   against a scripted fake PCI and in-process MQTT broker. The specialized
   system transcript exercises the three-step status plan and the 15-step
-  `DALI_ONLY` executor, reads typed values back through `DALI SESSION GET`, and
-  proves each mutation-bearing selector refuses without a PCI frame.
+  `DALI_ONLY` executor, and reads typed values back through
+  `DALI SESSION GET`. For each mutation-bearing extraction selector, it
+  answers the prefix exchanges, then proves that no operation-2 frame is sent
+  and the session is unchanged. Typed `DALI_ONLY` and `FULL` deployment refuse
+  without a PCI frame.
 
 Research and tests use loopback fixtures only. They do not contact a real
 C-Bus network.
