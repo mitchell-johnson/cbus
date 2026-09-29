@@ -4133,10 +4133,12 @@ mod tests {
     ) {
         let parameter = (EXT_START + consumed as u32) as u8;
         let block = vec![value; count];
-        for fragment in block.chunks(16) {
+        // Native C-Gate's `L` recall (also used by the ef/eh/ep DALI paged
+        // readers) names each fragment by the parameter of its first byte.
+        for (index, fragment) in block.chunks(16).enumerate() {
             let mut cal = vec![
                 0x80 | (u8::try_from(fragment.len()).unwrap() + 1),
-                parameter,
+                parameter.wrapping_add((index * 16) as u8),
             ];
             cal.extend_from_slice(fragment);
             reply(remote, 20, &cal).await;
@@ -5477,10 +5479,11 @@ mod tests {
             let block = (0..count)
                 .map(|offset| ((logical + offset as u32) as u8) ^ 0x5a)
                 .collect::<Vec<_>>();
-            for fragment in block.chunks(16) {
+            // Native `L` fragments name their own first byte's parameter.
+            for (index, fragment) in block.chunks(16).enumerate() {
                 let mut cal = vec![
                     0x80 | (u8::try_from(fragment.len()).unwrap() + 1),
-                    parameter,
+                    parameter.wrapping_add((index * 16) as u8),
                 ];
                 cal.extend_from_slice(fragment);
                 reply(&mut remote, 20, &cal).await;
