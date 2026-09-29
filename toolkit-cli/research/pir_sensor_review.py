@@ -16,7 +16,7 @@ import struct
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sensor_profile_review import EXE_SHA256, MAP_SHA256, Toolkit, digest  # noqa: E402
+from sensor_profile_review import EXE_SHA256, MAP_SHA256, Toolkit  # noqa: E402
 
 AGENT = 'CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.'
 MULTI = 'CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.'
@@ -29,10 +29,6 @@ VMT_FIELD_TABLE = -0x44
 
 
 class Review(Toolkit):
-    def disasm(self, name):
-        code, span = self.code(name)
-        return code, span
-
     def members(self, agent_symbol):
         result = super().members(agent_symbol)
         # TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes creates the
@@ -148,7 +144,7 @@ class Review(Toolkit):
                            'saved_margin': 'ROUND(PECTargetLux * ext(percent / 100.0))',
                            'round': 'System.@ROUND, x87 extended precision, ties to even'}}
 
-    def power_fail(self, members):
+    def power_fail(self):
         save, save_span = self.code('CIS_TCBusST7SensorCGateAgent.SavePowerFail')
         load, load_span = self.code('CIS_TCBusST7SensorCGateAgent.LoadPowerFail')
         index = [int(i.op_str.split(', ')[1], 0) for i in save
@@ -289,7 +285,7 @@ def review(exe_path, map_path):
         'save': {'pir_before_save': toolkit.before_save(members),
                  'prepare_forced_parameters': {'sha256': forced_span, 'writes': forced},
                  'multisensor_before_save': toolkit.multisensor_save(members),
-                 'power_fail': toolkit.power_fail(members),
+                 'power_fail': toolkit.power_fail(),
                  'pp_set_gate': toolkit.attribute_flags()},
         'unit': toolkit.unit(),
         'key_templates': toolkit.templates(),

@@ -647,9 +647,13 @@
         "docs/sensors.md",
         "docs/sensor-acceptance-summary.json",
         "docs/sensor-profile-review.json",
-        "research/sensor_profile_review.py"
+        "research/sensor_profile_review.py",
+        "tests/test_pir_sensors.py",
+        "docs/pir-sensor-review.json",
+        "docs/pir-sensor-acceptance-summary.json",
+        "research/pir_sensor_review.py"
       ],
-      "limits": "SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL (Toolkit TST7SENPILL class, SENPILL_ST7 layout) occupancy events, virtual keys, timers, threshold/margin and enable dependencies tested on owned native C-Gate: five firmware/catalogue profiles, 200 event/key cases, 1,050 raw-byte assertions, 52 unrelated parameters preserved per profile, offline/CLI preview and save/reload. A sanitized receipt proves the ST7 SENPIROA/SENPIRIA/SENPIRIB/SENLL layouts identical, but pins their Toolkit PIR/light-level classes, whose save forces occupancy masks and potentiometer A; those types and the SENPILLA/SENPIRIC/older layouts stay refused, with 12 native refusals leaving values unchanged. PIR, light-level and other sensor dialogs, optical behavior and remaining dialog functions are unverified."
+      "limits": "SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL (Toolkit TST7SENPILL class, SENPILL_ST7 layout) occupancy events, virtual keys, timers, threshold/margin and enable dependencies tested on owned native C-Gate: five firmware/catalogue profiles, 200 event/key cases, 1,050 raw-byte assertions, 52 unrelated parameters preserved per profile, offline/CLI preview and save/reload. A sanitized receipt proves the ST7 SENPIROA/SENPIRIA/SENPIRIB/SENLL layouts identical, but pins their Toolkit PIR/light-level classes, whose save forces occupancy masks and potentiometer A; the multisensor workflow refuses them and the SENPILLA/SENPIRIC/older layouts, with 12 native refusals leaving values unchanged. A separate PIR workflow models the Toolkit TST7SENPIROA/TST7SENPIRSS dialog (four fixed keys, blocks 1..4, groups, timers, template-restore choice, Motion-in-Darkness link, occupancy enable and power-up state) followed by its statically recovered complete forced save, for SENPIROA/SENPIRIA 2.0.01..2.4.99 and SENPIRIB 2.0.01..2.3.9 on their catalogue numbers: six native profiles with 41 raw-byte assertions each, idempotence, unrelated-value preservation and save/reload, plus five native refusals. Light-level (SENLL) and other sensor dialogs, a PIR CLI, base key/block serialization round-trips, original dialog execution, optical behavior and physical testing are unverified."
     },
     {
       "id": "firmware-update",

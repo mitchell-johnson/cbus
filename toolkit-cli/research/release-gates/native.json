@@ -135,6 +135,7 @@
     "tests/test_pci_routing.py",
     "tests/test_pci_serials.py",
     "tests/test_physical_addressing.py",
+    "tests/test_pir_sensors.py::PIRSensorNativeTest",
     "tests/test_programming.py",
     "tests/test_project_legacy_transform_census.py::VendorTemplateCensusTests::test_created_values_match_the_vendor_stylesheets",
     "tests/test_project_legacy_transform_census.py::VendorTemplateCensusTests::test_regenerated_census_is_deterministic_and_committed",

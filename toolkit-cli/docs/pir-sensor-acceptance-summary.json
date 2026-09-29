@@ -1,0 +1,136 @@
+{
+  "format": "cbus-pir-sensor-acceptance-v1",
+  "scope": "Toolkit source-recovered ST7 PIR dialog and forced save through native PP and a closed database; no physical PIR/lux behavior",
+  "backend": "owned loopback C-Gate (research/local_cgate.py)",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "profiles": [
+    {
+      "unit_type": "SENPIROA",
+      "firmware": "2.0.01",
+      "catalog_number": "5750WPL",
+      "spec": "SENPIROA_ST7.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "SENPIROA",
+      "firmware": "2.4.99",
+      "catalog_number": "SLC5750WPL,GY",
+      "spec": "SENPIROA_ST7_2.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "2.2.00",
+      "catalog_number": "SLC5751L,WE",
+      "spec": "SENPIRIA_ST7.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "2.4.00",
+      "catalog_number": "5751L",
+      "spec": "SENPIRIA_ST7_2.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.1.00",
+      "catalog_number": "SLC5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.3.9",
+      "catalog_number": "5753L",
+      "spec": "SENPIRIB_ST7.xml",
+      "raw_byte_assertions": 41,
+      "dialog_cases": 6,
+      "unrelated_parameters_preserved": 31,
+      "save_reload_passed": true
+    }
+  ],
+  "refused": [
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.3.10",
+      "catalog_number": "5753L",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.4.00",
+      "catalog_number": "5753L",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "2.0.00",
+      "catalog_number": "5751L",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware": "2.3.00",
+      "catalog_number": "5753PEIRL",
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENLL",
+      "firmware": "2.3.00",
+      "catalog_number": "5031PE",
+      "values_unchanged": true
+    }
+  ],
+  "passed": true,
+  "physical_hardware_verified": false,
+  "original_dialog_executed": false,
+  "full_report_sha256": "897f31500c8bbe30fbb9b3d1350975dd23344b1773d292dbe8318662efc122af",
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "listener_ownership_verified": true
+  },
+  "sources": {
+    "src/cbus_toolkit/pir_sensors.py": "42bd5b07418abc59a73711045df915316bd5bd262a250629efc29ca7fb4a6684",
+    "src/cbus_toolkit/sensors.py": "6641b958c3f75be3b9ede6b924c9a32814c4e2b7d2cfccc4c7a6deedbfb55338",
+    "tests/test_pir_sensors.py": "c7406c24882acd2150e359a79ff9117a433cdc12d4dae98130e286aa66107d45",
+    "research/pir_sensor_review.py": "5420e73ee392239cfc3bac24d87c888b6679ae4fbf980f9410913d4db68eeec6",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "docs/pir-sensor-review.json": "316c1b98ad9935c0e91386791398c1346ec8fffcd81157b9a3b74524a3111086",
+    "vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "vendor/cgate/app/unitspec/cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "vendor/unitspec-plain/I_SENPILL.xml": "ec4f917bdaf32e3fa1879cc60286d8e6b107685a9f306cb5435b14bff2d2c483",
+    "vendor/unitspec-plain/SENPILL_ST7.xml": "9f5fe3088980cb8554aa11599b55342164f0be5fb411f92623d08606990ae388",
+    "vendor/unitspec-plain/SENPIRIA_ST7.xml": "c0952d965a7970e38868105c866f91e65cc13984dab326452923c9559a168c66",
+    "vendor/unitspec-plain/SENPIRIA_ST7_2.xml": "8ef75ff825178625c84cf8994f7e2a1b197ed7fd789a776de2033a331d747887",
+    "vendor/unitspec-plain/SENPIRIB_ST7.xml": "8d5b8a15df537ee260d1623bae8a1a3dbd70065ed92779e5361d512366950428",
+    "vendor/unitspec-plain/SENPIROA_ST7.xml": "0b27b4fe574032e958211f1b445b32173112000fa2e44d1fe3da8dd0fe1008cb",
+    "vendor/unitspec-plain/SENPIROA_ST7_2.xml": "99c238bd6c213fd8dc238b8f3cbebbe7511d4306e92dcd74ef9b73fd1114bd1c",
+    "vendor/unitspec-plain/SENPIRSS_ST7.xml": "8fa3adab6bb38878cebb9f6527c8e3b0e4783a104ea5b3679b055edd77b992ba",
+    "vendor/unitspec-plain/SENPIRSS_ST7_2.xml": "e5f938ce626060d7bb21a95cc92420e43ef16cdd9329f00b576aa2887bfac116"
+  },
+  "unverified": [
+    "Original Toolkit PIR dialog execution and GUI before/after parity",
+    "Base Neo/NeoPro key, block, timer and scale serialization round-trips",
+    "Light-level (SENLL/SENLLA), SENPILLA/SENPIRIC and pre-ST7 sensor dialogs",
+    "A PIR CLI command",
+    "Physical movement, light-level and power-fail behavior"
+  ]
+}

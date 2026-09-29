@@ -39,7 +39,7 @@ PROFILE = MappingProxyType({'unit_type': 'SENPILL', 'firmware': ('2.0.01', '2.3.
                             'catalog_numbers': ('5753PEIRL', 'SLC5753PEIRL'),
                             'spec_filename': 'SENPILL_ST7.xml'})
 _PIR = ('Toolkit selects its ST7 PIR sensor class, whose save forces the occupancy masks, '
-        'potentiometer A, join and corridor fields')
+        'potentiometer A, join and corridor fields; use cbus_toolkit.pir_sensors')
 REFUSED = MappingProxyType({
     'SENPIROA': _PIR, 'SENPIRIA': _PIR, 'SENPIRIB': _PIR,
     'SENLL': 'Toolkit selects its ST7 light-level sensor class, which has no occupancy workflow',

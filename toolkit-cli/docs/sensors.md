@@ -6,6 +6,8 @@ or **SLC5753PEIRL**, using the user's `SENPILL_ST7.xml` and its includes.
 Native application and offline snapshots reject other unit types, revisions
 and catalog numbers before any write. This is one Toolkit sensor class, not
 full sensor-dialog or hardware parity. See [Profile admission](#profile-admission).
+The ST7 PIR types SENPIROA, SENPIRIA and SENPIRIB use a separate workflow; see
+[ST7 PIR sensor dialog](#st7-pir-sensor-dialog).
 
 The helper combines the Occupancy tab's event selection, the standard sensor
 macro, virtual-key/block assignment, timer settings, occupancy enable group,
@@ -129,9 +131,148 @@ step forces `PIRLightMovement`=9, `PIRDarkMovement`=10, `PIRDark`=4 and
 `PotentiometerAFunction`=1. It also clears the join, corridor, IR,
 maintenance and scene-selector fields. The PIR unit also limits blocks to four.
 Editing their event masks with this workflow would produce a state that the
-Toolkit overwrites on its next save. The workflow therefore refuses them.
-`SENLL` is a light-level sensor class with no occupancy workflow. Modelling
-the PIR and light-level dialogs is still open.
+Toolkit overwrites on its next save. The workflow therefore refuses them, and
+`PIRSensor` below models that class instead. `SENLL` is a light-level sensor
+class with no occupancy workflow; modelling its dialog is still open.
+
+## ST7 PIR sensor dialog
+
+`cbus_toolkit.pir_sensors.PIRSensor` models the Toolkit dialog of class
+`TST7SENPIROA` (SENPIROA) and `TST7SENPIRSS` (SENPIRIA, SENPIRIB) with agent
+`TCBusST7PIRSensorCGateAgent`, followed by that agent's complete save. The
+values it writes are the values the Toolkit would leave after pressing OK
+with the same dialog edits. Admission is the intersection of the Toolkit
+registration and C-Gate's catalogue:
+
+| Unit type | Firmware | Catalogue | Specification |
+|---|---|---|---|
+| SENPIROA | 2.0.01..2.3.99, 2.4.00..2.4.99 | 5750WPL, SLC5750WPL,GY | `SENPIROA_ST7.xml`, `SENPIROA_ST7_2.xml` |
+| SENPIRIA | 2.0.01..2.3.99, 2.4.00..2.4.99 | 5751L, SLC5751L,WE | `SENPIRIA_ST7.xml`, `SENPIRIA_ST7_2.xml` |
+| SENPIRIB | 2.0.01..2.3.9 | 5753L, SLC5753L | `SENPIRIB_ST7.xml` |
+
+Catalogue bands are `2.0.01..2.0.99`, `2.1.00..2.1.99` and so on; firmware
+between bands is refused. SENPIRIB 2.3.10..2.3.99 has no Toolkit ST7 class
+and SENPIRIB 2.4 uses the SENPIRIC layout, so both are refused. The loaded
+specification must be the one the catalogue selects for the session firmware.
+
+```python
+from cbus_toolkit.pir_sensors import PIRSensor
+
+sensor = PIRSensor(UnitSpecStore(spec_directory).load("SENPIRIA_ST7.xml"))
+plan = sensor.plan(
+    session.values(),
+    keys={1: {"block": 1, "group": 41, "timer_seconds": 300, "expiry": "ramp_off"},
+          4: {"group": 44}},
+    restore_functions=True, darkness_same_as_light=False,
+    enable_group=23, enabled_when="off", power_up="enabled",
+)
+sensor.apply(session, plan)   # profile, schema, stale and readback checks
+session.save_to_source()      # separate, explicit persistence operation
+```
+
+`plan(current)` with no options is the Toolkit's save of an unchanged dialog.
+The recovered dialog has these controls; the Light Level, Bank Switch,
+Environment and Scenes tabs are hidden and their subforms are empty:
+
+* Four fixed virtual keys: 1 Motion in Light, 2 Motion in Darkness, 3 Sunset,
+  4 Any Motion. Their function combos are disabled; the dialog's templates
+  `0x1F`, `0x20`, `0x22` and `0x21` resolve to the day, night, sunset and any
+  vectors in the table above. `keys` edits a key's block (1..4), Lighting group
+  (0..254, 255 for none), timer and expiry. Keys and blocks 5..8 are not
+  editable (grid columns 5..8 are disabled) and are preserved.
+* When an edited key's function is not its fixed template, the Toolkit asks
+  whether to restore it. `restore_functions=True` writes the template and
+  `False` keeps the custom function. Without a choice the plan is refused.
+* `darkness_same_as_light` is the "same response as Motion in Light" link.
+  The dialog loads it checked when keys 1 and 2 have equal blocks. While set,
+  key 2's blocks are replaced by key 1's and key 2's block cannot be edited
+  separately. Copying key 1 onto key 2 also triggers key 2's template check.
+* `enable_group` / `enabled_when` are the Occupancy Enable/Disable group
+  and polarity, as for SENPILL.
+* `power_up` is the Power Fail occupancy state: `disabled`, `enabled` or
+  `resume`.
+
+A shared block, a non-Lighting application, a key allocation that is not a
+single block 1..4, and other invalid values are refused before any write.
+
+### Toolkit save model
+
+The save runs the multisensor save and then `PrepareForcedParameters`. The
+plan applies, in this order:
+
+* Occupancy power-up. On load the state is `resume` when `PIRLevelStore` is
+  set; otherwise it is `disabled` when `(LightLevel[8] == 255)` equals
+  `PIREnablerGroupLogic`, else `enabled`. On save `resume` sets
+  `PIRLevelStore`=1; `disabled` stores `LightLevel[8]`=255 if the logic is set
+  (else 0), `enabled` the inverse, and both clear `PIRLevelStore`. A polarity
+  change therefore rewrites `LightLevel[8]`.
+* `BroadcastActive` becomes 4 when the loaded value is 1..6, otherwise 0.
+* `PECMarginLux` is recomputed through the hidden percentage:
+  `percent = ROUND(ext(margin / target) * 100)` (0 when target is 0), then
+  `margin = ROUND(target * ext(percent / 100))`. `ext` rounds to the x87
+  64-bit significand and `ROUND` rounds ties to even. This changes the margin
+  for many target/margin pairs and differs from exact rational rounding for
+  nine target/percent pairs, for example 50 lux-bytes at 59% gives 29.
+  `PECTargetLux` is preserved.
+* `PotentiometerBBankSwitchEnable`=0 (multisensor save, unconditional).
+* Forced: `PIRLightMovement`=9, `PIRDarkMovement`=10, `PIRDark`=4,
+  `PotentiometerAFunction`=1, `PotentiometerBFunction`=0, both
+  potentiometer timer blocks 0, `IRBank`=0, `DisableIR`=1, `IRBankKeyOffset`=0,
+  corridor office/link blocks 0, `CorridorLinkActive`=0,
+  `CorridorLinkEnablerGroup`=255, `BroadcastBlock`=0, `IndicatorControl`=0,
+  `PECEnablerGroup`=255, both join enabler and control groups 255,
+  `ControlAppGroupAddress`=255, `PECFunctionBlock`/`Active`=0, the PEC and PIR
+  infrared key/active fields 0, `PECLevelStore`=0 and `PECEnablerGroupLogic`=0.
+* `LightLevel` elements 4, 5, 6, 7 and 9 are set to 0.
+* `SceneKeySelector` is set to the one-value string `0`. Native C-Gate then
+  changes only element 0; elements 1..7 are preserved.
+* When the loaded `IndicatorBlockAssignment[0]` is 7 (the Blocks tab's
+  Disable Indicator state), the whole array becomes `7 0 0 0 0 0 0 0`.
+
+The Toolkit sends a PP SET only for programmable, changed attributes;
+`IndicatorFunction` and `PrimaryColour` are marked non-programmable and are
+absent from these specifications. Writing the final values is therefore
+equivalent. The plan is idempotent: planning again after apply changes nothing.
+
+Unmodelled: the base Neo/NeoPro key, block, timer and scale serialization is
+assumed to round-trip loaded values, and the Toolkit's
+`ApplyMicroFunctionDefaults` reset path (key 4 defaults to On/Off/Idle/Off
+below 2.4.00) is not a dialog edit here. There is no CLI command yet.
+
+### PIR evidence
+
+`research/pir_sensor_review.py` disassembles the pinned Toolkit EXE with its
+MAP and parses its DFM resources. Its sanitized receipt,
+[`pir-sensor-review.json`](pir-sensor-review.json), holds method digests,
+parameter names, constants and control component names only. It resolves
+agent member `0x13C` to `LightLevel` through
+`TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes`, and it checks the
+`ParameterProgrammingSetSingle` gate on attribute flags `+0x58` and `+0x38`.
+
+`tests/test_pir_sensors.py` holds independent literal vectors for the forced
+save, normalizations, x87 margin arithmetic, dialog controls and refusals. It
+checks every catalogue decision against the profile gate, checks the receipt
+against the model, and regenerates the receipt from the private EXE. Native
+acceptance on owned loopback C-Gate 3.4.0 build 2001 covers six profiles:
+SENPIROA 2.0.01/5750WPL and 2.4.99/SLC5750WPL,GY, SENPIRIA 2.2.00/SLC5751L,WE
+and 2.4.00/5751L, and SENPIRIB 2.1.00/SLC5753L and 2.3.9/5753L. Each starts from
+a non-default value in every forced field. It checks 41 raw-byte assertions,
+six dialog cases, idempotence, 31 unrelated parameters and keys/blocks 5..8
+unchanged, and an explicit database save/reload. Five identities are refused
+with values unchanged: SENPIRIB 2.3.10 and 2.4.00, SENPIRIA 2.0.00, SENPILL and
+SENLL. `pir-sensor-acceptance-summary.json` records the source hashes.
+
+```sh
+CBUS_NATIVE_SERVICE_BACKEND=local CBUS_LOCAL_CGATE_VENDOR="$VENDOR/cgate/app" \
+CBUS_CGATE_JAVA=/path/to/jdk-11/bin/java CBUS_UNITSPEC_DIR="$VENDOR/unitspec-plain" \
+CBUS_TOOLKIT_EXE="$VENDOR/toolkit/app/CBusToolkit.exe" \
+CBUS_PIR_SENSOR_REPORT=research/runtime/pir-sensor-acceptance.json \
+  .venv/bin/python -m pytest tests/test_pir_sensors.py -v
+```
+
+This is static-source plus native C-Gate evidence. The original Toolkit
+dialog was not executed, and no physical PIR, lux or power-fail behavior was
+observed.
 
 ## Evidence
 
@@ -207,6 +348,6 @@ CBUS_SENSOR_REPORT=research/runtime/sensor-acceptance.json \
 The following remain outside this acceptance scope: physical movement
 detection, lux calibration, sensitivity, occupancy power-up state, infrared
 controls, corridor linking, join mode, bank-switch editing and light
-maintenance/broadcast programming. Custom macros, PIR/light-level/SENPILLA
-dialogs and their Toolkit forced-parameter behavior, and complete GUI
-before/after parity are also outside it.
+maintenance/broadcast programming. Custom macros, light-level/SENPILLA
+dialogs and complete GUI before/after parity are also outside it. The PIR
+dialog has its own evidence above.
