@@ -213,11 +213,11 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertIsNone(
             report["acceptance_by_dimension"]["original_differential"]["percent"]
         )
-        self.assertEqual(report["obligations"]["total"], 484)
+        self.assertEqual(report["obligations"]["total"], 486)
         self.assertEqual(report["obligations"]["defined"], 3)
         self.assertEqual(report["obligations"]["accepted"], 0)
         self.assertEqual(report["legacy_category_summary"]["implemented"], 18)
-        self.assertEqual(report["legacy_category_summary"]["implemented_percent"], 46.15)
+        self.assertEqual(report["legacy_category_summary"]["implemented_percent"], 43.9)
         self.assertFalse(report["legacy_category_summary"]["functionality_estimate"])
         self.assertEqual(
             report["scope_items"]["by_kind"],

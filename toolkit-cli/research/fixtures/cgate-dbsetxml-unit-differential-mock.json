@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Volumes/external/cbus-toolkit-storage-20260915-v2/rust-target/debug/cgate-mock",
-    "sha256": "f965c20db06c91725b561d99b0b7034ff1fa8499c2a815a5d905bb6d54fc20d0"
+    "sha256": "f28274d6b864d404dd8b3856ec415c6671890ada7b0742f0c9d6cf20b81053a3"
   },
-  "source_revision": "f13802e097f1f77305b577b3190a990d91357927",
+  "source_revision": "5d6b32993e4bba57fc3efc12b4b862f989454c5a",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "73a5036a77577f06a866e5f2c9cf04a83dee4ef1defb86953ecc27008576dc0a",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
