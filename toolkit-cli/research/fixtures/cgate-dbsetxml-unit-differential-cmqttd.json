@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Users/mitchell/source/cbus-integrator-target/debug/cmqttd",
-    "sha256": "d851ad705c420d36e88bd444c9df0693a60fd05ee14432f377a05c2098ff6b9e"
+    "sha256": "95e8e8c558c9647ed578001924e775c4820af70c9f4b29be8d723485bf9b621e"
   },
-  "source_revision": "7fa4c7f2a1a7d5fb3d93308ae4c2b1ed6a22e474",
+  "source_revision": "299629fc1b9995881ea56b84ac839854af333080",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
     "docs/cmqttd-cgate.md": "cc5b1a50f5f7371d9f5d15ec43878ff5e027d6c63b15b751b157328d42a9aef8",
