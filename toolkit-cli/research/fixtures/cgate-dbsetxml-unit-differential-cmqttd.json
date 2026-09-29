@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Volumes/external/cbus-toolkit-storage-20260915-v2/rust-target/debug/cmqttd",
-    "sha256": "06feca1381609fd91eaa51d11629937f44a59a3faed2da2104c457a1f55a09f4"
+    "sha256": "358065de26234af4c966b9703dd68d0f524bb711462a2958941c292940cb9b5b"
   },
-  "source_revision": "cd321cb8a3d92eee10d3aa88dca56f0f57cf8afe",
+  "source_revision": "d75830f618f816d8db07312811e2a09df838ed39",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "73a5036a77577f06a866e5f2c9cf04a83dee4ef1defb86953ecc27008576dc0a",
     "rust/Cargo.lock": "81f3afba9a8739ccf065e881e21c4d4de2272645bef08f1267caf4e54ef31df9",
