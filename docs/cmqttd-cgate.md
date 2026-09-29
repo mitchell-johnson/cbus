@@ -1063,7 +1063,9 @@ non-inventoried service commands. Full replacement still requires:
   `#e# lighting ADDRESS VERB LEVEL` row, without the native PCI source unit and
   `sessionId`/`commandId` suffix, for its own commands and scene playback.
   Level reports keep `#e# lighting ADDRESS level=N` instead of native
-  `SyncUpdate` rows. Specialist application events use the native `702`/`730`
+  `SyncUpdate` rows. As native `bq` does for SyncUpdate, the row is emitted
+  only when a report changes the cached level, so a unit's repeated MMI is
+  silent; cmqttd starts from an unknown level rather than native's 0. Specialist application events use the native `702`/`730`
   and status rows (see the deviations table) and print `sourceUnit=0` for a
   zero source byte, which is what native prints for a zero-source Lighting
   SAL. Rows for cmqttd's own TRIGGER, ENABLE and TEMPERATURE commands keep

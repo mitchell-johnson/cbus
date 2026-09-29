@@ -479,3 +479,182 @@ async fn routed_and_direct_lighting_keep_order_and_source_identity_across_interf
     std::fs::remove_file(project).ok();
     std::fs::remove_file(state).ok();
 }
+
+/// A production unit broadcasts unsolicited extended binary status for
+/// application 56 every few seconds: block 0 (groups 0..=41 OFF except
+/// group 32 ON, 42..=43 missing) and all-missing blocks 0x58 and 0xB0.
+const UNSOLICITED_MMI: [&[u8]; 3] = [
+    b"86041000F9403800AAAAAAAAAAAAAAAAA9AA0A000000000000000000000048\r\n",
+    b"86041000F94038580000000000000000000000000000000000000000009D\r\n",
+    b"86041000F74038B00000000000000000000000000000000000000047\r\n",
+];
+
+#[tokio::test]
+async fn repeated_unsolicited_status_reports_publish_only_changes() {
+    let state = cbus_test_support::proc::temp_path("mmi-dedupe-cgate.json");
+    let sys = start_with(Options {
+        extra: vec![
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, address)| address.trim().to_string())
+        })
+        .unwrap();
+    let stream = TcpStream::connect(&address).await.unwrap();
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut greeting = String::new();
+    reader.read_line(&mut greeting).await.unwrap();
+    assert!(greeting.starts_with("201 "));
+    assert!(cgate_command(&mut reader, &mut writer, "EVENT e7s1c0")
+        .await
+        .contains("200"));
+    let rows = std::sync::Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+    let collector = tokio::spawn({
+        let rows = rows.clone();
+        async move {
+            let _keep = writer;
+            loop {
+                let mut line = String::new();
+                if reader.read_line(&mut line).await.unwrap_or(0) == 0 {
+                    break;
+                }
+                rows.lock().unwrap().push(line.trim_end().to_string());
+            }
+        }
+    });
+    let level_rows = |group: u8| {
+        let row = format!("#e# lighting //HARNESS/254/56/{group} level=");
+        rows.lock()
+            .unwrap()
+            .iter()
+            .filter(|line| line.starts_with(&row))
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    let states = |group: u8| {
+        sys.broker
+            .find_publishes(&format!("homeassistant/light/cbus_{group}/state"))
+            .into_iter()
+            .map(|publish| parse_json(&publish.payload))
+            .collect::<Vec<_>>()
+    };
+    let sensors = |group: u8| {
+        sys.broker
+            .find_publishes(&format!("homeassistant/binary_sensor/cbus_{group}/state"))
+            .into_iter()
+            .map(|publish| String::from_utf8(publish.payload).unwrap())
+            .collect::<Vec<_>>()
+    };
+    // Events reach MQTT and C-Gate in bus order, so an ON for a spare group
+    // proves every earlier report was handled by both consumers.
+    let barrier = |group: u8| {
+        let sys = &sys;
+        let rows = rows.clone();
+        async move {
+            sys.pci
+                .inject(&pci_wire(&[0x05, 0x07, 0x38, 0x00, 0x79, group]));
+            require(STARTUP, "barrier MQTT state", || !states(group).is_empty()).await;
+            let row = format!("#s# lighting on //HARNESS/254/56/{group} ");
+            require(STARTUP, "barrier C-Gate row", || {
+                rows.lock()
+                    .unwrap()
+                    .iter()
+                    .any(|line| line.starts_with(&row))
+            })
+            .await;
+        }
+    };
+
+    // Group 32 is known at brightness 128 before the unit starts reporting.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x02, 32, 0x80]));
+    require(STARTUP, "group 32 ramp", || {
+        states(32)
+            .first()
+            .is_some_and(|state| state["brightness"] == 128)
+    })
+    .await;
+
+    for _ in 0..3 {
+        for line in UNSOLICITED_MMI {
+            sys.pci.inject(line);
+        }
+    }
+    barrier(200).await;
+
+    let off = serde_json::json!({"state": "OFF", "cbus_source_addr": 0, "brightness": 0});
+    for group in (0u8..=41).filter(|&group| group != 32) {
+        assert_eq!(states(group), std::slice::from_ref(&off), "group {group}");
+        assert_eq!(sensors(group), ["OFF"], "group {group}");
+        assert_eq!(
+            level_rows(group),
+            [format!("#e# lighting //HARNESS/254/56/{group} level=0")],
+            "group {group}"
+        );
+    }
+    // A brightness-less binary ON leaves the known level alone.
+    assert_eq!(states(32).len(), 1, "{:?}", states(32));
+    assert_eq!(
+        parse_json(
+            &sys.broker
+                .retained("homeassistant/light/cbus_32/state")
+                .unwrap()
+        )["brightness"],
+        128
+    );
+    assert_eq!(sensors(32), ["ON"]);
+    assert!(level_rows(32).is_empty());
+    for group in (42u8..=199).chain(201..=255) {
+        assert!(states(group).is_empty(), "missing group {group}");
+    }
+
+    // A genuine change in the same broadcast publishes once: group 32 turns
+    // OFF and group 40 turns ON with an unknown level.
+    let changed = pci_wire(&[
+        0x86, 0x04, 0x10, 0x00, 0xf9, 0x40, 0x38, 0x00, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+        0xaa, 0xaa, 0xaa, 0x09, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ]);
+    for _ in 0..3 {
+        sys.pci.inject(&changed);
+        sys.pci.inject(UNSOLICITED_MMI[1]);
+        sys.pci.inject(UNSOLICITED_MMI[2]);
+    }
+    barrier(201).await;
+    assert_eq!(states(32).len(), 2, "{:?}", states(32));
+    assert_eq!(states(32)[1], off);
+    assert_eq!(sensors(32), ["ON", "OFF"]);
+    assert_eq!(level_rows(32), ["#e# lighting //HARNESS/254/56/32 level=0"]);
+    assert_eq!(
+        states(40),
+        [
+            off.clone(),
+            serde_json::json!({"state": "ON", "cbus_source_addr": 0})
+        ]
+    );
+    assert_eq!(sensors(40), ["OFF", "ON"]);
+    assert_eq!(level_rows(40).len(), 1);
+    for group in (0u8..=39).filter(|&group| group != 32) {
+        assert_eq!(states(group).len(), 1, "group {group}");
+        assert_eq!(level_rows(group).len(), 1, "group {group}");
+    }
+
+    collector.abort();
+    std::fs::remove_file(state).ok();
+}

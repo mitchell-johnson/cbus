@@ -2654,7 +2654,11 @@ impl Service {
             _ => {}
         }
         for (app, group, value) in updates {
-            net.levels.insert((app, group), value);
+            // Native `bq` raises its 738 SyncUpdate only when a status report
+            // changes the group's level; repeated identical MMI stays silent.
+            if net.levels.insert((app, group), value) == Some(value) {
+                continue;
+            }
             let _ = self.events.send(format!(
                 "#e# lighting //{}/{}/{app}/{group} level={value}",
                 self.project, self.network

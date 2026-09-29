@@ -37,6 +37,12 @@ re-swept the bus. cmqttd stays up and keeps observing C-Bus while the broker
 is away, so its last published states are current evidence. Republishing them
 restores what the broker held without adding bus traffic.
 
+The same cache suppresses redundant status reports. Sweep, readback and
+unsolicited MMI results republish a light or binary-sensor topic only when they
+change its retained payload, and a binary ON keeps a known nonzero brightness.
+Some units broadcast MMI every few seconds; lighting SALs and command echoes
+always publish.
+
 ## Docker staging stack
 
 `deploy/staging/docker-compose.staging.yml` defines the following services on

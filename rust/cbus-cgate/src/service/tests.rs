@@ -3740,6 +3740,15 @@ async fn unattributed_lighting_and_level_reports_keep_their_existing_rows() {
         events.try_recv().unwrap(),
         "#e# lighting //HARNESS/254/56/1 level=128"
     );
+    // Like native SyncUpdate, an identical repeated report is silent.
+    service
+        .observe(&CBusEvent::LevelReport {
+            app: 56,
+            block_start: 1,
+            levels: vec![Some(128)],
+        })
+        .await;
+    assert!(events.try_recv().is_err());
     // A timed ramp is reported with its snapped duration but clears the
     // cache until a report arrives.
     service

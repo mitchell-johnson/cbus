@@ -454,9 +454,7 @@ impl Gateway {
         }
     }
 
-    async fn publish_binary_sensor(&self, group_addr: u8, app_addr: i64, state: bool) {
-        let payload = if state { "ON" } else { "OFF" };
-        let topic = bin_sensor_state_topic(group_addr, app_addr);
+    async fn publish_binary_sensor(&self, topic: String, payload: &str) {
         self.retained_states
             .lock()
             .unwrap()
@@ -467,105 +465,115 @@ impl Gateway {
             .await;
     }
 
-    async fn mqtt_light_on(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
-        self.check_published(group_addr, app_addr).await;
-        self.publish_state(
-            state_topic(group_addr, app_addr),
-            json!({"state": "ON", "brightness": 255, "transition": 0,
-                   "cbus_source_addr": source}),
-        )
-        .await;
-        self.publish_binary_sensor(group_addr, app_addr, true).await;
+    /// The retained light state and binary-sensor value for one update.
+    /// `LightUpdate::Binary` is `MqttClient.lighting_group_binary_state`: no
+    /// brightness on ON (a binary report has no level), brightness 0 on OFF,
+    /// no transition either way.
+    fn light_state(source: Option<u8>, update: LightUpdate) -> (Value, bool) {
+        match update {
+            LightUpdate::On => (
+                json!({"state": "ON", "brightness": 255, "transition": 0,
+                       "cbus_source_addr": source}),
+                true,
+            ),
+            LightUpdate::Off => (
+                json!({"state": "OFF", "brightness": 0, "transition": 0,
+                       "cbus_source_addr": source}),
+                false,
+            ),
+            LightUpdate::Binary(true) => (json!({"state": "ON", "cbus_source_addr": source}), true),
+            LightUpdate::Binary(false) => (
+                json!({"state": "OFF", "cbus_source_addr": source, "brightness": 0}),
+                false,
+            ),
+            LightUpdate::Ramp { duration, level } => (
+                json!({"state": "ON", "brightness": level, "transition": duration,
+                       "cbus_source_addr": source}),
+                level > 0,
+            ),
+        }
     }
 
-    async fn mqtt_light_off(&self, source: Option<u8>, group_addr: u8, app_addr: i64) {
-        self.check_published(group_addr, app_addr).await;
-        self.publish_state(
-            state_topic(group_addr, app_addr),
-            json!({"state": "OFF", "brightness": 0, "transition": 0,
-                   "cbus_source_addr": source}),
-        )
-        .await;
-        self.publish_binary_sensor(group_addr, app_addr, false)
-            .await;
-    }
-
-    /// `MqttClient.lighting_group_binary_state`: state derived from a
-    /// binary status report — no brightness on ON (a binary report has
-    /// no level), brightness 0 on OFF, no transition either way.
-    async fn mqtt_light_binary_state(
-        &self,
-        source: Option<u8>,
-        group_addr: u8,
-        app_addr: i64,
-        light_on: bool,
-    ) {
-        self.check_published(group_addr, app_addr).await;
-        let payload = if light_on {
-            json!({"state": "ON", "cbus_source_addr": source})
-        } else {
-            json!({"state": "OFF", "cbus_source_addr": source, "brightness": 0})
+    /// Whether a status report adds nothing to the last retained state.
+    /// Identical payloads are redundant. A binary report carries no level,
+    /// so a binary ON keeps a known nonzero brightness and a binary OFF keeps
+    /// any earlier OFF payload instead of replacing it with a poorer copy.
+    fn status_report_redundant(last: &str, payload: &Value, update: LightUpdate) -> bool {
+        let Ok(last) = serde_json::from_str::<Value>(last) else {
+            return false;
         };
-        self.publish_state(state_topic(group_addr, app_addr), payload)
-            .await;
-        self.publish_binary_sensor(group_addr, app_addr, light_on)
-            .await;
+        if last == *payload {
+            return true;
+        }
+        match update {
+            LightUpdate::Binary(true) => {
+                last["state"] == "ON"
+                    && last
+                        .get("brightness")
+                        .and_then(Value::as_u64)
+                        .is_none_or(|brightness| brightness > 0)
+            }
+            LightUpdate::Binary(false) => last["state"] == "OFF",
+            _ => false,
+        }
     }
 
-    async fn mqtt_light_ramp(
-        &self,
-        source: Option<u8>,
-        group_addr: u8,
-        app_addr: i64,
-        duration: u32,
-        level: u8,
-    ) {
-        self.check_published(group_addr, app_addr).await;
-        self.publish_state(
-            state_topic(group_addr, app_addr),
-            json!({"state": "ON", "brightness": level, "transition": duration,
-                   "cbus_source_addr": source}),
-        )
-        .await;
-        self.publish_binary_sensor(group_addr, app_addr, level > 0)
-            .await;
-    }
-
+    /// Publish one light update. Commands and lighting SALs always publish.
+    /// Status reports (solicited sweeps, readbacks and a unit's unsolicited
+    /// MMI) republish a topic only when they change its retained state: some
+    /// units broadcast MMI every few seconds, and HA needs no retained
+    /// rewrite for an unchanged group.
     async fn publish_light_update(
         &self,
         source: Option<u8>,
         group_addr: u8,
         app_addr: i64,
         update: LightUpdate,
+        status_report: bool,
     ) {
-        match update {
-            LightUpdate::On => self.mqtt_light_on(source, group_addr, app_addr).await,
-            LightUpdate::Off => self.mqtt_light_off(source, group_addr, app_addr).await,
-            LightUpdate::Binary(state) => {
-                self.mqtt_light_binary_state(source, group_addr, app_addr, state)
-                    .await
-            }
-            LightUpdate::Ramp { duration, level } => {
-                self.mqtt_light_ramp(source, group_addr, app_addr, duration, level)
-                    .await
-            }
+        self.check_published(group_addr, app_addr).await;
+        let (payload, sensor) = Self::light_state(source, update);
+        let topic = state_topic(group_addr, app_addr);
+        let sensor_topic = bin_sensor_state_topic(group_addr, app_addr);
+        let sensor_payload = if sensor { "ON" } else { "OFF" };
+        let (state_redundant, sensor_redundant) = if status_report {
+            let retained = self.retained_states.lock().unwrap();
+            (
+                retained
+                    .get(&topic)
+                    .is_some_and(|last| Self::status_report_redundant(last, &payload, update)),
+                retained
+                    .get(&sensor_topic)
+                    .is_some_and(|last| last == sensor_payload),
+            )
+        } else {
+            (false, false)
+        };
+        if !state_redundant {
+            self.publish_state(topic, payload).await;
+        }
+        if !sensor_redundant {
+            self.publish_binary_sensor(sensor_topic, sensor_payload)
+                .await;
         }
     }
 
     /// Record and publish one genuine bus observation. Holding the sequence
     /// guard until both retained state requests are queued gives a concurrent
-    /// requested-state echo a deterministic before/after relationship.
+    /// requested-state echo a deterministic before/after relationship. A
+    /// redundant status report still counts as newer physical evidence.
     async fn publish_observed_light(
         &self,
         source: Option<u8>,
         group_addr: u8,
         app_addr: i64,
         update: LightUpdate,
+        status_report: bool,
     ) {
         let mut sequences = self.observation_sequences.lock().await;
         let sequence = sequences.entry((app_addr, group_addr)).or_default();
         *sequence = sequence.wrapping_add(1);
-        self.publish_light_update(source, group_addr, app_addr, update)
+        self.publish_light_update(source, group_addr, app_addr, update, status_report)
             .await;
     }
 
@@ -596,7 +604,7 @@ impl Gateway {
         if observed_now != observed_before_send {
             return false;
         }
-        self.publish_light_update(None, group_addr, app_addr, update)
+        self.publish_light_update(None, group_addr, app_addr, update, false)
             .await;
         true
     }
@@ -607,11 +615,11 @@ impl Gateway {
     pub async fn on_cbus_event(self: &Arc<Self>, event: CBusEvent) {
         match event {
             CBusEvent::LightingOn { source, app, group } => {
-                self.publish_observed_light(source, group, app as i64, LightUpdate::On)
+                self.publish_observed_light(source, group, app as i64, LightUpdate::On, false)
                     .await;
             }
             CBusEvent::LightingOff { source, app, group } => {
-                self.publish_observed_light(source, group, app as i64, LightUpdate::Off)
+                self.publish_observed_light(source, group, app as i64, LightUpdate::Off, false)
                     .await;
             }
             CBusEvent::LightingRamp {
@@ -626,6 +634,7 @@ impl Gateway {
                     group,
                     app as i64,
                     LightUpdate::Ramp { duration, level },
+                    false,
                 )
                 .await;
             }
@@ -646,6 +655,7 @@ impl Gateway {
                                 start,
                                 app as i64,
                                 LightUpdate::Binary(true),
+                                true,
                             )
                             .await
                         }
@@ -655,6 +665,7 @@ impl Gateway {
                                 start,
                                 app as i64,
                                 LightUpdate::Binary(false),
+                                true,
                             )
                             .await
                         }
@@ -683,7 +694,7 @@ impl Gateway {
                                 level: v,
                             }
                         };
-                        self.publish_observed_light(Some(0), start, app as i64, update)
+                        self.publish_observed_light(Some(0), start, app as i64, update, true)
                             .await;
                     }
                     start = start.wrapping_add(1);
