@@ -54,11 +54,11 @@
     "modules_without_skip_sites": 243,
     "modules_with_skip_sites": 203,
     "modules_by_category": {
-      "cgate_test_host": 119,
+      "cgate_test_host": 118,
       "external_cgate_project": 1,
       "host_platform": 16,
       "host_tool": 6,
-      "native_cgate_local": 45,
+      "native_cgate_local": 46,
       "native_opt_in": 2,
       "original_model_runtime": 3,
       "original_toolkit": 64,
@@ -76,8 +76,8 @@
       "partial": 18,
       "none": 76
     },
-    "native_runnable_tests": 205,
-    "native_selected_required_tests": 205,
+    "native_runnable_tests": 206,
+    "native_selected_required_tests": 206,
     "native_excluded": 0,
     "native_selection_selectors": 130
   },
@@ -293,23 +293,24 @@
     },
     "tests/test_cgl.py": {
       "categories": [
-        "cgate_test_host"
+        "native_cgate_local"
       ],
       "native": "all",
-      "gated_tests": 1,
-      "native_runnable_tests": 1,
-      "native_selected_tests": 7,
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 14,
       "sites": [
         {
           "scope": "tests/test_cgl.py::NativeCGLTests",
           "kind": "decorator.skipUnless",
-          "condition": "os.environ.get('CBUS_CGATE_TEST_HOST')",
-          "reason": "set CBUS_CGATE_TEST_HOST for real CGL acceptance",
+          "condition": "NATIVE",
+          "reason": "owned native C-Gate is not configured",
           "environment": [
-            "CBUS_CGATE_TEST_HOST"
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
           ],
           "categories": [
-            "cgate_test_host"
+            "native_cgate_local"
           ],
           "offline": "skips",
           "native": "runs"
@@ -6166,7 +6167,7 @@
         "unit_specs"
       ],
       "native": "none",
-      "gated_tests": 19,
+      "gated_tests": 20,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -6206,6 +6207,7 @@
             "rust_binaries"
           ],
           "tests": [
+            "RustInteropTests::test_cgl_route_vectors_match_native_capture",
             "RustInteropTests::test_create_unit_parameter_round_trip",
             "RustInteropTests::test_edlt_label_clear_accepted",
             "RustInteropTests::test_edlt_lighting_programming_round_trip",
