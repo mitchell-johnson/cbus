@@ -50,36 +50,36 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 429,
+    "test_modules": 432,
     "modules_without_skip_sites": 241,
-    "modules_with_skip_sites": 188,
+    "modules_with_skip_sites": 191,
     "modules_by_category": {
-      "cgate_test_host": 114,
+      "cgate_test_host": 115,
       "external_cgate_project": 1,
-      "host_platform": 13,
-      "host_tool": 3,
+      "host_platform": 14,
+      "host_tool": 4,
       "native_cgate_local": 36,
       "native_opt_in": 2,
-      "original_model_runtime": 2,
-      "original_toolkit": 60,
+      "original_model_runtime": 3,
+      "original_toolkit": 61,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 3,
       "rust_binaries": 6,
       "unclassified": 1,
       "unit_specs": 102,
-      "vendor_firmware": 3,
+      "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
       "all": 101,
-      "partial": 16,
-      "none": 71
+      "partial": 17,
+      "none": 73
     },
-    "native_runnable_tests": 193,
-    "native_selected_required_tests": 193,
+    "native_runnable_tests": 194,
+    "native_selected_required_tests": 194,
     "native_excluded": 0,
-    "native_selection_selectors": 120
+    "native_selection_selectors": 121
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -1707,10 +1707,25 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 2,
+      "gated_tests": 3,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
+        {
+          "scope": "tests/test_cmqtt_interop.py::test_real_cli_network_diagnose_through_cmqttd",
+          "kind": "decorator.skipif",
+          "condition": "BIN is None",
+          "reason": "Build the Rust cmqttd binary to run cross-language hardware-service tests",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "skips",
+          "native_resolution": "Rust binaries are provisioned by make check-interop, not by the native gate"
+        },
         {
           "scope": "tests/test_cmqtt_interop.py::test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it",
           "kind": "decorator.skipif",
@@ -1748,6 +1763,7 @@
             "rust_binaries"
           ],
           "tests": [
+            "test_real_cli_network_diagnose_through_cmqttd",
             "test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it",
             "test_real_cli_reads_all_edlt_labels_through_cmqttd"
           ]
@@ -4599,6 +4615,82 @@
         }
       ]
     },
+    "tests/test_firmware_update_oracle.py": {
+      "categories": [
+        "host_platform",
+        "original_model_runtime",
+        "vendor_firmware"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_firmware_update_oracle.py::OriginalUpdaterTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_FIRMWARE_ORACLE_BACKEND') == 'macos-mono' and platform.system() == 'Darwin' and os.environ.get('CBUS_MONO_MACOS_ROOT') and os.environ.get('CBUS_FIRMWARE_UPDATER')",
+          "reason": "Set CBUS_FIRMWARE_ORACLE_BACKEND=macos-mono, CBUS_MONO_MACOS_ROOT and CBUS_FIRMWARE_UPDATER",
+          "environment": [
+            "CBUS_FIRMWARE_ORACLE_BACKEND",
+            "CBUS_FIRMWARE_UPDATER",
+            "CBUS_MONO_MACOS_ROOT"
+          ],
+          "categories": [
+            "host_platform",
+            "original_model_runtime",
+            "vendor_firmware"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "host_platform",
+            "original_model_runtime",
+            "vendor_firmware"
+          ],
+          "tests": [
+            "OriginalUpdaterTests::test_selected_original_cases_match_update_plan"
+          ]
+        }
+      ]
+    },
+    "tests/test_firmware_update_plan.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_firmware_update_plan.py::PackageReaderTests::test_aes_entries_decrypt_with_optional_pyzipper",
+          "kind": "decorator.skipUnless",
+          "condition": "HAS_PYZIPPER",
+          "reason": "optional firmware extra (pyzipper) is not installed",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "host_tool"
+          ],
+          "tests": [
+            "PackageReaderTests::test_aes_entries_decrypt_with_optional_pyzipper"
+          ]
+        }
+      ]
+    },
     "tests/test_hardware_fixture_matrix.py": {
       "categories": [
         "native_cgate_local",
@@ -5739,7 +5831,7 @@
         "unit_specs"
       ],
       "native": "none",
-      "gated_tests": 18,
+      "gated_tests": 19,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -5792,6 +5884,7 @@
             "RustInteropTests::test_physical_readdress_confirmed_moved",
             "RustInteropTests::test_project_verbs_registries_and_validation",
             "RustInteropTests::test_public_cli_exports_and_replaces_complete_group_xml_file",
+            "RustInteropTests::test_public_cli_network_diagnose_matches_mock_native_envelopes",
             "RustInteropTests::test_serial_commission_confirmed_moved",
             "RustInteropTests::test_serials_refresh_and_database_inventory",
             "RustInteropTests::test_typed_container_document_replaces_complete_subtree",
@@ -6785,6 +6878,56 @@
           ],
           "tests": [
             "OriginalUpdateMenuTests::test_fresh_original_handler36_literal_cases"
+          ]
+        }
+      ]
+    },
+    "tests/test_unit_diagnostics.py": {
+      "categories": [
+        "cgate_test_host",
+        "original_toolkit"
+      ],
+      "native": "partial",
+      "gated_tests": 2,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_unit_diagnostics.py::NativeDiagnosticsTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_TEST_HOST')",
+          "reason": "Set CBUS_CGATE_TEST_HOST for disposable native diagnostics",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST"
+          ],
+          "categories": [
+            "cgate_test_host"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_unit_diagnostics.py::StaticReceiptTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Set CBUS_TOOLKIT_EXE (and MAP) for the static receipt",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "StaticReceiptTests::test_static_receipt_reproduces_the_committed_fixture"
           ]
         }
       ]

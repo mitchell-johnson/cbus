@@ -151,6 +151,7 @@
     "tests/test_simulator_duplicates.py",
     "tests/test_thermostat_templates_native.py",
     "tests/test_toolkit_database_csv_area_native.py",
+    "tests/test_unit_diagnostics.py::NativeDiagnosticsTests::test_native_capture_reproduces_the_committed_fixture",
     "tests/test_unit_templates.py::UnitTemplateNativeTest"
   ]
 }
