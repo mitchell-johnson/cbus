@@ -261,9 +261,12 @@
         "docs/classic-replacement.md",
         "tests/test_template_transaction.py",
         "tests/test_template_transaction_native.py",
-        "docs/native-template-transaction-acceptance.json"
+        "docs/native-template-transaction-acceptance.json",
+        "tests/test_conversion_mapping.py",
+        "tests/test_conversion_pairs_native.py",
+        "research/fixtures/convertunit-pairs-native-receipt.json"
       ],
-      "limits": "Native DIN conversion, existing-unit alignment and all nine classic KEY1/KEY2/KEY4 replacement pairs tested with native backups, persistence, metadata and rollback. A bounded KEY1/KEY2/KEY4 template-default transaction resets the original 26 template fields, performs one PP SAVE and verifies a fresh database reload while preserving stable excluded destination values. Other keypad/sensor conversions, broad RESET_TO_DEFAULTS/factory behavior, project-file persistence and physical reset remain incomplete."
+      "limits": "Native CONVERTUNIT covers all 15 C-Gate-admitted DIN dimmer/relay pairs in catalogue and move modes: an independent mapping-table model predicted every stored PP list, rebuilt identity, output channels, PP readback (including seven native-unloadable results) and save/reload, with 15 refusal cases and a PP-less source; cmqttd/cgate-mock apply the same rules but do not store the C-Bus 3 UnitType PP, regenerate channels or refuse unloadable PP values. Existing-unit alignment and all nine classic KEY1/KEY2/KEY4 replacement pairs tested with native backups, persistence, metadata and rollback. A bounded KEY1/KEY2/KEY4 template-default transaction resets the original 26 template fields, performs one PP SAVE and verifies a fresh database reload while preserving stable excluded destination values. Other keypad/sensor conversions, broad RESET_TO_DEFAULTS/factory behavior, project-file persistence and physical reset remain incomplete."
     },
     {
       "id": "classic-key-presets",

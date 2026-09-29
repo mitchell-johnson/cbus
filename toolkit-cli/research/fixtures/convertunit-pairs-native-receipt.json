@@ -1,0 +1,1725 @@
+{
+  "backend": {
+    "backend": "native",
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "boundary_cases": [
+    {
+      "code": 200,
+      "final": "200 OK.",
+      "id": "bare-source/DIMDN4->DIMDU4/mode1",
+      "passed": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 40
+    }
+  ],
+  "cases": [
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN8/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "10bb2d2362f68e28455fb4080ea670bfc2fc9a621682fc6dbaf940b336025d0b",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "10bb2d2362f68e28455fb4080ea670bfc2fc9a621682fc6dbaf940b336025d0b",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 6,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN8/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "3709627874b68ab27f44598e565a7d052a33207e812674c92fec441ced9b6110",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "3709627874b68ab27f44598e565a7d052a33207e812674c92fec441ced9b6110",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 6,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN8F/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "04cf8ba3bf94b5947642cf6f406746ada4509824b568edf7e3a1bb8cdb70c06a",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "04cf8ba3bf94b5947642cf6f406746ada4509824b568edf7e3a1bb8cdb70c06a",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 7,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8F"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN8F/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "eaafa3dcdec4c8c6581840b5267c509145db9e8b085736b1522eb0f638127460",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "eaafa3dcdec4c8c6581840b5267c509145db9e8b085736b1522eb0f638127460",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 7,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8F"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "2c14219208dbc7caa52bf2673a5aefad67399295b9ab6fb816d78d71802275e9",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 22,
+      "predicted_sha256": "2c14219208dbc7caa52bf2673a5aefad67399295b9ab6fb816d78d71802275e9",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 8,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "82d3ee56a7a5955d95acd6786d4ebbedaaefce8312e7e18302f933e308cdb46a",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 22,
+      "predicted_sha256": "82d3ee56a7a5955d95acd6786d4ebbedaaefce8312e7e18302f933e308cdb46a",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 8,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN4F/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "0c51cfe8c362e1a55677baa038d9751fd3b1cc2a3c59b910f85ddf048da6eaeb",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 22,
+      "predicted_sha256": "0c51cfe8c362e1a55677baa038d9751fd3b1cc2a3c59b910f85ddf048da6eaeb",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 9,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN4F"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDN4F/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "37bd7cf55a1a5a89feeef1ba79865b59c000e565bf95bc78cf02933c3b7cf56d",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 22,
+      "predicted_sha256": "37bd7cf55a1a5a89feeef1ba79865b59c000e565bf95bc78cf02933c3b7cf56d",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 31
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 9,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN4F"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDD4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "8e7034290d8f05e3d0d31c0adb2394265e1748b4e63a90b854afcd4c76065dfd",
+      "omitted_target_parameters": 0,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 199,
+      "predicted_sha256": "8e7034290d8f05e3d0d31c0adb2394265e1748b4e63a90b854afcd4c76065dfd",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "DimChProfile1StartupDurationCycles"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "DimChProfile1StartupDurationCycles",
+          "DimChProfile3StartupDurationCycles"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "changePropertyName",
+        "channelProperties",
+        "convertDimChProfileData",
+        "convertDimChannelProfileSelection",
+        "convertErrorReportInterval",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 12,
+      "target_parameter_count": 199,
+      "target_type": "DIMDD4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDU4->DIMDD4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "f12fed1eb5ae8c1d2770f65ea738f0761fcc4c669dc3f8b16dd448527d9c8765",
+      "omitted_target_parameters": 0,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 199,
+      "predicted_sha256": "f12fed1eb5ae8c1d2770f65ea738f0761fcc4c669dc3f8b16dd448527d9c8765",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "DimChProfile2StartupDurationCycles",
+          "DimChProfile4StartupDurationCycles"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "DimChProfile2StartupDurationCycles",
+          "DimChProfile4StartupDurationCycles"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "changePropertyName",
+        "channelProperties",
+        "convertDimChProfileData",
+        "convertDimChannelProfileSelection",
+        "convertErrorReportInterval",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse"
+      ],
+      "source_pp_count": 40,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDU4",
+      "table_index": 12,
+      "target_parameter_count": 199,
+      "target_type": "DIMDD4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4F->DIMDU4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "318e0ddba1e5cd1146af1f19ae4e3de7118386d585e161971487dce2d15ce070",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "318e0ddba1e5cd1146af1f19ae4e3de7118386d585e161971487dce2d15ce070",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4F",
+      "table_index": 1,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4F->DIMDU4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "0fa81a137f4c5fa8d1771a03d51d2bff8d24d26f1d50959e99f95651a8a4600f",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "0fa81a137f4c5fa8d1771a03d51d2bff8d24d26f1d50959e99f95651a8a4600f",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4F",
+      "table_index": 1,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDU4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "faf0335d98c78d979f5de8f0566d53165d89426c0cf6a817a9cd0eb0830f3994",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "faf0335d98c78d979f5de8f0566d53165d89426c0cf6a817a9cd0eb0830f3994",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": 4,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDU4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "9bf06a47f2fd55cf7558962d164ecc4b8fe3367c75207698b425f2b8a69bdc36",
+      "omitted_target_parameters": 9,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "9bf06a47f2fd55cf7558962d164ecc4b8fe3367c75207698b425f2b8a69bdc36",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": 4,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDN8/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "27b7f8f815215532b46d898722f7eca34f56a5280a73589d37e35fc6b9352193",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "27b7f8f815215532b46d898722f7eca34f56a5280a73589d37e35fc6b9352193",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "LogicFunction",
+          "LogicGA13Associations",
+          "LogicGA14Associations",
+          "LogicGA15Associations",
+          "LogicGA16Associations",
+          "MaxDimmingLevel",
+          "MinDimmingLevel",
+          "PowerUpDelay",
+          "RestrikeChannel"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "LevelStoreEnable",
+          "LogicFunction",
+          "LogicGA13Associations",
+          "LogicGA14Associations",
+          "LogicGA15Associations",
+          "LogicGA16Associations",
+          "MaxDimmingLevel",
+          "MinDimmingLevel",
+          "PowerUpDelay",
+          "RestrikeChannel"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": null,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDN8/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "01a91bab441c29efe3c1d271e6bdc169c0583914bbd1402e120dc6f9c79b6709",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 31,
+      "predicted_sha256": "01a91bab441c29efe3c1d271e6bdc169c0583914bbd1402e120dc6f9c79b6709",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "LogicFunction",
+          "LogicGA13Associations",
+          "LogicGA14Associations",
+          "LogicGA15Associations",
+          "LogicGA16Associations",
+          "MaxDimmingLevel",
+          "MinDimmingLevel",
+          "PowerUpDelay",
+          "RestrikeChannel"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "LevelStoreEnable",
+          "LogicFunction",
+          "LogicGA13Associations",
+          "LogicGA14Associations",
+          "LogicGA15Associations",
+          "LogicGA16Associations",
+          "MaxDimmingLevel",
+          "MinDimmingLevel",
+          "PowerUpDelay",
+          "RestrikeChannel"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": null,
+      "target_parameter_count": 31,
+      "target_type": "DIMDN8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDD4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "6313a6414a993b72499c49d489096d74fe4e127c82b3e2112a14187279d7da05",
+      "omitted_target_parameters": 0,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 199,
+      "predicted_sha256": "6313a6414a993b72499c49d489096d74fe4e127c82b3e2112a14187279d7da05",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 199
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": 11,
+      "target_parameter_count": 199,
+      "target_type": "DIMDD4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN4->DIMDD4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "e13e986653815576e3aa9ddfbf0d4bb1e22ea02f3f7827246348f7bf38b44e22",
+      "omitted_target_parameters": 0,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 199,
+      "predicted_sha256": "e13e986653815576e3aa9ddfbf0d4bb1e22ea02f3f7827246348f7bf38b44e22",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 199
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN4",
+      "table_index": 11,
+      "target_parameter_count": 199,
+      "target_type": "DIMDD4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8F->DIMDU4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "e0451c02ccac89253c06ecfe75d04590698122bd2d0202944435b99ed559a6a0",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 40,
+      "predicted_sha256": "e0451c02ccac89253c06ecfe75d04590698122bd2d0202944435b99ed559a6a0",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8F",
+      "table_index": 3,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8F->DIMDU4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "41945b73f1533936851f4a635540951027f296473d75200b5d43777d5ac256f2",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 40,
+      "predicted_sha256": "41945b73f1533936851f4a635540951027f296473d75200b5d43777d5ac256f2",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8F",
+      "table_index": 3,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8->DIMDU4/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "baca9f04334edb0157c3568329b3ab1bd32dc736bcdd041aaab43ecee307bd4c",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 40,
+      "predicted_sha256": "baca9f04334edb0157c3568329b3ab1bd32dc736bcdd041aaab43ecee307bd4c",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8",
+      "table_index": 2,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8->DIMDU4/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "25cf2b85516ebf713ac3f04aedb0ccf5ae8cbfd72f6decf595e6a4f6c2040dcb",
+      "omitted_target_parameters": 0,
+      "output_channels": 0,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 40,
+      "predicted_sha256": "25cf2b85516ebf713ac3f04aedb0ccf5ae8cbfd72f6decf595e6a4f6c2040dcb",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 40
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "resetToZero",
+        "setDefaultValue"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8",
+      "table_index": 2,
+      "target_parameter_count": 40,
+      "target_type": "DIMDU4"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8->DIMDD8/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "5d01e7165ee89f55d93e2e0fe3a412183b744a4edfbf54b7406ea56f6fc7efd7",
+      "omitted_target_parameters": 0,
+      "output_channels": 8,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 447,
+      "predicted_sha256": "5d01e7165ee89f55d93e2e0fe3a412183b744a4edfbf54b7406ea56f6fc7efd7",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 447
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8",
+      "table_index": 10,
+      "target_parameter_count": 447,
+      "target_type": "DIMDD8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "DIMDN8->DIMDD8/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "b7a713e43ae41f1ecebf2eb269bde07f3102a4a276a8d275ec2446d6d03c4688",
+      "omitted_target_parameters": 0,
+      "output_channels": 8,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 447,
+      "predicted_sha256": "b7a713e43ae41f1ecebf2eb269bde07f3102a4a276a8d275ec2446d6d03c4688",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 447
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "DIMDN8",
+      "table_index": 10,
+      "target_parameter_count": 447,
+      "target_type": "DIMDD8"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN4->RELDN4A/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "6f8088a211cf2b2eb83eb4c35eb379051081c12756c79ae1e2b7d92e80c822d0",
+      "omitted_target_parameters": 0,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 179,
+      "predicted_sha256": "6f8088a211cf2b2eb83eb4c35eb379051081c12756c79ae1e2b7d92e80c822d0",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 179
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapInterlockMask",
+        "mapInterlockPriority",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN4",
+      "table_index": 13,
+      "target_parameter_count": 179,
+      "target_type": "RELDN4A"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN4->RELDN4A/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "3466a9a9ec84ecf9155ca4df8d80790e995326b615f8c44c542d786c4254737a",
+      "omitted_target_parameters": 4,
+      "output_channels": 4,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 175,
+      "predicted_sha256": "3466a9a9ec84ecf9155ca4df8d80790e995326b615f8c44c542d786c4254737a",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "Ch1RestrikeDelay",
+          "Ch3RestrikeDelay"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "Ch0InterlockPriority",
+          "Ch1InterlockPriority",
+          "Ch1RestrikeDelay",
+          "Ch2InterlockPriority",
+          "Ch3InterlockPriority",
+          "Ch3RestrikeDelay"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapInterlockMask",
+        "mapInterlockPriority",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN4",
+      "table_index": 13,
+      "target_parameter_count": 179,
+      "target_type": "RELDN4A"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN8->RELDN8A/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "f9a32a272dc805173f4ba46a0edbffefa0374c8a0a12d6feab5d965396be857a",
+      "omitted_target_parameters": 0,
+      "output_channels": 8,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 243,
+      "predicted_sha256": "f9a32a272dc805173f4ba46a0edbffefa0374c8a0a12d6feab5d965396be857a",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 243
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN8",
+      "table_index": 14,
+      "target_parameter_count": 243,
+      "target_type": "RELDN8A"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN8->RELDN8A/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "d55852ff8587079ec29009d47ca1a0e19b8c15b99e75e1cb1aa717c38ec46272",
+      "omitted_target_parameters": 0,
+      "output_channels": 8,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 243,
+      "predicted_sha256": "d55852ff8587079ec29009d47ca1a0e19b8c15b99e75e1cb1aa717c38ec46272",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "Ch0RestrikeDelay",
+          "Ch2RestrikeDelay",
+          "Ch4RestrikeDelay",
+          "Ch6RestrikeDelay"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "Ch0RestrikeDelay",
+          "Ch2RestrikeDelay",
+          "Ch4RestrikeDelay",
+          "Ch6RestrikeDelay"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN8",
+      "table_index": 14,
+      "target_parameter_count": 243,
+      "target_type": "RELDN8A"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN12->RELDN16A/mode1",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 1,
+      "observed_sha256": "0cf1e88759c17cff3cae97ee583cf62bab02d3fa89fee16f666b111c7bbbf4e7",
+      "omitted_target_parameters": 0,
+      "output_channels": 16,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 371,
+      "predicted_sha256": "0cf1e88759c17cff3cae97ee583cf62bab02d3fa89fee16f666b111c7bbbf4e7",
+      "readback": {
+        "loaded": true,
+        "mismatches": [],
+        "parameter_count": 371
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapInterlockMask",
+        "mapInterlockPriority",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN12",
+      "table_index": 15,
+      "target_parameter_count": 371,
+      "target_type": "RELDN16A"
+    },
+    {
+      "check": {
+        "code": 200,
+        "final": "200 OK: yes"
+      },
+      "convert": {
+        "code": 200,
+        "final": "200 OK."
+      },
+      "id": "RELDN12->RELDN16A/mode2",
+      "identity_matches": true,
+      "identity_mismatches": [],
+      "mode": 2,
+      "observed_sha256": "36714f07e1d7707eab90b340433a95ab84a8393fb95154430dadd74c919efb32",
+      "omitted_target_parameters": 10,
+      "output_channels": 16,
+      "passed": true,
+      "pp_matches": true,
+      "pp_mismatches": [],
+      "pp_set_matches": true,
+      "predicted_pp_count": 361,
+      "predicted_sha256": "36714f07e1d7707eab90b340433a95ab84a8393fb95154430dadd74c919efb32",
+      "readback": {
+        "error_codes": [
+          "408"
+        ],
+        "error_parameters": [
+          "Ch11RestrikeDelay",
+          "Ch1RestrikeDelay",
+          "Ch3RestrikeDelay",
+          "Ch5RestrikeDelay",
+          "Ch7RestrikeDelay",
+          "Ch9RestrikeDelay"
+        ],
+        "loaded": false,
+        "mismatches": [],
+        "predicted_unparseable": [
+          "Ch11RestrikeDelay",
+          "Ch1RestrikeDelay",
+          "Ch3RestrikeDelay",
+          "Ch5RestrikeDelay",
+          "Ch7RestrikeDelay",
+          "Ch9RestrikeDelay"
+        ]
+      },
+      "reload_added_scalars": [
+        "DeviceName",
+        "GroupNumber"
+      ],
+      "reload_matches": true,
+      "rules": [
+        "channelProperties",
+        "extractByte",
+        "mapInterlockMask",
+        "mapInterlockPriority",
+        "mapRestrikeDelay",
+        "mapThreeParamToOne",
+        "mapTo2Byte",
+        "mapToIndex",
+        "mapTurnOnThreshold",
+        "oneBitToThreeBitAndInverse",
+        "toggleGlobalParam"
+      ],
+      "source_pp_count": 31,
+      "source_rejected_sets": [],
+      "source_removed": true,
+      "source_stored_as_rendered": true,
+      "source_type": "RELDN12",
+      "table_index": 15,
+      "target_parameter_count": 371,
+      "target_type": "RELDN16A"
+    }
+  ],
+  "command": "research/convertunit_pairs.py --backend native",
+  "format": "cbus-convertunit-pairs-receipt-v1",
+  "inputs": {
+    "ConvertUnitMappingTable.xml": "a48fbf06daaff9db3fbfd9fcae6922bfb532cce2ff21df1d7b33cf8622e3f80c",
+    "ConvertUnitMappingTable.xml.es": "f2bff6d4824ead276a6cdf0c8bdc84ee6fc86c86a77331e4f64cf44303e83c15",
+    "DIMDD4.xml": "83bf5a070f4b680b8b170a0678e8a15505c6cce4639d16ba3c05c67140fcc7b4",
+    "DIMDD8.xml": "72a5a3af8be82e447c9c66516530454d484ed8518d57093816f0628aa26a6dc4",
+    "DIMDN4.xml": "9ef6b13430f1eab1545235637a2b3b0409b1bf67910716b525a97d1477883eab",
+    "DIMDN8.xml": "00e71609255a8f267f2f8347c4216f0a2cbf09b4de409e158b62d6b1eec2c13b",
+    "DIMDU4.xml": "59023710101effa51d73dcff787e4f674b5675d663cb254c3bffc2609dc3812e",
+    "I_NCC_OUTPUT_UNITS.xml": "768c2d4c4c205bb36ba359bf65052d3b5383a9d62ee095931ca7fcbeeabacea4",
+    "RELDN12.xml": "0771af6c71d664429c3c27c1b5aa9d4b9323ab560e2be0cb6e9064dbb7ee89c8",
+    "RELDN16A.xml": "016c9635368dcbac98670a419f203db1f6e3e2df6b1bc2be09c734891338a28d",
+    "RELDN4.xml": "377f9f9f1d0f1e1762db12c5c12bb785e23c5a026a0959559e2d528f43a633b3",
+    "RELDN4A.xml": "a5a723386a1f85d4304b6c21055c3bcd16abafe586ed4ebb03f8340502f863b3",
+    "RELDN8.xml": "923ad76d2d86401facc50f48cdbd1068adfcbd3448a1a4955274e01750687844",
+    "RELDN8A.xml": "3d8c1db6a451da762e032dc636d217639abfb9f2d2ea7f315a118cd59032b336",
+    "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7"
+  },
+  "negative_cases": [
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CHECK 1 //PROJECT/254/p/55 RELDN4A 5504RVF",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "incompatible-type/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CHECK 1 //PROJECT/254/p/56 RELDN4 L5504RVF16",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "reverse-not-admitted/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 401,
+      "command": "CONVERTUNIT CHECK 1 //PROJECT/254/p/107 DIMDU4 L5504D2U",
+      "expected_code": 401,
+      "final": "401 Bad object or device ID: Element 107 not found.",
+      "id": "missing-source/CHECK",
+      "passed": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CHECK 2 //PROJECT/254/p/55 //PROJECT/254/p/107",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "missing-destination/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CHECK 2 //PROJECT/254/p/55 //PROJECT/254/p/56",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "incompatible-destination/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CHECK 1 //PROJECT/254/p/55 DIMDU4 NOSUCH",
+      "expected_code": 301,
+      "final": "301 no:Unexpected Catalog number",
+      "id": "unknown-catalogue/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 1 //PROJECT/254/p/55 RELDN4A 5504RVF",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "incompatible-type/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 1 //PROJECT/254/p/56 RELDN4 L5504RVF16",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "reverse-not-admitted/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 401,
+      "command": "CONVERTUNIT CONVERT 1 //PROJECT/254/p/107 DIMDU4 L5504D2U",
+      "expected_code": 401,
+      "final": "401 Bad object or device ID: Element 107 not found.",
+      "id": "missing-source/CONVERT",
+      "passed": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 2 //PROJECT/254/p/55 //PROJECT/254/p/107",
+      "expected_code": 301,
+      "final": "301 no:Unable to read data from DBElement 107 not found.",
+      "id": "missing-destination/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 2 //PROJECT/254/p/55 //PROJECT/254/p/56",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "incompatible-destination/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 1 //PROJECT/254/p/55 DIMDU4 NOSUCH",
+      "expected_code": 301,
+      "final": "301 no:Unexpected Catalog number",
+      "id": "unknown-catalogue/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 200,
+      "command": "CONVERTUNIT CHECK 1 //PROJECT/254/p/55 DIMDN4 L5504D2A",
+      "expected_code": 200,
+      "final": "200 OK: yes",
+      "id": "unchanged-identity/CHECK",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 301,
+      "command": "CONVERTUNIT CONVERT 1 //PROJECT/254/p/55 DIMDN4 L5504D2A",
+      "expected_code": 301,
+      "final": "301 no",
+      "id": "unchanged-identity/CONVERT",
+      "passed": true,
+      "unchanged": true
+    },
+    {
+      "code": 400,
+      "command": "CONVERTUNIT CHECK 4 //PROJECT/254/p/55 DIMDU4 L5504D2U",
+      "expected_code": 400,
+      "final": "400 Syntax Error.",
+      "id": "mode-out-of-range",
+      "passed": true,
+      "unchanged": true
+    }
+  ],
+  "summary": {
+    "boundary_passed": 1,
+    "negative": 15,
+    "negative_passed": 15,
+    "positive": 30,
+    "positive_passed": 30
+  }
+}

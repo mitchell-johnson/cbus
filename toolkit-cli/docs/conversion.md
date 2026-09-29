@@ -27,7 +27,80 @@ same-type firmware changes and selected DIN dimmer/relay transitions. Toolkit
 also has client-side conversion code for key inputs and sensors. The CLI does
 not claim that the native command implements those additional rules.
 
-Acceptance in `tests/test_conversion.py` uses the actual supplied C-Gate jar
+## Admitted pairs and the mapping table
+
+C-Gate class `dg` admits an unchanged type and exactly these 15 source-to-target
+pairs; every other pair returns `301 no` from both `CHECK` and `CONVERT`:
+
+| Source | Targets |
+| --- | --- |
+| DIMDU4 | DIMDN8, DIMDN8F, DIMDN4, DIMDN4F, DIMDD4 |
+| DIMDN4 | DIMDU4, DIMDN8, DIMDD4 |
+| DIMDN4F, DIMDN8F | DIMDU4 |
+| DIMDN8 | DIMDU4, DIMDD8 |
+| RELDN4, RELDN8, RELDN12 | RELDN4A, RELDN8A, RELDN16A respectively |
+
+The private `ConvertUnitMappingTable.xml` has 15 entries for 14 of these pairs.
+Its duplicate DIMDN4F-to-DIMDU4 entry is ignored because C-Gate uses the first
+match. DIMDN4 to DIMDN8 has no entry. The table uses 17 rules, not only
+`channelProperties`, `setDefaultValue` and `resetToZero`; the others split,
+join, scale and invert values into the C-Bus 3 per-channel parameters.
+
+`cbus_toolkit.conversion_mapping` models the rebuild from the table, unit
+specifications and catalogue, independently of C-Gate output. For each target
+parameter, in specification order, C-Gate uses:
+
+1. the first matching table pair's rules, if the source has stored PP values;
+2. otherwise the same-named source PP string, copied verbatim; or
+3. otherwise the rendered target default.
+
+Every rule sees the unchanged target default, and the last rule's result wins.
+An empty result omits the parameter. A same-type conversion copies the source
+PP list unchanged. Mode 1 keeps the source tag, name and address. It writes
+serial `00000000.0000` and the catalogue's default firmware. Mode 2 keeps the
+destination tag, name, address, serial, type, firmware and catalogue number.
+C-Bus 3 DIN dimmer and relay targets get new `Channel1..n` output channels.
+
+Native behaviors that users must expect:
+
+- `channelProperties` and `resetToZero` return an empty value when source and
+  target arrays have equal length. The PP is then omitted and reads back as
+  the target default. For example, DIMDN4 to DIMDU4 loses nine configured
+  channel settings.
+- DIMDN4 to DIMDN8 copies four-element arrays into eight-element parameters.
+  Some rules also produce a bare hex digit such as `b` or a one-token `0`.
+  C-Gate stores those strings, but a later PP LOAD of the unit fails with `408`.
+- `CHECK` admits an unchanged identity, while `CONVERT` refuses it. The same
+  refusal applies to a mode-2 move between units with the same type and
+  firmware.
+- A source with no stored PP skips every rule and receives only defaults.
+
+Owned native C-Gate 3.4.0.2001 acceptance
+(`tests/test_conversion_pairs_native.py`) ran all 15 pairs in both modes. It
+used generated non-default source values and, for moves, non-default
+destination values. The model matched every stored PP list, including order,
+and every rebuilt identity and output-channel set. PP GET readback matched,
+including the seven predicted PP LOAD failures. Values survived project save,
+close and load. Fifteen refusal cases were checked for exact codes and no
+mutation: incompatible and reverse pairs, a missing source or destination, an
+incompatible destination, an unknown catalogue number, an unchanged identity
+and mode 4. The sanitized receipt
+`research/fixtures/convertunit-pairs-native-receipt.json` records hashes of the
+jar, mapping table, catalogue and specifications, never their contents.
+
+cmqttd and `cgate-mock` implement the same admission, rules, identity and
+move-deletion semantics. They need the mapping table in the directory given
+to `--cgate-unitspec` or `--unitspec`. Without it, `CONVERT` refuses with
+`301` instead of guessing. The same harness (`research/convertunit_pairs.py`)
+matched native PP lists for all non-C-Bus-3 targets. Three differences remain:
+
+- The Rust database field map cannot store the C-Bus 3 `UnitType` device
+  parameter beside the unit type, so that PP is not stored.
+- Rust does not regenerate C-Bus 3 output channels.
+- Rust PP LOAD accepts stored values that native C-Gate rejects.
+
+The original DIMDN4-to-DIMDU4 acceptance in `tests/test_conversion.py` uses
+the actual supplied C-Gate jar
 and independently checks changed identities, retained group assignments,
 backup contents, project save/reload, destination metadata and source removal.
 It also records two native behaviors that must remain visible:
