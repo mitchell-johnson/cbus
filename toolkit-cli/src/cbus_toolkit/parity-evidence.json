@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "43f09d47ddabf7f86dd26a6ba43c583cc0007127",
+      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -75,6 +75,7 @@
           "rust/cbus-cgate/src/service/net_lifecycle.rs",
           "rust/cbus-cgate/src/service/pp_patch.rs",
           "rust/cbus-cgate/src/service/tests.rs",
+          "rust/cbus-cgate/src/service/tests/secondary_authorization.rs",
           "rust/cbus-cgate/src/service/transform.rs",
           "rust/cbus-cgate/src/service/unravel_plan.rs",
           "rust/cbus-cgate/src/show.rs",
@@ -199,7 +200,7 @@
           "toolkit-cli/tests/test_cgate_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "4081ce263fb838ef062cb84c1071d2c73379cefaa89aa66a74afd33e6648cda4"
+        "fingerprint_sha256": "ce9e8f3616cb320056ba295fc2f0ba5bbb4125b3eb398cfce3ecd82081c33717"
       },
       "report_verification": {
         "format": "cgate-session-differential-v2",
@@ -214,11 +215,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "2925f421f8f03c4d88d38ba9d2ff40f02b44d3b3f9f5760181687edd36b7dd5a"
+          "sha256": "98155af410becf0d62516ca8c50ea96bfd448b6b3bf6059286c6c1a5afa3e941"
         }
       ],
       "skips": [],
-      "record_sha256": "386358381372a53f83b1e0479954b330527668a81c428075c9c142207fe706de"
+      "record_sha256": "9f331b14285e0ca10349776f138c53994c5dabe814631d86db0ccc67578a0b2f"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -253,7 +254,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "43f09d47ddabf7f86dd26a6ba43c583cc0007127",
+      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /Users/mitchell/source/cbus-integrator-target/debug/cgate-mock --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output-dir research/runtime",
       "exit_code": 0,
       "invalidates_on": {
@@ -296,6 +297,7 @@
           "rust/cbus-cgate/src/service/net_lifecycle.rs",
           "rust/cbus-cgate/src/service/pp_patch.rs",
           "rust/cbus-cgate/src/service/tests.rs",
+          "rust/cbus-cgate/src/service/tests/secondary_authorization.rs",
           "rust/cbus-cgate/src/service/transform.rs",
           "rust/cbus-cgate/src/service/unravel_plan.rs",
           "rust/cbus-cgate/src/show.rs",
@@ -421,7 +423,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "6c2b39e0daf3daa1d8de2e2377e51216a3e50cbdcb7a5fe23565d7413b09c85f"
+        "fingerprint_sha256": "68c8d24009fdde57b83ded25fb56a23e8503f116af40bf267983a1dba9138b86"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -436,11 +438,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "2a889c911fde5fec081716f1aed4cf43ae06ec4e23b2113ad49af614a1691b6c"
+          "sha256": "868adc5a968684886a1cb46de6d959e07f1dc89ba75a9c8bff5eb45cb7408537"
         }
       ],
       "skips": [],
-      "record_sha256": "2745b8eae46502613d33b4eb64d9d17c034f35d33bc9d58a2d2733ed6c578bdd"
+      "record_sha256": "f0c46ace4a3b66a855e72a354eec523375f48d0cd6874ddfd6bd5617904cbf0f"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -481,7 +483,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "43f09d47ddabf7f86dd26a6ba43c583cc0007127",
+      "source_revision": "353c1a8cd3000e6e793adb43f6289bbb2fcc2b3a",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -492,7 +494,7 @@
           "toolkit-cli/research/functional-obligation-pilot.json",
           "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json"
         ],
-        "fingerprint_sha256": "77bab1bde111574f69c37290110daa86b239b85e5ad0330408212e612dcd1a0a"
+        "fingerprint_sha256": "13c856320ede8c8394c0e8dcca0487b7f616f67f162c2d773b6c4f3f03681aa4"
       },
       "report_verification": {
         "format": "cbus-parity-test-report-v1",
@@ -512,16 +514,16 @@
         {
           "role": "input",
           "path": "src/cbus_toolkit/cgate-contract-inventory.json",
-          "sha256": "cbca75ca29890fbbe5fa9b9bad0cf659b54ea0bcd8b2e544320508660d98ce6f"
+          "sha256": "4429d54110b8c0fcba4fa9a955a275fc7a30822d204fe59f7c64fbe315a68bdc"
         },
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "cfe86fc472a3c0ac10e3d723036be0cf93cd6197b383333eb8dbd239bffd39a3"
+          "sha256": "1667c0daace216830891b9cfaa1e120fdb311c48f1c35e36ec29e205a43dd3ba"
         }
       ],
       "skips": [],
-      "record_sha256": "8c41d11a76335415fbdeafd2fad8fe49225b7aeb985297a86074b4790c5a0f91"
+      "record_sha256": "ba94c8e375f46ff9ff143d26d6b722b2209c9d94a8ff81dd979e9f733872048f"
     }
   ]
 }
