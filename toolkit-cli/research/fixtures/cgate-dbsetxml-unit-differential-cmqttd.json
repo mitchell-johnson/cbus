@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Volumes/external/cbus-toolkit-storage-20260915-v2/rust-target/debug/cmqttd",
-    "sha256": "3422bcab8658d9451b75fd1e9d3b65906e4b17662b3420ae132f83b12c7045fa"
+    "sha256": "035e2d5abf41ec4b0a3861e20a0ed9f5a40b224fb752582c39f5d91f5f780664"
   },
-  "source_revision": "7ba947108ccd831d87ac4c4e79bff8685da3bb8b",
+  "source_revision": "bba10e5761a9ce709cf789d79a026cd0f58f5252",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "73a5036a77577f06a866e5f2c9cf04a83dee4ef1defb86953ecc27008576dc0a",
     "docs/cmqttd-cgate.md": "2bdc75842f3dd1a71906fb396f0ff708ee9951a5535d0740970c82d4c2530a6b",
