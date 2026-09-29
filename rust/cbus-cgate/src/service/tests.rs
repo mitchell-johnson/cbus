@@ -6724,6 +6724,14 @@ fn temperature_syntax_is_bounded_and_accepts_symbolic_application_addresses() {
     assert_eq!(format_temperature(20.0), "20");
 }
 
+/// Read one line, failing instead of hanging when an expected row is absent.
+async fn bounded_read_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R, line: &mut String) {
+    tokio::time::timeout(Duration::from_secs(5), reader.read_line(line))
+        .await
+        .expect("timed out waiting for a C-Gate line")
+        .unwrap();
+}
+
 #[tokio::test]
 async fn fragmented_command_survives_event_delivery_and_disconnect_releases_locks() {
     let path = state_path();
@@ -6736,11 +6744,12 @@ async fn fragmented_command_survives_event_delivery_and_disconnect_releases_lock
     let (rd, mut wr) = stream.into_split();
     let mut rd = BufReader::new(rd);
     let mut line = String::new();
-    rd.read_line(&mut line).await.unwrap();
+    bounded_read_line(&mut rd, &mut line).await;
     assert!(line.starts_with("201 "));
-    wr.write_all(b"[1] EVENT ON\r\n").await.unwrap();
+    // Attributed Lighting advice is native level 7; select it explicitly.
+    wr.write_all(b"[1] EVENT e7s0c0\r\n").await.unwrap();
     line.clear();
-    rd.read_line(&mut line).await.unwrap();
+    bounded_read_line(&mut rd, &mut line).await;
     wr.write_all(b"[2] PP LOCK L ").await.unwrap();
     service
         .observe(&CBusEvent::LightingOn {
@@ -6750,12 +6759,15 @@ async fn fragmented_command_survives_event_delivery_and_disconnect_releases_lock
         })
         .await;
     line.clear();
-    rd.read_line(&mut line).await.unwrap();
-    assert!(line.starts_with("#e#"));
+    bounded_read_line(&mut rd, &mut line).await;
+    assert!(
+        line.starts_with("#e# ") && line.contains(" 730 //HARNESS/254/56/1 "),
+        "{line:?}"
+    );
     wr.write_all(b"//HARNESS/254\r\n").await.unwrap();
     loop {
         line.clear();
-        rd.read_line(&mut line).await.unwrap();
+        bounded_read_line(&mut rd, &mut line).await;
         if line.starts_with("[2]") {
             break;
         }
