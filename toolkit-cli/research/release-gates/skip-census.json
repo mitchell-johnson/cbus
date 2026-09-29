@@ -50,32 +50,32 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 450,
+    "test_modules": 451,
     "modules_without_skip_sites": 243,
-    "modules_with_skip_sites": 207,
+    "modules_with_skip_sites": 208,
     "modules_by_category": {
       "cgate_test_host": 119,
       "external_cgate_project": 1,
       "hardware": 1,
-      "host_platform": 16,
+      "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 46,
+      "native_cgate_local": 47,
       "native_opt_in": 2,
-      "original_model_runtime": 3,
-      "original_toolkit": 64,
+      "original_model_runtime": 4,
+      "original_toolkit": 65,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 2,
-      "unit_specs": 106,
+      "unit_specs": 107,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
       "all": 110,
       "partial": 18,
-      "none": 79
+      "none": 80
     },
     "native_runnable_tests": 207,
     "native_selected_required_tests": 207,
@@ -5479,6 +5479,55 @@
           ],
           "offline": "runtime",
           "native": "runtime"
+        }
+      ]
+    },
+    "tests/test_original_workflow_capture.py": {
+      "categories": [
+        "host_platform",
+        "native_cgate_local",
+        "original_model_runtime",
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_original_workflow_capture.py::OriginalWorkflowCaptureTests",
+          "kind": "decorator.skipUnless",
+          "condition": "platform.system() == 'Darwin' and all((os.environ.get(name) for name in REQUIRED))",
+          "reason": "Set CBUS_MONO_MACOS_ROOT, CBUS_TOOLKIT_EXE, CBUS_LOCAL_CGATE_VENDOR, CBUS_CGATE_JAVA and CBUS_UNITSPEC_DIR for the complete original workflow capture",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_MONO_MACOS_ROOT",
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "host_platform",
+            "native_cgate_local",
+            "original_model_runtime",
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "host_platform",
+            "original_model_runtime",
+            "original_toolkit"
+          ],
+          "tests": [
+            "OriginalWorkflowCaptureTests::test_original_model_workflow_matches_cli_and_committed_receipt"
+          ]
         }
       ]
     },
