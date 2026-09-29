@@ -323,7 +323,15 @@ cover fixed windows, exact local literals and framing/count/checksum rejection.
 endpoint admission, release after normal and abrupt process exit, reentry refusal
 and POSIX symlink rejection. Coordinator and actual CLI subprocess tests verify
 that lease contention opens no PCI socket, creates no journal and does not
-consume the one-shot apply.
+consume the one-shot apply. Cross-implementation tests pin the shared attempt
+marker (encoder golden vector and vector-plan filename on both sides), refuse
+repeats across journals and shared stores before any request, recover from a
+marker alone, and apply the committed Rust vector plan live under the Python
+coordinator against the fixture (`observed_expected_change`). The Rust CLI suite
+verifies and applies with bare and checksummed session frames; live against
+the fixture, a Python-generated plan verifies and applies through the Rust CLI
+in both checksum modes, and the Rust-reserved marker then refuses a Python
+apply of the same plan while resuming Python read-only verification.
 
 The generated focused report is
 [selected-serial-coordinator-acceptance.json](selected-serial-coordinator-acceptance.json).

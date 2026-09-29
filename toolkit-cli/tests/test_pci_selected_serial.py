@@ -179,6 +179,29 @@ class SelectedSerialTests(unittest.TestCase):
             self.assertFalse((Path(tmp)/'journal.json').exists())
             self.assertEqual(list(Path(tmp).iterdir()),[])
 
+    def test_rust_vector_plan_applies_live_cross_implementation(self):
+        # The committed Rust vector plan executes end to end under the
+        # Python coordinator against the simulator fixture: validation,
+        # settings, lease, marker, guards, send and independent
+        # post-observation all interoperate, and the fixture proves the move.
+        rows=(Path(__file__).resolve().parents[2]/'rust'/'testdata'/'vectors'
+              /'selected_serial_plan.jsonl').read_text().splitlines()
+        with tempfile.TemporaryDirectory() as tmp:
+            sim=fixture(state_path=Path(tmp)/'fixture.json')
+            with sim.running() as endpoint:
+                document=json.loads(rows[0])['document']
+                document['endpoint']={'host':endpoint[0],'port':endpoint[1]}
+                document['before']['endpoint']={'host':endpoint[0],'port':endpoint[1]}
+                plan=SelectedSerialPlan.from_dict(document)
+                subject=SelectedSerialCoordinator(endpoint[0],endpoint[1],local_unit=document['local_unit'],
+                    expected_local_serial=document['expected_local_serial'],**document['settings'])
+                self.assertEqual(subject.verify(plan).outcome,'observed_unchanged')
+                result=subject.apply(plan,recovery_path=Path(tmp)/'journal.json')
+                self.assertEqual(result.outcome,'observed_expected_change')
+                self.assertEqual(sim.nodes[A].address,6);self.assertEqual(sim.nodes[B].address,255)
+                self.assertEqual(Path(result.as_dict()['attempt_identity']).name,
+                    implementation.attempt_identity_path(document,Path(tmp)/'journal.json').name)
+
     def test_independent_literal_peer_full_sequence_and_recovery_do_not_replay(self):
         initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
         responses=initial+initial+[RECEIPT_A]+after_responses()+after_responses()
