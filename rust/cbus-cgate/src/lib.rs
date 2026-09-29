@@ -33,6 +33,7 @@ mod etherlite;
 mod file;
 pub mod manual;
 mod native_archive;
+mod object_access;
 mod port;
 pub mod service;
 mod show;

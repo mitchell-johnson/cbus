@@ -1,0 +1,628 @@
+{
+ "access": [
+  "interface 127.0.0.1 Connect",
+  "user obj-connect <redacted> Connect",
+  "user obj-monitor <redacted> Monitor",
+  "user obj-operate <redacted> Operate",
+  "user obj-admin <redacted> Admin",
+  "user obj-program <redacted> Program",
+  "user obj-debug <redacted> Debug",
+  "user obj-clipsal <redacted> Clipsal"
+ ],
+ "captured_at": "2026-09-29",
+ "cleanup": [
+  {
+   "command": "NET CLOSE //AUTHOBJ/254",
+   "lines": [
+    "200 OK: //AUTHOBJ/254"
+   ]
+  },
+  {
+   "command": "PROJECT CLOSE AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT DELETE AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  }
+ ],
+ "fixture_sha256": "63f0301fbc5f16efeadd7005a2c5e569af79f5d81b9c234eb61c38f7fd8a321f",
+ "matrix": [
+  {
+   "command": "GET cgate KCount",
+   "kind": "read",
+   "object": "cgate",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "300 cgate: KCount=0"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    },
+    "Debug": {
+     "lines": [
+      "420 Access denied: cgate (Insufficient access level for read)"
+     ],
+     "session": [
+      "210 Access level: Debug"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET cgate EventLevel 5",
+   "kind": "write",
+   "object": "cgate",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "200 OK: cgate"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET cgate Version 1",
+   "kind": "read-only",
+   "object": "cgate",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: cgate (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "GET //AUTHOBJ Networks",
+   "kind": "read",
+   "object": "project",
+   "responses": {
+    "Connect": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Connect"
+     ]
+    },
+    "Monitor": {
+     "lines": [
+      "300 //AUTHOBJ: Networks=254"
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ Networks 1",
+   "kind": "read-only",
+   "object": "project",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "GET //AUTHOBJ/254 TxQ",
+   "kind": "read",
+   "object": "network",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254 (Insufficient access level for read)"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Program": {
+     "lines": [
+      "300 //AUTHOBJ/254: TxQ=now=<millis> "
+     ],
+     "session": [
+      "210 Access level: Program"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254 AutoSync false",
+   "kind": "write",
+   "object": "network",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Program": {
+     "lines": [
+      "200 OK: //AUTHOBJ/254"
+     ],
+     "session": [
+      "210 Access level: Program"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254 Retries 0",
+   "kind": "write",
+   "object": "network",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "200 OK: //AUTHOBJ/254"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254 Type 1",
+   "kind": "read-only",
+   "object": "network",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "DO //AUTHOBJ/254 Sync",
+   "kind": "method",
+   "object": "network",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "202 Done: //AUTHOBJ/254"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254 (Insufficient access level to run method)"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/56 Name Probe",
+   "kind": "write",
+   "object": "application",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "200 OK: //AUTHOBJ/254/56"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/56 Address 57",
+   "kind": "read-only",
+   "object": "application",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/56 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "DO //AUTHOBJ/254/56 AllOff",
+   "kind": "method",
+   "object": "application",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "202 Done: //AUTHOBJ/254/56"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "GET //AUTHOBJ/254/56/1 Level",
+   "kind": "read",
+   "object": "group",
+   "responses": {
+    "Connect": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Connect"
+     ]
+    },
+    "Monitor": {
+     "lines": [
+      "300 //AUTHOBJ/254/56/1: Level=0"
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/56/1 Level 0",
+   "kind": "write",
+   "object": "group",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "200 OK: //AUTHOBJ/254/56/1"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/56/1 Units 1",
+   "kind": "read-only",
+   "object": "group",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/56/1 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "DO //AUTHOBJ/254/56/1 Off",
+   "kind": "method",
+   "object": "group",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied."
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "202 Done: //AUTHOBJ/254/56/1"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "GET //AUTHOBJ/254/p/4 NetVoltage",
+   "kind": "read",
+   "object": "unit",
+   "responses": {
+    "Monitor": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/p/4 (Insufficient access level for read)"
+     ],
+     "session": [
+      "210 Access level: Monitor"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "300 //AUTHOBJ/254/p/4: NetVoltage=31.0"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/p/4 Serial 1",
+   "kind": "read-only",
+   "object": "unit",
+   "responses": {
+    "Clipsal": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/p/4 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Clipsal"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/p/4 LearnEnable false",
+   "kind": "write",
+   "object": "unit",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/p/4 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Program": {
+     "lines": [
+      "408 Operation failed: //AUTHOBJ/254/p/4 (Parameter set failed)"
+     ],
+     "session": [
+      "210 Access level: Program"
+     ]
+    }
+   }
+  },
+  {
+   "command": "DO //AUTHOBJ/254/p/4 PSync",
+   "kind": "method",
+   "object": "unit",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "202 Done: //AUTHOBJ/254/p/4"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Operate": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/p/4 (Insufficient access level to run method)"
+     ],
+     "session": [
+      "210 Access level: Operate"
+     ]
+    }
+   }
+  },
+  {
+   "command": "SET //AUTHOBJ/254/p/5 Address 40",
+   "kind": "write",
+   "object": "unit",
+   "responses": {
+    "Admin": {
+     "lines": [
+      "420 Access denied: //AUTHOBJ/254/p/5 (Insufficient access level for write)"
+     ],
+     "session": [
+      "210 Access level: Admin"
+     ]
+    },
+    "Program": {
+     "lines": [
+      "408 Operation failed: //AUTHOBJ/254/p/5 (Address change failed)"
+     ],
+     "session": [
+      "210 Access level: Program"
+     ]
+    }
+   }
+  }
+ ],
+ "native": {
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "cleanup_complete": true,
+  "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+ },
+ "network_state": [
+  "300 //AUTHOBJ/254: state=ok"
+ ],
+ "probe_sha256": "00067d5d772b8eb9baac90ea67b69f5cd9e43734ed3e8a7b81f2a10b4e824492",
+ "schema": "cbus-native-object-authorization-probe-v1",
+ "scope": "Owned native C-Gate + synthetic PCI on loopback; no physical C-Bus endpoint",
+ "setup": [
+  {
+   "command": "PROJECT NEW AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT USE AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBCREATENET 254 Auth Cni 127.0.0.1:<sim>",
+   "lines": [
+    "301 OID=<oid>"
+   ]
+  },
+  {
+   "command": "DBADDSAFE //AUTHOBJ/254 Application 56 Lighting",
+   "lines": [
+    "301 OID=<oid>"
+   ]
+  },
+  {
+   "command": "DBADDSAFE //AUTHOBJ/254/56 Group 1 Probe",
+   "lines": [
+    "301 OID=<oid>"
+   ]
+  },
+  {
+   "command": "DBADDSAFE //AUTHOBJ/254 Unit 4 U4",
+   "lines": [
+    "301 OID=<oid>"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/4/UnitType KEYE1",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/4/FirmwareVersion 2.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/4/UnitName U4",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBADDSAFE //AUTHOBJ/254 Unit 5 U5",
+   "lines": [
+    "301 OID=<oid>"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/5/UnitType KEYGL5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/5/FirmwareVersion 5.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //AUTHOBJ/254/p/5/UnitName U5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT SAVE AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET LOAD DB AUTHOBJ",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET OPEN //AUTHOBJ/254",
+   "lines": [
+    "120-initializing",
+    "120-opening port",
+    "120-starting network threads",
+    "120-pci reset",
+    "120-checking connection",
+    "120-relinking to bridged networks",
+    "120-open complete",
+    "200 OK: //AUTHOBJ/254"
+   ]
+  },
+  {
+   "command": "GET //AUTHOBJ/254/56 Groups",
+   "lines": [
+    "300 //AUTHOBJ/254/56: Groups=12,24,25,27,33"
+   ]
+  },
+  {
+   "command": "OFF //AUTHOBJ/254/56/1",
+   "lines": [
+    "200 OK: //AUTHOBJ/254/56/1"
+   ]
+  },
+  {
+   "command": "GET //AUTHOBJ/254/56 Groups",
+   "lines": [
+    "300 //AUTHOBJ/254/56: Groups=1,12,24,25,27,33"
+   ]
+  }
+ ]
+}

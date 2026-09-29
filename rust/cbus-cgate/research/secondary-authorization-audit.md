@@ -42,23 +42,42 @@ the curated sites.
 | Command trace (`Command.sendCommandEvent`) | 761/766 only when the root floor is at most Debug. ACCESS, LOG, PP, SAVE_TO_NVM and START_BACKGROUND_JOB leave no trace. | **Implemented now** and replayed. |
 | Advisory LOCK owner (`BN`) | Weak reference to the replaced context. | Implemented deterministically; the native release time varies. |
 | Root `cgate` parameters (`Ck`) | KCount read requires Clipsal; EventLevel write requires Operate; every other root parameter writes only at Max. | **Implemented now**. Native SET success is not implemented in cmqttd (502). |
-| DO methods (`Ch`) | Sync/PSync require Admin; Unravel and FactoryDefault require Program. | **Implemented now** for DO. The denial text is source-derived and not captured. |
+| DO methods (`Ch`) | Sync/PSync require Admin; Unravel and FactoryDefault require Program. | Implemented from the generated table. The capture confirms the network Sync and unit PSync denial text. |
 | DALI plan re-checks (`ka`, `kc`, `mG`) | Program re-checks against the context retained at plan start. | Redundant with the Program entry floors. |
 | PROGRAMMER ADD_INSTRUCTION (`mu`) | Base `lk` declares Clipsal. | Unreachable: the obfuscated enum constants make every type fail parse first. |
 | HELP below the floor (`displayHelp`) | Syntax error. | Missing and not compared. |
 
 ## Object-model rows
 
-The generated rows classify 1,014 parameter read/write and method levels. A
-level at or below its handler floor (GET Monitor, SET/DO Operate) is subsumed.
+The generated rows classify 1,014 parameter read/write and method levels. The
+generator follows each registering class's `extends` chain to the cmqttd object
+kind it backs: root `cgate`, project, network, application (`N`), group (`bV`)
+or unit (`CBusUnit`). `Bo` backs every kind. Each concrete class takes a name's
+level from the most derived class in its chain. The resulting
+`object_levels` (530 rows) are rendered by `--rust-table` into
+`src/object_access_table.rs`. cmqttd enforces that single table for
+`GET`/`SET`/`DO` before dispatch, mutation or PCI I/O (`service::object_access`).
 
-**Missing: 468 rows.** Most are Max writes on read-only unit and network
-parameters, plus reads that require more than Monitor. Examples include
-network TxQ/RxQ/AutoSync at Program, unit Serial/NetVoltage at Operate, and
-temperature High/Low at Debug. cmqttd applies only the handler floor to those
-rows. Writable unit parameters such as `Address` need Program natively, but in
-cmqttd they reach their physical SET at Operate. This is the largest remaining
-secondary-authorization gap.
+- **Implemented: 875 object rows.**
+- **Partial: 4.** These are the `ClockGenActive` reads that need Operate on
+  `CBus3DinDigOutputUnit` and `CBusDinProOutputUnit`, but Monitor on the other
+  unit classes. cmqttd cannot resolve the native unit subclass, so it applies
+  the lower level.
+- **Not applicable: 135.** These are child classes that cmqttd does not model,
+  such as unit terminals, measurement channels and aircon periods. Terminal
+  paths take their unit's levels.
+- **Missing: 0.**
+
+The [object capture](../../testdata/fixtures/native_cgate_object_authorization_probe.json)
+comes from an owned loopback child with the synthetic PCI from
+`toolkit-cli/research/unit_diagnostics_fixture.py`, and its
+[reproducer](native_object_authorization_probe.py). It records 22 commands, 38
+role responses, a writable parameter, a read-only parameter or restricted read,
+and a method for each object kind. The native denial names the object path as
+sent. For a missing object, native returns 401 before the level check. cmqttd
+keeps that behavior for `GET` only; `SET` and `DO` fail closed. The capture is
+replayed in `src/service/tests/object_authorization.rs`, which also pins the
+inventory counts.
 
 ## Dispositions of the 11 paths without a native floor
 
@@ -88,8 +107,8 @@ The following were not established by this audit:
 
 - IPv6 peers, native name-resolution refresh, and the 806 event text.
 - Load-change and config-change ports.
-- Per-object checks on unit and network objects, which need a native project
-  and network.
+- Native subclass-specific levels beyond the captured representative matrix
+  (source-derived only).
 - Physical success at any level.
 
 This audit does not close issue #26.

@@ -21549,3 +21549,5 @@ async fn matchdb_unravel_refuses_ambiguous_occupied_database_target() {
 }
 
 mod secondary_authorization;
+
+mod object_authorization;

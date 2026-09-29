@@ -11,6 +11,13 @@ The curated sites below were found by enumerating every use of the access
 level holder (`Cb`), `AccessContext`, `Command.enforceAccess/canAccess`, and
 the exposed parameter (`Ck`) and method (`Ch`) security classes. Generated rows
 cover every `Cn/Cf/Cc/Cg/Cd` parameter and `Ch` method registration.
+
+The class hierarchy (`extends` chains) maps each registering class to the
+cmqttd object kind it backs (root `cgate`, project, network, application,
+group or unit). `object_levels` is the per-kind table derived from those rows;
+`--rust-table` renders it as `src/object_access_table.rs`, the single table
+cmqttd enforces for GET/SET/DO. That step reads only the inventory, so the
+table can be re-rendered without the private decompile.
 """
 
 import argparse
@@ -23,12 +30,12 @@ from pathlib import Path
 LEVELS = ['None', 'Connect', 'Monitor', 'Operate', 'Admin', 'Program', 'Debug', 'Clipsal', 'Max']
 CAPTURE = 'rust/testdata/fixtures/native_cgate_secondary_authorization_probe.json'
 
-# Handler-entry floors in cmqttd that bound the object-model commands.
-GET_FLOOR, SET_FLOOR, DO_FLOOR = 2, 3, 3
-# Methods reachable through cmqttd DO and their enforced levels.
-CMQTT_DO_METHODS = {'On': 3, 'Off': 3, 'Ramp': 3, 'TerminateRamp': 3, 'Sync': 4, 'PSync': 4,
-                    'Unravel': 5, 'FactoryDefault': 5}
-ROOT_OWNERS = {'CGateManager'}
+OBJECT_CAPTURE = 'rust/testdata/fixtures/native_cgate_object_authorization_probe.json'
+# cmqttd object kinds and the native class whose subclasses back them. A
+# registering class maps to every kind whose marker appears in its chain, or
+# whose concrete classes inherit from it (for example `Bo` backs every kind).
+KINDS = [('cgate', 'CGateManager'), ('project', 'Project'), ('network', 'CBusBaseNetwork'),
+         ('application', 'N'), ('group', 'bV'), ('unit', 'CBusUnit')]
 
 # (id, file, method, anchor regex, required level or None, effect, classification, cmqttd, evidence)
 CURATED = [
@@ -132,14 +139,19 @@ CURATED = [
      f'{CAPTURE}#login_matrix.advisory_lock'),
     ('parameter-read-level', 'Ck.java', 'd', r'Insufficient access level for read', None,
      'GET/SHOW of an exposed parameter below its read level answers "420 Access denied: <object> '
-     '(Insufficient access level for read)".', 'partial',
-     'See generated object-model rows.', f'{CAPTURE}#login_matrix.cgate_object'),
+     '(Insufficient access level for read)".', 'implemented',
+     'service::object_access applies object_access_table before GET dispatch; <object> is the path as sent.',
+     f'{CAPTURE}#login_matrix.cgate_object; {OBJECT_CAPTURE}#matrix'),
     ('parameter-write-level', 'Ck.java', 'e', r'Insufficient access level for write', None,
      'SET below the parameter write level answers "420 Access denied: <object> (Insufficient access level '
-     'for write)".', 'partial', 'See generated object-model rows.', f'{CAPTURE}#login_matrix.cgate_object'),
+     'for write)".', 'implemented',
+     'service::object_access applies object_access_table before SET dispatch or PCI I/O.',
+     f'{CAPTURE}#login_matrix.cgate_object; {OBJECT_CAPTURE}#matrix'),
     ('method-level', 'Ch.java', 'a', r'Insufficient access level to run method', None,
      'DO/ON/OFF/RAMP/TERMINATERAMP of an exposed method below its level answers 420 "(Insufficient access '
-     'level to run method)".', 'partial', 'See generated object-model rows.', 'source only'),
+     'level to run method)".', 'implemented',
+     'service::object_access applies object_access_table before DO dispatch; ON/OFF/RAMP keep the Operate '
+     'handler floor, equal to every group method level.', f'{OBJECT_CAPTURE}#matrix'),
     ('internal-admin-contexts', 'qf.java', 'a', r'new AccessContext\(4\)', 'Admin',
      'Project start/default-project operations run with an internal Admin context.',
      'not_applicable', 'cmqttd has no internal command scripts; project startup is not ACCESS-gated.',
@@ -165,32 +177,120 @@ def normalized(text):
     return ' '.join(text.split())
 
 
-def classify_parameter(owner, name, read, write):
-    rows = []
-    if read <= GET_FLOOR:
-        rows.append(('read', 'implemented', 'Subsumed by the GET/SHOW Monitor handler floor.'))
-    elif owner in ROOT_OWNERS and name == 'KCount':
-        rows.append(('read', 'implemented', 'Service::cgate_object_access (Clipsal read).'))
-    else:
-        rows.append(('read', 'missing', 'cmqttd applies only the GET/SHOW handler floor to this parameter.'))
-    if write <= SET_FLOOR:
-        rows.append(('write', 'implemented', 'Subsumed by the SET Operate handler floor.'))
-    elif owner in ROOT_OWNERS or (owner == 'Bo' and name == 'State'):
-        note = ('Service::cgate_object_access for the root cgate object'
-                + ('' if owner in ROOT_OWNERS else '; other objects missing'))
-        rows.append(('write', 'implemented' if owner in ROOT_OWNERS else 'partial', note))
-    else:
-        rows.append(('write', 'missing', 'cmqttd applies only the SET Operate handler floor; a writable unit '
-                     'parameter can reach its physical SET below this level.'))
-    return rows
+def class_index(root):
+    """Map simple class names to files; obfuscated root-package names win."""
+    index = {}
+    for path in sorted(root.rglob('*.java'), key=lambda p: (len(p.relative_to(root).parts), str(p))):
+        index.setdefault(path.stem, path)
+    return index
 
 
-def classify_method(name, level):
-    if name in CMQTT_DO_METHODS:
-        return 'implemented', f'Service DO method gate ({LEVELS[CMQTT_DO_METHODS[name]]}).'
-    if level <= DO_FLOOR:
-        return 'implemented', 'Subsumed by the DO Operate handler floor; cmqttd answers 402 for unexposed methods.'
-    return 'not_applicable', 'cmqttd DO does not expose this method (402 Method not supported by object).'
+def chain_of(name, index):
+    chain = [name]
+    while chain[-1] in index:
+        text = index[chain[-1]].read_text(errors='replace')
+        match = re.search(r'class\s+' + re.escape(chain[-1]) + r'\b[^{]*?\bextends\s+([\w.]+)', text)
+        parent = match.group(1).split('.')[-1] if match else None
+        if not parent or parent in chain:
+            break
+        chain.append(parent)
+    return chain
+
+
+def resolve_name(expression, text):
+    """Resolve `array[i]` parameter names from a static String[] initializer."""
+    match = re.fullmatch(r'(\w+)\[(\d+)\]', expression)
+    if not match:
+        return expression.strip('"')
+    init = re.search(re.escape(match.group(1)) + r' = new String\[\]\{([^}]*)\}', text)
+    if not init:
+        return expression
+    values = re.findall(r'"([^"]*)"', init.group(1))
+    return values[int(match.group(2))]
+
+
+def object_levels(rows, chains):
+    """Derive the per-kind effective level of every parameter and method.
+
+    Each concrete class of a kind takes the definition from the most derived
+    class in its chain. cmqttd cannot tell unit or application subclasses
+    apart, so when concrete classes of one kind disagree the table keeps the
+    lowest level (never denying what some native class allows) and the higher
+    rows stay partial.
+    """
+    defined = collections.defaultdict(dict)
+    for row in rows:
+        defined[row['class']][(row['kind'], row['access'], row['name'])] = row['required_level']
+    table = {}
+    used = collections.defaultdict(set)
+    for kind, marker in KINDS:
+        concrete = [name for name, chain in chains.items() if marker in chain]
+        for name in concrete:
+            seen = set()
+            for owner in chains[name]:
+                for key, level in defined.get(owner, {}).items():
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    table.setdefault((kind,) + key, set()).add(level)
+                    used[(owner,) + key].add(kind)
+    levels = []
+    for (kind, row_kind, access, name), found in sorted(table.items()):
+        chosen = min(found, key=LEVELS.index)
+        levels.append({'object': kind, 'kind': row_kind, 'access': access, 'name': name,
+                       'required_level': chosen, 'native_levels': sorted(found, key=LEVELS.index)})
+    return levels, used
+
+
+def classify(rows, levels, used):
+    effective = {(row['object'], row['kind'], row['access'], row['name']): row['required_level']
+                 for row in levels}
+    for row in rows:
+        kinds = sorted(used.get((row['class'], row['kind'], row['access'], row['name']), ()))
+        if not kinds:
+            row['classification'] = 'not_applicable'
+            row['cmqttd'] = ('cmqttd does not model this native child class. Unit terminal paths '
+                             '(//P/N/p/U/T) take their unit\'s levels (fail closed); other child paths '
+                             'do not resolve to an object.')
+            continue
+        applied = {effective[(kind, row['kind'], row['access'], row['name'])] for kind in kinds}
+        if applied == {row['required_level']}:
+            row['classification'] = 'implemented'
+            row['cmqttd'] = f"object_access_table ({', '.join(kinds)}) enforced before dispatch."
+        else:
+            row['classification'] = 'partial'
+            row['cmqttd'] = (f"object_access_table ({', '.join(kinds)}) applies "
+                             f"{'/'.join(sorted(applied, key=LEVELS.index))}: cmqttd does not resolve the "
+                             'native subclass, so the lowest level among sibling classes is enforced.')
+        row['object_kinds'] = kinds
+
+
+def rust_table(inventory):
+    variants = {'cgate': 'Root', 'project': 'Project', 'network': 'Network',
+                'application': 'Application', 'group': 'Group', 'unit': 'Unit'}
+    parameters = collections.defaultdict(dict)
+    methods = []
+    for row in inventory['object_levels']:
+        if row['kind'] == 'method':
+            methods.append((row['object'], row['name'], row['required_level']))
+        else:
+            parameters[(row['object'], row['name'])][row['access']] = row['required_level']
+    out = ['// @generated by rust/cbus-cgate/research/secondary_authorization_audit.py --rust-table.',
+           '// Do not edit: regenerate from secondary-authorization-inventory.json `object_levels`.',
+           '',
+           'use super::ObjectKind::{self, *};',
+           'use crate::access::CgateAccessLevel::{self, *};',
+           '',
+           '/// (object, parameter, read level, write level).',
+           'pub(crate) const PARAMETERS: &[(ObjectKind, &str, CgateAccessLevel, CgateAccessLevel)] = &[']
+    for (kind, name), access in sorted(parameters.items(), key=lambda item: (variants[item[0][0]], item[0][1])):
+        out.append(f'    ({variants[kind]}, "{name}", {access["read"]}, {access["write"]}),')
+    out += ['];', '', '/// (object, method, run level).',
+            'pub(crate) const METHODS: &[(ObjectKind, &str, CgateAccessLevel)] = &[']
+    for kind, name, level in sorted(methods, key=lambda item: (variants[item[0]], item[1])):
+        out.append(f'    ({variants[kind]}, "{name}", {level}),')
+    out.append('];')
+    return '\n'.join(out) + '\n'
 
 
 def audit(root):
@@ -213,25 +313,27 @@ def audit(root):
         file_hash = None
         for match in REGISTRATION.finditer(text):
             file_hash = file_hash or digest(text)
-            name = match.group(2).strip('"')
+            name = resolve_name(match.group(2), text)
             read, write = int(match.group(3)), int(match.group(4))
-            for access, status, note in classify_parameter(path.stem, name, read, write):
+            for access, level in (('read', read), ('write', write)):
                 objects.append({
                     'kind': 'parameter', 'access': access, 'class': path.stem, 'name': name,
-                    'required_level': LEVELS[read if access == 'read' else write],
-                    'classification': status, 'cmqttd': note,
+                    'required_level': LEVELS[level],
                     'evidence': {'file_sha256': file_hash, 'anchor_sha256': digest(normalized(match.group(0)))},
                 })
         for match in METHOD.finditer(text):
             file_hash = file_hash or digest(text)
-            name = match.group(1).strip('"')
-            level = int(match.group(2))
-            status, note = classify_method(name, level)
             objects.append({
-                'kind': 'method', 'access': 'run', 'class': path.stem, 'name': name,
-                'required_level': LEVELS[level], 'classification': status, 'cmqttd': note,
+                'kind': 'method', 'access': 'run', 'class': path.stem, 'name': resolve_name(match.group(1), text),
+                'required_level': LEVELS[int(match.group(2))],
                 'evidence': {'file_sha256': file_hash, 'anchor_sha256': digest(normalized(match.group(0)))},
             })
+    index = class_index(root)
+    chains = {name: chain_of(name, index) for name in sorted({row['class'] for row in objects})}
+    for _, marker in KINDS:
+        chains.setdefault(marker, chain_of(marker, index))
+    levels, used = object_levels(objects, chains)
+    classify(objects, levels, used)
     counts = collections.Counter(row['classification'] for row in curated + objects)
     return {
         'schema': 'cbus-cgate-secondary-authorization-inventory-v1',
@@ -242,15 +344,26 @@ def audit(root):
         'counts': dict(sorted(counts.items())),
         'sites': curated,
         'object_model': objects,
+        'class_chains': chains,
+        'object_levels': levels,
+        'native_evidence': OBJECT_CAPTURE,
     }
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--decompile', type=Path, required=True, help='CFR src directory')
-    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--decompile', type=Path, help='CFR src directory')
+    parser.add_argument('--output', type=Path, required=True, help='inventory JSON (read with --rust-table only)')
+    parser.add_argument('--rust-table', type=Path, help='render object_levels from the inventory to this .rs file')
     args = parser.parse_args()
+    if args.decompile is None:
+        if args.rust_table is None:
+            parser.error('--decompile or --rust-table is required')
+        args.rust_table.write_text(rust_table(json.loads(args.output.read_text())))
+        raise SystemExit(0)
     result = audit(args.decompile.resolve())
     args.output.write_text(json.dumps(result, indent=2) + '\n')
+    if args.rust_table is not None:
+        args.rust_table.write_text(rust_table(result))
     print(json.dumps({'sites': len(result['sites']), 'object_rows': len(result['object_model']),
                       'counts': result['counts']}))

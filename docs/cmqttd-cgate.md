@@ -272,6 +272,24 @@ An unmatched non-loopback peer in token-only recovery mode receives 420 for
 `EVENT`/`EVENTS` queries and setters until token login; a denied setter does
 not alter its connection-local subscription.
 
+After the handler floor, `GET`, `SET` and `DO` apply native per-object levels
+to the root `cgate`, project, network, application, group and unit objects.
+The levels come from one generated table,
+`rust/cbus-cgate/src/object_access_table.rs`, which is rendered from the
+[secondary-authorization inventory](../rust/cbus-cgate/research/secondary-authorization-audit.md).
+A denial returns the native text, for example `420 Access denied: //P/254/p/5
+(Insufficient access level for write)`, before any state change or PCI I/O. For
+example, unit `Address` needs Program, unit `NetVoltage` needs Operate,
+network `TxQ` needs Program, `DO … PSync` needs Admin, and Max-only parameters
+are refused at Clipsal. Native C-Gate returns 401 for a missing object. cmqttd
+returns that 401 for `GET`, but its `SET` and `DO` refuse a missing object
+(fail closed). A unit terminal path uses its unit's levels. cmqttd cannot tell
+native unit subclasses apart, so it applies the lower level to `ClockGenActive`
+reads. An owned native capture with a synthetic PCI confirmed 38 role
+responses for these objects:
+[capture](../rust/testdata/fixtures/native_cgate_object_authorization_probe.json),
+[reproducer](../rust/cbus-cgate/research/native_object_authorization_probe.py).
+
 `CGL IMPORT` and `REPOSITORY USE` are also denied before dispatch while
 unauthenticated. After LOGIN, CGL import may update only the bounded local CGL
 1.1 label model described below. Repository index 1 is an idempotent local

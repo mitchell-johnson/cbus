@@ -2775,7 +2775,7 @@ impl Service {
                 return err(tag, 420, "420 Access denied.");
             }
         }
-        if let Some(response) = self.cgate_object_access(client, tag, &words, verb).await {
+        if let Some(response) = self.object_access(client, tag, &words, verb).await {
             return response;
         }
         if let Some(response) = family_help {
@@ -13413,25 +13413,8 @@ impl Service {
             return err(tag, 400, "400 DO requires an object and method");
         }
         let method = words[2].to_ascii_uppercase();
-        // Exposed native methods (`Ch`) carry their own level after the DO
-        // handler floor: group On/Off/Ramp are Operate, unit and network
-        // Sync/PSync are Admin, network Unravel and eDLT FactoryDefault are
-        // Program (secondary-authorization-inventory.json).
-        let required = match method.as_str() {
-            "SYNC" | "PSYNC" => CgateAccessLevel::Admin,
-            "UNRAVEL" | "FACTORYDEFAULT" => CgateAccessLevel::Program,
-            _ => CgateAccessLevel::Operate,
-        };
-        if client.access_level.unwrap_or(CgateAccessLevel::None) < required {
-            return err(
-                tag,
-                420,
-                &format!(
-                    "420 Access denied: {} (Insufficient access level to run method)",
-                    words[1]
-                ),
-            );
-        }
+        // Native method levels (`Ch`) were applied before dispatch by
+        // `Service::object_access`.
         let response = if matches!(method.as_str(), "ON" | "OFF" | "RAMP" | "TERMINATERAMP") {
             let mut command = vec![method, words[1].to_string()];
             command.extend(words[3..].iter().map(|word| (*word).to_string()));
@@ -13864,80 +13847,58 @@ impl Service {
     /// `CONFIG SET` changes native admission for subsequent connections now,
     /// despite the catalogue's `effective=restart` metadata. Read only the
     /// current global value; an already admitted session is unaffected.
-    /// Secondary per-parameter checks on the root `cgate` object after the
-    /// GET/SET handler floors. Native `Ck` parameters carry independent read
-    /// and write levels: KCount reads from Clipsal, EventLevel writes from
-    /// Operate, and every other catalogued root parameter writes only at Max
-    /// (native_cgate_secondary_authorization_probe.json `cgate_object`).
-    async fn cgate_object_access(
+    /// Secondary per-object checks after the GET/SET/DO handler floors.
+    /// Native `Ck` parameters carry independent read and write levels and
+    /// `Ch` methods a run level; `object_access` holds the generated table
+    /// (native_cgate_object_authorization_probe.json). Native C-Gate resolves
+    /// the object first, so a GET of a missing project, network or unit is
+    /// left to the handler's not-found reply. SET and DO fail closed instead:
+    /// cmqttd handlers can reach the bus for units absent from its model. The
+    /// check precedes every side effect.
+    async fn object_access(
         &self,
         client: &mut ClientState,
         tag: &str,
         words: &[&str],
         verb: &str,
     ) -> Option<Response> {
-        const WRITABLE_AT_OPERATE: &[&str] = &["EventLevel"];
-        const READ_ONLY: &[&str] = &[
-            "State",
-            "Version",
-            "DatabaseVersion",
-            "KCount",
-            "MemoryFree",
-            "MemoryUsed",
-            "MemoryTotal",
-            "MemoryMaximum",
-            "ComputerName",
-            "JavaArguments",
-            "LogFreeSpace",
-            "ProjectFreeSpace",
-            "IPAddress",
-            "IsPrerelease",
-            "ServerMode",
-            "Threads",
-        ];
-        if !words
-            .get(1)
-            .is_some_and(|target| target.eq_ignore_ascii_case("cgate"))
-        {
+        if !matches!(verb, "GET" | "SET" | "DO") {
             return None;
         }
-        let parameter = words.get(2)?;
-        let known = |names: &[&str]| {
-            names
-                .iter()
-                .any(|name| name.eq_ignore_ascii_case(parameter))
-        };
+        let path = crate::object_access::object_path(words.get(1)?)?;
         let level = self.ensure_access_level(client).await;
-        match verb {
-            "GET"
-                if words.len() == 3 && known(&["KCount"]) && level >= CgateAccessLevel::Clipsal =>
-            {
-                // The native value is an internal counter; cmqttd has none.
-                Some(Response {
-                    tag: tag.to_string(),
-                    lines: Vec::new(),
-                    final_text: "300 cgate: KCount=0".to_string(),
-                    status: 300,
-                })
+        if verb == "GET" && path.kind != crate::object_access::ObjectKind::Root {
+            let model = self.model.lock().await;
+            let network = model
+                .projects
+                .get(path.project)
+                .map(|project| path.network.map(|address| project.networks.get(&address)));
+            let exists = match (network, path.unit) {
+                (Some(Some(Some(network))), Some(unit)) => {
+                    network.units.contains_key(&unit) || network.physical.contains_key(&unit)
+                }
+                (Some(Some(network)), None) => network.is_some(),
+                (Some(None), _) => true,
+                _ => false,
+            };
+            if !exists {
+                return None;
             }
-            "SET" if words.len() >= 4 => {
-                let required = if known(WRITABLE_AT_OPERATE) {
-                    CgateAccessLevel::Operate
-                } else if known(READ_ONLY) {
-                    CgateAccessLevel::Max
-                } else {
-                    return None;
-                };
-                (level < required).then(|| {
-                    err(
-                        tag,
-                        420,
-                        "420 Access denied: cgate (Insufficient access level for write)",
-                    )
-                })
-            }
-            _ => None,
         }
+        if let Some(text) = crate::object_access::denial(path.kind, verb, words, level) {
+            return Some(err(tag, 420, &text));
+        }
+        // The native root KCount is an internal counter; cmqttd has none.
+        (path.kind == crate::object_access::ObjectKind::Root
+            && verb == "GET"
+            && words.len() == 3
+            && words[2].eq_ignore_ascii_case("KCount"))
+        .then(|| Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: "300 cgate: KCount=0".to_string(),
+            status: 300,
+        })
     }
 
     /// Native event, load-change and config-change listeners admit a peer
