@@ -110,6 +110,7 @@
     "tests/test_edlt_corridor_vectors.py",
     "tests/test_edlt_label_clear.py",
     "tests/test_edlt_normalization.py::NativeNormalizationTests",
+    "tests/test_edlt_open_unit_get.py::NativeOpenUnitGetTests",
     "tests/test_edlt_parent_form.py",
     "tests/test_edlt_parent_mra.py",
     "tests/test_edlt_parent_transaction.py",

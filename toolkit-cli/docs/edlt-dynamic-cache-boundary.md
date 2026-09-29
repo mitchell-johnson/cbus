@@ -198,12 +198,9 @@ SHA-256 without including the vendor binary or site project.
 Disassembly of the pinned `CBusEdlt` constructor registers `WidgetGroups` as
 a declared property and `FactoryDefault` as a method; it does not register a
 declared dynamic-label getter. That constructor alone did not account for
-inherited or runtime properties. **Issue #49 stays open.** A decisive generic
-`GET` check requires an isolated, open, serial-identified KEYGL5 unit and the
-original server's `?`, `*`, and `??` property replies, followed by any candidate
-request on a known pre-existing label after the observer restarts. Physical
-display and bus capture must establish that the value came from the unit,
-rather than saved `TagsDLT` or fresh label SAL.
+inherited or runtime properties. The open-unit `?`, `*` and `??` replies this
+section called for are now captured against an owned native server; see
+[Open-unit generic GET inventory](#open-unit-generic-get-inventory-owned-native-30-september-2026).
 
 ### Inherited generic-GET registration audit
 
@@ -224,8 +221,8 @@ uses the same map for its property-name enumeration. This strengthens the
 exact-release finding for **constructor-registered generic `GET` properties**.
 It does not turn the earlier synthetic-unit 401 responses into an open-unit
 capture, exclude an external runtime registration, or prove firmware-level
-impossibility. The capability remains false and P6.05 remains open for the
-original open-unit/property response and independent physical proof.
+impossibility. The owned-native open-unit capture below supplies the
+missing runtime check; physical proof remains open.
 
 The fixture-only check needs no proprietary files. To repeat its source
 comparison against the retained vendor JAR, run:
@@ -241,3 +238,70 @@ The verifier fails if the JAR or any of the eight class hashes, inheritance
 declarations, property names, method names, or constructor-only registration
 counts change. Focused `tests/test_edlt_get_inheritance.py` guards the
 fixture against accidental promotion to device-readback or open-unit proof.
+
+## Open-unit generic GET inventory (owned native, 30 September 2026)
+
+The [open-unit receipt](../research/fixtures/edlt-open-unit-get-native.json)
+resolves the earlier inconclusive 401 replies. Owned C-Gate 3.4.0.2001
+(JAR SHA-256 `3ec48394…`, Java 11, six loopback listeners) loaded a project
+whose CNI was the Python PCI simulator and opened network 254. Unit 5 is the
+named SIMTEST KEYGL5 identity from `synthetic_units` (`IDENTIFY` type
+`KEYGL5`, version `5.5.00`, serial `101183.1666`). The
+[probe](../research/edlt_open_unit_native.py) adds only the blocks native
+requested for these commands: learn-enable byte `3E` (chosen `00`), a writable
+`FF` selector block, and `IDENTIFY 3D` carrying chosen key-function nibbles.
+It also uses the existing 10 ms simulator reply delay, which avoids a
+confirmation race that otherwise left unit 5 unsynchronized. No simulator
+block stores label text.
+
+With the network and unit both at `State=ok`, native reported
+`ClassName=com.clipsal.cgate.cbus.dev.CBusEdlt`:
+
+- `GET <unit> ?` listed exactly 30 parameters, and `??` described and `*`
+  returned the same 30 without an error line. The set is identical to the 30
+  distinct constructor-registered names in the class-chain receipt above, so
+  no runtime registration adds a property to an open eDLT.
+- None of those parameters names a label, cache, dynamic or text value.
+  `WidgetGroups` returned the 44-byte static widget group mapping.
+- `DynamicLabels`, `DynamicLabel`, `LabelCache`, `Labels`, `Label`,
+  `LabelText`, `Cache` and `KFI` each returned `402 Operation not supported
+  ... (Parameter <name> not found)` with no bus traffic.
+- The lighting application (`//…/56`) and one widget group (`//…/56/27`)
+  expose only state, naming, learning, level, ramp and membership properties.
+- `GET <unit> *` issued only `RECALL 3E`; the other values came from the
+  model built by `NET SYNC` identity and parameter reads.
+- `LABEL KFIGET <network>/56 5` sent `A3FF0009`, `A5FF0082001C` and
+  `A5FF008404FF` selector writes, then `IDENTIFY 3D`, and returned exactly
+  `kfi1`–`kfi8`: the chosen nibbles `0`–`7`. It returns no text.
+
+**Resolved answer:** native C-Gate 3.4.0.2001 does not expose a readable
+dynamic-label cache for an open eDLT. Its generic property map, the `LABEL`
+registry (`CLEAR`, `CLEAREDLT`, `KFIGET` and `KFISET`) and its
+application/group objects provide no command that returns stored label
+content. The unit is simulated, but that does not weaken this conclusion.
+C-Gate builds the property list in its own classes, before and independently
+of any device reply, and the list matched the bytecode audit exactly. This
+leaves no native operation for cmqttd to reproduce, so cmqttd keeps
+`dynamic_label_device_readback: false`. It does not add a readback route.
+
+The remaining gap is outside the native command surface. An undocumented
+firmware request or a request issued only by the original Toolkit GUI has not
+been ruled out, because eDLT firmware images are encrypted. Any such path needs
+a controlled physical eDLT, the original Dynamic Label Editor trace and an
+observer restart, as described above. This capture makes no physical rendering
+or persistence claim.
+
+`tests/test_edlt_open_unit_get.py` checks that the receipt was captured by
+the committed probe against the pinned JAR. It also checks the 30-name set
+against the inheritance receipt and rejects a forged label property,
+answered candidate, unopened unit or unexpected device request. Its
+`NativeOpenUnitGetTests` class is in the native release gate and repeats the
+capture. Regenerate the receipt with:
+
+```sh
+cd toolkit-cli
+CBUS_LOCAL_CGATE_VENDOR=/path/to/ignored/pinned/cgate/app \
+CBUS_CGATE_JAVA=/path/to/java11/bin/java \
+PYTHONPATH=src:. python3.13 research/edlt_open_unit_native.py \
+  --output research/fixtures/edlt-open-unit-get-native.json
+```

@@ -1,0 +1,374 @@
+{
+ "cleanup_errors": [],
+ "native": {
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "cleanup_complete": true,
+  "java_version": "openjdk version \"11.0.32.1\" 2026-08-18"
+ },
+ "probe_sha256": "fac9592d4cfe72489ad842dea76b3d35e3e0561ebccc554f2cec7b650d9c4d60",
+ "probes": [
+  {
+   "command": "GET //EDLTGET/254/p/5 ?",
+   "lines": [
+    "300 //EDLTGET/254/p/5: Parameters=LearnEnable,ProjectName,ShortName,Type,Address,Version,Serial,State,Application2,Application,WidgetGroups,GeneratingClock,SerialNumber,PSyncTime,ClockGenActive,NetVoltage,FirmwareVersion,UnitBlock,BurdenActive,PatchVersion,EventLevel,ErrorFlags,PartName,Version2,SlotGroups,LearnActive,SummaryFlags,ClassName,CatalogNumber,Name"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 ??",
+   "lines": [
+    "102-//EDLTGET/254/p/5: LearnEnable - The state of the learn enable flag in the unit.",
+    "102-//EDLTGET/254/p/5: ProjectName - The user-defined project name of this C-Bus unit.",
+    "102-//EDLTGET/254/p/5: ShortName - The name of this object",
+    "102-//EDLTGET/254/p/5: Type - The device type string for this unit",
+    "102-//EDLTGET/254/p/5: Address - The address of this unit",
+    "102-//EDLTGET/254/p/5: Version - The version of this C-Bus unit",
+    "102-//EDLTGET/254/p/5: Serial - The serial number of this unit",
+    "102-//EDLTGET/254/p/5: State - The state of connection of this object",
+    "102-//EDLTGET/254/p/5: Application2 - The secondary C-Bus Application for this device",
+    "102-//EDLTGET/254/p/5: Application - The primary C-Bus Application for this device",
+    "102-//EDLTGET/254/p/5: WidgetGroups - List of groups used by eDLT Widget 6 to Widget 21",
+    "102-//EDLTGET/254/p/5: GeneratingClock - Flag indicating that the unit is generating a C-Bus clock.",
+    "102-//EDLTGET/254/p/5: SerialNumber - The serial number of this unit",
+    "102-//EDLTGET/254/p/5: PSyncTime - The time between parameter syncs for this unit",
+    "102-//EDLTGET/254/p/5: ClockGenActive - Flag indicating that the unit Clock Generation is Active.",
+    "102-//EDLTGET/254/p/5: NetVoltage - The voltage of the C-Bus network at this unit",
+    "102-//EDLTGET/254/p/5: FirmwareVersion - Firmware version string",
+    "102-//EDLTGET/254/p/5: UnitBlock - Unit blocks for this unit.",
+    "102-//EDLTGET/254/p/5: BurdenActive - Flag indicating that the unit has an active network burden.",
+    "102-//EDLTGET/254/p/5: PatchVersion - The version of patch in this unit",
+    "102-//EDLTGET/254/p/5: EventLevel - The level of displayed events for this object",
+    "102-//EDLTGET/254/p/5: ErrorFlags - Unit error flags",
+    "102-//EDLTGET/254/p/5: PartName - The user-defined part name of this C-Bus unit.",
+    "102-//EDLTGET/254/p/5: Version2 - The version of the micro in the unit",
+    "102-//EDLTGET/254/p/5: SlotGroups - List of groups used by this unit",
+    "102-//EDLTGET/254/p/5: LearnActive - Flag indicating that learn mode is active for this unit.",
+    "102-//EDLTGET/254/p/5: SummaryFlags - Unit summary flags",
+    "102-//EDLTGET/254/p/5: ClassName - The name of the class that implements this unit or application",
+    "102-//EDLTGET/254/p/5: CatalogNumber - The catalog number of this unit.",
+    "102 //EDLTGET/254/p/5: Name - The name of this object"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 *",
+   "lines": [
+    "300-//EDLTGET/254/p/5: Address=5",
+    "300-//EDLTGET/254/p/5: Application=56",
+    "300-//EDLTGET/254/p/5: Application2=255",
+    "300-//EDLTGET/254/p/5: BurdenActive=yes",
+    "300-//EDLTGET/254/p/5: CatalogNumber=5055EDL",
+    "300-//EDLTGET/254/p/5: ClassName=com.clipsal.cgate.cbus.dev.CBusEdlt",
+    "300-//EDLTGET/254/p/5: ClockGenActive=no",
+    "300-//EDLTGET/254/p/5: ErrorFlags=1",
+    "300-//EDLTGET/254/p/5: EventLevel=5",
+    "300-//EDLTGET/254/p/5: FirmwareVersion=01.05.00",
+    "300-//EDLTGET/254/p/5: GeneratingClock=no",
+    "300-//EDLTGET/254/p/5: LearnActive=no",
+    "300-//EDLTGET/254/p/5: LearnEnable=yes",
+    "300-//EDLTGET/254/p/5: Name=",
+    "300-//EDLTGET/254/p/5: NetVoltage=26.6",
+    "300-//EDLTGET/254/p/5: PartName=SIMEDLT ",
+    "300-//EDLTGET/254/p/5: PatchVersion=255",
+    "300-//EDLTGET/254/p/5: ProjectName=SIMTEST ",
+    "300-//EDLTGET/254/p/5: PSyncTime=300",
+    "300-//EDLTGET/254/p/5: Serial=101183.1666",
+    "300-//EDLTGET/254/p/5: SerialNumber=101183.1666",
+    "300-//EDLTGET/254/p/5: ShortName=SIMEDLT ",
+    "300-//EDLTGET/254/p/5: SlotGroups=255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255",
+    "300-//EDLTGET/254/p/5: State=ok",
+    "300-//EDLTGET/254/p/5: SummaryFlags=128",
+    "300-//EDLTGET/254/p/5: Type=KEYGL5",
+    "300-//EDLTGET/254/p/5: UnitBlock= :m:2a:ca,8b,24,8e,bc,de :m:23:ca,8b,33,93,2c,de :m:f2:ff :i:4:ff,ff,ff,0,0,18,b3,f6,82,a4,0,1 :m:3e:0",
+    "300-//EDLTGET/254/p/5: Version=5.5.00",
+    "300-//EDLTGET/254/p/5: Version2=01.05.00",
+    "300 //EDLTGET/254/p/5: WidgetGroups=255,255,255,255,255,255,255,255,255,255,255,255,56,27,56,25,56,33,56,24,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255"
+   ],
+   "wire": [
+    {
+     "direction": "rx",
+     "frame": "4605001A3E01"
+    },
+    {
+     "direction": "tx",
+     "frame": "86051000823E00A5"
+    },
+    {
+     "direction": "rx",
+     "frame": "1A3E01"
+    },
+    {
+     "direction": "tx",
+     "frame": "86051000823E00A5"
+    }
+   ]
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 WidgetGroups",
+   "lines": [
+    "300 //EDLTGET/254/p/5: WidgetGroups=255,255,255,255,255,255,255,255,255,255,255,255,56,27,56,25,56,33,56,24,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 DynamicLabels",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter dynamiclabels not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 DynamicLabel",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter dynamiclabel not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 LabelCache",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter labelcache not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 Labels",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter labels not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 Label",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter label not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 LabelText",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter labeltext not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 Cache",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter cache not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/p/5 KFI",
+   "lines": [
+    "402 Operation not supported by: //EDLTGET/254/p/5 (Parameter kfi not found)"
+   ],
+   "wire": []
+  },
+  {
+   "command": "HELP GET",
+   "lines": [
+    "101-Help: syntax: GET <object-id> <param-name>",
+    "101-Help: or:     SHOW  <object-id> <param-name>",
+    "101-Help: Show the parameter given in <param-name> for the object",
+    "101-Help: given in <object-id>.",
+    "101-Help: <object-id> is a network, group, unit, application, terminal or system entity",
+    "101-Help: <param-name> is a named parameter or '*' to show all parameters, ",
+    "101-Help: '?' to get a list of parameters, or '??' to get a list of parameters with",
+    "101 Help: descriptions."
+   ],
+   "wire": []
+  },
+  {
+   "command": "HELP LABEL",
+   "lines": [
+    "101-Help: LABEL commands:",
+    "101-Help:  LABEL ? Help for these commands",
+    "101-Help:  LABEL CLEAR - Clear DLT Labelling on a unit",
+    "101-Help:  LABEL CLEAREDLT - ",
+    "101-Help:  LABEL KFIGET - Retrieve Key Function Indicators from a DLT Labelling unit",
+    "101 Help:  LABEL KFISET - Set Key Function Indicators on a DLT Labelling unit"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/56 ??",
+   "lines": [
+    "102-//EDLTGET/254/56: State - The state of connection of this object",
+    "102-//EDLTGET/254/56: Name - The name of this object",
+    "102-//EDLTGET/254/56: LearnGroup - The group currently involved in learning",
+    "102-//EDLTGET/254/56: FreeGroup - The next free group address in this application",
+    "102-//EDLTGET/254/56: Groups - List of groups in this application",
+    "102-//EDLTGET/254/56: ClassName - The name of the class that implements this unit or application",
+    "102-//EDLTGET/254/56: ShortName - The name of this object",
+    "102-//EDLTGET/254/56: Learning - The state of learning in this application",
+    "102-//EDLTGET/254/56: EventLevel - The level of displayed events for this object",
+    "102 //EDLTGET/254/56: Address - The C-Bus Address of this device"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/56 *",
+   "lines": [
+    "300-//EDLTGET/254/56: Address=56",
+    "300-//EDLTGET/254/56: ClassName=com.clipsal.cgate.cbus.app.lighting.CBusLightingApplication",
+    "300-//EDLTGET/254/56: EventLevel=5",
+    "300-//EDLTGET/254/56: FreeGroup=0",
+    "300-//EDLTGET/254/56: Groups=12,24,25,27,33",
+    "300-//EDLTGET/254/56: LearnGroup=255",
+    "300-//EDLTGET/254/56: Learning=no",
+    "300-//EDLTGET/254/56: Name=",
+    "300-//EDLTGET/254/56: ShortName=lighting",
+    "300 //EDLTGET/254/56: State=ok"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/56/27 ??",
+   "lines": [
+    "102-//EDLTGET/254/56/27: Units - List of unit that this group is used by.",
+    "102-//EDLTGET/254/56/27: RampTime - The stored ramp time for this group - only impacts CI command",
+    "102-//EDLTGET/254/56/27: Name - The name of this object",
+    "102-//EDLTGET/254/56/27: Protected - If set, protects group from allon/alloff operations",
+    "102-//EDLTGET/254/56/27: Type - Returns either group or area if this is an area",
+    "102-//EDLTGET/254/56/27: EventLevel - The level of displayed events for this object",
+    "102-//EDLTGET/254/56/27: State - The state of connection of this object",
+    "102 //EDLTGET/254/56/27: Level - The current level of this group"
+   ],
+   "wire": []
+  },
+  {
+   "command": "GET //EDLTGET/254/56/27 *",
+   "lines": [
+    "300-//EDLTGET/254/56/27: EventLevel=5",
+    "300-//EDLTGET/254/56/27: Level=0",
+    "300-//EDLTGET/254/56/27: Name=",
+    "300-//EDLTGET/254/56/27: Protected=no",
+    "300-//EDLTGET/254/56/27: RampTime=0",
+    "300-//EDLTGET/254/56/27: State=ok",
+    "300-//EDLTGET/254/56/27: Type=group",
+    "300 //EDLTGET/254/56/27: Units="
+   ],
+   "wire": []
+  },
+  {
+   "command": "LABEL KFIGET //EDLTGET/254/56 5",
+   "lines": [
+    "300-kfi1=0",
+    "300-kfi2=1",
+    "300-kfi3=2",
+    "300-kfi4=3",
+    "300-kfi5=4",
+    "300-kfi6=5",
+    "300-kfi7=6",
+    "300 kfi8=7"
+   ],
+   "wire": [
+    {
+     "direction": "rx",
+     "frame": "A3FF0009"
+    },
+    {
+     "direction": "tx",
+     "frame": "8605100032FF0034"
+    },
+    {
+     "direction": "rx",
+     "frame": "A5FF0082001C"
+    },
+    {
+     "direction": "tx",
+     "frame": "8605100032FF0034"
+    },
+    {
+     "direction": "rx",
+     "frame": "A5FF008404FF"
+    },
+    {
+     "direction": "tx",
+     "frame": "8605100032FF0034"
+    },
+    {
+     "direction": "rx",
+     "frame": "213D"
+    },
+    {
+     "direction": "tx",
+     "frame": "860510008D3D8010325476000000000000000F"
+    }
+   ]
+  }
+ ],
+ "project": "EDLTGET",
+ "scope": "Owned native C-Gate + synthetic PCI; no physical eDLT or rendered label",
+ "setup": [
+  {
+   "command": "PROJECT NEW EDLTGET",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT USE EDLTGET",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBCREATENET 254 Edlt Cni 127.0.0.1:0",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBADDSAFE //EDLTGET/254 Unit 5 U5",
+   "lines": [
+    "301 OID=00000000-0000-4000-8000-000000000000"
+   ]
+  },
+  {
+   "command": "DBSETSAFE //EDLTGET/254/p/5/UnitType KEYGL5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //EDLTGET/254/p/5/FirmwareVersion 5.5.00",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "DBSETSAFE //EDLTGET/254/p/5/UnitName U5",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "PROJECT SAVE EDLTGET",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET LOAD DB EDLTGET",
+   "lines": [
+    "200 OK."
+   ]
+  },
+  {
+   "command": "NET OPEN //EDLTGET/254",
+   "lines": [
+    "120-initializing",
+    "120-opening port",
+    "120-starting network threads",
+    "120-pci reset",
+    "120-checking connection",
+    "120-relinking to bridged networks",
+    "120-open complete",
+    "200 OK: //EDLTGET/254"
+   ]
+  }
+ ]
+}
