@@ -125,3 +125,29 @@ captured bare fragments above. All four transformed files loaded and returned
 `project transform-legacy` command produced exactly the native transformed
 bytes for those four files. The earlier rejection observations remain the
 pre-transform results; they do not imply that conversion fails.
+
+## Migration-template census
+
+The [template census](../research/fixtures/project-legacy-transform-template-census.json)
+lists every `xsl:template` in the three original migration stylesheets with a
+stable ID (stylesheet, ordinal and match/name/mode hash), the stylesheet
+SHA-256s, a coarse classification and a `portable_coverage` flag. The flag
+comes from the `NATIVE_TEMPLATE_COVERAGE` table in the portable module, and a
+test checks both against each other and against the module's rule constants.
+
+| Stylesheet | Templates | Portable coverage | Full | Bounded |
+| --- | ---: | ---: | ---: | ---: |
+| `v2tov21.xslt` | 57 | 57 | 55 | 2 |
+| `v21tov22.xslt` | 19 | 19 | 16 | 3 |
+| `v22tov23.xslt` | 2 | 2 | 1 | 1 |
+| Total | 78 | 78 | 72 | 6 |
+
+"Bounded" means the portable command rejects part of that template's input
+instead of reproducing it. This applies to the three identity copies
+(canonical source bytes only), the `cis:Unit` addition (each unit must carry
+its own exact `cis` declaration) and the two firmware renames (Units with
+attributes are rejected). The census omits `repair.xslt` and
+`tidyduplicategroups.xslt`; it hashes them and records them as out of scope.
+Coverage of a template is not evidence of native loadability for arbitrary
+projects. The [legacy transform page](project-legacy-transform.md) lists the
+native receipts.

@@ -1,0 +1,314 @@
+{
+  "format": "cbus-project-legacy-transform-templates-native-v1",
+  "target": "original C-Gate 3.4.0 build 2001, owned XML repository and loopback only",
+  "sources": {
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "transform_sha256": {
+      "v2tov21.xslt": "8346eab4259b957d53fc2b5c14ee1e058196124eabe4a7e3fb45b145f74735a8",
+      "v21tov22.xslt": "e2090621171b5febf4903eaa964dd7a855b3d3cea827678da3758376dceab875",
+      "v22tov23.xslt": "5674534824826a2db5e3b762c207ce0e566298e54703f628d16f9b3d2d47dab2",
+      "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
+    },
+    "census_sha256": "55b5c7b720e716fe8b48cac88aa4400263db4f0fe4b5e3e1a8b0ec1da322f23d",
+    "native_test_sha256": "cd52ebc1b6186e2b8d53896c93475fe99a898c9c11caefed80e2ab98ca36b663",
+    "portable_module_sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
+    "portable_test_sha256": "e60de1a4f35ffde9d9d5c239648f019f9f6f23b43bf587699529011b789b2dce",
+    "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "cases": [
+    {
+      "case": "FW21",
+      "source_db_version": "2.1",
+      "templates": [
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "875c0465d0e4393afaa12f06cb13f226632f1640fc625785b8f97a48432b6a6e",
+      "output_sha256": "e07169c66d69a65ce4d6006561074e8d1eb947680b90caca7ed6cf656400a2bf",
+      "backup_sha256": "875c0465d0e4393afaa12f06cb13f226632f1640fc625785b8f97a48432b6a6e",
+      "readback_sha256": "94731690cf3040a3d79ee482c383515289d8e37cd3aa98d518fe42345caf3ee7",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "FW2",
+      "source_db_version": "2",
+      "templates": [
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "62f746e12d57a438bd5b8be6e8a60e478255ddc4043aa4cbbd678d075fbca5c9",
+      "output_sha256": "e07169c66d69a65ce4d6006561074e8d1eb947680b90caca7ed6cf656400a2bf",
+      "backup_sha256": "62f746e12d57a438bd5b8be6e8a60e478255ddc4043aa4cbbd678d075fbca5c9",
+      "readback_sha256": "a8302fc125533b97f33e8dbff5cd44e34740d77dbb33d6f368177c9a3d7d7a30",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "FW22",
+      "source_db_version": "2.2",
+      "templates": [],
+      "source_sha256": "80b5422af8d948caf00633bc6adb4a7caad036c562df7481107803b3dcd8e8ef",
+      "output_sha256": "60a52e8b470aa671a5dfa957aa662ff9525cc0353c4d49cea46d805c46fb5f81",
+      "backup_sha256": "80b5422af8d948caf00633bc6adb4a7caad036c562df7481107803b3dcd8e8ef",
+      "readback_sha256": "e8baa60a9197b6efee30c6704b2bdfd70043c5f3ec9ed64682421a9fe3aa23c2",
+      "removed_pp": [],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 0,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "DLT21",
+      "source_db_version": "2.1",
+      "templates": [
+        "v21tov22#03-98a206ab",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "9a194746f0219f4e86b703aee90526db4d357328d73e0350d40f93e17356c93b",
+      "output_sha256": "667eb9db65c5442b6cde7413e9ad19371bdc6639375de0ff95460d1959c53afd",
+      "backup_sha256": "9a194746f0219f4e86b703aee90526db4d357328d73e0350d40f93e17356c93b",
+      "readback_sha256": "71404d32aa9141245d27142dd6aed6d85128300f77f8d8b2b37d56327665abf9",
+      "removed_pp": [
+        "CorridorLinkEnable"
+      ],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "DLT2",
+      "source_db_version": "2",
+      "templates": [
+        "v21tov22#03-98a206ab",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "9e53b07f898215f1054a0a4068a49f75f39115b87963558f55d5cd8f5b47987f",
+      "output_sha256": "667eb9db65c5442b6cde7413e9ad19371bdc6639375de0ff95460d1959c53afd",
+      "backup_sha256": "9e53b07f898215f1054a0a4068a49f75f39115b87963558f55d5cd8f5b47987f",
+      "readback_sha256": "c6f3fc6c87b3e7af39ce085cac297abe68c2918748fc109ca687922f2528aab4",
+      "removed_pp": [
+        "CorridorLinkEnable"
+      ],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "NEO21",
+      "source_db_version": "2.1",
+      "templates": [
+        "v21tov22#04-36fd2be7",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "3b97eb020902498d802acc2dd1aaccc39c767f01b83325e14fd34386929e824f",
+      "output_sha256": "f497c27496f6c0ca05ce85ad041b22b8b53f0bbdb2d12c4cb91fda90c0a05374",
+      "backup_sha256": "3b97eb020902498d802acc2dd1aaccc39c767f01b83325e14fd34386929e824f",
+      "readback_sha256": "d15d440cf6c6bd0356d5e5796d6b159c475891de76e3b790de018648788ae4a9",
+      "removed_pp": [
+        "KeyDisableGroupInvert",
+        "CorridorLinkEnable",
+        "NightlightColour",
+        "DisableIRNEC"
+      ],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "NS2",
+      "source_db_version": "2",
+      "templates": [
+        "v2tov21#57-1338c52b",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "6a0f80a930a1ef98b1f9c6aa4917051e105188057e47e98723eb286dbcb58644",
+      "output_sha256": "dd9293997cfb349bdaadf888f5f73793abea779de7cbbbaf493978017721cb8e",
+      "backup_sha256": "6a0f80a930a1ef98b1f9c6aa4917051e105188057e47e98723eb286dbcb58644",
+      "readback_sha256": "b38775de87ce7104e63e0ef53978f01d11d33bab8be80fe9ffdaadd56278ee0b",
+      "removed_pp": [
+        "FeatureSet"
+      ],
+      "added_pp_count": 5,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 2,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "NS21",
+      "source_db_version": "2.1",
+      "templates": [
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "1c4aabb84ac49fce1607472e72a00610bf2ff92f663c5c34548f5f8e57e0fea3",
+      "output_sha256": "bded3e4def0dd81e536d05abd34e0f05ffbe92120503c9c2fd540b771c3c38e6",
+      "backup_sha256": "1c4aabb84ac49fce1607472e72a00610bf2ff92f663c5c34548f5f8e57e0fea3",
+      "readback_sha256": "9fb4f36260cce76f828aadcbb74e7f6b9fe331d9b38783311af0d753c451c6f7",
+      "removed_pp": [],
+      "added_pp_count": 0,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 2,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "WL21",
+      "source_db_version": "2.1",
+      "templates": [
+        "v21tov22#17-efb660bf",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "3d659f364e5ca18384e04cb48c096a328fc9ad93323e33796374aae05738590e",
+      "output_sha256": "6a6c2db6ddbcfd0b65343297d4af82c5fd6ed6060c7be78f81a560f57e869298",
+      "backup_sha256": "3d659f364e5ca18384e04cb48c096a328fc9ad93323e33796374aae05738590e",
+      "readback_sha256": "d5e2dd1d2309988f6583bcc1c400095721ee40278b6285613203bb1b59fcc6e7",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "added_pp_count": 12,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "WL2",
+      "source_db_version": "2",
+      "templates": [
+        "v21tov22#17-efb660bf",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "a44f1f00c4f855b98d4ccd89e3b50a1770fc9f7bd775d227f9c2233b3c3031fb",
+      "output_sha256": "6a6c2db6ddbcfd0b65343297d4af82c5fd6ed6060c7be78f81a560f57e869298",
+      "backup_sha256": "a44f1f00c4f855b98d4ccd89e3b50a1770fc9f7bd775d227f9c2233b3c3031fb",
+      "readback_sha256": "c78bfa47605881975009f956a2eabc76e791bfd5250a8df6558fbe16bbc12a03",
+      "removed_pp": [
+        "Remote3Identity"
+      ],
+      "added_pp_count": 12,
+      "renamed_pp": [],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    },
+    {
+      "case": "EXP2",
+      "source_db_version": "2",
+      "templates": [
+        "v2tov21#55-9e87eeb9",
+        "v2tov21#56-fd9c07b5",
+        "v21tov22#17-efb660bf",
+        "v21tov22#18-8e846bdd",
+        "v21tov22#19-c309fdfb"
+      ],
+      "source_sha256": "452b9d1042e39d381bc48ac4d4970b78238553f9577ba7751f04a7c31a22b159",
+      "output_sha256": "1e498415fb41b70fe1278157e15c1f57dcbd1fdbc5767ba45dc3c6c5a9e1c9ed",
+      "backup_sha256": "452b9d1042e39d381bc48ac4d4970b78238553f9577ba7751f04a7c31a22b159",
+      "readback_sha256": "844305ac7474dede026ebdd8e4379eb75e9ce4866fe5e85a46a376a5447d5e47",
+      "removed_pp": [
+        "KeyMaskAllowed"
+      ],
+      "added_pp_count": 116,
+      "renamed_pp": [
+        [
+          "EnableNightlightPCx",
+          "EnableNightlightOnPCx"
+        ]
+      ],
+      "firmware_changes": 7,
+      "cis_units": 0,
+      "load_before": 408,
+      "transform": 200,
+      "load_after": 200,
+      "readback": 344,
+      "readback_units_equal_portable": true,
+      "native_bytes_equal_portable": true
+    }
+  ],
+  "service": {
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "cleanup_complete": true
+  },
+  "physical_networks_opened": false,
+  "scope": "PC/PCI firmware renames, DLT and Neo Application gates, cis:Unit additions, wireless additions and version-2 PP expansion/rename"
+}

@@ -169,10 +169,9 @@ class LegacyTransformTests(unittest.TestCase):
                 b'<Project><Network><Unit><UnitType>KEYGL5</UnitType>'
                 b'<FirmwareVersion>5.5.00</FirmwareVersion><PP Name="Keep" Value="1"/>'
                 b'</Unit></Network></Project></Installation>\n')
-        for source in (base.replace(b'KEYGL5', b'KEYBL5'),
-                       base.replace(b'5.5.00', b'5.4.00'),
-                       base.replace(b'Name="Keep"', b'Name="KeyExtraLongPressDuration"'),
-                       base.replace(b'Name="Keep"', b'Name="EnableNightlightPCx"'),
+        for source in (base.replace(b'KEYGL5', b'KEY GL5'),
+                       base.replace(b'5.5.00', b'5.5 00'),
+                       base.replace(b'<FirmwareVersion>5.5.00</FirmwareVersion>', b''),
                        base.replace(b'<PP Name="Keep"', b'<Empty></Empty><PP Name="Keep"'),
                        base.replace(b' Value="1"', b' extra="x" Value="1"'),
                        base.replace(b'<PP Name="Keep" Value="1"/>',
@@ -224,15 +223,17 @@ class LegacyTransformTests(unittest.TestCase):
                                      tuple((*four, *(("FeatureSet",) if version == "2" else ()),
                                             "Remote3Identity")))
 
-    def test_neo_16_rejects_other_firmware_and_namespaced_unit(self):
+    def test_neo_other_firmware_passes_and_unreproducible_shapes_reject(self):
         source = (b'<?xml version="1.0" encoding="utf-8"?><Installation><DBVersion>2.1</DBVersion>'
                   b'<Project><Network><Unit><UnitType>KEYB2</UnitType>'
                   b'<FirmwareVersion>1.6</FirmwareVersion><PP Name="Application" Value="0x38"/>'
                   b'</Unit></Network></Project></Installation>\n')
         self.assertEqual(transform_repaired_legacy_project(source).source_db_version, "2.1")
-        for invalid in (source.replace(b'<FirmwareVersion>1.6', b'<FirmwareVersion>1.7'),
-                        source.replace(b'<Unit>', b'<cis:Unit xmlns:cis="urn:test">').replace(
-                            b'</Unit>', b'</cis:Unit>')):
+        self.assertEqual(transform_repaired_legacy_project(
+            source.replace(b'<FirmwareVersion>1.6', b'<FirmwareVersion>1.7')).removed_programming_parameters, ())
+        for invalid in (source.replace(b'<Unit>', b'<cis:Unit xmlns:cis="urn:test">').replace(
+                            b'</Unit>', b'</cis:Unit>'),
+                        source.replace(b'<Unit>', b'<Unit x="1">').replace(b'KEYB2', b'PC_CTA').replace(b'>1.6<', b'>4.00<')):
             with self.subTest(invalid=invalid):
                 with self.assertRaises(LegacyProjectTransformError):
                     transform_repaired_legacy_project(invalid)

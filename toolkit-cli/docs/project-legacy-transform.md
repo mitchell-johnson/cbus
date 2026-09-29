@@ -33,22 +33,49 @@ conversion alone cannot verify a different project's loadability. The command
 accepts the UTF-8, XML 1.0 `Installation` envelope produced by the portable
 repair, one literal direct DBVersion 2, 2.1 or 2.2, one direct `Project`, a
 final LF, and an optional project address matching `[A-Z][A-Z0-9_]{0,7}`.
-For version 2 or 2.1, it also admits unnamespaced `KEYGL5` firmware `5.5.00`
-and `KEYB2`/`KEYB4` firmware `1.6` units with canonical direct
-`PP Name="..." Value="..."` tokens. A PP name may contain spaces, as the
-native Neo snapshot's `EEPROM Checksum` does. The command preserves other
-programming bytes and applies the original stylesheets' obsolete-parameter
-removals: `Remote3` through `Remote8` identity/key-map fields in the 2.1→2.2
-stage, plus the 2→2.1 stage's specified mask, offset, feature, key 9–16 and
-remote 1–2 fields. For `KEYB2`/`KEYB4` firmware `1.6` without an `Application`
-PP, the 2.1→2.2 stage also removes `KeyDisableGroupInvert`,
-`CorridorLinkEnable`, `NightlightColour` and `DisableIRNEC` from that unit.
-With an `Application` PP, those four fields remain. The portable result lists
-removed names in source order under `removed_programming_parameters`.
+For version 2 or 2.1, it also admits Units whose `UnitType` and single
+`FirmwareVersion` are plain identifiers and whose PP children are canonical
+direct `PP Name="..." Value="..."` tokens. A PP name may contain spaces, as the
+native Neo snapshot's `EEPROM Checksum` does. The command preserves other bytes
+and applies each template of the original migration stylesheets as a byte edit:
 
-The earlier original stylesheets also add parameters and change selected
-firmware versions. Other Unit types and firmware versions, noncanonical PP
-tokens, namespaced units and the PP expansion/rename triggers still require
+- **Global PP removals.** The 2.1→2.2 stage removes `Remote3` through `Remote8`
+  identity/key-map fields. From version 2, the 2→2.1 stage also removes the
+  specified mask, offset, feature, key 9–16 and remote 1–2 fields.
+- **Version 2 expansion and rename.** `KeyExtraLongPressDuration` is kept and
+  followed by 52 default mask, offset, key and remote PP tokens.
+  `EnableNightlightPCx` becomes `EnableNightlightOnPCx` with the same value.
+- **Application gates.** For an unnamespaced `KEYBL5`/`KEYML5` Unit without an
+  `Application` PP, `CorridorLinkEnable` is removed. For the 13 Neo types
+  (`KEYA1` to `KEYM8`) with firmware starting `1.6` and no `Application`,
+  `KeyDisableGroupInvert`, `CorridorLinkEnable`, `NightlightColour` and
+  `DisableIRNEC` are removed. With an `Application` PP, the fields remain.
+- **Firmware renames.** An unnamespaced `PC_CTA` Unit with firmware starting
+  `4.00`, or a `PCINT4`, `PCLOCAL4`, `PC_CBTI`, `PC_PGA`, `PC_IRT2` or `PC_WHAM`
+  Unit with firmware starting `4.0.00`, gets `FirmwareVersion` `4.0.0`. As in
+  the original, the element moves to the Unit's last child. A renamed Unit
+  must have no attributes, because the original stylesheet drops them.
+- **Wireless additions.** The 34 listed wireless types with firmware starting
+  `2.0.0` and an `Application` PP gain `Remote3`–`Remote8` identity and key-map
+  defaults at the end of the Unit.
+- **`cis:Unit` additions (version 2 only).** The original 2→2.1 Unit template
+  matches only Units in the `http://www.clipsal.com/cis/schema/2001/cbus.xsd`
+  namespace. It appends the four Neo bit fields to Neo types with firmware
+  starting `1.6`–`1.12` or `2.`, and `CorridorLinkEnable` to `KEYBL5`/`KEYML5`.
+  No 2.1→2.2 Unit template matches a namespaced Unit. The portable command
+  requires each `cis:Unit` start tag to carry its own exact `xmlns:cis`
+  declaration. The document may contain no other namespace declarations.
+
+The portable result lists removed PP names in source order under
+`removed_programming_parameters`, as well as `added_programming_parameters`,
+`renamed_programming_parameters` and `firmware_version_changes`. Version 2.2
+sources pass only through the final version stage, so no Unit edits apply.
+
+The [template census](../research/fixtures/project-legacy-transform-template-census.json)
+and [native readback](project-repair-native.md#migration-template-census)
+record portable coverage for each original template. Other namespaces, a
+`cis` declaration elsewhere, Units outside `Network`, noncanonical tokens,
+missing firmware and PP elements outside direct Unit children still require
 original C-Gate's native transform. The portable command rejects DTDs,
 alternate version spelling, other encodings and malformed or oversized XML.
 
@@ -119,8 +146,20 @@ version-2 `FeatureSet` removals. All eight portable outputs match native
 Readback retains the four conditional fields only when `Application` was
 present. The owned service opens no physical network.
 
-These observations cover 22 generated conversions, two rejected versions and
+The [owned template receipt](../research/fixtures/project-legacy-transform-templates-native-receipt.json)
+creates one project in the original C-Gate. It has 15 generated PC/PCI, DLT,
+Neo, wireless and key Units without unit specifications. Eleven staged
+version 2, 2.1 and 2.2 variants add synthetic PP tokens or `cis:Unit`
+wrappers. Together they exercise every census template classified as a
+firmware rename, Application-gated removal, wireless or `cis:Unit` addition,
+or PP expansion/rename. All eleven portable outputs match native
+`TRANSFORM PROJECT` bytes. Each output then passes `PROJECT LOAD` and
+`DBGETXML`. The readback firmware and PP multiset for each Unit equal the
+portable output. Native loading reads each `cis:Unit` as an ordinary Unit.
+
+These observations cover 33 generated conversions, two rejected versions and
 two explicit built-in-stylesheet variants (server output and in-place) in the
-original XML repository. Arbitrary repaired databases, other unit/PP
-migrations, custom stylesheets and output paths, SQLite repository behavior,
-Windows conversion and complete Toolkit workflow parity remain unverified.
+original XML repository. Arbitrary repaired databases, noncanonical or
+otherwise unadmitted Unit/PP shapes, custom stylesheets and output paths,
+SQLite repository behavior, Windows conversion and complete Toolkit workflow
+parity remain unverified.

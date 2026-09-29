@@ -11,10 +11,10 @@
       "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
     },
     "native_test_sha256": "336fcf08ad3cb3909998aa574a7dcb0358479c2052ea0cdeff05cd7bb4fc5c09",
-    "portable_module_sha256": "ec1fdb82139a30ca6c474a789ad70531712243a4280b8415b92329dc65911f9d",
+    "portable_module_sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
     "native_module_sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
-    "cli_dispatch_sha256": "0d1a52cdcf611b60738a58ab83a5725ae3df0d2ccbab6c487f05a0c257271930",
-    "portable_test_sha256": "133b9268508771688ff26d063f8873b09ac74774e78da204fa58ea65cf593f0b",
+    "cli_dispatch_sha256": "46c14394c5202c700f1f4e12b2071c436a9d9535b5520dcc3e18048627c07ad5",
+    "portable_test_sha256": "e4b9a5083d820de48327f82bc5f116e566c7e3f5322325b1bdd325178c44159f",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
   "cases": [
