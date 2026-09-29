@@ -7705,6 +7705,50 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn stale_ack_from_retired_generation_cannot_complete_a_new_generation_store() {
+        // Generation A: the STORE reaches the wire, then the PCI stream is
+        // lost before its ACK. The transaction retires this generation.
+        let (old, mut old_remote, _) = setup().await;
+        let worker = old.clone();
+        let lost =
+            tokio::spawn(async move { worker.store_parameter_verified(4, 0x20, &[0x06]).await });
+        assert_eq!(line(&mut old_remote).await, b"\\460400A3200006ED\r");
+        drop(old_remote);
+        assert!(lost.await.unwrap().is_err());
+        assert_ne!(old.programming_lane_state(), ProgrammingLaneState::Ready);
+
+        // Generation B: the replacement link first delivers A's late ACK and
+        // a matching readback before any new request exists.
+        let (pci, mut remote, _) = setup().await;
+        reply(&mut remote, 4, &[0x32, 0x20, 0]).await;
+        reply(&mut remote, 4, &[0x82, 0x20, 0x06]).await;
+        tokio::time::sleep(Duration::from_millis(50)).await;
+
+        let worker = pci.clone();
+        let write =
+            tokio::spawn(async move { worker.store_parameter_verified(4, 0x20, &[0x06]).await });
+        assert_eq!(line(&mut remote).await, b"\\460400A3200006ED\r");
+        // The unit never acknowledges B's STORE: the stale frames must not
+        // advance it to readback or report success.
+        tokio::time::advance(REPLY_TIMEOUT).await;
+        tokio::task::yield_now().await;
+        assert_eq!(
+            write.await.unwrap().unwrap_err().kind(),
+            ErrorKind::TimedOut
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_millis(25),
+            "a stale ACK advanced the new generation's STORE to readback or replay",
+        )
+        .await;
+        assert_eq!(
+            pci.programming_lane_state(),
+            ProgrammingLaneState::ReconnectRequired
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn locked_parameter_store_uses_native_unlock_then_verifies_readback() {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();

@@ -38,8 +38,12 @@ no PP save.
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
   physical-pp apply //PROJECT/NETWORK/p/UNIT --method direct \
-  --set UnitName GARAGE --set Project GRENACHE
+  --set UnitName GARAGE --set Project GRENACHE \
+  --journal journals/unit-4-attempt-1.json
 ```
+
+Every apply without `--dry-run` requires `--journal PATH` (see
+[Attempt journal and recovery](#attempt-journal-and-recovery)).
 
 Omitting `--destination` selects native `PP SAVE_TO_SOURCE`. An explicit
 physical destination on the same project and network lock selects `PP SAVE`:
@@ -47,7 +51,8 @@ physical destination on the same project and network lock selects `PP SAVE`:
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
   physical-pp apply //PROJECT/NETWORK/p/4 --method goc2 \
-  --set ParameterName '0x12 0x34' --destination //PROJECT/NETWORK/p/5
+  --set ParameterName '0x12 0x34' --destination //PROJECT/NETWORK/p/5 \
+  --journal journals/unit-5-attempt-1.json
 ```
 
 All `--set` rows are validated for unique names and native quoting before the
@@ -92,6 +97,92 @@ and dry-run remain available without it. The output always keeps
 service read back the encoded value during that run. It does not prove behavior
 after power loss, every device/firmware combination, a live bridge route, or
 execution of the original Toolkit UI.
+
+## Attempt journal and recovery
+
+A save writes a durable attempt journal (`cbus-physical-pp-journal-v1`). The
+client creates it with an exclusive create and fsyncs the file and its
+directory before it sends the SAVE. It uses the same envelope as the
+selected-serial attempt marker: `send_may_have_occurred=true` and
+`read_only_recovery_only=true` from creation, because a crash at any later
+point may leave the journal as the only evidence. The journal never
+authorizes a replay.
+
+The immutable `plan` holds the following. `attempt_id` is the SHA-256 of the
+canonical plan.
+
+- The unit identity: source, destination, lock, project, network and unit.
+- The SHA-256 of the complete loaded schema.
+- The method, the native save form and whether the unit-wide NVM commit
+  applies.
+- The captured cmqttd `pci_generation`.
+- Each edited range in unit-specification order: parameter, logical PP
+  address, byte length, and the SHA-256 of the loaded and staged bytes.
+
+The client reads the loaded and staged bytes from cmqttd's own `PP DEBUG mem`
+session rows. It also checks that the SET change map covers exactly the
+extent derived from the declared layout. A disagreement refuses before the
+journal is created.
+
+Each later phase is an atomic, fsynced replacement. Before it replaces the
+file, the client checks that the file still holds its previous bytes. The
+phases are:
+
+- `planned`
+- `save-sent`, written before the SAVE is sent; if this write fails, no SAVE
+  is sent
+- `save-confirmed` or `save-uncertain`
+- `readback-verified`, `readback-mismatch` or `readback-unavailable`
+- `complete`
+
+Per-range `store_state` moves from `planned` to `possible` when the SAVE is
+sent, and to `confirmed` after cmqttd's 200 reply. That reply covers each
+range's tagged STORE acknowledgements and its exact per-range readback. After
+a failed SAVE, the client reads cmqttd's reply
+`after N confirmed write(s)`. The first N planned ranges become `confirmed`,
+the next becomes `uncertain`, and the rest become `not-attempted`. A lost
+C-Gate connection or any other reply leaves every planned range `uncertain`.
+`nvm_commit` follows the same rules. A failed Save-to-NVM, such as a lost
+EXECUTE or a lost POLL after a running EXECUTE, is recorded as `uncertain`.
+
+The client refuses a save before any C-Gate command in two cases:
+
+- The selected journal path already exists.
+- Another `*.json` journal in the same directory names the same destination
+  unit and is neither complete nor resolved.
+
+Keep one journal directory per site. Use a new file name for each attempt.
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
+  physical-pp recover --journal journals/unit-4-attempt-1.json
+```
+
+`recover` preflights capabilities and performs a fresh physical `PP LOAD` of
+the journaled destination. It never sends SET, SAVE, UNLOCK or NVM commands.
+If the schema digest differs, every range is `unreadable`. Otherwise, each
+range is classified by its fresh bytes:
+
+- `expected`: the bytes match the staged digest.
+- `unchanged`: the bytes match the loaded digest.
+- `mixed`: the bytes match neither digest, for example after a multi-group
+  range was interrupted part-way through.
+- `unreadable`: the bytes could not be read.
+
+The report outcome is `observed_expected`, `observed_unchanged`,
+`observed_partial`, `observed_mixed` or `unreadable`. Recover appends each
+observation to the journal. It marks the journal `resolved` only when every
+range is `expected` or `unchanged`, and then exits 0. A `mixed` or
+`unreadable` result exits 1 and keeps the unit's later saves refused.
+
+A fresh LOAD cannot observe a C-Bus 3 NVM commit. When the journal does not
+record a confirmed commit, `nvm_commit_uncertain=true` is reported.
+`power_cycle_persistence_verified` stays false.
+
+A plain `--tcp` cmqttd exits when its PCI stream is lost. Recovery therefore
+normally runs against a restarted daemon. Its `pci_generation` counter
+restarts, so recover reports the fresh generation but does not compare it
+with the journaled one.
 
 ## Native method and protection contract
 
@@ -182,6 +273,32 @@ transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
 - Unchanged fields that are pre-read but never stored or committed.
 - The unit-wide NCC rule: a `direct` edit in a specification that declares
   NCC fields is followed by Save-to-NVM EXECUTE and POLL.
+
+The peer's `drop_on=(phase, range_index)` interrupts a two-range save at each
+uncertain boundary. The boundaries are before a STORE is applied, after a STORE
+chunk is applied but before its ACK, after the final ACK but before the exact
+readback, between ranges (`direct` and page-crossing `paged`), at a second
+`goc2` range, at NVM EXECUTE, and after a running EXECUTE but before POLL.
+Each case asserts the following:
+
+- The peer captures the journal when the first STORE arrives, and it already
+  says `save-sent`.
+- Per-range store states and the NVM state match cmqttd's reply.
+- A restarted daemon's `recover` performs only reads on a new PCI connection
+  and classifies each range from the peer's actual memory, including `mixed`
+  for a partly written 25-byte range.
+
+A further case shows that an unresolved journal refuses repeat saves before
+I/O, both on the same path and on a new path in the same directory, until
+recovery resolves it. For field preservation, `direct`, `paged`, `ncc`,
+`goc2` and `edlt` saves run with declared neighbour fields on both sides,
+across a page for `paged`/`ncc`, plus undeclared guard bytes and a field in
+another memory space. The test snapshots the peer's complete memory. Only
+the target range's bytes may change. The Rust test
+`stale_ack_from_retired_generation_cannot_complete_a_new_generation_store` in
+`cbus-transport` shows the following sequence. An ACK and readback delivered
+by a replacement PCI link before the new STORE exists do not complete it. The
+new STORE times out, and its generation is retired.
 
 Separate cases reject an over-count correlated read before any save. Others
 drop the PCI after the first STORE of `direct`, `paged`, `ncc`, `giu`,

@@ -159,6 +159,7 @@ def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_
                     sys.executable, '-m', 'cbus_toolkit', 'cgate',
                     '--host', '127.0.0.1', '--port', port, '--timeout', '30',
                     'physical-pp', 'apply', '//TEST/254/p/5', '--method', 'direct',
+                    '--journal', str(tmp_path / 'physical-pp-journal.json'),
                     '--set', 'Value', value_text,
                 ], capture_output=True, text=True, timeout=120)
                 assert result.returncode == 0, result.stderr

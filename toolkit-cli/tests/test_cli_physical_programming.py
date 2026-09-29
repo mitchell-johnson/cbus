@@ -1,7 +1,9 @@
 import json
+from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import unittest
 
 from cbus_toolkit.physical_programming import SUPPORTED_METHODS
@@ -54,6 +56,8 @@ class PhysicalProgrammingCLITests(unittest.TestCase):
             "<Protection>none</Protection></Param></Parameters>"
         )
         cap = json.dumps(capabilities(), separators=(",", ":"))
+        debug = tagged(10, "199---------|20|", "199-    unit>01|", "199- current>02|",
+                       "199-  change>ff|", "199 endparam>nn|")
         responses = [
             tagged(1, "200-" + cap, "200 OK"),
             tagged(2, "200 OK"),
@@ -64,23 +68,22 @@ class PhysicalProgrammingCLITests(unittest.TestCase):
             tagged(7, "315 Value=0x01"),
             tagged(8, "200 OK"),
             tagged(9, "315 Value=0x02"),
-            tagged(10, "200 OK"),
-            tagged(11, "200 OK"),
-            tagged(12, "200 OK"),
-            tagged(13, "200 OK"),
-            tagged(14, "200 OK"),
-            tagged(15, "200 OK"),
-            tagged(16, "200 OK"),
-            tagged(17, "343-Begin XML snippet", "347-" + schema, "344 End XML snippet"),
-            tagged(18, "315 Value=0x02"),
-            tagged(19, "200 OK"),
+            debug,
+            *(tagged(number, "200 OK") for number in range(11, 18)),
+            tagged(18, "343-Begin XML snippet", "347-" + schema, "344 End XML snippet"),
+            tagged(19, "315 Value=0x02"),
             tagged(20, "200 OK"),
+            tagged(21, "200 OK"),
         ]
+        journal = Path(self.enterContext(tempfile.TemporaryDirectory())) / "attempt.json"
         with peer(responses) as ((host, port), sent):
             result = self.cli(
                 host, port, "apply", "//TEST/253/p/4", "--method", "direct",
-                "--set", "Value", "0x02",
+                "--set", "Value", "0x02", "--journal", str(journal),
             )
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual(result["journal"]["attempt_id"], document["attempt_id"])
         self.assertTrue(result["complete"])
         self.assertTrue(result["saved"])
         self.assertTrue(result["fresh_physical_readback_verified"])
@@ -98,20 +101,21 @@ class PhysicalProgrammingCLITests(unittest.TestCase):
         self.assertEqual(commands[6], f"[7] PP GET {session} Value")
         self.assertEqual(commands[7], f'[8] PP SET {session} Value "0x02"')
         self.assertEqual(commands[8], f"[9] PP GET {session} Value")
-        self.assertEqual(commands[9], f"[10] PP SAVE_TO_SOURCE {session}")
-        self.assertEqual(commands[10], f"[11] PP END {session}")
-        self.assertEqual(commands[11], f"[12] PP UNLOCK {write_lock}")
-        self.assertEqual(commands[12], "[13] PROJECT USE TEST")
-        verify = re.fullmatch(r"\[14\] PP LOCK (cbus_pp_[0-9a-f]{12}_verify_lock) //TEST/253", commands[13])
+        self.assertEqual(commands[9], f"[10] PP DEBUG mem {session} 20")
+        self.assertEqual(commands[10], f"[11] PP SAVE_TO_SOURCE {session}")
+        self.assertEqual(commands[11], f"[12] PP END {session}")
+        self.assertEqual(commands[12], f"[13] PP UNLOCK {write_lock}")
+        self.assertEqual(commands[13], "[14] PROJECT USE TEST")
+        verify = re.fullmatch(r"\[15\] PP LOCK (cbus_pp_[0-9a-f]{12}_verify_lock) //TEST/253", commands[14])
         self.assertIsNotNone(verify)
         verify_lock = verify[1]
         verify_session = verify_lock.removesuffix("_lock")
-        self.assertEqual(commands[14], f"[15] PP START {verify_session} {verify_lock}")
-        self.assertEqual(commands[15], f"[16] PP LOAD {verify_session} //TEST/253/p/4")
-        self.assertEqual(commands[16], f"[17] PP INFO {verify_session} *")
-        self.assertEqual(commands[17], f"[18] PP GET {verify_session} Value")
-        self.assertEqual(commands[18], f"[19] PP END {verify_session}")
-        self.assertEqual(commands[19], f"[20] PP UNLOCK {verify_lock}")
+        self.assertEqual(commands[15], f"[16] PP START {verify_session} {verify_lock}")
+        self.assertEqual(commands[16], f"[17] PP LOAD {verify_session} //TEST/253/p/4")
+        self.assertEqual(commands[17], f"[18] PP INFO {verify_session} *")
+        self.assertEqual(commands[18], f"[19] PP GET {verify_session} Value")
+        self.assertEqual(commands[19], f"[20] PP END {verify_session}")
+        self.assertEqual(commands[20], f"[21] PP UNLOCK {verify_lock}")
 
     def test_help_lists_all_methods_and_invalid_path_stops_before_connect(self):
         process = subprocess.run(

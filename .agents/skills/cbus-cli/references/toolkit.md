@@ -279,7 +279,8 @@ For physical PP work through cmqttd, prefer the typed command:
 ```sh
 cbus-toolkit cgate physical-pp inspect //PROJECT/NETWORK/p/UNIT --method direct
 cbus-toolkit cgate physical-pp apply //PROJECT/NETWORK/p/UNIT \
-  --method direct --set UnitName GARAGE
+  --method direct --set UnitName GARAGE --journal journals/unit-4-attempt-1.json
+cbus-toolkit cgate physical-pp recover --journal journals/unit-4-attempt-1.json
 ```
 
 It preflights `CMQTT CAPABILITIES`, validates every selected parameter against

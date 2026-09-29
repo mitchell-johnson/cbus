@@ -50,8 +50,10 @@ snapshot, display rendering, power-cycle persistence or dynamic-cache readback.
    service capabilities, physical path, schema parameters, and current values.
 3. For a preview, run `physical-pp apply ... --dry-run --set NAME VALUE`. This
    still performs physical LOAD and temporary staging but sends no save.
-4. Apply without `--dry-run`. Omit `--destination` for SAVE_TO_SOURCE or name a
-   same-project/network physical destination for SAVE.
+4. Apply without `--dry-run` and with a new `--journal PATH`. Omit
+   `--destination` for SAVE_TO_SOURCE or name a same-project/network physical
+   destination for SAVE. After any uncertain save, run
+   `physical-pp recover --journal PATH` and act on its range classifications.
 5. Require `saved=true` and `fresh_physical_readback_verified=true`. Preserve
    failure evidence. Never repeat a command whose save outcome is uncertain.
 6. If persistence matters, perform a separate controlled power-cycle test; the
