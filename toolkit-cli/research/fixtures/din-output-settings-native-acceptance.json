@@ -1,0 +1,297 @@
+{
+ "format": "cbus-din-output-settings-acceptance-v1",
+ "backend": "local",
+ "firmware": "2.7.00",
+ "scope": "Toolkit source-grounded DIN Logic/Turn On/Recovery/Restrike settings through native PP and a closed database; no physical outputs",
+ "types": [
+  {
+   "unit_type": "RELDN4",
+   "catalog_number": "5504RVF",
+   "spec": "RELDN4.xml",
+   "positive": [
+    "logic",
+    "turn-on-threshold",
+    "turn-on-raw",
+    "recovery-level",
+    "level-store-255",
+    "restrike",
+    "restrike-delay-min",
+    "interlock",
+    "interlock-off"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "restrike-delay-1-254",
+    "interlock-0-4"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "relay-max",
+    "recovery-with-store",
+    "relay-delay",
+    "restrike-delay-disabled",
+    "restrike-delay-0",
+    "interlock-high",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "RELDN8",
+   "catalog_number": "5508RVF",
+   "spec": "RELDN8.xml",
+   "positive": [
+    "logic",
+    "turn-on-threshold",
+    "turn-on-raw",
+    "recovery-level",
+    "level-store-255",
+    "restrike",
+    "restrike-delay-min"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "restrike-delay-1-254"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "relay-max",
+    "recovery-with-store",
+    "relay-delay",
+    "restrike-delay-disabled",
+    "restrike-delay-0",
+    "interlock-hidden",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 13,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "RELDN8B",
+   "catalog_number": "L5508RVF",
+   "spec": "RELDN8.xml",
+   "positive": [
+    "logic",
+    "turn-on-threshold",
+    "turn-on-raw",
+    "recovery-level",
+    "level-store-255",
+    "restrike",
+    "restrike-delay-min",
+    "interlock",
+    "interlock-off"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "restrike-delay-1-254",
+    "interlock-0-8"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "relay-max",
+    "recovery-with-store",
+    "relay-delay",
+    "restrike-delay-disabled",
+    "restrike-delay-0",
+    "interlock-high",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "RELDN12",
+   "catalog_number": "5512RVF",
+   "spec": "RELDN12.xml",
+   "positive": [
+    "logic",
+    "turn-on-threshold",
+    "turn-on-raw",
+    "recovery-level",
+    "level-store-255",
+    "restrike",
+    "restrike-delay-min",
+    "interlock",
+    "interlock-off"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "restrike-delay-1-254",
+    "interlock-0-8"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "relay-max",
+    "recovery-with-store",
+    "relay-delay",
+    "restrike-delay-disabled",
+    "restrike-delay-0",
+    "interlock-high",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "DIMDN4",
+   "catalog_number": "5504D2A",
+   "spec": "DIMDN4.xml",
+   "positive": [
+    "logic",
+    "min-max",
+    "min-coupling",
+    "max-boundary",
+    "recovery-level",
+    "level-store-255",
+    "recovery-delay",
+    "recovery-delay-min"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "max-0-min-0",
+    "recovery-delay-5-255"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "inverted-raw",
+    "recovery-with-store",
+    "recovery-delay-low",
+    "dimmer-restrike",
+    "interlock-hidden",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "DIMDN4F",
+   "catalog_number": "SLC5504TD4A",
+   "spec": "DIMDN4.xml",
+   "positive": [
+    "logic",
+    "min-max",
+    "min-coupling",
+    "max-boundary",
+    "recovery-level",
+    "level-store-255",
+    "recovery-delay",
+    "recovery-delay-min"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "max-0-min-0",
+    "recovery-delay-5-255"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "inverted-raw",
+    "recovery-with-store",
+    "recovery-delay-low",
+    "dimmer-restrike",
+    "interlock-hidden",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "DIMDN8",
+   "catalog_number": "5508D1A",
+   "spec": "DIMDN8.xml",
+   "positive": [
+    "logic",
+    "min-max",
+    "min-coupling",
+    "max-boundary",
+    "recovery-level",
+    "level-store-255",
+    "recovery-delay",
+    "recovery-delay-min"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "max-0-min-0",
+    "recovery-delay-5-255"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "inverted-raw",
+    "recovery-with-store",
+    "recovery-delay-low",
+    "dimmer-restrike",
+    "interlock-hidden",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  },
+  {
+   "unit_type": "DIMDN8F",
+   "catalog_number": "SLC5508TD2A",
+   "spec": "DIMDN8.xml",
+   "positive": [
+    "logic",
+    "min-max",
+    "min-coupling",
+    "max-boundary",
+    "recovery-level",
+    "level-store-255",
+    "recovery-delay",
+    "recovery-delay-min"
+   ],
+   "boundary": [
+    "logic-last-channel-and-group-4",
+    "max-0-min-0",
+    "recovery-delay-5-255"
+   ],
+   "invalid": [
+    "logic-unassigned-group",
+    "inverted-raw",
+    "recovery-with-store",
+    "recovery-delay-low",
+    "dimmer-restrike",
+    "interlock-hidden",
+    "channel-high"
+   ],
+   "raw_byte_assertions": 15,
+   "unrelated_parameters_preserved": 16,
+   "save_reload_passed": true
+  }
+ ],
+ "refused": [
+  {
+   "unit_type": "RELDN8SP",
+   "firmware": "2.7.00",
+   "values_unchanged": true
+  },
+  {
+   "unit_type": "RELDN8",
+   "firmware": "2.6.00",
+   "values_unchanged": true
+  },
+  {
+   "unit_type": "DIMDN8",
+   "firmware": "2.7.01",
+   "values_unchanged": true
+  }
+ ],
+ "edits": 66,
+ "raw_byte_assertions": 118,
+ "passed": true,
+ "physical_hardware_verified": false,
+ "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+ "service": {
+  "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+  "listener_ownership_verified": true
+ },
+ "command": "CBUS_NATIVE_SERVICE_BACKEND=local PYTHONPATH=src:tests:. python -m pytest tests/test_din_output_settings.py -k DinOutputNativeTest"
+}

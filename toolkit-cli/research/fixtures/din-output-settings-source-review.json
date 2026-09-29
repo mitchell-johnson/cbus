@@ -1,0 +1,405 @@
+{
+ "format": "cbus-din-output-settings-source-review-v1",
+ "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+ "original_execution": "Only CIS_CBus.PercentToLevel, CIS_CBus.LevelToPercent and the OnRecoveryLevelChange Round(percent*2.55) fragment were executed (research/din_output_levels_original.py). Everything else is static disassembly and DFM analysis.",
+ "inputs": {
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+   "RELDN4.xml": "377f9f9f1d0f1e1762db12c5c12bb785e23c5a026a0959559e2d528f43a633b3",
+   "RELDN8.xml": "923ad76d2d86401facc50f48cdbd1068adfcbd3448a1a4955274e01750687844",
+   "RELDN12.xml": "0771af6c71d664429c3c27c1b5aa9d4b9323ab560e2be0cb6e9064dbb7ee89c8",
+   "DIMDN4.xml": "9ef6b13430f1eab1545235637a2b3b0409b1bf67910716b525a97d1477883eab",
+   "DIMDN8.xml": "00e71609255a8f267f2f8347c4216f0a2cbf09b4de409e158b62d6b1eec2c13b"
+  },
+  "form_resource_sha256": {
+   "TFRMCBUSDIMMER": "a86ed924ab115eaddf3f6ee4a515ea2938736e6666e28cb55f4c037735729ee6",
+   "TFRMCBUSDIMMERLOGIC": "f3b9de2534086746710535c6d08470f673089eaf368a98b6e2d0d0535b117ed9",
+   "TFRMCBUSDIMMERLOGICGROUPS": "4b1f3a93e106584e88590ae57b2ce35c1069e5e4aec1612fffccede50f6d04c2",
+   "TFRMCBUSDIMMERLOGICRECOVERY": "b7b6cdedcea59b2c03d345d597575c275d265934734bf2f998400eb2dc778c9b",
+   "TFRMCBUSDIMMERRECOVERY": "f0b08a046be47dff569d8cea77362094903030c7e9dd98b1108d93f07365e8a6",
+   "TFRMCBUSDIMMERRESTRIKECHANNEL": "49de92fb3c60932470fac43ed9c2b740a0d6bc344396e48ddd1689a765ee6d4a",
+   "TFRMCBUSDIMMERTURNON": "18cb77d215272b7e66001cecb38b497e6289e245897905d51636afbe8eaff1e4"
+  },
+  "help_topic_sha256": {
+   "9792.htm": "5cbbe277149723edfb9f9eedec556f3c3d2588c6c46529b60ef2b78d61d24b9f",
+   "9808.htm": "8efdb76f92354da9f4af6ffa401500800b5f1cc4c0c64cadf99a8d6506863679",
+   "9813.htm": "e72bffcf0dd4eb018915a01378f4e25691ffdf43cfda9c6bd753a363b5c67136",
+   "9814.htm": "587d8b05d82148aae84061d6988c3e47f0f7103ca3380125f0b5f1ef24de4db8",
+   "9815.htm": "7f54a975c960e81bec8a0550c85a8b5f6ce47e846ea3f5f30b3521a9084681f3",
+   "9816.htm": "f897ded55ac63b5ae5f23c16d94d5b8a858836629376eb5afda69c438d893b3a",
+   "9817.htm": "b3bec1b87b1fd8b8aed70de6992fc14acc240ec25601b814426bf64081bd7687",
+   "9824.htm": "bcb08dbc736ac8168704b505444097c53157c3ab24440c5c008480979164c3af",
+   "9838.htm": "5332e0805b328bf013288d2ec6a7ddb7850ddadacb80f779ec2afa2cc81df604",
+   "9646.htm": "7041f1c8b26bb9aeac905e6f814de091cdf219941eebd92dc7cee6a90b8fd2a5",
+   "9649.htm": "58b5b730cb0fa724e42a92d84393dc4e78ec65642b92b4c7844a872bf158cafb",
+   "9651.htm": "ca2d594e04c1ab5bbf87441f602aa780aa8965d390d3c37d716b598782b8a915",
+   "9652.htm": "f1da8c322cd8173242e78702b906c531692e660bd565b347d6b1c1ca656ae45c",
+   "9702.htm": "b398c236bba51e4821f05bb8c1658c6d3f4381af3b3db8e496c9c449d2b45f82"
+  }
+ },
+ "profiles": [
+  {
+   "unit_type": "RELDN4",
+   "unit_class": "TRELDN4",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "RELDN4.xml",
+   "channels": 4,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "logic_groups": 4,
+   "is_relay": true,
+   "interlock_combo": true,
+   "restrike_tab": true,
+   "recovery_delay_slider": false,
+   "max_slider": false,
+   "admitted": true
+  },
+  {
+   "unit_type": "RELDN8",
+   "unit_class": "TRELDN8",
+   "agent": "TMarshallingBoxCGateAgent",
+   "spec": "RELDN8.xml",
+   "channels": 8,
+   "pp_indices": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    8,
+    9,
+    10
+   ],
+   "logic_groups": 4,
+   "is_relay": true,
+   "interlock_combo": false,
+   "restrike_tab": true,
+   "recovery_delay_slider": false,
+   "max_slider": false,
+   "admitted": true
+  },
+  {
+   "unit_type": "RELDN8B",
+   "unit_class": "TRELDN8B",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "RELDN8.xml",
+   "channels": 8,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "logic_groups": 4,
+   "is_relay": true,
+   "interlock_combo": true,
+   "restrike_tab": true,
+   "recovery_delay_slider": false,
+   "max_slider": false,
+   "admitted": true
+  },
+  {
+   "unit_type": "RELDN8SP",
+   "unit_class": "TRELDN8SP",
+   "agent": "TMarshallingBoxCGateAgent",
+   "spec": "RELDN8.xml",
+   "channels": 9,
+   "pp_indices": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "logic_groups": 4,
+   "is_relay": true,
+   "interlock_combo": false,
+   "restrike_tab": true,
+   "recovery_delay_slider": false,
+   "max_slider": false,
+   "admitted": false
+  },
+  {
+   "unit_type": "RELDN12",
+   "unit_class": "TRELDN12",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "RELDN12.xml",
+   "channels": 12,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "logic_groups": 4,
+   "is_relay": true,
+   "interlock_combo": true,
+   "restrike_tab": true,
+   "recovery_delay_slider": false,
+   "max_slider": false,
+   "admitted": true
+  },
+  {
+   "unit_type": "DIMDN4",
+   "unit_class": "TDIMDN4",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "DIMDN4.xml",
+   "channels": 4,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "logic_groups": 4,
+   "is_relay": false,
+   "interlock_combo": false,
+   "restrike_tab": false,
+   "recovery_delay_slider": true,
+   "max_slider": true,
+   "admitted": true
+  },
+  {
+   "unit_type": "DIMDN4F",
+   "unit_class": "TDIMDN4F",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "DIMDN4.xml",
+   "channels": 4,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "logic_groups": 4,
+   "is_relay": false,
+   "interlock_combo": false,
+   "restrike_tab": false,
+   "recovery_delay_slider": true,
+   "max_slider": true,
+   "admitted": true
+  },
+  {
+   "unit_type": "DIMDN8",
+   "unit_class": "TDIMDN8",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "DIMDN8.xml",
+   "channels": 8,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "logic_groups": 4,
+   "is_relay": false,
+   "interlock_combo": false,
+   "restrike_tab": false,
+   "recovery_delay_slider": true,
+   "max_slider": true,
+   "admitted": true
+  },
+  {
+   "unit_type": "DIMDN8F",
+   "unit_class": "TDIMDN8F",
+   "agent": "TDinRailOutputCGateAgent",
+   "spec": "DIMDN8.xml",
+   "channels": 8,
+   "pp_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "logic_groups": 4,
+   "is_relay": false,
+   "interlock_combo": false,
+   "restrike_tab": false,
+   "recovery_delay_slider": true,
+   "max_slider": true,
+   "admitted": true
+  }
+ ],
+ "profile_evidence": {
+  "channel_counts": "VMT 0x188 GetMaxChannels / 0x18c GetMaxLogicGroups used by TCBusDimmerUnit.Init 0xd2b268 (RELDN4 0x122ae88, RELDN8 0x122b71c, RELDN8SP 0x122b900, RELDN12 0x122a6e0, DIMDN4 0x1229290, DIMDN8 0x12298b0)",
+  "is_relay": "unit +0x20c set by relay Init (TRELDN4 0x122aeb8, TRELDN8 0x122b760, TRELDN12 0x122a710); form +0x5cc (TfrmCBusDimmer.Init 0xef5334)",
+  "interlock": "HasInterlock 0xef5f30 = IsRelay and HasChannelInterlock (+0x21c; cleared by TRELDN8.Init 0x122b788, set by TRELDN8B 0x122b95a); PopulateInterlockChannelsCombo 0xef5df8 items '0','2'..min(N,8); TFlashListComboBox.Change 0xae4860 stores ItemIndex-IndexOffset (DFM UseIndex=true, IndexOffset=0)",
+  "agents": "CIS_TDinRailOutputCGateAgent initialization 0x13987e0 registers RELDN8/RELDN8SP with TMarshallingBoxCGateAgent (0x1398be6/0x1398bfe); AfterLoad 0x12432a8 remaps channel c to PP index [1,2,3,4,7,8,9,10,11][c]"
+ },
+ "controls": [
+  {
+   "tab": "Logic",
+   "form": "TfrmCBusDimmerLogic",
+   "control": "chkLA1..chkLA4",
+   "binding": "LogicGA13Associations..LogicGA16Associations[channel]",
+   "domain": "0/1"
+  },
+  {
+   "tab": "Logic",
+   "form": "TfrmCBusDimmerLogic",
+   "control": "rgLogic",
+   "binding": "LogicFunction[channel]",
+   "domain": "0=And|Min, 1=Or|Max (column order; TFlashRadioGroup not traced)",
+   "dependency": "enabled only while the channel has an association (OnLogicControlsChange 0xef76f8); stored value never cleared"
+  },
+  {
+   "tab": "Logic",
+   "form": "TfrmCBusDimmerLogicGroups",
+   "control": "cmbGroup",
+   "binding": "GroupAddress[12+g]",
+   "domain": "group address or 255",
+   "dependency": "enabled only while a channel associates logic group g (EnableLogicGroups 0xef7fc8); save refused when an associated logic group has no group (UnusedGroupInLogic 0xef95f4)"
+  },
+  {
+   "tab": "Logic",
+   "form": "TfrmCBusDimmerLogicRecovery",
+   "control": "chkLevelStoreEnable",
+   "binding": "LogicLevelStoreEnable[g]",
+   "domain": "0/1",
+   "dependency": "disables the level slider; no forced 255 (0xef2490)"
+  },
+  {
+   "tab": "Logic",
+   "form": "TfrmCBusDimmerLogicRecovery",
+   "control": "trkRecoveryLevel",
+   "binding": "LightLevel[12+g]",
+   "domain": "0..100 % via PercentToLevel",
+   "coupling": "OnLogicRecoveryLevelChange 0xef7c7c re-propagates to logic groups and channels on the same group (not admitted)"
+  },
+  {
+   "tab": "Turn On / Min-Max",
+   "form": "TfrmCBusDimmerTurnOn",
+   "control": "trkMin",
+   "binding": "MinDimmingLevel[channel]",
+   "domain": "0..100 % via PercentToLevel",
+   "coupling": "dimmer max moves to min+1 when max% <= min% (0xeeff70)"
+  },
+  {
+   "tab": "Turn On / Min-Max",
+   "form": "TfrmCBusDimmerTurnOn",
+   "control": "trkMax",
+   "binding": "MaxDimmingLevel[channel] (dimmers only)",
+   "domain": "0..100 % via PercentToLevel",
+   "coupling": "min moves to max-1 when min% >= max% (0xeefdb8); relays hide and unbind trkMax (TfrmCBusDimmerTurnOn.Init 0xeefb4c)"
+  },
+  {
+   "tab": "Turn On",
+   "form": "TfrmCBusDimmer",
+   "control": "cmbInterlockChannels",
+   "binding": "InterLockingChannel",
+   "domain": "item index of '0','2'..min(N,8)",
+   "dependency": "RELDN4, RELDN8B, RELDN12 only; load masks relay raw>7 to raw&7 and save writes the masked value (0x122f6e1, 0x122f554)"
+  },
+  {
+   "tab": "Recovery",
+   "form": "TfrmCBusDimmerRecovery",
+   "control": "chkLevelStoreEnable",
+   "binding": "LevelStoreEnable[channel]",
+   "domain": "0/1",
+   "dependency": "checking sets the level to 100 % (0xef1c48); basic agent save writes 255 for level-store channels (0x122e0fd)",
+   "coupling": "OnLevelStoreEnableChange 0xef6f44 copies to channels/logic groups on the same group (not admitted)"
+  },
+  {
+   "tab": "Recovery",
+   "form": "TfrmCBusDimmerRecovery",
+   "control": "trkRecoveryLevel",
+   "binding": "LightLevel[channel]",
+   "domain": "0..100 % via PercentToLevel; disabled while level store is set",
+   "coupling": "OnRecoveryLevelChange 0xef6aa8: enabled channels on the same used group take the same percentage; logic groups on that group take Round(percent*2.55)"
+  },
+  {
+   "tab": "Recovery",
+   "form": "TfrmCBusDimmerRecovery",
+   "control": "trkRecoveryDelay",
+   "binding": "PowerUpDelay[channel] (dimmers only)",
+   "domain": "raw 5..255; display seconds v<60 ? v : 60+(v-60)*10 (FormatTimeShort 0xef1460)",
+   "dependency": "relays hide and unbind the delay (TfrmCBusDimmerRecovery.Init 0xef0ff4)"
+  },
+  {
+   "tab": "Restrike Delay",
+   "form": "TfrmCBusDimmerRestrikeChannel",
+   "control": "chkRestrike",
+   "binding": "RestrikeChannel[channel] (relays only)",
+   "domain": "0/1"
+  },
+  {
+   "tab": "Restrike Delay",
+   "form": "TfrmCBusDimmer",
+   "control": "trkRestrikeDelay",
+   "binding": "RestrikeDelay",
+   "domain": "raw 1..254 x 10 s (FormatTimeShort 0xef8a28)",
+   "dependency": "enabled at dialog load only when a channel restrikes (RestrikeChanged 0xef86c0 from SetData 0xef6290)"
+  }
+ ],
+ "transforms": {
+  "PercentToLevel": {
+   "address": "0x7f2aa0",
+   "rule": "percent*255 div 100",
+   "vectors": "research/fixtures/din-output-level-original-vectors.json"
+  },
+  "LevelToPercent": {
+   "address": "0x7f2ac8",
+   "rule": "(level+2)*100 div 255",
+   "vectors": "research/fixtures/din-output-level-original-vectors.json"
+  },
+  "LogicGroupRound255": {
+   "address": "0xef6e5a",
+   "rule": "x87 Round(percent*2.55 extended), equal to round-half-even of percent*255/100 for 0..100",
+   "vectors": "research/fixtures/din-output-level-original-vectors.json"
+  },
+  "trackbar_call_sites": [
+   "0xc09b95",
+   "0xc09f85",
+   "0xc09fdc",
+   "0xc0a0a9"
+  ]
+ },
+ "whole_dialog_save_effects_not_reproduced": [
+  "Basic agent save rewrites every channel's LightLevel to 255 when its level store is set (editor applies it only to the edited channel)",
+  "Basic agent save pads GroupAddress indexes N..11 with 255 and LightLevel with 0",
+  "TMarshallingBoxCGateAgent save zeroes PP indexes 0, 5 and 6 (and 11 on RELDN8) of the per-channel arrays and writes MaxDimmingLevel in dialog order",
+  "Relay save writes InterLockingChannel & 7",
+  "Synchronise Sliders and Stagger buttons (multi-channel UI conveniences)"
+ ],
+ "unresolved": [
+  "rgLogic value mapping is inferred from column order; TFlashRadioGroup code was not traced",
+  "Live re-enabling of the restrike delay slider after a restrike checkbox click was not traced",
+  "Re-entrant propagation of level-store and logic-recovery edits across shared groups"
+ ],
+ "out_of_scope": {
+  "logic_engine": "Programmable logic-engine code (PICED) is external software, not these DIN Logic tab settings",
+  "older_layouts": [
+   "RELAY4 (LogicGA0-5, LogicFunctionAndPowerUpDelay, TfrmCBus1Relay*)",
+   "DIMMER4 (TfrmCBus1Relay)"
+  ]
+ }
+}

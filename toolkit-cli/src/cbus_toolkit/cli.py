@@ -202,6 +202,58 @@ def _sensor(args):
     return Multisensor(UnitSpecStore(args.spec_dir).load("SENPILL_ST7.xml"))
 
 
+def _din_options(parser):
+    """DIN relay/dimmer Logic, Turn On, Recovery and Restrike tab controls."""
+    onoff = ("on", "off")
+    parser.add_argument("--channel", type=_number, help="Dialog channel for per-channel settings")
+    parser.add_argument("--logic-groups", help="Comma-separated logic groups 1..4 for the channel, or 'none'")
+    parser.add_argument("--logic-function", choices=("and", "or", "min", "max"),
+                        help="Relay And/Or or dimmer Min/Max; requires an associated logic group")
+    for name in ("min", "max", "recovery"):
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(f"--{name}-percent", type=_number, help="Toolkit slider percentage (PercentToLevel)")
+        group.add_argument(f"--{name}-level", type=_byte, help="Raw C-Bus level byte")
+    parser.add_argument("--level-store", choices=onoff, help="Channel Auto Level Store")
+    parser.add_argument("--recovery-delay", type=_number, help="Dimmer recovery delay raw 5..255")
+    parser.add_argument("--restrike", choices=onoff, help="Relay channel restrike")
+    parser.add_argument("--restrike-delay", type=_number, help="Relay restrike delay raw 1..254 (x10 s)")
+    parser.add_argument("--interlock", type=_number, help="Relay interlocked channel count: 0 or 2..8")
+    parser.add_argument("--logic-group", type=_number, help="Logic group 1..4 for the logic options")
+    parser.add_argument("--logic-group-address", type=_byte, help="Logic group address; 255 unassigns it")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--logic-recovery-percent", type=_number)
+    group.add_argument("--logic-recovery-level", type=_byte)
+    parser.add_argument("--logic-level-store", choices=onoff)
+
+
+def _din_settings(args):
+    groups = None
+    if args.logic_groups is not None:
+        text = args.logic_groups.strip().lower()
+        try:
+            groups = [] if text == "none" else [int(item, 10) for item in text.split(",")]
+        except ValueError as exc:
+            raise ValueError("--logic-groups must be comma-separated 1..4 or 'none'") from exc
+    flag = lambda value: None if value is None else value == "on"
+    return {"channel": args.channel, "logic_groups": groups, "logic_function": args.logic_function,
+            **{name: getattr(args, name) for name in (
+                "min_percent", "min_level", "max_percent", "max_level", "recovery_percent", "recovery_level",
+                "recovery_delay", "restrike_delay", "interlock", "logic_group", "logic_group_address",
+                "logic_recovery_percent", "logic_recovery_level")},
+            "level_store": flag(args.level_store), "restrike": flag(args.restrike),
+            "logic_level_store": flag(args.logic_level_store)}
+
+
+def _din_editor(args, unit_type):
+    from .din_output_settings import PROFILES, DinOutputEditor, check_profile
+    from .unitspec import UnitSpecStore
+    if args.spec_dir is None:
+        raise ValueError("Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications")
+    if unit_type not in PROFILES:
+        check_profile(unit_type, None)
+    return DinOutputEditor(UnitSpecStore(args.spec_dir).load(PROFILES[unit_type].spec_filename), unit_type)
+
+
 def _parameter_snapshot(path, profile, *, identity=None):
     """Read a snapshot or mapping; `profile` is an exact identity or a checker."""
     with path.open("rb") as handle:
@@ -1683,6 +1735,11 @@ def build_parser():
     p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL occupancy profile")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _sensor_options(p)
+    p = unops.add_parser("din-settings", help="Show or edit DIN relay/dimmer Logic, Turn On, Recovery and Restrike settings (firmware 2.7.00)")
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--show", action="store_true", help="Report the Toolkit tab view without editing")
+    p.add_argument("--plan", dest="din_plan", type=Path, help="Apply a saved cbus-din-output-settings-plan-v1 after a stale check")
+    _din_options(p)
     p = unops.add_parser("edlt-lighting", help="Configure tested KEYGL5 5.5.00 / 5055EDL lighting widgets in the database")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _edlt_options(p)
@@ -2090,6 +2147,15 @@ def build_parser():
     p = sops.add_parser("plan")
     p.add_argument("file", type=Path, help="SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL PP export or parameter mapping")
     _sensor_options(p)
+    din = commands.add_parser("din-settings", help="Show or plan DIN relay/dimmer tab settings without C-Gate")
+    din.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    dops = din.add_subparsers(dest="action", required=True)
+    for action in ("show", "plan"):
+        p = dops.add_parser(action)
+        p.add_argument("file", type=Path, help="Admitted DIN unit PP export, or parameter mapping with --unit-type")
+        p.add_argument("--unit-type", help="Required for a bare parameter mapping")
+        if action == "plan":
+            _din_options(p)
     edlt = commands.add_parser("edlt", help="Plan tested eDLT widgets with configuration CRCs offline")
     edlt.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     eops = edlt.add_subparsers(dest="action", required=True)
@@ -3131,7 +3197,7 @@ def _network(args, client):
 def _programming(args, client):
     from .programming import Programmer
     programmer = Programmer(client)
-    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
+    mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "din-settings", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -3330,6 +3396,25 @@ def _programming(args, client):
             values = session.values()
         elif args.remote_action in ("key-macro", "neo-key-macro"):
             result = keys.configure(session, **_key_settings(args))
+            values = session.values()
+        elif args.remote_action == "din-settings":
+            din_editor = _din_editor(args, session.unit_type)
+            din_editor._verify_profile(session)
+            edits = {k: v for k, v in _din_settings(args).items() if v is not None}
+            if args.show:
+                if edits or args.din_plan is not None:
+                    raise ValueError("--show cannot be combined with edits or --plan")
+                return din_editor.show(session.values())
+            if args.din_plan is not None:
+                from .din_output_settings import DinPlan
+                from .edlt_global_cli import read_json
+                if edits:
+                    raise ValueError("--plan cannot be combined with edit options")
+                result = din_editor.apply(session, DinPlan.from_dict(read_json(args.din_plan, limit=1024 * 1024)))
+            else:
+                if not edits:
+                    raise ValueError("Supply DIN edit options, --plan or --show")
+                result = din_editor.configure(session, **edits)
             values = session.values()
         elif args.remote_action == "sensor-occupancy":
             result = sensor.configure(session, **_sensor_settings(args))
@@ -3682,6 +3767,18 @@ def run(args):
             if not isinstance(values, dict):
                 raise ValueError("Snapshot requires a parameter mapping")
         return keys.plan(values, **_key_settings(args)).as_dict(), 0
+    if args.area == "din-settings":
+        from .din_output_settings import check_profile
+        identity = []
+        values = _parameter_snapshot(args.file, check_profile, identity=identity)
+        unit_type = identity[0] if identity else args.unit_type
+        if unit_type is None or (identity and args.unit_type not in (None, unit_type)):
+            raise ValueError("A bare parameter mapping requires a matching --unit-type")
+        editor = _din_editor(args, unit_type)
+        if args.action == "show":
+            return editor.show(values), 0
+        edits = {k: v for k, v in _din_settings(args).items() if v is not None}
+        return editor.plan(values, identity=tuple(identity) or None, **edits).as_dict(), 0
     if args.area == "sensors":
         from .sensors import check_profile
         identity = []

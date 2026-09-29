@@ -827,6 +827,16 @@ settings. Shared blocks and conflicting potentiometers require explicit
 options. See [sensors.md](docs/sensors.md) for the supported dependencies and
 the remaining sensor functions.
 
+## DIN relay and dimmer settings
+
+RELDN4/8/8B/12 and DIMDN4/4F/8/8F at firmware 2.7.00 support the Toolkit
+Logic, Turn On/Min-Max, Recovery and Restrike Delay tab settings per channel,
+with the original percent/level conversion and slider coupling. Use
+`din-settings show|plan` on an exported snapshot, or
+`cgate unit ... [--dry-run] din-settings` for a native apply with readback.
+RELDN8SP, RELAY4 and other firmware are refused. See
+[din-output-settings.md](docs/din-output-settings.md).
+
 ## eDLT widgets
 
 The tested profile is KEYGL5 5.5.00 / 5055EDL. Configure Off/On or Dimmer

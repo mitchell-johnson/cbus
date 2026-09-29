@@ -212,9 +212,16 @@
         "research/verify_memory_fragments.py",
         "docs/native-memory-acceptance.json",
         "docs/native-memory-fragment-acceptance.json",
-        "docs/catalog-acceptance-summary.json"
+        "docs/catalog-acceptance-summary.json",
+        "src/cbus_toolkit/din_output_settings.py",
+        "tests/test_din_output_settings.py",
+        "tests/test_cli_din_output_settings.py",
+        "docs/din-output-settings.md",
+        "research/fixtures/din-output-settings-source-review.json",
+        "research/fixtures/din-output-level-original-vectors.json",
+        "research/fixtures/din-output-settings-native-acceptance.json"
       ],
-      "limits": "6,487 of 6,497 declared catalogue boundary configurations compared with native C-Gate (616,722 parameter comparisons); all 163 distinct layouts tested with 326 changing native values. The primary command-addressable corpus covers 161 layouts; a network-denied direct invocation of the original C-Gate encoder covers the internal-fragment-only DLT LabelFlavourLSB/MSB layouts through four exact raw-byte/decode comparisons. The ten missing boundary configurations are vendor-absent specifications that native C-Gate itself rejects. Missing vendor schemas, original Toolkit workflow acceptance and physical transfer/protection remain separate gaps."
+      "limits": "6,487 of 6,497 declared catalogue boundary configurations compared with native C-Gate (616,722 parameter comparisons); all 163 distinct layouts tested with 326 changing native values. The primary command-addressable corpus covers 161 layouts; a network-denied direct invocation of the original C-Gate encoder covers the internal-fragment-only DLT LabelFlavourLSB/MSB layouts through four exact raw-byte/decode comparisons. The ten missing boundary configurations are vendor-absent specifications that native C-Gate itself rejects. Missing vendor schemas, original Toolkit workflow acceptance and physical transfer/protection remain separate gaps. The DIN relay/dimmer dialog editor covers RELDN4/8/8B/12 and DIMDN4/4F/8/8F firmware 2.7.00 Logic, Turn On/Min-Max, Recovery and Restrike Delay controls from a sanitized static source review, 458 original-instruction level/percent vectors and owned native C-Gate acceptance (66 edits, 118 raw-byte assertions, unrelated-parameter preservation, save/reload and three refusals); RELDN8SP, RELAY4/DIMMER4, other firmware and other TfrmCBusDimmer users stay refused, re-entrant shared-group cascades are refused, and physical output behaviour and original GUI execution remain unverified."
     },
     {
       "id": "native-unit-defaults-and-database-editing",

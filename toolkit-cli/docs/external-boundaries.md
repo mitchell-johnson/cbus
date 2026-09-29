@@ -27,10 +27,11 @@ implementation is claimed here.
 
 4. **Logic-engine code editing → external software.**
    Relay/dimmer *logic control* is an explicit Toolkit workflow
-   (9433.htm, 9855.htm, 9858.htm) and stays in scope for channel
-   planning (`relay_dimmer_logic.py`); controller logic-engine *code
-   editing* may belong to external software. Pinned in code as
-   `relay_dimmer_logic.LOGIC_ENGINE_BOUNDARY = "external"`.
+   (9433.htm, 9855.htm, 9858.htm) and stays in scope; the DIN Logic
+   tab is implemented by `din_output_settings.py`
+   ([DIN output settings](din-output-settings.md)). Controller
+   logic-engine *code editing* may belong to external software. Pinned
+   in code as `din_output_settings.LOGIC_ENGINE_BOUNDARY = "external"`.
    Changes with: editor-capability evidence distinguishing the two.
 
 5. **Non-eDLT device updaters → unevidenced scope.**

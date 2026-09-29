@@ -1,0 +1,2310 @@
+{
+ "format": "cbus-din-output-level-original-vectors-v1",
+ "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+ "probe_sha256": "e58a4563f593c4ed0d1fc559a63401ed83ea831fe45ed83ab9ecad59755721f5",
+ "routines": {
+  "PercentToLevel": "0x7f2aa0",
+  "LevelToPercent": "0x7f2ac8",
+  "LogicGroupRound255": "0xef6e5a"
+ },
+ "control_word": "0x1332",
+ "call_sites": {
+  "TFlashCxTrackBar.ControllerValueChange": "0xc09b95",
+  "TFlashCxTrackBarProperties.DoChanged/vertical": "0xc09f85",
+  "TFlashCxTrackBarProperties.DoChanged/horizontal": "0xc09fdc",
+  "TFlashCxVertTrackBar.ControllerValueChange": "0xc0a0a9"
+ },
+ "boundary": "Direct original-instruction execution of the two leaf routines and the Round(percent*2.55) fragment. VCL trackbar positioning, event dispatch, rendering and user input are not executed.",
+ "rows": [
+  {
+   "routine": "PercentToLevel",
+   "input": 0,
+   "output": 0
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 1,
+   "output": 2
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 2,
+   "output": 5
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 3,
+   "output": 7
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 4,
+   "output": 10
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 5,
+   "output": 12
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 6,
+   "output": 15
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 7,
+   "output": 17
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 8,
+   "output": 20
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 9,
+   "output": 22
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 10,
+   "output": 25
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 11,
+   "output": 28
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 12,
+   "output": 30
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 13,
+   "output": 33
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 14,
+   "output": 35
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 15,
+   "output": 38
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 16,
+   "output": 40
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 17,
+   "output": 43
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 18,
+   "output": 45
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 19,
+   "output": 48
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 20,
+   "output": 51
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 21,
+   "output": 53
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 22,
+   "output": 56
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 23,
+   "output": 58
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 24,
+   "output": 61
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 25,
+   "output": 63
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 26,
+   "output": 66
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 27,
+   "output": 68
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 28,
+   "output": 71
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 29,
+   "output": 73
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 30,
+   "output": 76
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 31,
+   "output": 79
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 32,
+   "output": 81
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 33,
+   "output": 84
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 34,
+   "output": 86
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 35,
+   "output": 89
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 36,
+   "output": 91
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 37,
+   "output": 94
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 38,
+   "output": 96
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 39,
+   "output": 99
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 40,
+   "output": 102
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 41,
+   "output": 104
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 42,
+   "output": 107
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 43,
+   "output": 109
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 44,
+   "output": 112
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 45,
+   "output": 114
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 46,
+   "output": 117
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 47,
+   "output": 119
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 48,
+   "output": 122
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 49,
+   "output": 124
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 50,
+   "output": 127
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 51,
+   "output": 130
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 52,
+   "output": 132
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 53,
+   "output": 135
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 54,
+   "output": 137
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 55,
+   "output": 140
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 56,
+   "output": 142
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 57,
+   "output": 145
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 58,
+   "output": 147
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 59,
+   "output": 150
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 60,
+   "output": 153
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 61,
+   "output": 155
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 62,
+   "output": 158
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 63,
+   "output": 160
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 64,
+   "output": 163
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 65,
+   "output": 165
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 66,
+   "output": 168
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 67,
+   "output": 170
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 68,
+   "output": 173
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 69,
+   "output": 175
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 70,
+   "output": 178
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 71,
+   "output": 181
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 72,
+   "output": 183
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 73,
+   "output": 186
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 74,
+   "output": 188
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 75,
+   "output": 191
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 76,
+   "output": 193
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 77,
+   "output": 196
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 78,
+   "output": 198
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 79,
+   "output": 201
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 80,
+   "output": 204
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 81,
+   "output": 206
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 82,
+   "output": 209
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 83,
+   "output": 211
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 84,
+   "output": 214
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 85,
+   "output": 216
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 86,
+   "output": 219
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 87,
+   "output": 221
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 88,
+   "output": 224
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 89,
+   "output": 226
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 90,
+   "output": 229
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 91,
+   "output": 232
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 92,
+   "output": 234
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 93,
+   "output": 237
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 94,
+   "output": 239
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 95,
+   "output": 242
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 96,
+   "output": 244
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 97,
+   "output": 247
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 98,
+   "output": 249
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 99,
+   "output": 252
+  },
+  {
+   "routine": "PercentToLevel",
+   "input": 100,
+   "output": 255
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 0,
+   "output": 0
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 1,
+   "output": 1
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 2,
+   "output": 1
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 3,
+   "output": 1
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 4,
+   "output": 2
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 5,
+   "output": 2
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 6,
+   "output": 3
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 7,
+   "output": 3
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 8,
+   "output": 3
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 9,
+   "output": 4
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 10,
+   "output": 4
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 11,
+   "output": 5
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 12,
+   "output": 5
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 13,
+   "output": 5
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 14,
+   "output": 6
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 15,
+   "output": 6
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 16,
+   "output": 7
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 17,
+   "output": 7
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 18,
+   "output": 7
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 19,
+   "output": 8
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 20,
+   "output": 8
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 21,
+   "output": 9
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 22,
+   "output": 9
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 23,
+   "output": 9
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 24,
+   "output": 10
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 25,
+   "output": 10
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 26,
+   "output": 10
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 27,
+   "output": 11
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 28,
+   "output": 11
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 29,
+   "output": 12
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 30,
+   "output": 12
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 31,
+   "output": 12
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 32,
+   "output": 13
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 33,
+   "output": 13
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 34,
+   "output": 14
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 35,
+   "output": 14
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 36,
+   "output": 14
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 37,
+   "output": 15
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 38,
+   "output": 15
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 39,
+   "output": 16
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 40,
+   "output": 16
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 41,
+   "output": 16
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 42,
+   "output": 17
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 43,
+   "output": 17
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 44,
+   "output": 18
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 45,
+   "output": 18
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 46,
+   "output": 18
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 47,
+   "output": 19
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 48,
+   "output": 19
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 49,
+   "output": 20
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 50,
+   "output": 20
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 51,
+   "output": 20
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 52,
+   "output": 21
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 53,
+   "output": 21
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 54,
+   "output": 21
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 55,
+   "output": 22
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 56,
+   "output": 22
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 57,
+   "output": 23
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 58,
+   "output": 23
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 59,
+   "output": 23
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 60,
+   "output": 24
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 61,
+   "output": 24
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 62,
+   "output": 25
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 63,
+   "output": 25
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 64,
+   "output": 25
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 65,
+   "output": 26
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 66,
+   "output": 26
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 67,
+   "output": 27
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 68,
+   "output": 27
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 69,
+   "output": 27
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 70,
+   "output": 28
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 71,
+   "output": 28
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 72,
+   "output": 29
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 73,
+   "output": 29
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 74,
+   "output": 29
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 75,
+   "output": 30
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 76,
+   "output": 30
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 77,
+   "output": 30
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 78,
+   "output": 31
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 79,
+   "output": 31
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 80,
+   "output": 32
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 81,
+   "output": 32
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 82,
+   "output": 32
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 83,
+   "output": 33
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 84,
+   "output": 33
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 85,
+   "output": 34
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 86,
+   "output": 34
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 87,
+   "output": 34
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 88,
+   "output": 35
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 89,
+   "output": 35
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 90,
+   "output": 36
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 91,
+   "output": 36
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 92,
+   "output": 36
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 93,
+   "output": 37
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 94,
+   "output": 37
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 95,
+   "output": 38
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 96,
+   "output": 38
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 97,
+   "output": 38
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 98,
+   "output": 39
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 99,
+   "output": 39
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 100,
+   "output": 40
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 101,
+   "output": 40
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 102,
+   "output": 40
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 103,
+   "output": 41
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 104,
+   "output": 41
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 105,
+   "output": 41
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 106,
+   "output": 42
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 107,
+   "output": 42
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 108,
+   "output": 43
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 109,
+   "output": 43
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 110,
+   "output": 43
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 111,
+   "output": 44
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 112,
+   "output": 44
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 113,
+   "output": 45
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 114,
+   "output": 45
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 115,
+   "output": 45
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 116,
+   "output": 46
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 117,
+   "output": 46
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 118,
+   "output": 47
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 119,
+   "output": 47
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 120,
+   "output": 47
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 121,
+   "output": 48
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 122,
+   "output": 48
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 123,
+   "output": 49
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 124,
+   "output": 49
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 125,
+   "output": 49
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 126,
+   "output": 50
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 127,
+   "output": 50
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 128,
+   "output": 50
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 129,
+   "output": 51
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 130,
+   "output": 51
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 131,
+   "output": 52
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 132,
+   "output": 52
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 133,
+   "output": 52
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 134,
+   "output": 53
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 135,
+   "output": 53
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 136,
+   "output": 54
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 137,
+   "output": 54
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 138,
+   "output": 54
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 139,
+   "output": 55
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 140,
+   "output": 55
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 141,
+   "output": 56
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 142,
+   "output": 56
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 143,
+   "output": 56
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 144,
+   "output": 57
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 145,
+   "output": 57
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 146,
+   "output": 58
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 147,
+   "output": 58
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 148,
+   "output": 58
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 149,
+   "output": 59
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 150,
+   "output": 59
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 151,
+   "output": 60
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 152,
+   "output": 60
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 153,
+   "output": 60
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 154,
+   "output": 61
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 155,
+   "output": 61
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 156,
+   "output": 61
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 157,
+   "output": 62
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 158,
+   "output": 62
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 159,
+   "output": 63
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 160,
+   "output": 63
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 161,
+   "output": 63
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 162,
+   "output": 64
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 163,
+   "output": 64
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 164,
+   "output": 65
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 165,
+   "output": 65
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 166,
+   "output": 65
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 167,
+   "output": 66
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 168,
+   "output": 66
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 169,
+   "output": 67
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 170,
+   "output": 67
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 171,
+   "output": 67
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 172,
+   "output": 68
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 173,
+   "output": 68
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 174,
+   "output": 69
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 175,
+   "output": 69
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 176,
+   "output": 69
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 177,
+   "output": 70
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 178,
+   "output": 70
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 179,
+   "output": 70
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 180,
+   "output": 71
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 181,
+   "output": 71
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 182,
+   "output": 72
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 183,
+   "output": 72
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 184,
+   "output": 72
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 185,
+   "output": 73
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 186,
+   "output": 73
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 187,
+   "output": 74
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 188,
+   "output": 74
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 189,
+   "output": 74
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 190,
+   "output": 75
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 191,
+   "output": 75
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 192,
+   "output": 76
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 193,
+   "output": 76
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 194,
+   "output": 76
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 195,
+   "output": 77
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 196,
+   "output": 77
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 197,
+   "output": 78
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 198,
+   "output": 78
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 199,
+   "output": 78
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 200,
+   "output": 79
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 201,
+   "output": 79
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 202,
+   "output": 80
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 203,
+   "output": 80
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 204,
+   "output": 80
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 205,
+   "output": 81
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 206,
+   "output": 81
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 207,
+   "output": 81
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 208,
+   "output": 82
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 209,
+   "output": 82
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 210,
+   "output": 83
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 211,
+   "output": 83
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 212,
+   "output": 83
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 213,
+   "output": 84
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 214,
+   "output": 84
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 215,
+   "output": 85
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 216,
+   "output": 85
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 217,
+   "output": 85
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 218,
+   "output": 86
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 219,
+   "output": 86
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 220,
+   "output": 87
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 221,
+   "output": 87
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 222,
+   "output": 87
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 223,
+   "output": 88
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 224,
+   "output": 88
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 225,
+   "output": 89
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 226,
+   "output": 89
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 227,
+   "output": 89
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 228,
+   "output": 90
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 229,
+   "output": 90
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 230,
+   "output": 90
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 231,
+   "output": 91
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 232,
+   "output": 91
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 233,
+   "output": 92
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 234,
+   "output": 92
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 235,
+   "output": 92
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 236,
+   "output": 93
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 237,
+   "output": 93
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 238,
+   "output": 94
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 239,
+   "output": 94
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 240,
+   "output": 94
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 241,
+   "output": 95
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 242,
+   "output": 95
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 243,
+   "output": 96
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 244,
+   "output": 96
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 245,
+   "output": 96
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 246,
+   "output": 97
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 247,
+   "output": 97
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 248,
+   "output": 98
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 249,
+   "output": 98
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 250,
+   "output": 98
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 251,
+   "output": 99
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 252,
+   "output": 99
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 253,
+   "output": 100
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 254,
+   "output": 100
+  },
+  {
+   "routine": "LevelToPercent",
+   "input": 255,
+   "output": 100
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 0,
+   "output": 0
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 1,
+   "output": 3
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 2,
+   "output": 5
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 3,
+   "output": 8
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 4,
+   "output": 10
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 5,
+   "output": 13
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 6,
+   "output": 15
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 7,
+   "output": 18
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 8,
+   "output": 20
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 9,
+   "output": 23
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 10,
+   "output": 26
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 11,
+   "output": 28
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 12,
+   "output": 31
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 13,
+   "output": 33
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 14,
+   "output": 36
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 15,
+   "output": 38
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 16,
+   "output": 41
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 17,
+   "output": 43
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 18,
+   "output": 46
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 19,
+   "output": 48
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 20,
+   "output": 51
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 21,
+   "output": 54
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 22,
+   "output": 56
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 23,
+   "output": 59
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 24,
+   "output": 61
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 25,
+   "output": 64
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 26,
+   "output": 66
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 27,
+   "output": 69
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 28,
+   "output": 71
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 29,
+   "output": 74
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 30,
+   "output": 76
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 31,
+   "output": 79
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 32,
+   "output": 82
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 33,
+   "output": 84
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 34,
+   "output": 87
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 35,
+   "output": 89
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 36,
+   "output": 92
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 37,
+   "output": 94
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 38,
+   "output": 97
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 39,
+   "output": 99
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 40,
+   "output": 102
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 41,
+   "output": 105
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 42,
+   "output": 107
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 43,
+   "output": 110
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 44,
+   "output": 112
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 45,
+   "output": 115
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 46,
+   "output": 117
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 47,
+   "output": 120
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 48,
+   "output": 122
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 49,
+   "output": 125
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 50,
+   "output": 128
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 51,
+   "output": 130
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 52,
+   "output": 133
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 53,
+   "output": 135
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 54,
+   "output": 138
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 55,
+   "output": 140
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 56,
+   "output": 143
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 57,
+   "output": 145
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 58,
+   "output": 148
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 59,
+   "output": 150
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 60,
+   "output": 153
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 61,
+   "output": 156
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 62,
+   "output": 158
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 63,
+   "output": 161
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 64,
+   "output": 163
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 65,
+   "output": 166
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 66,
+   "output": 168
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 67,
+   "output": 171
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 68,
+   "output": 173
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 69,
+   "output": 176
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 70,
+   "output": 178
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 71,
+   "output": 181
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 72,
+   "output": 184
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 73,
+   "output": 186
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 74,
+   "output": 189
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 75,
+   "output": 191
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 76,
+   "output": 194
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 77,
+   "output": 196
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 78,
+   "output": 199
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 79,
+   "output": 201
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 80,
+   "output": 204
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 81,
+   "output": 207
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 82,
+   "output": 209
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 83,
+   "output": 212
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 84,
+   "output": 214
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 85,
+   "output": 217
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 86,
+   "output": 219
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 87,
+   "output": 222
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 88,
+   "output": 224
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 89,
+   "output": 227
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 90,
+   "output": 230
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 91,
+   "output": 232
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 92,
+   "output": 235
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 93,
+   "output": 237
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 94,
+   "output": 240
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 95,
+   "output": 242
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 96,
+   "output": 245
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 97,
+   "output": 247
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 98,
+   "output": 250
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 99,
+   "output": 252
+  },
+  {
+   "routine": "LogicGroupRound255",
+   "input": 100,
+   "output": 255
+  }
+ ]
+}
