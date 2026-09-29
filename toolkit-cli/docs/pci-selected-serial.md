@@ -188,6 +188,26 @@ If a child interruption also prevents its evidence serialization,
 `transport_invoked: true` and `send_attempted: null` preserve that uncertainty;
 the coordinator does not invent a negative send result or a byte count.
 
+A second durable guard is a canonical-plan attempt marker
+(`.cbus-selected-serial-attempt-sha256-<hex>.json`, mode0600, fsynced) shared
+by the Python coordinator and the Rust `serial-apply`. The filename carries
+SHA-256 over the Rust fingerprint encoding of the validated plan (sorted keys,
+integral floats as integers, numeric IP hosts normalized), which the Python
+coordinator reproduces byte for byte; both suites pin the same encoder golden
+vector and the same marker filename for the committed vector plan. The marker
+lives in the resolved journal directory. An existing marker, from either
+implementation, refuses apply before any PCI I/O or journal creation. Otherwise
+the marker is reserved after the fresh preconditions and before the journal and
+the one-shot request. Like the journal, its envelope conservatively records
+`send_may_have_occurred: true`. It embeds the validated plan, so
+`verify --recovery MARKER` (or Rust `serial-verify --journal`) resumes read-only
+recovery from a marker alone. Recovery rejects an attempt ID that does not
+match the embedded plan. Apply evidence names the marker in `attempt_identity`.
+Deleting a stale marker (operator action, never automatic) is the only replay
+path. The marker deduplicates one plan file, not a bus state: plans embed live
+observations, so independently generated plans never share a fingerprint, and
+the endpoint lease remains the plan-agnostic cross-implementation guard.
+
 After a clean complete capture, the journal is updated before a fresh full
 inventory. Verification compares the **entire** independently observed identity
 map and MMI state vector with the exact expected map: only the selected serial

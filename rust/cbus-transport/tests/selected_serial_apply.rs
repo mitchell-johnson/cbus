@@ -1350,3 +1350,71 @@ async fn occupied_destination_fails_preconditions_without_journal_or_send() {
     assert_no_connection(&listener).await;
     assert_no_request(&mut remote).await;
 }
+
+#[test]
+fn marker_filename_matches_cross_implementation_vector() {
+    // Pinned independently by the Python coordinator suite
+    // (`test_attempt_marker_filename_matches_rust_vector`): both sides must
+    // resolve one marker filename for the committed vector plan, or
+    // cross-implementation replay protection silently splits.
+    let marker =
+        attempt_identity_path(&valid_plan_doc_bytes(), &journal_path("cross-pin")).unwrap();
+    assert_eq!(
+        marker.file_name().unwrap().to_string_lossy(),
+        ".cbus-selected-serial-attempt-sha256-55af93616aaeacb668e4b52f284a90cba1ccd7792fc77491caf22c44942b98cf.json"
+    );
+}
+
+#[tokio::test(start_paused = true)]
+async fn python_envelope_marker_refuses_and_recovers() {
+    // The Python coordinator reserves this exact envelope (same filename,
+    // keys and conservative flags) before its journal. A marker written by
+    // either implementation refuses replays before PCI I/O and resumes
+    // read-only recovery on both.
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let doc = plan_bytes_for_port(listener.local_addr().unwrap().port());
+    let journal = journal_path("python-envelope");
+    let marker = attempt_identity_path(&doc, &journal).unwrap();
+    let name = marker.file_name().unwrap().to_string_lossy().into_owned();
+    let digest = name
+        .strip_prefix(".cbus-selected-serial-attempt-sha256-")
+        .and_then(|rest| rest.strip_suffix(".json"))
+        .unwrap()
+        .to_string();
+    let document: serde_json::Value = serde_json::from_slice(&doc).unwrap();
+    let mut encoded = serde_json::to_vec(&serde_json::json!({
+        "attempt_id": format!("sha256:{digest}"),
+        "format": "cbus-selected-serial-attempt-v1",
+        "journal": "/elsewhere/journal.json",
+        "operation": "apply",
+        "plan": document,
+        "read_only_recovery_only": true,
+        "scope": "resolved_journal_directory",
+        "send_may_have_occurred": true,
+    }))
+    .unwrap();
+    encoded.push(b'\n');
+    std::fs::write(&marker, encoded).unwrap();
+
+    let recovered = load_recovery(&marker).expect("Python marker must reload");
+    assert_eq!(recovered.plan.serial, "101136.1558");
+    assert!(recovered.send_may_have_occurred);
+
+    let (pci, mut remote) = setup().await;
+    let error = apply_plan(
+        &doc,
+        &pci,
+        &journal,
+        ApplyOptions {
+            durable_attempt_identity: true,
+            ..ApplyOptions::default()
+        },
+    )
+    .await
+    .expect_err("marked plan must be refused");
+    assert!(matches!(error, ApplyError::AlreadyApplied(_)), "{error}");
+    assert!(!journal.exists());
+    assert_no_connection(&listener).await;
+    assert_no_request(&mut remote).await;
+    std::fs::remove_file(&marker).unwrap();
+}

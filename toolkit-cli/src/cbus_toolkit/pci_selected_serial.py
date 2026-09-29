@@ -8,6 +8,9 @@ a socket nor matching MMI bookends can prove that prerequisite or atomicity.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
+import hashlib
+import ipaddress
 import json
 import math
 import os
@@ -30,6 +33,14 @@ from .commissioning_lease import EndpointLease
 MAX_PLAN_BYTES = 4 * 1024 * 1024
 MAX_JOURNAL_BYTES = 16 * 1024 * 1024
 MAX_JSON_DEPTH = 127
+# Durable attempt-marker envelope shared with the Rust serial-apply lane
+# (`cbus_transport::apply`). Both implementations resolve one hidden marker
+# per canonical plan and refuse repeats without send; the marker embeds the
+# validated plan so either side resumes read-only recovery from it.
+ATTEMPT_FORMAT = 'cbus-selected-serial-attempt-v1'
+ATTEMPT_SCOPES = ('resolved_journal_directory','operator_selected_attempt_store')
+_U64_LIMIT = 2**64
+_I64_MIN = -2**63
 
 
 def _validate_json_tree(value):
@@ -403,6 +414,121 @@ class _Journal:
                     state.setdefault('cleanup_errors',[]).append({'type':type(error).__name__,'message':str(error)})
 
 
+# The attempt-marker filename is SHA-256 over the Rust fingerprint bytes:
+# `serde_json::to_vec` of the strict parser's sanitized plan value after
+# recursive key sorting, integral-float normalization and numeric-IP host
+# normalization beside `port`. The helpers below reproduce those bytes so a
+# Python and a Rust apply of one plan contend for one marker.
+
+def _sanitized_number(value):
+    """Mirror the Rust strict scanner's substitution for oversized integers."""
+    if _I64_MIN <= value < _U64_LIMIT: return value
+    try: float(value)
+    except OverflowError: return '__cbus_python_big_integer__'
+    return 1e300 if value > 0 else -1e300
+
+
+def _canonical_host(host):
+    # Rust `IpAddr::from_str` rejects zone IDs and brackets; its Display
+    # keeps IPv4-mapped IPv6 in dotted form.
+    if '%' in host or '[' in host: return host
+    try: address=ipaddress.ip_address(host)
+    except ValueError: return host
+    if address.version==6 and address.ipv4_mapped is not None:
+        return '::ffff:%s'%address.ipv4_mapped
+    return str(address)
+
+
+def _fingerprint_value(value):
+    if isinstance(value,bool) or value is None or isinstance(value,str): return value
+    if isinstance(value,int): return _sanitized_number(value)
+    if isinstance(value,float):
+        if not math.isfinite(value): raise ValueError('Recovery evidence must be finite JSON data')
+        if value.is_integer() and (0<=value<_U64_LIMIT or _I64_MIN<=value<0): return int(value)
+        return value
+    if isinstance(value,(list,tuple)): return [_fingerprint_value(item) for item in value]
+    if isinstance(value,dict):
+        normalized={key:_fingerprint_value(value[key]) for key in sorted(value)}
+        if 'port' in normalized and isinstance(normalized.get('host'),str):
+            normalized['host']=_canonical_host(normalized['host'])
+        return normalized
+    raise TypeError('Unsupported plan value: %s'%type(value).__name__)
+
+
+def _serde_float(value):
+    """Shortest round-trip digits in serde_json's (zmij) f64 layout."""
+    sign='-' if math.copysign(1.,value)<0 else ''
+    digits,exponent=Decimal(repr(abs(value))).normalize().as_tuple()[1:]
+    digits=''.join(map(str,digits));point=len(digits)-1+exponent
+    if -5<=point<=15:
+        if len(digits)-1<=point: text=digits+'0'*(point+1-len(digits))+'.0'
+        elif point>=0: text=digits[:point+1]+'.'+digits[point+1:]
+        else: text='0.'+'0'*(-point-1)+digits
+    else:
+        text=digits[0]+('.'+digits[1:] if len(digits)>1 else '')+'e'+('+' if point>=0 else '-')+str(abs(point))
+    return sign+text
+
+
+_SERDE_SHORT_ESCAPES={'"':'\\"','\\':'\\\\','\b':'\\b','\f':'\\f','\n':'\\n','\r':'\\r','\t':'\\t'}
+
+
+def _serde_string(text):
+    return '"'+''.join(_SERDE_SHORT_ESCAPES.get(c) or ('\\u%04x'%ord(c) if ord(c)<0x20 else c) for c in text)+'"'
+
+
+def _serde_json(value):
+    if value is None: return 'null'
+    if value is True: return 'true'
+    if value is False: return 'false'
+    if isinstance(value,int): return str(value)
+    if isinstance(value,float): return _serde_float(value)
+    if isinstance(value,str): return _serde_string(value)
+    if isinstance(value,list): return '['+','.join(_serde_json(item) for item in value)+']'
+    return '{'+','.join(_serde_string(key)+':'+_serde_json(item) for key,item in value.items())+'}'
+
+
+def _canonical_plan(value):
+    """Exact bytes the Rust apply lane fingerprints for this plan value."""
+    return _serde_json(_fingerprint_value(value)).encode('utf-8')
+
+
+def _canonical_fingerprint(value):
+    return hashlib.sha256(_canonical_plan(value)).hexdigest()
+
+
+def _resolved_recovery_path(recovery_path):
+    path=Path(recovery_path)
+    if path.name in ('','.','..'): raise ValueError('Attempt identity: recovery path must name a file')
+    directory=path.parent.resolve(strict=True)
+    if not directory.is_dir(): raise ValueError('Attempt identity: recovery parent is not a directory: %s'%directory)
+    return directory/path.name
+
+
+def attempt_identity_path(value,recovery_path,attempt_store=None):
+    """Canonical attempt-marker path for a validated plan document.
+
+    Identical to the Rust `attempt_identity_path`/`attempt_identity_path_in_store`
+    for the same plan: the resolved journal directory by default, or one
+    existing operator-selected shared store. Performs no writes.
+    """
+    journal=_resolved_recovery_path(recovery_path)
+    if attempt_store is None: directory=journal.parent
+    else:
+        try: directory=Path(attempt_store).resolve(strict=True)
+        except OSError as error:
+            raise ValueError('Attempt identity: cannot resolve shared store %s: %s'%(attempt_store,error)) from error
+    if not directory.is_dir(): raise ValueError('Attempt identity: shared store is not a directory: %s'%directory)
+    path=directory/('.cbus-selected-serial-attempt-sha256-%s.json'%_canonical_fingerprint(value))
+    if path==journal: raise ValueError('Attempt identity: recovery journal must not use the identity path')
+    return path
+
+
+def _refuse_existing_attempt(marker):
+    try: os.lstat(marker)
+    except FileNotFoundError: return
+    raise SelectedSerialUncertain('Attempt identity already exists at %s; read-only recovery only'%marker)
+
+
 class SelectedSerialCoordinator:
     """Exactly one selected-serial attempt, preceded/followed by full observations.
 
@@ -502,7 +628,7 @@ class SelectedSerialCoordinator:
             'outcome':'uncertain','plan':None if plan is None else plan.as_dict(),
             'before':None,'local_identity':None,'local_options':None,'exchange':None,'after':None,
             'attempt_recorded':False,'attempt_durability_verified':False,'transport_invoked':False,
-            'send_attempted':False,'receipt_matches_request':None,
+            'attempt_identity':None,'send_attempted':False,'receipt_matches_request':None,
             'after_collection_complete':False,'expected_identity_change':False,'unexpected_changes':[],
             'errors':[],'journal':None,'atomic_observation':False,'firmware_persistence_verified':False,
             'physical_compatibility_verified':False,'exclusive_ownership_required':True,
@@ -581,12 +707,37 @@ class SelectedSerialCoordinator:
             'expected_state':expected['states'][a],'observed_state':observed['states'][a]}
             for a in range(256) if wanted.get(a,[])!=actual.get(a,[]) or expected['states'][a]!=observed['states'][a]]
 
-    def apply(self,plan,*,recovery_path):
+    def _reserve_attempt(self,marker,value,recovery_path):
+        """Exclusively create the durable attempt marker before the journal.
+
+        The envelope is the Rust one: a crash after this point may leave only
+        the marker, so it conservatively records that a send may have
+        occurred and embeds the validated plan for read-only recovery. A lost
+        creation race refuses without send like a preexisting marker.
+        """
+        journal=_resolved_recovery_path(recovery_path)
+        record={'format':ATTEMPT_FORMAT,'operation':'apply',
+            'attempt_id':'sha256:'+_canonical_fingerprint(value),
+            'scope':ATTEMPT_SCOPES[0] if journal.parent==marker.parent else ATTEMPT_SCOPES[1],
+            'journal':str(journal),'plan':value,'send_may_have_occurred':True,'read_only_recovery_only':True}
+        try: _Journal(marker).write(record)
+        except FileExistsError as error:
+            raise SelectedSerialUncertain('Attempt identity already exists at %s; read-only recovery only'%marker) from error
+
+    def apply(self,plan,*,recovery_path,attempt_store=None):
+        """Apply once, guarded by a canonical attempt marker shared with Rust.
+
+        The marker lives beside the resolved journal, or in ``attempt_store``
+        (an existing shared directory) so repeats contend across journal
+        directories. An existing marker refuses before any PCI I/O.
+        """
         plan,value=self._validated_plan(plan)
         with self._lock:
             if self._apply_used: raise RuntimeError('A coordinator cannot apply twice; use read-only verify after an attempt')
             evidence=self._base('apply',plan);journal=None
             try:
+                marker=attempt_identity_path(value,recovery_path,attempt_store)
+                _refuse_existing_attempt(marker)
                 # This host-local lease covers both the second inventory and
                 # the durable attempt/result journal. Contention cannot burn a
                 # coordinator attempt, create a journal or open a PCI socket.
@@ -600,6 +751,10 @@ class SelectedSerialCoordinator:
                     # Prepare the pure child before durably marking a possible send.
                     transport=self._transport()
                     if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached before journal creation')
+                    # Reserve the independent recovery handle before the
+                    # journal and the one-shot request, as the Rust lane does.
+                    self._reserve_attempt(marker,value,recovery_path)
+                    evidence['attempt_identity']=str(marker)
                     evidence['state']='preconditions_checked';journal=self._new_journal(recovery_path)
                     evidence['journal']={'path':str(journal.path)};journal.write(evidence)
                     evidence['state']='write_attempted';evidence['attempt_recorded']=True
@@ -658,11 +813,26 @@ class SelectedSerialCoordinator:
         a new read-only observation; this function never authorizes replay.
         """
         value=_load(path,MAX_JOURNAL_BYTES)
-        if not isinstance(value,dict) or value.get('format')!='cbus-selected-serial-result-v1':
+        if not isinstance(value,dict) or value.get('format') not in ('cbus-selected-serial-result-v1',ATTEMPT_FORMAT):
             raise ValueError('Unsupported selected-serial recovery journal')
         plan=SelectedSerialPlan.from_dict(value.get('plan'));document=plan.as_dict()
+        if value['format']==ATTEMPT_FORMAT:
+            # A Python- or Rust-reserved marker: the same envelope checks as
+            # Rust load_recovery, including the plan-bound attempt ID.
+            _keys(value,('format','operation','attempt_id','scope','journal','plan',
+                'send_may_have_occurred','read_only_recovery_only'),'Attempt marker')
+            if (value['operation']!='apply' or value['send_may_have_occurred'] is not True or
+                    value['read_only_recovery_only'] is not True or value['scope'] not in ATTEMPT_SCOPES or
+                    not isinstance(value['journal'],str)):
+                raise ValueError('Attempt marker envelope is ambiguous')
+            if value['attempt_id']!='sha256:'+_canonical_fingerprint(value['plan']):
+                raise ValueError('Attempt marker ID does not match its embedded plan')
+            return plan
         validator=SelectedSerialCoordinator(**document['endpoint'],local_unit=document['local_unit'],
             expected_local_serial=document['expected_local_serial'],**document['settings'])
-        _keys(value,validator._base('apply'),'Recovery journal')
+        expected=validator._base('apply')
+        # Journals written before markers existed carry no attempt_identity.
+        if 'attempt_identity' not in value: expected.pop('attempt_identity')
+        _keys(value,expected,'Recovery journal')
         if value['operation']!='apply': raise ValueError('Recovery requires an apply journal')
         return plan

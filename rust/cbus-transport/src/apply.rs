@@ -59,7 +59,11 @@
 //! Journal recovery is a Rust-local format (`cbus-selected-serial-apply-v1`)
 //! with no cross-implementation guarantee: Python coordinator journals
 //! (`cbus-selected-serial-result-v1`) are neither read nor written here, and
-//! these journals are not readable by the Python coordinator.
+//! these journals are not readable by the Python coordinator. The durable
+//! attempt marker (`cbus-selected-serial-attempt-v1`) is shared instead: the
+//! Python coordinator reproduces the fingerprint bytes, filename, directory
+//! rule and envelope, so either implementation's marker refuses the other's
+//! replay of the same plan file and resumes read-only recovery on both.
 //!
 //! No-replay design: [`ApplyOnce`] claims its single use before any PCI I/O,
 //! and [`apply_plan`] keeps canonical fingerprints of sanitized, validated
@@ -1004,4 +1008,33 @@ pub async fn apply_plan(
         verify: after,
         journal_path: journal.path().to_path_buf(),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Golden vector shared with the Python coordinator
+    /// (`test_canonical_bytes_match_rust_fingerprint_encoder`): any drift in
+    /// either encoder splits the cross-implementation attempt-marker
+    /// namespace, so both suites pin these exact bytes.
+    #[test]
+    fn canonical_fingerprint_bytes_match_python_vector() {
+        let raw = br#"{"z":[1.0,-0.0,30.0,0.1,1e-5,1e-6,1.5e-7,1e15,1000000000000000.5,1e16,1.5e20,-2.5,5e-324,1.7976931348623157e308,123456.789,-1e-300],"big":123456789012345678901234567890,"negbig":-123456789012345678901234567890,"u64":18446744073709551615,"i64":-9223372036854775808,"text":"\u00e9\ud83d\ude00\u0000\u001f\u007f\n\t\b\f\r\"\\\/","endpoint":{"port":10001,"host":"::FFFF:10.0.0.1"},"v6":{"host":"2001:DB8:0:0:1:0:0:1","port":1},"named":{"host":"localhost","port":1},"nohost":{"host":"127.000.0.1","port":1},"noport":{"host":"::FFFF:10.0.0.1"},"flags":[true,false,null]}"#;
+        let (value, _) = parse_strict_json_value(raw).unwrap();
+        let expected = concat!(
+            r#"{"big":1e+300,"endpoint":{"host":"::ffff:10.0.0.1","port":10001},"#,
+            r#""flags":[true,false,null],"i64":-9223372036854775808,"#,
+            r#""named":{"host":"localhost","port":1},"negbig":-1e+300,"#,
+            r#""nohost":{"host":"127.000.0.1","port":1},"noport":{"host":"::FFFF:10.0.0.1"},"#,
+            "\"text\":\"\u{e9}\u{1f600}\\u0000\\u001f\u{7f}\\n\\t\\b\\f\\r\\\"\\\\/\",",
+            r#""u64":18446744073709551615,"v6":{"host":"2001:db8::1:0:0:1","port":1},"#,
+            r#""z":[1,0,30,0.1,0.00001,1e-6,1.5e-7,1000000000000000,1000000000000000.5,"#,
+            r#"10000000000000000,1.5e+20,-2.5,5e-324,1.7976931348623157e+308,123456.789,-1e-300]}"#,
+        );
+        assert_eq!(
+            String::from_utf8(canonical_plan_fingerprint(&value)).unwrap(),
+            expected
+        );
+    }
 }

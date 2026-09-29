@@ -79,6 +79,106 @@ class SelectedSerialTests(unittest.TestCase):
             self.assertEqual(caught.exception.selected_serial_evidence['outcome'],'uncertain')
             self.assertFalse(caught.exception.selected_serial_evidence['after_collection_complete'])
 
+    def test_canonical_bytes_match_rust_fingerprint_encoder(self):
+        # Golden vector shared with cbus-transport's
+        # canonical_fingerprint_bytes_match_python_vector: any drift in either
+        # encoder splits the cross-implementation attempt-marker namespace.
+        raw=(r'{"z":[1.0,-0.0,30.0,0.1,1e-5,1e-6,1.5e-7,1e15,1000000000000000.5,1e16,1.5e20,-2.5,5e-324,'
+             r'1.7976931348623157e308,123456.789,-1e-300],"big":123456789012345678901234567890,'
+             r'"negbig":-123456789012345678901234567890,"u64":18446744073709551615,"i64":-9223372036854775808,'
+             r'"text":"é😀\u0000\u001f\u007f\n\t\b\f\r\"\\\/","endpoint":{"port":10001,'
+             r'"host":"::FFFF:10.0.0.1"},"v6":{"host":"2001:DB8:0:0:1:0:0:1","port":1},'
+             r'"named":{"host":"localhost","port":1},"nohost":{"host":"127.000.0.1","port":1},'
+             r'"noport":{"host":"::FFFF:10.0.0.1"},"flags":[true,false,null]}')
+        expected=('{"big":1e+300,"endpoint":{"host":"::ffff:10.0.0.1","port":10001},'
+            '"flags":[true,false,null],"i64":-9223372036854775808,'
+            '"named":{"host":"localhost","port":1},"negbig":-1e+300,'
+            '"nohost":{"host":"127.000.0.1","port":1},"noport":{"host":"::FFFF:10.0.0.1"},'
+            '"text":"é\U0001f600\\u0000\\u001f\x7f\\n\\t\\b\\f\\r\\"\\\\/",'
+            '"u64":18446744073709551615,"v6":{"host":"2001:db8::1:0:0:1","port":1},'
+            '"z":[1,0,30,0.1,0.00001,1e-6,1.5e-7,1000000000000000,1000000000000000.5,'
+            '10000000000000000,1.5e+20,-2.5,5e-324,1.7976931348623157e+308,123456.789,-1e-300]}')
+        self.assertEqual(implementation._canonical_plan(json.loads(raw)),expected.encode('utf-8'))
+
+    def test_attempt_marker_filename_matches_rust_vector(self):
+        # The committed vector plan resolves to the filename the Rust suite
+        # pins independently; both sides refuse one canonical plan.
+        rows=(Path(__file__).resolve().parents[2]/'rust'/'testdata'/'vectors'
+              /'selected_serial_plan.jsonl').read_text().splitlines()
+        document=json.loads(rows[0])['document']
+        with tempfile.TemporaryDirectory() as tmp:
+            marker=implementation.attempt_identity_path(document,Path(tmp)/'probe.json')
+        self.assertEqual(marker.name,'.cbus-selected-serial-attempt-sha256-'
+            '55af93616aaeacb668e4b52f284a90cba1ccd7792fc77491caf22c44942b98cf.json')
+
+    def test_attempt_marker_refuses_repeat_across_journals_before_io(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'fixture.json'
+            sim=fixture(state_path=path,faults={A:SerialAddressFault(move=False)})
+            with sim.running() as endpoint:
+                subject=manager(endpoint);plan=subject.plan(A,6)
+                journal_first=Path(tmp)/'first.json';journal_second=Path(tmp)/'second.json'
+                marker=implementation.attempt_identity_path(plan.as_dict(),journal_first)
+                self.assertEqual(marker.parent,Path(tmp).resolve())
+                result=subject.apply(plan,recovery_path=journal_first)
+                self.assertEqual(result.outcome,'observed_unchanged')
+                self.assertEqual(result.as_dict()['attempt_identity'],str(marker))
+                record=json.loads(marker.read_text())
+                self.assertEqual(record,{'format':'cbus-selected-serial-attempt-v1','operation':'apply',
+                    'attempt_id':'sha256:'+implementation._canonical_fingerprint(plan.as_dict()),
+                    'scope':'resolved_journal_directory','journal':str(journal_first.parent.resolve()/'first.json'),
+                    'plan':plan.as_dict(),'send_may_have_occurred':True,'read_only_recovery_only':True})
+                # A fresh coordinator (a second process) with a different
+                # journal in the same directory is refused before PCI I/O.
+                retry=manager(endpoint)
+                with self.assertRaises(SelectedSerialUncertain) as caught:
+                    retry.apply(plan,recovery_path=journal_second)
+                self.assertIn('read-only recovery only',str(caught.exception))
+                self.assertEqual(caught.exception.selected_serial_evidence['before'],None)
+                self.assertFalse(journal_second.exists())
+                self.assertEqual(len(sim.co_operations),1)
+                # The marker alone resumes read-only recovery; a forged ID fails.
+                journal_first.unlink()
+                self.assertEqual(SelectedSerialCoordinator.load_recovery(marker).as_dict(),plan.as_dict())
+                forged=Path(tmp)/'forged.json'
+                forged.write_text(json.dumps(record|{'attempt_id':'sha256:'+'0'*64}))
+                with self.assertRaisesRegex(ValueError,'does not match'):
+                    SelectedSerialCoordinator.load_recovery(forged)
+                forged.write_text(json.dumps(record|{'send_may_have_occurred':False}))
+                with self.assertRaisesRegex(ValueError,'ambiguous'):
+                    SelectedSerialCoordinator.load_recovery(forged)
+
+    def test_attempt_store_shares_markers_across_journal_directories(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp=Path(tmp);store=tmp/'store';store.mkdir()
+            sim=fixture(state_path=tmp/'fixture.json',faults={A:SerialAddressFault(move=False)})
+            with sim.running() as endpoint:
+                subject=manager(endpoint);plan=subject.plan(A,6)
+                dir_a=tmp/'a';dir_a.mkdir();dir_b=tmp/'b';dir_b.mkdir()
+                journal_first=dir_a/'first.json';journal_second=dir_b/'second.json'
+                marker=implementation.attempt_identity_path(plan.as_dict(),journal_first,store)
+                self.assertEqual(marker.parent,store.resolve())
+                self.assertEqual(marker,implementation.attempt_identity_path(plan.as_dict(),journal_second,store))
+                result=subject.apply(plan,recovery_path=journal_first,attempt_store=store)
+                self.assertEqual(result.outcome,'observed_unchanged')
+                self.assertEqual(result.as_dict()['attempt_identity'],str(marker))
+                self.assertEqual(json.loads(marker.read_text())['scope'],'operator_selected_attempt_store')
+                retry=manager(endpoint)
+                with self.assertRaises(SelectedSerialUncertain):
+                    retry.apply(plan,recovery_path=journal_second,attempt_store=store)
+                self.assertFalse(journal_second.exists())
+                self.assertEqual(len(sim.co_operations),1)
+
+    def test_missing_attempt_store_refuses_before_io_or_journal(self):
+        with tempfile.TemporaryDirectory() as tmp,conversation(successful_responses()+[b'g.'+BARE_PCI,OPTIONS]) as (endpoint,state):
+            subject=manager(endpoint);plan=subject.plan(A,6)
+            baseline=list(state['requests'])
+            with self.assertRaisesRegex(ValueError,'shared store'):
+                subject.apply(plan,recovery_path=Path(tmp)/'journal.json',attempt_store=Path(tmp)/'missing')
+            self.assertEqual(state['requests'],baseline)
+            self.assertFalse((Path(tmp)/'journal.json').exists())
+            self.assertEqual(list(Path(tmp).iterdir()),[])
+
     def test_independent_literal_peer_full_sequence_and_recovery_do_not_replay(self):
         initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]
         responses=initial+initial+[RECEIPT_A]+after_responses()+after_responses()
