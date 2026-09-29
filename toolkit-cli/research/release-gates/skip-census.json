@@ -50,36 +50,36 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 432,
-    "modules_without_skip_sites": 241,
-    "modules_with_skip_sites": 191,
+    "test_modules": 434,
+    "modules_without_skip_sites": 240,
+    "modules_with_skip_sites": 194,
     "modules_by_category": {
       "cgate_test_host": 115,
       "external_cgate_project": 1,
-      "host_platform": 14,
-      "host_tool": 4,
-      "native_cgate_local": 36,
+      "host_platform": 15,
+      "host_tool": 6,
+      "native_cgate_local": 38,
       "native_opt_in": 2,
       "original_model_runtime": 3,
       "original_toolkit": 61,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 3,
-      "rust_binaries": 6,
-      "unclassified": 1,
+      "rust_binaries": 7,
+      "unclassified": 2,
       "unit_specs": 102,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 101,
+      "all": 103,
       "partial": 17,
-      "none": 73
+      "none": 74
     },
-    "native_runnable_tests": 194,
-    "native_selected_required_tests": 194,
+    "native_runnable_tests": 198,
+    "native_selected_required_tests": 198,
     "native_excluded": 0,
-    "native_selection_selectors": 121
+    "native_selection_selectors": 123
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5032,6 +5032,61 @@
         }
       ]
     },
+    "tests/test_native_cgate_project_interchange.py": {
+      "categories": [
+        "host_tool",
+        "native_cgate_local",
+        "rust_binaries"
+      ],
+      "native": "all",
+      "gated_tests": 3,
+      "native_runnable_tests": 3,
+      "native_selected_tests": 3,
+      "sites": [
+        {
+          "scope": "tests/test_native_cgate_project_interchange.py",
+          "kind": "decorator.skipif",
+          "condition": "not CMQTTD.is_file() or not os.access(CMQTTD, os.X_OK)",
+          "reason": "cmqttd binary is not built",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "runs",
+          "native_resolution": "the native gate provisions the cmqttd binary as CBUS_CMQTTD_BIN for this cross-server PROJECT ARCHIVE/RESTORE interchange; other Rust interop stays with make check-interop"
+        },
+        {
+          "scope": "tests/test_native_cgate_project_interchange.py",
+          "kind": "decorator.skipif",
+          "condition": "not NATIVE",
+          "reason": "owned native C-Gate is not configured",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_native_cgate_project_interchange.py",
+          "kind": "decorator.skipif",
+          "condition": "shutil.which('sqlite3') is None",
+          "reason": "cmqttd SQLite restore needs sqlite3",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_native_global_factory.py": {
       "categories": [
         "cgate_test_host",
@@ -5185,6 +5240,32 @@
           ],
           "categories": [
             "native_opt_in"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_native_unravel_cases.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_native_unravel_cases.py::NativeRecaptureTests",
+          "kind": "decorator.skipUnless",
+          "condition": "all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR')))",
+          "reason": "Select pinned Java11/vendor for owned original C-Gate unravel capture",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
           ],
           "offline": "skips",
           "native": "runs"
@@ -5432,6 +5513,78 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_pci_serial_probe.py": {
+      "categories": [
+        "host_platform",
+        "host_tool",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_pci_serial_probe.py::SerialProbePtyTests",
+          "kind": "decorator.skipUnless",
+          "condition": "POSIX_SERIAL",
+          "reason": "POSIX PTY and serial extra required",
+          "environment": [],
+          "categories": [
+            "host_platform",
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_pci_serial_probe.py::SerialProbePtyTests::test_tiocexcl_holder_is_busy",
+          "kind": "body.call",
+          "condition": null,
+          "reason": "this platform's pty driver does not enforce TIOCEXCL",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
+        {
+          "scope": "tests/test_pci_serial_probe.py::SerialProbePtyTests::test_tiocexcl_holder_is_busy",
+          "kind": "decorator.skipIf",
+          "condition": "os.geteuid() == 0",
+          "reason": "TIOCEXCL does not exclude root",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_pci_serial_probe.py::SerialProbeUnitTests::test_frames_match_the_rust_transport_init_sequence",
+          "kind": "decorator.skipUnless",
+          "condition": "RUST_PCI.exists()",
+          "reason": "repository Rust transport source required",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "SerialProbePtyTests::test_tiocexcl_holder_is_busy"
+          ]
         }
       ]
     },

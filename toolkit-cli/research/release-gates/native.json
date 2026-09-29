@@ -121,6 +121,7 @@
     "tests/test_native_thermostat_schedule_integration.py",
     "tests/test_native_thermostat_scheduling_integration.py",
     "tests/test_native_tls.py",
+    "tests/test_native_unravel_cases.py::NativeRecaptureTests::test_owned_native_recapture_matches_committed_outcomes",
     "tests/test_networks.py",
     "tests/test_offline_conversion.py::NativeConversionTests",
     "tests/test_pci_full_inventory.py",
