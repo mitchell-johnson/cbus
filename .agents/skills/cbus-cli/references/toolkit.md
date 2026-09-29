@@ -49,6 +49,15 @@ for images. Report `diagnostics`, orphans and circular joins as project facts,
 not live topology; layout, print and pixel parity are unassessed. See
 `toolkit-cli/docs/topology.md`.
 
+Scanner text is keyboard-wedge input: Toolkit 1.18 recognizes a 28-plus-character
+software configuration code (catalogue in characters 1–16, serial from 17) and
+12/28-character unit-dialog serials. It has no `CBUS:` prefix. Use
+`barcode parse [TEXT]`, which reads stdin lines when TEXT is omitted, to classify
+scans. Use `project add-unit FILE --network N --catalog cbusunits.xml --barcode TEXT`
+to add a unit to a legacy XML/CBZ project. A duplicate serial selects the existing
+unit and writes nothing. See `toolkit-cli/docs/barcode.md`. Toolkit has no PICED
+launcher or handoff.
+
 When a repaired XML `Installation` still has DBVersion 2, 2.1 or 2.2, use
 `project transform-legacy REPAIRED.xml --dry-run` to validate the bounded
 conversion, then `--output NEW.xml` to write a new file exclusively. The 2
