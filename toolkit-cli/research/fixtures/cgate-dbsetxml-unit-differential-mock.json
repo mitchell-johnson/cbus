@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Users/mitchell/source/cbus-integrator-target/debug/cgate-mock",
-    "sha256": "1d5e7c40845bfe1c3a8f87a6f5f0df99c4ab1d0a0a504b863b0f01b3d9ae8bb2"
+    "sha256": "cd78b79c62ac77484d24a74a24ef157910d78c8b505a704416c73079c91f66af"
   },
-  "source_revision": "d1512fb43df02faf2b75078daf827d2e203d3f1a",
+  "source_revision": "c546ff8dcb4da69b1e7f9c64c42a6c0848ea3e90",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
     "docs/cmqttd-cgate.md": "51973f240914f4759df689c6a8d5176aac7c785d707d04e3c15ea81109d45450",
@@ -68,7 +68,7 @@
     "rust/cbus-protocol/src/common.rs": "67c90acf93417a76e0b8852212bd03b1cf81787918dfe45ff5166f0ff4bb5e60",
     "rust/cbus-protocol/src/consts.rs": "df1d021425eb86eb51b5c6c1d6e57d5c21bea82258fb5ac954542a44cf1780b0",
     "rust/cbus-protocol/src/dali.rs": "4a0c4bda8cb7ad7538208cfd395c88d93b67054769ffdd87e52ef198279ea02a",
-    "rust/cbus-protocol/src/decode.rs": "9f3a4e1e4b30a0312311b9bf2ee82fcbec0ea83d3fff956033e6e3cea97edbb0",
+    "rust/cbus-protocol/src/decode.rs": "1c9850a14124a4937d7f0cb033040e69485d3a71a64aedfb38f46d0b6f8d5fee",
     "rust/cbus-protocol/src/edlt_sync_metadata.rs": "f208973db5ef138a84159ee350fc039319e8f62271c43fd4231aedbbd0481db1",
     "rust/cbus-protocol/src/edlt_widget_groups.rs": "a8bdaa5717fe2f98f6fe96195af4e72fa725241013d35e74e9eb09f25ef62489",
     "rust/cbus-protocol/src/json.rs": "b81098cdfbcf76c09295377b6c6bc051ced7a1c4712f32418f0c749bb6093dd3",
@@ -104,7 +104,7 @@
     "rust/cbus-transport/src/cni_discovery.rs": "3b6a13ba2c0d5da1c4df09a612b0cc47b343c6021a671a670995dd81e459d4a5",
     "rust/cbus-transport/src/conn.rs": "1483c7e96526b2c458b750722e1799f04d5eec9e112e2ccf860fb217dda3e3d6",
     "rust/cbus-transport/src/flow.rs": "7bd2078c84170d3e679034f3ca517bb4ab0fd4bd9f5b3af43564b9daa5e7f327",
-    "rust/cbus-transport/src/framing.rs": "91002d8bc97ac4d1167454eaae4ca373ac27e792439e0d7fd242a7573086a066",
+    "rust/cbus-transport/src/framing.rs": "9e886bac945e8d555ef81ef543427b38c2f1b4a515076ccadf0890b0f4bfcf35",
     "rust/cbus-transport/src/inventory.rs": "4f9468f72fa16680fad676ed243a00dd3e6d6c8786c3c1e719f9285211398a06",
     "rust/cbus-transport/src/journal.rs": "8043ac0cda5068252553430250d024e5e33541b1729a07e61be69868c8379a11",
     "rust/cbus-transport/src/lib.rs": "11b86a3cb477ee9b22a7c562df6102df779d576f5bce7452a8fcca80c4a846bc",
