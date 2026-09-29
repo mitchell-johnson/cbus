@@ -1,0 +1,67 @@
+{
+  "oracle": {
+    "product": "Schneider Electric C-Gate",
+    "version": "3.4.0 build 2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "environment": "owned Java 11 child; verified IPv4 loopback listeners; disposable work directory; no C-Bus endpoint"
+  },
+  "scope": "Startup event.display-oids yes and no with heartbeat-time=1 and command.show-time=yes; one same-process SET of the opposite value; timestamps, session numbers, ports and durations normalized; distinct monitor rows retained",
+  "cases": [
+    {
+      "startup_event_display_oids": "yes",
+      "replies": [
+        "[noop] 200 OK.",
+        "[set] 200 OK.",
+        "[bcast] 200 OK."
+      ],
+      "monitor_events": [
+        "#e# <timestamp> 700 cgate - Heartbeat.",
+        "#e# <timestamp> 703 cmd<N> - broadcast_event oracle display-oids",
+        "#e# <timestamp> 761 cmd<N> - Command: [bcast] BROADCAST_EVENT oracle display-oids",
+        "#e# <timestamp> 761 cmd<N> - Command: [noop] NOOP",
+        "#e# <timestamp> 761 cmd<N> - Command: [set] CONFIG SET event.display-oids no",
+        "#e# <timestamp> 766 cmd<N> - Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "#e# <timestamp> 766 cmd<N> - Response: [bcast] 200 OK.",
+        "#e# <timestamp> 766 cmd<N> - Response: [noop] 200 OK.",
+        "#e# <timestamp> 766 cmd<N> - Response: [set] 200 OK.",
+        "#e# <timestamp> 767 cmd<N> - commandId= time=<ms>",
+        "#e# <timestamp> 767 cmd<N> - commandId=bcast time=<ms>",
+        "#e# <timestamp> 767 cmd<N> - commandId=noop time=<ms>",
+        "#e# <timestamp> 767 cmd<N> - commandId=set time=<ms>",
+        "#e# <timestamp> 803 cmd<N> - Host:/127.0.0.1 opened command interface from port: <port>",
+        "#e# <timestamp> 804 cmd<N> - Host:/127.0.0.1 closed command interface from port: <port>",
+        "#e# <timestamp> 899 sys Debug: New Command Context: cc003 = AccessContext Session /127.0.0.1#6",
+        "#e# <timestamp> 999 sys Socket accepted."
+      ],
+      "owned_child_cleanup_complete": true
+    },
+    {
+      "startup_event_display_oids": "no",
+      "replies": [
+        "[noop] 200 OK.",
+        "[set] 200 OK.",
+        "[bcast] 200 OK."
+      ],
+      "monitor_events": [
+        "#e# <timestamp> 700 cgate Heartbeat.",
+        "#e# <timestamp> 703 cmd<N> broadcast_event oracle display-oids",
+        "#e# <timestamp> 761 cmd<N> Command: [bcast] BROADCAST_EVENT oracle display-oids",
+        "#e# <timestamp> 761 cmd<N> Command: [noop] NOOP",
+        "#e# <timestamp> 761 cmd<N> Command: [set] CONFIG SET event.display-oids yes",
+        "#e# <timestamp> 766 cmd<N> Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+        "#e# <timestamp> 766 cmd<N> Response: [bcast] 200 OK.",
+        "#e# <timestamp> 766 cmd<N> Response: [noop] 200 OK.",
+        "#e# <timestamp> 766 cmd<N> Response: [set] 200 OK.",
+        "#e# <timestamp> 767 cmd<N> commandId= time=<ms>",
+        "#e# <timestamp> 767 cmd<N> commandId=bcast time=<ms>",
+        "#e# <timestamp> 767 cmd<N> commandId=noop time=<ms>",
+        "#e# <timestamp> 767 cmd<N> commandId=set time=<ms>",
+        "#e# <timestamp> 803 cmd<N> Host:/127.0.0.1 opened command interface from port: <port>",
+        "#e# <timestamp> 804 cmd<N> Host:/127.0.0.1 closed command interface from port: <port>",
+        "#e# <timestamp> 899 sys Debug: New Command Context: cc003 = AccessContext Session /127.0.0.1#6",
+        "#e# <timestamp> 999 sys Socket accepted."
+      ],
+      "owned_child_cleanup_complete": true
+    }
+  ]
+}

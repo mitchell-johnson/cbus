@@ -180,7 +180,8 @@ entry for each reply line, including multiline replies and errors. Setting it
 to `no` suppresses only the `766` entries after the next restart. A startup
 `command.show-time=yes` also emits
 `767 cmdN - commandId=<tag> time=<milliseconds>` after completed replies.
-Startup `event-millis` controls whether event timestamps include `.mmm`;
+Startup `event-millis` controls whether event timestamps include `.mmm`,
+and startup `event.display-oids=no` drops the `-` OID column after the source;
 `heartbeat-time` starts native-shaped `700` events at the saved whole-second
 cadence. A nonempty startup `project.default` selects its named durable
 project for each new command session once the project exists in the model;
@@ -257,7 +258,10 @@ counts, `config_persistence="cmqttd-json"`,
 `config_event_transport_server=true`, `config_event_transport_socket=true`,
 `config_event_server_command_admission=true`, `config_event_server_tls_loopback=true`,
 `config_event_catalogue_complete=false`,
-`config_restart_effects=["command.show-responses","command.show-time","event-host","event-millis","event-mode","event-port","global-event-level","heartbeat-time","project.default","project.start"]`,
+`config_restart_effects=["command.show-responses","command.show-time","event-host","event-millis","event-mode","event-port","event.display-oids","global-event-level","heartbeat-time","project.default","project.start"]`,
+`config_live_effects=["accept-connections-from","access-control-file"]`,
+the 148-name `config_dispositions` map with `config_disposition_counts`
+(most names are `unimplemented`; see the generated table in `docs/cmqttd-cgate.md`),
 and the OBGET repair flag. Ground native claims in
 [`native_cgate_config.json`](../../../../rust/testdata/fixtures/native_cgate_config.json)
 and the original event-listener admission bypass in

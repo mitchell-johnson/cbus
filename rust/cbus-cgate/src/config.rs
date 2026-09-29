@@ -3,7 +3,7 @@
 //! The metadata below is retained from the pinned 3.4.0.2001 daemon. It does
 //! not by itself establish runtime effects. The implemented restart effects,
 //! `command.show-responses`, `command.show-time`, `event-millis`,
-//! `heartbeat-time`, `global-event-level`, `project.default`, and
+//! `event.display-oids`, `heartbeat-time`, `global-event-level`, `project.default`, and
 //! `project.start` have separate loopback oracle evidence. The native
 //! `global-event-level` catalogue says immediate, but its observed event
 //! delivery effect is sampled at startup. A nonnumeric saved value prevents
@@ -11,6 +11,9 @@
 //! `accept-connections-from` also has an owned loopback command-admission
 //! capture: despite `effective=restart` metadata, its SET and LOAD effects
 //! on new connections are immediate.
+//! `disposition` classifies every catalogue name's runtime effect.
+
+pub(crate) mod disposition;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConfigScope {

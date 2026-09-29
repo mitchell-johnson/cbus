@@ -17613,12 +17613,33 @@ async fn config_catalog_scopes_snapshots_and_restart_are_durable_without_pci_io(
             "event-millis",
             "event-mode",
             "event-port",
+            "event.display-oids",
             "global-event-level",
             "heartbeat-time",
             "project.default",
             "project.start"
         ])
     );
+    assert_eq!(
+        document["config_live_effects"],
+        serde_json::json!(["accept-connections-from", "access-control-file"])
+    );
+    let dispositions = document["config_dispositions"].as_object().unwrap();
+    assert_eq!(dispositions.len(), 148);
+    assert_eq!(dispositions["heartbeat-time"], "restart");
+    assert_eq!(dispositions["file.base"], "secure_deviation");
+    assert_eq!(dispositions["cgate-name"], "not_applicable");
+    assert_eq!(dispositions["network.retries"], "unimplemented");
+    let counts = document["config_disposition_counts"].as_object().unwrap();
+    assert_eq!(
+        counts
+            .values()
+            .map(|count| count.as_u64().unwrap())
+            .sum::<u64>(),
+        148
+    );
+    assert_eq!(counts["restart"], 11);
+    assert_eq!(counts["live"], 2);
     assert_eq!(document["config_native_obget_missing_reply_repaired"], true);
 
     let mut byte = [0u8; 1];
@@ -19624,5 +19645,210 @@ async fn programming_login_downgrade_and_logout_preserve_owned_session() {
             .await
             .is_err()
     );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn config_access_control_file_selects_default_access_snapshot_immediately() {
+    // Native u.java reads access-control-file on each default ACCESS
+    // LOAD/SAVE. cmqttd keeps that name as a bounded cmqttd-json snapshot
+    // identity rather than a host path.
+    let path = state_path();
+    let (pci_client, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[alpha] ACCESS ADD user alpha alpha-password Admin",
+        "[save-default] ACCESS SAVE",
+        "[rename] CONFIG SET access-control-file site-policy.txt",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            200,
+            "{command}"
+        );
+    }
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-renamed] ACCESS LOAD")
+            .await
+            .final_text,
+        "408 Operation failed: Access load failed: Access control snapshot not found"
+    );
+    for command in [
+        "[beta] ACCESS ADD user beta beta-password Monitor",
+        "[save-renamed] ACCESS SAVE",
+        "[load-original] ACCESS LOAD access.txt",
+    ] {
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            200,
+            "{command}"
+        );
+    }
+    let original = format_response(
+        &service
+            .handle(&mut client, "[list-original] ACCESS LIST")
+            .await,
+    );
+    assert!(original.contains("user alpha") && !original.contains("user beta"));
+    assert_eq!(
+        service
+            .handle(&mut client, "[load-default] ACCESS LOAD")
+            .await
+            .status,
+        200
+    );
+    let renamed = format_response(
+        &service
+            .handle(&mut client, "[list-renamed] ACCESS LIST")
+            .await,
+    );
+    assert!(renamed.contains("user alpha") && renamed.contains("user beta"));
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[escape] CONFIG SET access-control-file ../escape.txt"
+            )
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle(&mut client, "[save-escape] ACCESS SAVE")
+            .await
+            .final_text,
+        "408 Operation failed: Access save failed: Illegal path: ../escape.txt"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+/// Normalize a delivered native-shaped event the way the owned oracle does.
+fn normalize_display_oids_row(line: &str) -> String {
+    let (stamp, rest) = line.strip_prefix("#e# ").unwrap().split_once(' ').unwrap();
+    chrono::NaiveDateTime::parse_from_str(stamp, "%Y%m%d-%H%M%S%.3f").unwrap();
+    let words = rest
+        .split(' ')
+        .map(|word| {
+            if word.starts_with("cmd") && word[3..].parse::<u64>().is_ok() {
+                "cmd<N>".to_string()
+            } else {
+                word.to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+    format!("#e# <timestamp> {words}")
+}
+
+#[tokio::test]
+async fn config_event_display_oids_drops_oid_column_only_after_restart() {
+    let evidence: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_config_event_display_oids.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    for case in evidence["cases"].as_array().unwrap() {
+        let startup = case["startup_event_display_oids"].as_str().unwrap();
+        let (pci_client, _remote) = pci();
+        let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(service.clone().serve(listener));
+        let (mut monitor_reader, mut monitor_writer) = connect_command_session(address).await;
+        assert_eq!(
+            command_lines(
+                &mut monitor_reader,
+                &mut monitor_writer,
+                "event",
+                "EVENT e9s0c0"
+            )
+            .await,
+            ["[event] 200 OK."]
+        );
+        // Like the oracle, discard the subscriber's own trailing trace rows.
+        loop {
+            let mut line = String::new();
+            let read = tokio::time::timeout(
+                Duration::from_millis(300),
+                monitor_reader.read_line(&mut line),
+            )
+            .await;
+            if !matches!(read, Ok(Ok(count)) if count > 0) {
+                break;
+            }
+        }
+        let (mut reader, mut writer) = connect_command_session(address).await;
+        let opposite = if startup == "yes" { "no" } else { "yes" };
+        let mut replies = Vec::new();
+        for (tag, body) in [
+            ("noop", "NOOP".to_string()),
+            ("set", format!("CONFIG SET event.display-oids {opposite}")),
+            ("bcast", "BROADCAST_EVENT oracle display-oids".to_string()),
+        ] {
+            replies.extend(command_lines(&mut reader, &mut writer, tag, &body).await);
+        }
+        // NOOP's `200 OK` punctuation is a separately tracked native
+        // difference; compare the NOOP-free replies and event rows here.
+        let expected_replies = case["replies"].as_array().unwrap();
+        assert_eq!(replies[1..], expected_replies[1..], "startup {startup}");
+        let mut observed = std::collections::BTreeSet::new();
+        loop {
+            let mut line = String::new();
+            match tokio::time::timeout(
+                Duration::from_millis(300),
+                monitor_reader.read_line(&mut line),
+            )
+            .await
+            {
+                Ok(Ok(read)) if read > 0 => {
+                    observed.insert(normalize_display_oids_row(line.trim_end()));
+                }
+                _ => break,
+            }
+        }
+        // cmqttd's greeting text differs from native and it does not emit
+        // native 899/999 socket rows on this path; compare the 703/761/766
+        // families that the setting reshapes.
+        let reshaped = |row: &&str| {
+            [" 703 ", " 761 ", " 766 "]
+                .iter()
+                .any(|code| row.contains(code))
+                && !row.contains("201 Service ready")
+                && !row.contains("[noop]")
+        };
+        let expected = case["monitor_events"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row.as_str().unwrap())
+            .filter(reshaped)
+            .map(str::to_string)
+            .collect::<std::collections::BTreeSet<_>>();
+        let observed = observed
+            .iter()
+            .map(String::as_str)
+            .filter(reshaped)
+            .filter(|row| !row.contains("cmqttd C-Gate service ready"))
+            .map(str::to_string)
+            .collect::<std::collections::BTreeSet<_>>();
+        assert_eq!(observed, expected, "startup event.display-oids={startup}");
+        drop((reader, writer, monitor_reader, monitor_writer));
+        server.abort();
+        drop(service);
+        // Leave the saved opposite value for the next fresh start, as the
+        // native capture's second child started from saved `no`.
+        let (pci_client, _remote) = pci();
+        let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+        restarted
+            .handle(
+                &mut ClientState::default(),
+                "[prepare] CONFIG SET event.display-oids no",
+            )
+            .await;
+        drop(restarted);
+    }
     std::fs::remove_file(path).unwrap();
 }

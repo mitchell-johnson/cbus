@@ -552,11 +552,23 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
             "event-millis",
             "event-mode",
             "event-port",
+            "event.display-oids",
             "global-event-level",
             "heartbeat-time",
             "project.default",
             "project.start"
         ])
+    );
+    assert_eq!(
+        capabilities["config_live_effects"],
+        serde_json::json!(["accept-connections-from", "access-control-file"])
+    );
+    assert_eq!(
+        capabilities["config_dispositions"]
+            .as_object()
+            .unwrap()
+            .len(),
+        148
     );
 
     assert_eq!(

@@ -750,6 +750,8 @@ pub struct Service {
     command_show_responses: bool,
     command_show_time: bool,
     event_millis: bool,
+    /// Native `event.display-oids`, sampled at startup like `event-millis`.
+    event_display_oids: bool,
     startup_event_transport: StartupEventTransport,
     /// The native e+ selector samples this global value at startup, despite
     /// CONFIG INFO describing the parameter as effective immediately.
@@ -1854,6 +1856,8 @@ impl Service {
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let event_millis = config_parameter("event-millis")
             .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
+        let event_display_oids = config_parameter("event.display-oids")
+            .is_some_and(|parameter| config_global_value(&model, parameter) == "yes");
         let event_mode = config_parameter("event-mode")
             .map(|parameter| config_global_value(&model, parameter))
             .unwrap_or_else(|| "server".to_string());
@@ -1930,6 +1934,7 @@ impl Service {
             command_show_responses,
             command_show_time,
             event_millis,
+            event_display_oids,
             startup_event_transport,
             global_event_level,
             global_event_level_invalid,
@@ -3090,18 +3095,30 @@ impl Service {
             capabilities["config_event_server_command_admission"] = serde_json::Value::Bool(true);
             capabilities["config_event_server_tls_loopback"] = serde_json::Value::Bool(true);
             capabilities["config_event_catalogue_complete"] = serde_json::Value::Bool(false);
-            capabilities["config_restart_effects"] = serde_json::json!([
-                "command.show-responses",
-                "command.show-time",
-                "event-host",
-                "event-millis",
-                "event-mode",
-                "event-port",
-                "global-event-level",
-                "heartbeat-time",
-                "project.default",
-                "project.start"
-            ]);
+            {
+                use crate::config::disposition::{
+                    names_with, ConfigDisposition, CONFIG_DISPOSITIONS,
+                };
+                capabilities["config_restart_effects"] =
+                    serde_json::json!(names_with(ConfigDisposition::Restart));
+                capabilities["config_live_effects"] =
+                    serde_json::json!(names_with(ConfigDisposition::Live));
+                capabilities["config_dispositions"] = CONFIG_DISPOSITIONS
+                    .iter()
+                    .map(|entry| (entry.name.to_string(), entry.disposition.as_str().into()))
+                    .collect::<serde_json::Map<_, _>>()
+                    .into();
+                capabilities["config_disposition_counts"] = ConfigDisposition::ALL
+                    .iter()
+                    .map(|disposition| {
+                        (
+                            disposition.as_str().to_string(),
+                            names_with(*disposition).len().into(),
+                        )
+                    })
+                    .collect::<serde_json::Map<_, _>>()
+                    .into();
+            }
             capabilities["config_native_obget_missing_reply_repaired"] =
                 serde_json::Value::Bool(true);
             capabilities["file_commands"] =
@@ -13629,8 +13646,9 @@ impl Service {
         let mut events = self.events.subscribe();
         let (mut reader, mut writer) = stream.into_split();
         if startup && self.global_event_level >= 5 {
-            let line = format!("{} 800 cgate - C-Gate started.\r\n", self.event_timestamp());
-            writer.write_all(line.as_bytes()).await?;
+            let line = format!("{} 800 cgate - C-Gate started.", self.event_timestamp());
+            let line = event_oid_column(&line, self.event_display_oids);
+            writer.write_all(format!("{line}\r\n").as_bytes()).await?;
         }
         let mut input = [0u8; 1024];
         loop {
@@ -13643,6 +13661,7 @@ impl Service {
                     Ok(event) => {
                         if let Some(line) = cgate_event_delivery(EventMode::DEFAULT, self.global_event_level, &event) {
                             let line = line.strip_prefix("#e# ").unwrap_or(line);
+                            let line = event_oid_column(line, self.event_display_oids);
                             tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{line}\r\n").as_bytes()))
                                 .await.map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "C-Gate event sink is not reading"))??;
                         }
@@ -13902,7 +13921,7 @@ impl Service {
                             continue;
                         }
                         if let Some(event) = self.publish_command_entry(&client, &line) {
-                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, self.event_display_oids, &event).await?;
                         }
                         let started = Instant::now();
                         let tagged = line.starts_with('[');
@@ -13927,10 +13946,10 @@ impl Service {
                                 .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                             if !close_after_reply {
                                 for event in self.publish_command_responses(&client, &wire, &line) {
-                                    write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
+                                    write_own_command_event(&mut writer, mode, self.global_event_level, self.event_display_oids, &event).await?;
                                 }
                                 if let Some(event) = self.publish_command_time(&client, &response.tag, started) {
-                                    write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
+                                    write_own_command_event(&mut writer, mode, self.global_event_level, self.event_display_oids, &event).await?;
                                 }
                             }
                             if close_after_reply {
@@ -13982,10 +14001,10 @@ impl Service {
                         tokio::time::timeout(Duration::from_secs(10), writer.write_all(wire.as_bytes())).await
                             .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
                         for event in self.publish_command_responses(&client, &wire, &command) {
-                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, self.event_display_oids, &event).await?;
                         }
                         if let Some(event) = self.publish_command_time(&client, &response.tag, started) {
-                            write_own_command_event(&mut writer, mode, self.global_event_level, &event).await?;
+                            write_own_command_event(&mut writer, mode, self.global_event_level, self.event_display_oids, &event).await?;
                         }
                         if close && response.status == 204 {
                             // `write_all` only guarantees that the plaintext
@@ -14010,6 +14029,7 @@ impl Service {
                                 |channel| client.event_channels.contains(channel).then_some(event.as_str()),
                             );
                             if let Some(delivery) = delivery {
+                                let delivery = event_oid_column(delivery, self.event_display_oids);
                                 tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{delivery}\r\n").as_bytes())).await
                                     .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate event client is not reading"))??;
                             }
@@ -14056,12 +14076,14 @@ async fn write_own_command_event<W>(
     writer: &mut W,
     mode: EventMode,
     default: u8,
+    display_oids: bool,
     event: &str,
 ) -> io::Result<()>
 where
     W: tokio::io::AsyncWrite + Unpin,
 {
     if let Some(delivery) = cgate_event_delivery(mode, default, event) {
+        let delivery = event_oid_column(delivery, display_oids);
         tokio::time::timeout(
             Duration::from_secs(10),
             writer.write_all(format!("{delivery}\r\n").as_bytes()),
@@ -14091,6 +14113,35 @@ fn cgate_event_delivery(mode: EventMode, default: u8, event: &str) -> Option<&st
     } else {
         Some(event)
     }
+}
+
+/// Native `event.display-oids=no` omits the OID column that follows an event
+/// source (`-` when the object has no OID), as captured in
+/// `native_cgate_config_event_display_oids.json`. `sys` rows have no column.
+/// cmqttd's native-shaped rows only carry the `-` placeholder, so only that
+/// token is removed. Events keep the column internally; delivery strips it.
+fn event_oid_column(line: &str, display_oids: bool) -> std::borrow::Cow<'_, str> {
+    if display_oids {
+        return std::borrow::Cow::Borrowed(line);
+    }
+    let body = line.strip_prefix("#e# ").unwrap_or(line);
+    let prefix = &line[..line.len() - body.len()];
+    let mut parts = body.splitn(4, ' ');
+    if let (Some(stamp), Some(code), Some(source), Some(rest)) =
+        (parts.next(), parts.next(), parts.next(), parts.next())
+    {
+        let stamp_bytes = stamp.as_bytes();
+        let timestamped = stamp_bytes.len() >= 15
+            && stamp_bytes[8] == b'-'
+            && stamp_bytes[..8].iter().all(u8::is_ascii_digit)
+            && stamp_bytes[9..15].iter().all(u8::is_ascii_digit);
+        if timestamped && code.len() == 3 && code.bytes().all(|byte| byte.is_ascii_digit()) {
+            if let Some(text) = rest.strip_prefix("- ") {
+                return std::borrow::Cow::Owned(format!("{prefix}{stamp} {code} {source} {text}"));
+            }
+        }
+    }
+    std::borrow::Cow::Borrowed(line)
 }
 
 fn is_own_command_trace(event: &str, session: u64) -> bool {
