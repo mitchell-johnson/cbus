@@ -140,8 +140,30 @@ running pytest. The receipt contains the source revision, aggregate hashes,
 counts, provision variable names and kinds, and a sanitized failure reason;
 it omits private paths, values, test IDs and pytest output. Keep the separate
 JUnit artifact protected because test-produced XML may contain site details.
-The hardware selection stays private until P1.04 defines the required fixtures;
-an absent manifest fails instead of turning hardware acceptance into a skip.
+An absent manifest fails instead of turning hardware acceptance into a skip.
+
+### Hardware fixture matrix
+
+[`toolkit-cli/research/hardware-fixture-matrix.json`](../toolkit-cli/research/hardware-fixture-matrix.json)
+lists the physical fixtures that required acceptance cases need. It has one row
+per device type derived from the 280 decoded unit specifications and the
+C-Gate catalogue, one row per programming method, and explicit CNI/PCI
+interface, one- to six-bridge topology, wireless gateway, DALI gateway and
+ballast, eDLT USB DFU bootloader, eDLT/DLT display, power-cycle, electrical
+and reference-network rows. Each row has a stable `fixture:` ID, family,
+required observables, owning work items and issues, a status, and input
+SHA-256 digests. It never contains specification content. Every fixture is
+`unavailable` today; `provisioned` requires a private manifest reference, and
+neither status is acceptance evidence.
+
+`build_hardware_fixture_matrix.py --check` regenerates the matrix from
+`CBUS_UNITSPEC_DIR` and `CBUS_LOCAL_CGATE_VENDOR` and fails when they are
+absent. `--verify` checks the committed matrix without private inputs. The
+parity register marks a physical dimension `blocked`, not not-applicable or
+`unassessed`, when it requires unavailable fixtures, and names them in
+`blocker_ids`. `coverage` reports blocked counts separately, and a blocked
+dimension never counts as accepted. A private hardware gate manifest should
+select tests for provisioned fixture IDs only.
 
 Both provisioned jobs upload the JSON receipt and JUnit report, then run
 `.venv/bin/cbus-toolkit coverage --evidence-root . --require-complete` directly

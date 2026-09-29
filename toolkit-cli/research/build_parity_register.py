@@ -48,6 +48,7 @@ SESSION_PHYSICAL_PATH = (
     ROOT / "research" / "fixtures" / "cgate-session-physical-applicability.json"
 )
 ROADMAP_PATH = REPOSITORY / "docs" / "parity-review-and-roadmap.md"
+HARDWARE_FIXTURE_MATRIX_PATH = ROOT / "research" / "hardware-fixture-matrix.json"
 REGISTER_PATH = PACKAGE / "parity-obligations.json"
 EVIDENCE_PATH = PACKAGE / "parity-evidence.json"
 
@@ -79,6 +80,119 @@ FAMILY_LEDGER = {
     "unit_types": ("vendor-catalog-inventory", "all-unit-parameter-encoding"),
     "device_configuration": ("all-unit-parameter-encoding",),
 }
+
+
+# Physical acceptance for these broad rows needs hardware fixtures from the
+# P1.04 matrix; their physical dimension is blocked until those exist. The
+# listed families select every matrix fixture in them. "*" selects all.
+UMBRELLA_PHYSICAL_FIXTURE_FAMILIES = {
+    "cgate-command-transport": ("cgate-physical-paths",),
+    "pci-command-transport": ("interface", "bridge_topology", "reference_network", "power_cycle_rig"),
+    "interface-discovery-and-setup": ("interface", "pc_interface", "wireless_gateway"),
+    "network-scan-unravel-routing": ("interface", "bridge", "bridge_topology", "reference_network"),
+    "all-unit-parameter-encoding": ("programming_method", "power_cycle_rig"),
+    "native-unit-defaults-and-database-editing": ("programming_method",),
+    "unit-read-write-verify": ("programming_method", "bridge_topology", "power_cycle_rig"),
+    "unit-copy-convert-reset": ("programming_method", "power_cycle_rig"),
+    "classic-key-presets": ("key_input",),
+    "neo-core-key-presets": ("key_input",),
+    "groups-applications-control": ("interface", "bridge_topology", "reference_network"),
+    "scenes-triggers-labels": ("reference_network", "edlt_display", "dlt_display"),
+    "dlt-edlt-widgets-and-labels": ("edlt_display", "dlt_display", "power_cycle_rig"),
+    "edlt-parent-automatic-application-cache": ("edlt_display",),
+    "edlt-reset-controls": ("edlt_display", "power_cycle_rig"),
+    "edlt-global-category-programming": ("edlt_display",),
+    "edlt-retained-scene-editing": ("edlt_display",),
+    "edlt-scene-live": ("edlt_display", "reference_network"),
+    "sensors-wizard-semantics": ("sensor",),
+    "firmware-update": ("usb_bootloader", "edlt_display", "power_cycle_rig"),
+    "edlt-usb-read-only-diagnostics": ("usb_bootloader",),
+    "network-calculator-diagnostics": ("electrical_rig", "reference_network"),
+    "unit-hardware-acceptance": ("*",),
+    "native-serial-retrieval": ("interface", "bridge_topology", "reference_network"),
+    "database-serial-population": ("interface", "reference_network"),
+    "physical-unit-addressing": ("interface", "bridge_topology", "reference_network", "power_cycle_rig"),
+    "serial-directed-commissioning": ("interface", "bridge_topology", "reference_network", "power_cycle_rig"),
+    "toolkit-unit-templates": ("programming_method",),
+    "thermostat-configuration": ("thermostat",),
+}
+# No physical case is established for these rows yet. Their physical
+# dimension stays unassessed, never not-applicable, until a reviewed decision.
+UMBRELLA_PHYSICAL_UNDECIDED = frozenset({
+    "legacy-project-editing",
+    "native-cgate3-projects",
+    "native-project-repair",
+    "vendor-catalog-inventory",
+    "toolkit-surface-census",
+    "cgl-import-export",
+    "preferences-and-update-workflow",
+    "toolkit-differential-acceptance",
+    "database-unit-addressing",
+    "toolkit-database-report-export",
+})
+# Physical C-Gate paths need an interface and the reference network, plus
+# these families by first command word; routed paths add 1-6 bridge topologies.
+CGATE_PATH_FIXTURE_FAMILIES = {
+    "AIRCON": ("thermostat",),
+    "AUDIO": ("media",),
+    "CLOCK": ("clock",),
+    "DALI": ("dali_gateway", "dali_ballast"),
+    "DEPLOY_QUEUE": ("programming_method", "power_cycle_rig"),
+    "LABEL": ("edlt_display", "dlt_display"),
+    "MEDIATRANSPORT": ("media",),
+    "PP": ("programming_method", "power_cycle_rig"),
+    "PROGRAMMER": ("programming_method", "power_cycle_rig"),
+    "TEMPERATURE": ("thermostat",),
+    "UNIT": ("programming_method",),
+}
+CGATE_PATH_BASE_FIXTURE_FAMILIES = ("interface", "reference_network")
+
+
+def hardware_fixture_matrix() -> tuple[dict, bytes]:
+    sys.path.insert(0, str(ROOT / "research"))
+    from build_hardware_fixture_matrix import load_committed, validate_matrix
+
+    matrix, raw = load_committed(HARDWARE_FIXTURE_MATRIX_PATH)
+    validate_matrix(matrix)
+    return matrix, raw
+
+
+def fixture_ids_for(matrix: dict, families: tuple[str, ...]) -> list[str]:
+    """Return the still-unavailable fixtures of the selected families."""
+    rows = matrix["fixtures"]
+    known = {row["family"] for row in rows}
+    selected = set(families) - {"*"}
+    if selected - known:
+        raise ValueError(f"Unknown hardware fixture families: {sorted(selected - known)}")
+    return sorted(
+        row["id"]
+        for row in rows
+        if ("*" in families or row["family"] in selected)
+        and row["status"] == "unavailable"
+    )
+
+
+def cgate_path_fixture_ids(matrix: dict, path: str, routing_evidence: str) -> list[str]:
+    families = CGATE_PATH_BASE_FIXTURE_FAMILIES + CGATE_PATH_FIXTURE_FAMILIES.get(
+        path.split()[0], ()
+    )
+    if re.search(r"bridge", routing_evidence, re.I):
+        families += ("bridge_topology",)
+    return fixture_ids_for(matrix, families)
+
+
+def block_physical(obligation: dict, fixture_ids: list[str]) -> None:
+    if not fixture_ids:
+        return
+    if obligation["acceptance"]["physical"] != "unassessed":
+        raise ValueError(f"{obligation['id']} physical dimension is already decided")
+    obligation["acceptance"]["physical"] = "blocked"
+    obligation["acceptance_blockers"] = {
+        "physical": {
+            "reason_kind": "hardware_fixture_unavailable",
+            "blocker_ids": fixture_ids,
+        }
+    }
 
 
 def digest(path: Path) -> str:
@@ -944,6 +1058,33 @@ def build() -> tuple[dict, dict]:
             }
         )
 
+    fixture_matrix, fixture_matrix_raw = hardware_fixture_matrix()
+    decided = set(UMBRELLA_PHYSICAL_FIXTURE_FAMILIES) | UMBRELLA_PHYSICAL_UNDECIDED
+    if (
+        set(UMBRELLA_PHYSICAL_FIXTURE_FAMILIES) & UMBRELLA_PHYSICAL_UNDECIDED
+        or decided != ledger_ids
+    ):
+        raise ValueError("Every ledger row needs one physical fixture decision")
+    obligation_by_id = {item["id"]: item for item in obligations}
+    path_fixture_ids: set[str] = set()
+    for scope, contract in cgate_path_scopes:
+        if scope["routing_class"] != "Physical":
+            continue
+        fixture_ids = cgate_path_fixture_ids(
+            fixture_matrix, scope["source_id"], contract["routing_evidence"]
+        )
+        path_fixture_ids.update(fixture_ids)
+        block_physical(
+            obligation_by_id[cgate_path_obligation_id(scope["source_id"])], fixture_ids
+        )
+    for ledger_id, families in sorted(UMBRELLA_PHYSICAL_FIXTURE_FAMILIES.items()):
+        fixture_ids = (
+            sorted(path_fixture_ids)
+            if families == ("cgate-physical-paths",)
+            else fixture_ids_for(fixture_matrix, families)
+        )
+        block_physical(obligation_by_id[f"ledger:{ledger_id}"], fixture_ids)
+
     session_evidence = session_differential_evidence()
     session_tagged_evidence = session_tagged_wire_evidence()
     session_physical_evidence = session_physical_applicability_evidence()
@@ -1019,9 +1160,14 @@ def build() -> tuple[dict, dict]:
             "cgate_tagged_session_differential_cmqttd": digest(TAGGED_SESSION_DIFFERENTIAL_PATH),
             "cgate_session_physical_applicability": digest(SESSION_PHYSICAL_PATH),
             "roadmap": digest(ROADMAP_PATH),
+            "hardware_fixture_matrix": sha256(fixture_matrix_raw).hexdigest(),
         },
         "evidence_bundle_sha256": sha256(evidence_raw).hexdigest(),
         "work_item_ids": sorted(WORK_ITEM_IDS),
+        "hardware_fixture_roster": [
+            {"id": row["id"], "family": row["family"], "status": row["status"]}
+            for row in fixture_matrix["fixtures"]
+        ],
         "source_inventory": source_inventory,
         "scope_items": scope_items,
         "obligations": obligations,

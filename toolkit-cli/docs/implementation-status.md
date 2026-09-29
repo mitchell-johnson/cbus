@@ -251,6 +251,13 @@ cannot make the gate pass. The census remains incomplete: the 39 broad and 442
 C-Gate path obligations are provisional, three `SESSION_ID` functions are
 defined, and none is fully accepted, so `--require-complete` returns nonzero.
 The parity-register and coverage tests guard this behavior.
+A physical dimension that needs hardware is `blocked`, not `unassessed` or not
+applicable. It names unavailable fixtures from the
+[hardware fixture matrix](../research/hardware-fixture-matrix.json). All 264
+fixtures are unavailable, so the 234 bus-routed C-Gate path obligations and 29
+umbrella rows are blocked. `unassessed` means no physical requirement has been
+decided yet. Blocked cases remain in the physical denominator and never count
+as accepted.
 
 Disposable-server access: the owned C-Gate configuration defaults to `Program`, which denies the internal `PP LOCK`/`PP NEW` operations. The isolated thermostat unit probe successfully used an explicit `interface 127.0.0.1 Clipsal` grant in its own temporary `access.txt` before starting its own server. It completed seven saved/reloaded parameter cases with all listeners verified as loopback, no CNI connections, and process/storage cleanup confirmed ([retained evidence](../research/experiments/2026-09-24/thermostat-native-access.json)). This removes the earlier claim that an operator login is required for those disposable programming fixtures. Fixture topology and `CBUS_CGATE_SIMULATOR_HOST=127.0.0.1` still need correct provisioning for host-based native tests. The serials discovery timing issue remains open; no test was weakened.
 

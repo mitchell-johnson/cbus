@@ -120,6 +120,18 @@ or original-differential dimension.
 each dimension. Their percentages remain `null` until the denominator is
 complete, alongside the implementation and overall acceptance percentages.
 
+A dimension is `blocked` only when an `acceptance_blockers` entry for it gives a
+`reason_kind` and a nonempty list of `blocker_ids`. Each ID must name a fixture
+in the packaged `hardware_fixture_roster`, which is projected from the
+digest-bound [hardware fixture matrix](../research/hardware-fixture-matrix.json).
+At least one named fixture must still be unavailable. Reason
+`hardware_fixture_unavailable` admits only the physical dimension.
+`power_cycle_rig_unavailable` also admits persistence/recovery when a
+power-cycle rig is named. Blocked cases stay in the required denominator, and
+`physical_acceptance` reports the number of unavailable fixtures behind them. A
+blocked dimension is never accepted or not applicable. `unassessed` means that
+no requirement or blocker has been decided.
+
 ## Validation rules
 
 The validator rejects duplicate JSON keys, non-finite numbers, duplicate or
@@ -172,8 +184,11 @@ orphaned mappings fail. These path obligations keep implementation status,
 original-differential acceptance, physical acceptance and applicability in
 separate fields. All are currently provisional and `in_progress`: a reachable
 dispatch route is known, but complete selector/state/effect behavior is not
-accepted. Original and physical acceptance remain `unassessed`, applicability
-remains `unresolved`, and no evidence receipt is attributed to them.
+accepted. Original acceptance remains `unassessed`. Physical acceptance is
+`blocked` for the 234 bus-routed paths, by their interface, reference-network,
+bridge-topology and device fixtures, and `unassessed` for local paths.
+Applicability remains `unresolved`, and no evidence receipt is attributed to
+them.
 
 The first reviewed functional pilot defines `cgate-function:session-id-query`,
 `cgate-function:session-id-all`, and `cgate-function:session-id-tag`. Each maps

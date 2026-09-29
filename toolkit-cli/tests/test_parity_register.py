@@ -550,7 +550,13 @@ class ParityRegisterTests(unittest.TestCase):
                 self.assertEqual(obligation["definition_status"], "provisional")
                 self.assertEqual(obligation["applicability_status"], "unresolved")
                 self.assertEqual(obligation["acceptance"]["original_differential"], "unassessed")
-                self.assertEqual(obligation["acceptance"]["physical"], "unassessed")
+                routing = contract["axes"]["effects_routing"]["subaxes"]["routing_class"]["value"]
+                # Bus-routed paths are blocked by unavailable P1.04 fixtures,
+                # never unassessed or not applicable.
+                self.assertEqual(
+                    obligation["acceptance"]["physical"],
+                    "blocked" if routing == "Physical" else "unassessed",
+                )
                 self.assertIn("P0.03", obligation["work_item_ids"])
 
     def test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows(self):
@@ -739,6 +745,143 @@ class ParityRegisterTests(unittest.TestCase):
                 self.assertTrue(report["complete"])
                 self.assertTrue(report["evidence_artifacts_verified"])
 
+    def test_packaged_physical_paths_are_blocked_by_matrix_fixtures(self):
+        register, _, _, _, _, _, _ = packaged_documents()
+        matrix_raw = register_builder.HARDWARE_FIXTURE_MATRIX_PATH.read_bytes()
+        matrix = json.loads(matrix_raw)
+        self.assertEqual(
+            register["source_digests"]["hardware_fixture_matrix"],
+            sha256(matrix_raw).hexdigest(),
+        )
+        self.assertEqual(
+            register["hardware_fixture_roster"],
+            [
+                {"id": row["id"], "family": row["family"], "status": row["status"]}
+                for row in matrix["fixtures"]
+            ],
+        )
+        matrix_ids = {row["id"] for row in matrix["fixtures"]}
+        physical_scopes = {
+            item["id"]
+            for item in register["scope_items"]
+            if item.get("routing_class") == "Physical"
+        }
+        self.assertEqual(len(physical_scopes), 234)
+        blocked_paths = set()
+        for obligation in register["obligations"]:
+            state = obligation["acceptance"]["physical"]
+            if obligation.get("kind") == "cgate_path":
+                routed = obligation["source_scope_item_id"] in physical_scopes
+                self.assertEqual(state, "blocked" if routed else "unassessed")
+                if routed:
+                    blocked_paths.add(obligation["id"])
+            if state != "blocked":
+                self.assertNotIn("acceptance_blockers", obligation)
+                continue
+            blocker = obligation["acceptance_blockers"]["physical"]
+            self.assertEqual(blocker["reason_kind"], "hardware_fixture_unavailable")
+            self.assertTrue(blocker["blocker_ids"])
+            self.assertLessEqual(set(blocker["blocker_ids"]), matrix_ids)
+        self.assertEqual(len(blocked_paths), 234)
+        by_id = {item["id"]: item for item in register["obligations"]}
+        for ledger_id in ("unit-hardware-acceptance", "firmware-update", "dlt-edlt-widgets-and-labels"):
+            self.assertEqual(by_id[f"ledger:{ledger_id}"]["acceptance"]["physical"], "blocked")
+        self.assertEqual(
+            set(by_id["ledger:unit-hardware-acceptance"]["acceptance_blockers"]["physical"]["blocker_ids"]),
+            matrix_ids,
+        )
+        for ledger_id in register_builder.UMBRELLA_PHYSICAL_UNDECIDED:
+            self.assertEqual(by_id[f"ledger:{ledger_id}"]["acceptance"]["physical"], "unassessed")
+        report = evaluate_packaged_change(register)
+        self.assertEqual(report["physical_acceptance"]["blocked"], 234 + 29)
+        self.assertEqual(report["physical_acceptance"]["accepted"], 0)
+        self.assertEqual(report["blocked_obligations"], 263)
+        self.assertEqual(report["hardware_fixtures"]["provisioned"], 0)
+        self.assertEqual(report["hardware_fixtures"]["unavailable"], len(matrix_ids))
+
+    def test_blocked_dimension_requires_known_unavailable_fixture_blockers(self):
+        def blocked(mutate=None, *, dimension="physical", reason="hardware_fixture_unavailable"):
+            register, evidence, ledger, evidence_raw = fixture_documents()
+            register["source_digests"]["hardware_fixture_matrix"] = sha256(b"matrix").hexdigest()
+            register["hardware_fixture_roster"] = [
+                {"id": "fixture:unit:DIMX", "family": "dimmer", "status": "unavailable"},
+                {"id": "fixture:rig:power-cycle-network", "family": "power_cycle_rig", "status": "unavailable"},
+                {"id": "fixture:interface:pci-usb", "family": "interface", "status": "provisioned"},
+            ]
+            obligation = register["obligations"][0]
+            obligation["acceptance"][dimension] = "blocked"
+            obligation["acceptance_blockers"] = {
+                dimension: {"reason_kind": reason, "blocker_ids": ["fixture:unit:DIMX"]}
+            }
+            if mutate is not None:
+                mutate(register)
+            return parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw,
+                artifact_root=self.artifact_root,
+            )
+
+        report = blocked()
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["obligations"]["accepted"], 0)
+        self.assertEqual(report["physical_acceptance"]["blocked"], 1)
+        self.assertEqual(report["physical_acceptance"]["not_applicable"], 0)
+        self.assertEqual(report["physical_acceptance"]["required"], 1)
+        self.assertEqual(report["physical_acceptance"]["percent"], 0.0)
+        self.assertEqual(report["physical_acceptance"]["unavailable_fixtures"], 1)
+        self.assertEqual(report["hardware_fixtures"]["blocking"], 1)
+        self.assertIn(
+            "1 obligations have acceptance blocked by 1 unavailable hardware fixtures",
+            report["blockers"],
+        )
+
+        def obligation(register):
+            return register["obligations"][0]
+
+        def blocker(register):
+            return obligation(register)["acceptance_blockers"]["physical"]
+
+        cases = [
+            (lambda r: blocker(r).update(blocker_ids=[]), "must not be empty"),
+            (lambda r: blocker(r).update(blocker_ids=["fixture:unit:MISSING"]), "unknown hardware fixtures"),
+            (lambda r: blocker(r).update(blocker_ids=["fixture:interface:pci-usb"]), "only by provisioned"),
+            (lambda r: blocker(r).update(reason_kind="operator_unavailable"), "unknown blocker reason"),
+            (lambda r: blocker(r).pop("blocker_ids"), "requires reason_kind and blocker_ids"),
+            (lambda r: obligation(r).pop("acceptance_blockers"), "require acceptance_blockers"),
+            (lambda r: obligation(r)["acceptance_blockers"].update(
+                nominal={"reason_kind": "hardware_fixture_unavailable", "blocker_ids": ["fixture:unit:DIMX"]}
+            ), "exactly its blocked dimensions"),
+            (lambda r: r.pop("hardware_fixture_roster"), "requires its hardware fixture roster"),
+            (lambda r: r["source_digests"].pop("hardware_fixture_matrix"), "lacks its matrix source digest"),
+            (lambda r: r["hardware_fixture_roster"].append(dict(r["hardware_fixture_roster"][0])), "Duplicate hardware fixture"),
+            (lambda r: r["hardware_fixture_roster"][0].update(status="maybe"), "unknown fixture status"),
+        ]
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                with self.assertRaisesRegex(ValueError, expected):
+                    blocked(mutate)
+        with self.subTest("unblocked dimension cannot carry blockers"):
+            def unblock(register):
+                obligation(register)["acceptance"]["physical"] = "accepted"
+            with self.assertRaisesRegex(ValueError, "exactly its blocked dimensions"):
+                blocked(unblock)
+        with self.subTest("hardware reason cannot block a non-physical dimension"):
+            with self.assertRaisesRegex(ValueError, "cannot be blocked for reason"):
+                blocked(dimension="nominal")
+        with self.subTest("power-cycle reason needs a power-cycle rig"):
+            with self.assertRaisesRegex(ValueError, "requires fixture families"):
+                blocked(dimension="persistence_recovery", reason="power_cycle_rig_unavailable")
+
+            def rig(register):
+                blocker_ids = obligation(register)["acceptance_blockers"]["persistence_recovery"]["blocker_ids"]
+                blocker_ids.append("fixture:rig:power-cycle-network")
+
+            report = blocked(rig, dimension="persistence_recovery", reason="power_cycle_rig_unavailable")
+            self.assertFalse(report["complete"])
+            self.assertEqual(
+                report["acceptance_by_dimension"]["persistence_recovery"]["blocked"], 1
+            )
+            self.assertEqual(report["physical_acceptance"]["unavailable_fixtures"], 0)
+
     def test_duplicate_json_keys_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "Duplicate JSON key"):
             parity.parse_json_document('{"schema_version":1,"schema_version":1}', context="fixture")
@@ -846,7 +989,7 @@ class ParityRegisterTests(unittest.TestCase):
             evidence["records"][0]
         )
         register["obligations"][0]["acceptance"] = {
-            dimension: "blocked" for dimension in parity.REQUIRED_DIMENSIONS
+            dimension: "unassessed" for dimension in parity.REQUIRED_DIMENSIONS
         }
         evidence_raw = (json.dumps(evidence, indent=2) + "\n").encode()
         register["evidence_bundle_sha256"] = sha256(evidence_raw).hexdigest()

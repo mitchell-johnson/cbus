@@ -35,6 +35,69 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertNotEqual(missing.returncode, 0)
         self.assertIn("artifact is missing", missing.stdout + missing.stderr)
 
+    def test_coverage_reports_blocked_hardware_separately(self):
+        proc = subprocess.run(
+            [sys.executable, "-m", "cbus_toolkit", "coverage"],
+            text=True, capture_output=True, timeout=120,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        progress = json.loads(proc.stdout)["progress"]
+        physical = progress["physical_acceptance"]
+        self.assertEqual(physical["blocked"], 263)
+        self.assertEqual(physical["accepted"], 0)
+        self.assertEqual(physical["not_applicable"], 3)
+        self.assertEqual(
+            physical["blocked"] + physical["unassessed"] + physical["accepted"],
+            physical["required"],
+        )
+        self.assertEqual(physical["unavailable_fixtures"], progress["hardware_fixtures"]["total"])
+        self.assertEqual(progress["hardware_fixtures"]["provisioned"], 0)
+        self.assertEqual(progress["blocked_obligations"], 263)
+        for dimension, counts in progress["acceptance_by_dimension"].items():
+            with self.subTest(dimension=dimension):
+                self.assertIn("blocked", counts)
+        self.assertTrue(
+            any("unavailable hardware fixtures" in item for item in progress["blockers"])
+        )
+
+    def test_blocked_dimension_never_satisfies_completion(self):
+        from tempfile import TemporaryDirectory
+
+        from cbus_toolkit import parity
+        from test_parity_register import FIXTURE_REPORT, fixture_documents
+
+        register, evidence, ledger, evidence_raw = fixture_documents()
+        register["source_digests"]["hardware_fixture_matrix"] = "0" * 64
+        register["hardware_fixture_roster"] = [
+            {"id": "fixture:unit:DIMX", "family": "dimmer", "status": "unavailable"}
+        ]
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "oracle.txt").write_bytes(b"fixture original")
+            (root / "result.txt").write_bytes(FIXTURE_REPORT)
+            complete = parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw, artifact_root=root
+            )
+            self.assertTrue(complete["complete"])
+            obligation = register["obligations"][0]
+            obligation["acceptance"]["physical"] = "blocked"
+            obligation["acceptance_blockers"] = {
+                "physical": {
+                    "reason_kind": "hardware_fixture_unavailable",
+                    "blocker_ids": ["fixture:unit:DIMX"],
+                }
+            }
+            report = parity.evaluate(
+                register, evidence, ledger, evidence_raw=evidence_raw, artifact_root=root
+            )
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["obligations"]["accepted"], 0)
+        self.assertEqual(report["obligations"]["accepted_percent"], 0.0)
+        physical = report["physical_acceptance"]
+        self.assertEqual((physical["required"], physical["accepted"]), (1, 0))
+        self.assertEqual((physical["blocked"], physical["not_applicable"]), (1, 0))
+        self.assertEqual(physical["percent"], 0.0)
+
     def test_require_complete_still_fails(self):
         proc = subprocess.run(
             [sys.executable, "-m", "cbus_toolkit", "coverage", "--require-complete"],

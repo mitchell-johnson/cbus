@@ -28,6 +28,23 @@ IMPLEMENTATION_STATES = {"pending", "in_progress", "implemented"}
 DEFINITION_STATES = {"provisional", "defined"}
 APPLICABILITY_STATES = {"unresolved", "resolved"}
 ACCEPTANCE_STATES = {"unassessed", "blocked", "accepted", "not_applicable"}
+# A blocked dimension names the unavailable hardware fixtures that stop its
+# required cases. Each reason kind admits only the listed dimensions; blocked
+# never counts as accepted or not applicable.
+HARDWARE_FIXTURE_STATUSES = {"unavailable", "provisioned"}
+HARDWARE_FIXTURE_ID_RE = re.compile(r"fixture:[a-z0-9-]+:[A-Za-z0-9_.-]+\Z")
+BLOCKER_REASON_KINDS: dict[str, dict[str, frozenset[str]]] = {
+    "hardware_fixture_unavailable": {
+        "dimensions": frozenset({"physical"}),
+        "required_families": frozenset(),
+    },
+    # A power-loss/restart case can block persistence-recovery acceptance
+    # only when a power-cycle rig is among the unavailable fixtures.
+    "power_cycle_rig_unavailable": {
+        "dimensions": frozenset({"physical", "persistence_recovery"}),
+        "required_families": frozenset({"power_cycle_rig"}),
+    },
+}
 EVIDENCE_RESULTS = {"passed", "failed", "blocked", "skipped"}
 EVIDENCE_ENVIRONMENTS = {
     "offline",
@@ -1037,6 +1054,94 @@ def validate_evidence_bundle(
     return by_id
 
 
+def _validate_hardware_fixture_roster(
+    register: dict[str, Any], source_digests: dict[str, str]
+) -> dict[str, dict[str, Any]]:
+    """Validate the packaged projection of the P1.04 hardware fixture matrix.
+
+    The full matrix is a research artifact bound by its SHA-256; the wheel
+    carries only fixture IDs, families and availability so that blocked
+    acceptance dimensions can be checked without private inputs.
+    """
+    roster = register.get("hardware_fixture_roster")
+    if roster is None:
+        if "hardware_fixture_matrix" in source_digests:
+            raise ValueError("Parity register requires its hardware fixture roster")
+        return {}
+    if "hardware_fixture_matrix" not in source_digests:
+        raise ValueError("Hardware fixture roster lacks its matrix source digest")
+    if not isinstance(roster, list) or not roster:
+        raise ValueError("Hardware fixture roster must be a nonempty array")
+    by_id: dict[str, dict[str, Any]] = {}
+    for index, fixture in enumerate(roster):
+        if not isinstance(fixture, dict) or set(fixture) != {"id", "family", "status"}:
+            raise ValueError(f"hardware fixture {index} must contain id, family and status")
+        fixture_id = fixture["id"]
+        if not isinstance(fixture_id, str) or not HARDWARE_FIXTURE_ID_RE.fullmatch(fixture_id):
+            raise ValueError(f"hardware fixture {index} has an invalid id")
+        if fixture_id in by_id:
+            raise ValueError(f"Duplicate hardware fixture id: {fixture_id}")
+        if not isinstance(fixture["family"], str) or not fixture["family"]:
+            raise ValueError(f"{fixture_id} requires a family")
+        if fixture["status"] not in HARDWARE_FIXTURE_STATUSES:
+            raise ValueError(f"{fixture_id} has an unknown fixture status")
+        by_id[fixture_id] = fixture
+    return by_id
+
+
+def _validate_acceptance_blockers(
+    obligation_id: str,
+    obligation: dict[str, Any],
+    fixtures_by_id: dict[str, dict[str, Any]],
+) -> None:
+    blocked = {
+        dimension
+        for dimension, state in obligation["acceptance"].items()
+        if state == "blocked"
+    }
+    if "acceptance_blockers" not in obligation:
+        if blocked:
+            raise ValueError(
+                f"{obligation_id} blocked dimensions require acceptance_blockers"
+            )
+        return
+    blockers = obligation["acceptance_blockers"]
+    if not isinstance(blockers, dict) or not blockers:
+        raise ValueError(f"{obligation_id}.acceptance_blockers must be a nonempty object")
+    if set(blockers) != blocked:
+        raise ValueError(
+            f"{obligation_id}.acceptance_blockers must name exactly its blocked dimensions"
+        )
+    for dimension, blocker in blockers.items():
+        context = f"{obligation_id}.{dimension}"
+        if not isinstance(blocker, dict) or set(blocker) != {"reason_kind", "blocker_ids"}:
+            raise ValueError(f"{context} blocker requires reason_kind and blocker_ids")
+        reason = BLOCKER_REASON_KINDS.get(blocker["reason_kind"])
+        if reason is None:
+            raise ValueError(f"{context} has an unknown blocker reason kind")
+        if dimension not in reason["dimensions"]:
+            raise ValueError(
+                f"{context} cannot be blocked for reason {blocker['reason_kind']}"
+            )
+        blocker_ids = _strings(
+            blocker["blocker_ids"], field=f"{context}.blocker_ids", nonempty=True
+        )
+        unknown = sorted(set(blocker_ids) - set(fixtures_by_id))
+        if unknown:
+            raise ValueError(f"{context} names unknown hardware fixtures: {unknown[:5]}")
+        if not any(
+            fixtures_by_id[fixture_id]["status"] == "unavailable"
+            for fixture_id in blocker_ids
+        ):
+            raise ValueError(f"{context} is blocked only by provisioned fixtures")
+        families = {fixtures_by_id[fixture_id]["family"] for fixture_id in blocker_ids}
+        if not reason["required_families"] <= families:
+            raise ValueError(
+                f"{context} blocker reason requires fixture families "
+                f"{sorted(reason['required_families'])}"
+            )
+
+
 def validate_register(
     register: dict[str, Any],
     evidence: dict[str, Any],
@@ -1082,6 +1187,7 @@ def validate_register(
             raise ValueError("Parity C-Gate contract inventory digest changed")
     elif cgate_contract_raw is not None:
         raise ValueError("C-Gate contract inventory object is required with its bytes")
+    fixtures_by_id = _validate_hardware_fixture_roster(register, source_digests)
     if ledger_raw is not None:
         parsed_ledger = parse_json_document(ledger_raw, context="feature ledger")
         if parsed_ledger != ledger:
@@ -1336,6 +1442,7 @@ def validate_register(
                 raise ValueError(
                     f"{obligation_id}.{dimension} lacks a passed not-applicable decision"
                 )
+        _validate_acceptance_blockers(obligation_id, obligation, fixtures_by_id)
         if obligation.get("kind") == "cgate_function":
             candidate = obligation["applicability"]["physical_candidate"]
             physical = acceptance["physical"]
@@ -1648,6 +1755,7 @@ def validate_register(
         "ledger_by_id": ledger_by_id,
         "obligations_by_id": obligations_by_id,
         "evidence_by_id": evidence_by_id,
+        "hardware_fixtures_by_id": fixtures_by_id,
         "scope_counts": dict(sorted(scope_counts.items())),
         "unresolved_scope_items": unresolved_scope,
         "unresolved_domains": unresolved_domains,
@@ -1739,6 +1847,27 @@ def evaluate(
             "unassessed": states["unassessed"],
             "percent": dimension_percent,
         }
+    fixtures_by_id = validated["hardware_fixtures_by_id"]
+    blocked_obligations = [
+        item for item in obligations if "blocked" in item["acceptance"].values()
+    ]
+    blocking_fixture_ids = {
+        fixture_id
+        for item in blocked_obligations
+        for blocker in item["acceptance_blockers"].values()
+        for fixture_id in blocker["blocker_ids"]
+        if fixtures_by_id[fixture_id]["status"] == "unavailable"
+    }
+    physical_blocking_ids = {
+        fixture_id
+        for item in blocked_obligations
+        if "physical" in item["acceptance_blockers"]
+        for fixture_id in item["acceptance_blockers"]["physical"]["blocker_ids"]
+        if fixtures_by_id[fixture_id]["status"] == "unavailable"
+    }
+    fixture_status_counts = Counter(
+        fixture["status"] for fixture in fixtures_by_id.values()
+    )
     blockers: list[str] = []
     if not register["census_complete"]:
         blockers.append("functional census is incomplete")
@@ -1754,6 +1883,11 @@ def evaluate(
         blockers.append(f"{len(obligations) - len(defined)} obligations remain provisional")
     if len(accepted) != len(obligations):
         blockers.append(f"{len(obligations) - len(accepted)} obligations are not fully accepted")
+    if blocked_obligations:
+        blockers.append(
+            f"{len(blocked_obligations)} obligations have acceptance blocked by "
+            f"{len(blocking_fixture_ids)} unavailable hardware fixtures"
+        )
     if not evidence_artifacts_verified:
         blockers.append("evidence artifacts have not been verified against a trusted root")
     return {
@@ -1772,7 +1906,19 @@ def evaluate(
             "accepted_percent": percent(len(accepted), len(obligations)),
         },
         "acceptance_by_dimension": acceptance_by_dimension,
-        "physical_acceptance": acceptance_by_dimension["physical"],
+        # Blocked cases stay in the required denominator; the unavailable
+        # fixtures behind them are reported beside the ratio.
+        "physical_acceptance": {
+            **acceptance_by_dimension["physical"],
+            "unavailable_fixtures": len(physical_blocking_ids),
+        },
+        "blocked_obligations": len(blocked_obligations),
+        "hardware_fixtures": {
+            "total": len(fixtures_by_id),
+            "unavailable": fixture_status_counts["unavailable"],
+            "provisioned": fixture_status_counts["provisioned"],
+            "blocking": len(blocking_fixture_ids),
+        },
         "legacy_category_summary": {
             "total": ledger_total,
             **{state: status_counts[state] for state in sorted(IMPLEMENTATION_STATES)},
