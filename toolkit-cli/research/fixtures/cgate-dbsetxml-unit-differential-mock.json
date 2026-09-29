@@ -13,12 +13,12 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Users/mitchell/source/cbus-integrator-target/debug/cgate-mock",
-    "sha256": "6c75504cc4638af17fb78be574cc1ff259ed6e5cea4939cd0c13e79336eddd2d"
+    "sha256": "2d73e8770b67ec484e7e9e56587c8c3b26480f5c0ef13f691ec30b8bf68e72b4"
   },
-  "source_revision": "e92cfb9b8ea9e4346f000e397235aae0af816309",
+  "source_revision": "25b6bdb472ae7a67f429e017efc90549569bf9ef",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
-    "docs/cmqttd-cgate.md": "95737aa02919eb8d4945b8acfda8eccdb46f17fd37e899e1d2a9e5504b1fbfb9",
+    "docs/cmqttd-cgate.md": "7565a6f5e621012309f5ca7b4a4ef523f204307684d4ca32800e6f9c4fa2dc22",
     "rust/Cargo.lock": "527b22140f959060246a54191e7e845bc3d33ff796da940164d3a826d40d2028",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",

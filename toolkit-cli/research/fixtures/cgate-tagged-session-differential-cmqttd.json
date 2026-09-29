@@ -9,13 +9,13 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "rust_artifact": {
     "path": "/Users/mitchell/source/cbus-integrator-target/debug/cmqttd",
-    "sha256": "0fe49a7fcaa581b37217362055fc96d4441351410798a7f8ada7288e608fd14b",
+    "sha256": "15bf18b189db459d21f396e43b7214fafd09b2cdd6713dcdcd703a8702e4b118",
     "provenance": "current-build"
   },
-  "source_revision": "e92cfb9b8ea9e4346f000e397235aae0af816309",
+  "source_revision": "25b6bdb472ae7a67f429e017efc90549569bf9ef",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
-    "docs/cmqttd-cgate.md": "95737aa02919eb8d4945b8acfda8eccdb46f17fd37e899e1d2a9e5504b1fbfb9",
+    "docs/cmqttd-cgate.md": "7565a6f5e621012309f5ca7b4a4ef523f204307684d4ca32800e6f9c4fa2dc22",
     "rust/Cargo.lock": "527b22140f959060246a54191e7e845bc3d33ff796da940164d3a826d40d2028",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
@@ -101,7 +101,7 @@
     "rust/cbus-protocol/src/sal/trigger.rs": "f6fbd953f436ff6ebdb9e6fe1027f59ad17cac753d2657fee902230619e8d38d",
     "rust/cbus-protocol/src/serial_address.rs": "b278a63c21cf7c1fbc5c2a95bbb33127dc6d37b546753fe37d10b4b4193b66bf",
     "rust/cbus-test-support/Cargo.toml": "e5ff75e7e87fd374c3a5d757bc98fe5f22d5623e41e44bd8a1ca7db81a3cd83f",
-    "rust/cbus-test-support/src/broker.rs": "06285b03e29c24c2024be6885b86c85f01fa48e8fb153e911e5616c401235285",
+    "rust/cbus-test-support/src/broker.rs": "2be187bbca05257da88423596d4f585ad4e2e1d671d73aed0e13c47abad205d1",
     "rust/cbus-test-support/src/lib.rs": "ff0391c0f6dc73520a22c9ca5a5a74afbb64d33a8c62e8f78720003e4badc433",
     "rust/cbus-test-support/src/pci.rs": "8389f4dbea7c02321785b1b4f598fd75e6791495f35323dd2510dd6483633342",
     "rust/cbus-test-support/src/proc.rs": "e7093dde3b27dd3b551dc546ae3d2db08d5570ba99386460fc7cf076bda8b95f",
@@ -125,7 +125,7 @@
     "rust/cmqttd/src/cli.rs": "7f4d32032d96c18ed8dcb578bafbc3b8a7da8014a4a81da17c952f53a574b22b",
     "rust/cmqttd/src/discover.rs": "d8767f2705557586c7bc9b574f108afd0dc116743f452a5286a0d1df283a1eec",
     "rust/cmqttd/src/gateway.rs": "9e05bec3031aedd47bf8c5cdc927989ae3650ad41bf6ab7693c6c45a6d44a159",
-    "rust/cmqttd/src/main.rs": "8da0190c8675a4998f5432ade4e1288fbe7bd1d5150827b72aac111315b53743",
+    "rust/cmqttd/src/main.rs": "3bd53654b73cd2063e4dacde4f1b8bc9f0c01bf8e41c410dae677fab618a5cf4",
     "rust/cmqttd/src/setup.rs": "5e5c4d1fdb39a3e9c92dd0ac365cb520ff633cb407fea5fad7cd75b4227e8f24",
     "rust/cmqttd/tests/system_cgate_config.rs": "c0c9671d4a3439eaa503fa16addb6bcbc3ecb79adf720ec775f25500d1f329ca",
     "rust/cmqttd/tests/system_cgate_config_admission.rs": "c2a5b5363aee7ef5600dce6a62586c5157110ef2d861e4a80555b90ad6dc07ef",
@@ -188,8 +188,8 @@
     "b": "201 cmqttd C-Gate service ready\r\n"
   },
   "peer_ports": {
-    "a": 60016,
-    "b": 60017
+    "a": 64268,
+    "b": 64269
   },
   "cases": [
     {
@@ -243,9 +243,9 @@
         "[502] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b>\r\n"
       ],
       "rust_wire_reply": [
-        "[502] 300-sessionID=cmd1 origin=internal from=20260930-082514 tag=Console\r\n",
-        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:60016 from=20260930-082514\r\n",
-        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:60017 from=20260930-082514\r\n"
+        "[502] 300-sessionID=cmd1 origin=internal from=20260930-084124 tag=Console\r\n",
+        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:64268 from=20260930-084124\r\n",
+        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:64269 from=20260930-084124\r\n"
       ],
       "result": "passed"
     },
@@ -300,9 +300,9 @@
         "[504] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[504] 300-sessionID=cmd1 origin=internal from=20260930-082514 tag=Console\r\n",
-        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:60016 from=20260930-082514 tag=native-a\r\n",
-        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:60017 from=20260930-082514 tag=native-b\r\n"
+        "[504] 300-sessionID=cmd1 origin=internal from=20260930-084124 tag=Console\r\n",
+        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:64268 from=20260930-084124 tag=native-a\r\n",
+        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:64269 from=20260930-084124 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -323,9 +323,9 @@
         "[603] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[603] 300-sessionID=cmd1 origin=internal from=20260930-082514 tag=Console\r\n",
-        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:60016 from=20260930-082514 tag=native-a\r\n",
-        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:60017 from=20260930-082514 tag=native-b\r\n"
+        "[603] 300-sessionID=cmd1 origin=internal from=20260930-084124 tag=Console\r\n",
+        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:64268 from=20260930-084124 tag=native-a\r\n",
+        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:64269 from=20260930-084124 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -363,9 +363,9 @@
         "[604] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[604] 300-sessionID=cmd1 origin=internal from=20260930-082514 tag=Console\r\n",
-        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:60016 from=20260930-082514 tag=native-a\r\n",
-        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:60017 from=20260930-082514 tag=native-b\r\n"
+        "[604] 300-sessionID=cmd1 origin=internal from=20260930-084124 tag=Console\r\n",
+        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:64268 from=20260930-084124 tag=native-a\r\n",
+        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:64269 from=20260930-084124 tag=native-b\r\n"
       ],
       "result": "passed"
     },
