@@ -653,6 +653,25 @@ def _ranges_for(entry: dict) -> list[tuple[str, str]]:
     )
 
 
+KEY_PRESET_RECEIPT = ROOT / "research" / "fixtures" / "key-preset-family-equivalence.json"
+KEY_PRESET_LEDGER_FAMILIES = {"classic-key-presets": "classic", "neo-core-key-presets": "neo"}
+
+
+def _admitted_key_preset_types() -> dict[str, set[str]]:
+    """Unit types the committed key-preset family receipt admits, per ledger row."""
+    if not KEY_PRESET_RECEIPT.is_file():
+        return {}
+    families = json.loads(KEY_PRESET_RECEIPT.read_text(encoding="utf-8"))["families"]
+    return {
+        ledger_id: {
+            row["unit_type"]
+            for row in families[family]["types"]
+            if row.get("decision") == "admitted"
+        }
+        for ledger_id, family in KEY_PRESET_LEDGER_FAMILIES.items()
+    }
+
+
 def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
                      triage: dict[str, str]) -> list[dict]:
     """Deterministically derive every dialog row from committed inputs and facts."""
@@ -674,9 +693,14 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
         row["root_class"]: row["resource_name"] for row in executable["resources"]
     }
     features = {feature["id"]: feature for feature in ledger["features"]}
+    admitted_presets = _admitted_key_preset_types()
     for ledger_id, exact in LEDGER_EXACT_UNIT_TYPES.items():
         limits = features.get(ledger_id, {}).get("limits") or ""
         for unit_type in exact:
+            # The key-preset rows summarize their admitted families in prose;
+            # their exact roster lives in the committed family receipt.
+            if unit_type in admitted_presets.get(ledger_id, set()):
+                continue
             if not re.search(rf"(?<![A-Z0-9]){re.escape(unit_type)}(?![A-Z0-9])", limits):
                 raise ValueError(f"Ledger {ledger_id} limits no longer name {unit_type}")
 
