@@ -57,7 +57,10 @@ class Session:
         request = f"[{self.tag}] {command}"
         if document is not None:
             request += f" << END{self.tag}\r\n{document}\r\nEND{self.tag}"
-        self.stream.write((request + "\r\n").encode())
+        # An unbuffered SocketIO.write is a single send() and may accept only
+        # part of a large here-document (a ~1 MB raw SQLite upload), leaving
+        # the server waiting for a terminator that never arrives.
+        self.socket.sendall((request + "\r\n").encode())
         final = re.compile(rf"^\[{self.tag}\] \d{{3}} ")
         lines = []
         while True:
