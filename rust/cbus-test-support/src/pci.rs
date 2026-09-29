@@ -78,6 +78,9 @@ struct State {
     conf_delay: Option<Duration>,
     /// Reject exactly the next confirmed frame (`<code>!`).
     reject_next_conf: bool,
+    /// Echo each client line with a bare CR while the connection is in
+    /// basic mode, like a real PCI and `cbus-simulator`.
+    basic_echo: bool,
     writer: Option<mpsc::UnboundedSender<Vec<u8>>>,
     writer_abort: Option<tokio::task::AbortHandle>,
 }
@@ -95,10 +98,22 @@ impl FakePci {
     /// the server swallow the confirmation of the first frame carrying a
     /// confirmation char (and all its byte-identical retries).
     pub async fn start(withhold_first_conf: bool) -> FakePci {
+        Self::start_inner(withhold_first_conf, false).await
+    }
+
+    /// Like `start`, but each connection begins in basic mode and echoes
+    /// every client line terminated by a bare CR (`~\r`, `|\r`) until a
+    /// smart-connect has been handled. A reset returns it to basic mode.
+    pub async fn start_basic_echo(withhold_first_conf: bool) -> FakePci {
+        Self::start_inner(withhold_first_conf, true).await
+    }
+
+    async fn start_inner(withhold_first_conf: bool, basic_echo: bool) -> FakePci {
         let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind pci");
         let port = listener.local_addr().unwrap().port();
         let state = Arc::new(Mutex::new(State {
             withhold_first_conf,
+            basic_echo,
             ..Default::default()
         }));
         let st = state.clone();
@@ -213,6 +228,7 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
         st.writer_abort = Some(writer_task.abort_handle());
     }
 
+    let mut basic = state.lock().unwrap().basic_echo;
     let mut buf: Vec<u8> = Vec::new();
     let mut chunk = [0u8; 4096];
     loop {
@@ -222,6 +238,20 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
         };
         buf.extend_from_slice(&chunk[..n]);
         for frame in split_client_frames(&mut buf) {
+            if state.lock().unwrap().basic_echo {
+                if frame.is_reset {
+                    basic = true;
+                }
+                // The echo precedes handling, so `|` itself is echoed.
+                if basic {
+                    let mut echo = frame.raw.clone();
+                    echo.push(b'\r');
+                    let _ = tx.send(echo);
+                }
+                if frame.is_smart_connect {
+                    basic = false;
+                }
+            }
             handle_frame(&state, &tx, frame);
         }
     }

@@ -233,3 +233,38 @@ async fn state_topic_publish_is_not_a_command() {
         "a /state publish must not become an OFF command"
     );
 }
+
+/// A basic-mode PCI echoes the CR-only init lines (`~\r`, `|\r`) before
+/// smart connect takes effect, and here nothing CRLF-terminated follows.
+/// Like native C-Gate, cmqttd ends from-PCI lines at a bare CR, so the
+/// echo does not hold back the command's confirmation: the command is
+/// confirmed on its first transmission.
+#[tokio::test]
+async fn basic_mode_echo_does_not_hold_back_command_confirmation() {
+    let sys = start_with(Options {
+        basic_echo: true,
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    let fix = &expectations()["mqtt_cmd_off_default_app"];
+    let expect_pci = fix["expect_pci_payload"].as_str().unwrap();
+    command_roundtrip(
+        &sys,
+        fix["topic"].as_str().unwrap(),
+        &fix["payload"],
+        expect_pci,
+        fix["echo_state_topic"].as_str().unwrap(),
+        &fix["echo_state_payload"],
+    )
+    .await;
+    require(COMMAND_DRAIN, "command result", || {
+        !sys.broker
+            .find_publishes("cmqttd/cbus/command_result")
+            .is_empty()
+    })
+    .await;
+    let result = parse_json(&sys.broker.find_publishes("cmqttd/cbus/command_result")[0].payload);
+    assert_eq!(result["delivery"], "confirmed", "{result}");
+    assert_eq!(sys.pci.count_payload(expect_pci), 1, "no retransmission");
+}

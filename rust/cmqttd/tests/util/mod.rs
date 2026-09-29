@@ -87,6 +87,8 @@ pub struct System {
 pub struct Options {
     pub project: bool,
     pub withhold_first_conf: bool,
+    /// The fake PCI echoes basic-mode lines with a bare CR.
+    pub basic_echo: bool,
     /// Value for `-T` (timesync period; "0" disables like the harness).
     pub timesync: String,
     pub extra: Vec<String>,
@@ -97,6 +99,7 @@ impl Default for Options {
         Options {
             project: true,
             withhold_first_conf: false,
+            basic_echo: false,
             timesync: "0".into(),
             extra: Vec::new(),
         }
@@ -107,7 +110,11 @@ impl Default for Options {
 /// arguments (`-T 0`, DEBUG, TLS disabled) plus `opts.extra`.
 pub async fn start_with(opts: Options) -> System {
     let broker = MiniBroker::start().await;
-    let pci = FakePci::start(opts.withhold_first_conf).await;
+    let pci = if opts.basic_echo {
+        FakePci::start_basic_echo(opts.withhold_first_conf).await
+    } else {
+        FakePci::start(opts.withhold_first_conf).await
+    };
     let broker_port = broker.port().to_string();
     let pci_addr = format!("127.0.0.1:{}", pci.port());
     let project = project_file();

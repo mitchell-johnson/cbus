@@ -143,6 +143,42 @@ mod tests {
     }
 
     #[test]
+    fn basic_mode_echo_does_not_hold_later_confirmations() {
+        // The init sequence echoed CR-only by a basic-mode PCI, then the
+        // confirmation of the first confirmed command.
+        let mut fb = FrameBuffer::new_client();
+        let evs = fb.feed(b"~\r~\r~\r|\r");
+        // The last CR waits for the next byte in case it starts a CRLF.
+        assert_eq!(evs.len(), 3);
+        assert!(evs
+            .iter()
+            .all(|ev| ev.packet == Some(Packet::Invalid) && ev.raw.len() == 2));
+        let evs = fb.feed(b"h.");
+        assert_eq!(evs.len(), 2);
+        assert_eq!(evs[0].raw, b"|\r");
+        assert_eq!(
+            evs[1].packet,
+            Some(Packet::Confirmation {
+                code: b'h',
+                success: true
+            })
+        );
+    }
+
+    #[test]
+    fn crlf_split_between_reads_is_one_terminator() {
+        let mut fb = FrameBuffer::new_client();
+        assert!(fb.feed(b"05013000790051\r").is_empty());
+        let evs = fb.feed(b"\nh.");
+        assert_eq!(evs.len(), 2);
+        assert_eq!(evs[0].raw, b"05013000790051\r\n");
+        assert!(matches!(
+            evs[0].packet,
+            Some(Packet::PointToMultipoint { .. })
+        ));
+    }
+
+    #[test]
     fn overflow_clears() {
         let mut fb = FrameBuffer::new_client();
         fb.feed(&[b'0'; 200]);

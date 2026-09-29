@@ -79,7 +79,17 @@ fn decode_packet_mode(
                 2,
             );
         }
-        find(data, b"\r\n")
+        // Native C-Gate's receiver ends a PCI line at CR or LF, whichever
+        // comes first, and drops empty lines. A basic-mode PCI echoes the
+        // client's CR-only lines (`~\r`, `|\r`), so waiting for CRLF would
+        // hold that echo, and every confirmation behind it, until unrelated
+        // CRLF traffic arrived. A CR that is the last buffered byte waits
+        // for one more byte, so a CRLF split across reads is still one
+        // terminator.
+        match data.iter().position(|&b| matches!(b, b'\r' | b'\n')) {
+            Some(e) if data[e] == b'\r' && e + 1 == data.len() => None,
+            other => other,
+        }
     } else {
         if data[0] == b'~' {
             return (Some(Packet::Reset), 1);
@@ -109,7 +119,11 @@ fn decode_packet_mode(
         None => return (None, 0),
     };
     let mut body = &data[..end];
-    let consumed = end + if from_pci { 2 } else { 1 };
+    let consumed = if from_pci && data[end] == b'\r' && data.get(end + 1) == Some(&b'\n') {
+        end + 2
+    } else {
+        end + 1
+    };
 
     if body.is_empty() {
         return (None, consumed);
