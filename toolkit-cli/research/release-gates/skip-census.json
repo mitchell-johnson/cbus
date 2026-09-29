@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 425,
-    "modules_without_skip_sites": 239,
-    "modules_with_skip_sites": 186,
+    "test_modules": 429,
+    "modules_without_skip_sites": 241,
+    "modules_with_skip_sites": 188,
     "modules_by_category": {
       "cgate_test_host": 114,
       "external_cgate_project": 1,
       "host_platform": 13,
       "host_tool": 3,
-      "native_cgate_local": 34,
+      "native_cgate_local": 36,
       "native_opt_in": 2,
       "original_model_runtime": 2,
       "original_toolkit": 60,
@@ -72,14 +72,14 @@
       "windows": 12
     },
     "native_modules": {
-      "all": 99,
+      "all": 101,
       "partial": 16,
       "none": 71
     },
-    "native_runnable_tests": 190,
-    "native_selected_required_tests": 190,
+    "native_runnable_tests": 193,
+    "native_selected_required_tests": 193,
     "native_excluded": 0,
-    "native_selection_selectors": 117
+    "native_selection_selectors": 120
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5418,6 +5418,31 @@
         }
       ]
     },
+    "tests/test_project_legacy_transform_census.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_project_legacy_transform_census.py::VendorTemplateCensusTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_LOCAL_CGATE_VENDOR')",
+          "reason": "Select the pinned vendor C-Gate app directory to regenerate the census",
+          "environment": [
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_project_legacy_transform_native.py": {
       "categories": [
         "native_cgate_local"
@@ -5455,6 +5480,32 @@
       "sites": [
         {
           "scope": "tests/test_project_legacy_transform_neo_native.py::LegacyNeoNativeTests",
+          "kind": "decorator.skipUnless",
+          "condition": "all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR')))",
+          "reason": "Select pinned Java11/vendor for owned original C-Gate migration acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_project_legacy_transform_templates_native.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_project_legacy_transform_templates_native.py::LegacyTemplateNativeTests",
           "kind": "decorator.skipUnless",
           "condition": "all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR')))",
           "reason": "Select pinned Java11/vendor for owned original C-Gate migration acceptance",
