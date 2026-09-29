@@ -126,8 +126,12 @@ a consumed lookup needs it.
 Empty and `TEXT` `TagDLT` variants produce their exact text with
 `image_present=false`. Existing `DYNAMIC` and `FONT` variants depend on project
 images; `ICON` depends on Toolkit's local DLTP index. Neither source is present
-in `DBGETXML`, so consuming such an existing action fails closed. Use a
-separately established caller cache when those image facts are required.
+in `DBGETXML`. `ICON` variants resolve when a SHA-256-bound DLTP index is
+supplied with `--toolkit-dltp-dir` and `--toolkit-dltp-sha256`. Consuming an
+existing unresolved action fails closed. `--display-preferences` applies the
+eDLT list display/sort model to the resolved application cache (see
+[eDLT display preferences](edlt-display-preferences.md)). Use a separately
+established caller cache when project image facts are required.
 
 The cache limits remain 256 applications, 4,096 listed groups, 512 lifecycle
 group facts, and 8,192 level addresses. Scene operations retain the existing

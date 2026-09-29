@@ -28,6 +28,9 @@ def options(parser, *, state_only=False, surface='manual'):
     else:
         parser.add_argument('--metadata', type=Path, required=True,
                             help='Scene Manager application and DynamicAll cache facts')
+    if surface in ('offline', 'native'):
+        from .edlt_parent_transaction_cli import presentation_options
+        presentation_options(parser)
     parser.add_argument('--operations', type=Path, required=True,
                         help='JSON array of up to 256 ordered scene operations; set-name-text allocates a static scene name')
     parser.add_argument('--validate', action='store_true', help='Run the original scene validation getters before preparing the save')
@@ -111,6 +114,8 @@ def offline(args, *, state_only=False):
     from .edlt_global_cli import read_parameters
     instance = editor(args)
     values = read_parameters(args.file)
+    from .edlt_parent_transaction_cli import presentation
+    extra = presentation(args)
     if getattr(args, 'project_xml', None) is not None:
         if args.unit is None:
             raise ValueError('--unit is required with --project-xml')
@@ -123,9 +128,9 @@ def offline(args, *, state_only=False):
         if not state_only:
             return plan_native_scene_metadata(
                 text, args.unit, values, instance, operation_rows,
-                validate=args.validate).as_dict(), 0
+                validate=args.validate, **extra).as_dict(), 0
         resolved = resolve_native_scene_metadata(
-            text, args.unit, values, instance.engine, operation_rows)
+            text, args.unit, values, instance.engine, operation_rows, **extra)
         configured = {'metadata': resolved.cache,
                       'operations': resolved.operations,
                       'validate': args.validate}

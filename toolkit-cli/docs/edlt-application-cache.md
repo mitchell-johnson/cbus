@@ -10,7 +10,9 @@ an explicit `applications_complete` flag, and ordered `CachedGroupList`
 records. Each group list has an application address, its own completeness flag
 and a tuple of `CachedDisplay` group records. Names and formatted display text
 are separate because Toolkit's address/hex display preferences affect the
-latter. The schema rejects duplicate numeric identities and contradictory
+latter. `edlt_display_model.present_application_cache` recomputes both
+display text and order from explicit preferences; see
+[eDLT display preferences](edlt-display-preferences.md). The schema rejects duplicate numeric identities and contradictory
 presence facts; duplicate names and source order are preserved.
 
 `application_choices(primary=..., secondary=...)` requires a complete

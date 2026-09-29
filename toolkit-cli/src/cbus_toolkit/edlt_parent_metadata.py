@@ -29,6 +29,12 @@ from .edlt_application_cache import (
     CachedDisplay,
     CachedGroupList,
 )
+from .edlt_display_model import (
+    EdltDisplayPreferences,
+    evidence as display_evidence,
+    present_application_cache,
+)
+from .edlt_dltp_index import DltpIndex
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS,
@@ -190,6 +196,7 @@ class NativeEdltProjectSnapshot:
     other_networks: tuple[str, ...]
     other_units: tuple[str, ...]
     applications: tuple[NativeApplicationRecord, ...]
+    dltp_index: DltpIndex | None = None
 
     def value_map(self):
         return dict(self.values)
@@ -198,8 +205,8 @@ class NativeEdltProjectSnapshot:
         return dict(self.raw_values)
 
 
-def _dynamic_labels(node, default_language):
-    """Derive the four original DataStore rows when no image lookup is needed."""
+def _dynamic_labels(node, default_language, dltp_index=None):
+    """Derive the four original DataStore rows when image lookup is resolvable."""
     collections = _children(node, 'TagsDLT')
     if len(collections) > 1:
         raise ValueError('Native metadata contains duplicate TagsDLT collections')
@@ -224,25 +231,32 @@ def _dynamic_labels(node, default_language):
             raise ValueError('Native TagDLT type is outside the admitted profile')
         variants[variant] = (tag_type, tag_value)
     # InitialiseGroup always supplies four empty variants. TEXT and an empty
-    # variant cannot have an Image. DYNAMIC/FONT depend on project image files;
-    # ICON depends on Toolkit's local DLTP index, neither of which is present in
-    # DBGETXML, so those states remain explicitly unknown.
-    if any(value[0] in ('DYNAMIC', 'FONT', 'ICON')
-           for value in variants.values()):
+    # variant cannot have an Image. DYNAMIC/FONT depend on project image files
+    # that DBGETXML does not carry, so those states remain explicitly unknown.
+    # ICON depends on Toolkit's local DLTP index: TagDLT.PopulateImage matches
+    # the exact key text when a SHA-256-bound index is supplied.
+    unresolved = ('DYNAMIC', 'FONT') + (('ICON',) if dltp_index is None else ())
+    if any(value[0] in unresolved for value in variants.values()):
         return None, False
-    return tuple((str(variant), variants.get(variant, ('', ''))[1], False)
-                 for variant in range(4)), True
+    rows = []
+    for variant in range(4):
+        tag_type, tag_value = variants.get(variant, ('', ''))
+        rows.append((str(variant), tag_value,
+                     tag_type == 'ICON' and dltp_index.image_present(tag_value)))
+    return tuple(rows), True
 
 
-def _tag_images(group, default_language):
-    """Derive image presence only when project/built-in image lookup is irrelevant."""
-    labels, known = _dynamic_labels(group, default_language)
+def _tag_images(group, default_language, dltp_index=None):
+    """Derive image presence only when image lookup is resolvable."""
+    labels, known = _dynamic_labels(group, default_language, dltp_index)
     if not known:
         return None, False
     return tuple(row[2] for row in labels), True
 
 
-def _snapshot(text, unit_path, editor):
+def _snapshot(text, unit_path, editor, *, dltp_index=None):
+    if dltp_index is not None and type(dltp_index) is not DltpIndex:
+        raise ValueError('A DLTP index must come from load_dltp_index')
     unit_path, project_name, network_address, unit_address = _unit_path(unit_path)
     root = _container(text, 'Installation').documentElement
     projects = _children(root, 'Project')
@@ -307,14 +321,15 @@ def _snapshot(text, unit_path, editor):
                         or level_identity in identities or level_identity in level_ids):
                     raise ValueError('Native group contains duplicate level address or identity')
                 identities.add(level_identity); level_ids.add(level_identity)
-                labels, labels_known = _dynamic_labels(level, default_language)
+                labels, labels_known = _dynamic_labels(
+                    level, default_language, dltp_index)
                 level_records.append(NativeLevelRecord(
                     address, group_address, level_address, level_value,
                     level_identity,
                     _field(level, 'TagName'), labels, labels_known,
                     _json(_shape(level))))
             level_records = tuple(level_records)
-            images, known = _tag_images(group, default_language)
+            images, known = _tag_images(group, default_language, dltp_index)
             groups.append(NativeGroupRecord(
                 address, group_address, group.tagName, group_identity,
                 _field(group, 'TagName'),
@@ -340,7 +355,7 @@ def _snapshot(text, unit_path, editor):
         tuple(sorted(values.items())), tuple(sorted(raw_values.items())),
         project_metadata, unit_metadata,
         network_metadata, other_networks, other_units,
-        tuple(applications))
+        tuple(applications), dltp_index)
 
 
 def _operation_groups(values, operations):
@@ -539,6 +554,7 @@ class NativeEdltParentPlan:
     requirements: str
     static_labels: str
     scene_metadata: object | None = None
+    display_preferences: EdltDisplayPreferences | None = None
 
     @property
     def mutation_required(self):
@@ -546,7 +562,7 @@ class NativeEdltParentPlan:
 
     def semantic_source(self):
         return (self.snapshot, self.operations, self.cache,
-                self.creations, self.scene_metadata,
+                self.creations, self.scene_metadata, self.display_preferences,
                 tuple(sorted(self.parent_plan.expected.items())),
                 tuple(sorted(self.parent_plan.changes.items())))
 
@@ -569,9 +585,8 @@ class NativeEdltParentPlan:
                     for row in ordered_application_cache.group_lists
                     if row.complete
                 ],
-                'inventory_order_source':
-                    'DBGETXML Application/Group XML child order',
-                'display_projection': 'exact TagName database view',
+                **display_evidence(self.display_preferences,
+                                   ordered_application_cache),
                 'toolkit_registry_display_and_sort_preferences_observed': False,
                 'projected_list_objects_admitted': False,
                 'scene_manager_creations_enter_cache_before_pp_staging': bool(
@@ -619,6 +634,10 @@ class NativeEdltParentPlan:
             'rollback_before_pp_save': True,
             'rollback_after_pp_save_attempt': False,
             'project_images_loaded': False,
+            'toolkit_dltp_index': (
+                None if self.snapshot.dltp_index is None
+                else self.snapshot.dltp_index.evidence()),
+            'icon_dynamic_labels_resolved': self.snapshot.dltp_index is not None,
             'unresolved_image_metadata_rejected_when_consumed': True,
             'full_scene_manager_control_binding_verified': False,
             'native_parent_form_executed': False,
@@ -714,12 +733,15 @@ def _accumulate_operation_groups(values, operations, required_apps,
 
 def _complete_application_cache(snapshot, required_apps, requirement_rows,
                                 *, required_existing=(),
-                                required_group_lists=(), projection=None):
+                                required_group_lists=(), projection=None,
+                                display_preferences=None):
     """Resolve one complete database-view cache without projecting objects.
 
     ``TagName`` and XML child order are exact database facts.  Toolkit's
     registry-backed formatted-display and sorting preferences are not present
-    in DBGETXML, so the cache deliberately uses a deterministic TagName view.
+    in DBGETXML.  Without explicit preferences the cache deliberately uses a
+    deterministic TagName view in XML order; supplied preferences apply the
+    source-pinned eDLT FormattedDisplay and List.Sort model.
     """
     if projection is not None and type(projection) is not ApplicationCache:
         raise ValueError('Projected ordered cache must be an ApplicationCache')
@@ -862,8 +884,10 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
                 'Complete ordered application cache exceeds 4096 groups')
         group_lists.append(CachedGroupList(
             address, True, tuple(groups)))
-    return ApplicationCache(
+    cache = ApplicationCache(
         lifecycle, True, displays, tuple(group_lists))
+    return (cache if display_preferences is None else
+            present_application_cache(cache, display_preferences))
 
 
 def _reset_requirements(snapshot, editor, operations):
@@ -1018,7 +1042,8 @@ def _parent_container_projection(snapshot, requirements, values, operations):
 
 
 def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
-                                snapshot, requirements, *, networks=()):
+                                snapshot, requirements, *, networks=(),
+                                display_preferences=None):
     """Compose the exact SceneManager resolver with parent dependencies."""
     from .edlt_scene_manager import SceneManagerCache
     from .edlt_scene_metadata import (
@@ -1041,7 +1066,8 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         outcome = resolve_native_scene_metadata(
             text, unit_path, supplied, scene_engine,
             scene_operation['operations'], _projected_containers=projected,
-            _projected_values=source)
+            _projected_values=source, dltp_index=snapshot.dltp_index,
+            display_preferences=display_preferences)
         if outcome.snapshot != snapshot:
             raise ValueError(
                 'Parent and SceneManager metadata snapshots do not identify '
@@ -1074,7 +1100,8 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
             snapshot, ordered_apps, ordered_requirements,
             required_existing=control_groups,
             required_group_lists=complete_group_lists,
-            projection=resolved.cache.application_cache)
+            projection=resolved.cache.application_cache,
+            display_preferences=display_preferences)
         if reset_requirements is not None:
             reset = operations[0]
             options = {
@@ -1111,7 +1138,8 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
             snapshot, ordered_apps, ordered_requirements,
             required_existing=control_groups,
             required_group_lists=complete_group_lists,
-            projection=resolved.cache.application_cache)
+            projection=resolved.cache.application_cache,
+            display_preferences=display_preferences)
         stable_source = _project_ordered_scene_source(
             editor, operations, ordered_base_source, ordered_cache)
         if stable_source != scene_source:
@@ -1126,7 +1154,8 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
                 snapshot, ordered_apps, ordered_requirements,
                 required_existing=control_groups,
                 required_group_lists=complete_group_lists,
-                projection=resolved.cache.application_cache)
+                projection=resolved.cache.application_cache,
+            display_preferences=display_preferences)
             if _project_ordered_scene_source(
                     editor, operations, ordered_base_source,
                     ordered_cache) != stable_source:
@@ -1253,17 +1282,25 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks), operations, cache,
         creations, parent, _json(requirements), _static_labels(supplied),
-        resolved)
+        resolved, display_preferences)
 
 
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,
-                                *, networks=()):
-    """Build the projected cache and parent plan without native I/O."""
+                                *, networks=(), display_preferences=None,
+                                dltp_index=None):
+    """Build the projected cache and parent plan without native I/O.
+
+    ``display_preferences`` optionally applies the eDLT registry display/sort
+    model to ordered lists; ``dltp_index`` resolves ICON dynamic-label images.
+    """
     if type(editor) is not EdltParentTransaction:
         raise ValueError('Expected an EdltParentTransaction editor')
+    if (display_preferences is not None
+            and type(display_preferences) is not EdltDisplayPreferences):
+        raise ValueError('Display preferences must be EdltDisplayPreferences')
     operations = normalize_operations(operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
-    snapshot = _snapshot(text, unit_path, editor)
+    snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index)
     supplied = editor.snapshot(values)
     if supplied != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
@@ -1271,7 +1308,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     if any(row['op'] == 'scene-manager' for row in operations):
         return _plan_parent_scene_metadata(
             text, unit_path, supplied, editor, operations, snapshot,
-            requirements, networks=networks)
+            requirements, networks=networks,
+            display_preferences=display_preferences)
 
     # Applications, Corridor and Reset consume complete ordered lists.  For
     # this branch a missing object cannot be appended at a position that is
@@ -1304,7 +1342,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
             preliminary = _complete_application_cache(
                 snapshot, required_apps, requirement_rows,
                 required_existing=control_groups,
-                required_group_lists=complete_group_lists)
+                required_group_lists=complete_group_lists,
+                display_preferences=display_preferences)
             reset_operation = operations[0]
             reset_options = {
                 name: value for name, value in reset_operation.items()
@@ -1326,14 +1365,16 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         cache = _complete_application_cache(
             snapshot, required_apps, requirement_rows,
             required_existing=control_groups,
-            required_group_lists=complete_group_lists)
+            required_group_lists=complete_group_lists,
+            display_preferences=display_preferences)
         parent_input = (snapshot.raw_map()
                         if reset_requirements is not None else supplied)
         parent = editor.plan(
             parent_input, metadata=cache, operations=operations)
         return NativeEdltParentPlan(
             unit_path, text, snapshot, tuple(networks), operations, cache,
-            (), parent, _json(requirements), _static_labels(supplied))
+            (), parent, _json(requirements), _static_labels(supplied),
+            display_preferences=display_preferences)
 
     required_apps = {row['application'] for row in requirements['applications']}
     group_reasons = {}
@@ -1404,7 +1445,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     parent = editor.plan(supplied, metadata=cache, operations=operations)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks), operations, cache,
-        creations, parent, _json(requirements), _static_labels(supplied))
+        creations, parent, _json(requirements), _static_labels(supplied),
+        display_preferences=display_preferences)
 
 
 @dataclass(frozen=True)
@@ -1425,9 +1467,16 @@ class NativeEdltParentError(RuntimeError):
 
 class NativeEdltParentTransaction:
     """Single-use database-only metadata plus PP transaction manager."""
-    def __init__(self, client, editor, *, programmer=None):
+    def __init__(self, client, editor, *, programmer=None,
+                 display_preferences=None, dltp_index=None):
         if type(editor) is not EdltParentTransaction:
             raise ValueError('Expected an EdltParentTransaction editor')
+        if (display_preferences is not None
+                and type(display_preferences) is not EdltDisplayPreferences):
+            raise ValueError('Display preferences must be EdltDisplayPreferences')
+        if dltp_index is not None and type(dltp_index) is not DltpIndex:
+            raise ValueError('A DLTP index must come from load_dltp_index')
+        self.display_preferences, self.dltp_index = display_preferences, dltp_index
         self.client, self.editor = client, editor
         self.database, self.projects = NativeDatabase(client), NativeProjects(client)
         self.programmer = Programmer(client) if programmer is None else programmer
@@ -1585,7 +1634,9 @@ class NativeEdltParentTransaction:
             networks = self._closed_networks(project, text)
             plan = plan_native_parent_metadata(
                 text, unit, _snapshot(text, unit, self.editor).value_map(),
-                self.editor, operations, networks=networks)
+                self.editor, operations, networks=networks,
+                display_preferences=self.display_preferences,
+                dltp_index=self.dltp_index)
             self._plans.append(plan); self._fingerprints[id(plan)] = repr(plan)
             self._evidence.update(state='planned', complete=True,
                                   plan=plan.as_dict())
@@ -1606,7 +1657,9 @@ class NativeEdltParentTransaction:
             raise ValueError('Project network inventory changed since planning')
         current = plan_native_parent_metadata(
             text, plan.unit, plan.snapshot.value_map(), self.editor,
-            plan.operations, networks=plan.networks)
+            plan.operations, networks=plan.networks,
+            display_preferences=plan.display_preferences,
+            dltp_index=plan.snapshot.dltp_index)
         if exact and text != plan.before_xml:
             raise ValueError('Native project XML changed since planning')
         if current.semantic_source() != plan.semantic_source():
@@ -1659,7 +1712,8 @@ class NativeEdltParentTransaction:
             self._evidence['objects'])
 
     def _verify_created(self, plan, text):
-        snapshot = _snapshot(text, plan.unit, self.editor)
+        snapshot = _snapshot(text, plan.unit, self.editor,
+                             dltp_index=plan.snapshot.dltp_index)
         before_apps = {row.address: row for row in plan.snapshot.applications}
         after_apps = {row.address: row for row in snapshot.applications}
         app_creations = {
@@ -1803,7 +1857,8 @@ class NativeEdltParentTransaction:
             for action in ('close', 'load'):
                 self._operation(action, plan.snapshot.project)
             text = self._xml(plan.snapshot.project)
-            current = _snapshot(text, plan.unit, self.editor)
+            current = _snapshot(text, plan.unit, self.editor,
+                                dltp_index=plan.snapshot.dltp_index)
             if current != plan.snapshot:
                 raise RuntimeError('Reload did not restore the admitted eDLT source')
             self._evidence['rollback_verified'] = True

@@ -81,12 +81,14 @@ stale PP snapshot stops before backup or mutation.
 
 For Applications, Corridor and Reset, every Application and Group child is
 copied in its DBGETXML child order. Each cached `name` is the exact `TagName`.
-The automatic cache uses that same `TagName` as a deterministic
+By default, the automatic cache uses that same `TagName` as a deterministic
 `formatted_display` database view. Toolkit's address/hex display formatting,
 tag override and application/group sorting preferences live outside project
-XML, so this path does not claim the original visible list text or order under
-those registry settings. The plan reports
-`toolkit_registry_display_and_sort_preferences_observed=false`.
+XML. Without an explicit `--display-preferences` document, this path does not
+claim to reproduce the original list text or order. With that document, it
+applies the source-pinned eDLT `FormattedDisplay` and `SortMode` model
+described in [eDLT display preferences](edlt-display-preferences.md). The plan
+always reports `toolkit_registry_display_and_sort_preferences_observed=false`.
 
 Reset validates and retains the exact strings, including numeric casing and
 text padding, before constructing its initial and fresh lifecycle requirements.
@@ -155,9 +157,12 @@ same way as every other parent transaction.
 variants. Empty and `TEXT` variants have no image, so their four false image
 facts are derivable from project XML. `DYNAMIC` and `FONT` variants depend on
 downloaded project image files; `ICON` depends on Toolkit's local DLTP image
-index. Those files are not part of `DBGETXML`. If the retained parent load or
-an effective dynamic widget/navigation binding would consume one of those
-image states, automatic resolution fails closed instead of guessing. Known
+index. Those files are not part of `DBGETXML`. `ICON` variants resolve when a
+SHA-256-bound `--toolkit-dltp-dir`/`--toolkit-dltp-sha256` index is supplied
+(see [eDLT display preferences](edlt-display-preferences.md)). If the retained
+parent load or an effective dynamic widget/navigation binding would consume
+another unresolved image state, automatic resolution fails closed instead of
+guessing. Known
 text/icon facts must agree with the effective dynamic display type. The
 caller-cache path remains available when separately obtained image facts are
 required.

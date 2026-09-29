@@ -2141,6 +2141,11 @@ def build_parser():
     p = eops.add_parser("blank-plan", help="Plan a visible eDLT widget Blank selection")
     p.add_argument("file", type=Path, help="Complete KEYGL5 5.5.00 / 5055EDL PP snapshot")
     _edlt_blank_options(p)
+    p = eops.add_parser("display-lists", help="Show eDLT application/group/level lists under explicit display/sort preferences")
+    p.add_argument("--project-xml", type=Path, required=True, help="Exact native DBGETXML project snapshot (read only)")
+    p.add_argument("--network", type=int, required=True, help="Network address inside the project")
+    p.add_argument("--display-preferences", type=Path,
+                   help="cbus-edlt-display-preferences-v1 JSON; omitted means the original absent-registry defaults")
     p = eops.add_parser("reset-plan", help="Plan eDLT Reset Unit controls from a complete raw PP export")
     p.add_argument("file", type=Path)
     reset_options(p)
@@ -3141,8 +3146,10 @@ def _programming(args, client):
             raise ValueError(
                 "Automatic eDLT scene metadata requires --lock-address "
                 + expected_lock + " for the selected source network")
+        from .edlt_parent_transaction_cli import presentation
         editor = _edlt_scene_manager(args)
-        manager = NativeSceneMetadataTransaction(client, editor)
+        manager = NativeSceneMetadataTransaction(
+            client, editor, **presentation(args))
         plan = manager.plan(
             args.source, operations=scene_operations(args),
             validate=args.validate, exclusive_project=True)
@@ -3160,6 +3167,10 @@ def _programming(args, client):
                  or getattr(args, "backup_project", None) is not None)):
         raise ValueError(
             "--exclusive-project and --backup-project require --auto-metadata")
+    if (args.remote_action in ("edlt-scene-manager", "edlt-parent-transaction")
+            and not getattr(args, "auto_metadata", False)):
+        from .edlt_parent_transaction_cli import presentation
+        presentation(args)  # Rejects display/DLTP options without automatic metadata.
     if (args.remote_action == "edlt-parent-transaction"
             and getattr(args, "auto_metadata", False)):
         if args.unit_type is not None or args.source is None:
@@ -3180,8 +3191,10 @@ def _programming(args, client):
             raise ValueError(
                 "Automatic eDLT metadata requires --lock-address "
                 + expected_lock + " for the selected source network")
+        from .edlt_parent_transaction_cli import presentation
         editor = _edlt_parent_transaction(args)
-        manager = NativeEdltParentTransaction(client, editor)
+        manager = NativeEdltParentTransaction(
+            client, editor, **presentation(args))
         plan = manager.plan(args.source, operations=operations(args),
                             exclusive_project=True)
         if args.dry_run:
@@ -3650,6 +3663,14 @@ def run(args):
         values = _parameter_snapshot(args.file, check_profile, identity=identity)
         return _sensor(args).plan(values, identity=tuple(identity) or None, **_sensor_settings(args)).as_dict(), 0
     if args.area == "edlt":
+        if args.action == "display-lists":
+            from .edlt_display_model import EdltDisplayPreferences, native_display_lists
+            from .edlt_global_cli import read_json
+            from .edlt_parent_transaction_cli import read_project_xml
+            preferences = (EdltDisplayPreferences.from_registry(key_present=False)
+                           if args.display_preferences is None else
+                           EdltDisplayPreferences.from_dict(read_json(args.display_preferences, limit=64 * 1024)))
+            return native_display_lists(read_project_xml(args.project_xml), args.network, preferences), 0
         if args.action == "reset-plan":
             from .edlt_reset_cli import offline
             return offline(args)
@@ -3685,12 +3706,16 @@ def run(args):
                 if not args.unit:
                     raise ValueError("--unit is required with --project-xml")
                 from .edlt_parent_metadata import plan_native_parent_metadata
-                from .edlt_parent_transaction_cli import operations, read_project_xml
+                from .edlt_parent_transaction_cli import (
+                    operations, presentation, read_project_xml,
+                )
                 return plan_native_parent_metadata(
                     read_project_xml(args.project_xml), args.unit, values,
-                    editor, operations(args)).as_dict(), 0
+                    editor, operations(args), **presentation(args)).as_dict(), 0
             if args.unit is not None:
                 raise ValueError("--unit requires --project-xml")
+            from .edlt_parent_transaction_cli import presentation
+            presentation(args)
             return editor.plan(
                 values, **_edlt_parent_transaction_settings(args)).as_dict(), 0
         if args.action == "time-date-plan":

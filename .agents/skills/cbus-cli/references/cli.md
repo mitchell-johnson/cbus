@@ -342,6 +342,15 @@ cbus-toolkit cgate unit --lock-address //PROJECT/254 \
   --auto-metadata --exclusive-project --operations scene-operations.json
 ```
 
+The automatic parent and SceneManager paths also accept
+`--display-preferences prefs.json` (`cbus-edlt-display-preferences-v1` registry
+DWORDs for the source-pinned FormattedDisplay/SortMode list model) and the
+pair `--toolkit-dltp-dir APP_DIR --toolkit-dltp-sha256 HEX`, which resolves
+`ICON` dynamic labels from a SHA-256-bound Toolkit DLTP index. `DYNAMIC` and
+`FONT` still fail closed. `cbus-toolkit edlt display-lists --project-xml
+project.xml --network 254` shows the lists read-only. See
+`toolkit-cli/docs/edlt-display-preferences.md`.
+
 The automatic path requires all project networks closed and idle. Retained
 getter accesses can add application202 as `Trigger Control`, an exact non-255
 trigger group as `Group N`, and exact missing actions as `Action Selector N`

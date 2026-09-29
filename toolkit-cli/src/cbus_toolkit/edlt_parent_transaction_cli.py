@@ -97,6 +97,8 @@ def options(parser, *, surface='manual'):
             '--metadata', type=Path, required=True,
             help=('Caller-supplied retained lifecycle, complete application '
                   'or complete SceneManager cache JSON'))
+    if surface in ('offline', 'native'):
+        presentation_options(parser)
     parser.add_argument(
         '--operations', type=Path, required=True,
         help=('JSON array of 2..22 ordered supported widget/settings, one '
@@ -177,3 +179,43 @@ def read_project_xml(path, *, limit=16 * 1024 * 1024):
     if not raw or len(raw) > limit:
         raise ValueError('Native project XML must be nonempty and at most 16 MiB')
     return raw.decode('utf-8', 'strict')
+
+
+def presentation_options(parser):
+    """Automatic-metadata display preferences and the Toolkit DLTP index."""
+    parser.add_argument(
+        '--display-preferences', type=Path,
+        help=('cbus-edlt-display-preferences-v1 JSON with the eDLT registry '
+              'DWORDs; applies FormattedDisplay and SortMode list order. '
+              'Omit to keep the TagName view in DBGETXML order'))
+    parser.add_argument(
+        '--toolkit-dltp-dir', type=Path,
+        help=('Toolkit application directory containing Images/DLTP/Index.txt; '
+              'resolves ICON dynamic-label images'))
+    parser.add_argument(
+        '--toolkit-dltp-sha256',
+        help='Required SHA-256 of the Toolkit DLTP Index.txt bytes')
+
+
+def presentation(args):
+    """Return plan keyword arguments; reject them without automatic metadata."""
+    preferences = getattr(args, 'display_preferences', None)
+    directory = getattr(args, 'toolkit_dltp_dir', None)
+    digest = getattr(args, 'toolkit_dltp_sha256', None)
+    if (directory is None) != (digest is None):
+        raise ValueError('--toolkit-dltp-dir and --toolkit-dltp-sha256 must be supplied together')
+    automatic = (getattr(args, 'project_xml', None) is not None
+                 or getattr(args, 'auto_metadata', False))
+    if not automatic and (preferences is not None or directory is not None):
+        raise ValueError('--display-preferences and --toolkit-dltp-dir require '
+                         '--project-xml or --auto-metadata')
+    result = {'display_preferences': None, 'dltp_index': None}
+    if preferences is not None:
+        from .edlt_display_model import EdltDisplayPreferences
+        from .edlt_global_cli import read_json
+        result['display_preferences'] = EdltDisplayPreferences.from_dict(
+            read_json(preferences, limit=64 * 1024))
+    if directory is not None:
+        from .edlt_dltp_index import load_dltp_index
+        result['dltp_index'] = load_dltp_index(directory, expected_sha256=digest)
+    return result
