@@ -1,0 +1,337 @@
+{
+ "format": "native-cgate-lighting-events-v1",
+ "oracle": {
+  "product": "C-Gate",
+  "version": "3.4.0.2001",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "class_sha256": {
+   "BL.class": "3cdf66aa284e67717123bcfcbe9e3dc8e19f0c255529ed16291e8168b3f82626",
+   "bq.class": "25763e12caeb1b45dfa28a31c162ba7bb8738ea79beba7d8f12dec714eebeb79"
+  },
+  "raw_probe_report_sha256": "1d460009f7cdc5643f36786a1edbd3181398232039dfe558657a79b51f31e1dd",
+  "captured_at": "2026-09-29T13:59:54Z",
+  "listener_ownership_verified": true,
+  "cleanup_complete": true,
+  "process_exit_confirmed": true
+ },
+ "probe": "rust/cbus-cgate/research/native_lighting_event_probe.py",
+ "scope": "Captured from an isolated owned C-Gate 3.4 daemon whose only network is a disposable project on the ephemeral Toolkit PCI simulator; synthetic monitor-mode SAL lines were written on that loopback connection and a second command session issued Lighting commands. The project database defines Lighting application 56 and group 7 with synthetic OIDs; other groups are created by bus traffic. No site project, lighting hardware, Docker service, or live C-Bus network was used. Project names are replaced by PROJECT, generated network and interface OIDs by placeholders, timestamps by <timestamp>, command sessions by cmd<session> and the ephemeral client port by <port>.",
+ "session_event_mode": "EVENT e9s9c0",
+ "native_format": {
+  "event_730": "<timestamp> 730 <group address> <group OID or -> new level=L sourceunit=S ramptime=T[ sessionId=cmdN commandId=TAG]; level 7. A terminated ramp logs 'ramp terminated new level=L sourceunit=S' instead.",
+  "status_row": "lighting <action> <group address> <arguments> #sourceunit=S OID=<group OID or empty>[ sessionId=cmdN commandId=TAG]; action 'on'/'off' for an instant 255/0 with an empty argument field, 'ramp' with 'LEVEL SECONDS' otherwise, and 'terminateramp' with '#level=L'.",
+  "source_zero": "A zero source byte is printed as sourceunit=0.",
+  "unchanged_level": "A repeated OFF still emits both rows.",
+  "routing": "A point-to-multipoint row with a nonzero routing byte is accepted as direct traffic; an inbound point-to-point-to-multipoint row is logged as 824 unknown response and produces no lighting rows."
+ },
+ "cmqttd_contract": "cmqttd emits the event-730 and status rows for each attributed inbound ON, OFF and RAMP SAL, with the database Group OID when one is defined. A zero source byte keeps decoding as unattributed and is neither cached nor reported. Inbound TERMINATERAMP (whose native level is an interpolated ramp position), the 702 phantom-group rows, and the command-context suffix of cmqttd's own commands are not reproduced.",
+ "setup": [
+  {
+   "command": "PROJECT NEW PROJECT",
+   "final": "[s0] 200 OK."
+  },
+  {
+   "command": "PROJECT USE PROJECT",
+   "final": "[s1] 200 OK."
+  },
+  {
+   "command": "DBCREATENET 254 LT_Probe Cni SIMULATOR",
+   "final": "[s2] 301 OID=<generated>"
+  },
+  {
+   "command": "DBSETXML //PROJECT/254",
+   "final": "[s4] 301 OID=<network-oid>"
+  },
+  {
+   "command": "PROJECT SAVE PROJECT",
+   "final": "[s5] 200 OK."
+  },
+  {
+   "command": "NET LOAD DB PROJECT",
+   "final": "[s6] 200 OK."
+  },
+  {
+   "command": "NET OPEN //PROJECT/254",
+   "final": "[s7] 200 OK: //PROJECT/254"
+  },
+  {
+   "command": "DBGET //PROJECT/254/56/7/OID",
+   "final": "[s8] 342 254/56/7/OID=77777777-7777-4777-8777-000000000007"
+  }
+ ],
+ "cases": [
+  {
+   "label": "on_source_4",
+   "pci_line": "05043800790145",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQzODAwNzkwMTQ1IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 1",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=255 sourceunit=4 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/1  #sourceunit=4 OID="
+   ]
+  },
+  {
+   "label": "off_source_4",
+   "pci_line": "050438000101BD",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQzODAwMDEwMUJEIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=0 sourceunit=4 ramptime=0",
+    "#s# lighting off //PROJECT/254/56/1  #sourceunit=4 OID="
+   ]
+  },
+  {
+   "label": "off_repeat_source_4",
+   "pci_line": "050438000101BD",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDQzODAwMDEwMUJEIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=0 sourceunit=4 ramptime=0",
+    "#s# lighting off //PROJECT/254/56/1  #sourceunit=4 OID="
+   ]
+  },
+  {
+   "label": "ramp_instant_128_source_5",
+   "pci_line": "050538000201803B",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUzODAwMDIwMTgwM0IgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=128 sourceunit=5 ramptime=0",
+    "#s# lighting ramp //PROJECT/254/56/1 128 0 #sourceunit=5 OID="
+   ]
+  },
+  {
+   "label": "ramp_instant_255_source_5",
+   "pci_line": "050538000201FFBC",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUzODAwMDIwMUZGQkMgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=255 sourceunit=5 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/1  #sourceunit=5 OID="
+   ]
+  },
+  {
+   "label": "ramp_instant_0_source_5",
+   "pci_line": "05053800020100BB",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDUzODAwMDIwMTAwQkIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=0 sourceunit=5 ramptime=0",
+    "#s# lighting off //PROJECT/254/56/1  #sourceunit=5 OID="
+   ]
+  },
+  {
+   "label": "ramp_4s_200_source_6",
+   "pci_line": "050638000A01C8EA",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYzODAwMEEwMUM4RUEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#s# lighting ramp //PROJECT/254/56/1 200 4 #sourceunit=6 OID=",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=200 sourceunit=6 ramptime=4"
+   ]
+  },
+  {
+   "label": "terminate_source_6",
+   "pci_line": "050638000901B3",
+   "cmqttd": "not-reproduced: cmqttd does not decode inbound TERMINATERAMP into an event and cannot know the native interpolated ramp level",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYzODAwMDkwMUIzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - ramp terminated new level=66 sourceunit=6",
+    "#s# lighting terminateramp //PROJECT/254/56/1 #level=66 #sourceunit=6 OID="
+   ]
+  },
+  {
+   "label": "ramp_4s_0_source_6",
+   "pci_line": "050638000A0100B2",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYzODAwMEEwMTAwQjIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=0 sourceunit=6 ramptime=4",
+    "#s# lighting ramp //PROJECT/254/56/1 0 4 #sourceunit=6 OID="
+   ]
+  },
+  {
+   "label": "ramp_1020s_77_source_6",
+   "pci_line": "050638007A014DF5",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDYzODAwN0EwMTRERjUgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#s# lighting ramp //PROJECT/254/56/1 77 1020 #sourceunit=6 OID=",
+    "#e# <timestamp> 730 //PROJECT/254/56/1 - new level=77 sourceunit=6 ramptime=1020"
+   ]
+  },
+  {
+   "label": "terminate_idle_source_7",
+   "pci_line": "05073800092093",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDczODAwMDkyMDkzIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 825 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 response for unknown group 32 :092093"
+   ]
+  },
+  {
+   "label": "on_source_0",
+   "pci_line": "05003800790248",
+   "cmqttd": "not-reproduced: cmqttd keeps decoding a zero source byte as unattributed; such a SAL is neither cached nor reported, while native reports sourceunit=0",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDAzODAwNzkwMjQ4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 2",
+    "#e# <timestamp> 730 //PROJECT/254/56/2 - new level=255 sourceunit=0 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/2  #sourceunit=0 OID="
+   ]
+  },
+  {
+   "label": "on_source_255",
+   "pci_line": "05FF3800790348",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1RkYzODAwNzkwMzQ4IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 3",
+    "#e# <timestamp> 730 //PROJECT/254/56/3 - new level=255 sourceunit=255 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/3  #sourceunit=255 OID="
+   ]
+  },
+  {
+   "label": "concatenated_source_7",
+   "pci_line": "0507380079040105020680B1",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDczODAwNzkwNDAxMDUwMjA2ODBCMSBwcm9jZXNzZWQgYnkgbmV0d29yay4=)",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 4",
+    "#e# <timestamp> 730 //PROJECT/254/56/4 - new level=255 sourceunit=7 ramptime=0",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 5",
+    "#e# <timestamp> 730 //PROJECT/254/56/5 - new level=0 sourceunit=7 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/4  #sourceunit=7 OID=",
+    "#s# lighting off //PROJECT/254/56/5  #sourceunit=7 OID=",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 6",
+    "#e# <timestamp> 730 //PROJECT/254/56/6 - new level=128 sourceunit=7 ramptime=0",
+    "#s# lighting ramp //PROJECT/254/56/6 128 0 #sourceunit=7 OID="
+   ]
+  },
+  {
+   "label": "application_48_source_7",
+   "pci_line": "0507300079014A",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDczMDAwNzkwMTRBIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 702 //PROJECT/254/48 - [lighting] loaded application",
+    "#e# <timestamp> 702 //PROJECT/254/48 - [lighting] automatic phantom group created at address 1",
+    "#e# <timestamp> 730 //PROJECT/254/48/1 - new level=255 sourceunit=7 ramptime=0",
+    "#s# lighting on //PROJECT/254/48/1  #sourceunit=7 OID="
+   ]
+  },
+  {
+   "label": "database_group_source_8",
+   "pci_line": "0508380079073B",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDgzODAwNzkwNzNCIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#s# lighting on //PROJECT/254/56/7  #sourceunit=8 OID=77777777-7777-4777-8777-000000000007",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 7",
+    "#e# <timestamp> 730 //PROJECT/254/56/7 77777777-7777-4777-8777-000000000007 new level=255 sourceunit=8 ramptime=0"
+   ]
+  },
+  {
+   "label": "database_group_ramp_source_8",
+   "pci_line": "0508380012074062",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDgzODAwMTIwNzQwNjIgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/7 77777777-7777-4777-8777-000000000007 new level=64 sourceunit=8 ramptime=8",
+    "#s# lighting ramp //PROJECT/254/56/7 64 8 #sourceunit=8 OID=77777777-7777-4777-8777-000000000007"
+   ]
+  },
+  {
+   "label": "pm_routing_byte_source_9",
+   "pci_line": "05093809790A2E",
+   "cmqttd": "not-reproduced: cbus-protocol rejects a point-to-multipoint row with a nonzero routing byte, so the frame produces no event",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDA1MDkzODA5NzkwQTJFIHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 10",
+    "#e# <timestamp> 730 //PROJECT/254/56/10 - new level=255 sourceunit=9 ramptime=0",
+    "#s# lighting on //PROJECT/254/56/10  #sourceunit=9 OID="
+   ]
+  },
+  {
+   "label": "ppm_one_bridge_source_9",
+   "pci_line": "0309FE0938790B31",
+   "cmqttd": "same",
+   "native_rows": [
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IDAzMDlGRTA5Mzg3OTBCMzEgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 824 //PROJECT/254 <network-oid> unknown response: 0309FE0938790B31"
+   ]
+  }
+ ],
+ "commands": [
+  {
+   "label": "command_on",
+   "command": "LIGHTING ON //PROJECT/254/56/9",
+   "response": [
+    "[c0] 200 OK: //PROJECT/254/56/9"
+   ],
+   "native_rows": [
+    "#e# <timestamp> 999 sys Socket accepted.",
+    "#e# <timestamp> 803 cmd<session> - Host:/127.0.0.1 opened command interface from port: <port>",
+    "#e# <timestamp> 899 sys Debug: New Command Context: cc010 = AccessContext Session /127.0.0.1#8",
+    "#e# <timestamp> 766 cmd<session> - Response: 201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "#e# <timestamp> 761 cmd<session> - Command: [c0] LIGHTING ON //PROJECT/254/56/9",
+    "#e# <timestamp> 702 //PROJECT/254/56 77777777-7777-4777-8777-000000000056 [lighting] automatic phantom group created at address 9",
+    "#e# <timestamp> 766 cmd<session> - Response: [c0] 200 OK: //PROJECT/254/56/9",
+    "#e# <timestamp> 735 //PROJECT/254 <network-oid> C-Bus(Y2MwMTAgc2VudCBjbWQgKGZhc3RwY2kpOiBcMDUzODAwNzkwOXEgKDI1NDogXDA1MzgwMDc5MDlxKQ==)",
+    "#e# <timestamp> 765 //PROJECT/254 <network-oid> C-Bus(Z290IHBhY2tldCBjb25maXJtOiBxIw==)",
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IFwwNTM4MDA3OTA5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 730 //PROJECT/254/56/9 - new level=255 sourceunit=16 ramptime=0 sessionId=cmd<session> commandId=c0",
+    "#s# lighting on //PROJECT/254/56/9  #sourceunit=16 OID= sessionId=cmd<session> commandId=c0"
+   ]
+  },
+  {
+   "label": "command_ramp",
+   "command": "LIGHTING RAMP //PROJECT/254/56/9 100 4s",
+   "response": [
+    "[c1] 200 OK: //PROJECT/254/56/9"
+   ],
+   "native_rows": [
+    "#e# <timestamp> 761 cmd<session> - Command: [c1] LIGHTING RAMP //PROJECT/254/56/9 100 4s",
+    "#e# <timestamp> 766 cmd<session> - Response: [c1] 200 OK: //PROJECT/254/56/9",
+    "#e# <timestamp> 735 //PROJECT/254 <network-oid> C-Bus(Y2MwMTAgc2VudCBjbWQgKGZhc3RwY2kpOiBcMDUzODAwMEEwOTY0ciAoMjU0OiBcMDUzODAwMEEwOTY0cik=)",
+    "#e# <timestamp> 765 //PROJECT/254 <network-oid> C-Bus(Z290IHBhY2tldCBjb25maXJtOiByIw==)",
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IFwwNTM4MDAwQTA5NjQgcHJvY2Vzc2VkIGJ5IG5ldHdvcmsu)",
+    "#e# <timestamp> 730 //PROJECT/254/56/9 - new level=100 sourceunit=16 ramptime=4 sessionId=cmd<session> commandId=c1",
+    "#s# lighting ramp //PROJECT/254/56/9 100 4 #sourceunit=16 OID= sessionId=cmd<session> commandId=c1"
+   ]
+  },
+  {
+   "label": "command_terminate",
+   "command": "LIGHTING TERMINATERAMP //PROJECT/254/56/9",
+   "response": [
+    "[c2] 200 OK: //PROJECT/254/56/9"
+   ],
+   "native_rows": [
+    "#e# <timestamp> 761 cmd<session> - Command: [c2] LIGHTING TERMINATERAMP //PROJECT/254/56/9",
+    "#e# <timestamp> 766 cmd<session> - Response: [c2] 200 OK: //PROJECT/254/56/9",
+    "#e# <timestamp> 735 //PROJECT/254 <network-oid> C-Bus(Y2MwMTAgc2VudCBjbWQgKGZhc3RwY2kpOiBcMDUzODAwMDkwOXMgKDI1NDogXDA1MzgwMDA5MDlzKQ==)",
+    "#e# <timestamp> 765 //PROJECT/254 <network-oid> C-Bus(Z290IHBhY2tldCBjb25maXJtOiBzIw==)",
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IFwwNTM4MDAwOTA5IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#s# lighting terminateramp //PROJECT/254/56/9 #level=100 #sourceunit=16 OID= sessionId=cmd<session> commandId=c2",
+    "#e# <timestamp> 730 //PROJECT/254/56/9 - ramp terminated new level=100 sourceunit=16"
+   ]
+  },
+  {
+   "label": "command_off_database_group",
+   "command": "LIGHTING OFF //PROJECT/254/56/7",
+   "response": [
+    "[c3] 200 OK: //PROJECT/254/56/7"
+   ],
+   "native_rows": [
+    "#e# <timestamp> 761 cmd<session> - Command: [c3] LIGHTING OFF //PROJECT/254/56/7",
+    "#e# <timestamp> 766 cmd<session> - Response: [c3] 200 OK: //PROJECT/254/56/7",
+    "#e# <timestamp> 735 //PROJECT/254 <network-oid> C-Bus(Y2MwMTAgc2VudCBjbWQgKGZhc3RwY2kpOiBcMDUzODAwMDEwN3QgKDI1NDogXDA1MzgwMDAxMDd0KQ==)",
+    "#e# <timestamp> 765 //PROJECT/254 <network-oid> C-Bus(Z290IHBhY2tldCBjb25maXJtOiB0Iw==)",
+    "#e# <timestamp> 734 //PROJECT/254 <network-oid> C-Bus(cmVzcG9uc2U6IFwwNTM4MDAwMTA3IHByb2Nlc3NlZCBieSBuZXR3b3JrLg==)",
+    "#e# <timestamp> 730 //PROJECT/254/56/7 77777777-7777-4777-8777-000000000007 new level=0 sourceunit=16 ramptime=0 sessionId=cmd<session> commandId=c3",
+    "#s# lighting off //PROJECT/254/56/7  #sourceunit=16 OID=77777777-7777-4777-8777-000000000007 sessionId=cmd<session> commandId=c3"
+   ]
+  }
+ ]
+}

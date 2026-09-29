@@ -1021,23 +1021,24 @@ non-inventoried service commands. Full replacement still requires:
   correlated gateway/programming exchange, not downstream DALI-device state
   or persistence. See [the DALI guide](cgate-dali.md).
 
-- Lighting event source identity. cmqttd's lighting status event is
-  `#e# lighting //PROJECT/NETWORK/APP/GROUP level=N`; it carries no source
-  unit, even when the received SAL identifies one. Scene playback emits
-  `#e# lighting ADDRESS RAMP LEVEL 0`. Trigger, temperature, measurement and
-  other application events append `sourceUnit=N` and print `0` when the source
-  is unknown. The re-decompiled build-2001 load-change formatter `BL` (class
-  SHA-256 `3cdf66aa…f82626`) and group class `bq` (`25763e12…beeb79`) emit a
-  lighting change as
-  `<app> <action> <address> <arguments> #sourceunit=<N> OID=<oid>`, followed
-  by ` sessionId=<id> commandId=<id>` when a command context exists.
-  `<action>` is `on` or `off` with an empty argument field, `ramp` with
-  `<level> <ramptime>` (`<level> 0` for an instant level other than 0 or 255),
-  or `terminateramp` with `#level=<N>`. A synchronization-only update is
-  `# <app> SyncUpdate <address> level=<N> #sourceunit=-1 OID=<oid>`. The group
-  object also logs event 730 as `new level=<N> sourceunit=<N> ramptime=<N>`.
-  cmqttd's event text is unchanged. Matching this format, including the OID
-  and command context, remains open.
+- Lighting event source identity. An attributed inbound Lighting ON, OFF or
+  RAMP SAL now emits the native build-2001 pair: level-7 event
+  `730 <address> <oid-or--> new level=N sourceunit=N ramptime=N` from group
+  class `bq` and the `BL` load-change status row
+  `lighting <on|off|ramp> <address> <arguments> #sourceunit=N OID=<oid>`, with
+  the database Group OID when one exists. Both forms, including source 255,
+  concatenated SALs, application 48 and a database Group, are replayed from
+  the owned capture `rust/testdata/fixtures/native_cgate_lighting_events.json`.
+  Remaining differences: cmqttd keeps a zero source byte unattributed (native
+  prints `sourceunit=0`), does not report inbound TERMINATERAMP (native prints
+  an interpolated `#level=`), rejects a point-to-multipoint row with a nonzero
+  routing byte that native accepts, and keeps its untimed
+  `#e# lighting ADDRESS VERB LEVEL` row, without the native PCI source unit and
+  `sessionId`/`commandId` suffix, for its own commands and scene playback.
+  Level reports keep `#e# lighting ADDRESS level=N` instead of native
+  `SyncUpdate` rows. Trigger, temperature, measurement and other application
+  events print `sourceUnit=0` for a zero source byte, which is what native
+  prints for a zero-source Lighting SAL.
 
 - Proprietary Schneider `patchset.zip` ingestion. The physical WRITE_PATCH
   protocol is implemented for the documented explicit manifest format, while

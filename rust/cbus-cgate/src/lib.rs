@@ -384,8 +384,9 @@ pub fn event_category(line: &str) -> EventCategory {
 /// corresponding bare event-port row. The native levels of locally captured
 /// forms are not always the last status-code digit: heartbeat 700 and startup
 /// 800 are level 5; command traces 761, 766 and 767 are level 9; diagnostic
-/// 938 is level 8. Other 7xx codes retain the existing code-digit fallback;
-/// unrecognized 8xx/9xx rows have no inferred level.
+/// 938 is level 8; group level advice 730 is level 7. Other 7xx codes retain
+/// the existing code-digit fallback; unrecognized 8xx/9xx rows have no
+/// inferred level.
 pub fn event_reporting_level(line: &str) -> Option<u8> {
     let body = line.strip_prefix("#e# ").unwrap_or(line);
     let mut fields = body.splitn(3, ' ');
@@ -452,6 +453,20 @@ fn source_captured_event_level(code: &str, payload: &str) -> Option<u8> {
     }
     if code == "999" && payload == "sys Socket accepted." {
         return Some(9);
+    }
+    // Group-level advice from class `bq`: `ADDRESS OID-or-- new level=...`
+    // or `... ramp terminated new level=...`, logged at level 7.
+    if code == "730" {
+        let mut fields = payload.splitn(3, ' ');
+        if let (Some(address), Some(_), Some(text)) = (fields.next(), fields.next(), fields.next())
+        {
+            if address.starts_with("//")
+                && (text.starts_with("new level=")
+                    || text.starts_with("ramp terminated new level="))
+            {
+                return Some(7);
+            }
+        }
     }
     let (source, text) = payload.split_once(" - ")?;
     if code == "800" && source == "cgate" && text == "C-Gate started." {
@@ -11165,6 +11180,20 @@ impl Server {
                 })
             })
             || self.level_key(oid).is_some()
+    }
+
+    /// Database OID of an addressed Group, as native load-change rows print
+    /// it. A group created only by bus traffic has no database identity.
+    pub(crate) fn lighting_group_oid(&self, project: &str, path: &str) -> Option<&str> {
+        self.db_pending
+            .values()
+            .filter(|object| {
+                object.project == project
+                    && object.element == "Group"
+                    && object.path.as_deref() == Some(path)
+            })
+            .max_by(|a, b| (a.xml_order, &a.oid).cmp(&(b.xml_order, &b.oid)))
+            .map(|object| object.oid.as_str())
     }
 
     fn last_unit_by_oid(&self, project: &str, oid: &str) -> Option<&Unit> {

@@ -239,3 +239,243 @@ async fn unrelated_physical_event_does_not_suppress_command_echo() {
         .expect("unrelated physical state must remain retained");
     assert_eq!(parse_json(&unrelated)["cbus_source_addr"], 5);
 }
+
+/// Direct observations interleaved with a bridged C-Gate command and an MQTT
+/// command keep bus order on both interfaces. Each observed group carries the
+/// same source unit in its native C-Gate load-change row and its MQTT state;
+/// neither confirmed command is reported as an attributed observation.
+#[tokio::test]
+async fn routed_and_direct_lighting_keep_order_and_source_identity_across_interfaces() {
+    let project = cbus_test_support::proc::temp_path("lighting-order-project.xml");
+    let state = cbus_test_support::proc::temp_path("lighting-order-cgate.json");
+    std::fs::write(
+        &project,
+        r#"<Installation><Project oid="project-topology"><TagName>TOPO</TagName>
+        <Network oid="network-254"><TagName>Local</TagName><Address>254</Address>
+          <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+          <Unit oid="pci"><Address>16</Address><UnitType>PC_CNI2</UnitType></Unit>
+          <Unit oid="bridge-near"><Address>253</Address><UnitType>BRIDGE2N</UnitType></Unit>
+          <Application oid="app"><TagName>Lighting</TagName><Address>56</Address>
+            <Group oid="group"><TagName>Local Light</TagName><Address>1</Address></Group>
+          </Application>
+        </Network>
+        <Network oid="network-253"><TagName>Remote</TagName><Address>253</Address>
+          <Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface>
+          <Unit oid="remote"><Address>4</Address><UnitType>KEYE1</UnitType></Unit>
+          <Unit oid="bridge-far"><Address>254</Address><UnitType>BRIDGE2N</UnitType></Unit>
+          <Application oid="remote-app"><TagName>Remote Lighting</TagName><Address>56</Address>
+            <Group oid="remote-group"><TagName>Remote Light</TagName><Address>1</Address></Group>
+          </Application>
+        </Network></Project></Installation>"#,
+    )
+    .unwrap();
+    let sys = start_with(Options {
+        project: false,
+        extra: vec![
+            "-P".into(),
+            project.to_string_lossy().into_owned(),
+            "--cgate-bind".into(),
+            "127.0.0.1:0".into(),
+            "--cgate-state".into(),
+            state.to_string_lossy().into_owned(),
+        ],
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    require(STARTUP, "C-Gate listener", || {
+        sys.daemon.stderr().contains("C-Gate service listening on ")
+    })
+    .await;
+    let address = sys
+        .daemon
+        .stderr()
+        .lines()
+        .find_map(|line| {
+            line.split_once("C-Gate service listening on ")
+                .map(|(_, address)| address.trim().to_string())
+        })
+        .unwrap();
+    let connect = || async {
+        let stream = TcpStream::connect(&address).await.unwrap();
+        let (reader, writer) = stream.into_split();
+        let mut reader = BufReader::new(reader);
+        let mut greeting = String::new();
+        reader.read_line(&mut greeting).await.unwrap();
+        assert!(greeting.starts_with("201 "));
+        (reader, writer)
+    };
+    let (mut events_reader, mut events_writer) = connect().await;
+    assert!(
+        cgate_command(&mut events_reader, &mut events_writer, "EVENT e7s1c0")
+            .await
+            .contains("200")
+    );
+    let (mut reader, mut writer) = connect().await;
+    let rows = std::sync::Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+    let collector = tokio::spawn({
+        let rows = rows.clone();
+        async move {
+            let _keep = events_writer;
+            loop {
+                let mut line = String::new();
+                if events_reader.read_line(&mut line).await.unwrap_or(0) == 0 {
+                    break;
+                }
+                rows.lock().unwrap().push(line.trim_end().to_string());
+            }
+        }
+    });
+    let lighting_rows = |rows: &std::sync::Mutex<Vec<String>>| {
+        rows.lock()
+            .unwrap()
+            .iter()
+            .filter(|row| {
+                row.starts_with("#s# lighting ")
+                    || row.contains(" 730 ")
+                    || row.starts_with("#e# lighting ")
+            })
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    let observed = |group: u8, state: &'static str, source: u8| {
+        let sys = &sys;
+        async move {
+            require(STARTUP, "attributed MQTT state", || {
+                sys.broker
+                    .retained(&format!("homeassistant/light/cbus_{group}/state"))
+                    .is_some_and(|payload| {
+                        let payload = parse_json(&payload);
+                        payload["state"] == state && payload["cbus_source_addr"] == source
+                    })
+            })
+            .await;
+        }
+    };
+
+    // 1. Direct observation from unit 4.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x04, 0x38, 0x00, 0x79, 0x01]));
+    observed(1, "ON", 4).await;
+    require(STARTUP, "group 1 load-change row", || {
+        lighting_rows(&rows)
+            .iter()
+            .any(|row| row.starts_with("#s# lighting on //TOPO/254/56/1 "))
+    })
+    .await;
+    let group_one_publishes = sys
+        .broker
+        .find_publishes("homeassistant/light/cbus_1/state")
+        .len();
+
+    // 2. Bridged command; a direct observation from unit 5 arrives while it
+    // waits for its PCI confirmation.
+    let routed = cgate_command(&mut reader, &mut writer, "ON //TOPO/253/56/1");
+    let peer = async {
+        require(COMMAND_DRAIN, "routed lighting PPM", || {
+            sys.pci.count_payload("03FD0938790145") == 1
+        })
+        .await;
+        sys.pci
+            .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x01, 0x02]));
+    };
+    let (routed, ()) = tokio::join!(routed, peer);
+    assert!(routed.contains("200 OK"), "{routed:?}");
+    observed(2, "OFF", 5).await;
+
+    // 3. MQTT command for group 3, confirmed by the PCI.
+    sys.broker
+        .inject_qos1("homeassistant/light/cbus_3/set", br#"{"state": "ON"}"#);
+    require(COMMAND_DRAIN, "MQTT command confirmation", || {
+        sys.broker
+            .find_publishes("cmqttd/cbus/command_result")
+            .iter()
+            .filter_map(|publish| {
+                serde_json::from_slice::<serde_json::Value>(&publish.payload).ok()
+            })
+            .any(|payload| payload["group"] == 3 && payload["delivery"] == "confirmed")
+    })
+    .await;
+    assert_eq!(sys.pci.count_payload("053800790347"), 1);
+
+    // 4. Direct instant ramp from unit 6.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x06, 0x38, 0x00, 0x02, 0x04, 0x80]));
+    require(STARTUP, "attributed MQTT ramp", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_4/state")
+            .is_some_and(|payload| {
+                let payload = parse_json(&payload);
+                payload["brightness"] == 128 && payload["cbus_source_addr"] == 6
+            })
+    })
+    .await;
+    require(STARTUP, "group 4 load-change row", || {
+        lighting_rows(&rows)
+            .iter()
+            .any(|row| row.starts_with("#s# lighting ramp //TOPO/254/56/4 "))
+    })
+    .await;
+
+    let lighting = lighting_rows(&rows);
+    let status = lighting
+        .iter()
+        .filter(|row| row.starts_with("#s# "))
+        .cloned()
+        .collect::<Vec<_>>();
+    // Direct observations in bus order, each with its physical source.
+    // Only group 1 is a database Group and so carries an OID.
+    assert_eq!(status.len(), 3, "{lighting:?}");
+    assert!(status[0].starts_with("#s# lighting on //TOPO/254/56/1  #sourceunit=4 OID="));
+    assert!(!status[0].ends_with("OID="), "{status:?}");
+    assert_eq!(
+        status[1],
+        "#s# lighting off //TOPO/254/56/2  #sourceunit=5 OID="
+    );
+    assert_eq!(
+        status[2],
+        "#s# lighting ramp //TOPO/254/56/4 128 0 #sourceunit=6 OID="
+    );
+    for (row, source) in status.iter().zip([4, 5, 6]) {
+        let address = row.split(' ').nth(3).unwrap();
+        let advice = lighting
+            .iter()
+            .filter(|line| line.contains(&format!(" 730 {address} ")))
+            .collect::<Vec<_>>();
+        assert_eq!(advice.len(), 1, "{lighting:?}");
+        assert!(advice[0].contains(&format!(" sourceunit={source} ramptime=0")));
+    }
+    // The bridged command is reported only as cmqttd's command row, between
+    // the observations that preceded and followed it; it is not attributed
+    // to a source unit and it does not touch the local group-1 MQTT state.
+    let position = |needle: &str| lighting.iter().position(|row| row.contains(needle));
+    let command_row = position("#e# lighting //TOPO/253/56/1 ON 255").expect("routed command row");
+    assert!(position("//TOPO/254/56/1 ").unwrap() < command_row);
+    assert!(command_row < position("//TOPO/254/56/4 ").unwrap());
+    assert!(!lighting
+        .iter()
+        .any(|row| row.contains("//TOPO/253/56/1 ") && row.contains("sourceunit")));
+    assert_eq!(
+        sys.broker
+            .find_publishes("homeassistant/light/cbus_1/state")
+            .len(),
+        group_one_publishes
+    );
+    // The MQTT command is not a C-Gate observation of group 3.
+    assert!(!lighting.iter().any(|row| row.contains("//TOPO/254/56/3")));
+    // MQTT publishes follow the same order as the C-Gate rows.
+    let first_publish = |group: u8, source: u8| {
+        sys.broker
+            .find_publishes(&format!("homeassistant/light/cbus_{group}/state"))
+            .into_iter()
+            .find(|publish| parse_json(&publish.payload)["cbus_source_addr"] == source)
+            .unwrap()
+            .ts
+    };
+    assert!(first_publish(1, 4) < first_publish(2, 5));
+    assert!(first_publish(2, 5) < first_publish(4, 6));
+
+    collector.abort();
+    std::fs::remove_file(project).ok();
+    std::fs::remove_file(state).ok();
+}

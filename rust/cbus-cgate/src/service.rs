@@ -2171,6 +2171,7 @@ impl Service {
             return;
         };
         let mut updates = Vec::new();
+        let mut lighting_change = None;
         let mut application_update = None;
         match event {
             CBusEvent::MeasurementData {
@@ -2375,30 +2376,39 @@ impl Service {
                     message.event_arguments()
                 ));
             }
+            // An attributed Lighting SAL is reported in the native load-change
+            // form below; only the level cache is updated here. A zero source
+            // byte decodes as `None` and remains unattributed: it neither
+            // populates the cache nor emits a row (native prints 0).
             CBusEvent::LightingOn {
-                source: Some(_),
+                source: Some(source),
                 app,
                 group,
-            } => updates.push((*app, *group, 255)),
-            CBusEvent::LightingOff {
-                source: Some(_),
-                app,
-                group,
-            } => updates.push((*app, *group, 0)),
-            CBusEvent::LightingRamp {
-                source: Some(_),
-                app,
-                group,
-                duration: 0,
-                level,
-            } => updates.push((*app, *group, *level)),
-            CBusEvent::LightingRamp {
-                source: Some(_),
-                app,
-                group,
-                ..
             } => {
-                net.levels.remove(&(*app, *group));
+                net.levels.insert((*app, *group), 255);
+                lighting_change = Some((*app, *group, 255, 0, *source));
+            }
+            CBusEvent::LightingOff {
+                source: Some(source),
+                app,
+                group,
+            } => {
+                net.levels.insert((*app, *group), 0);
+                lighting_change = Some((*app, *group, 0, 0, *source));
+            }
+            CBusEvent::LightingRamp {
+                source: Some(source),
+                app,
+                group,
+                duration,
+                level,
+            } => {
+                if *duration == 0 {
+                    net.levels.insert((*app, *group), *level);
+                } else {
+                    net.levels.remove(&(*app, *group));
+                }
+                lighting_change = Some((*app, *group, *level, *duration, *source));
             }
             CBusEvent::LevelReport {
                 app,
@@ -2506,6 +2516,20 @@ impl Service {
                 "#e# lighting //{}/{}/{app}/{group} level={value}",
                 self.project, self.network
             ));
+        }
+        if let Some((app, group, level, ramptime, source)) = lighting_change {
+            let address = format!("//{}/{}/{app}/{group}", self.project, self.network);
+            let oid = model.lighting_group_oid(&self.project, &address);
+            for line in lighting_change_events(
+                &self.event_timestamp(),
+                &address,
+                oid,
+                level,
+                ramptime,
+                source,
+            ) {
+                let _ = self.events.send(line);
+            }
         }
         if let Some((key, value)) = application_update {
             model.application_state.insert(key, value);
@@ -14375,6 +14399,40 @@ fn cgate_event_delivery(mode: EventMode, default: u8, event: &str) -> Option<&st
     }
 }
 
+/// Native rows for one attributed Lighting level change.
+///
+/// Build 2001 group class `bq` logs level-7 event 730 with the group's OID
+/// column (`-` without one), then load-change formatter `BL` writes the
+/// status row `lighting <action> <address> <arguments> #sourceunit=N OID=`.
+/// The action is derived from the level and ramp time: an instant 255 is
+/// `on` and an instant 0 is `off`, whichever SAL carried it; every other
+/// level is `ramp LEVEL SECONDS`. `native_cgate_lighting_events.json` pins
+/// each form, including the double space left by an empty argument field.
+fn lighting_change_events(
+    timestamp: &str,
+    address: &str,
+    oid: Option<&str>,
+    level: u8,
+    ramptime: u32,
+    source: u8,
+) -> [String; 2] {
+    let (action, arguments) = match (ramptime, level) {
+        (0, 255) => ("on", String::new()),
+        (0, 0) => ("off", String::new()),
+        _ => ("ramp", format!("{level} {ramptime}")),
+    };
+    [
+        format!(
+            "#e# {timestamp} 730 {address} {} new level={level} sourceunit={source} ramptime={ramptime}",
+            oid.unwrap_or("-")
+        ),
+        format!(
+            "#s# lighting {action} {address} {arguments} #sourceunit={source} OID={}",
+            oid.unwrap_or("")
+        ),
+    ]
+}
+
 /// Native `event.display-oids=no` omits the OID column that follows an event
 /// source (`-` when the object has no OID), as captured in
 /// `native_cgate_config_event_display_oids.json`. `sys` rows have no column.
@@ -14398,6 +14456,15 @@ fn event_oid_column(line: &str, display_oids: bool) -> std::borrow::Cow<'_, str>
         if timestamped && code.len() == 3 && code.bytes().all(|byte| byte.is_ascii_digit()) {
             if let Some(text) = rest.strip_prefix("- ") {
                 return std::borrow::Cow::Owned(format!("{prefix}{stamp} {code} {source} {text}"));
+            }
+            // A database-defined Lighting group carries its OID in the
+            // event-730 column instead of the placeholder.
+            if code == "730" && source.starts_with("//") {
+                if let Some((_, text)) = rest.split_once(' ') {
+                    return std::borrow::Cow::Owned(format!(
+                        "{prefix}{stamp} {code} {source} {text}"
+                    ));
+                }
             }
         }
     }

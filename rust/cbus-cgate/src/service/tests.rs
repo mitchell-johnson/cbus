@@ -3438,6 +3438,253 @@ async fn access_control_fanout_matches_every_native_captured_row() {
     std::fs::remove_file(path).unwrap();
 }
 
+fn lighting_capture_fixture() -> String {
+    // Mirrors the captured database: only 56/7 is a database Group; every
+    // other captured group was created by bus traffic and has no OID.
+    r#"<Installation><Project oid="project-lighting"><TagName>PROJECT</TagName>
+      <Network oid="network-254"><TagName>LT_Probe</TagName><Address>254</Address>
+        <Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:10001</InterfaceAddress></Interface>
+        <Application oid="lighting-56"><TagName>Lighting</TagName><Address>56</Address>
+          <Group oid="kitchen-7"><TagName>Kitchen</TagName><Address>7</Address></Group>
+        </Application>
+      </Network>
+    </Project></Installation>"#
+        .to_string()
+}
+
+/// `#e# <timestamp> 730 ...` with the service's own clock replaced.
+fn untimed_event(line: &str) -> String {
+    match line
+        .strip_prefix("#e# ")
+        .and_then(|body| body.split_once(' '))
+    {
+        Some((_, rest)) => format!("#e# <timestamp> {rest}"),
+        None => line.to_string(),
+    }
+}
+
+fn lighting_event_for(sal: &Sal, source: Option<u8>) -> Option<CBusEvent> {
+    match *sal {
+        Sal::LightingOn {
+            application,
+            group_address,
+        } => Some(CBusEvent::LightingOn {
+            source,
+            app: application,
+            group: group_address,
+        }),
+        Sal::LightingOff {
+            application,
+            group_address,
+        } => Some(CBusEvent::LightingOff {
+            source,
+            app: application,
+            group: group_address,
+        }),
+        Sal::LightingRamp {
+            application,
+            group_address,
+            duration,
+            level,
+        } => Some(CBusEvent::LightingRamp {
+            source,
+            app: application,
+            group: group_address,
+            duration,
+            level,
+        }),
+        _ => None,
+    }
+}
+
+#[tokio::test]
+async fn lighting_fanout_matches_every_native_captured_row() {
+    let fixture_json: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_lighting_events.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&lighting_capture_fixture(), None, path.clone(), pci, None).unwrap();
+    let oid = service
+        .model
+        .lock()
+        .await
+        .lighting_group_oid("PROJECT", "//PROJECT/254/56/7")
+        .expect("database Group has an OID")
+        .to_string();
+    let mut events = service.events.subscribe();
+    let cases = fixture_json["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 19);
+    let mut compared = 0;
+    for case in cases {
+        let label = case["label"].as_str().unwrap();
+        let wire = format!("{}\r\n", case["pci_line"].as_str().unwrap());
+        let native = case["native_rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| {
+                row.as_str()
+                    .unwrap()
+                    .replace("77777777-7777-4777-8777-000000000007", &oid)
+            })
+            .filter(|row| row.starts_with("#s# lighting ") || row.contains(" 730 "))
+            .collect::<Vec<_>>();
+        let (packet, _) = cbus_protocol::decode_packet(wire.as_bytes(), true, true, true);
+        let mut emitted = Vec::new();
+        if let Some(Packet::PointToMultipoint { meta, sals, .. }) = packet {
+            // The PCI transport emits one event per SAL, in frame order, and
+            // none for TERMINATERAMP.
+            for sal in &sals {
+                if let Some(event) = lighting_event_for(sal, meta.source_address) {
+                    service.observe(&event).await;
+                } else {
+                    assert!(
+                        matches!(sal, Sal::LightingTerminateRamp { .. }),
+                        "{label}: {sal:?}"
+                    );
+                }
+            }
+        }
+        while let Ok(line) = events.try_recv() {
+            emitted.push(untimed_event(&line));
+        }
+        if case["cmqttd"] != "same" {
+            assert!(emitted.is_empty(), "{label}: {emitted:?}");
+            continue;
+        }
+        // Native writes the status row from a separate listener, so it can
+        // precede its 730 row. Compare each group's pair independently.
+        let mut native_sorted = native.clone();
+        let mut emitted_sorted = emitted.clone();
+        native_sorted.sort();
+        emitted_sorted.sort();
+        assert_eq!(emitted_sorted, native_sorted, "{label}");
+        let group_order = |rows: &[String]| {
+            rows.iter()
+                .filter(|row| row.starts_with("#s# "))
+                .map(|row| row.split(' ').nth(3).unwrap().to_string())
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(group_order(&emitted), group_order(&native), "{label}");
+        compared += native.len();
+    }
+    assert_eq!(compared, 32);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn unattributed_lighting_and_level_reports_keep_their_existing_rows() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    service
+        .observe(&CBusEvent::LightingOn {
+            source: None,
+            app: 56,
+            group: 1,
+        })
+        .await;
+    assert!(events.try_recv().is_err());
+    assert!(
+        !service.model.lock().await.projects["HARNESS"].networks[&254]
+            .levels
+            .contains_key(&(56, 1))
+    );
+    // A status report carries no source unit. It keeps the untimed cmqttd
+    // level row rather than inventing an attribution.
+    service
+        .observe(&CBusEvent::LevelReport {
+            app: 56,
+            block_start: 1,
+            levels: vec![Some(128)],
+        })
+        .await;
+    assert_eq!(
+        events.try_recv().unwrap(),
+        "#e# lighting //HARNESS/254/56/1 level=128"
+    );
+    // A timed ramp is reported with its snapped duration but clears the
+    // cache until a report arrives.
+    service
+        .observe(&CBusEvent::LightingRamp {
+            source: Some(12),
+            app: 56,
+            group: 1,
+            duration: 4,
+            level: 200,
+        })
+        .await;
+    let group_oid = service
+        .model
+        .lock()
+        .await
+        .lighting_group_oid("HARNESS", "//HARNESS/254/56/1")
+        .unwrap()
+        .to_string();
+    assert_eq!(
+        untimed_event(&events.try_recv().unwrap()),
+        format!(
+            "#e# <timestamp> 730 //HARNESS/254/56/1 {group_oid} new level=200 sourceunit=12 ramptime=4"
+        )
+    );
+    assert_eq!(
+        events.try_recv().unwrap(),
+        format!("#s# lighting ramp //HARNESS/254/56/1 200 4 #sourceunit=12 OID={group_oid}")
+    );
+    assert!(
+        !service.model.lock().await.projects["HARNESS"].networks[&254]
+            .levels
+            .contains_key(&(56, 1))
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn lighting_group_advice_uses_native_level_and_oid_column() {
+    let bare = "#e# 20260930-120000 730 //P/254/56/1 - new level=255 sourceunit=4 ramptime=0";
+    let with_oid = "#e# 20260930-120000 730 //P/254/56/7 77777777-7777-4777-8777-000000000007 new level=0 sourceunit=8 ramptime=0";
+    let terminated =
+        "20260930-120000.123 730 //P/254/56/1 - ramp terminated new level=66 sourceunit=6";
+    for line in [bare, with_oid, terminated] {
+        assert_eq!(crate::event_reporting_level(line), Some(7), "{line}");
+    }
+    let six = EventMode {
+        events: crate::EventLevel::Capped(6),
+        status: 1,
+        config: 0,
+    };
+    let seven = EventMode {
+        events: crate::EventLevel::Capped(7),
+        status: 0,
+        config: 0,
+    };
+    assert!(cgate_event_delivery(six, 5, with_oid).is_none());
+    assert!(cgate_event_delivery(seven, 5, with_oid).is_some());
+    // e+ follows the startup global level, and strips the #e# prefix.
+    assert!(cgate_event_delivery(EventMode::DEFAULT, 5, bare).is_none());
+    assert_eq!(
+        cgate_event_delivery(EventMode::DEFAULT, 7, bare),
+        bare.strip_prefix("#e# ")
+    );
+    let status = "#s# lighting on //P/254/56/1  #sourceunit=4 OID=";
+    assert!(cgate_event_delivery(seven, 5, status).is_none());
+    assert_eq!(cgate_event_delivery(six, 5, status), Some(status));
+    // display-oids=no removes the OID column for placeholder and database
+    // groups alike.
+    assert_eq!(
+        event_oid_column(bare, false),
+        "#e# 20260930-120000 730 //P/254/56/1 new level=255 sourceunit=4 ramptime=0"
+    );
+    assert_eq!(
+        event_oid_column(with_oid, false),
+        "#e# 20260930-120000 730 //P/254/56/7 new level=0 sourceunit=8 ramptime=0"
+    );
+    assert_eq!(event_oid_column(with_oid, true), with_oid);
+}
+
 #[tokio::test]
 async fn confirmed_telephony_on_retired_pci_generation_fails_closed() {
     let path = state_path();
