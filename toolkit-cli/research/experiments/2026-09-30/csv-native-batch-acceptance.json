@@ -1,0 +1,259 @@
+{
+ "format": "cbus-toolkit-csv-native-batch-acceptance-v1",
+ "date": "2026-09-30",
+ "test": "tests/test_toolkit_database_csv_native_batch.py::NativeBatchColdLoadTests::test_owned_cgate_cold_loads_every_fixture_and_readback_csv_matches",
+ "command": "CBUS_LOCAL_CGATE_VENDOR=<owned C-Gate 3.4.0.2001 app> CBUS_CGATE_JAVA=<owned Java 11> PYTHONPATH=src:tests:. python -m pytest tests/test_toolkit_database_csv_native_batch.py",
+ "outcome": "2 passed, 16 subtests passed; 0 skipped",
+ "native_cgate": {
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+  "java_version": "openjdk version \"11.0.32.1\" 2026-08-18",
+  "backend": "local",
+  "loopback_only": true,
+  "listener_ownership_verified": true,
+  "cleanup_complete": true,
+  "work_removed": true
+ },
+ "harness_sha256": {
+  "tests/test_toolkit_database_csv_native_batch.py": "4528c7fc768bc6501bd64f48e514cba22591b1e9b96f7fa617f7de51d1b5fc65",
+  "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+ },
+ "fixtures": [
+  {
+   "fixture": "dimdn8f",
+   "project": "CSVTEST",
+   "fixture_sha256": "c7d4aaf2e7fe9b272fef547a3b346513cc7f854a40e71bdff2547edf87718cf1",
+   "loaded_document_sha256": "c84e4b92997364a61dc162cf5bdfac095e882e108e56a7c46aa8eecbc6fa2c46",
+   "readback_sha256": "9a0170aff9f60d5441109bbbd9c4ef36bc672ab482c817fb89f880cca9de0ac0",
+   "unit_types": [
+    "DIMDN8F"
+   ],
+   "csv_sha256": "799efd76f5240649ee0f4015fc6b8fb547cab04a647ada2ba43bccd1c15c27c4",
+   "csv_bytes": 508,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "din4-rel4-rel8",
+   "project": "CSVTEST",
+   "fixture_sha256": "9c18c3dd1f1c62390176fa9d2e2697ad7b55cdadd3e5d5ca87d6d69a0c321eb1",
+   "loaded_document_sha256": "ddb0c938dbb9c44b43a290cc198a7de6f705de9e2f889b8c6a252b4709321d7d",
+   "readback_sha256": "34607dc4cc54882e24b5177a0a4aed2ad10b5e43772502df1ef3c0c8c34ed140",
+   "unit_types": [
+    "DIMDN4",
+    "DIMDN4F",
+    "RELDN4",
+    "RELDN8"
+   ],
+   "csv_sha256": "de52dc38b0841fcf215f3235fad09ae3d03b62407bd738b8a7be1bc114eff05f",
+   "csv_bytes": 1156,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "keygl5",
+   "project": "CSVTEST",
+   "fixture_sha256": "7e3a2437d1326a482d9265e1ba9d8a47faa179aaaa665c7f643a6d4e19acb75b",
+   "loaded_document_sha256": "53daa6b45576a8889d1f3a477512f9cc2bac73033fe4812f4829d342d95ed607",
+   "readback_sha256": "97116fe28df6765333ec02d4a8340726404cbbeb1ea9b206036566ffc56df12c",
+   "unit_types": [
+    "KEYGL5"
+   ],
+   "csv_sha256": "1179b51f6ff0b543662a6857813a79786ea008b5b7ac2e50b5d39fe2769d0ed3",
+   "csv_bytes": 472,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "manager-order",
+   "project": "CSVTEST",
+   "fixture_sha256": "c0c6c51d8b9e2505a26924bba2346fc49ff993249a1ab2530386e67c99deb83e",
+   "loaded_document_sha256": "1770fef99095ca0a160f78bba096f5e2cc884864a390f4c2231e391d032cad91",
+   "readback_sha256": "f87f9ea8be4cd17dcfb54936fa6d3620035bcd97dc6dd77d17203ab125fc5f13",
+   "unit_types": [
+    "KEYE3",
+    "RELAY4"
+   ],
+   "csv_sha256": "370a3a9eb31eb7e93fee7c223ed08077dd751392a4929eecea8211acf03a82b5",
+   "csv_bytes": 1013,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "reldn8b",
+   "project": "CSVTEST",
+   "fixture_sha256": "386e180fa8d153261d7f46928e515b7d8f0f61242b4ed93c8e797667a52d7352",
+   "loaded_document_sha256": "1e10a23d7e05ade9413db252a3da7496d96d82938f8672782a6ddf4851db5847",
+   "readback_sha256": "f2097322abcf109954f6964783e2a121bccd95cd15951c2620d25f458dc68b95",
+   "unit_types": [
+    "RELDN8B"
+   ],
+   "csv_sha256": "43552b7e14c727b7e906e7f44be19922c5d364744265ddc3220ffc06985ac406",
+   "csv_bytes": 511,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "reldn8sp",
+   "project": "CSVTEST",
+   "fixture_sha256": "771e0a3457848c853d2245105287da84132475f8645e2cf75be6b1184c495275",
+   "loaded_document_sha256": "3021722fc8b73a5c9fffcd89c655d3e7c6cba6d712d246ae275c355351658410",
+   "readback_sha256": "0b6d5f1452851a1d39fdbb4e7e336eb099402c1eccf876251f354016bebba701",
+   "unit_types": [
+    "RELDN8SP"
+   ],
+   "csv_sha256": "1b0face71e3a9d3e0e68afd6fa7bec85de807c9f34973e82fbddc0a945b20c1e",
+   "csv_bytes": 518,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "senpiria",
+   "project": "CSVTEST",
+   "fixture_sha256": "37e7e42614e2543ae9d8536182816ce952600a916e9cf060cf25ed60c35b4f0f",
+   "loaded_document_sha256": "23322649cbfabe8ffdbc9ed60c6fcce2a15c90a74ca1a9d9bd1fb94c170a5a9a",
+   "readback_sha256": "ecd2490824c96e0aa553fc4c430584858d44919fdbb7c52c2ac4c50184a01649",
+   "unit_types": [
+    "SENPIRIA"
+   ],
+   "csv_sha256": "6f1fb5ef87bf22c05dd814bb0015afce6e068d15b34c2a6bae37d3534f0cccb8",
+   "csv_bytes": 446,
+   "readback_csv_equal": true
+  },
+  {
+   "fixture": "registry-batch",
+   "project": "CSVREG",
+   "fixture_sha256": "da0e2db5685f3b55c45d55c69f756fbd86c5d6f166103ef5aae1966e0b7ea8aa",
+   "loaded_document_sha256": "0a9a4844be644109bbf4d868640e5c32a31f125268d0dbd228261bfe7db63a02",
+   "readback_sha256": "c5ad62cc142602e1a904fb018132fa47607de33eac1f9e0a178e9117ab325336",
+   "unit_types": [
+    "ANODN4",
+    "ANOMB8",
+    "DIMDS8",
+    "DIMPR1",
+    "DIMPR2",
+    "DIMPR4",
+    "DSIMB8",
+    "RELDB1",
+    "RELDC4",
+    "RELMB8",
+    "SENPIRIB"
+   ],
+   "csv_sha256": "4b583dd0839ade7c30a34832d1c18121fdc08cec02f329718dd4b685ae779214",
+   "csv_bytes": 2718,
+   "readback_csv_equal": true
+  }
+ ],
+ "commands": [
+  {
+   "command": "REPOSITORY LIST",
+   "code": 123
+  },
+  {
+   "command": "REPOSITORY USE 2",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVTEST",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVTEST",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LOAD CSVREG",
+   "code": 200
+  },
+  {
+   "command": "DBGETXML //CSVREG",
+   "code": 344
+  },
+  {
+   "command": "PROJECT CLOSE CSVREG",
+   "code": 200
+  },
+  {
+   "command": "PROJECT LIST",
+   "code": 124
+  }
+ ],
+ "physical_networks_opened": false,
+ "original_toolkit_gui_executed": false,
+ "limits": [
+  "Cold native C-Gate project load and DBGETXML readback of synthetic fixtures; Python CLI re-projection of the readback equals the fixture CSV byte for byte.",
+  "The original Toolkit GUI report was not executed; this is storage/readback acceptance, not an original CSV oracle.",
+  "Fixtures were wrapped only with the Installation DBVersion/Version/Modified, Project/Network TagName and InstallationDetail elements the file repository requires.",
+  "DIMDN8, RELDN12, SENPIROA, KEYE1/2/4, KEYEIR1-4 and OWNED_UNKNOWN have no committed synthetic XML fixture and were not cold-loaded here."
+ ]
+}

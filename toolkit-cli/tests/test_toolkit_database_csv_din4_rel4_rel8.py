@@ -38,8 +38,10 @@ ROWS = (
     + 'Circuit 04,Circuit 03,Circuit 02,"Kitchen, east",' + '<N/A>,' * 12,
     '6,' + PREFIX + ',Four relay,RELDN4,SYNTHETIC,No serial #,2.7.00,Lighting,,<Unused>,'
     + '"Kitchen, east",Circuit 02,Circuit 03,Circuit 04,' + '<N/A>,' * 12,
+    # RELDN8 is registered to the marshalling-box agent, which reloads stored
+    # indices 1-4 and 7-10 (see csv-factory-registry-static.json).
     '7,' + PREFIX + ',Eight relay,RELDN8,SYNTHETIC,No serial #,2.7.00,Lighting,,<Unused>,'
-    + ','.join(f'Circuit {number:02d}' for number in range(16, 8, -1)) + ','
+    + ','.join(f'Circuit {number:02d}' for number in (15, 14, 13, 12, 9, 8, 7, 6)) + ','
     + '<N/A>,' * 8,
 )
 CSV_BYTES = ('\r\n'.join((HEADER, *ROWS)) + '\r\n\r\n').encode()
@@ -94,7 +96,9 @@ class DINFourEightCSVTests(unittest.TestCase):
                 self.assertTrue(native.complete)
                 self.assertEqual(native.cached.selected_class, selected_class)
                 self.assertEqual(native.report.rows, (HEADER, expected))
-                self.assertEqual(len(native.cached.unit.group_identities), 16)
+                remapped = selected_class == 'TRELDN8'
+                self.assertEqual(len(native.cached.unit.group_identities), 8 if remapped else 16)
+                self.assertEqual(len(native.cached.unit.loader_associations), 24 if remapped else 0)
                 self.assertEqual(native.cached.raw_area, '255')
                 self.assertFalse(native.as_dict()['native_database_mutated'])
                 cached = project_cached_csv_unit(native.cached.unit,

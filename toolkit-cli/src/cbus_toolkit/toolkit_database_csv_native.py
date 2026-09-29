@@ -11,14 +11,18 @@ from .addressing import _container
 from .toolkit_database_csv import (DatabaseCSV, MAX_CAPTURE_BYTES, MAX_UNITS,
                                    document_database_csv, validate_columns)
 from .toolkit_database_csv_projection import (
+    _DIN_TYPES,
     _KEYE_TYPES,
-    _RELDN8SP_RELOAD_INDICES,
+    _REMAP_TYPES,
+    _SENSOR_TYPES,
     CSVAreaObservation,
     CachedCSVGroup,
     CachedCSVProjection,
     CachedCSVUnit,
     project_cached_csv_unit,
+    remap_indices,
 )
+from .toolkit_database_csv_registry import refusal_reason
 
 
 PROFILE = 'cbus-toolkit-database-native-xml-projection-v1'
@@ -227,8 +231,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
             secondary_node if index < 8 and secondary_mask & (1 << index) else primary
             for index in range(len(group_addresses)))
         area_address = 255
-    elif unit_type in ('DIMDN4', 'DIMDN4F', 'DIMDN8', 'DIMDN8F',
-                       'RELDN4', 'RELDN8', 'RELDN8B', 'RELDN12') and firmware == '2.7.00':
+    elif unit_type in _DIN_TYPES and firmware == '2.7.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=16)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
@@ -242,23 +245,23 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_addresses = group_values
         group_applications = (primary,) * len(group_addresses)
         area_address = 255
-    elif unit_type == 'RELDN8SP' and firmware == '2.7.00':
+    elif unit_type in _REMAP_TYPES and firmware == '2.7.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=16)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'),
                               'AreaGroupAddress', count=1)
         primary_address, secondary_address = app_values
         if secondary_address != 255 or area_values != (255,):
-            raise ValueError('Captured native RELDN8SP profile requires unused secondary application and Area255')
+            raise ValueError(f'Captured native {unit_type} profile requires unused secondary application and Area255')
         primary = _one_by_address(network, 'Application', primary_address)
         secondary = ''
-        # LoadGroups first runs the DIN 16-slot loader. Its second pass clears
-        # the unit group manager, then appends these nine selected indices.
+        # LoadGroups first runs the DIN loader. The marshalling-box pass then
+        # clears the unit group manager and appends the selected indices.
         group_addresses = group_values + tuple(
-            group_values[index] for index in _RELDN8SP_RELOAD_INDICES)
+            group_values[index] for index in remap_indices(unit_type))
         group_applications = (primary,) * len(group_addresses)
         area_address = 255
-    elif unit_type in ('SENPIROA', 'SENPIRIA') and firmware == '2.4.00':
+    elif unit_type in _SENSOR_TYPES and firmware == _SENSOR_TYPES[unit_type][0]:
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=8)
         area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
@@ -268,8 +271,8 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         secondary_mask = secondary_blocks[0]
         if unit_type == 'SENPIROA' and (secondary_address != 255 or secondary_mask):
             raise ValueError('Captured native SENPIROA profile requires an unused secondary application')
-        if unit_type == 'SENPIRIA' and secondary_address == 255 and secondary_mask:
-            raise ValueError('SENPIRIA secondary group blocks require a configured secondary application')
+        if unit_type != 'SENPIROA' and secondary_address == 255 and secondary_mask:
+            raise ValueError(unit_type + ' secondary group blocks require a configured secondary application')
         if area_values != (255,):
             raise ValueError('Captured native sensor profile requires Area group 255')
         primary = _one_by_address(network, 'Application', primary_address)
@@ -340,7 +343,10 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 2.5.00, DIMDN4/DIMDN4F/DIMDN8/DIMDN8F/RELDN4/RELDN8/RELDN8B/RELDN8SP/RELDN12 2.7.00, SENPIROA/SENPIRIA 2.4.00, KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles')
+        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 2.5.00, '
+                         'DIN-output and marshalling-box 2.7.00, SENPIROA/SENPIRIA 2.4.00, SENPIRIB 2.2.00, '
+                         'KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles; '
+                         + refusal_reason(unit_type, firmware))
 
     groups = []
     application_groups = {}
@@ -374,8 +380,8 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         _field(unit, 'UnitName'), _field(unit, 'TagName'), unit_type,
         _field(unit, 'CatalogNumber'), _field(unit, 'SerialNumber'), firmware,
         _field(primary, 'TagName'), secondary,
-        identities[16:] if unit_type == 'RELDN8SP' else identities,
-        loader_associations=identities if unit_type == 'RELDN8SP' else ())
+        identities[16:] if unit_type in _REMAP_TYPES else identities,
+        loader_associations=identities if unit_type in _REMAP_TYPES else ())
     observations = () if area_address is None else (
         CSVAreaObservation(str(area_address)), CSVAreaObservation(str(area_address)))
     cached = project_cached_csv_unit(cached_unit, group_cache=tuple(groups),

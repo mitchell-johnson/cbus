@@ -5,9 +5,10 @@ not parse a project or access native storage.  The admitted RELAY4 and KEYE
 profiles replay the two Area getter loads and group lookup/reference changes;
 the RELAY4 profile also models the captured optional missing-unused-group save.
 The KEYGL5 profile consumes sixteen already-resolved functional widget groups.
-The RELDN8SP profile retains both its sixteen initial DIN associations and the
-nine marshalling-box reload associations. The latter replace the group manager
-list and are the nine CSV-visible groups.
+The marshalling-box remap profiles (RELDN8, RELDN8SP and RELMB8) retain both
+their sixteen initial DIN associations and the eight or nine marshalling-box
+reload associations. The latter replace the group manager list and are the
+CSV-visible groups.
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ from .toolkit_database_csv import (
     document_database_csv,
     validate_columns,
 )
+from .toolkit_database_csv_registry import refusal_reason
 
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
@@ -31,13 +33,46 @@ _KEYE_TYPES = frozenset((
     'KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
     'KEYEIR1', 'KEYEIR2', 'KEYEIR3', 'KEYEIR4',
 ))
+# DIN-output agent classes and their GetMaxChannels value. The shared agent
+# reloads one group per channel from GroupAddress[0:max], so later stored slots
+# are unavailable in the report. The 2026-09-30 factory registry pins each row.
+_DIN_CHANNELS = {'TDIMDN4': 4, 'TDIMDN4F': 4, 'TDIMDN8': 8, 'TDIMDN8F': 8,
+                 'TRELDN4': 4, 'TRELDN8B': 8, 'TRELDN12': 12,
+                 'TANODN4': 4, 'TDIMDS8': 8, 'TDIMPR1': 1, 'TDIMPR2': 2,
+                 'TDIMPR4': 4, 'TRELDC4': 4, 'TRELDB1': 1,
+                 'TANOMB8': 9, 'TDSIMB8': 9}
 _DIN_TYPES = {'DIMDN4': 'TDIMDN4', 'DIMDN4F': 'TDIMDN4F',
               'DIMDN8': 'TDIMDN8', 'DIMDN8F': 'TDIMDN8F',
-              'RELDN4': 'TRELDN4', 'RELDN8': 'TRELDN8',
-              'RELDN8B': 'TRELDN8B',
-              'RELDN12': 'TRELDN12'}
+              'RELDN4': 'TRELDN4', 'RELDN8B': 'TRELDN8B',
+              'RELDN12': 'TRELDN12', 'ANODN4': 'TANODN4', 'DIMDS8': 'TDIMDS8',
+              'DIMPR1': 'TDIMPR1', 'DIMPR2': 'TDIMPR2', 'DIMPR4': 'TDIMPR4',
+              'RELDC4': 'TRELDC4', 'RELDB1': 'TRELDB1',
+              'ANOMB8': 'TANOMB8', 'DSIMB8': 'TDSIMB8'}
+# TMarshallingBoxCGateAgent.LoadGroups remaps TRELDN8 (and subclasses) and
+# TRELMB8 after the DIN load: stored indices 1-4 then 7-11, bounded by the
+# class channel count.
+_REMAP_TYPES = {'RELDN8': ('TRELDN8', 8), 'RELDN8SP': ('TRELDN8SP', 9),
+                'RELMB8': ('TRELMB8', 9)}
 _RELDN8SP_RELOAD_INDICES = (1, 2, 3, 4, 7, 8, 9, 10, 11)
-_SENSOR_TYPES = {'SENPIROA': 'TST7SENPIROA', 'SENPIRIA': 'TST7SENPIRSS'}
+_SENSOR_TYPES = {'SENPIROA': ('2.4.00', 'TST7SENPIROA'),
+                 'SENPIRIA': ('2.4.00', 'TST7SENPIRSS'),
+                 'SENPIRIB': ('2.2.00', 'TST7SENPIRSS')}
+
+
+def remap_indices(unit_type):
+    """Stored GroupAddress indices reloaded by the marshalling-box agent."""
+    return _RELDN8SP_RELOAD_INDICES[:_REMAP_TYPES[unit_type.upper()][1]]
+
+
+def admitted_profiles():
+    """Every admitted (unit type, firmware, selected class) point, in order."""
+    rows = [('RELAY4', firmware, 'TRELAY4') for firmware in ('0', '4.4', '9')]
+    rows += [(kind, '2.5.00', 'TKEYEx') for kind in sorted(_KEYE_TYPES)]
+    rows += [(kind, '2.7.00', klass) for kind, klass in _DIN_TYPES.items()]
+    rows += [(kind, '2.7.00', klass) for kind, (klass, _) in _REMAP_TYPES.items()]
+    rows += [(kind, firmware, klass) for kind, (firmware, klass) in _SENSOR_TYPES.items()]
+    rows.append(('KEYGL5', '5.5.00', 'TCBusEDLTUnit'))
+    return tuple(rows)
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
 _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_type',
@@ -105,15 +140,18 @@ class CachedCSVUnit:
         if type(self.loader_associations) is not tuple or any(
                 type(value) is not str or not value for value in self.loader_associations):
             raise ValueError('Loader associations must be nonempty identities in an exact tuple')
-        if self.unit_type.upper() == 'RELDN8SP':
-            if (len(self.group_identities) != 9 or len(self.loader_associations) != 25
+        kind = self.unit_type.upper()
+        if kind in _REMAP_TYPES:
+            indices = remap_indices(kind)
+            if (len(self.group_identities) != len(indices)
+                    or len(self.loader_associations) != 16 + len(indices)
                     or self.group_identities != self.loader_associations[16:]
                     or self.group_identities != tuple(
-                        self.loader_associations[index]
-                        for index in _RELDN8SP_RELOAD_INDICES)):
-                raise ValueError('RELDN8SP requires sixteen DIN loads followed by its exact nine-group replacement')
+                        self.loader_associations[index] for index in indices)):
+                raise ValueError(f'{kind} requires sixteen DIN loads followed by its exact '
+                                 f'{len(indices)}-group marshalling-box replacement')
         elif self.loader_associations:
-            raise ValueError('Loader association history is supported only for RELDN8SP')
+            raise ValueError('Loader association history is supported only for marshalling-box remap profiles')
 
     def as_dict(self):
         result = {'identity': self.identity, 'address': self.address,
@@ -210,15 +248,15 @@ def _class(unit):
         if len(unit.group_identities) != 16:
             raise ValueError('Cached DIN profile requires exactly sixteen stored groups')
         return _DIN_TYPES[kind]
-    if kind == 'RELDN8SP' and unit.firmware == '2.7.00':
-        return 'TRELDN8SP'
-    if kind in _SENSOR_TYPES and unit.firmware == '2.4.00':
+    if kind in _REMAP_TYPES and unit.firmware == '2.7.00':
+        return _REMAP_TYPES[kind][0]
+    if kind in _SENSOR_TYPES and unit.firmware == _SENSOR_TYPES[kind][0]:
         if len(unit.group_identities) != 8:
             raise ValueError('Cached sensor profile requires exactly eight stored groups')
-        return _SENSOR_TYPES[kind]
+        return _SENSOR_TYPES[kind][1]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, RELDN8SP, sensor and KEYGL5 type/firmware pairs')
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, marshalling-box, sensor and KEYGL5 type/firmware pairs; ' + refusal_reason(unit.unit_type, unit.firmware))
 
 
 def _validated_groups(unit, groups):
@@ -255,10 +293,9 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
     if group_save is not None and type(group_save) is not CSVGroupSaveObservation:
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
-    has_area = selected_class in (
-        'TRELAY4', 'TKEYEx', 'TDIMDN4', 'TDIMDN4F', 'TDIMDN8', 'TDIMDN8F',
-        'TRELDN4', 'TRELDN8', 'TRELDN8B', 'TRELDN8SP', 'TRELDN12',
-        'TST7SENPIROA', 'TST7SENPIRSS')
+    has_area = (selected_class in _DIN_CHANNELS or selected_class in (
+        'TRELAY4', 'TKEYEx', 'TRELDN8', 'TRELDN8SP', 'TRELMB8',
+        'TST7SENPIROA', 'TST7SENPIRSS'))
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
     if not has_area and area_observations and len(area_observations) != 2:
@@ -315,13 +352,11 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Group-save observation was supplied but the projection did not require a save')
 
     cache = {group.identity: group for group in current}
-    if selected_class == 'TRELDN8SP':
-        events.append(_event('marshalling_box_groups_replaced',
-                             initial_count=16, replacement_count=9))
-    interaction_count = {'TRELAY4': 6, 'TDIMDN4': 4, 'TDIMDN4F': 4,
-                         'TRELDN4': 4, 'TRELDN8B': 8, 'TRELDN8SP': 9,
-                         'TRELDN12': 12,
-                         'TCBusEDLTUnit': 16}.get(selected_class, 8)
+    if unit.loader_associations:
+        events.append(_event('marshalling_box_groups_replaced', initial_count=16,
+                             replacement_count=len(unit.group_identities)))
+    interaction_count = {'TRELAY4': 6, 'TRELDN8': 8, 'TRELDN8SP': 9, 'TRELMB8': 9,
+                         'TCBusEDLTUnit': 16, **_DIN_CHANNELS}.get(selected_class, 8)
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities))
     area = cache[area_identity].tag if area_identity is not None else None
@@ -342,7 +377,7 @@ def parse_cached_projection(value, *, columns):
         raise ValueError('Cached unit must provide every documented field, without extras')
     expected_unit_fields = (_UNIT_FIELDS | {'loader_associations'}
                             if type(raw_unit['unit_type']) is str
-                            and raw_unit['unit_type'].upper() == 'RELDN8SP'
+                            and raw_unit['unit_type'].upper() in _REMAP_TYPES
                             else _UNIT_FIELDS)
     if set(raw_unit) != expected_unit_fields:
         raise ValueError('Cached unit must provide every documented field, without extras')
