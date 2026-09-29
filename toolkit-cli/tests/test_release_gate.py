@@ -58,6 +58,30 @@ class ReleaseGateTests(unittest.TestCase):
                     "CBUS_LOCAL_CGATE_VENDOR": str(vendor),
                 })
 
+    def test_value_provision_can_pin_an_exact_selector(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            manifest_path = self.fixture(root, requirements={
+                "CBUS_NATIVE_SERVICE_BACKEND": {"kind": "value", "equals": "local"},
+                "CBUS_SCENE_NATIVE": {"kind": "flag"},
+            })
+            with patch.object(release_gate, "ROOT", root), patch.object(release_gate.platform, "system", return_value="SyntheticOS"):
+                manifest = release_gate.load_manifest(manifest_path, "hardware")
+            verified = release_gate.verify_provision(manifest, {
+                "CBUS_NATIVE_SERVICE_BACKEND": "local", "CBUS_SCENE_NATIVE": "1"})
+            self.assertEqual(verified[0], {"name": "CBUS_NATIVE_SERVICE_BACKEND", "kind": "value",
+                                           "present": True, "equals": "local"})
+            with self.assertRaisesRegex(release_gate.GateError, "must equal local"):
+                release_gate.verify_provision(manifest, {
+                    "CBUS_NATIVE_SERVICE_BACKEND": "docker", "CBUS_SCENE_NATIVE": "1"})
+            for rule in ({"kind": "flag", "equals": "1"}, {"kind": "value", "equals": ""}):
+                with self.subTest(rule=rule):
+                    manifest_path = self.fixture(root, requirements={"CBUS_NATIVE_SERVICE_BACKEND": rule})
+                    with patch.object(release_gate, "ROOT", root), \
+                            patch.object(release_gate.platform, "system", return_value="SyntheticOS"):
+                        with self.assertRaisesRegex(release_gate.GateError, "exact value"):
+                            release_gate.load_manifest(manifest_path, "hardware")
+
     def test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection(self):
         cases = [
             ([], "nonempty"),

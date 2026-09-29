@@ -149,6 +149,12 @@ def load_manifest(path: Path, expected_gate: str) -> dict:
                  f"Invalid contained paths for {name}")
         _require(not contains or requirement["kind"] == "directory",
                  f"Contained paths require a directory provision: {name}")
+        # A selector value such as CBUS_NATIVE_SERVICE_BACKEND=local is public
+        # configuration, not an endpoint, so a value rule may pin it exactly.
+        _require("equals" not in requirement
+                 or (requirement["kind"] == "value" and isinstance(requirement["equals"], str)
+                     and requirement["equals"]),
+                 f"An exact value requires a nonempty value provision: {name}")
     return manifest
 
 
@@ -162,6 +168,10 @@ def verify_provision(manifest: dict, environment: dict[str, str]) -> list[dict[s
         entry: dict[str, object] = {"name": name, "kind": kind, "present": True}
         if kind == "flag":
             _require(value == "1", f"Required provision must equal 1: {name}")
+        elif "equals" in requirement:
+            _require(value == requirement["equals"],
+                     f"Required provision must equal {requirement['equals']}: {name}")
+            entry["equals"] = requirement["equals"]
         elif kind != "value":
             path = Path(value).expanduser()
             if kind == "file":

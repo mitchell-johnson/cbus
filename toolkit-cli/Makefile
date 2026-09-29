@@ -10,7 +10,8 @@
 #   make check          full source-tree suite (provision-gated tests report skips)
 #   make check-offline  source-tree suite without the two Rust interop modules
 #   make check-native   strict owned-process C-Gate + original-instruction gate
-#                       (fails on missing provision or any skipped test)
+#                       (fails on a stale skip census, missing provision or
+#                       any skipped test)
 #   make check-hardware strict private-manifest hardware gate
 #   make check-interop  Python-to-Rust interop against cgate-mock and cmqttd
 #                       (rebuilds both binaries, runs the native SESSION_ID
@@ -67,6 +68,7 @@ check-parity-register:
 	$(PY) research/build_parity_register.py --check
 
 check-native: compile
+	$(PY) research/skip_census.py --check
 	$(PY) research/release_gate.py $(NATIVE_GATE_MANIFEST) --gate native \
 		--junit $(NATIVE_GATE_JUNIT) --output $(NATIVE_GATE_OUTPUT)
 

@@ -191,6 +191,10 @@ jobs:
       CBUS_CGATE_JAVAC: ${{ vars.CBUS_CGATE_JAVAC }}
       CBUS_LOCAL_CGATE_VENDOR: ${{ vars.CBUS_LOCAL_CGATE_VENDOR }}
       CBUS_UNITSPEC_DIR: ${{ vars.CBUS_UNITSPEC_DIR }}
+      # tests/conftest.py then owns the loopback C-Gate test host.
+      CBUS_NATIVE_SERVICE_BACKEND: local
+      CBUS_NATIVE_TLS_TEST: '1'
+      CBUS_SCENE_NATIVE: '1'
     steps:
       - uses: actions/checkout@v4
 

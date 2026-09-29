@@ -96,8 +96,20 @@ Dispatch the workflow with `release_gate=native` or
 labelled `cbus-native` and the `cbus-native` environment. Its environment must
 supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths, the original
 C-Gate application directory in `CBUS_LOCAL_CGATE_VENDOR`, including
-`cgate.jar`, and `CBUS_UNITSPEC_DIR`. `make check-native` reads the committed
-`research/release-gates/native.json` selection. Both manual jobs build and
+`cgate.jar`, `CBUS_UNITSPEC_DIR`, `CBUS_NATIVE_SERVICE_BACKEND=local`, and the
+`CBUS_NATIVE_TLS_TEST=1` and `CBUS_SCENE_NATIVE=1` opt-ins. With the local
+backend selected, `tests/conftest.py` starts one owned loopback `LocalCGate`
+before the first module that reads `CBUS_CGATE_TEST_HOST`, publishes its
+ephemeral port and loopback simulator routing, and refuses an externally set
+`CBUS_CGATE_TEST_HOST`/`PORT`. `make check-native` first runs
+`research/skip_census.py --check`, which statically classifies every test
+module's skip gates by provisioning into the committed
+`research/release-gates/skip-census.json` and fails if a test runnable under
+that profile is missing from the committed
+`research/release-gates/native.json` selection, or if the selection covers a
+test the profile would skip. Modules that need the original Toolkit, Windows,
+hardware, vendor firmware, Rust binaries, private evidence inputs or a
+pre-provisioned project stay out, with the reason in the census. Both manual jobs build and
 install a non-editable wheel, then set `CBUS_TOOLKIT_WHEEL` to that exact
 archive. A missing or substituted wheel, missing provision, unsupported host,
 zero-test selection, failed test, or skipped test fails the gate.
