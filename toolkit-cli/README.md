@@ -2212,8 +2212,9 @@ complete workflow census is still being expanded.
 
 The [original-artifact provenance manifest](docs/original-artifact-provenance.md)
 pins the private target installer, extracted Toolkit/C-Gate files, bundled JRE,
-and decoded unit-catalogue inputs by hash and version without committing their
-contents. Verify those inputs before an original comparison; the pin alone is
+decoded unit-catalogue inputs, and the owned JDK and Mono runtimes by hash and
+version without committing their contents. It also reproduces the extraction
+chain from `Setup.exe` and proves the decoded catalogue is a fresh decode. Verify those inputs before an original comparison; the pin alone is
 not a native or hardware acceptance receipt.
 
 Decode the vendor's authenticated unit specification format for inspection:

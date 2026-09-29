@@ -94,7 +94,11 @@ Native and physical acceptance are manual, separately provisioned jobs in
 Dispatch the workflow with `release_gate=native` or
 `release_gate=hardware`. The native job requires a self-hosted macOS runner
 labelled `cbus-native` and the `cbus-native` environment. Its environment must
-supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths, the original
+supply executable `CBUS_CGATE_JAVA` and `CBUS_CGATE_JAVAC` paths from the
+owned Temurin 11.0.32.1+1 JDK, whose launcher digests and whole JDK-home tree
+digest are pinned in `native.json` (see
+[original artifact provenance](../toolkit-cli/docs/original-artifact-provenance.md#native-gate-runtime-pin));
+any other Java, including `/usr/bin/java`, fails the gate before pytest runs. It also needs the original
 C-Gate application directory in `CBUS_LOCAL_CGATE_VENDOR`, including
 `cgate.jar`, `CBUS_UNITSPEC_DIR`, `CBUS_NATIVE_SERVICE_BACKEND=local`, and the
 `CBUS_NATIVE_TLS_TEST=1` and `CBUS_SCENE_NATIVE=1` opt-ins. The job builds

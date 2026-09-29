@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 446,
-    "modules_without_skip_sites": 243,
-    "modules_with_skip_sites": 203,
+    "test_modules": 447,
+    "modules_without_skip_sites": 242,
+    "modules_with_skip_sites": 205,
     "modules_by_category": {
       "cgate_test_host": 118,
       "external_cgate_project": 1,
@@ -64,7 +64,7 @@
       "original_toolkit": 64,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
-      "runtime_capability": 3,
+      "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 2,
       "unit_specs": 106,
@@ -74,7 +74,7 @@
     "native_modules": {
       "all": 109,
       "partial": 18,
-      "none": 76
+      "none": 78
     },
     "native_runnable_tests": 206,
     "native_selected_required_tests": 206,
@@ -168,6 +168,29 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_authenticode_check.py": {
+      "categories": [
+        "runtime_capability"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_authenticode_check.py",
+          "kind": "helper.load.runtime",
+          "condition": null,
+          "reason": "cryptography is installed only with the research extra",
+          "environment": [],
+          "categories": [
+            "runtime_capability"
+          ],
+          "offline": "runtime",
+          "native": "runtime"
         }
       ]
     },
@@ -5407,6 +5430,29 @@
           "tests": [
             "BinaryEvidenceTests::test_original_attribute_registration_and_alignment_exclusion"
           ]
+        }
+      ]
+    },
+    "tests/test_original_artifact_provenance.py": {
+      "categories": [
+        "runtime_capability"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_original_artifact_provenance.py::OriginalArtifactProvenanceTests::test_real_decoder_round_trips_synthetic_authenticated_input",
+          "kind": "body.runtime",
+          "condition": null,
+          "reason": "cryptography is installed only with the research extra",
+          "environment": [],
+          "categories": [
+            "runtime_capability"
+          ],
+          "offline": "runtime",
+          "native": "runtime"
         }
       ]
     },

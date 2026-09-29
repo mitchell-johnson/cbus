@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import importlib.util
 from collections import Counter
 import csv
 from datetime import datetime, timezone
@@ -35,6 +36,9 @@ KINDS = {"value", "flag", "file", "directory", "executable"}
 ENVIRONMENT_NAME = re.compile(r"CBUS_[A-Z0-9_]+")
 SOURCE_PATHS = ("src", "tests", "research", "conftest.py", "pyproject.toml", "Makefile")
 EXECUTABLE_SUFFIXES = {".py", ".pyi", ".pyc", ".so", ".pyd"}
+RULE_KEYS = {"kind", "contains", "equals", "sha256", "pinned_home"}
+HOME_KEYS = {"parent_levels", "file_count", "total_bytes", "sha256"}
+SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 class GateError(ValueError):
@@ -139,8 +143,26 @@ def load_manifest(path: Path, expected_gate: str) -> dict:
     for name, requirement in requirements.items():
         _require(isinstance(name, str) and ENVIRONMENT_NAME.fullmatch(name) is not None,
                  "Invalid release-gate environment name")
-        _require(isinstance(requirement, dict) and requirement.get("kind") in KINDS,
+        _require(isinstance(requirement, dict) and requirement.get("kind") in KINDS
+                 and set(requirement) <= RULE_KEYS,
                  f"Invalid provision rule for {name}")
+        # Owned runtimes (for example the JDK behind CBUS_CGATE_JAVA) are pinned
+        # to the digests in research/original-artifact-provenance.json.
+        _require("sha256" not in requirement
+                 or (requirement["kind"] in ("file", "executable")
+                     and isinstance(requirement["sha256"], str)
+                     and SHA256.fullmatch(requirement["sha256"]) is not None),
+                 f"A pinned digest requires a file or executable provision: {name}")
+        home = requirement.get("pinned_home")
+        _require(home is None
+                 or (requirement["kind"] in ("file", "executable") and "sha256" in requirement
+                     and isinstance(home, dict) and set(home) == HOME_KEYS
+                     and type(home["parent_levels"]) is int and 1 <= home["parent_levels"] <= 4
+                     and type(home["file_count"]) is int and home["file_count"] > 0
+                     and type(home["total_bytes"]) is int and home["total_bytes"] >= 0
+                     and isinstance(home["sha256"], str)
+                     and SHA256.fullmatch(home["sha256"]) is not None),
+                 f"Invalid pinned runtime home for {name}")
         contains = requirement.get("contains", [])
         _require(isinstance(contains, list) and all(isinstance(item, str) and item
                                                     and not PurePosixPath(item).is_absolute()
@@ -190,8 +212,37 @@ def verify_provision(manifest: dict, environment: dict[str, str]) -> list[dict[s
                 entry.update(_directory_snapshot(path.resolve()))
             else:
                 entry.update(sha256=digest(path), bytes=path.stat().st_size)
+                if "sha256" in requirement:
+                    _require(entry["sha256"] == requirement["sha256"],
+                             f"Required provision does not match its pinned SHA-256: {name}")
+                    entry["pinned"] = True
+                if "pinned_home" in requirement:
+                    entry["pinned_home"] = _pinned_home(name, path, requirement["pinned_home"])
         verified.append(entry)
     return verified
+
+
+def _pin_module():
+    source = Path(__file__).with_name("pin_original_artifacts.py")
+    spec = importlib.util.spec_from_file_location("cbus_release_gate_artifact_pins", source)
+    _require(spec is not None and spec.loader is not None, "Cannot load the artifact pin verifier")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _pinned_home(name: str, path: Path, pinned: dict) -> dict[str, object]:
+    """Bind the whole runtime tree, not only its launcher, to the provenance pin."""
+    home = path.resolve().parents[pinned["parent_levels"] - 1]
+    pins = _pin_module()
+    try:
+        observed = pins._tree(home)
+    except pins.PinError as error:
+        raise GateError(f"Required provision's runtime home cannot be pinned: {name}") from error
+    expected = {key: pinned[key] for key in ("file_count", "total_bytes", "sha256")}
+    _require(observed == expected,
+             f"Required provision's runtime home does not match its pin: {name}")
+    return expected
 
 
 def source_inputs(selectors: list[str]) -> dict[str, object]:

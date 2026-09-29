@@ -82,6 +82,89 @@ class ReleaseGateTests(unittest.TestCase):
                         with self.assertRaisesRegex(release_gate.GateError, "exact value"):
                             release_gate.load_manifest(manifest_path, "hardware")
 
+    def pinned_runtime(self, root):
+        home = root / "jdk/Contents/Home"
+        (home / "bin").mkdir(parents=True)
+        (home / "lib").mkdir()
+        java = home / "bin/java"
+        java.write_text("synthetic java launcher\n")
+        java.chmod(0o700)
+        (home / "lib/libjvm.dylib").write_text("synthetic jvm\n")
+        (home / "release").write_text('JAVA_RUNTIME_VERSION="11.0.32.1+1"\n')
+        pins = release_gate._pin_module()
+        rule = {"kind": "executable", "sha256": release_gate.digest(java),
+                "pinned_home": {"parent_levels": 2, **pins._tree(home)}}
+        return home, java, rule
+
+    def test_pinned_runtime_rejects_substituted_launcher_or_tampered_home(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            home, java, rule = self.pinned_runtime(root)
+            manifest_path = self.fixture(root, requirements={"CBUS_CGATE_JAVA": rule})
+            with patch.object(release_gate, "ROOT", root), patch.object(release_gate.platform, "system", return_value="SyntheticOS"):
+                manifest = release_gate.load_manifest(manifest_path, "hardware")
+            verified = release_gate.verify_provision(manifest, {"CBUS_CGATE_JAVA": str(java)})
+            self.assertTrue(verified[0]["pinned"])
+            self.assertEqual(verified[0]["pinned_home"]["file_count"], 3)
+            self.assertNotIn(str(home), json.dumps(verified))
+            with self.assertRaisesRegex(release_gate.GateError, "missing: CBUS_CGATE_JAVA"):
+                release_gate.verify_provision(manifest, {})
+            other = root / "other-java"
+            other.write_text("an unpinned java launcher\n")
+            other.chmod(0o700)
+            with self.assertRaisesRegex(release_gate.GateError, "pinned SHA-256: CBUS_CGATE_JAVA"):
+                release_gate.verify_provision(manifest, {"CBUS_CGATE_JAVA": str(other)})
+            library = home / "lib/libjvm.dylib"
+            for tamper, restore in (
+                (lambda: library.write_text("patched jvm\n"), lambda: library.write_text("synthetic jvm\n")),
+                (lambda: (home / "lib/extra.jar").write_text("x"), lambda: (home / "lib/extra.jar").unlink()),
+                (lambda: library.unlink(), lambda: library.write_text("synthetic jvm\n")),
+            ):
+                tamper()
+                with self.assertRaisesRegex(release_gate.GateError, "runtime home does not match"):
+                    release_gate.verify_provision(manifest, {"CBUS_CGATE_JAVA": str(java)})
+                restore()
+            (home / "lib/link").symlink_to(library)
+            with self.assertRaisesRegex(release_gate.GateError, "runtime home cannot be pinned"):
+                release_gate.verify_provision(manifest, {"CBUS_CGATE_JAVA": str(java)})
+
+    def test_manifest_rejects_malformed_or_misplaced_pins(self):
+        home_pin = {"parent_levels": 2, "file_count": 1, "total_bytes": 1, "sha256": "a" * 64}
+        cases = [
+            {"kind": "directory", "sha256": "a" * 64},
+            {"kind": "executable", "sha256": "A" * 64},
+            {"kind": "executable", "sha256": "a" * 63},
+            {"kind": "executable", "pinned_home": home_pin},
+            {"kind": "executable", "sha256": "a" * 64, "pinned_home": {**home_pin, "parent_levels": 0}},
+            {"kind": "executable", "sha256": "a" * 64, "pinned_home": {**home_pin, "extra": 1}},
+            {"kind": "executable", "sha_256": "a" * 64},
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for rule in cases:
+                with self.subTest(rule=rule):
+                    manifest = self.fixture(root, requirements={"CBUS_CGATE_JAVA": rule})
+                    with patch.object(release_gate, "ROOT", root), \
+                            patch.object(release_gate.platform, "system", return_value="SyntheticOS"):
+                        with self.assertRaises(release_gate.GateError):
+                            release_gate.load_manifest(manifest, "hardware")
+
+    def test_native_gate_pins_match_the_owned_runtime_provenance(self):
+        base = Path(release_gate.__file__).resolve().parent
+        native = json.loads((base / "release-gates/native.json").read_text())
+        provenance = json.loads((base / "original-artifact-provenance.json").read_text())
+        records = {record["id"]: record for record in provenance["artifacts"]}
+        home = records["native-jdk-home"]
+        expected_home = {"parent_levels": 2, "file_count": home["file_count"],
+                         "total_bytes": home["total_bytes"], "sha256": home["sha256"]}
+        for name, artifact in (("CBUS_CGATE_JAVA", "native-jdk-java"),
+                               ("CBUS_CGATE_JAVAC", "native-jdk-javac")):
+            with self.subTest(name=name):
+                self.assertEqual(records[artifact]["path"], "bin/" + name.rsplit("_", 1)[1].lower())
+                self.assertEqual(native["required_environment"][name], {
+                    "kind": "executable", "sha256": records[artifact]["sha256"],
+                    "pinned_home": expected_home})
+
     def test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection(self):
         cases = [
             ([], "nonempty"),

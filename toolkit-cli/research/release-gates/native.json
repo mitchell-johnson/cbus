@@ -6,10 +6,24 @@
   ],
   "required_environment": {
     "CBUS_CGATE_JAVA": {
-      "kind": "executable"
+      "kind": "executable",
+      "sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "pinned_home": {
+        "parent_levels": 2,
+        "file_count": 510,
+        "total_bytes": 309754272,
+        "sha256": "53741b1d26c8b6a0bb40eb512dfd5a829b85deae2423c1917190310c61387ffc"
+      }
     },
     "CBUS_CGATE_JAVAC": {
-      "kind": "executable"
+      "kind": "executable",
+      "sha256": "98359a0227aa21aa777b5e12214a8224df9f193fd46540b6413613e7213883f5",
+      "pinned_home": {
+        "parent_levels": 2,
+        "file_count": 510,
+        "total_bytes": 309754272,
+        "sha256": "53741b1d26c8b6a0bb40eb512dfd5a829b85deae2423c1917190310c61387ffc"
+      }
     },
     "CBUS_CMQTTD_BIN": {
       "kind": "executable"

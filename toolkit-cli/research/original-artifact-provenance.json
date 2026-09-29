@@ -3,7 +3,9 @@
   "target": "Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
   "roots": {
     "installer": "private extracted installer audit",
-    "decoded_specs": "private decoded C-Gate unit specification directory"
+    "decoded_specs": "private decoded C-Gate unit specification directory",
+    "native_jdk": "owned macOS Temurin JDK home (Contents/Home) used by the native gate",
+    "native_mono": "owned macOS Mono framework version root used by the original firmware oracle"
   },
   "versions": {
     "toolkit": {
@@ -27,12 +29,33 @@
       "artifact": "firmware-updater",
       "source": "PE fixed FileVersion",
       "value": "1.16.3.0"
+    },
+    "native_jdk": {
+      "artifact": "native-jdk-release",
+      "source": "owned JDK release JAVA_RUNTIME_VERSION",
+      "value": "11.0.32.1+1",
+      "implementor": "Temurin-11.0.32.1+1",
+      "os_arch": "aarch64",
+      "image_type": "JDK"
+    },
+    "native_mono": {
+      "artifact": "native-mono-runtime",
+      "source": "owned Mono framework VERSION file",
+      "value": "6.12.0.206"
     }
   },
   "specification_alignment": {
     "encrypted_count": 280,
     "decoded_count": 280,
     "names_match": true
+  },
+  "specification_derivation": {
+    "decoder": "research/decode_unitspec.py",
+    "decoder_sha256": "35228a94935cb00f241dcd5544d1aefb16bb76676f1ec65180d8aaaa2d7bcf27",
+    "method": "AES-GCM authenticated fresh decode; byte-identical to decoded_specs",
+    "decoded_count": 280,
+    "byte_identical": true,
+    "pairs_sha256": "614b4004b3fb6bf61feded45f0583ca60bb9b163f0d59c1492e0d8fda53813e0"
   },
   "artifacts": [
     {
@@ -186,6 +209,65 @@
       "kind": "file",
       "size_bytes": 600,
       "sha256": "a8b6b1d2911abc2f443a9fa0c7d0d3f919ded4c20e1a7ee84d3f8b11aecfb870"
+    },
+    {
+      "id": "native-jdk-java",
+      "root": "native_jdk",
+      "path": "bin/java",
+      "kind": "file",
+      "size_bytes": 70464,
+      "sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+    },
+    {
+      "id": "native-jdk-javac",
+      "root": "native_jdk",
+      "path": "bin/javac",
+      "kind": "file",
+      "size_bytes": 70464,
+      "sha256": "98359a0227aa21aa777b5e12214a8224df9f193fd46540b6413613e7213883f5"
+    },
+    {
+      "id": "native-jdk-release",
+      "root": "native_jdk",
+      "path": "release",
+      "kind": "file",
+      "size_bytes": 1639,
+      "sha256": "b767891fa50c7c4acfbca9ae507fdf44ced70c3a84d5fbf096c4b335955d3bb6"
+    },
+    {
+      "id": "native-jdk-home",
+      "root": "native_jdk",
+      "path": ".",
+      "kind": "tree",
+      "file_count": 510,
+      "total_bytes": 309754272,
+      "sha256": "53741b1d26c8b6a0bb40eb512dfd5a829b85deae2423c1917190310c61387ffc"
+    },
+    {
+      "id": "native-mono-launcher",
+      "root": "native_mono",
+      "path": "bin/mono-sgen64",
+      "kind": "file",
+      "size_bytes": 4703808,
+      "sha256": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49"
+    },
+    {
+      "id": "native-mono-compiler",
+      "root": "native_mono",
+      "path": "lib/mono/4.5/mcs.exe",
+      "kind": "file",
+      "size_bytes": 1821184,
+      "sha256": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771"
+    },
+    {
+      "id": "native-mono-runtime",
+      "root": "native_mono",
+      "path": ".",
+      "kind": "tree-links",
+      "file_count": 7628,
+      "total_bytes": 1105900647,
+      "sha256": "4021e8374d573ad18cb95275a2a87daf29957079808d094d668ca726bed86b69",
+      "link_count": 310
     }
   ]
 }
