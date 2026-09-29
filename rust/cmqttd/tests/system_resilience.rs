@@ -700,10 +700,10 @@ async fn broker_restart_resubscribes_and_republishes_discovery() {
         );
     }
 
-    // No fabricated state: the daemon has no fresh bus evidence, so it
-    // republishes no light state and does not repeat the startup sweep.
-    // Light state returns with the next genuine observation or the
-    // periodic -S resync.
+    // No fabricated state: the daemon observed no light state before the
+    // crash (the fake PCI answers no sweep), so it republishes none and does
+    // not repeat the startup sweep. Light state returns with the next
+    // genuine observation or the periodic -S resync.
     tokio::time::sleep(Duration::from_secs(2)).await;
     let after = &sys.broker.publishes()[mark..];
     assert!(
@@ -735,6 +735,106 @@ async fn broker_restart_resubscribes_and_republishes_discovery() {
         sys.pci.count_payload(CMD_FRAME) == commands_before + 1
     })
     .await;
+    assert!(sys.broker.errors().is_empty(), "{:?}", sys.broker.errors());
+}
+
+/// A broker that loses its retained store gets back the light state cmqttd
+/// had published from bus observations and PCI-confirmed command echoes,
+/// byte-identical, together with the lazily discovered group's config.
+/// Groups never observed stay absent and the startup sweep is not repeated.
+#[tokio::test]
+async fn broker_restart_republishes_observed_light_state() {
+    let sys = start_default().await;
+    wait_started(&sys).await;
+    require(STARTUP, "startup status sweep", || {
+        configured_sweep()
+            .iter()
+            .all(|payload| sys.pci.count_payload(payload) >= 1)
+    })
+    .await;
+    let sweeps_before = sys.pci.count_payload(&configured_sweep()[0]);
+
+    // Labelled group 1 ON and unlabelled group 200 OFF from the bus, and a
+    // confirmed OFF command echo for labelled group 10.
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x79, 0x01]));
+    sys.pci
+        .inject(&pci_wire(&[0x05, 0x05, 0x38, 0x00, 0x01, 200]));
+    sys.broker.inject(CMD_TOPIC, CMD_PAYLOAD);
+    let state_topics = [
+        "homeassistant/light/cbus_1/state",
+        "homeassistant/binary_sensor/cbus_1/state",
+        "homeassistant/light/cbus_200/state",
+        "homeassistant/binary_sensor/cbus_200/state",
+        "homeassistant/light/cbus_10/state",
+        "homeassistant/binary_sensor/cbus_10/state",
+    ];
+    let lazy_config = "homeassistant/light/cbus_200/config";
+    require(
+        COMMAND_DRAIN,
+        "observed and confirmed state retained",
+        || {
+            state_topics
+                .iter()
+                .chain([&lazy_config])
+                .all(|topic| sys.broker.retained(topic).is_some())
+        },
+    )
+    .await;
+    let before: Vec<Vec<u8>> = state_topics
+        .iter()
+        .chain([&lazy_config])
+        .map(|topic| sys.broker.retained(topic).unwrap())
+        .collect();
+
+    let mark = sys.broker.publishes().len();
+    let connections_before = sys.broker.connections();
+    sys.broker.restart();
+    assert!(sys.broker.retained(state_topics[0]).is_none());
+    require(STARTUP, "MQTT reconnect", || {
+        sys.broker.connections() > connections_before
+    })
+    .await;
+    require(
+        STARTUP,
+        "light state and lazy discovery republished",
+        || {
+            state_topics
+                .iter()
+                .chain([&lazy_config])
+                .all(|topic| sys.broker.retained(topic).is_some())
+        },
+    )
+    .await;
+    for (topic, before) in state_topics.iter().chain([&lazy_config]).zip(&before) {
+        assert_eq!(
+            sys.broker.retained(topic).as_ref(),
+            Some(before),
+            "{topic} changed across the broker restart"
+        );
+    }
+
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    let mut republished: Vec<String> = sys.broker.publishes()[mark..]
+        .iter()
+        .filter(|p| p.topic.ends_with("/state") && p.topic != BRIDGE_STATE)
+        .map(|p| {
+            assert!(p.retain, "{} republished unretained", p.topic);
+            p.topic.clone()
+        })
+        .collect();
+    republished.sort();
+    let mut expected: Vec<String> = state_topics.iter().map(|t| t.to_string()).collect();
+    expected.sort();
+    assert_eq!(
+        republished, expected,
+        "exactly the observed states, once each"
+    );
+    assert_eq!(
+        sys.pci.count_payload(&configured_sweep()[0]),
+        sweeps_before,
+        "an MQTT reconnect must not repeat the startup status sweep"
+    );
     assert!(sys.broker.errors().is_empty(), "{:?}", sys.broker.errors());
 }
 

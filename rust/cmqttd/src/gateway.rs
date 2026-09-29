@@ -14,7 +14,7 @@ use cbus_mqtt::topics::{
 use cbus_transport::pci::{CBusEvent, PciClient};
 use rumqttc::{AsyncClient, QoS};
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{mpsc, watch, Mutex as AsyncMutex, RwLock};
@@ -68,6 +68,12 @@ pub struct Gateway {
     /// `MqttClient._status_requests_queued`: the configured sweep runs
     /// once per process; only the periodic resync forces repeats.
     status_requests_queued: AtomicBool,
+    /// Last retained light and binary-sensor state published per topic. Only
+    /// bus observations and PCI-confirmed command echoes reach it; C-Bus
+    /// transport loss clears it.
+    retained_states: Mutex<BTreeMap<String, String>>,
+    /// Set by the first MQTT ConnAck; later ConnAcks are reconnects.
+    mqtt_connected_before: AtomicBool,
 }
 
 impl Gateway {
@@ -99,6 +105,8 @@ impl Gateway {
             group_db: Mutex::new(HashMap::new()),
             observation_sequences: AsyncMutex::new(HashMap::new()),
             status_requests_queued: AtomicBool::new(false),
+            retained_states: Mutex::new(BTreeMap::new()),
+            mqtt_connected_before: AtomicBool::new(false),
         });
         gw.clone().spawn_workers(cmd_rx, readback_rx, sweep_rx);
         gw
@@ -190,8 +198,11 @@ impl Gateway {
 
     /// `MqttClient.__aenter__`: subscribe the /set command wildcard,
     /// publish the meta config, publish discovery for every labelled
-    /// group, then queue the configured status sweep.
+    /// group, then queue the configured status sweep. On an MQTT reconnect
+    /// the last retained light states are republished as well; the sweep
+    /// still runs only once per process.
     pub async fn on_connected(self: &Arc<Self>) {
+        let reconnect = self.mqtt_connected_before.swap(true, Ordering::SeqCst);
         let _ = self
             .mqtt
             .subscribe("homeassistant/light/+/set", QoS::ExactlyOnce)
@@ -211,8 +222,30 @@ impl Gateway {
             .iter()
             .flat_map(|(&app, (_, groups))| groups.keys().map(move |&ga| (ga, app)))
             .collect();
-        for (ga, app) in pairs {
+        for &(ga, app) in &pairs {
             self.publish_light(ga, app, true).await;
+        }
+
+        if reconnect {
+            // Lazily discovered groups lost their config with the broker's
+            // store; republish it unlabelled, exactly as first published.
+            let lazy: Vec<(u8, i64)> = self
+                .group_db
+                .lock()
+                .unwrap()
+                .iter()
+                .flat_map(|(&app, groups)| {
+                    groups
+                        .iter()
+                        .filter(|&(_, &published)| published)
+                        .map(move |(&ga, _)| (ga, app))
+                })
+                .filter(|pair| !pairs.contains(pair))
+                .collect();
+            for (ga, app) in lazy {
+                self.publish_light(ga, app, false).await;
+            }
+            self.republish_retained_states().await;
         }
 
         self.queue_configured_status_requests(false);
@@ -343,10 +376,38 @@ impl Gateway {
     // ------------------------------------------------------ state publishes
 
     async fn publish_state(&self, topic: String, payload: Value) {
+        let payload = payload.to_string();
+        self.retained_states
+            .lock()
+            .unwrap()
+            .insert(topic.clone(), payload.clone());
         let _ = self
             .mqtt
-            .publish(topic, QoS::AtLeastOnce, true, payload.to_string())
+            .publish(topic, QoS::AtLeastOnce, true, payload)
             .await;
+    }
+
+    /// Restore the retained light state a broker may have lost with its
+    /// store. The deployed Python daemon had no in-process MQTT reconnect, so
+    /// its supervisor restart re-swept the bus instead. Here the process
+    /// keeps observing C-Bus through the outage, so its last published
+    /// states are current evidence. Groups never observed stay absent. The
+    /// observation guard orders this snapshot against concurrent publishes.
+    async fn republish_retained_states(&self) {
+        let _sequences = self.observation_sequences.lock().await;
+        let states = self.retained_states.lock().unwrap().clone();
+        if !states.is_empty() {
+            tracing::info!(
+                "republishing {} retained light states after MQTT reconnect",
+                states.len()
+            );
+        }
+        for (topic, payload) in states {
+            let _ = self
+                .mqtt
+                .publish(topic, QoS::AtLeastOnce, true, payload)
+                .await;
+        }
     }
 
     async fn publish_bridge_state(&self, connected: bool) {
@@ -395,14 +456,14 @@ impl Gateway {
 
     async fn publish_binary_sensor(&self, group_addr: u8, app_addr: i64, state: bool) {
         let payload = if state { "ON" } else { "OFF" };
+        let topic = bin_sensor_state_topic(group_addr, app_addr);
+        self.retained_states
+            .lock()
+            .unwrap()
+            .insert(topic.clone(), payload.to_string());
         let _ = self
             .mqtt
-            .publish(
-                bin_sensor_state_topic(group_addr, app_addr),
-                QoS::AtLeastOnce,
-                true,
-                payload,
-            )
+            .publish(topic, QoS::AtLeastOnce, true, payload)
             .await;
     }
 
@@ -661,6 +722,9 @@ impl Gateway {
             }
             CBusEvent::ConnectionLost => {
                 self.group_db.lock().unwrap().clear();
+                // States from the lost transport are no longer evidence; the
+                // reconnect sweep re-observes them.
+                self.retained_states.lock().unwrap().clear();
                 self.publish_bridge_state(false).await;
             }
         }

@@ -16,9 +16,10 @@
 # Env:   CANDIDATE_REV (default HEAD), PREVIOUS_REV (default HEAD~1),
 #        PREVIOUS_IMAGE (reuse an existing tag instead of building
 #        PREVIOUS_REV), RECEIPT (receipt path), KEEP_IMAGES=1,
-#        EXPECT_SIM_CONFIRM_GAP (default 1; see docs/deployment-rehearsal.md:
-#        cmqttd currently loses PCI confirmations after the simulator's
-#        unterminated basic-mode echo, so confirmation checks are XFAIL).
+#        EXPECT_SIM_CONFIRM_GAP (default 0; set 1 only when an image under
+#        test predates CR-terminated from-PCI framing, which lost PCI
+#        confirmations after the simulator's basic-mode echo; see
+#        docs/deployment-rehearsal.md).
 set -euo pipefail
 
 DRY_RUN=0
@@ -41,7 +42,7 @@ PREVIOUS_TAG="${PREVIOUS_IMAGE:-cmqttd-staging:${RUN_ID}-previous}"
 RECEIPT="${RECEIPT:-${TMPDIR:-/tmp}/${STAGING_PROJECT}-receipt.txt}"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/${STAGING_PROJECT}.XXXXXX")"
 FAILURES=0
-EXPECT_SIM_CONFIRM_GAP="${EXPECT_SIM_CONFIRM_GAP:-1}"
+EXPECT_SIM_CONFIRM_GAP="${EXPECT_SIM_CONFIRM_GAP:-0}"
 
 # Never let a typo aim compose at the production project.
 case "$STAGING_PROJECT" in
@@ -53,8 +54,8 @@ log() { printf '%s %s\n' "$(date -u +%H:%M:%S)" "$*" | tee -a "$RECEIPT"; }
 record() { printf '%s\n' "$*" >>"$RECEIPT"; }
 pass() { if [ "$DRY_RUN" = 1 ]; then log "DRY $*"; else log "PASS $*"; fi; }
 fail() { log "FAIL $*"; FAILURES=$((FAILURES + 1)); }
-# A check blocked by the known simulator confirmation gap: XFAIL while the
-# gap is expected, XPASS (fix the default) once it unexpectedly passes.
+# A confirmation check: a hard check by default. With EXPECT_SIM_CONFIRM_GAP=1
+# (a pre-fix image) it is XFAIL, or XPASS when it passes anyway.
 known_gap() {
     local ok=$1; shift
     if [ "$EXPECT_SIM_CONFIRM_GAP" = 1 ]; then
@@ -140,11 +141,10 @@ command_roundtrip() {
     return 1
 }
 
-# No light state may appear without bus evidence (e.g. after the broker
-# lost its retained store).
-no_light_state_retained() {
+# Retained light and binary-sensor state lines, sorted.
+light_states() {
     [ "$DRY_RUN" = 1 ] && { retained >/dev/null; return 0; }
-    ! retained | grep -E -q '^homeassistant/(light|binary_sensor)/cbus_[0-9_]+/state '
+    retained | grep -E '^homeassistant/(light|binary_sensor)/cbus_[0-9_]+/state ' | sort || true
 }
 
 restart_count() {
@@ -266,6 +266,8 @@ record "cgate_state_sha256 candidate=$STATE_BEFORE"
 
 # 2. Broker crash and restart (persistence disabled: retained state is lost).
 log "phase 2: broker kill + restart"
+STATES_BEFORE="$(light_states)"
+record "light_states_before_broker_kill $(printf '%s' "$STATES_BEFORE" | grep -c . || true)"
 dc kill broker
 dc start broker
 if await_retained 'homeassistant/binary_sensor/cbus_cmqttd/state' 'ON' 60 \
@@ -274,15 +276,15 @@ if await_retained 'homeassistant/binary_sensor/cbus_cmqttd/state' 'ON' 60 \
 else
     fail "broker restart: discovery not republished"
 fi
-# Light state is not fabricated on MQTT reconnect: with the retained store
-# gone and no new bus evidence, no light state may reappear. (It returns
-# with the next observation or the periodic -S resync; the simulator does
-# not answer lighting status sweeps, so none arrives here.)
+# On MQTT reconnect cmqttd republishes exactly the light state it had
+# published from bus observations and confirmed command echoes, and
+# fabricates none. The simulator answers no lighting status sweep, so the
+# periodic -S resync adds nothing here.
 [ "$DRY_RUN" = 1 ] || sleep "${STAGING_STATUS_RESYNC:-20}"
-if no_light_state_retained; then
-    pass "broker restart: no fabricated light state"
+if [ "$(light_states)" = "$STATES_BEFORE" ]; then
+    pass "broker restart: observed light state republished, none fabricated"
 else
-    fail "broker restart: light state appeared without bus evidence"
+    fail "broker restart: retained light state differs from before the kill"
 fi
 if command_roundtrip 1 ON; then
     pass "broker restart: command wildcard resubscribed"

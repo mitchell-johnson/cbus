@@ -13,7 +13,8 @@ the in-process mini broker and scripted fake PCI:
 
 | Test | Behavior pinned |
 |---|---|
-| `broker_restart_resubscribes_and_republishes_discovery` | The broker crashes and returns with no sessions, subscriptions or retained messages. cmqttd reconnects, resubscribes `homeassistant/light/+/set`, republishes byte-identical meta and light discovery, and retains bridge state `ON`. It publishes no light state and repeats no startup sweep until genuine bus evidence arrives. A post-restart bus event is retained, and a post-restart command reaches the PCI exactly once. |
+| `broker_restart_resubscribes_and_republishes_discovery` | The broker crashes and returns with no sessions, subscriptions or retained messages. cmqttd reconnects, resubscribes `homeassistant/light/+/set`, republishes byte-identical meta and light discovery, and retains bridge state `ON`. The fake PCI answers no sweep, so cmqttd has observed no light state; it publishes none and repeats no startup sweep. A post-restart bus event is retained, and a post-restart command reaches the PCI exactly once. |
+| `broker_restart_republishes_observed_light_state` | After bus observations of a labelled and an unlabelled group and a PCI-confirmed command echo, the broker crashes with its retained store. On reconnect cmqttd republishes the unlabelled group's lazy discovery and exactly those six light and binary-sensor states, retained and byte-identical, once each. It fabricates no state for unobserved groups and repeats no startup sweep. |
 | `cni_tcp_drop_exits_and_supervisor_restart_recovers` | Plain `-t` CNI mode has no in-process reconnect. When TCP is lost, cmqttd retains bridge state `OFF` and exits 0. The Docker `restart: always` policy supplies recovery. A fresh process with the same arguments re-initializes the PCI, repeats the configured sweep and retains `ON`. Discovery is unchanged, and commands resume. ESP32 discovery modes reconnect in-process; `esp32_wifi_mode_reconnects_and_reinitialises` covers that path. |
 | `two_client_mqtt_fanout_under_event_burst` | Two independent MQTT subscribers each receive all 120 light-state publishes from a back-to-back burst of 120 bus events, in bus order and identical to the daemon's publish sequence. The events are 60 instant ramps of one group, interleaved with 60 ON/OFF toggles of another. |
 
@@ -22,10 +23,19 @@ the in-process mini broker and scripted fake PCI:
 retained messages and subscriptions while the listener stays on the same
 port.
 
-After an MQTT reconnect, light state is refreshed only from new bus evidence:
-the next observation, or the periodic `-S` status resync (300 s by default in
-the container). If a broker loses its retained store, Home Assistant keeps the
-entities but has no light state until one of those arrives.
+After an MQTT reconnect, cmqttd republishes the last retained light and
+binary-sensor state it published for each group. Only bus observations and
+PCI-confirmed command echoes produce that state, so nothing is fabricated.
+Groups it never observed stay absent until the next observation or the periodic
+`-S` status resync (300 s by default in the container). C-Bus transport loss
+clears this cache along with the lazy-discovery record, because the reconnect
+sweep re-observes the bus.
+
+The deployed Python daemon gives no precedent here. Its dispatcher exited on
+an MQTT error and never reconnected in-process, and a supervisor restart
+re-swept the bus. cmqttd stays up and keeps observing C-Bus while the broker
+is away, so its last published states are current evidence. Republishing them
+restores what the broker held without adding bus traffic.
 
 ## Docker staging stack
 
@@ -59,8 +69,9 @@ exit:
    by cmqttd and the C-Gate `201` banner, then records the `cgate.json`
    SHA-256.
 2. It kills and restarts the broker. It then checks that discovery and bridge
-   state are republished, that no light state is fabricated for one resync
-   interval, and that the command wildcard is live.
+   state are republished, that after one resync interval the retained light
+   state matches the set held before the kill exactly (republished, none
+   fabricated), and that the command wildcard is live.
 3. It restarts the simulator, which drops the CNI TCP connection. It checks
    that Docker's restart count increases and repeats the phase 1 checks.
 4. It rolls back to the previous image on the same state volume, then rolls
@@ -72,23 +83,31 @@ restart counts, state hashes and `PASS`/`FAIL`/`XFAIL`/`XPASS` results. It
 contains no hostnames or credentials. The exit status is non-zero on any
 `FAIL`.
 
-### Known simulator confirmation gap
+### Resolved simulator confirmation gap
 
 `cbus-simulator` locally echoes basic-mode input terminated by CR only, such
 as `~\r` and `|\r`, before cmqttd's smart connect takes effect. cmqttd's
-from-PCI framer waits for CRLF, so the unterminated echo stays buffered. The
-simulator does not answer lighting status sweeps, so no CRLF-terminated frame
-arrives to flush it. Every later PCI confirmation, such as `h.`, is therefore
-lost. cmqttd retries three times and reports `delivery: uncertain`. A native
-proxy capture on the simulator showed `h.` returned within 1 ms of each resend.
-The simulator's echo bytes are pinned by `cbus-simulator/tests/system_sim.rs`,
-and a real PCI's echo framing is unverified here, so neither side was changed.
+from-PCI framer used to wait for CRLF, so the echo stayed buffered. The
+simulator answers no lighting status sweep, so no CRLF frame arrived to flush
+it. Every later PCI confirmation, such as `h.`, was lost, and commands ended
+`delivery: uncertain` after three attempts.
 
-Until this is resolved, the rehearsal treats PCI-confirmed delivery as
-`XFAIL`. It proves command subscription through cmqttd's `command parsed` log
-line. `EXPECT_SIM_CONFIRM_GAP=0` makes confirmation a hard check. On a live
-bus, CRLF-terminated traffic flushes the buffer, but a confirmation that
-arrives while the echo is still buffered would be lost there as well.
+The framer was wrong. Native C-Gate 3.4's PCI receiver thread ends a line at
+CR or LF, whichever comes first, and discards empty lines. It also recognizes
+confirmations anywhere in the stream. cmqttd now ends from-PCI lines the same
+way. A CR that is the last buffered byte waits for one more byte, so a CRLF
+split across reads still counts as one terminator. The `fp-cr-*` and `fp-lf-*`
+rows of `rust/testdata/vectors/decode_from_pci.jsonl` pin this. The in-process
+`basic_mode_echo_does_not_hold_back_command_confirmation` test in
+`cmqttd/tests/system_commands.rs` runs cmqttd against a fake PCI with
+simulator-style echo. The command is confirmed on its first transmission. The
+simulator's echo bytes stay pinned by `cbus-simulator/tests/system_sim.rs`.
+Real-PCI echo bytes remain uncaptured here.
+
+PCI-confirmed delivery is therefore a hard check by default.
+`EXPECT_SIM_CONFIRM_GAP=1` restores `XFAIL` handling for an image built before
+the fix, such as a rollback target. This change has not yet been rehearsed
+with Docker.
 
 ## Recorded runs
 

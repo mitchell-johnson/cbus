@@ -154,6 +154,8 @@ Strict decoding rejects malformed input. Lenient decoding retains compatibility 
 
 `cbus-transport` reassembles byte streams with a bounded buffer, performs the PCI initialization sequence, assigns confirmation codes, retransmits unconfirmed frames, and prioritizes interactive commands over background status sweeps. It supports TCP CNI connections and serial PCI connections.
 
+A from-PCI line ends at CR or LF, whichever comes first, as in native C-Gate's receiver. A CRLF pair is consumed as one terminator, even when it is split across reads, and empty lines are ignored. A basic-mode PCI's CR-only echo of the initialization lines therefore cannot hold back later confirmations. The `fp-cr-*` and `fp-lf-*` vectors in `decode_from_pci.jsonl` pin this.
+
 Network-interface discovery is a separate IPv4 UDP exchange. `cbus-tools
 cni-discover` and `cbus-toolkit interface discover-cni` send the exact retained
 19-byte query once and strictly decode fixed 30-byte CNI2/Wiser replies through

@@ -261,7 +261,8 @@ reach MQTT and C-Gate `EVENT` rows in bus order. A PCI loss mid-save
 no STORE, ignores a late ACK and only writes the remaining chunks on an explicit
 new save. A broker outage mid-save leaves the save and 80 C-Gate events
 unaffected; on reconnect cmqttd resubscribes, republishes discovery and bridge
-state, and delivers the queued observations. The mini broker's
+state, delivers the queued observations and republishes the last observed or
+confirmed light state (`broker_restart_republishes_observed_light_state`). The mini broker's
 `disconnect_clients`/`set_refusing` emulate that outage. These are scripted
 loopback tests, not physical programming or broker acceptance.
 
