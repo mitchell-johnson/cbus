@@ -9,12 +9,26 @@ import struct
 import unittest
 from uuid import uuid4
 
-from cbus_toolkit.sensors import Multisensor, SensorError, SensorApplyError
+from cbus_toolkit.sensors import (LAYOUTS, PROFILE, Multisensor, SensorError, SensorApplyError,
+                                  profile_refusal)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 from test_macros import Session
 
 
+ROOT = Path(__file__).resolve().parents[1]
+REVIEW = ROOT / 'docs/sensor-profile-review.json'
+# Newly admitted firmware/catalogue boundaries plus the retained 2.3.00 case.
+NATIVE_PROFILES = (('2.0.01','5753PEIRL'),('2.1.00','SLC5753PEIRL'),('2.2.00','5753PEIRL'),
+                   ('2.3.00','5753PEIRL'),('2.3.9','SLC5753PEIRL'))
+# Layout-identical types refused for their Toolkit class, a registration gap,
+# and neighbouring profiles whose layout differs or is a superset.
+NATIVE_REFUSED = (('SENPIROA','2.3.00','5750WPL',True),('SENPIROA','2.4.00','5750WPL',True),
+                  ('SENPIRIA','2.3.00','5751L',True),('SENPIRIA','2.4.00','5751L',True),
+                  ('SENPIRIB','2.3.00','5753L',True),('SENLL','2.3.00','5031PE',True),
+                  ('SENPILL','2.3.10','5753PEIRL',True),('SENPILL','2.0.00','5753PEIRL',False),
+                  ('SENPILL','2.4.00','5753PEIRL',False),('SENPILLA','2.4.00','5754ODPEIR',False),
+                  ('SENPIRIC','2.4.00','5754ODPE',False),('SENPIRIB','2.4.00','5753L',False))
 VECTORS = {'day': (7,0,0,0), 'night': (13,7,7,0), 'any': (13,7,0,7),
            'sunset': (13,15,7,15), 'disabled': (0,0,0,0)}
 STAGES = ('JPCommand','SRCommand','LPCommand','LRCommand')
@@ -146,6 +160,9 @@ class SensorTest(unittest.TestCase):
         with self.assertRaisesRegex(SensorError,'multiple-block'):
             self.sensor.plan(current,key=3,event='night',group=1)
         with self.assertRaises(SensorError):Multisensor(replace(self.spec,filename='SENPILLA.xml'))
+        for identity in (('SENPILL','2.3.00'),['SENPILL','2.3.00','5753PEIRL'],('SENPIRIA','2.3.00','5751L')):
+            with self.subTest(identity=identity),self.assertRaises(SensorError):
+                self.sensor.plan(self.spec.defaults(),identity=identity)
         bad=replace(self.spec.get('PIRDark'),fields=dict(self.spec.get('PIRDark').fields,Address='55'))
         with self.assertRaises(SensorError):Multisensor(replace(self.spec,parameters=dict(self.spec.parameters,PIRDark=bad)))
 
@@ -160,10 +177,40 @@ class SensorTest(unittest.TestCase):
         self.assertTrue(result['verified']);self.assertFalse(result['saved']);self.assertFalse(result['device_verified'])
         self.assertEqual(session.current['Other'],'unchanged')
         with self.assertRaisesRegex(SensorError,'changed since'):self.sensor.apply(session,plan)
-        for field,value in (('firmware','2.4.00'),('catalog_number','SLC5753PEIRL'),('unit_type','SENPIRIB')):
+        for field,value in (('firmware','2.4.00'),('firmware','2.3.10'),('firmware','2.0.00'),
+                            ('catalog_number','5753L'),('catalog_number',None),('unit_type','SENPIRIB')):
             session=self.session();setattr(session,field,value)
             with self.assertRaisesRegex(SensorError,'Native session'):self.sensor.apply(session,plan)
             self.assertEqual(session.calls,[])
+
+    def test_admitted_firmware_catalogue_range_and_explicit_refusals(self):
+        for firmware in ('2.0.01','2.0.99','2.1.00','2.2.50','2.3.00','2.3.09','2.3.9'):
+            for catalog in PROFILE['catalog_numbers']:
+                with self.subTest(firmware=firmware,catalog=catalog):
+                    self.assertIsNone(profile_refusal('SENPILL',firmware,catalog))
+        for identity,reason in ((('SENPILL','2.0.00','5753PEIRL'),'outside'),(('SENPILL','2.3.10','5753PEIRL'),'no Toolkit ST7'),
+                                (('SENPILL','2.3.99','SLC5753PEIRL'),'outside'),(('SENPILL','2.4.00','5753PEIRL'),'outside'),
+                                (('SENPILL','2.3.00a','5753PEIRL'),'outside'),(('SENPILL',None,'5753PEIRL'),'outside'),
+                                (('SENPILL','2.3.00','5753L'),'catalogue'),(('SENPILL','2.3.00',None),'catalogue'),
+                                (('SENPIROA','2.3.00','5750WPL'),'PIR sensor class'),(('SENPIRIA','2.4.00','5751L'),'PIR sensor class'),
+                                (('SENPIRIB','2.3.00','5753L'),'PIR sensor class'),(('SENLL','2.3.00','5031PE'),'light-level'),
+                                (('SENPILLA','2.4.00','5754ODPEIR'),'TSENPILLA'),(('SENPIRIC','2.4.00','5754ODPE'),'TSENPIRIC'),
+                                (('KEY4','2.3.00','5753PEIRL'),'Only SENPILL')):
+            with self.subTest(identity=identity):self.assertIn(reason,profile_refusal(*identity))
+
+    def test_bound_plan_identity_is_reported_and_must_match_the_session(self):
+        session=self.session();session.firmware='2.1.00';session.catalog_number='SLC5753PEIRL'
+        result=self.sensor.configure(session,key=3,event='day',group=19)
+        self.assertEqual((result['firmware'],result['catalog_number']),('2.1.00','SLC5753PEIRL'))
+        self.assertEqual(result['firmware_range'],['2.0.01','2.3.9'])
+        unbound=self.sensor.plan(self.spec.defaults(),key=3,event='day',group=19)
+        self.assertIsNone(unbound.as_dict()['firmware'])
+        bound=self.sensor.plan(self.spec.defaults(),key=3,event='day',group=19,identity=('SENPILL','2.3.00','5753PEIRL'))
+        session=self.session();session.firmware='2.2.00'
+        with self.assertRaisesRegex(SensorError,'another unit'):self.sensor.apply(session,bound)
+        self.assertEqual(session.calls,[])
+        session=self.session()
+        self.assertEqual(self.sensor.apply(session,unbound)['firmware'],'2.3.00')
 
     def test_partial_failure_does_not_retry_or_save(self):
         session=self.session();session.failure='GroupAddress'
@@ -172,6 +219,88 @@ class SensorTest(unittest.TestCase):
         self.assertEqual(error.exception.attempted[-1],'GroupAddress')
         self.assertEqual(tuple(n for n,v in session.calls),error.exception.attempted)
         self.assertEqual(sum(n=='GroupAddress' for n,v in session.calls),1)
+
+
+class SensorProfileReviewTest(unittest.TestCase):
+    """The committed layout/class receipt must justify exactly the admitted table."""
+    def setUp(self):
+        self.review=json.loads(REVIEW.read_text())
+
+    @staticmethod
+    def above(version):
+        parts=version.split('.');parts[-1]=str(int(parts[-1])+1);return '.'.join(parts)
+
+    def test_receipt_is_sanitized_and_pinned(self):
+        self.assertEqual(self.review['format'],'cbus-sensor-profile-review-v1')
+        self.assertFalse(self.review['original_execution'])
+        self.assertEqual(self.review['reference'],{'spec':'SENPILL_ST7.xml','workflow_fields':len(LAYOUTS),
+            'layout_fields':['Type','Address','ArraySize','BitSize','BitAddress','ArraySkip','MinValue','MaxValue','Protection']})
+        text=REVIEW.read_text()
+        for private in ('<Param','Description','DefaultValue','CLIPSAL'):self.assertNotIn(private,text)
+        self.assertTrue(all(re.fullmatch('[0-9a-f]{64}',value) for value in self.review['inputs']['unitspec_sha256'].values()))
+
+    def test_layout_verdicts_match_the_assessment(self):
+        specs=self.review['specs'];reference=specs['SENPILL_ST7.xml']
+        for name in ('SENPIROA_ST7.xml','SENPIROA_ST7_2.xml','SENPIRIA_ST7.xml','SENPIRIA_ST7_2.xml','SENPIRIB_ST7.xml',
+                     'SENPIRIB_ST7_2.xml','SENPIRSS_ST7.xml','SENPIRSS_ST7_2.xml','SENLL_ST7.xml'):
+            with self.subTest(spec=name):
+                self.assertTrue(specs[name]['full_layout_equal'])
+                self.assertEqual((specs[name]['parameter_count'],specs[name]['layout_sha256']),(82,reference['layout_sha256']))
+        for name,changed in (('SENPILL_1.xml',8),('SENPILL_2.xml',8),('SENPILL_3.xml',8)):
+            self.assertFalse(specs[name]['workflow_fields_equal']);self.assertEqual(specs[name]['parameters_changed'],changed)
+        for name in ('SENPILLA.xml','SENPIRIC.xml'):
+            self.assertTrue(specs[name]['workflow_fields_equal']);self.assertFalse(specs[name]['full_layout_equal'])
+            self.assertEqual((specs[name]['parameters_added'],specs[name]['parameters_removed']),(11,0))
+        for name in ('SENPIR.xml','SENPIRSS.xml'):self.assertFalse(specs[name]['workflow_fields_equal'])
+
+    def test_toolkit_classes_separate_pir_and_multisensor_handling(self):
+        toolkit=self.review['toolkit']
+        classes={(row['unit_type'],row['firmware_min'],row['firmware_max']):row['class'] for row in toolkit['registrations']}
+        self.assertEqual(classes[('SENPILL','2.0.01','2.3.9')],'TST7SENPILL')
+        self.assertEqual(classes[('SENPIROA','2.0.01','9')],'TST7SENPIROA')
+        self.assertEqual(classes[('SENPIRIA','2.0.01','9')],'TST7SENPIRSS')
+        self.assertEqual(classes[('SENPIRIB','2.0.01','2.3.9')],'TST7SENPIRSS')
+        agents={row['unit_class']:row['agent_class'] for row in toolkit['agents']}
+        self.assertEqual(agents,{'TST7SENPILL':'TCBusST7MultisensorCGateAgent','TST7SENLL':'TCBusST7LightLevelSensorCGateAgent',
+                                 'TST7SENPIRSS':'TCBusST7PIRSensorCGateAgent','TST7SENPIROA':'TCBusST7PIRSensorCGateAgent'})
+        save=toolkit['pir_save']
+        self.assertEqual(save['before_save_calls'][:2],['CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation',
+                                                        'CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.PrepareForcedParameters'])
+        forced={row['parameter']:row['value'] for row in save['forced'] if 'index' not in row and 'value' in row}
+        # The PIR save overwrites the event masks and pot A that this workflow edits.
+        for name,value in (('PIRLightMovement',9),('PIRDarkMovement',10),('PIRDark',4),('PotentiometerAFunction',1),
+                           ('SingleJoinEnablerGroup',255),('DualJoinEnablerGroup',255),('SceneKeySelector',0)):
+            self.assertEqual(forced[name],value);self.assertIn(name,LAYOUTS)
+        self.assertEqual(save['pir_unit_constants'],{'MaximumBlockCount':4,'MaximumIndicatorCount':1})
+        for hit in toolkit['admitted_class_firmware_scan']['version_comparisons']:
+            self.assertTrue(hit['overridden_by'].startswith('TCBusST7MultisensorUnit.'))
+
+    def test_every_catalogue_decision_matches_the_profile_gate(self):
+        admitted=set()
+        for row in self.review['decisions']:
+            versions=[row['firmware_max']]+([row['firmware_min']] if 'firmware_min' in row else [self.above(row['firmware_above'])])
+            for version in versions:
+                with self.subTest(row=row,version=version):
+                    refusal=profile_refusal(row['unit_type'],version,row['catalog_number'])
+                    self.assertEqual(refusal is None,row['admitted'])
+            if row['admitted']:
+                self.assertEqual((row['spec'],row['toolkit_class'],row['toolkit_agent']),
+                                 ('SENPILL_ST7.xml','TST7SENPILL','TCBusST7MultisensorCGateAgent'))
+                admitted.add((row['catalog_number'],row['firmware_min'],row['firmware_max']))
+        for catalog in PROFILE['catalog_numbers']:
+            spans=sorted(span[1:] for span in admitted if span[0]==catalog)
+            self.assertEqual((spans[0][0],spans[-1][1]),PROFILE['firmware'])
+        refused={row['unit_type'] for row in self.review['decisions'] if row['refusal']=='different-toolkit-class'}
+        self.assertEqual(refused,{'SENPIROA','SENPIRIA','SENPIRIB','SENLL'})
+
+    @unittest.skipUnless(all(os.environ.get(n) for n in ('CBUS_UNITSPEC_DIR','CBUS_TOOLKIT_EXE','CBUS_LOCAL_CGATE_VENDOR')),
+                         'Set decoded specs, Toolkit EXE and C-Gate vendor to regenerate the receipt')
+    def test_receipt_regenerates_from_private_inputs(self):
+        from research.sensor_profile_review import review
+        exe=Path(os.environ['CBUS_TOOLKIT_EXE'])
+        current=review(os.environ['CBUS_UNITSPEC_DIR'],Path(os.environ['CBUS_LOCAL_CGATE_VENDOR'])/'unitspec/cbusunits.xml',
+                       exe,exe.with_suffix('.map'))
+        self.assertEqual(json.loads(json.dumps(current)),self.review)
 
 
 @unittest.skipUnless(os.environ.get('CBUS_TOOLKIT_HELP_DIR') and os.environ.get('CBUS_TOOLKIT_EXE'),'Set Toolkit help and EXE paths for source evidence')
@@ -206,56 +335,119 @@ class SensorSourceTest(unittest.TestCase):
             self.assertEqual(at(va,len(bytes.fromhex(hexbytes))),bytes.fromhex(hexbytes))
 
 
-@unittest.skipUnless(os.environ.get('CBUS_CGATE_TEST_HOST') and os.environ.get('CBUS_UNITSPEC_DIR'),'Set C-Gate and unit specs for closed-database sensor acceptance')
+def native_backend():
+    """Owned loopback C-Gate when selected, else an explicitly supplied host."""
+    if os.environ.get('CBUS_NATIVE_SERVICE_BACKEND')=='local':
+        return 'local' if os.environ.get('CBUS_LOCAL_CGATE_VENDOR') and os.environ.get('CBUS_CGATE_JAVA') else None
+    return 'host' if os.environ.get('CBUS_CGATE_TEST_HOST') else None
+
+
+def raw_bytes(session,address,count):
+    return bytes.fromhex(session.get_raw_data(address,count).lines[-1].split('RawData=',1)[1])
+
+
+@unittest.skipUnless(native_backend() and os.environ.get('CBUS_UNITSPEC_DIR'),'Select native C-Gate and unit specs for closed-database sensor acceptance')
 class SensorNativeTest(unittest.TestCase):
-    def test_all_events_raw_masks_timer_threshold_and_save_reload(self):
-        from cbus_toolkit.cgate import CGateClient
+    @classmethod
+    def setUpClass(cls):
+        cls.service=None;cls.host=os.environ.get('CBUS_CGATE_TEST_HOST');cls.port=int(os.environ.get('CBUS_CGATE_TEST_PORT','20023'))
+        if native_backend()=='local':
+            from research.local_cgate import LocalCGate
+            cls.service=LocalCGate(os.environ['CBUS_LOCAL_CGATE_VENDOR']);cls.addClassCleanup(cls.service.close)
+            # PP LOCK needs the owned loopback interface at Clipsal access.
+            (cls.service.work/'config/access.txt').write_text('interface 127.0.0.1 Clipsal\n')
+            cls.service.start();cls.host,cls.port='127.0.0.1',cls.service.port
+
+    def exercise_profile(self,client,network,address,firmware,catalog,sensor,report):
         from cbus_toolkit.native import NativeDatabase
         from cbus_toolkit.programming import Programmer
-        project='SN'+uuid4().hex[:6].upper();network=f'//{project}/254';path=network+'/p/230'
-        report={'format':'cbus-sensor-acceptance-v1','profile':{'unit_type':'SENPILL','firmware':'2.3.00','catalog_number':'5753PEIRL','spec':'SENPILL_ST7.xml'},
+        path=f'{network}/p/{address}';case={'firmware':firmware,'catalog_number':catalog,'event_key_cases':0,'raw_byte_assertions':0}
+        NativeDatabase(client).create_unit(network,address,'Sensor_'+str(address),'SENPILL',firmware,catalog_number=catalog)
+        programmer=Programmer(client)
+        with programmer.load(network,'/db'+path)as session:
+            self.assertEqual((session.unit_type,session.firmware,session.catalog_number),('SENPILL',firmware,catalog))
+            session.reset_defaults();baseline=session.values()
+            for key in range(1,9):
+                for event,vector in VECTORS.items():
+                    result=sensor.configure(session,key=key,event=event,block=key,group=20+key,timer_seconds=300+key,allow_shared_block=True)
+                    self.assertEqual((result['firmware'],result['catalog_number']),(firmware,catalog))
+                    values=session.values();bit=1<<(key-1)
+                    expectedmask=(bool(event in ('day','any')),bool(event in ('night','any')),event=='sunset')
+                    self.assertEqual(tuple(bool(v&bit)for v in raw_bytes(session,50,3)),expectedmask)
+                    self.assertEqual(tuple(int(values[n].split()[key-1],0)for n in STAGES),vector)
+                    self.assertEqual(raw_bytes(session,104+(key-1)*2,2),bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])))
+                    case['event_key_cases']+=1;case['raw_byte_assertions']+=5
+            looped=session.values()
+            self.assertEqual({n:v for n,v in looped.items() if n not in LAYOUTS},{n:v for n,v in baseline.items() if n not in LAYOUTS})
+            # Native read-modify-write must preserve fields sharing EEPROM
+            # bytes, including the bank-switch/expiry byte.
+            neighbours={'BlockBankSwitchActive':'1 1 1 1 1 1 1 1','BlockGroupLogic':'1 1 1 1 1 1 1 1','SceneKeySelector':'1 1 1 1 1 1 1 1'}
+            for name,value in neighbours.items():session.set(name,value)
+            before=session.values()
+            sensor.configure(session,key=3,event='night',group=31,timer_seconds=513,expiry='ramp_off',target_lux=550,
+                             margin_percent=10,enable_group=23,enabled_when='off',disable_potentiometer_override=True)
+            for address_,mask,expected in ((27,255,55),(28,255,6),(74,63,25),(82,255,31),(88,255,23),
+                                           (98,128,0),(99,64,64),(101,24,0),(138,255,2),(146,255,1)):
+                self.assertEqual(raw_bytes(session,address_,1)[0]&mask,expected);case['raw_byte_assertions']+=1
+            after=session.values()
+            # Every parameter outside the sensor workflow is untouched by it.
+            unrelated=sorted(name for name in before if name not in LAYOUTS)
+            self.assertEqual({n:after[n] for n in unrelated},{n:before[n] for n in unrelated})
+            self.assertEqual(after['SceneTable'],baseline['SceneTable'])
+            case['unrelated_parameters_preserved']=len(unrelated)
+            expected=sensor.snapshot(after);session.save_to_source()
+        client.command('PROJECT SAVE '+network.split('/')[2])
+        with programmer.load(network,'/db'+path)as session:
+            self.assertEqual(sensor.snapshot(session.values()),expected)
+            self.assertEqual(session.values(),after)
+        case['save_reload_passed']=True;report['profiles'].append(case)
+        report['event_key_cases']+=case['event_key_cases'];report['raw_byte_assertions']+=case['raw_byte_assertions']
+
+    def refuse_profile(self,client,network,address,unit_type,firmware,catalog,layout_identical,sensor,report):
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import Programmer
+        NativeDatabase(client).create_unit(network,address,'Refused_'+str(address),unit_type,firmware,catalog_number=catalog)
+        with Programmer(client).load(network,f'/db{network}/p/{address}')as session:
+            before=session.values()
+            if layout_identical:
+                # Native C-Gate accepts the same 82-parameter layout here; the
+                # refusal is the Toolkit class/registration gate, not a schema error.
+                sensor._verify_session(session);self.assertEqual(set(before),set(sensor.spec.parameters))
+            with self.assertRaisesRegex(SensorError,'Native session must'):
+                sensor.configure(session,key=3,event='night',group=31)
+            self.assertEqual(session.values(),before)
+        report['refused'].append({'unit_type':unit_type,'firmware':firmware,'catalog_number':catalog,
+                                  'native_layout_identical':layout_identical,'values_unchanged':True})
+
+    def test_admitted_profiles_events_raw_masks_preservation_save_reload_and_refusals(self):
+        from cbus_toolkit.cgate import CGateClient
+        project='SN'+uuid4().hex[:6].upper();network=f'//{project}/254'
+        names=os.environ.get('CBUS_SENSOR_NATIVE_PROFILES')
+        profiles=tuple(p for p in NATIVE_PROFILES if not names or p[0] in names.split(','))
+        report={'format':'cbus-sensor-acceptance-v2','backend':native_backend(),
+                'profile':{'unit_type':'SENPILL','firmware_range':list(PROFILE['firmware']),
+                           'catalog_numbers':list(PROFILE['catalog_numbers']),'spec':PROFILE['spec_filename']},
                 'scope':'Toolkit source-grounded sensor setup through native PP and a closed database; no physical PIR/lux behavior',
-                'event_key_cases':0,'raw_byte_assertions':0,'passed':False}
+                'profiles':[],'refused':[],'event_key_cases':0,'raw_byte_assertions':0,'passed':False,
+                'complete_scope':profiles==NATIVE_PROFILES,'physical_hardware_verified':False}
         sensor=Multisensor(UnitSpecStore(os.environ['CBUS_UNITSPEC_DIR']).load('SENPILL_ST7.xml'))
-        with CGateClient(os.environ['CBUS_CGATE_TEST_HOST'],int(os.environ.get('CBUS_CGATE_TEST_PORT','20023')),timeout=30)as client:
+        with CGateClient(self.host,self.port,timeout=30)as client:
             report['greeting']=client.greeting;client.command('PROJECT NEW '+project)
             try:
                 client.command('PROJECT USE '+project)
                 client.command('DBCREATENET 254 Sensor_Offline Cni 127.0.0.1:29999')
                 client.command('NET LOAD DB '+project);client.command('PROJECT SAVE '+project)
-                NativeDatabase(client).create_unit(network,230,'Sensor_Offline','SENPILL','2.3.00',catalog_number='5753PEIRL')
-                programmer=Programmer(client)
-                with programmer.load(network,'/db'+path)as session:
-                    session.reset_defaults();baseline=session.values()
-                    for key in range(1,9):
-                        for event,vector in VECTORS.items():
-                            sensor.configure(session,key=key,event=event,block=key,group=20+key,timer_seconds=300+key,allow_shared_block=True)
-                            values=session.values();bit=1<<(key-1)
-                            expectedmask=(bool(event in ('day','any')),bool(event in ('night','any')),event=='sunset')
-                            raw=bytes.fromhex(session.get_raw_data(50,3).lines[-1].split('RawData=',1)[1])
-                            self.assertEqual(tuple(bool(v&bit)for v in raw),expectedmask)
-                            self.assertEqual(tuple(int(values[n].split()[key-1],0)for n in STAGES),vector)
-                            raw=bytes.fromhex(session.get_raw_data(104+(key-1)*2,2).lines[-1].split('RawData=',1)[1])
-                            self.assertEqual(raw,bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])))
-                            report['event_key_cases']+=1;report['raw_byte_assertions']+=5
-                    # Native read-modify-write must preserve fields sharing
-                    # EEPROM bytes, including the bank-switch/expiry byte.
-                    session.set('BlockBankSwitchActive','1 1 1 1 1 1 1 1')
-                    session.set('BlockGroupLogic','1 1 1 1 1 1 1 1')
-                    session.set('SceneKeySelector','1 1 1 1 1 1 1 1')
-                    sensor.configure(session,key=3,event='night',group=31,timer_seconds=513,expiry='ramp_off',target_lux=550,
-                                     margin_percent=10,enable_group=23,enabled_when='off',disable_potentiometer_override=True)
-                    for address,mask,expected in ((27,255,55),(28,255,6),(74,63,25),(82,255,31),(88,255,23),
-                                                  (98,128,0),(99,64,64),(101,24,0),(138,255,2),(146,255,1)):
-                        actual=int(session.get_raw_data(address,1).lines[-1].split('RawData=',1)[1],16)
-                        self.assertEqual(actual&mask,expected);report['raw_byte_assertions']+=1
-                    self.assertEqual(session.values()['SceneTable'],baseline['SceneTable'])
-                    expected=sensor.snapshot(session.values());session.save_to_source()
-                client.command('PROJECT SAVE '+project)
-                with programmer.load(network,'/db'+path)as session:self.assertEqual(sensor.snapshot(session.values()),expected)
-                report['save_reload_passed']=True;report['passed']=True
+                for index,(firmware,catalog) in enumerate(profiles):
+                    with self.subTest(firmware=firmware,catalog=catalog):
+                        self.exercise_profile(client,network,230+index,firmware,catalog,sensor,report)
+                for index,(unit_type,firmware,catalog,identical) in enumerate(NATIVE_REFUSED):
+                    with self.subTest(unit_type=unit_type,firmware=firmware):
+                        self.refuse_profile(client,network,240+index,unit_type,firmware,catalog,identical,sensor,report)
+                report['passed']=(len(report['profiles'])==len(profiles) and len(report['refused'])==len(NATIVE_REFUSED))
+                self.assertTrue(report['passed'])
             finally:
                 client.command('PROJECT CLOSE '+project);client.command('PROJECT DELETE '+project)
+                if self.service is not None:report['service']={k:self.service.report.get(k) for k in ('vendor_jar_sha256','java_version','listener_ownership_verified','listeners')}
                 if os.environ.get('CBUS_SENSOR_REPORT'):Path(os.environ['CBUS_SENSOR_REPORT']).write_text(json.dumps(report,indent=2)+'\n')
 
 

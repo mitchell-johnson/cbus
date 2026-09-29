@@ -202,7 +202,8 @@ def _sensor(args):
     return Multisensor(UnitSpecStore(args.spec_dir).load("SENPILL_ST7.xml"))
 
 
-def _parameter_snapshot(path, profile):
+def _parameter_snapshot(path, profile, *, identity=None):
+    """Read a snapshot or mapping; `profile` is an exact identity or a checker."""
     with path.open("rb") as handle:
         data = handle.read(1024 * 1024 + 1)
     if len(data) > 1024 * 1024:
@@ -211,9 +212,15 @@ def _parameter_snapshot(path, profile):
     if not isinstance(values, dict):
         raise ValueError("Expected a PP parameter mapping or export snapshot")
     if "format" in values:
-        if values.get("format") != "cbus-cli-parameters-v1" or tuple(values.get(key) for key in (
-                "unit_type", "firmware", "catalog_number")) != tuple(profile):
+        found = tuple(values.get(key) for key in ("unit_type", "firmware", "catalog_number"))
+        if values.get("format") != "cbus-cli-parameters-v1":
             raise ValueError("Snapshot format or unit identity differs from the selected profile")
+        if callable(profile):
+            profile(*found)
+        elif found != tuple(profile):
+            raise ValueError("Snapshot format or unit identity differs from the selected profile")
+        if identity is not None:
+            identity.extend(found)
         values = values.get("parameters")
         if not isinstance(values, dict):
             raise ValueError("Snapshot requires a parameter mapping")
@@ -1669,7 +1676,7 @@ def build_parser():
     )
     physical_programming_options(physical_pp)
 
-    p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.3.00 / 5753PEIRL occupancy profile")
+    p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL occupancy profile")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _sensor_options(p)
     p = unops.add_parser("edlt-lighting", help="Configure tested KEYGL5 5.5.00 / 5055EDL lighting widgets in the database")
@@ -2066,7 +2073,7 @@ def build_parser():
     sensors.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     sops = sensors.add_subparsers(dest="action", required=True)
     p = sops.add_parser("plan")
-    p.add_argument("file", type=Path, help="SENPILL 2.3.00 / 5753PEIRL PP export or parameter mapping")
+    p.add_argument("file", type=Path, help="SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL PP export or parameter mapping")
     _sensor_options(p)
     edlt = commands.add_parser("edlt", help="Plan tested eDLT widgets with configuration CRCs offline")
     edlt.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -3638,9 +3645,10 @@ def run(args):
                 raise ValueError("Snapshot requires a parameter mapping")
         return keys.plan(values, **_key_settings(args)).as_dict(), 0
     if args.area == "sensors":
-        from .sensors import PROFILE
-        values = _parameter_snapshot(args.file, PROFILE[:3])
-        return _sensor(args).plan(values, **_sensor_settings(args)).as_dict(), 0
+        from .sensors import check_profile
+        identity = []
+        values = _parameter_snapshot(args.file, check_profile, identity=identity)
+        return _sensor(args).plan(values, identity=tuple(identity) or None, **_sensor_settings(args)).as_dict(), 0
     if args.area == "edlt":
         if args.action == "reset-plan":
             from .edlt_reset_cli import offline

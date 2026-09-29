@@ -801,8 +801,10 @@ gateway clock and verifies that gateway separately. See the
 
 ## Sensor occupancy settings
 
-The tested ST7 profile is SENPILL 2.3.00 / 5753PEIRL. Preview and apply its
-movement event, group, timer, light threshold and occupancy enable settings:
+The tested ST7 profile is SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL.
+Layout-identical PIR and light-level sensors stay refused because the Toolkit
+handles them with other classes. Preview and apply its movement event, group,
+timer, light threshold and occupancy enable settings:
 
 ```sh
 cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \

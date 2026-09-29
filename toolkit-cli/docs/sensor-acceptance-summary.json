@@ -1,40 +1,188 @@
 {
-  "format": "cbus-sensor-acceptance-v1",
+  "format": "cbus-sensor-acceptance-v2",
   "profile": {
     "unit_type": "SENPILL",
-    "firmware": "2.3.00",
-    "catalog_number": "5753PEIRL",
+    "firmware_range": [
+      "2.0.01",
+      "2.3.9"
+    ],
+    "catalog_numbers": [
+      "5753PEIRL",
+      "SLC5753PEIRL"
+    ],
     "spec": "SENPILL_ST7.xml"
   },
   "scope": "Toolkit source-grounded sensor setup through native PP and a closed database; no physical PIR/lux behavior",
-  "event_key_cases": 40,
-  "raw_byte_assertions": 210,
-  "passed": true,
+  "backend": "owned loopback C-Gate (research/local_cgate.py)",
   "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "profiles": [
+    {
+      "firmware": "2.0.01",
+      "catalog_number": "5753PEIRL",
+      "event_key_cases": 40,
+      "raw_byte_assertions": 210,
+      "unrelated_parameters_preserved": 52,
+      "save_reload_passed": true
+    },
+    {
+      "firmware": "2.1.00",
+      "catalog_number": "SLC5753PEIRL",
+      "event_key_cases": 40,
+      "raw_byte_assertions": 210,
+      "unrelated_parameters_preserved": 52,
+      "save_reload_passed": true
+    },
+    {
+      "firmware": "2.2.00",
+      "catalog_number": "5753PEIRL",
+      "event_key_cases": 40,
+      "raw_byte_assertions": 210,
+      "unrelated_parameters_preserved": 52,
+      "save_reload_passed": true
+    },
+    {
+      "firmware": "2.3.00",
+      "catalog_number": "5753PEIRL",
+      "event_key_cases": 40,
+      "raw_byte_assertions": 210,
+      "unrelated_parameters_preserved": 52,
+      "save_reload_passed": true
+    },
+    {
+      "firmware": "2.3.9",
+      "catalog_number": "SLC5753PEIRL",
+      "event_key_cases": 40,
+      "raw_byte_assertions": 210,
+      "unrelated_parameters_preserved": 52,
+      "save_reload_passed": true
+    }
+  ],
+  "event_key_cases": 200,
+  "raw_byte_assertions": 1050,
+  "refused": [
+    {
+      "unit_type": "SENPIROA",
+      "firmware": "2.3.00",
+      "catalog_number": "5750WPL",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIROA",
+      "firmware": "2.4.00",
+      "catalog_number": "5750WPL",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "2.3.00",
+      "catalog_number": "5751L",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "2.4.00",
+      "catalog_number": "5751L",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.3.00",
+      "catalog_number": "5753L",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENLL",
+      "firmware": "2.3.00",
+      "catalog_number": "5031PE",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware": "2.3.10",
+      "catalog_number": "5753PEIRL",
+      "native_layout_identical": true,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware": "2.0.00",
+      "catalog_number": "5753PEIRL",
+      "native_layout_identical": false,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware": "2.4.00",
+      "catalog_number": "5753PEIRL",
+      "native_layout_identical": false,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPILLA",
+      "firmware": "2.4.00",
+      "catalog_number": "5754ODPEIR",
+      "native_layout_identical": false,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIC",
+      "firmware": "2.4.00",
+      "catalog_number": "5754ODPE",
+      "native_layout_identical": false,
+      "values_unchanged": true
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "2.4.00",
+      "catalog_number": "5753L",
+      "native_layout_identical": false,
+      "values_unchanged": true
+    }
+  ],
+  "passed": true,
+  "complete_scope": true,
   "save_reload_passed": true,
-  "test_count": 13,
+  "test_count": 26,
+  "skipped": 0,
+  "test_files": [
+    "tests/test_sensors.py",
+    "tests/test_cli_sensors.py",
+    "tests/test_sensor_threshold_guard.py"
+  ],
   "physical_hardware_verified": false,
   "local_report": "research/runtime/sensor-acceptance.json",
-  "local_report_sha256": "2d00a25d7d216a28b677c34f6a1a9aa9b6df1cfb7706b999eb2a4f613eaacf9f",
+  "local_report_sha256": "8fb526e0bcb5d68e5c54f68730db0d9fb70fe9b8fe58fa4d78a88c78701b019c",
   "source_hashes": {
-    "src/cbus_toolkit/sensors.py": "46e8cfdeadbe407c3ca1cfc19525945452c526a64b5e95fcc9259fbaf78aca50",
-    "tests/test_sensors.py": "d8de68bf455a390a2401414fbd31f6f17cef69c1472697735f947f6c190bfe61",
-    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
-    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
-    "research/vendor/unitspec-plain/SENPILL_ST7.xml": "9f5fe3088980cb8554aa11599b55342164f0be5fb411f92623d08606990ae388",
-    "research/vendor/unitspec-plain/I_SENPILL.xml": "ec4f917bdaf32e3fa1879cc60286d8e6b107685a9f306cb5435b14bff2d2c483",
-    "research/vendor/toolkit-help/305.htm": "1f3d4c50565c558ab8d42d436b4b06ce614803d6c4114af7a7f3ff8bb77e4ad8",
-    "research/vendor/toolkit-help/307.htm": "16200b6a6ddbce46b1fac6993007900bd6d104cf8a1112d2bebc74527b729991",
-    "research/vendor/toolkit-help/10114.htm": "a6725193f04bd7a1561cb3b0c3df20b74780658ce9866550bb74b9c683d7c614",
-    "research/vendor/toolkit-help/10115.htm": "1f640e9cc1119e488d505a734e6966dc95493e3a05912269a27f171d29e6d7a1",
-    "research/vendor/toolkit-help/10116.htm": "14aee20e89d1db7bc713d603c1de54eed95d28f90abf7b26c577592cf5ea4ee5",
-    "research/vendor/toolkit-help/17328.htm": "9b633dbbc0c83ad010237f3056861ac8f6c1881e9384abe5d6291809d9c1cb59"
+    "src/cbus_toolkit/sensors.py": "cd60d219436d1069fc9f4769250a6c1289c826b0bcc5886e89ba5731b4584abc",
+    "src/cbus_toolkit/cli.py": "69185c16e06679817e9e613b0d641acf6b5ccac8825f7f56086001f617bac5f9",
+    "tests/test_sensors.py": "4f8cee3f33195fe15c111421e0ae675bd88bbcce3678f9cb7ea3ee00e73f0744",
+    "tests/test_cli_sensors.py": "50844dfd358934f3b4c8747b6760376ebc18c55f232be21c2d567bd5ac6a2b21",
+    "research/sensor_profile_review.py": "d95838ca74881a745f4eb2d0b061cf4064f654cf2fa8b8e893df319f22a165f3",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "docs/sensor-profile-review.json": "b901ce0f87c2cec9ad751c66b063aa2e5656067ed1f78723ddc5fa097896b79b",
+    "vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "vendor/cgate/app/unitspec/cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "vendor/unitspec-plain/SENPILL_ST7.xml": "9f5fe3088980cb8554aa11599b55342164f0be5fb411f92623d08606990ae388",
+    "vendor/unitspec-plain/I_SENPILL.xml": "ec4f917bdaf32e3fa1879cc60286d8e6b107685a9f306cb5435b14bff2d2c483",
+    "vendor/toolkit-help/305.htm": "1f3d4c50565c558ab8d42d436b4b06ce614803d6c4114af7a7f3ff8bb77e4ad8",
+    "vendor/toolkit-help/307.htm": "16200b6a6ddbce46b1fac6993007900bd6d104cf8a1112d2bebc74527b729991",
+    "vendor/toolkit-help/10114.htm": "a6725193f04bd7a1561cb3b0c3df20b74780658ce9866550bb74b9c683d7c614",
+    "vendor/toolkit-help/10115.htm": "1f640e9cc1119e488d505a734e6966dc95493e3a05912269a27f171d29e6d7a1",
+    "vendor/toolkit-help/10116.htm": "14aee20e89d1db7bc713d603c1de54eed95d28f90abf7b26c577592cf5ea4ee5",
+    "vendor/toolkit-help/17328.htm": "9b633dbbc0c83ad010237f3056861ac8f6c1881e9384abe5d6291809d9c1cb59"
   },
   "unverified": [
     "Physical movement and light-level behavior",
     "Sensor calibration and sensitivity",
-    "Other sensor types and firmware revisions",
+    "PIR (SENPIROA/SENPIRIA/SENPIRIB), light-level (SENLL/SENLLA), SENPILLA/SENPIRIC and pre-ST7 sensor dialogs, including the Toolkit PIR forced-parameter save",
     "Join and corridor linking",
     "Light maintenance/broadcast and bank-switch setup",
     "Infrared and power-up settings",

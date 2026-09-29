@@ -1,10 +1,11 @@
-"""Toolkit ST7 multisensor occupancy setup for one verified device profile.
+"""Toolkit ST7 multisensor occupancy setup for the verified SENPILL profile.
 
 This edits an existing PP session. It does not save, transfer, calibrate a
 physical sensor, or simulate optical/PIR behavior. See docs/sensors.md.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
+import re
 from types import MappingProxyType
 import xml.etree.ElementTree as ET
 
@@ -29,7 +30,22 @@ EVENTS = MappingProxyType({'day': (7, 0, 0, 0), 'night': (13, 7, 7, 0),
                            'any': (13, 7, 0, 7), 'sunset': (13, 15, 7, 15),
                            'disabled': (0, 0, 0, 0)})
 EXPIRY = frozenset(('idle', 'off', 'down', 'ramp_off', 'recall1', 'recall2', 'ramp_recall1'))
-PROFILE = ('SENPILL', '2.3.00', '5753PEIRL', 'SENPILL_ST7.xml')
+# Toolkit registers TST7SENPILL with TCBusST7MultisensorCGateAgent for SENPILL
+# 2.0.01..2.3.9 in numeric '.'-token order. C-Gate's catalogue selects
+# SENPILL_ST7.xml for both catalogue numbers across that range. Other sensor
+# types stay refused even where their layout is identical: see
+# docs/sensor-profile-review.json.
+PROFILE = MappingProxyType({'unit_type': 'SENPILL', 'firmware': ('2.0.01', '2.3.9'),
+                            'catalog_numbers': ('5753PEIRL', 'SLC5753PEIRL'),
+                            'spec_filename': 'SENPILL_ST7.xml'})
+_PIR = ('Toolkit selects its ST7 PIR sensor class, whose save forces the occupancy masks, '
+        'potentiometer A, join and corridor fields')
+REFUSED = MappingProxyType({
+    'SENPIROA': _PIR, 'SENPIRIA': _PIR, 'SENPIRIB': _PIR,
+    'SENLL': 'Toolkit selects its ST7 light-level sensor class, which has no occupancy workflow',
+    'SENPILLA': 'The SENPILLA layout adds light-level group parameters and Toolkit selects TSENPILLA',
+    'SENPIRIC': 'The SENPIRIC layout adds light-level group parameters and Toolkit selects TSENPIRIC',
+})
 # Address, count, bits, bit offset, byte skip. No distributed vendor catalog.
 LAYOUTS = MappingProxyType({
     'JPCommand': (104, 8, 4, 4, 1), 'SRCommand': (104, 8, 4, 0, 1),
@@ -51,6 +67,33 @@ LAYOUTS = MappingProxyType({
 _BITS = frozenset(('PIREnablerGroupLogic', 'PECFunctionActive'))
 
 
+def _version(value):
+    if not isinstance(value, str) or not re.fullmatch(r'[0-9]{1,4}(\.[0-9]{1,4}){1,3}', value):
+        return None
+    return tuple(int(part) for part in value.split('.'))
+
+
+def profile_refusal(unit_type, firmware, catalog_number):
+    """Return why a unit identity is outside the verified profile, or None."""
+    if unit_type != PROFILE['unit_type']:
+        return REFUSED.get(unit_type, 'Only SENPILL multisensors use this workflow')
+    version = _version(firmware)
+    low, high = (_version(value) for value in PROFILE['firmware'])
+    if version is None or not low <= version <= high:
+        return ('SENPILL firmware outside 2.0.01..2.3.9 uses another layout or Toolkit class '
+                '(2.3.10..2.3.99 has no Toolkit ST7 registration)')
+    if catalog_number not in PROFILE['catalog_numbers']:
+        return 'SENPILL catalogue number must be 5753PEIRL or SLC5753PEIRL'
+    return None
+
+
+def check_profile(unit_type, firmware, catalog_number, *, subject='Unit identity'):
+    reason = profile_refusal(unit_type, firmware, catalog_number)
+    if reason is not None:
+        raise SensorError(f'{subject} must be SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL: {reason}')
+    return (unit_type, firmware, catalog_number)
+
+
 def _integer(value, label, minimum, maximum):
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise SensorError(f'{label} must be an integer in {minimum}..{maximum}')
@@ -65,14 +108,20 @@ class SensorPlan:
     expected: dict
     changes: dict
     shared_keys: tuple = ()
+    identity: tuple | None = None
 
     def __post_init__(self):
         for name in ('expected', 'changes'):
             object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in getattr(self, name).items()}))
 
     def as_dict(self):
-        return {'format': 'cbus-st7-sensor-plan-v1', 'unit_type': PROFILE[0], 'firmware': PROFILE[1],
-                'catalog_number': PROFILE[2], 'spec_filename': PROFILE[3], 'key': self.key,
+        # A plan made from a bare parameter mapping is bound to the profile's
+        # layout; firmware and catalogue are reported only when known.
+        firmware, catalog_number = self.identity[1:] if self.identity else (None, None)
+        return {'format': 'cbus-st7-sensor-plan-v1', 'unit_type': PROFILE['unit_type'], 'firmware': firmware,
+                'catalog_number': catalog_number, 'firmware_range': list(PROFILE['firmware']),
+                'catalog_numbers': list(PROFILE['catalog_numbers']),
+                'spec_filename': PROFILE['spec_filename'], 'key': self.key,
                 'event': self.event, 'block': self.block, 'shared_keys': list(self.shared_keys),
                 'expected': {k: list(v) for k, v in self.expected.items()},
                 'changes': {k: list(v) for k, v in self.changes.items()}, 'saved': False,
@@ -81,8 +130,8 @@ class SensorPlan:
 
 class Multisensor:
     def __init__(self, spec):
-        if (spec.unit_type, spec.filename) != (PROFILE[0], PROFILE[3]):
-            raise SensorError('Use SENPILL_ST7.xml for SENPILL 2.3.00 / 5753PEIRL')
+        if (spec.unit_type, spec.filename) != (PROFILE['unit_type'], PROFILE['spec_filename']):
+            raise SensorError('Use SENPILL_ST7.xml for SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL')
         self.spec, self.codec = spec, MemoryCodec(spec)
         for name, expected in LAYOUTS.items():
             layout = self.codec.layout(name)
@@ -105,13 +154,17 @@ class Multisensor:
     def plan(self, current, *, key=None, event=None, block=None, group=None,
              timer_seconds=None, expiry='off', target_lux=None, margin_percent=None,
              enable_group=None, enabled_when=None, allow_shared_block=False,
-             disable_potentiometer_override=False):
+             disable_potentiometer_override=False, identity=None):
         """Plan an exclusive sensor event per key plus optional global settings.
 
         Day/night share a timer only when their key block masks select the same
         block. Target lux uses exact 10-lux steps; percentage is converted to a
         native margin byte using Toolkit's round-to-even arithmetic.
         """
+        if identity is not None:
+            if not isinstance(identity, tuple) or len(identity) != 3:
+                raise SensorError('Identity must be (unit_type, firmware, catalog_number)')
+            identity = check_profile(*identity)
         for value in (allow_shared_block, disable_potentiometer_override):
             if not isinstance(value, bool):
                 raise SensorError('Shared-block and potentiometer options must be boolean')
@@ -205,14 +258,13 @@ class Multisensor:
             updates['PIREnablerGroupLogic'][0] = int(enabled_when == 'off')
         changes = {name: tuple(values) for name, values in updates.items() if tuple(values) != original[name]}
         self.codec.encode_many(changes)
-        return SensorPlan(key, event, selected, original, changes, shared)
+        return SensorPlan(key, event, selected, original, changes, shared, identity)
 
     def _verify_profile(self, session):
-        if (session.unit_type, session.firmware, session.catalog_number) != PROFILE[:3]:
-            raise SensorError('Native session must be SENPILL 2.3.00 / 5753PEIRL')
+        return check_profile(session.unit_type, session.firmware, session.catalog_number,
+                             subject='Native session')
 
     def _verify_session(self, session):
-        self._verify_profile(session)
         document = xml_text(session.info('*'))
         if '<!DOCTYPE' in document.upper() or '<!ENTITY' in document.upper():
             raise SensorError('Unsupported native schema declarations')
@@ -239,6 +291,9 @@ class Multisensor:
         if not isinstance(plan, SensorPlan) or set(plan.expected) != set(LAYOUTS) or any(name not in LAYOUTS for name in plan.changes):
             raise SensorError('Plan contains fields outside the sensor workflow')
         self.codec.encode_many(plan.changes)
+        identity = self._verify_profile(session)
+        if plan.identity is not None and plan.identity != identity:
+            raise SensorError('Plan was created for another unit firmware or catalogue number')
         self._verify_session(session)
         if self.snapshot(session.values()) != dict(plan.expected):
             raise SensorError('PP parameters changed since the sensor plan was created')
@@ -255,8 +310,8 @@ class Multisensor:
             # Never issue recovery I/O after an uncertain transport or partial
             # PP error. The caller can inspect/reload the unsaved PP session.
             raise SensorApplyError(error, attempted) from error
-        return {**plan.as_dict(), 'verified': True}
+        return {**replace(plan, identity=identity).as_dict(), 'verified': True}
 
     def configure(self, session, **options):
-        self._verify_profile(session)
-        return self.apply(session, self.plan(session.values(), **options))
+        identity = self._verify_profile(session)
+        return self.apply(session, self.plan(session.values(), identity=identity, **options))
