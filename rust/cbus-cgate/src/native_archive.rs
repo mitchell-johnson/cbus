@@ -177,8 +177,10 @@ pub(crate) fn restore(server: &mut Server, tag: &str, project: &str, token: &str
         if created.status >= 400 {
             return failed(tag, format!("Network {address}: {}", created.final_text));
         }
-        let replaced =
-            staged.handle_document(&format!("[restore] DBSETXML //{project}/{address}"), document);
+        let replaced = staged.handle_document(
+            &format!("[restore] DBSETXML //{project}/{address}"),
+            document,
+        );
         if replaced.status != 301 {
             return failed(tag, format!("Network {address}: {}", replaced.final_text));
         }
@@ -206,7 +208,9 @@ fn encode(container: Container, payload: &[u8]) -> Result<Vec<u8>, String> {
             let mut encoder = flate2::GzBuilder::new()
                 .operating_system(0)
                 .write(Vec::new(), flate2::Compression::default());
-            encoder.write_all(payload).map_err(|error| error.to_string())?;
+            encoder
+                .write_all(payload)
+                .map_err(|error| error.to_string())?;
             let mut bytes = encoder.finish().map_err(|error| error.to_string())?;
             if bytes.len() > 9 {
                 bytes[8] = 0;
@@ -272,7 +276,9 @@ fn decode(container: Container, bytes: &[u8]) -> Result<Vec<u8>, String> {
                 entry.compression(),
                 zip::CompressionMethod::Stored | zip::CompressionMethod::Deflated
             ) {
-                return Err(format!("Zip entry {name} uses an unsupported compression method"));
+                return Err(format!(
+                    "Zip entry {name} uses an unsupported compression method"
+                ));
             }
             if entry.size() > limit {
                 return Err(format!("Zip entry {name} expands beyond the archive limit"));
@@ -281,7 +287,9 @@ fn decode(container: Container, bytes: &[u8]) -> Result<Vec<u8>, String> {
                 bounded_read(entry, limit).map_err(|error| format!("Zip entry {name}: {error}"))?;
             let is_sqlite = payload.starts_with(SQLITE_MAGIC);
             if (name == "tagdb.db") != is_sqlite {
-                return Err(format!("Zip entry {name} does not contain the expected payload"));
+                return Err(format!(
+                    "Zip entry {name} does not contain the expected payload"
+                ));
             }
             Ok(payload)
         }
@@ -380,9 +388,7 @@ fn parse_project(
         let namespaced = child.tag_name().namespace().is_some();
         match (namespaced, child.tag_name().name()) {
             (false, "OID") => retain_scalar(&mut imported.envelope, "project-oid", child)?,
-            (false, "Description") => {
-                retain_scalar(&mut imported.envelope, "description", child)?
-            }
+            (false, "Description") => retain_scalar(&mut imported.envelope, "description", child)?,
             // RESTORE names the project; native load renames it likewise.
             (false, "TagName" | "Address") => {}
             (false, "Network") => {
@@ -421,13 +427,13 @@ fn retain_scalar(
     }
     let value = node.text().unwrap_or_default().to_string();
     if key.ends_with("-oid") && !valid_uuid(&value) {
-        return Err(format!("project XML {} has an invalid OID", node.tag_name().name()));
-    }
-    if envelope.attributes.insert(key.to_string(), value).is_some() {
         return Err(format!(
-            "project XML repeats {}",
+            "project XML {} has an invalid OID",
             node.tag_name().name()
         ));
+    }
+    if envelope.attributes.insert(key.to_string(), value).is_some() {
+        return Err(format!("project XML repeats {}", node.tag_name().name()));
     }
     Ok(())
 }
@@ -455,10 +461,7 @@ fn with_generated_oids(network: roxmltree::Node<'_, '_>, source: &str) -> Result
         let end = xml_open_tag_end(&fragment, start)
             .ok_or_else(|| "invalid Network XML opening tag".to_string())?;
         if fragment.as_bytes().get(end.saturating_sub(1)) == Some(&b'/') {
-            return Err(format!(
-                "project XML {} is empty",
-                node.tag_name().name()
-            ));
+            return Err(format!("project XML {} is empty", node.tag_name().name()));
         }
         insertions.push(end + 1);
     }
@@ -569,7 +572,14 @@ const TABLE_COLUMNS: &[(&str, &[&str])] = &[
     ("_schema", &["version", "filename"]),
     (
         "installation",
-        &["id", "oid", "db_version", "version", "project_id", "installation_detail_id"],
+        &[
+            "id",
+            "oid",
+            "db_version",
+            "version",
+            "project_id",
+            "installation_detail_id",
+        ],
     ),
     (
         "installation_detail",
@@ -629,9 +639,18 @@ const TABLE_COLUMNS: &[(&str, &[&str])] = &[
     ),
     (
         "interface",
-        &["id", "oid", "interface_type", "interface_address", "network_id"],
+        &[
+            "id",
+            "oid",
+            "interface_type",
+            "interface_address",
+            "network_id",
+        ],
     ),
-    ("application", &["id", "oid", "tagged_entity_id", "network_id"]),
+    (
+        "application",
+        &["id", "oid", "tagged_entity_id", "network_id"],
+    ),
     (
         "_group",
         &[
@@ -646,7 +665,10 @@ const TABLE_COLUMNS: &[(&str, &[&str])] = &[
             "nac_dali_duration_test_timeout",
         ],
     ),
-    ("net_var", &["id", "oid", "tagged_entity_id", "application_id"]),
+    (
+        "net_var",
+        &["id", "oid", "tagged_entity_id", "application_id"],
+    ),
     (
         "level_tag",
         &["id", "oid", "tagged_entity_id", "value", "tags_dlt_list_id"],
@@ -732,7 +754,14 @@ impl Drop for TempDatabase {
 /// Run one read-only query that returns a single JSON value.
 fn sqlite_json(path: &Path, sql: &str) -> Result<Value, String> {
     let output = Command::new("sqlite3")
-        .args(["-readonly", "-safe", "-batch", "-noheader", "-bail", "-list"])
+        .args([
+            "-readonly",
+            "-safe",
+            "-batch",
+            "-noheader",
+            "-bail",
+            "-list",
+        ])
         .arg(path)
         .arg(sql)
         .stdin(Stdio::null())
@@ -964,7 +993,12 @@ impl<'a> SchneiderRows<'a> {
         Ok(output)
     }
 
-    fn levels(&self, link: &'static str, parent_column: &str, parent: i64) -> Result<String, String> {
+    fn levels(
+        &self,
+        link: &'static str,
+        parent_column: &str,
+        parent: i64,
+    ) -> Result<String, String> {
         let mut output = String::new();
         for link_row in self.children(link, parent_column, parent) {
             let level = self.by_id("level_tag", number(link_row, "level_tag_id"))?;
@@ -987,7 +1021,12 @@ impl<'a> SchneiderRows<'a> {
             self.reject(
                 "_group",
                 group,
-                &["area", "phantom", "snapshot_id", "nac_dali_duration_test_timeout"],
+                &[
+                    "area",
+                    "phantom",
+                    "snapshot_id",
+                    "nac_dali_duration_test_timeout",
+                ],
             )?;
             let group_id = number(group, "id").ok_or("Schneider group has no id")?;
             let (identity, _) = self.entity(group, "group", false)?;
@@ -1033,7 +1072,11 @@ impl<'a> SchneiderRows<'a> {
         optional(&mut output, "UnitType", text(row, "unit_type"));
         optional(&mut output, "UnitName", text(row, "unit_name"));
         optional(&mut output, "SerialNumber", text(row, "serial_number"));
-        optional(&mut output, "FirmwareVersion", text(row, "firmware_version"));
+        optional(
+            &mut output,
+            "FirmwareVersion",
+            text(row, "firmware_version"),
+        );
         for link in self.children("pp_properties", "unit_id", id) {
             let property = self.by_id("property", number(link, "property_id"))?;
             output.push_str(&format!(
@@ -1069,7 +1112,11 @@ impl<'a> SchneiderRows<'a> {
         let interface = interfaces[0];
         output.push_str("<Interface>");
         optional(&mut output, "OID", text(interface, "oid"));
-        optional(&mut output, "InterfaceType", text(interface, "interface_type"));
+        optional(
+            &mut output,
+            "InterfaceType",
+            text(interface, "interface_type"),
+        );
         optional(
             &mut output,
             "InterfaceAddress",
@@ -1098,7 +1145,10 @@ impl<'a> SchneiderRows<'a> {
                 let property = self.by_id("property", number(property_link, "property_id"))?;
                 output.push_str("<Property>");
                 optional(&mut output, "OID", text(property, "oid"));
-                output.push_str(&element("Name", &text(property, "name").unwrap_or_default()));
+                output.push_str(&element(
+                    "Name",
+                    &text(property, "name").unwrap_or_default(),
+                ));
                 output.push_str(&element(
                     "Value",
                     &text(property, "value").unwrap_or_default(),
@@ -1213,9 +1263,10 @@ impl<'a> SchneiderRows<'a> {
                 continue;
             }
             let table_name: &'static str = table;
-            if let Some(row) = self.rows(table).find(|row| {
-                number(row, "id").is_none_or(|id| !used.contains(&(table_name, id)))
-            }) {
+            if let Some(row) = self
+                .rows(table)
+                .find(|row| number(row, "id").is_none_or(|id| !used.contains(&(table_name, id))))
+            {
                 return Err(format!(
                     "Schneider {table} row {} is not reachable from the project",
                     number(row, "id").unwrap_or(-1)
@@ -1233,8 +1284,20 @@ mod tests {
     #[test]
     fn archive_names_stay_inside_the_archive_directory() {
         assert_eq!(archive_path("a.zip").unwrap(), "Projects/archived/a.zip");
-        assert_eq!(archive_path("sub\\a.gz").unwrap(), "Projects/archived/sub/a.gz");
-        for token in ["", "/tmp/a.zip", "..\\a.zip", "a/../../b.zip", "C:x.zip", "%P%/a", "~/a", "dir/"] {
+        assert_eq!(
+            archive_path("sub\\a.gz").unwrap(),
+            "Projects/archived/sub/a.gz"
+        );
+        for token in [
+            "",
+            "/tmp/a.zip",
+            "..\\a.zip",
+            "a/../../b.zip",
+            "C:x.zip",
+            "%P%/a",
+            "~/a",
+            "dir/",
+        ] {
             assert!(archive_path(token).is_err(), "{token}");
         }
         assert_eq!(container("A.ZIP"), Container::Zip);
@@ -1266,7 +1329,9 @@ mod tests {
             writer.finish().unwrap().into_inner()
         };
         let two = build(&[("tagdb.xml", document), ("extra.bin", b"x")]);
-        assert!(decode(Container::Zip, &two).unwrap_err().contains("exactly one"));
+        assert!(decode(Container::Zip, &two)
+            .unwrap_err()
+            .contains("exactly one"));
         let named = build(&[("project.xml", document)]);
         assert!(decode(Container::Zip, &named)
             .unwrap_err()
@@ -1279,8 +1344,7 @@ mod tests {
         assert!(decode(Container::Zip, &bomb)
             .unwrap_err()
             .contains("expands beyond"));
-        let mut encoder =
-            flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::best());
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::best());
         encoder.write_all(&vec![0; 8 * 1024 * 1024]).unwrap();
         let gz_bomb = encoder.finish().unwrap();
         assert!(decode(Container::Gzip, &gz_bomb)

@@ -15603,6 +15603,81 @@ async fn auth_db_project_and_scene_mutations_gate_together() {
 }
 
 #[tokio::test]
+async fn native_project_archive_is_file_namespace_only_and_durable() {
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci.clone(), None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "[1] PROJECT NEW AUX",
+        "[2] DBCREATENET 1 Auxiliary Cni loopback",
+        "[3] DBADDSAFE //AUX/1 Unit 20 Original",
+        "[3a] DBSETSAFE //AUX/1/p/20/UnitType KEYE1",
+        "[3b] DBSETSAFE //AUX/1/p/20/UnitName Room",
+        "[3c] DBSETSAFE //AUX/1/p/20/FirmwareVersion 1.2.67",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert!(response.status < 400, "{command}: {response:?}");
+    }
+    for (command, expected) in [
+        ("[4] PROJECT ARCHIVE AUX aux.zip", "200 OK."),
+        (
+            "[5] PROJECT ARCHIVE AUX aux.zip",
+            "408 Operation failed: Archive failed: Destination file exists",
+        ),
+        (
+            "[6] PROJECT ARCHIVE AUX cmqttd:",
+            "408 Invalid cmqttd: archive key",
+        ),
+        ("[7] PROJECT RESTORE COPY aux.zip", "200 OK."),
+    ] {
+        assert_eq!(
+            service.handle(&mut client, command).await.final_text,
+            expected,
+            "{command}"
+        );
+    }
+    let listing = service
+        .handle(&mut client, "[8] FILE DIR Projects/archived")
+        .await;
+    assert!(format!("{listing:?}").contains("aux.zip"), "{listing:?}");
+    drop(service);
+    let restarted = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    assert_eq!(
+        restarted
+            .handle(&mut restarted_client, "[9] PROJECT RESTORE COPY2 aux.zip")
+            .await
+            .final_text,
+        "200 OK."
+    );
+    // The restored Network readback is the source readback, OIDs included.
+    let mut source_reply = None;
+    for project in ["AUX", "COPY", "COPY2"] {
+        restarted
+            .handle(&mut restarted_client, &format!("[u] PROJECT USE {project}"))
+            .await;
+        let reply = restarted
+            .handle(
+                &mut restarted_client,
+                &format!("[g] DBGETXML //{project}/1"),
+            )
+            .await;
+        let lines = reply.lines.clone();
+        match &source_reply {
+            None => source_reply = Some(lines),
+            Some(source) => assert_eq!(&lines, source, "{project}"),
+        }
+    }
+    let model = restarted.model.lock().await;
+    for project in ["COPY", "COPY2"] {
+        assert!(model.projects[project].networks[&1].physical.is_empty());
+    }
+    drop(model);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn project_archive_restore_and_secondary_rename_are_durable_database_only() {
     let path = state_path();
     let (pci, _remote) = pci();
@@ -15986,7 +16061,7 @@ async fn administrative_guards_keep_configured_binding_and_reject_unknown_transf
     ] {
         let response = service.handle(&mut client, &command).await;
         assert_eq!(response.status, 408, "{command}: {response:?}");
-        assert!(response.final_text.contains("cmqttd: archive key"));
+        assert!(response.final_text.contains("Illegal path"), "{response:?}");
     }
     assert!(!vendor_path.exists());
     let configured_delete = service

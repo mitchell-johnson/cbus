@@ -6142,7 +6142,10 @@ mod native_project_archive {
         let mut server = Server::new(AccessLevel::Program)
             .with_programming(true)
             .with_native_project_archives();
-        assert_eq!(server.handle("[mk] FILE MKDIR Projects/archived").status, 200);
+        assert_eq!(
+            server.handle("[mk] FILE MKDIR Projects/archived").status,
+            200
+        );
         server
     }
 
@@ -6238,7 +6241,10 @@ mod native_project_archive {
             .find(|vector| vector["kind"] == "sqlite_base")
             .unwrap();
         let sqlite = sqlite_available();
-        for vector in vectors.iter().filter(|vector| vector["kind"] != "sqlite_base") {
+        for vector in vectors
+            .iter()
+            .filter(|vector| vector["kind"] != "sqlite_base")
+        {
             let name = vector["name"].as_str().unwrap();
             let mut server = server();
             let archive = vector["archive"].as_str().unwrap();
@@ -6278,7 +6284,9 @@ mod native_project_archive {
                 );
             }
             assert_eq!(
-                server.handle(&format!("[again] PROJECT RESTORE XR {archive}")).final_text,
+                server
+                    .handle(&format!("[again] PROJECT RESTORE XR {archive}"))
+                    .final_text,
                 "408 Operation failed: Archive failed: Destination file exists"
             );
 
@@ -6290,7 +6298,9 @@ mod native_project_archive {
                 ("out.xml", None, "XCRAW"),
             ] {
                 assert_eq!(
-                    server.handle(&format!("[arc] PROJECT ARCHIVE XR {out}")).final_text,
+                    server
+                        .handle(&format!("[arc] PROJECT ARCHIVE XR {out}"))
+                        .final_text,
                     "200 OK.",
                     "{name} {out}"
                 );
@@ -6314,14 +6324,24 @@ mod native_project_archive {
                     }
                     None => String::from_utf8(bytes).unwrap(),
                 };
-                assert!(document.starts_with("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation>"));
-                assert!(document.contains("<DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>"));
-                assert!(document.contains("<Project>") && document.contains("<InstallationDetail>"));
+                assert!(document
+                    .starts_with("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation>"));
+                assert!(
+                    document.contains("<DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>")
+                );
+                assert!(
+                    document.contains("<Project>") && document.contains("<InstallationDetail>")
+                );
                 for expected in vector["archive_contains"].as_array().into_iter().flatten() {
-                    assert!(document.contains(expected.as_str().unwrap()), "{name} {expected}");
+                    assert!(
+                        document.contains(expected.as_str().unwrap()),
+                        "{name} {expected}"
+                    );
                 }
                 assert_eq!(
-                    server.handle(&format!("[rt] PROJECT RESTORE {copy} {out}")).final_text,
+                    server
+                        .handle(&format!("[rt] PROJECT RESTORE {copy} {out}"))
+                        .final_text,
                     "200 OK.",
                     "{name} {out}"
                 );
@@ -6345,16 +6365,26 @@ mod native_project_archive {
         let mut native = server();
         native.handle("[new] PROJECT NEW XSRC");
         assert_eq!(
-            native.handle("[arc] PROJECT ARCHIVE XSRC cmqttd:slot").final_text,
+            native
+                .handle("[arc] PROJECT ARCHIVE XSRC cmqttd:slot")
+                .final_text,
             "200 OK."
         );
         assert_eq!(
-            native.handle("[res] PROJECT RESTORE XDST cmqttd:slot").final_text,
+            native
+                .handle("[res] PROJECT RESTORE XDST cmqttd:slot")
+                .final_text,
             "200 OK."
         );
         let mut mock = Server::new(AccessLevel::Program);
         mock.handle("[new] PROJECT NEW XSRC");
-        assert_eq!(mock.handle("[arc] PROJECT ARCHIVE XSRC /tmp/x.zip").status, 200);
-        assert_eq!(mock.handle("[res] PROJECT RESTORE XDST /tmp/x.zip").status, 200);
+        assert_eq!(
+            mock.handle("[arc] PROJECT ARCHIVE XSRC /tmp/x.zip").status,
+            200
+        );
+        assert_eq!(
+            mock.handle("[res] PROJECT RESTORE XDST /tmp/x.zip").status,
+            200
+        );
     }
 }
