@@ -11,6 +11,7 @@ use cbus_protocol::common::CONFIRMATION_CODES;
 use cbus_protocol::packet::{Meta, Packet};
 use cbus_protocol::report::StatusReport;
 use cbus_protocol::sal::{
+    accesscontrol::AccessControlMessage,
     aircon::{AirconCommand, AirconStatus},
     audio::{AudioCommand, AudioEvent},
     ereport::ErrorReportMessage,
@@ -104,6 +105,13 @@ const FORCE_CLEANUP_PERCENTAGE: f64 = 0.25;
 /// `PCIProtocol.on_*` handlers consumed by `mqtt_gateway.CBusHandler`).
 #[derive(Debug, Clone, PartialEq)]
 pub enum CBusEvent {
+    /// One Access Control command or access-point observation on the bus.
+    AccessControl {
+        /// Source unit address (`None` when the source byte was 0).
+        source: Option<u8>,
+        /// Fully decoded Access Control message.
+        message: AccessControlMessage,
+    },
     /// One Measurement application channel sample observed on the bus.
     MeasurementData {
         /// Source unit address (`None` when the source byte was 0).
@@ -1149,6 +1157,10 @@ impl PciClient {
                 for s in sals {
                     let src = meta.source_address;
                     let event = match s {
+                        Sal::AccessControl(message) => Some(CBusEvent::AccessControl {
+                            source: src,
+                            message,
+                        }),
                         Sal::Aircon(command) => Some(CBusEvent::AirconCommand {
                             source: src,
                             command,

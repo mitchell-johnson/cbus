@@ -8269,6 +8269,59 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn access_control_traffic_is_fanned_out_without_completing_confirmed_send() {
+        use cbus_protocol::sal::accesscontrol::AccessControlMessage;
+        let (pci, mut remote, mut events) = setup().await;
+        let worker = pci.clone();
+        let command = tokio::spawn(async move {
+            worker
+                .send_confirmed(&Packet::PointToMultipoint {
+                    meta: Meta::new(true, 0),
+                    application: cbus_protocol::common::APP_ACCESS_CONTROL,
+                    sals: vec![Sal::AccessControl(AccessControlMessage::Close {
+                        zone: 7,
+                        point: 9,
+                    })],
+                })
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\05D50002070914h\r");
+
+        // Access requests carry variable-length data and, like the fixed
+        // point observations, are bus events rather than this send's
+        // confirmation.
+        remote
+            .get_mut()
+            .write_all(b"0504D500A607090112AB00AE\r\n0505D5001207080A0708E7\r\n")
+            .await
+            .unwrap();
+        for (source, message) in [
+            (
+                4,
+                AccessControlMessage::AccessRequestValid {
+                    zone: 7,
+                    point: 9,
+                    direction: 1,
+                    data: vec![0x12, 0xab, 0x00],
+                },
+            ),
+            (5, AccessControlMessage::PointLeftOpen { zone: 7, point: 8 }),
+            (5, AccessControlMessage::Lock { zone: 7, point: 8 }),
+        ] {
+            assert_eq!(
+                events.recv().await,
+                Some(CBusEvent::AccessControl {
+                    source: Some(source),
+                    message,
+                })
+            );
+        }
+        assert!(!command.is_finished());
+        remote.get_mut().write_all(b"h.\r\n").await.unwrap();
+        assert!(command.await.unwrap().is_ok());
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn security_event_is_fanned_out_without_completing_confirmed_send() {
         let (pci, mut remote, mut events) = setup().await;
         let worker = pci.clone();

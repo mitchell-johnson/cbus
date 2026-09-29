@@ -102,6 +102,7 @@ fn check_vector(fname: &str, v: &Value) -> Result<(), String> {
         | "audio.jsonl"
         | "measurement.jsonl"
         | "security.jsonl"
+        | "access_control.jsonl"
         | "mediatransport.jsonl"
         | "telephony.jsonl"
         | "identify.jsonl"

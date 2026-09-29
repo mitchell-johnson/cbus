@@ -676,7 +676,9 @@ are physical for application 213 on the configured network or a topology-resolve
 point values before I/O, encodes the retained `0x02` CLOSE or `0x0A` LOCK SAL,
 sends it exactly once, and requires the correlated confirmation on the current
 PCI generation. A 200 proves interface delivery only; it does not prove a door
-or controller changed state or persisted it. Routed Access Control delivery is exact-once and has no controller readback. TLS-client-certificate identity mapping remains outside the evidenced scope.
+or controller changed state or persisted it. Routed Access Control delivery is exact-once and has no controller readback. TLS-client-certificate identity mapping remains outside the evidenced scope. Inbound Access Control traffic fans out to EVENT clients as
+`#e# accesscontrol NAME //PROJECT/NETWORK/213 ZONE POINT [DIRECTION REQUESTER-HEX] sourceUnit=N`
+for the eight native message names; malformed or native-out-of-range SAL emits nothing and no MQTT state is published.
 
 ### Telephony commands
 

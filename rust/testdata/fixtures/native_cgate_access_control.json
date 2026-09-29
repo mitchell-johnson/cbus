@@ -1,0 +1,321 @@
+{
+ "format": "native-cgate-access-control-events-v1",
+ "oracle": {
+  "product": "C-Gate",
+  "version": "3.4.0.2001",
+  "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "class_sha256": {
+   "com/clipsal/cgate/cbus/app/accesscontrol/CBusAccessControlApplication.class": "412b7ef2ddf2aeb2a6774647f35869e570fec5b4b49a6c2a50212f931e2110c0",
+   "bc.class": "9d5f9621b601fe77483982a187e6543f425b371d014c677cfe05dcf6dda2bb36",
+   "S.class": "a5979214497f5718efb41b68ce71c12edb618b47aaa679cbcdce80d6094653c6",
+   "BL.class": "3cdf66aa284e67717123bcfcbe9e3dc8e19f0c255529ed16291e8168b3f82626"
+  },
+  "raw_probe_report_sha256": "be71725d493fe03657fc922036c73afbfc3d7b6e5d76b758a49f354025d23dbc",
+  "listener_ownership_verified": true,
+  "cleanup_complete": true,
+  "process_exit_confirmed": true
+ },
+ "probe": "rust/cbus-cgate/research/native_access_control_event_probe.py",
+ "scope": "Captured from an isolated owned C-Gate 3.4 daemon whose only network is a disposable project on the ephemeral Toolkit PCI simulator; synthetic monitor-mode SAL lines were written on that loopback connection. No site project, access-control hardware, Docker service, or live C-Bus network was used. Project names are replaced by PROJECT and timestamps by <timestamp>. The first injected SAL also produced the native lazy-creation row '702 //PROJECT/254/213 - [accesscontrol] loaded application', which is omitted from the per-case rows.",
+ "session_event_mode": "EVENT e9s9c0",
+ "decoder": {
+  "short_opcode": "bit 7 clear: command = bits 3..6, parameter length = bits 0..2; commands 0 close_access_point, 1 lock_access_point, 2 access_point_left_open, 3 access_point_forced_open, 4 access_point_closed, 6 exit_request; parameters zone, point",
+  "long_opcode": "bit 7 set: command = bits 5..6, parameter length = bits 0..4; commands 1 access_request_valid, 2 access_request_invalid; parameters zone, point, direction, then requester = remaining parameter bytes as upper-case hex",
+  "ranges": {
+   "zone": [
+    0,
+    254
+   ],
+   "point": [
+    0,
+    254
+   ],
+   "direction": [
+    0,
+    2
+   ]
+  },
+  "event_row": "702 <application address> - [accesscontrol] <name> zone=Z point=P[ direction=D requester=HEX] sourceUnit=N",
+  "status_row": "[# ]accesscontrol <name> <application address> <values> #sourceunit=N OID=; the '# ' prefix marks observations other than close/lock"
+ },
+ "cmqttd_event_layout": "#e# accesscontrol <name> //PROJECT/NETWORK/213 <status-row values> sourceUnit=N, the untimed application-event layout shared with the other specialist applications; it is not the timestamped native 702 row",
+ "cases": [
+  {
+   "label": "close",
+   "sal_hex": "020709",
+   "source": 4,
+   "pci_line": "0504D50002070910",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] close_access_point zone=7 point=9 sourceUnit=4"
+   ],
+   "native_status_rows": [
+    "#s# accesscontrol close_access_point //PROJECT/254/213 7 9 #sourceunit=4 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "lock",
+   "sal_hex": "0A0709",
+   "source": 4,
+   "pci_line": "0504D5000A070908",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] lock_access_point zone=7 point=9 sourceUnit=4"
+   ],
+   "native_status_rows": [
+    "#s# accesscontrol lock_access_point //PROJECT/254/213 7 9 #sourceunit=4 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "left_open",
+   "sal_hex": "120102",
+   "source": 5,
+   "pci_line": "0505D5001201020C",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_left_open zone=1 point=2 sourceUnit=5"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_left_open //PROJECT/254/213 1 2 #sourceunit=5 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "forced_open",
+   "sal_hex": "1A0102",
+   "source": 5,
+   "pci_line": "0505D5001A010204",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_forced_open zone=1 point=2 sourceUnit=5"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_forced_open //PROJECT/254/213 1 2 #sourceunit=5 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "closed",
+   "sal_hex": "220102",
+   "source": 5,
+   "pci_line": "0505D500220102FC",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_closed zone=1 point=2 sourceUnit=5"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_closed //PROJECT/254/213 1 2 #sourceunit=5 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "exit_request",
+   "sal_hex": "3200FE",
+   "source": 6,
+   "pci_line": "0506D5003200FEF0",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] exit_request zone=0 point=254 sourceUnit=6"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol exit_request //PROJECT/254/213 0 254 #sourceunit=6 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "request_valid",
+   "sal_hex": "A607090112AB00",
+   "source": 6,
+   "pci_line": "0506D500A607090112AB00AC",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_request_valid zone=7 point=9 direction=1 requester=12AB00 sourceUnit=6"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_request_valid //PROJECT/254/213 7 9 1 12AB00 #sourceunit=6 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "request_invalid_empty",
+   "sal_hex": "C3070902",
+   "source": 6,
+   "pci_line": "0506D500C30709024B",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_request_invalid zone=7 point=9 direction=2 requester= sourceUnit=6"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_request_invalid //PROJECT/254/213 7 9 2  #sourceunit=6 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "request_invalid_max",
+   "sal_hex": "DFFEFE02000102030405060708090A0B0C0D0E0F101112131415161718191A1B",
+   "source": 6,
+   "pci_line": "0506D500DFFEFE02000102030405060708090A0B0C0D0E0F101112131415161718191A1BC9",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_request_invalid zone=254 point=254 direction=2 requester=000102030405060708090A0B0C0D0E0F101112131415161718191A1B sourceUnit=6"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_request_invalid //PROJECT/254/213 254 254 2 000102030405060708090A0B0C0D0E0F101112131415161718191A1B #sourceunit=6 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "concatenated",
+   "sal_hex": "1A0708A4070801AA",
+   "source": 7,
+   "pci_line": "0507D5001A0708A4070801AA98",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_forced_open zone=7 point=8 sourceUnit=7",
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_request_valid zone=7 point=8 direction=1 requester=AA sourceUnit=7"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_forced_open //PROJECT/254/213 7 8 #sourceunit=7 OID=",
+    "#s# # accesscontrol access_request_valid //PROJECT/254/213 7 8 1 AA #sourceunit=7 OID="
+   ],
+   "cmqttd": "same"
+  },
+  {
+   "label": "close_three_bytes",
+   "sal_hex": "03070901",
+   "source": 7,
+   "pci_line": "0507D500030709010B",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] close_access_point zone=7 point=9 sourceUnit=7"
+   ],
+   "native_status_rows": [
+    "#s# accesscontrol close_access_point //PROJECT/254/213 7 9 #sourceunit=7 OID="
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "note": "native ignores the third parameter byte of short opcode 0x03; cmqttd rejects non-canonical short lengths and emits nothing"
+  },
+  {
+   "label": "zone_255",
+   "sal_hex": "02FF09",
+   "source": 7,
+   "pci_line": "0507D50002FF0915",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL parameter: 02FF0915 - Zone out of range"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "point_255",
+   "sal_hex": "0207FF",
+   "source": 7,
+   "pci_line": "0507D5000207FF17",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL parameter: 0207FF17 - Access Point out of range"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "direction_3",
+   "sal_hex": "A3070903",
+   "source": 7,
+   "pci_line": "0507D500A307090369",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL parameter: A307090369 - Direction out of range"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "request_too_short",
+   "sal_hex": "A20709",
+   "source": 7,
+   "pci_line": "0507D500A207096D",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL parameter: A207096D - Direction not available"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "unknown_short_5",
+   "sal_hex": "2A0709",
+   "source": 7,
+   "pci_line": "0507D5002A0709E5",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown SAL command: 2A0709E5",
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown cbus response: 2A0709E5"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "unknown_long_0",
+   "sal_hex": "830709",
+   "source": 7,
+   "pci_line": "0507D5008307098C",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown SAL command: 8307098C",
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown cbus response: 8307098C"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "unknown_long_3",
+   "sal_hex": "E3070901",
+   "source": 7,
+   "pci_line": "0507D500E30709012B",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown SAL command: E30709012B",
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown cbus response: E30709012B"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "truncated",
+   "sal_hex": "A6070901",
+   "source": 7,
+   "pci_line": "0507D500A607090168",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL command: A607090168",
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown cbus response: A607090168"
+   ],
+   "native_status_rows": [],
+   "cmqttd": "both_silent",
+   "note": "native reports only a code-824 diagnostic; cmqttd decodes nothing and emits no event"
+  },
+  {
+   "label": "range_then_valid",
+   "sal_hex": "02FF09220304",
+   "source": 7,
+   "pci_line": "0507D50002FF09220304EC",
+   "native_event_rows": [
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL parameter: 02FF09220304EC - Zone out of range",
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_closed zone=3 point=4 sourceUnit=7"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_closed //PROJECT/254/213 3 4 #sourceunit=7 OID="
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "note": "native skips the out-of-range first message and still emits the second; cmqttd rejects the whole SAL and emits nothing"
+  },
+  {
+   "label": "trailing_byte",
+   "sal_hex": "22030499",
+   "source": 7,
+   "pci_line": "0507D500220304995D",
+   "native_event_rows": [
+    "#e# <timestamp> 702 //PROJECT/254/213 - [accesscontrol] access_point_closed zone=3 point=4 sourceUnit=7",
+    "#e# <timestamp> 824 //PROJECT/254/213 - bad SAL command: 995D",
+    "#e# <timestamp> 824 //PROJECT/254/213 - unknown cbus response: 220304995D"
+   ],
+   "native_status_rows": [
+    "#s# # accesscontrol access_point_closed //PROJECT/254/213 3 4 #sourceunit=7 OID="
+   ],
+   "cmqttd": "cmqttd_fails_closed",
+   "note": "native emits the complete first message before rejecting the truncated trailing opcode; cmqttd rejects the whole SAL and emits nothing"
+  }
+ ]
+}

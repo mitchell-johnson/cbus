@@ -63,6 +63,7 @@ pub fn run_vector(fname: &str, index: usize, id: &str) {
         | "audio.jsonl"
         | "measurement.jsonl"
         | "security.jsonl"
+        | "access_control.jsonl"
         | "mediatransport.jsonl"
         | "telephony.jsonl"
         | "identify.jsonl"

@@ -3317,6 +3317,128 @@ async fn observed_telephony_commands_and_events_use_native_fanout() {
 }
 
 #[tokio::test]
+async fn observed_access_control_messages_use_native_fanout() {
+    use cbus_protocol::sal::accesscontrol::AccessControlMessage;
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    for (source, message, expected) in [
+        (
+            Some(4),
+            AccessControlMessage::Close { zone: 7, point: 9 },
+            "#e# accesscontrol close_access_point //HARNESS/254/213 7 9 sourceUnit=4",
+        ),
+        (
+            None,
+            AccessControlMessage::Lock {
+                zone: 0,
+                point: 254,
+            },
+            "#e# accesscontrol lock_access_point //HARNESS/254/213 0 254 sourceUnit=0",
+        ),
+        (
+            Some(5),
+            AccessControlMessage::PointLeftOpen { zone: 1, point: 2 },
+            "#e# accesscontrol access_point_left_open //HARNESS/254/213 1 2 sourceUnit=5",
+        ),
+        (
+            Some(5),
+            AccessControlMessage::PointForcedOpen { zone: 1, point: 2 },
+            "#e# accesscontrol access_point_forced_open //HARNESS/254/213 1 2 sourceUnit=5",
+        ),
+        (
+            Some(5),
+            AccessControlMessage::PointClosed { zone: 1, point: 2 },
+            "#e# accesscontrol access_point_closed //HARNESS/254/213 1 2 sourceUnit=5",
+        ),
+        (
+            Some(5),
+            AccessControlMessage::ExitRequest { zone: 1, point: 2 },
+            "#e# accesscontrol exit_request //HARNESS/254/213 1 2 sourceUnit=5",
+        ),
+        (
+            Some(6),
+            AccessControlMessage::AccessRequestValid {
+                zone: 7,
+                point: 9,
+                direction: 1,
+                data: vec![0x12, 0xab, 0x00],
+            },
+            "#e# accesscontrol access_request_valid //HARNESS/254/213 7 9 1 12AB00 sourceUnit=6",
+        ),
+        (
+            Some(6),
+            AccessControlMessage::AccessRequestInvalid {
+                zone: 7,
+                point: 9,
+                direction: 2,
+                data: Vec::new(),
+            },
+            // Native appends the empty requester after a separator.
+            "#e# accesscontrol access_request_invalid //HARNESS/254/213 7 9 2  sourceUnit=6",
+        ),
+    ] {
+        service
+            .observe(&CBusEvent::AccessControl { source, message })
+            .await;
+        assert_eq!(events.try_recv().unwrap(), expected);
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn access_control_fanout_matches_every_native_captured_row() {
+    let fixture_json: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_access_control.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci, _remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut events = service.events.subscribe();
+    let cases = fixture_json["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 21);
+    for case in cases {
+        let label = case["label"].as_str().unwrap();
+        let sal = hex::decode(case["sal_hex"].as_str().unwrap()).unwrap();
+        let decoded = cbus_protocol::sal::decode_sals(213, &sal);
+        if case["cmqttd"] != "same" {
+            assert!(decoded.is_err(), "{label}: {decoded:?}");
+            continue;
+        }
+        let source = case["source"].as_u64().unwrap() as u8;
+        let rows = case["native_status_rows"].as_array().unwrap();
+        let messages = decoded.unwrap();
+        assert_eq!(messages.len(), rows.len(), "{label}");
+        for (message, row) in messages.into_iter().zip(rows) {
+            let Sal::AccessControl(message) = message else {
+                panic!("{label}: not Access Control");
+            };
+            // Native: `#s# [# ]accesscontrol NAME ADDRESS VALUES #sourceunit=N OID=`.
+            let row = row.as_str().unwrap().strip_prefix("#s# ").unwrap();
+            let row = row.strip_prefix("# ").unwrap_or(row);
+            let body = row
+                .strip_suffix(&format!(" #sourceunit={source} OID="))
+                .unwrap()
+                .replace("//PROJECT/254/213", "//HARNESS/254/213");
+            service
+                .observe(&CBusEvent::AccessControl {
+                    source: Some(source),
+                    message,
+                })
+                .await;
+            assert_eq!(
+                events.try_recv().unwrap(),
+                format!("#e# {body} sourceUnit={source}"),
+                "{label}"
+            );
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn confirmed_telephony_on_retired_pci_generation_fails_closed() {
     let path = state_path();
     let (old_pci, old_remote) = pci();

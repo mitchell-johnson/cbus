@@ -24,21 +24,7 @@ use serde_json::{json, Map, Value};
 /// Canonical JSON for one SAL.
 pub fn sal_to_json(s: &Sal) -> Value {
     match s {
-        Sal::AccessControl(message) => {
-            let (kind, zone, point) = match *message {
-                AccessControlMessage::Close { zone, point } => ("close", zone, point),
-                AccessControlMessage::Lock { zone, point } => ("lock", zone, point),
-                AccessControlMessage::PointLeftOpen { zone, point } => {
-                    ("point_left_open", zone, point)
-                }
-                AccessControlMessage::PointForcedOpen { zone, point } => {
-                    ("point_forced_open", zone, point)
-                }
-                AccessControlMessage::PointClosed { zone, point } => ("point_closed", zone, point),
-                AccessControlMessage::ExitRequest { zone, point } => ("exit_request", zone, point),
-            };
-            json!({"sal":"access_control", "command":kind, "zone":zone, "point":point})
-        }
+        Sal::AccessControl(message) => access_control_to_json(message),
         Sal::Aircon(command) => aircon_to_json(command),
         Sal::AirconStatus(status) => aircon_status_to_json(status),
         Sal::AudioCommand(command) => audio_command_to_json(command),
@@ -252,6 +238,45 @@ fn telephony_command_to_json(command: &TelephonyCommand) -> Value {
             json!({"sal":"telephony", "command":"reject_incoming_call"})
         }
     }
+}
+
+fn access_control_to_json(message: &AccessControlMessage) -> Value {
+    let (kind, zone, point, request) = match message {
+        AccessControlMessage::Close { zone, point } => ("close", zone, point, None),
+        AccessControlMessage::Lock { zone, point } => ("lock", zone, point, None),
+        AccessControlMessage::PointLeftOpen { zone, point } => {
+            ("point_left_open", zone, point, None)
+        }
+        AccessControlMessage::PointForcedOpen { zone, point } => {
+            ("point_forced_open", zone, point, None)
+        }
+        AccessControlMessage::PointClosed { zone, point } => ("point_closed", zone, point, None),
+        AccessControlMessage::ExitRequest { zone, point } => ("exit_request", zone, point, None),
+        AccessControlMessage::AccessRequestValid {
+            zone,
+            point,
+            direction,
+            data,
+        } => ("access_request_valid", zone, point, Some((direction, data))),
+        AccessControlMessage::AccessRequestInvalid {
+            zone,
+            point,
+            direction,
+            data,
+        } => (
+            "access_request_invalid",
+            zone,
+            point,
+            Some((direction, data)),
+        ),
+    };
+    let mut value = json!({"sal":"access_control", "command":kind, "zone":zone, "point":point});
+    if let Some((direction, data)) = request {
+        let object = value.as_object_mut().expect("object");
+        object.insert("direction".into(), json!(direction));
+        object.insert("data_hex".into(), json!(hex::encode(data)));
+    }
+    value
 }
 
 fn telephony_event_to_json(event: &TelephonyEvent) -> Value {
@@ -1092,6 +1117,7 @@ fn get_str<'a>(d: &'a Value, k: &str) -> Result<&'a str, JErr> {
 /// Build a SAL from canonical JSON.
 pub fn sal_from_json(d: &Value) -> Result<Sal, JErr> {
     match get_str(d, "sal")? {
+        "access_control" => access_control_from_json(d).map(Sal::AccessControl),
         "aircon" => aircon_from_json(d).map(Sal::Aircon),
         "aircon_status" => aircon_status_from_json(d).map(Sal::AirconStatus),
         "audio" => audio_command_from_json(d).map(Sal::AudioCommand),
@@ -1290,6 +1316,32 @@ fn ereport_from_json(d: &Value) -> Result<ErrorReportMessage, JErr> {
         unit: get_u8(d, "unit")?,
         data1: get_u8(d, "data1")?,
         data2: get_u8(d, "data2")?,
+    })
+}
+
+fn access_control_from_json(d: &Value) -> Result<AccessControlMessage, JErr> {
+    let zone = get_u8(d, "zone")?;
+    let point = get_u8(d, "point")?;
+    Ok(match get_str(d, "command")? {
+        "close" => AccessControlMessage::Close { zone, point },
+        "lock" => AccessControlMessage::Lock { zone, point },
+        "point_left_open" => AccessControlMessage::PointLeftOpen { zone, point },
+        "point_forced_open" => AccessControlMessage::PointForcedOpen { zone, point },
+        "point_closed" => AccessControlMessage::PointClosed { zone, point },
+        "exit_request" => AccessControlMessage::ExitRequest { zone, point },
+        "access_request_valid" => AccessControlMessage::AccessRequestValid {
+            zone,
+            point,
+            direction: get_u8(d, "direction")?,
+            data: get_hex(d, "data_hex")?,
+        },
+        "access_request_invalid" => AccessControlMessage::AccessRequestInvalid {
+            zone,
+            point,
+            direction: get_u8(d, "direction")?,
+            data: get_hex(d, "data_hex")?,
+        },
+        command => return Err(format!("unhandled Access Control command: {command}")),
     })
 }
 

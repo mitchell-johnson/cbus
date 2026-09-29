@@ -633,7 +633,8 @@ impl Gateway {
                     let _ = self.pci().await.clock_datetime().await;
                 }
             }
-            CBusEvent::AirconCommand { .. }
+            CBusEvent::AccessControl { .. }
+            | CBusEvent::AirconCommand { .. }
             | CBusEvent::AirconStatus { .. }
             | CBusEvent::AudioCommand { .. }
             | CBusEvent::AudioEvent { .. }

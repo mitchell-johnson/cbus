@@ -2128,6 +2128,24 @@ impl Service {
                     measurement.event_arguments()
                 ));
             }
+            CBusEvent::AccessControl { source, message } => {
+                // Build 2001 CBusAccessControlApplication emits
+                //   this.d(name + " " + s2.a() + " sourceUnit=" + n2 + ...);
+                //   BL.a(bl2, this.p(), name, aT, s2.b(), n2, ...);
+                // captured as `702 //P/N/213 - [accesscontrol] NAME zone=Z
+                // point=P ... sourceUnit=N` and `#s# [# ]accesscontrol NAME
+                // //P/N/213 VALUES #sourceunit=N OID=`. cmqttd keeps the
+                // shared untimed application layout with those values; see
+                // testdata/fixtures/native_cgate_access_control.json.
+                let source = source.unwrap_or(0);
+                let _ = self.events.send(format!(
+                    "#e# accesscontrol {} //{}/{}/213 {} sourceUnit={source}",
+                    message.event_name(),
+                    self.project,
+                    self.network,
+                    message.event_arguments()
+                ));
+            }
             CBusEvent::AirconCommand { source, command } => {
                 let source = source.unwrap_or(0);
                 let _ = self.events.send(format!(
@@ -3099,6 +3117,18 @@ impl Service {
             capabilities["test_spam_commands"] =
                 serde_json::json!(["ereport", "lighting", "list", "stop"]);
             capabilities["access_control_commands"] = serde_json::json!(["close", "lock"]);
+            capabilities["access_control_reports"] = serde_json::json!([
+                "close_access_point",
+                "lock_access_point",
+                "access_point_left_open",
+                "access_point_forced_open",
+                "access_point_closed",
+                "exit_request",
+                "access_request_valid",
+                "access_request_invalid"
+            ]);
+            capabilities["access_control_event_fanout"] = serde_json::Value::Bool(true);
+            capabilities["access_control_mqtt_state"] = serde_json::Value::Bool(false);
             capabilities["native_family_help_roots"] = serde_json::json!([
                 "applications",
                 "calculator",

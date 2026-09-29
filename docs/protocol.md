@@ -2,7 +2,7 @@
 
 ## C-Bus packets
 
-`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Media Transport, Audio, Security, Measurement, Identify, Short Message, Error Reporting, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
+`cbus-protocol` models point-to-multipoint, point-to-point, routed point-to-point-to-multipoint, device-management, reset, confirmation, error, and special packet forms. It includes CAL identify, recall, reply, and extended messages; lighting, Air-Conditioning, Media Transport, Audio, Security, Measurement, Identify, Short Message, Error Reporting, Access Control, clock, enable, temperature, and status-request SALs; binary and Manchester status reports; checksum helpers; ramp-rate conversion; and stable packet JSON.
 
 Air-Conditioning application `0xAC` has typed encode/decode coverage for the
 eleven commands registered by C-Gate 3.4: refresh, ward off/on, zone HVAC and
@@ -40,6 +40,19 @@ malformed lengths, invalid boolean values and zones outside 1–127 fail closed.
 The 52 exact command/report cases are in
 `rust/testdata/vectors/security.jsonl`; the retained native capture and class
 hashes are in `rust/testdata/fixtures/native_cgate_security.json`.
+
+Access Control application `0xD5` has typed encode/decode coverage for
+all eight messages decoded by C-Gate 3.4: close and lock commands, point left
+open, forced open and closed, exit request, and valid/invalid access requests.
+Short opcodes carry the command in bits 3–6 and the length in bits 0–2; the
+access requests use long opcodes `0xA0`/`0xC0` with a five-bit length, then
+zone, point, direction and 0–28 access-data bytes. Canonical JSON uses
+`access_control` with `direction` and `data_hex` for requests. Inbound zones
+and points above 254, directions above 2, unknown commands, non-canonical
+short lengths and truncation fail closed; outbound close/lock keep the full
+byte range. Exact cases are in `rust/testdata/vectors/access_control.jsonl`
+and the inbound `fp-access-control-*` rows of `decode_from_pci.jsonl`; the
+owned native capture is `rust/testdata/fixtures/native_cgate_access_control.json`.
 
 Measurement application `0xE4` has typed encode/decode coverage for C-Gate
 3.4's `MEASUREMENT DATA` broadcast. Its fixed SAL is `0E`, device, channel,
