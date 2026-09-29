@@ -89,17 +89,52 @@ pub async fn connect(ep: &Endpoint) -> std::io::Result<(BoxedRead, BoxedWrite)> 
             Ok((Box::new(rd), Box::new(wr)))
         }
         Endpoint::Serial { device, baud } => {
-            let port = tokio_serial::SerialStream::open(
-                &tokio_serial::new(device, *baud)
-                    .data_bits(tokio_serial::DataBits::Eight)
-                    .parity(tokio_serial::Parity::None)
-                    .stop_bits(tokio_serial::StopBits::One),
-            )
-            .map_err(std::io::Error::other)?;
+            let port = open_serial(device, *baud)?;
             let (rd, wr) = tokio::io::split(port);
             Ok((Box::new(rd), Box::new(wr)))
         }
     }
+}
+
+fn serial_builder(device: &str, baud: u32) -> tokio_serial::SerialPortBuilder {
+    tokio_serial::new(device, baud)
+        .data_bits(tokio_serial::DataBits::Eight)
+        .parity(tokio_serial::Parity::None)
+        .stop_bits(tokio_serial::StopBits::One)
+}
+
+/// Open `device` 8N1, exclusively (serialport's TIOCEXCL plus flock).
+///
+/// On macOS the line rate is set with `IOSSIOSPEED`, which a pseudo-terminal
+/// rejects with ENOTTY after the port is already configured. Only that
+/// failure is retried once without a rate: a pty has no line rate, while a
+/// real serial driver accepts the ioctl, so its errors are never masked.
+fn open_serial(device: &str, baud: u32) -> std::io::Result<tokio_serial::SerialStream> {
+    match tokio_serial::SerialStream::open(&serial_builder(device, baud)) {
+        Ok(port) => Ok(port),
+        #[cfg(any(target_os = "macos", target_os = "ios"))]
+        Err(error) if baud > 0 && is_enotty(&error) => {
+            tracing::info!(
+                "{device} rejected the serial speed ioctl; opening it as a pseudo-terminal"
+            );
+            tokio_serial::SerialStream::open(&serial_builder(device, 0))
+                .map_err(std::io::Error::other)
+        }
+        Err(error) => Err(std::io::Error::other(error)),
+    }
+}
+
+/// serialport reports errno ENOTTY as an unknown error carrying nix's text.
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+fn is_enotty(error: &tokio_serial::Error) -> bool {
+    error.kind == tokio_serial::ErrorKind::Unknown
+        && (error.description == "Not a typewriter"
+            || error.description
+                == std::io::Error::from_raw_os_error(libc::ENOTTY)
+                    .to_string()
+                    .split(" (os error")
+                    .next()
+                    .unwrap_or_default())
 }
 
 /// Connect with retries: sleep `interval` between attempts;
@@ -149,6 +184,54 @@ mod tests {
         // retry path with capped attempts
         let r3 = connect_with_retry(&ep, Duration::from_millis(20), 2).await;
         assert!(r3.is_err());
+    }
+
+    /// A pseudo-terminal slave carries bytes both ways through the same
+    /// serial endpoint cmqttd uses for `--serial`.
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn serial_endpoint_opens_a_pseudo_terminal() {
+        use std::io::{Read, Write};
+        use std::os::fd::FromRawFd;
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+        let (master, path) = unsafe {
+            let fd = libc::posix_openpt(libc::O_RDWR | libc::O_NOCTTY);
+            assert!(fd >= 0, "posix_openpt failed");
+            assert_eq!(libc::grantpt(fd), 0);
+            assert_eq!(libc::unlockpt(fd), 0);
+            let name = std::ffi::CStr::from_ptr(libc::ptsname(fd))
+                .to_string_lossy()
+                .into_owned();
+            (std::fs::File::from_raw_fd(fd), name)
+        };
+        let (mut rd, mut wr) = connect(&Endpoint::serial(&path, ESP32_DEFAULT_BAUD))
+            .await
+            .unwrap_or_else(|error| panic!("open {path}: {error}"));
+        // Read the master first: flushing a serial stream waits (tcdrain)
+        // until the other side of the pty has consumed the output.
+        let mut reader = master.try_clone().unwrap();
+        let sent = tokio::task::spawn_blocking(move || {
+            let mut sent = [0u8; 2];
+            reader.read_exact(&mut sent).unwrap();
+            sent
+        });
+        wr.write_all(b"~\r").await.unwrap();
+        wr.flush().await.unwrap();
+        assert_eq!(
+            &tokio::time::timeout(Duration::from_secs(5), sent)
+                .await
+                .unwrap()
+                .unwrap(),
+            b"~\r"
+        );
+        (&master).write_all(b"++\r\n").unwrap();
+        let mut received = [0u8; 4];
+        tokio::time::timeout(Duration::from_secs(5), rd.read_exact(&mut received))
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(&received, b"++\r\n");
     }
 
     #[test]

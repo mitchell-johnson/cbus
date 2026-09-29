@@ -741,6 +741,29 @@ async fn probe(tag: &str, kind: &str, address: &str, configured: Option<&Endpoin
     }
 }
 
+/// `PORT LIST` rows. cmqttd's own serial endpoint is always reported
+/// `inuse`, including a device the host port library does not enumerate
+/// (for example a pseudo-terminal), which is appended after the enumerated
+/// ports. Native C-Gate can only select enumerated ports.
+fn list_rows(enumerated: &[&str], active: Option<&str>) -> Vec<String> {
+    let is_active = |name: &str| active.is_some_and(|item| item.eq_ignore_ascii_case(name));
+    let mut rows = enumerated
+        .iter()
+        .map(|name| {
+            let status = if is_active(name) {
+                "inuse"
+            } else {
+                "available"
+            };
+            format!("port={name} status={status}")
+        })
+        .collect::<Vec<_>>();
+    if let Some(active) = active.filter(|_| !enumerated.iter().any(|name| is_active(name))) {
+        rows.push(format!("port={active} status=inuse"));
+    }
+    rows
+}
+
 pub(crate) async fn handle(tag: &str, words: &[&str], configured: Option<&Endpoint>) -> Response {
     if words.len() == 1 || (words.len() == 2 && words[1] == "?") {
         return help(tag);
@@ -755,18 +778,11 @@ pub(crate) async fn handle(tag: &str, words: &[&str], configured: Option<&Endpoi
                     Endpoint::Serial { device, .. } => Some(serial_name(device)),
                     Endpoint::Tcp { .. } => None,
                 });
-                let rows = ports
-                    .into_iter()
-                    .map(|port| {
-                        let name = serial_name(&port.port_name);
-                        let status = if active.is_some_and(|item| item.eq_ignore_ascii_case(name)) {
-                            "inuse"
-                        } else {
-                            "available"
-                        };
-                        format!("port={name} status={status}")
-                    })
+                let names = ports
+                    .iter()
+                    .map(|port| serial_name(&port.port_name))
                     .collect::<Vec<_>>();
+                let rows = list_rows(&names, active);
                 if rows.is_empty() {
                     response(tag, 126, rows, "no ports found")
                 } else {
@@ -845,6 +861,20 @@ pub(crate) async fn handle(tag: &str, words: &[&str], configured: Option<&Endpoi
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn list_marks_and_appends_the_selected_serial_endpoint() {
+        assert_eq!(
+            list_rows(&["ttyS0", "ttyUSB0"], Some("TTYUSB0")),
+            ["port=ttyS0 status=available", "port=ttyUSB0 status=inuse"]
+        );
+        assert_eq!(
+            list_rows(&["ttyS0"], Some("ttys004")),
+            ["port=ttyS0 status=available", "port=ttys004 status=inuse"]
+        );
+        assert_eq!(list_rows(&[], Some("pts/3")), ["port=pts/3 status=inuse"]);
+        assert!(list_rows(&[], None).is_empty());
+    }
 
     #[test]
     fn native_scan_argument_quirks_are_preserved() {

@@ -347,6 +347,7 @@ dependencies = [
  "clap",
  "hex",
  "if-addrs",
+ "libc",
  "mdns-sd",
  "rumqttc",
  "rustls",
