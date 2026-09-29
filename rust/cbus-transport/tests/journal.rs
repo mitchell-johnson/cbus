@@ -425,3 +425,32 @@ fn journal_size_bound_includes_trailing_newline_exactly() {
     );
     cleanup(&dir);
 }
+
+#[test]
+fn journal_resume_replaces_existing_record_and_detects_external_change() {
+    let dir = tempdir();
+    let path = dir.join("resume.json");
+    let missing = RecoveryJournal::resume(&path).expect_err("resume never creates");
+    assert_eq!(missing.reason(), "not_found");
+    assert!(!path.exists());
+
+    let mut first = new_journal(&path);
+    first.write(&json!({"step": 1})).unwrap();
+    drop(first);
+
+    // A later process resumes and replaces the record atomically.
+    let mut resumed = RecoveryJournal::resume(&path).expect("existing journal resumes");
+    resumed.write(&json!({"step": 2})).unwrap();
+    assert!(resumed.last_update().replacement_completed);
+    assert_eq!(fs::read(&path).unwrap(), canonical_bytes(r#"{"step":2}"#));
+
+    // A change after resumption is still refused instead of overwritten.
+    fs::write(&path, canonical_bytes(r#"{"step":"external"}"#)).unwrap();
+    let error = resumed.write(&json!({"step": 3})).unwrap_err();
+    assert_eq!(error.reason(), "external_change");
+    assert_eq!(
+        fs::read(&path).unwrap(),
+        canonical_bytes(r#"{"step":"external"}"#)
+    );
+    cleanup(&dir);
+}

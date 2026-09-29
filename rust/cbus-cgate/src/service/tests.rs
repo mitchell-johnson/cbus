@@ -5351,6 +5351,9 @@ async fn physical_readdress_is_guarded_acknowledged_and_keeps_database_address()
     remote_write.write_all(&[unlock_code, b'.']).await.unwrap();
     let store = pci_line(&mut remote_read).await;
     assert!(store.starts_with(b"\\460500A3204E065A"));
+    let pending = move_journal::scan(&service.move_journal_dir).records;
+    assert_eq!(pending.len(), 1, "journal must precede the STORE");
+    assert_eq!(pending[0].state, "send_pending");
     let store_code = store[store.len() - 2];
     pci_reply(&mut remote_write, 6, &[0x32, 0x20, 0x4e]).await;
     remote_write.write_all(&[store_code, b'.']).await.unwrap();
@@ -5358,6 +5361,19 @@ async fn physical_readdress_is_guarded_acknowledged_and_keeps_database_address()
     let response = moving.await.unwrap();
     assert_eq!(response.status, 200);
     assert_eq!(response.final_text, "200 OK: //HARNESS/254/p/6");
+    // The scalar move was journaled and closed by the unit's store ACK.
+    let records = move_journal::scan(&service.move_journal_dir).records;
+    assert_eq!(records.len(), 1);
+    assert_eq!(records[0].operation, "set_address");
+    assert_eq!(records[0].verification_scope, "addresses");
+    assert_eq!(records[0].scope_addresses, [5, 6]);
+    assert_eq!(records[0].moves[0].serial, "101136.1558");
+    assert_eq!(records[0].state, "complete");
+    assert_eq!(
+        records[0].completion_evidence.as_deref(),
+        Some("unit_store_ack")
+    );
+    std::fs::remove_dir_all(&service.move_journal_dir).unwrap();
     let model = service.model.lock().await;
     let network = &model.projects["HARNESS"].networks[&254];
     assert!(network.units.contains_key(&5));
@@ -19851,4 +19867,602 @@ async fn config_event_display_oids_drops_oid_column_only_after_restart() {
         drop(restarted);
     }
     std::fs::remove_file(path).unwrap();
+}
+
+// ---------------------------------------------------------------------------
+// Durable physical move journal (NET UNRAVEL/UNRAVELUNIT and SET Address).
+// A scripted PCI peer plays the bus; "crash" is modelled by aborting the
+// command task after its STORE reaches the wire and building a new Service on
+// the same state path.
+
+mod move_journal_peer {
+    use super::*;
+
+    pub(super) type Reader = BufReader<tokio::io::ReadHalf<tokio::io::DuplexStream>>;
+    pub(super) type Writer = tokio::io::WriteHalf<tokio::io::DuplexStream>;
+
+    pub(super) async fn line(reader: &mut Reader) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+
+    async fn reply(writer: &mut Writer, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+
+    pub(super) fn packed(serial: &str) -> [u8; 4] {
+        cbus_protocol::serial_address::parse_native_serial(serial)
+            .unwrap()
+            .packed
+    }
+
+    /// Reset a fresh PCI client and return the service plus the bus side.
+    pub(super) async fn connect(path: &Path) -> (Arc<Service>, Reader, Writer) {
+        let (client, remote) = pci();
+        let (remote_read, remote_write) = tokio::io::split(remote);
+        let mut remote_read = BufReader::new(remote_read);
+        let reset = tokio::spawn({
+            let client = client.clone();
+            async move { client.pci_reset().await }
+        });
+        for _ in 0..8 {
+            line(&mut remote_read).await;
+        }
+        reset.await.unwrap().unwrap();
+        let service = Service::new(&fixture(), None, path.to_path_buf(), client, None).unwrap();
+        {
+            let mut model = service.model.lock().await;
+            let network = model
+                .projects
+                .get_mut("HARNESS")
+                .unwrap()
+                .networks
+                .get_mut(&254)
+                .unwrap();
+            for (address, serial, unit_type) in [
+                (6, "101136.1558", "KEYE1"),
+                (7, "101136.1559", "KEYE1"),
+                (16, "100966.1187", "PC_CNI"),
+            ] {
+                let mut unit = Unit::blank(address, "");
+                unit.serial = serial.to_string();
+                unit.unit_type = unit_type.to_string();
+                unit.firmware = "2.5.00".to_string();
+                network.units.insert(address, unit);
+            }
+        }
+        (service, remote_read, remote_write)
+    }
+
+    pub(super) async fn mmi(reader: &mut Reader, writer: &mut Writer, present: &[usize]) {
+        let request = line(reader).await;
+        assert!(request.starts_with(b"\\05FF00FAFF"), "{request:?}");
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for (start, count) in [(0usize, 88usize), (88, 88), (176, 80)] {
+            let mut states = vec![0u8; count];
+            for address in present {
+                if (start..start + count).contains(address) {
+                    states[*address - start] = 1;
+                }
+            }
+            let mut wire = cbus_protocol::packet::Packet::StandardStatus {
+                application: 0xff,
+                block_start: start as u8,
+                states,
+            }
+            .encode_packet()
+            .unwrap();
+            wire.extend_from_slice(b"\r\n");
+            writer.write_all(&wire).await.unwrap();
+        }
+        tokio::task::yield_now().await;
+    }
+
+    pub(super) async fn identify(
+        reader: &mut Reader,
+        writer: &mut Writer,
+        address: u8,
+        serials: &[&str],
+    ) {
+        let request = line(reader).await;
+        assert!(
+            request.starts_with(format!("\\46{address:02X}002104").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        writer.write_all(&[code, b'.']).await.unwrap();
+        for serial in serials {
+            let mut cal = vec![0x8d, 4, 0x38, 0xff, 0xff, 0xff, 0xff];
+            cal.extend_from_slice(&packed(serial));
+            cal.extend_from_slice(&[0xa2, 0, address]);
+            reply(writer, address, &cal).await;
+        }
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    pub(super) async fn local_options(reader: &mut Reader, writer: &mut Writer) {
+        let request = line(reader).await;
+        assert!(request.starts_with(b"\\4610001A4201"), "{request:?}");
+        reply(writer, 16, &[0x82, 0x42, 5]).await;
+    }
+
+    /// Read one selected-serial STORE request without answering it.
+    pub(super) async fn selected_request(reader: &mut Reader, serial: &str) -> u8 {
+        let request = line(reader).await;
+        assert!(request.starts_with(b"\\05FF000F00"), "{request:?}");
+        let encoded = hex::encode_upper(packed(serial));
+        assert!(request
+            .windows(encoded.len())
+            .any(|window| window == encoded.as_bytes()));
+        request[request.len() - 2]
+    }
+
+    pub(super) async fn selected_ack(writer: &mut Writer, code: u8, serial: &str, destination: u8) {
+        writer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x87, 0];
+        cal.extend_from_slice(&packed(serial));
+        cal.extend_from_slice(&[0, 0]);
+        reply(writer, destination, &cal).await;
+        tokio::time::advance(Duration::from_secs(2)).await;
+        tokio::task::yield_now().await;
+    }
+
+    /// Initial inventory + preflight of `UNRAVELUNIT 255 MATCHDB` with two
+    /// units at 255 whose database addresses are 6 and 7.
+    pub(super) async fn preflight(reader: &mut Reader, writer: &mut Writer) {
+        mmi(reader, writer, &[16, 255]).await;
+        identify(reader, writer, 16, &["100966.1187"]).await;
+        identify(reader, writer, 255, &["101136.1558", "101136.1559"]).await;
+        local_options(reader, writer).await;
+        identify(reader, writer, 6, &[]).await;
+        identify(reader, writer, 7, &[]).await;
+    }
+
+    pub(super) async fn silent(reader: &mut Reader) -> bool {
+        tokio::time::timeout(Duration::from_millis(30), reader.read_u8())
+            .await
+            .is_err()
+    }
+
+    pub(super) fn journals(service: &Service) -> Vec<move_journal::MoveJournalRecord> {
+        let scan = move_journal::scan(&service.move_journal_dir);
+        assert!(scan.unreadable.is_empty(), "{:?}", scan.unreadable);
+        scan.records
+    }
+
+    pub(super) async fn capabilities(service: &Arc<Service>) -> serde_json::Value {
+        let response = service
+            .handle(&mut ClientState::default(), "[cap] CMQTT CAPABILITIES")
+            .await;
+        assert_eq!(response.status, 200);
+        serde_json::from_str(response.lines[0].trim_start_matches("200-")).unwrap()
+    }
+
+    pub(super) fn cleanup(service: &Service, path: &Path) {
+        let _ = std::fs::remove_dir_all(&service.move_journal_dir);
+        let _ = std::fs::remove_file(&service.move_journal_dir);
+        let _ = std::fs::remove_file(path);
+    }
+}
+
+#[tokio::test(start_paused = true)]
+async fn move_journal_is_durable_before_store_and_complete_after_verified_unravel() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    preflight(&mut reader, &mut writer).await;
+    assert!(journals(&service).is_empty(), "no record before the plan");
+
+    // The STORE is on the wire: the record already exists durably and is
+    // conservative about the send.
+    let code = selected_request(&mut reader, "101136.1558").await;
+    let records = journals(&service);
+    assert_eq!(records.len(), 1);
+    let record = &records[0];
+    assert_eq!(record.state, "send_pending");
+    assert!(record.send_may_have_occurred && record.read_only_recovery_only);
+    assert!(record.blocking());
+    assert_eq!(record.network, 254);
+    assert_eq!(record.operation, "net_unravelunit");
+    assert_eq!(record.verification_scope, "full_inventory");
+    assert_eq!(
+        record
+            .moves
+            .iter()
+            .map(|planned| (planned.source, planned.serial.as_str(), planned.destination))
+            .collect::<Vec<_>>(),
+        [(255, "101136.1558", 6), (255, "101136.1559", 7)]
+    );
+    assert!(record.attempt_id.starts_with("sha256:"));
+
+    selected_ack(&mut writer, code, "101136.1558", 6).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    let code = selected_request(&mut reader, "101136.1559").await;
+    let record = journals(&service).remove(0);
+    assert_eq!(
+        (record.state.as_str(), record.confirmed_moves),
+        ("moving", 1)
+    );
+    selected_ack(&mut writer, code, "101136.1559", 7).await;
+    identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
+    mmi(&mut reader, &mut writer, &[6, 7, 16]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    identify(&mut reader, &mut writer, 7, &["101136.1559"]).await;
+    identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
+    local_options(&mut reader, &mut writer).await;
+
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 200, "{response:?}");
+    let record = journals(&service).remove(0);
+    assert_eq!(record.state, "complete");
+    assert!(record.complete && record.final_inventory_verified && !record.blocking());
+    assert_eq!(record.confirmed_moves, 2);
+    assert_eq!(
+        record.completion_evidence.as_deref(),
+        Some("final_inventory")
+    );
+    let caps = capabilities(&service).await;
+    assert_eq!(caps["move_journal"], true);
+    assert_eq!(caps["move_journal_replay"], false);
+    assert_eq!(caps["move_journal_blocked_networks"], serde_json::json!([]));
+    cleanup(&service, &path);
+}
+
+#[tokio::test(start_paused = true)]
+async fn interrupted_unravel_blocks_restart_until_read_only_verify_and_clear() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    preflight(&mut reader, &mut writer).await;
+    selected_request(&mut reader, "101136.1558").await;
+    // Crash: the STORE was sent but nothing after it is observed.
+    command.abort();
+    assert!(command.await.unwrap_err().is_cancelled());
+    let journal_dir = service.move_journal_dir.clone();
+    drop(service);
+    drop((reader, writer));
+
+    let (service, mut reader, mut writer) = connect(&path).await;
+    assert_eq!(service.move_journal_dir, journal_dir);
+    let id = journals(&service).remove(0).journal_id;
+    let mut client = ClientState::default();
+    for command in [
+        "[2] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+        "[3] NET UNRAVEL //HARNESS/254",
+        "[4] DO //HARNESS/254 UNRAVEL",
+        "[5] SET //HARNESS/254/p/5 Address 6",
+    ] {
+        let response = service.handle(&mut client, command).await;
+        assert_eq!(response.status, 409, "{command}: {response:?}");
+        assert!(
+            response.final_text.contains(&id)
+                && response.final_text.contains("CMQTT MOVE-JOURNAL VERIFY"),
+            "{response:?}"
+        );
+        assert!(
+            silent(&mut reader).await,
+            "{command} must refuse before PCI I/O"
+        );
+    }
+    let caps = capabilities(&service).await;
+    assert_eq!(
+        caps["move_journal_blocked_networks"],
+        serde_json::json!([254])
+    );
+    assert_eq!(caps["move_journal_incomplete"], serde_json::json!([id]));
+
+    let listed = service
+        .handle(&mut client, "[6] CMQTT MOVE-JOURNAL LIST")
+        .await;
+    assert_eq!(listed.status, 200);
+    assert!(listed.lines[0].contains(&id), "{listed:?}");
+
+    // CLEAR is refused until a conclusive verification exists.
+    let clear = service
+        .handle(&mut client, &format!("[7] CMQTT MOVE-JOURNAL CLEAR {id}"))
+        .await;
+    assert_eq!(clear.status, 409, "{clear:?}");
+    assert!(clear.final_text.contains("conclusive"));
+    assert!(silent(&mut reader).await);
+
+    // VERIFY performs a fresh inventory only: the first unit moved, the
+    // second did not. It never sends an address request.
+    let verify = tokio::spawn({
+        let service = service.clone();
+        let id = id.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    &format!("[8] CMQTT MOVE-JOURNAL VERIFY {id}"),
+                )
+                .await
+        }
+    });
+    mmi(&mut reader, &mut writer, &[6, 16, 255]).await;
+    identify(&mut reader, &mut writer, 6, &["101136.1558"]).await;
+    identify(&mut reader, &mut writer, 16, &["100966.1187"]).await;
+    identify(&mut reader, &mut writer, 255, &["101136.1559"]).await;
+    let verified = verify.await.unwrap();
+    assert_eq!(verified.status, 200, "{verified:?}");
+    let evidence: serde_json::Value =
+        serde_json::from_str(verified.lines[0].trim_start_matches("200-")).unwrap();
+    assert_eq!(evidence["outcome"], "observed_mixed");
+    assert_eq!(evidence["moved"], serde_json::json!([true, false]));
+    assert_eq!(evidence["replay_authorized"], false);
+    assert!(silent(&mut reader).await, "verification must not write");
+    let record = journals(&service).remove(0);
+    assert!(record.blocking(), "verification alone does not release");
+    assert_eq!(
+        record.verification.as_ref().unwrap().outcome,
+        "observed_mixed"
+    );
+
+    let clear = service
+        .handle(&mut client, &format!("[9] CMQTT MOVE-JOURNAL CLEAR {id}"))
+        .await;
+    assert_eq!(clear.status, 200, "{clear:?}");
+    let record = journals(&service).remove(0);
+    assert_eq!(record.state, "cleared");
+    assert!(!record.blocking());
+    assert_eq!(
+        capabilities(&service).await["move_journal_blocked_networks"],
+        serde_json::json!([])
+    );
+    let again = service
+        .handle(&mut client, &format!("[10] CMQTT MOVE-JOURNAL CLEAR {id}"))
+        .await;
+    assert_eq!(again.status, 409, "{again:?}");
+    assert!(silent(&mut reader).await);
+    cleanup(&service, &path);
+}
+
+#[tokio::test(start_paused = true)]
+async fn move_journal_verify_classifies_unchanged_and_expected() {
+    use move_journal_peer::*;
+    for (observed, outcome) in [
+        (
+            vec![
+                (16usize, vec!["100966.1187"]),
+                (255, vec!["101136.1558", "101136.1559"]),
+            ],
+            "observed_unchanged",
+        ),
+        (
+            vec![
+                (6, vec!["101136.1558"]),
+                (7, vec!["101136.1559"]),
+                (16, vec!["100966.1187"]),
+            ],
+            "observed_expected_change",
+        ),
+    ] {
+        let path = state_path();
+        let (service, mut reader, mut writer) = connect(&path).await;
+        let command = tokio::spawn({
+            let service = service.clone();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                    )
+                    .await
+            }
+        });
+        preflight(&mut reader, &mut writer).await;
+        selected_request(&mut reader, "101136.1558").await;
+        command.abort();
+        let _ = command.await;
+        drop(service);
+        drop((reader, writer));
+
+        let (service, mut reader, mut writer) = connect(&path).await;
+        let id = journals(&service).remove(0).journal_id;
+        let verify = tokio::spawn({
+            let service = service.clone();
+            let id = id.clone();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        &format!("[2] CMQTT MOVE-JOURNAL VERIFY {id}"),
+                    )
+                    .await
+            }
+        });
+        let present = observed
+            .iter()
+            .map(|(address, _)| *address)
+            .collect::<Vec<_>>();
+        mmi(&mut reader, &mut writer, &present).await;
+        for (address, serials) in &observed {
+            identify(&mut reader, &mut writer, *address as u8, serials).await;
+        }
+        let verified = verify.await.unwrap();
+        assert_eq!(verified.status, 200, "{verified:?}");
+        assert!(
+            verified.lines[0].contains(&format!("\"outcome\":\"{outcome}\"")),
+            "{verified:?}"
+        );
+        assert!(silent(&mut reader).await);
+        cleanup(&service, &path);
+    }
+}
+
+#[tokio::test(start_paused = true)]
+async fn move_journal_verify_failure_is_inconclusive_and_keeps_the_block() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    preflight(&mut reader, &mut writer).await;
+    selected_request(&mut reader, "101136.1558").await;
+    command.abort();
+    let _ = command.await;
+    drop(service);
+    drop((reader, writer));
+    let (service, mut reader, mut writer) = connect(&path).await;
+    let id = journals(&service).remove(0).journal_id;
+    let verify = tokio::spawn({
+        let service = service.clone();
+        let id = id.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    &format!("[2] CMQTT MOVE-JOURNAL VERIFY {id}"),
+                )
+                .await
+        }
+    });
+    // A present address whose IDENTIFY4 never answers cannot be inventoried.
+    mmi(&mut reader, &mut writer, &[6]).await;
+    identify(&mut reader, &mut writer, 6, &[]).await;
+    let verified = verify.await.unwrap();
+    assert_eq!(verified.status, 408, "{verified:?}");
+    let clear = service
+        .handle(
+            &mut ClientState::default(),
+            &format!("[3] CMQTT MOVE-JOURNAL CLEAR {id}"),
+        )
+        .await;
+    assert_eq!(clear.status, 409, "{clear:?}");
+    assert!(journals(&service)[0].blocking());
+    cleanup(&service, &path);
+}
+
+#[cfg(unix)]
+#[tokio::test(start_paused = true)]
+async fn move_journal_filesystem_failure_sends_no_address_request() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, mut writer) = connect(&path).await;
+    // A regular file where the journal directory belongs cannot be scanned:
+    // every move refuses before PCI I/O.
+    std::fs::write(&service.move_journal_dir, b"not a directory").unwrap();
+    let refused = service
+        .handle(
+            &mut ClientState::default(),
+            "[0] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+        )
+        .await;
+    assert_eq!(refused.status, 409, "{refused:?}");
+    assert!(refused.final_text.contains("unreadable"), "{refused:?}");
+    assert!(silent(&mut reader).await);
+    std::fs::remove_file(&service.move_journal_dir).unwrap();
+    // A readable but unwritable directory lets preflight run, then makes
+    // the durable intent impossible to record.
+    std::fs::create_dir(&service.move_journal_dir).unwrap();
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(
+            &service.move_journal_dir,
+            std::fs::Permissions::from_mode(0o555),
+        )
+        .unwrap();
+    }
+    let command = tokio::spawn({
+        let service = service.clone();
+        async move {
+            service
+                .handle(
+                    &mut ClientState::default(),
+                    "[1] NET UNRAVELUNIT //HARNESS/254 255 MATCHDB",
+                )
+                .await
+        }
+    });
+    preflight(&mut reader, &mut writer).await;
+    let response = command.await.unwrap();
+    assert_eq!(response.status, 408, "{response:?}");
+    assert!(
+        response
+            .final_text
+            .contains("Move journal could not be recorded")
+            && response.final_text.contains("no address request sent"),
+        "{response:?}"
+    );
+    assert!(
+        silent(&mut reader).await,
+        "no STORE may follow a failed journal"
+    );
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(
+            &service.move_journal_dir,
+            std::fs::Permissions::from_mode(0o755),
+        )
+        .unwrap();
+    }
+    assert!(journals(&service).is_empty());
+    cleanup(&service, &path);
+}
+
+#[tokio::test(start_paused = true)]
+async fn move_journal_rejects_malformed_and_unknown_ids() {
+    use move_journal_peer::*;
+    let path = state_path();
+    let (service, mut reader, _writer) = connect(&path).await;
+    let mut client = ClientState::default();
+    for (command, status) in [
+        ("[1] CMQTT MOVE-JOURNAL", 400),
+        ("[2] CMQTT MOVE-JOURNAL VERIFY ../../etc", 400),
+        ("[3] CMQTT MOVE-JOURNAL VERIFY 254-0123456789abcdef", 404),
+        ("[4] CMQTT MOVE-JOURNAL CLEAR 254-0123456789abcdef", 404),
+    ] {
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            status,
+            "{command}"
+        );
+    }
+    let listed = service
+        .handle(&mut client, "[5] CMQTT MOVE-JOURNAL LIST")
+        .await;
+    assert_eq!(listed.status, 200);
+    assert!(listed.lines[0].contains("\"journals\":[]"), "{listed:?}");
+    assert!(silent(&mut reader).await);
+    cleanup(&service, &path);
 }

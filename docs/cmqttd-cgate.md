@@ -623,6 +623,30 @@ The route envelope and receipt rules are evidence-bound compositions recorded
 in `rust/testdata/fixtures/native_cgate_routed_unravel.json`; there is no live
 physical-bridge or power-cycle persistence acceptance.
 
+These backends and scalar `SET ... Address` keep a durable move journal in
+`<--cgate-state>.move-journal/` (for example `cgate.json.move-journal/`).
+Before the first address write of a plan, cmqttd exclusively creates and
+fsyncs one `cmqttd-move-journal-v1` record with the network, route, PCI
+generation, planned serial/source/destination moves, the pre-move inventory
+and the expected result. The record starts with `send_may_have_occurred:
+true`. It is replaced atomically after each confirmed move, after the verified
+final inventory (or, for scalar SET, the unit's store ACK), and on completion.
+If the record cannot be written, the command returns 408 and sends no address
+request. An incomplete or unreadable record, including one left by a crash or
+kill, makes every later `NET UNRAVEL`, `NET UNRAVELUNIT`, `DO ... UNRAVEL` and
+`SET ... Address` on that network return 409 before PCI I/O, and startup logs
+it. `CMQTT MOVE-JOURNAL LIST` reports records. `CMQTT MOVE-JOURNAL VERIFY ID`
+performs a fresh read-only observation: whole-network inventory for unravel,
+or source/destination IDENTIFY4 for SET. It records `observed_expected_change`,
+`observed_unchanged`, `observed_mixed`, `observed_unexpected_change` or
+`uncertain`. `CMQTT MOVE-JOURNAL CLEAR ID` releases the network only after a
+conclusive verification. VERIFY and CLEAR require LOGIN when the gate is
+armed. Nothing replays a move. `CMQTT CAPABILITIES` reports
+`move_journal_incomplete` and `move_journal_blocked_networks`. The journal
+protects cooperating cmqttd processes that share one state directory. It does
+not exclude other controllers. Scripted-PCI service tests and a
+kill-and-restart daemon test cover it; there is no physical acceptance.
+
 `NET SET_PROJECT_IDENTIFY //PROJECT/NETWORK NAME` applies the native Java-style
 one-to-eight UTF-16-unit check, uppercase fold, and six-bit range validation.
 The Toolkit typed wrapper applies the same checks, including Unicode folds

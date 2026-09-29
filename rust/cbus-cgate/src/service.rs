@@ -8,6 +8,7 @@ mod connection_admission;
 mod dali;
 mod dali_specialized;
 pub(crate) mod family_help;
+mod move_journal;
 mod net_lifecycle;
 mod pp_patch;
 mod transform;
@@ -780,6 +781,9 @@ pub struct Service {
     project: String,
     network: u8,
     state_path: PathBuf,
+    /// Durable physical move journal beside `state_path`; see
+    /// [`move_journal`].
+    move_journal_dir: PathBuf,
     events: broadcast::Sender<String>,
     observed_labels: Mutex<ObservedLabels>,
     measurement_state: Mutex<HashMap<(u8, u8), Option<MeasurementObservation>>>,
@@ -1928,6 +1932,8 @@ impl Service {
                 Mutex::new(projects)
             });
         let shutdown = broadcast::channel(8).0;
+        let move_journal_dir = move_journal::journal_directory(&state_path);
+        Self::log_move_journal_startup(&move_journal_dir);
         Ok(Arc::new(Self {
             dali_state: Mutex::new(dali_specialized::DaliState::from_server(&model, &project)),
             model: Mutex::new(model),
@@ -1948,6 +1954,7 @@ impl Service {
             project,
             network,
             state_path,
+            move_journal_dir,
             events: broadcast::channel(512).0,
             observed_labels: Mutex::new(ObservedLabels::default()),
             measurement_state: Mutex::new(HashMap::new()),
@@ -3629,6 +3636,7 @@ impl Service {
                 "per-field-readback-receipts",
                 "full-typed-ext-atomic-boundary"
             ]);
+            self.move_journal_capabilities(&mut capabilities);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }
         if verb == "HELP" && sub == "DALI" {
@@ -3776,6 +3784,9 @@ impl Service {
         }
         if verb == "TRANSFORM" {
             return self.transform(tag, &words).await;
+        }
+        if verb == "CMQTT" && sub == "MOVE-JOURNAL" {
+            return self.move_journal_command(tag, &words).await;
         }
         if verb == "CMQTT" && sub == "LABELS" && words.len() == 3 {
             let address = words[2];
@@ -7260,6 +7271,12 @@ impl Service {
                 .is_some_and(|flag| flag.eq_ignore_ascii_case("MATCHDB"));
             (None, match_database)
         };
+        // An incomplete move journal for this network means an earlier move
+        // may have happened. Refuse before any PCI I/O; recovery is the
+        // read-only CMQTT MOVE-JOURNAL VERIFY, never a replay.
+        if let Some(refusal) = self.move_journal_refusal(target) {
+            return err(tag, 409, &refusal);
+        }
 
         // Resolve the complete source route before acquiring a PCI generation
         // or attempting discovery. `network_path` admits only an evidenced
@@ -7483,6 +7500,62 @@ impl Service {
             }
         }
 
+        // Durable intent before the first address write. The record is
+        // conservative from creation: a crash after this point may follow a
+        // STORE, so a restart refuses new moves on this network.
+        let mut journal = if plan.is_empty() {
+            None
+        } else {
+            let mut expected_after = before.clone();
+            for (source, serial, destination) in &plan {
+                if let Some(serials) = expected_after.get_mut(source) {
+                    serials.retain(|candidate| candidate != serial);
+                    if serials.is_empty() {
+                        expected_after.remove(source);
+                    }
+                }
+                expected_after.insert(*destination, vec![serial.clone()]);
+            }
+            match move_journal::ActiveMoveJournal::create(
+                &self.move_journal_dir,
+                move_journal::MovePlanIdentity {
+                    operation: if unit_form {
+                        "net_unravelunit"
+                    } else {
+                        "net_unravel"
+                    },
+                    command: words.join(" "),
+                    project: &self.project,
+                    network: target,
+                    route: &route,
+                    pci_generation: generation,
+                    verification_scope: "full_inventory",
+                    scope_addresses: Vec::new(),
+                    moves: plan
+                        .iter()
+                        .map(|(source, serial, destination)| move_journal::PlannedMove {
+                            source: *source,
+                            serial: serial.clone(),
+                            destination: *destination,
+                        })
+                        .collect(),
+                    before: before.clone(),
+                    expected_after,
+                },
+            ) {
+                Ok(journal) => Some(journal),
+                Err(error) => return move_journal::journal_refused(tag, &error),
+            }
+        };
+        // Every stop after journal creation leaves the record incomplete.
+        let uncertain = |journal: &mut Option<move_journal::ActiveMoveJournal>,
+                         response: Response| {
+            if let Some(journal) = journal.as_mut() {
+                journal.uncertain(&response.final_text);
+            }
+            response
+        };
+
         let mut expected_states = states.clone();
         let mut expected = before.clone();
         let mut completed = 0usize;
@@ -7520,12 +7593,15 @@ impl Service {
                     .await
             };
             if let Err(error) = sent {
-                return err(
-                    tag,
-                    408,
-                    &format!(
-                        "408 Unravel outcome uncertain after {completed} of {} verified movement(s): {error}",
-                        plan.len()
+                return uncertain(
+                    &mut journal,
+                    err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Unravel outcome uncertain after {completed} of {} verified movement(s): {error}",
+                            plan.len()
+                        ),
                     ),
                 );
             }
@@ -7540,16 +7616,33 @@ impl Service {
                             .is_some_and(|observed| observed == *serial)
                 });
             if !verified {
-                return err(
-                    tag,
-                    408,
-                    &format!(
-                        "408 Unravel verification failed after {completed} of {} verified movement(s)",
-                        plan.len()
+                return uncertain(
+                    &mut journal,
+                    err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Unravel verification failed after {completed} of {} verified movement(s)",
+                            plan.len()
+                        ),
                     ),
                 );
             }
             completed += 1;
+            if let Some(Err(error)) = journal
+                .as_mut()
+                .map(|journal| journal.confirm_move("moving"))
+            {
+                // The record still says incomplete; stop before another write.
+                return err(
+                    tag,
+                    408,
+                    &format!(
+                        "408 Move journal update failed after {completed} of {} verified movement(s): {error}; no further address request sent",
+                        plan.len()
+                    ),
+                );
+            }
             let remaining = expected
                 .get_mut(source)
                 .expect("planned source is inventoried");
@@ -7571,11 +7664,14 @@ impl Service {
         let final_states = match install_mmi_for_route(&pci, &route).await {
             Ok(states) => states,
             Err(error) => {
-                return err(
-                    tag,
-                    408,
-                    &format!(
-                        "408 Final unravel inventory failed after {completed} move(s): {error}"
+                return uncertain(
+                    &mut journal,
+                    err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Final unravel inventory failed after {completed} move(s): {error}"
+                        ),
                     ),
                 )
             }
@@ -7583,36 +7679,67 @@ impl Service {
         let final_inventory = match physical_serial_inventory(&pci, &final_states, &route).await {
             Ok(inventory) => inventory,
             Err(error) => {
-                return err(
-                    tag,
-                    408,
-                    &format!(
-                        "408 Final unravel identity inventory failed after {completed} move(s): {error}"
+                return uncertain(
+                    &mut journal,
+                    err(
+                        tag,
+                        408,
+                        &format!(
+                            "408 Final unravel identity inventory failed after {completed} move(s): {error}"
+                        ),
                     ),
                 )
             }
         };
         if final_states != expected_states || final_inventory != expected {
-            return err(
-                tag,
-                408,
-                "408 Final unravel inventory differs from the exact planned change",
+            return uncertain(
+                &mut journal,
+                err(
+                    tag,
+                    408,
+                    "408 Final unravel inventory differs from the exact planned change",
+                ),
             );
         }
+        // The fresh whole-network inventory now proves the physical outcome.
+        // Later option-check or cache-commit failures do not reopen it.
+        if let Some(journal) = journal.as_mut() {
+            if let Err(error) = journal.final_verified() {
+                tracing::warn!(journal = %journal.id(), "move journal final update failed: {error}");
+            }
+        }
+        let finish = |journal: &mut Option<move_journal::ActiveMoveJournal>, note: Option<&str>| {
+            if let Some(journal) = journal.as_mut() {
+                match journal.complete("final_inventory", note) {
+                    Ok(()) => move_journal::prune_finished(&self.move_journal_dir, target),
+                    Err(error) => tracing::warn!(
+                        journal = %journal.id(),
+                        "move journal completion update failed: {error}"
+                    ),
+                }
+            }
+        };
         if !plan.is_empty() {
             match pci.recall_parameter(local, 66, 1).await {
                 Ok(options) if options == [5] => {}
-                _ => return err(tag, 408, "408 Final local PCI option check failed"),
+                _ => {
+                    let response = err(tag, 408, "408 Final local PCI option check failed");
+                    finish(&mut journal, Some(&response.final_text));
+                    return response;
+                }
             }
         }
 
         let Some(_guard) = self.pci_commit_guard(generation, &pci).await else {
-            return err(
+            let response = err(
                 tag,
                 408,
                 &format!("408 Unravel invalidated by PCI reconnect after {completed} move(s)"),
             );
+            finish(&mut journal, Some(&response.final_text));
+            return response;
         };
+        finish(&mut journal, None);
         if let Some(network) = self
             .model
             .lock()
@@ -7682,6 +7809,9 @@ impl Service {
         if source == 0 || !(1..=254).contains(&destination) || source == destination {
             return err(tag, 400, "400 Invalid destination address");
         }
+        if let Some(refusal) = self.move_journal_refusal(network) {
+            return err(tag, 409, &refusal);
+        }
 
         // Resolve every bridge before the first read. An absent, ambiguous or
         // over-depth topology therefore cannot lead to a protected write on a
@@ -7733,6 +7863,35 @@ impl Service {
         if !destination_replies.is_empty() {
             return err(tag, 409, "409 Destination occupied");
         }
+        // Durable intent before the unlock/STORE exchange. Address-scoped
+        // recovery observes only the source and destination.
+        let serial = serial_number(&source_replies[0])
+            .ok()
+            .flatten()
+            .unwrap_or_else(|| move_journal::UNKNOWN_SERIAL.to_string());
+        let mut journal = match move_journal::ActiveMoveJournal::create(
+            &self.move_journal_dir,
+            move_journal::MovePlanIdentity {
+                operation: "set_address",
+                command: words.join(" "),
+                project: &self.project,
+                network,
+                route: &route,
+                pci_generation: generation,
+                verification_scope: "addresses",
+                scope_addresses: vec![source, destination],
+                moves: vec![move_journal::PlannedMove {
+                    source,
+                    serial: serial.clone(),
+                    destination,
+                }],
+                before: BTreeMap::from([(source, vec![serial.clone()])]),
+                expected_after: BTreeMap::from([(destination, vec![serial])]),
+            },
+        ) {
+            Ok(journal) => journal,
+            Err(error) => return move_journal::journal_refused(tag, &error),
+        };
         let result = if route.is_empty() {
             pci.readdress_unit(source, destination).await
         } else {
@@ -7744,7 +7903,19 @@ impl Service {
             } else {
                 408
             };
-            return err(tag, code, &format!("{code} Readdress failed: {error}"));
+            let response = err(tag, code, &format!("{code} Readdress failed: {error}"));
+            journal.uncertain(&response.final_text);
+            return response;
+        }
+        // The unit's address-store ACK is this command's physical receipt.
+        let completion = journal
+            .confirm_move("store_confirmed")
+            .and_then(|()| journal.complete("unit_store_ack", None));
+        match completion {
+            Ok(()) => move_journal::prune_finished(&self.move_journal_dir, network),
+            Err(error) => {
+                tracing::warn!(journal = %journal.id(), "move journal completion update failed: {error}")
+            }
         }
 
         let Some(_commit_guard) = self.pci_commit_guard(generation, &pci).await else {
@@ -15529,6 +15700,12 @@ fn requires_programming_auth(verb: &str, sub: &str, words: &[String]) -> bool {
         ),
         "EVENT_CHANNEL" => matches!(sub, "SUB" | "UNSUB"),
         "LOCK" | "UNLOCK" => true,
+        "CMQTT" => {
+            sub == "MOVE-JOURNAL"
+                && words
+                    .get(2)
+                    .is_some_and(|action| matches!(action.as_str(), "VERIFY" | "CLEAR"))
+        }
         "CGL" => sub == "IMPORT",
         "REPOSITORY" => sub == "USE",
         "SET" | "NEW" => true,

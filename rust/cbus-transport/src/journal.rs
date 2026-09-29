@@ -192,6 +192,19 @@ impl RecoveryJournal {
         })
     }
 
+    /// Resume an existing journal written by an earlier writer or process.
+    ///
+    /// The current bytes are read once with the same guards as
+    /// [`RecoveryJournal::read_current`] and become the expected content, so
+    /// the next [`RecoveryJournal::write`] is a checked atomic replacement
+    /// that still fails on any later external change. A missing journal is
+    /// `not_found`; resumption never creates a file.
+    pub fn resume(path: impl AsRef<Path>) -> Result<Self, JournalError> {
+        let mut journal = Self::new(path)?;
+        journal.expected = Some(guarded_read(&journal.path)?);
+        Ok(journal)
+    }
+
     /// The absolute journal path.
     pub fn path(&self) -> &Path {
         &self.path
