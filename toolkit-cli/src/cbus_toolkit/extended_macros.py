@@ -3,6 +3,10 @@
 The shared macro factory uses the same nibble event codes as classic keys.
 Neo-core devices have eight blocks, a secondary-application mask, and a scene
 selector bit which Toolkit clears when writing an ordinary key function.
+
+Admitted profiles share KEYM4's layout for every parameter (KEYE differs only
+in KeyMask) and Toolkit's TCBusNeoProInputCGateAgent save path; see
+research/key_preset_families.py for the evidence and explicit refusals.
 """
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -13,11 +17,46 @@ from .memory import MemoryCodec
 from .programming import xml_text
 
 
+# Key counts are Toolkit's MaximumKeyCount, except KEYE1: its TKEYEx class
+# serves KEYE1-4 through a key mask, and KEYE1 keeps its accepted single key.
 PROFILES = MappingProxyType({
     'KEYE.xml': ('KEYE1', 1, 'C-Bus 30M mech'),
+    'KEYM2.xml': ('KEYM2', 2, 'Neo'),
     'KEYM4.xml': ('KEYM4', 4, 'Neo'),
+    'KEYM8.xml': ('KEYM8', 8, 'Neo'),
+    'KEYA1.xml': ('KEYA1', 1, 'Reflection'),
     'KEYA3.xml': ('KEYA3', 3, 'Reflection'),
+    'KEYA6.xml': ('KEYA6', 6, 'Reflection'),
+    'KEYA8.xml': ('KEYA8', 8, 'Reflection'),
+    'KEYAV2.xml': ('KEYAV2', 2, 'Reflection vertical'),
+    'KEYAV4.xml': ('KEYAV4', 4, 'Reflection vertical'),
+    'KEYB2.xml': ('KEYB2', 2, 'Saturn'),
     'KEYB4.xml': ('KEYB4', 4, 'Saturn'),
+    'KEYB6.xml': ('KEYB6', 6, 'Saturn'),
+    'KEYH1.xml': ('KEYH1', 1, 'Saturn ZEN'),
+    'KEYH2.xml': ('KEYH2', 2, 'Saturn ZEN'),
+    'KEYH3.xml': ('KEYH3', 3, 'Saturn ZEN'),
+    'KEYH4.xml': ('KEYH4', 4, 'Saturn ZEN'),
+    'KEYC1.xml': ('KEYC1', 1, 'Classic Neo'),
+    'KEYC2.xml': ('KEYC2', 2, 'Classic Neo'),
+    'KEYC4.xml': ('KEYC4', 4, 'Classic Neo'),
+    'KEYCIR4.xml': ('KEYCIR4', 4, 'Classic Neo infrared'),
+    'KEYDV1.xml': ('KEYDV1', 1, 'Decorator'),
+    'KEYDV2.xml': ('KEYDV2', 2, 'Decorator'),
+    'KEYDV3.xml': ('KEYDV3', 3, 'Decorator'),
+    'KEYDV4.xml': ('KEYDV4', 4, 'Decorator'),
+    'KEYP2.xml': ('KEYP2', 2, 'Modena'),
+    'KEYP4.xml': ('KEYP4', 4, 'Modena'),
+    'KEYP6.xml': ('KEYP6', 6, 'Modena'),
+    'KEYV1.xml': ('KEYV1', 1, 'Avanti'),
+    'KEYV2.xml': ('KEYV2', 2, 'Avanti'),
+    'KEYV3.xml': ('KEYV3', 3, 'Avanti'),
+})
+# Specifications that resemble these profiles but lack the same proof.
+REFUSED_PROFILES = MappingProxyType({
+    'KEYM6.xml': 'Toolkit 1.18 registers no KEYM6 unit class',
+    'KEYCIR1.xml': "Toolkit's KEYCIR1 class exposes no keys (MaximumKeyCount 0)",
+    'KEYV1SP.xml': 'bus-coupler layout and TCBusCouplerVieoInputCGateAgent save path differ',
 })
 # address, array length, bit width, starting bit, byte skip between entries
 LAYOUTS = MappingProxyType({
@@ -59,6 +98,10 @@ class ExtendedKeyPlan:
 class ExtendedKeys:
     def __init__(self, spec):
         self.spec = spec
+        if spec.filename in REFUSED_PROFILES:
+            raise MacroError(f'{spec.filename} is not supported: {REFUSED_PROFILES[spec.filename]}')
+        if spec.filename.endswith('_A.xml'):
+            raise MacroError('First-generation _A specifications use a different layout and Toolkit save path')
         profile = PROFILES.get(spec.filename)
         if profile is None or profile[0] != spec.unit_type:
             raise MacroError('Select a supported explicit Neo-core profile: ' + ', '.join(PROFILES))

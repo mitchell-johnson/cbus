@@ -1,70 +1,349 @@
 {
-  "format": "cbus-extended-macros-acceptance-v1",
+  "format": "cbus-extended-macros-acceptance-v2",
   "scope": "Toolkit help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior",
+  "backend": "owned loopback C-Gate (research/local_cgate.py)",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
   "profiles": [
     {
       "unit_type": "KEYE1",
       "catalog_number": "5031NMML",
       "firmware": "2.5.00",
       "spec_filename": "KEYE.xml",
+      "key": 1,
       "presets_passed": 18,
-      "raw_stage_bytes_checked": 36,
-      "database_reload_passed": true
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYM2",
+      "catalog_number": "5052NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYM2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
     },
     {
       "unit_type": "KEYM4",
       "catalog_number": "5054NL",
       "firmware": "2.5.00",
       "spec_filename": "KEYM4.xml",
+      "key": 4,
       "presets_passed": 18,
-      "raw_stage_bytes_checked": 36,
-      "database_reload_passed": true
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYM8",
+      "catalog_number": "5058NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYM8.xml",
+      "key": 8,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYA1",
+      "catalog_number": "R5061NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYA1.xml",
+      "key": 1,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
     },
     {
       "unit_type": "KEYA3",
       "catalog_number": "R5063NL",
       "firmware": "2.5.00",
       "spec_filename": "KEYA3.xml",
+      "key": 3,
       "presets_passed": 18,
-      "raw_stage_bytes_checked": 36,
-      "database_reload_passed": true
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYA6",
+      "catalog_number": "R5066NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYA6.xml",
+      "key": 6,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYA8",
+      "catalog_number": "R5068NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYA8.xml",
+      "key": 8,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYAV2",
+      "catalog_number": "R5062VNL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYAV2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYAV4",
+      "catalog_number": "R5064VNL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYAV4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYB2",
+      "catalog_number": "5082NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYB2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
     },
     {
       "unit_type": "KEYB4",
       "catalog_number": "5084NL",
       "firmware": "2.5.00",
       "spec_filename": "KEYB4.xml",
+      "key": 4,
       "presets_passed": 18,
-      "raw_stage_bytes_checked": 36,
-      "database_reload_passed": true
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYB6",
+      "catalog_number": "5086NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYB6.xml",
+      "key": 6,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYH1",
+      "catalog_number": "ER5041NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYH1.xml",
+      "key": 1,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYH2",
+      "catalog_number": "ER5042NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYH2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYH3",
+      "catalog_number": "ER5043NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYH3.xml",
+      "key": 3,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYH4",
+      "catalog_number": "ER5044NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYH4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYC1",
+      "catalog_number": "5031NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYC1.xml",
+      "key": 1,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYC2",
+      "catalog_number": "5032NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYC2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYC4",
+      "catalog_number": "5034NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYC4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYCIR4",
+      "catalog_number": "5034NIRL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYCIR4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYDV1",
+      "catalog_number": "SLC5051NLM",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYDV1.xml",
+      "key": 1,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYDV2",
+      "catalog_number": "SLC5052NLM",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYDV2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYDV3",
+      "catalog_number": "SLC5053NLM",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYDV3.xml",
+      "key": 3,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYDV4",
+      "catalog_number": "SLC5054NLM",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYDV4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYP2",
+      "catalog_number": "LHC882",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYP2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYP4",
+      "catalog_number": "LHC884",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYP4.xml",
+      "key": 4,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYP6",
+      "catalog_number": "LHC886",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYP6.xml",
+      "key": 6,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYV1",
+      "catalog_number": "5091NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYV1.xml",
+      "key": 1,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYV2",
+      "catalog_number": "5092NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYV2.xml",
+      "key": 2,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
+    },
+    {
+      "unit_type": "KEYV3",
+      "catalog_number": "5093NL",
+      "firmware": "2.5.00",
+      "spec_filename": "KEYV3.xml",
+      "key": 3,
+      "presets_passed": 18,
+      "raw_stage_bytes_checked": 36
     }
   ],
   "passed": true,
-  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
-  "test_count": 13,
-  "native_preset_cases": 72,
+  "project_close_reload_passed": true,
+  "test_file": "tests/test_extended_macros.py",
+  "test_count": 14,
+  "skipped": 0,
+  "native_preset_cases": 558,
   "physical_hardware_verified": false,
   "source_hashes": {
-    "src/cbus_toolkit/extended_macros.py": "fee60e40ca1100b4efc31740d42184bce2a992791c24793a9e6957c2e4faf4b6",
-    "src/cbus_toolkit/macros.py": "05c211f0e7f4ef35066fb51fb94b883e03cf88b8605e6bb3b782d00e5c523d44",
-    "tests/test_extended_macros.py": "d61aec2f4bb2e471f7df9a3d85a8b4808e14275ebd815c738f9d8aaf479d064f",
+    "src/cbus_toolkit/macros.py": "7aac4c3d2c1f6ce4d84e6a47a2d5d1e44c8a6e81f71d1e67dcf28e173d7cf41b",
+    "src/cbus_toolkit/extended_macros.py": "6c22cb1f1ba51895233a6e199ebbd8f93b59de6c4a3467079a83206754d9039b",
+    "research/key_preset_families.py": "ea28f8678e2da42ea5fa9059f8268d0f1f7af255e8ea409de09ecc2a1f90273e",
+    "research/fixtures/key-preset-family-equivalence.json": "888897eee22372f4c1aa5e75fbd55ac80f634cda3a16047fe7d6027507c78ccf",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
     "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "research/vendor/cgate/app/unitspec/cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "tests/test_extended_macros.py": "62ded372e22e0e5ef2a6199b8a4d04925348781cf5ad51b2df133bea540317e3",
     "research/vendor/unitspec-plain/KEYE.xml": "8f9aae67a141b6a2919a4551dbd72762d56be1f97fbd8f51d66d4cce54cbeed4",
+    "research/vendor/unitspec-plain/KEYM2.xml": "0fff94c46333df97e7e7471176c3816c1c7b4864e35283f765721db1b9f3a8ca",
     "research/vendor/unitspec-plain/KEYM4.xml": "d2512412f2304db00bcc77e5568b6c493b50d1fd44bd64187d8ef51457478995",
+    "research/vendor/unitspec-plain/KEYM8.xml": "6a896ec2b715bd1f43bc91ab68170b23f6b28badad27bcf9c69777e6617ffaa4",
+    "research/vendor/unitspec-plain/KEYA1.xml": "1a8ba490e8c59fab4f0316d22738510138b48681062fbec4bc7be859d1f16911",
     "research/vendor/unitspec-plain/KEYA3.xml": "ff1ea2360245ba3fe5a00a5f2c3d9a728bad5419ea6f8fdd5e9b7f602f9de83b",
+    "research/vendor/unitspec-plain/KEYA6.xml": "5ff8f9ad967558e0d020cabf3e997908f6b72fe583a976621a656fed941bb2bc",
+    "research/vendor/unitspec-plain/KEYA8.xml": "ad266203fe4c7dacab2c23962253c6a54690720c40c06fcb9553ab40c84f75cb",
+    "research/vendor/unitspec-plain/KEYAV2.xml": "8f2d45397de925f2e761faad6c31c650f94c1ec1a5a67de0c881b3e150d60bb6",
+    "research/vendor/unitspec-plain/KEYAV4.xml": "ec4697c2867bd1dc23f9fa301ed9b9da93910bb9c5c99a9e3f78f23cf78865b9",
+    "research/vendor/unitspec-plain/KEYB2.xml": "ffe7a7ff6d6491adf77b4424c467e819468271b24a269496c1fb91bbd2ab50e3",
     "research/vendor/unitspec-plain/KEYB4.xml": "e8e9996d9ccc90b854c6b46061861ec1664b308443539384fe909259df518775",
+    "research/vendor/unitspec-plain/KEYB6.xml": "e32fec010d2ff879a149a9bd6f93852bf8735a06ee2ff3ef441ab69a506f9d00",
+    "research/vendor/unitspec-plain/KEYH1.xml": "ed06f9bca394e1671be06aadfae84bbd938339fd76efface8d260db700080f8a",
+    "research/vendor/unitspec-plain/KEYH2.xml": "ffdc2b645be9839c5660e00aef816c09b6df3a5c1a832b749d82493f909dcb0b",
+    "research/vendor/unitspec-plain/KEYH3.xml": "72e791c1e587dc727c002f5ff38ebf37c44232ba9c9beb6d83e8ddf2c5517d8c",
+    "research/vendor/unitspec-plain/KEYH4.xml": "5c4eba0b5e70d640201af75900395ca884bdd22d4f88da9cdf91cba39c3f5a2c",
+    "research/vendor/unitspec-plain/KEYC1.xml": "2827aa52f2df637118da942b13ceffbf23c793de33e69012a53bde2bce9f54ac",
+    "research/vendor/unitspec-plain/KEYC2.xml": "707f9d681680e1c9a6155e4fefeae912203868a940184e8d3d099c515aa5bf21",
+    "research/vendor/unitspec-plain/KEYC4.xml": "25dbcdafed049470346d8dc65197fac67279a703067fc37cd2afdf25b64cf85a",
+    "research/vendor/unitspec-plain/KEYCIR4.xml": "d8fd6f29e8734003c7492e54eca626a620f4d6f66f7598f06025a42651c14ef4",
+    "research/vendor/unitspec-plain/KEYDV1.xml": "2237317721bd2aa5e980be4e1c31c35c8130efe6f788e34426e13b660453f9c2",
+    "research/vendor/unitspec-plain/KEYDV2.xml": "066d653170853362ac7c08aacbba414760b1cfef49ff05e54a2c6e57f76fdb68",
+    "research/vendor/unitspec-plain/KEYDV3.xml": "f39b13d7ae9a7bbbaac000485c2d557f6afba95f99893ae157376259e9193afc",
+    "research/vendor/unitspec-plain/KEYDV4.xml": "1bb09e07669d2345718c0ebaf7d4f068181d25dd4f028c1212c61dcb98d5eed9",
+    "research/vendor/unitspec-plain/KEYP2.xml": "999b0766a5c3c33e116c19e6dce70b7f81bee0d991a2d2e3808c37bf8068a244",
+    "research/vendor/unitspec-plain/KEYP4.xml": "b6873584fc2f914ea1decf697823183a7502bc048e04fdb5f1622f808ab729d0",
+    "research/vendor/unitspec-plain/KEYP6.xml": "62758dc8c35a7f6bb6f1bf4075fc5d4899ac8c8b3cd9b477e0b54a354310fc9a",
+    "research/vendor/unitspec-plain/KEYV1.xml": "dbc6c5127da5b89daa38939df0ffbf74da9d75cab0873e4924155c694256cadc",
+    "research/vendor/unitspec-plain/KEYV2.xml": "336a05638b6093f0a0515116a27506c3bc536abd0494db17533aa117a1dec828",
+    "research/vendor/unitspec-plain/KEYV3.xml": "e7a9ec9abba4731eff21d5b5d21c5c96624e6a7ed39e45cce2fc3de7541f41b8",
     "research/vendor/unitspec-plain/I_NEOPRO.xml": "1ffa027e2c5e98da1461673a0bb8e67e96ae9a97ae41c37753bb6fa8cb26b1ab",
     "research/vendor/unitspec-plain/I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7"
   },
   "local_report": "research/runtime/extended-macros-acceptance.json",
-  "local_report_sha256": "41d7f47ab6375191e55122c58e1935798ba2d152215502894ea39ba280779b6a",
+  "local_report_sha256": "180cd10f4960d161a8c6f60c2a90b6e1eee7dc04e01bb90a9861d1f3cf3fea98",
   "unverified": [
     "Physical button behavior",
-    "Other unit types and firmware revisions",
+    "Other firmware revisions",
     "Complete GUI before/after parity",
     "Automatic GUI indicator reassignment",
-    "DLT/eDLT/NCC widgets and custom macros"
+    "DLT/eDLT/NCC widgets and custom macros",
+    "KEYM6, KEYCIR1, KEYV1SP and _A specifications (refused)"
   ]
 }

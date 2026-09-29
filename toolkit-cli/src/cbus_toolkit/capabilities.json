@@ -270,10 +270,13 @@
       "status": "implemented",
       "evidence": [
         "tests/test_macros.py",
+        "tests/test_key_preset_families.py",
         "tests/test_cli.py",
-        "docs/macros.md"
+        "docs/macros.md",
+        "docs/classic-key-family-acceptance-summary.json",
+        "research/fixtures/key-preset-family-equivalence.json"
       ],
-      "limits": "18 KEY1/KEY2/KEY4 macro presets grounded in Toolkit help and executable byte vectors, with native parameter/raw-byte/readback/save tests. Other keypad families and custom macros remain separate."
+      "limits": "18 macro presets grounded in Toolkit help and executable byte vectors on KEY1/KEY2/KEY4, KEYIR1/KEYIR4, KEYBC2/KEYBC4 and KEYAUX4/DINAUX4 (Bell Press excluded by Toolkit's AUX subset). Layout and TCBusKeyInputCGateAgent save-path equivalence is receipted; native raw-byte, readback, differing-parameter preservation and project close/reload tests pass. BCNC4A/BCNC4B stay refused because Toolkit forces micro-function defaults on save. Other keypad families, custom macros and physical buttons remain separate."
     },
     {
       "id": "groups-applications-control",
@@ -775,10 +778,12 @@
       "status": "implemented",
       "evidence": [
         "tests/test_extended_macros.py",
+        "tests/test_key_preset_families.py",
         "tests/test_cli.py",
-        "docs/extended-macros-acceptance-summary.json"
+        "docs/extended-macros-acceptance-summary.json",
+        "research/fixtures/key-preset-family-equivalence.json"
       ],
-      "limits": "18 standard presets on four exact firmware2.5.00 profiles: KEYE1, KEYM4, KEYA3, KEYB4. Native raw bytes, scene-bit clearing, secondary mask, timers, recalls, explicit indicators and save/reload tested. Other profiles, custom macros and physical buttons remain separate."
+      "limits": "18 standard presets on 31 firmware2.5.00 Neo-core profiles whose layout matches KEYM4 and whose Toolkit class uses the TCBusNeoProInputCGateAgent save path (KEYE1 via its subclass): Neo, Reflection, Saturn, Saturn ZEN, Classic Neo, Decorator, Modena and Avanti. Native raw bytes, scene-bit clearing, unrelated-parameter preservation, secondary mask, timers, recalls, explicit indicators and project close/reload tested. KEYM6, KEYCIR1, KEYV1SP and _A specifications are refused. Other firmware, custom macros and physical buttons remain separate."
     },
     {
       "id": "database-unit-addressing",

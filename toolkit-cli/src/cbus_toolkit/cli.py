@@ -1660,13 +1660,13 @@ def build_parser():
     p.add_argument("file", type=Path)
     p = unops.add_parser("import")
     p.add_argument("file", type=Path)
-    p = unops.add_parser("key-macro", help="Configure a classic KEY1/KEY2/KEY4 key preset with verified readback")
+    p = unops.add_parser("key-macro", help="Configure a classic key, IR, auxiliary or bus-coupler input preset with verified readback")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     p.add_argument("--spec", required=True, help="Exact classic vendor schema, such as KEY4.xml")
     _key_options(p)
     p = unops.add_parser("neo-key-macro", help="Configure tested Neo-core key presets with scene-selector and block handling")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
-    p.add_argument("--spec", required=True, help="KEYE.xml, KEYM4.xml, KEYA3.xml or KEYB4.xml")
+    p.add_argument("--spec", required=True, help="Admitted Neo-core specification, such as KEYM4.xml or KEYDV2.xml")
     _key_options(p, extended=True)
 
     from .physical_programming_cli import options as physical_programming_options

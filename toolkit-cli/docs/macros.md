@@ -1,8 +1,24 @@
 # Classic key macro presets
 
-`macros.py` configures the physical keys of **KEY1, KEY2 and KEY4** through native C-Gate programming sessions. It supports 18 source-defined presets, group/block assignments, 16-bit timers and two recall levels. It checks the native unit type and parameter layout, preserves other keys and unrelated parameters, detects stale plans and verifies readback. Applying a plan edits the PP session; saving remains an explicit operation.
+`macros.py` configures the keys of classic key, infrared, auxiliary and bus-coupler input units through native C-Gate programming sessions. It supports 18 source-defined presets, group/block assignments, 16-bit timers and two recall levels. It checks the native unit type and parameter layout, preserves other keys and unrelated parameters, detects stale plans and verifies readback. Applying a plan edits the PP session; saving remains an explicit operation.
 
-The current acceptance covers the original Toolkit help tables and executable registration constants, all 18 presets on native KEY4 firmware 1.2.67, native KEY1/KEY2 configuration, and database save/reload. It does not establish physical button behavior, every firmware revision, eDLT/NCC widgets, sensors, wireless inputs or all Toolkit macros.
+| Specification | Unit type | Toolkit class | Keys | Tested catalog / firmware | Parameters never written |
+| --- | --- | --- | ---: | --- | --- |
+| KEY1.xml | KEY1 | TKey1 | 1 | 5031N / 1.2.67 | — |
+| KEY2.xml | KEY2 | TKey2 | 2 | 5032N / 1.2.67 | — |
+| KEY4.xml | KEY4 | TKey4 | 4 | 5034N / 1.2.67 | — |
+| KEYIR1.xml | KEYIR1 | TKEYIR1 | 4 | 5031NIR / 1.2.67 | InfraRedBank |
+| KEYIR4.xml | KEYIR4 | TKEYIR4 | 4 | 5034NIR / 1.2.67 | InfraRedBank |
+| KEYAUX4.xml | KEYAUX4 | TKEYAUX4 | 4 | 5104AUX / 1.2.67 | IndicatorBrightness (absent) |
+| DINAUX4.xml | DINAUX4 | TDINAUX4 | 4 | L5504AUX / 1.2.67 | GAVBroadcastFlag, IndicatorBrightness (absent) |
+| KEYBC2.xml | KEYBC2 | TKEYBC2 | 2 | 5102BCLEDL / 1.2.67 | GAVBroadcastFlag, IndicatorBrightness (absent) |
+| KEYBC4.xml | KEYBC4 | TKEYBC4 | 4 | 5104BCL / 1.2.67 | GAVBroadcastFlag, IndicatorBrightness (absent) |
+
+The key count is Toolkit's `MaximumKeyCount` for the registered class, so the 1-key infrared unit exposes four inputs. The last column lists the parameters whose layout differs from KEY4. A preset plan cannot contain them, application rejects a plan that does, and native acceptance proves their values survive every preset, save and reload. `GUARDED_PARAMETERS` exposes the same list.
+
+KEYAUX4 and DINAUX4 refuse `bellpress`. Their Toolkit class returns the `AUX` macro-function subset, which omits the Bell Press template and offers Aux On/Off instead. BCNC4A and BCNC4B are refused. Their `TBCNC4CGateAgent.BeforeSaveProgrammingInformation` calls `TBCNC4.ApplyMicroFunctionDefaults`, which overwrites all 16 stage values before every Toolkit save.
+
+The current acceptance covers the original Toolkit help tables and executable registration constants, all 18 presets on native KEY4 firmware 1.2.67, every applicable preset on each other admitted type, native KEY1/KEY2 configuration, and database save/reload. It does not establish physical button, infrared or auxiliary-input behavior, every firmware revision, eDLT/NCC widgets, sensors, wireless inputs or all Toolkit macros.
 
 ## CLI
 
@@ -34,7 +50,7 @@ with Programmer(client).load("//MYPROJ/254", "/db//MYPROJ/254/p/10") as session:
     session.save_to_source()  # Separate, explicit database save.
 ```
 
-`keys.configure(session, **options)` combines planning and application. Keys and blocks are one-based; the physical key count is 1, 2 or 4 even though the native arrays have four entries. Full arrays are written to avoid native indexed-SET offset inconsistencies. Untouched entries retain their current values.
+`keys.configure(session, **options)` combines planning and application. Keys and blocks are one-based; the key count is 1, 2 or 4 (see the table) even though the native arrays have four entries. Full arrays are written to avoid native indexed-SET offset inconsistencies. Untouched entries retain their current values.
 
 Options are `key`, `preset`, `group=None`, `block=None`, `timer_seconds=None`, `expiry="off"`, `recall1=None`, `recall2=None`, and `allow_shared_block=False`. Group assignment supports Lighting Type primary applications 48–95 and groups 0–254; 255 is the unassigned group sentinel. The four supported blocks map to the first four group entries. Other entries and application selection are preserved.
 
@@ -98,6 +114,27 @@ The PE image base is `0x00600000`; section 1 starts at RVA `0x1000`. MAP section
 - `TInputBlockCollection.GetAllTimerHighByteAsString`: MAP `0001:0070F2D4`; it calls `CIS_Maths.HighByte` (`0001:001EFE64`). The low-byte counterpart at `0001:0070F39C` calls `CIS_Maths.LowByte` (`0001:001EFE50`). These helpers select the upper/lower bytes of a 16-bit value. [Help 1878](../research/vendor/toolkit-help/1878.htm) defines the maximum interval as 65535 seconds; [help 8138](../research/vendor/toolkit-help/8138.htm) documents zero-duration expiry behavior and the permitted expiry functions.
 - `KEY1.xml`, `KEY2.xml` and `KEY4.xml` inherit `I_KEY.xml`. JP/SR share bytes starting at `0x32`, LP/LR at `0x33`; each key uses stride 2. JP/LP occupy the upper nibble. Block allocation starts at `0x3A`, timer high bytes at `0x44`, low bytes at `0x48`, expiry nibbles at `0x4C`, and group addresses at `0x50`.
 
+### Family equivalence
+
+`research/key_preset_families.py` produces the sanitized receipt [key-preset-family-equivalence.json](../research/fixtures/key-preset-family-equivalence.json). It never executes vendor code. For each candidate, it records the SHA-256 of each specification file and include, a digest of every parameter's layout and of the preset fields, and the names of parameters whose layout or only default differs from KEY4. It also follows these executable facts:
+
+- The `TUnitTypeFactory.RegisterUnitType` call site gives the Delphi class and firmware range for each unit type. The VMT parent chain places every admitted class under `TCBusKeyInputUnit`.
+- `TFlashAgentFactory.RegisterAgent` gives each class's C-Gate agent. KEY1/KEY2/KEY4, KEYIR1/KEYIR4, KEYAUX4, DINAUX4 and KEYBC2/KEYBC4 all register `TCBusKeyInputCGateAgent`, so they share the save path through `TKeyInputCGateAgent.SetKeyValues`. BCNC4A uses the `TBCNC4CGateAgent` subclass described above.
+- The virtual `MacroFunctionSubsetName` (VMT slot 0x1C4) and `MaximumKeyCount` (slot 0x190) implementations give the subset and key count. `InitialiseKeyMacroFunctionSubsetFactory` gives the template types that each subset offers.
+- `TKeyMacroFunction.ReconcileTemplateAndGroup` shows the AUX override replacing template types 7 (Bell Press) and 27 with 28 (Aux On/Off).
+
+Regenerate the receipt and compare it with the committed copy:
+
+```sh
+python research/key_preset_families.py --unitspec-dir "$CBUS_UNITSPEC_DIR" \
+  --exe research/vendor/toolkit/app/CBusToolkit.exe \
+  --map research/vendor/toolkit/app/CBusToolkit.map \
+  --catalog research/vendor/cgate/app/unitspec/cbusunits.xml \
+  --output research/fixtures/key-preset-family-equivalence.json
+```
+
+In every subset, Toolkit offers Trigger 1 and Trigger 2 only on Trigger Control (202) blocks. `macros.py` does not enforce that application choice. The receipt keeps the per-application template sets for review.
+
 Inspected source hashes:
 
 | Artifact | SHA-256 |
@@ -113,16 +150,19 @@ Run deterministic tests without vendor files:
 PYTHONPATH=src python3 -m unittest discover -s tests -p test_macros.py -v
 ```
 
-To include exact source and native acceptance on a disposable C-Gate instance:
+To include exact source and native acceptance, use an owned loopback C-Gate 3.4.0 build 2001 (`research/local_cgate.py`), or set `CBUS_CGATE_TEST_HOST` for a disposable server:
 
 ```sh
-CBUS_CGATE_TEST_HOST=127.0.0.1 \
+CBUS_NATIVE_SERVICE_BACKEND=local \
+CBUS_CGATE_JAVA=/path/to/java11/bin/java \
+CBUS_LOCAL_CGATE_VENDOR=research/vendor/cgate/app \
 CBUS_UNITSPEC_DIR=research/vendor/unitspec-plain \
 CBUS_TOOLKIT_HELP_DIR=research/vendor/toolkit-help \
 CBUS_TOOLKIT_EXE=research/vendor/toolkit/app/CBusToolkit.exe \
-PYTHONPATH=src python3 -m unittest discover -s tests -p test_macros.py -v
+CBUS_UNIT_CATALOG=research/vendor/cgate/app/unitspec/cbusunits.xml \
+PYTHONPATH=src:tests python3 -m pytest tests/test_macros.py tests/test_key_preset_families.py -v
 ```
 
-Native tests create a unique `Kxxxxxxx` project with a closed network, compare all stage vectors and packed bytes, then save/reload a database unit. No physical network is opened. Failed local application attempts restore attempted parameters and verify the original snapshot. A transport failure can also prevent rollback; `MacroApplyError.rollback_errors` records that uncertainty rather than claiming success.
+Native tests create a unique project with a closed network whose CNI address is an owned idle loopback listener. They compare all stage vectors and packed bytes, then save/reload a database unit. The family test creates KEYIR1, KEYIR4, KEYAUX4, DINAUX4, KEYBC2 and KEYBC4 database units from their catalogue numbers. It sets each differing parameter that exists on the type to a non-default value and applies every preset to the highest key: 106 applications and two AUX Bell Press refusals without writes. After each preset it compares the stage bytes and every parameter outside the preset workflow. It then saves each unit, closes and reloads the project, and requires identical PP values. Another native test rejects a KEY4 plan on a KEYIR4 session before writing. [classic-key-family-acceptance-summary.json](classic-key-family-acceptance-summary.json) records the counts and source hashes. No physical network is opened. Failed local application attempts restore attempted parameters and verify the original snapshot. A transport failure can also prevent rollback; `MacroApplyError.rollback_errors` records that uncertainty rather than claiming success.
 
-This module does not implement arbitrary custom micro-function editing, sensor/wireless/scene macros, secondary-application assignment, join mode, multi-block configuration, LED reassignment, or newer input-unit variants. Existing indicators, ramp rates, recall levels and timers are preserved unless their corresponding supported option is supplied. Those retained settings can affect the resulting physical behavior and need device-level acceptance separately.
+This module does not implement arbitrary custom micro-function editing, sensor/wireless/scene macros, secondary-application assignment, join mode, multi-block configuration, LED reassignment, infrared bank or broadcast settings, or newer input-unit variants. Existing indicators, ramp rates, recall levels and timers are preserved unless their corresponding supported option is supplied. Those retained settings can affect the resulting physical behavior and need device-level acceptance separately.

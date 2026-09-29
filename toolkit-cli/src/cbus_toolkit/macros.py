@@ -1,8 +1,11 @@
-"""Classic KEY1/KEY2/KEY4 macro presets, grounded in Toolkit 1.18.
+"""Classic key, IR, auxiliary and bus-coupler macro presets from Toolkit 1.18.
 
 Four stages are JP (short press), SR, LP and LR. These are classic nibble
 micro-functions, not the newer command encodings or eDLT/NCC widget formats.
 Plans edit logical PP parameters and never save or transfer to a device.
+
+Admitted types share KEY4's layout for every preset field and Toolkit's
+TCBusKeyInputCGateAgent save path (research/key_preset_families.py).
 """
 from __future__ import annotations
 
@@ -72,10 +75,30 @@ PRESETS = MappingProxyType({p.name: p for p in (
     Preset("unused", ("idle", "idle", "idle", "idle"), "976.htm"),
 )})
 
-SUPPORTED_UNITS = MappingProxyType({"KEY1": 1, "KEY2": 2, "KEY4": 4})
+# Key counts are Toolkit's MaximumKeyCount for each registered unit class.
+SUPPORTED_UNITS = MappingProxyType({"KEY1": 1, "KEY2": 2, "KEY4": 4, "KEYIR1": 4, "KEYIR4": 4,
+                                    "KEYAUX4": 4, "DINAUX4": 4, "KEYBC2": 2, "KEYBC4": 4})
+# Parameters whose layout differs from KEY4. Presets never write them; they
+# are listed so callers and acceptance can prove their preservation.
+GUARDED_PARAMETERS = MappingProxyType({
+    "KEYIR1": ("InfraRedBank",), "KEYIR4": ("InfraRedBank",),
+    "KEYAUX4": ("IndicatorBrightness",),
+    "DINAUX4": ("GAVBroadcastFlag", "IndicatorBrightness"),
+    "KEYBC2": ("GAVBroadcastFlag", "IndicatorBrightness"),
+    "KEYBC4": ("GAVBroadcastFlag", "IndicatorBrightness"),
+})
+# Toolkit's AUX macro-function subset omits Bell Press (it offers Aux On/Off).
+EXCLUDED_PRESETS = MappingProxyType({"KEYAUX4": frozenset({"bellpress"}),
+                                     "DINAUX4": frozenset({"bellpress"})})
+REFUSED_UNITS = MappingProxyType({
+    "BCNC4A": "Toolkit's TBCNC4CGateAgent forces fixed micro-function defaults before every save",
+    "BCNC4B": "Toolkit's TBCNC4CGateAgent forces fixed micro-function defaults before every save",
+})
 _READ_FIELDS = STAGES + ("BlockAllocation", "GroupAddress", "Application", "TimerHighByte",
                        "TimerLowByte", "TimerExpiryCommand", "LightLevelStore1", "LightLevelStore2")
 _EXPIRY = frozenset(("idle", "off", "down", "ramp_off", "recall1", "recall2", "ramp_recall1"))
+if any(name in _READ_FIELDS for names in GUARDED_PARAMETERS.values() for name in names):
+    raise RuntimeError("A guarded classic parameter overlaps the preset workflow")
 
 
 def _int(value, label):
@@ -118,9 +141,13 @@ class ClassicKeys:
     def __init__(self, spec: UnitSpec):
         self.spec = spec
         self.unit_type = spec.unit_type
+        if self.unit_type in REFUSED_UNITS:
+            raise MacroError(f"{self.unit_type} is not supported: {REFUSED_UNITS[self.unit_type]}")
         if self.unit_type not in SUPPORTED_UNITS or spec.filename != self.unit_type + ".xml":
-            raise MacroError("Classic presets currently support KEY1.xml, KEY2.xml and KEY4.xml only")
+            raise MacroError("Classic presets support " + ", ".join(name + ".xml" for name in SUPPORTED_UNITS) + " only")
         self.key_count = SUPPORTED_UNITS[self.unit_type]
+        self.guarded = GUARDED_PARAMETERS.get(self.unit_type, ())
+        self.excluded_presets = EXCLUDED_PRESETS.get(self.unit_type, frozenset())
         self.codec = MemoryCodec(spec)
         expected = {"JPCommand": (0x32, 4, 4, 4, 1), "SRCommand": (0x32, 4, 4, 0, 1),
                     "LPCommand": (0x33, 4, 4, 4, 1), "LRCommand": (0x33, 4, 4, 0, 1),
@@ -158,6 +185,8 @@ class ClassicKeys:
             raise MacroError(f"{self.unit_type} has {self.key_count} physical key(s)")
         if preset not in PRESETS:
             raise MacroError("Unknown classic macro preset")
+        if preset in self.excluded_presets:
+            raise MacroError(f"Toolkit does not offer the {preset} preset on {self.unit_type} (AUX subset)")
         original = self._snapshot(current)
         updates = {name: list(values) for name, values in original.items()}
         for name, code in zip(STAGES, PRESETS[preset].codes):
@@ -256,6 +285,8 @@ class ClassicKeys:
     def apply(self, session, plan: KeyPlan):
         if plan.unit_type != self.unit_type:
             raise MacroError("Plan unit type differs from the programmer")
+        if plan.preset in self.excluded_presets:
+            raise MacroError(f"Toolkit does not offer the {plan.preset} preset on {self.unit_type} (AUX subset)")
         if any(name not in _READ_FIELDS for name in plan.changes):
             raise MacroError("Plan contains fields outside the classic key workflow")
         try:

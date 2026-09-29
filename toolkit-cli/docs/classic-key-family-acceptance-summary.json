@@ -1,0 +1,108 @@
+{
+  "format": "cbus-classic-key-family-acceptance-v1",
+  "scope": "Toolkit help/binary-grounded classic presets on layout- and save-path-equivalent key, IR, auxiliary and bus-coupler types through native PP; closed database only; no physical input behavior",
+  "backend": "owned loopback C-Gate (research/local_cgate.py)",
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "types": [
+    {
+      "unit_type": "KEYIR1",
+      "firmware": "1.2.67",
+      "catalog_number": "5031NIR",
+      "key": 4,
+      "presets_passed": 18,
+      "presets_refused": 0,
+      "guarded_preserved": [
+        "InfraRedBank"
+      ]
+    },
+    {
+      "unit_type": "KEYIR4",
+      "firmware": "1.2.67",
+      "catalog_number": "5034NIR",
+      "key": 4,
+      "presets_passed": 18,
+      "presets_refused": 0,
+      "guarded_preserved": [
+        "InfraRedBank"
+      ]
+    },
+    {
+      "unit_type": "KEYAUX4",
+      "firmware": "1.2.67",
+      "catalog_number": "5104AUX",
+      "key": 4,
+      "presets_passed": 17,
+      "presets_refused": 1,
+      "guarded_preserved": []
+    },
+    {
+      "unit_type": "DINAUX4",
+      "firmware": "1.2.67",
+      "catalog_number": "L5504AUX",
+      "key": 4,
+      "presets_passed": 17,
+      "presets_refused": 1,
+      "guarded_preserved": [
+        "GAVBroadcastFlag"
+      ]
+    },
+    {
+      "unit_type": "KEYBC2",
+      "firmware": "1.2.67",
+      "catalog_number": "5102BCLEDL",
+      "key": 2,
+      "presets_passed": 18,
+      "presets_refused": 0,
+      "guarded_preserved": [
+        "GAVBroadcastFlag"
+      ]
+    },
+    {
+      "unit_type": "KEYBC4",
+      "firmware": "1.2.67",
+      "catalog_number": "5104BCL",
+      "key": 4,
+      "presets_passed": 18,
+      "presets_refused": 0,
+      "guarded_preserved": [
+        "GAVBroadcastFlag"
+      ]
+    }
+  ],
+  "passed": true,
+  "project_close_reload_passed": true,
+  "test_file": "tests/test_macros.py",
+  "test_count": 20,
+  "skipped": 0,
+  "native_preset_cases": 106,
+  "native_refusals_without_writes": 2,
+  "physical_hardware_verified": false,
+  "source_hashes": {
+    "src/cbus_toolkit/macros.py": "7aac4c3d2c1f6ce4d84e6a47a2d5d1e44c8a6e81f71d1e67dcf28e173d7cf41b",
+    "src/cbus_toolkit/extended_macros.py": "6c22cb1f1ba51895233a6e199ebbd8f93b59de6c4a3467079a83206754d9039b",
+    "research/key_preset_families.py": "ea28f8678e2da42ea5fa9059f8268d0f1f7af255e8ea409de09ecc2a1f90273e",
+    "research/fixtures/key-preset-family-equivalence.json": "888897eee22372f4c1aa5e75fbd55ac80f634cda3a16047fe7d6027507c78ccf",
+    "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "research/vendor/cgate/app/unitspec/cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "tests/test_macros.py": "ffffdf86e4ff02cf4edae38acd1e493ac51f4036ec57786ad3c6a4514f2454d5",
+    "research/vendor/unitspec-plain/KEYIR1.xml": "bdef92d8a7abc65b8c1ebe68e2e148fa69758cf3fa121b1f58641867e313bee7",
+    "research/vendor/unitspec-plain/KEYIR4.xml": "ea563fa2f1a492c5f238cbdb687a7e9fbdc440dc98d2a5d79df8e9c9f765a73b",
+    "research/vendor/unitspec-plain/KEYAUX4.xml": "0d461890db0d989f43d5ec3469b16d4198b930caf9d91ef8fd1dc321ba6e6718",
+    "research/vendor/unitspec-plain/DINAUX4.xml": "0f9b31ed16a509dc2892d073da121c83006dbec8215cf8935fab35959c172e23",
+    "research/vendor/unitspec-plain/KEYBC2.xml": "3df1177bf5bbf18869611e48d83a6c074e0740fd39f73e40495469a65ed6e98f",
+    "research/vendor/unitspec-plain/KEYBC4.xml": "37123e80222c49ad26bfd286b224d6a71a477f062c1bc8918858fd5372735e86",
+    "research/vendor/unitspec-plain/I_KEY.xml": "610772568d96cf2cd85d37f9c38c58051854aa5f9e1b1788ea20acda88a79f68"
+  },
+  "local_report": "research/runtime/classic-key-family-acceptance.json",
+  "local_report_sha256": "9076b8afb117868c01270ab0d1f86c13ec5e8bf17e2ca2abeaf5bbda3ededd6f",
+  "unverified": [
+    "Physical key, infrared and auxiliary-input behavior",
+    "Other firmware revisions",
+    "Complete GUI before/after parity",
+    "Trigger 1/2 application-202 restriction is not enforced",
+    "BCNC4A/BCNC4B (refused)"
+  ]
+}

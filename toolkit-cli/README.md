@@ -1770,7 +1770,8 @@ cbus-toolkit cgate conversion catalog //TEST/254/p/20 DIMDU4 L5504D2U
 ```
 
 Remove `--dry-run` to save the key edits to the explicit source. The 18 classic
-presets support KEY1/KEY2/KEY4, with group, block, timer and recall settings.
+presets support KEY1/KEY2/KEY4, KEYIR1/KEYIR4, KEYAUX4, DINAUX4 and KEYBC2/KEYBC4
+(no Bell Press on the auxiliary units), with group, block, timer and recall settings.
 `keys plan` produces an offline plan from an exported PP snapshot.
 See [preset rules and acceptance](docs/macros.md).
 
@@ -1807,7 +1808,7 @@ history. The target serial defaults to blank (unassigned). The replacement is
 staged and checked before promotion; failed operations report recovery and
 backup details. See [classic replacement](docs/classic-replacement.md).
 
-Four Neo-core profiles also have verified preset helpers:
+Neo-core profiles also have verified preset helpers:
 
 ```sh
 cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/21 \
@@ -1819,8 +1820,9 @@ cbus-toolkit keys --spec-dir /path/to/decoded/specs neo-plan KEYM4.xml neo-value
 
 These support 8 blocks, primary/secondary application selection, recalls,
 timer expiry and explicit indicator assignment. An ordinary preset clears the
-key's scene-selector bit while retaining the scene table. Tested profiles are
-KEYE1, KEYM4, KEYA3 and KEYB4 at firmware 2.5.00; see
+key's scene-selector bit while retaining the scene table. The 31 tested profiles
+cover the Neo, Reflection, Saturn, Saturn ZEN, Classic Neo, Decorator, Modena,
+Avanti and 30M mech KEYE1 specifications at firmware 2.5.00; see
 [extended keypad scope and evidence](docs/extended-macros.md).
 
 ## Events and trigger control

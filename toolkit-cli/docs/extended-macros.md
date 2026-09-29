@@ -1,22 +1,64 @@
-# Neo, Reflection, Saturn and 30M key presets
+# Neo-core key presets
 
-`extended_macros.py` implements the 18 standard wired presets for four explicit
+`extended_macros.py` implements the 18 standard wired presets for 31 explicit
 Neo-core profiles. The mapping comes from Toolkit 1.18's help event tables,
 its executable's Neo save path, and the original unit specifications. Native
-acceptance verifies 72 preset applications and database save/reload with C-Gate
-3.4.0 build 2001.
+acceptance verifies 558 preset applications and project close/reload with
+C-Gate 3.4.0 build 2001. Every profile was tested at firmware 2.5.00.
 
-| Specification | Unit type | Product family | Physical keys | Tested catalog | Tested firmware |
-| --- | --- | --- | ---: | --- | --- |
-| KEYE.xml | KEYE1 | 30M mech | 1 | 5031NMML | 2.5.00 |
-| KEYM4.xml | KEYM4 | Neo | 4 | 5054NL | 2.5.00 |
-| KEYA3.xml | KEYA3 | Reflection | 3 | R5063NL | 2.5.00 |
-| KEYB4.xml | KEYB4 | Saturn | 4 | 5084NL | 2.5.00 |
+| Specification | Unit type | Product family | Toolkit class | Keys | Tested catalog |
+| --- | --- | --- | --- | ---: | --- |
+| KEYE.xml | KEYE1 | C-Bus 30M mech | TKEYEx | 1 | 5031NMML |
+| KEYM2.xml | KEYM2 | Neo | TKEYM2 | 2 | 5052NL |
+| KEYM4.xml | KEYM4 | Neo | TKEYM4 | 4 | 5054NL |
+| KEYM8.xml | KEYM8 | Neo | TKEYM8 | 8 | 5058NL |
+| KEYA1.xml | KEYA1 | Reflection | TKEYA1 | 1 | R5061NL |
+| KEYA3.xml | KEYA3 | Reflection | TKEYA3 | 3 | R5063NL |
+| KEYA6.xml | KEYA6 | Reflection | TKEYA6 | 6 | R5066NL |
+| KEYA8.xml | KEYA8 | Reflection | TKEYA8 | 8 | R5068NL |
+| KEYAV2.xml | KEYAV2 | Reflection vertical | TKEYAV2 | 2 | R5062VNL |
+| KEYAV4.xml | KEYAV4 | Reflection vertical | TKEYAV4 | 4 | R5064VNL |
+| KEYB2.xml | KEYB2 | Saturn | TKEYB2 | 2 | 5082NL |
+| KEYB4.xml | KEYB4 | Saturn | TKEYB4 | 4 | 5084NL |
+| KEYB6.xml | KEYB6 | Saturn | TKEYB6 | 6 | 5086NL |
+| KEYH1.xml | KEYH1 | Saturn ZEN | TKEYH1 | 1 | ER5041NL |
+| KEYH2.xml | KEYH2 | Saturn ZEN | TKEYH2 | 2 | ER5042NL |
+| KEYH3.xml | KEYH3 | Saturn ZEN | TKEYH3 | 3 | ER5043NL |
+| KEYH4.xml | KEYH4 | Saturn ZEN | TKEYH4 | 4 | ER5044NL |
+| KEYC1.xml | KEYC1 | Classic Neo | TKEYC1 | 1 | 5031NL |
+| KEYC2.xml | KEYC2 | Classic Neo | TKEYC2 | 2 | 5032NL |
+| KEYC4.xml | KEYC4 | Classic Neo | TKEYC4 | 4 | 5034NL |
+| KEYCIR4.xml | KEYCIR4 | Classic Neo infrared | TKEYCIR4 | 4 | 5034NIRL |
+| KEYDV1.xml | KEYDV1 | Decorator | TKEYDV1 | 1 | SLC5051NLM |
+| KEYDV2.xml | KEYDV2 | Decorator | TKEYDV2 | 2 | SLC5052NLM |
+| KEYDV3.xml | KEYDV3 | Decorator | TKEYDV3 | 3 | SLC5053NLM |
+| KEYDV4.xml | KEYDV4 | Decorator | TKEYDV4 | 4 | SLC5054NLM |
+| KEYP2.xml | KEYP2 | Modena | TKEYP2 | 2 | LHC882 |
+| KEYP4.xml | KEYP4 | Modena | TKEYP4 | 4 | LHC884 |
+| KEYP6.xml | KEYP6 | Modena | TKEYP6 | 6 | LHC886 |
+| KEYV1.xml | KEYV1 | Avanti | TKEYV1 | 1 | 5091NL |
+| KEYV2.xml | KEYV2 | Avanti | TKEYV2 | 2 | 5092NL |
+| KEYV3.xml | KEYV3 | Avanti | TKEYV3 | 3 | 5093NL |
 
 These are separate vendor unit types sharing `I_NEOPRO.xml` and
-`I_NEOCORE.xml`. The KEYE family alone does not identify Neo, Reflection and
-Saturn. DLT/eDLT/NCC units, other key counts, older `_A.xml` specifications,
-virtual scene keys and custom micro-functions are outside this implementation.
+`I_NEOCORE.xml` (KEYH1–KEYH3 through `I_KEYHPRO.xml` and `I_KEYH3PRO.xml`).
+Every parameter has the same layout as KEYM4, except KEYE1's KeyMask. The key
+count is Toolkit's `MaximumKeyCount` for the registered class. KEYE1 is the
+exception. Its `TKEYEx` class serves KEYE1–KEYE4 through a key mask, and KEYE1
+keeps its accepted single key.
+
+The following specifications are refused explicitly:
+
+- KEYM6.xml has the KEYM4 layout, but Toolkit 1.18 registers no KEYM6 unit
+  class.
+- KEYCIR1.xml's `TKEYCIR1.MaximumKeyCount` returns zero.
+- KEYV1SP.xml is a bus coupler. Eight parameters have a different layout, and
+  its Toolkit class saves through `TCBusCouplerVieoInputCGateAgent`.
+- Every first-generation `_A.xml` specification uses `I_NEO.xml`, 14 differing
+  parameters and the `TCBusNeoInputCGateAgent` save path.
+
+DLT/eDLT/NCC units, other firmware, virtual scene keys and custom
+micro-functions are outside this implementation.
 
 ## Python API
 
@@ -119,28 +161,66 @@ virtual addresses:
   insufficient: the Neo-specific save path above establishes which encoding
   and fields these families actually use.
 
+### Family equivalence
+
+`research/key_preset_families.py` writes the sanitized receipt
+[key-preset-family-equivalence.json](../research/fixtures/key-preset-family-equivalence.json)
+without executing vendor code. For each candidate specification, it records the
+SHA-256 of each file and include, a digest of every parameter's layout and of
+the 15 preset fields, and the names of parameters that differ from KEYM4 in
+layout or default only. KEYV1–KEYV3 differ only in the IndicatorFunction
+default. It also follows these executable facts:
+
+- The `TUnitTypeFactory.RegisterUnitType` call site gives each unit type's
+  Delphi class and firmware range. Every admitted class descends from
+  `TCBusNeoProInputUnit`, and 2.5.00 lies inside every range.
+- At `TFlashAgentFactory.RegisterAgent`, every admitted class except KEYE1's
+  `TKEYEx` registers the same `TCBusNeoProInputCGateAgent` as KEYM4, KEYA3 and
+  KEYB4. `TKEYEx` registers its `TCBusKEYExCGateAgent` subclass. That agent
+  chain inherits the `TCoreNeoInputCGateAgent.SetKeyValues` save path above.
+- The virtual `MacroFunctionSubsetName` resolves to `TCoreNeoProInputUnit`
+  (`NEOPRO`). The Classic Neo classes resolve to
+  `TCBusNeoProClassicInputUnit` (`NEOPRO_CLASSIC`). Both subsets offer all 18
+  preset templates, but Trigger 1 and Trigger 2 appear only for Trigger
+  Control (202) blocks. `extended_macros.py` does not enforce that
+  application choice.
+- The C-Gate catalogue selects each admitted specification, not its `_A`
+  predecessor, at firmware 2.5.00.
+
 ## Verification and remaining scope
 
-The 13-test suite passes with vendor evidence and native acceptance enabled:
+Run the suite with vendor evidence and native acceptance on an owned loopback
+C-Gate 3.4.0 build 2001 (`research/local_cgate.py`), or set
+`CBUS_CGATE_TEST_HOST` for a disposable server:
 
 ```sh
-CBUS_CGATE_TEST_HOST=127.0.0.1 \
-CBUS_UNITSPEC_DIR=toolkit-cli/research/vendor/unitspec-plain \
-CBUS_TOOLKIT_HELP_DIR=toolkit-cli/research/vendor/toolkit-help \
-CBUS_TOOLKIT_EXE=toolkit-cli/research/vendor/toolkit/app/CBusToolkit.exe \
-CBUS_EXTENDED_MACROS_REPORT=toolkit-cli/research/runtime/extended-macros-acceptance.json \
-toolkit-cli/.venv/bin/python -m unittest discover -s toolkit-cli/tests \
-  -p test_extended_macros.py -v
+cd toolkit-cli
+CBUS_NATIVE_SERVICE_BACKEND=local \
+CBUS_CGATE_JAVA=/path/to/java11/bin/java \
+CBUS_LOCAL_CGATE_VENDOR=research/vendor/cgate/app \
+CBUS_UNITSPEC_DIR=research/vendor/unitspec-plain \
+CBUS_TOOLKIT_HELP_DIR=research/vendor/toolkit-help \
+CBUS_TOOLKIT_EXE=research/vendor/toolkit/app/CBusToolkit.exe \
+CBUS_UNIT_CATALOG=research/vendor/cgate/app/unitspec/cbusunits.xml \
+CBUS_EXTENDED_MACROS_REPORT=research/runtime/extended-macros-acceptance.json \
+PYTHONPATH=src:tests .venv/bin/python -m pytest \
+  tests/test_extended_macros.py tests/test_key_preset_families.py -v
 ```
 
-Native tests create a unique project with a closed network. They reset each
-unit's native defaults, start a key in scene mode, apply all 18 presets, compare
-stage values and packed raw bytes, and confirm the scene table is unchanged.
-Additional raw-byte assertions cover group, secondary mask, expiry, timer,
-recall and indicator fields. The final state survives an explicit database
-save and fresh programming-session load for all four profiles. Deterministic
-tests cover all eight blocks, shared and virtual assignments, stale plans,
-rollback, layout rejection and bit preservation.
+Set `CBUS_NEO_PROFILES=KEYM2.xml,KEYDV4.xml` to limit a diagnostic run.
+
+The native test creates a unique project with a closed network whose CNI
+address is an owned idle loopback listener. It creates a database unit for
+every profile from its catalogue number. It resets native defaults, starts the
+highest key in scene mode, applies all 18 presets, and compares stage values
+and packed raw bytes. After every preset, it compares all parameters outside
+the 15 preset fields, including the scene table. Additional raw-byte assertions
+cover group, secondary mask, expiry, timer, recall and indicator fields. Each
+unit is saved, the project is closed and reloaded, and a fresh programming
+session must return identical values. Refusal tests reject KEYM6, KEYCIR1,
+KEYV1SP and `_A` specifications, and a KEYM4 plan on a KEYM2 session, before
+any write. Deterministic tests cover all eight blocks, shared and virtual
+assignments, stale plans, rollback, layout rejection and bit preservation.
 
 This establishes the source-defined configuration semantics for the listed
 profiles and tested firmware. It does not establish physical button behavior,

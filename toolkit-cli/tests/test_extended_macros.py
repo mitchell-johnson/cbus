@@ -7,7 +7,7 @@ import struct
 import unittest
 from uuid import uuid4
 
-from cbus_toolkit.extended_macros import ExtendedKeys, PROFILES
+from cbus_toolkit.extended_macros import ExtendedKeys, LAYOUTS, PROFILES, REFUSED_PROFILES
 from cbus_toolkit.macros import MacroError, MacroApplyError, PRESETS, STAGES
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
@@ -96,12 +96,18 @@ class ExtendedMacroTest(unittest.TestCase):
         self.assertEqual(plan.shared_keys,(8,))
 
     def test_profile_layout_and_physical_key_bounds(self):
-        for filename,unit_type,count in (('KEYE.xml','KEYE1',1),('KEYM4.xml','KEYM4',4),('KEYA3.xml','KEYA3',3),('KEYB4.xml','KEYB4',4)):
-            keys=ExtendedKeys(fixture(filename,unit_type))
-            keys.plan(keys.spec.defaults(),key=count,preset='bellpress')
-            with self.assertRaises(MacroError):keys.plan(keys.spec.defaults(),key=count+1,preset='on')
-        for filename,unit_type in (('KEYB6.xml','KEYB6'),('KEYGL5.xml','KEYGL5'),('KEYM4_A.xml','KEYM4')):
-            with self.assertRaises(MacroError):ExtendedKeys(fixture(filename,unit_type))
+        self.assertEqual(len(PROFILES),31)
+        for filename,(unit_type,count,_family) in PROFILES.items():
+            with self.subTest(spec=filename):
+                keys=ExtendedKeys(fixture(filename,unit_type))
+                keys.plan(keys.spec.defaults(),key=count,preset='bellpress')
+                with self.assertRaises(MacroError):keys.plan(keys.spec.defaults(),key=count+1,preset='on')
+        refused=(('KEYM6.xml','KEYM6'),('KEYCIR1.xml','KEYCIR1'),('KEYV1SP.xml','KEYV1SP'),('KEYGL5.xml','KEYGL5'),
+                 ('KEYM4_A.xml','KEYM4'),('KEYB6_A.xml','KEYB6'),('KEYB6.xml','KEYM6'),('KEYB6A.xml','KEYB6A'))
+        for filename,unit_type in refused:
+            with self.subTest(refused=filename),self.assertRaises(MacroError):ExtendedKeys(fixture(filename,unit_type))
+        for filename,reason in REFUSED_PROFILES.items():
+            with self.assertRaisesRegex(MacroError,'not supported'):ExtendedKeys(fixture(filename,filename[:-4]))
         bad=replace(self.spec.get('JPCommand'),fields=dict(self.spec.get('JPCommand').fields,Address='50'))
         with self.assertRaises(MacroError):ExtendedKeys(replace(self.spec,parameters=dict(self.spec.parameters,JPCommand=bad)))
 
@@ -170,64 +176,85 @@ class ExtendedHelpTest(unittest.TestCase):
         check.test_all_presets_against_original_help_event_tables()
 
 
-@unittest.skipUnless(os.environ.get('CBUS_CGATE_TEST_HOST') and os.environ.get('CBUS_UNITSPEC_DIR'),'Set C-Gate and unit specs for closed-database Neo preset acceptance')
+@unittest.skipUnless(classic_tests.NATIVE, classic_tests.NATIVE_REASON)
 class ExtendedNativeTest(unittest.TestCase):
-    def test_four_profiles_all_presets_raw_bytes_and_database_reload(self):
+    def test_all_profiles_all_presets_raw_bytes_preservation_and_project_reload(self):
         from cbus_toolkit.cgate import CGateClient
         from cbus_toolkit.native import NativeDatabase
         from cbus_toolkit.programming import Programmer
-        project='EK'+uuid4().hex[:6].upper();network=f'//{project}/254'
-        rows=(('KEYE.xml','KEYE1','5031NMML',1),('KEYM4.xml','KEYM4','5054NL',4),('KEYA3.xml','KEYA3','R5063NL',3),('KEYB4.xml','KEYB4','5084NL',4))
-        report={'format':'cbus-extended-macros-acceptance-v1','scope':'Toolkit help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior','profiles':[],'passed':False}
-        with CGateClient(os.environ['CBUS_CGATE_TEST_HOST'],int(os.environ.get('CBUS_CGATE_TEST_PORT','20023')),timeout=30) as client:
+        selected=os.environ.get('CBUS_NEO_PROFILES')
+        rows=[(filename,)+PROFILES[filename][:2] for filename in PROFILES if not selected or filename in selected.split(',')]
+        report={'format':'cbus-extended-macros-acceptance-v2','scope':'Toolkit help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior','profiles':[],'passed':False}
+        finals={}
+        with classic_tests.native_endpoint() as (host,port),CGateClient(host,port,timeout=30) as client,\
+                classic_tests.closed_network_project(client,'EK') as project:
             report['greeting']=client.greeting
-            client.command('PROJECT NEW '+project)
-            try:
-                client.command('PROJECT USE '+project)
-                client.command('DBCREATENET 254 Extended_Offline Cni 127.0.0.1:29999')
-                client.command('NET LOAD DB '+project)
-                client.command('PROJECT SAVE '+project)
-                programmer=Programmer(client);store=UnitSpecStore(os.environ['CBUS_UNITSPEC_DIR'])
-                for index,(filename,unit_type,catalog,key) in enumerate(rows):
-                    keys=ExtendedKeys(store.load(filename));path=f'{network}/p/{220+index}'
-                    NativeDatabase(client).create_unit(network,220+index,'Extended_'+str(index),unit_type,'2.5.00',catalog_number=catalog)
-                    with programmer.load(network,'/db'+path) as session:
-                        session.reset_defaults()
-                        baseline=session.values()
-                        session.set('Application','56 57')
-                        # Start as a scene to prove ordinary presets remove the
-                        # mode bit without overwriting the independent scene table.
-                        selectors=[0]*8;selectors[key-1]=1
-                        session.set('SceneKeySelector',' '.join(map(str,selectors)))
-                        for preset,vector in classic_tests.VECTORS.items():
-                            with self.subTest(unit_type=unit_type,preset=preset):
-                                opts={'timer_seconds':300} if preset=='timer' else {}
-                                self.assertTrue(keys.configure(session,key=key,preset=preset,group=17,**opts)['verified'])
-                                actual=session.values()
-                                self.assertEqual(tuple(int(actual[name].split()[key-1],0) for name in STAGES),vector)
-                                raw=session.get_raw_data(104+(key-1)*2,2).lines[-1].split('RawData=',1)[1]
-                                self.assertEqual(raw,bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])).hex())
-                                self.assertEqual(actual['SceneTable'],baseline['SceneTable'])
-                        keys.configure(session,key=key,preset='timer',group=31,application='secondary',timer_seconds=300,expiry='ramp_off',
-                                       recall1=64,recall2=128,indicator_block=8)
-                        before=keys._snapshot(session.values())
-                        self.assertEqual(int(session.get_raw_data(69,1).lines[-1].split('RawData=',1)[1],16),1<<(key-1))
-                        self.assertEqual(int(session.get_raw_data(96+key-1,1).lines[-1].split('RawData=',1)[1],16)&135,7)
-                        for address,value in ((80+key-1,31),(120+key-1,64),(128+key-1,128),(136+key-1,1),(144+key-1,44)):
-                            self.assertEqual(int(session.get_raw_data(address,1).lines[-1].split('RawData=',1)[1],16),value)
-                        self.assertEqual(int(session.get_raw_data(72+key-1,1).lines[-1].split('RawData=',1)[1],16)&15,9)
-                        session.save_to_source()
-                    client.command('PROJECT SAVE '+project)
-                    with programmer.load(network,'/db'+path) as session:
-                        self.assertEqual(keys._snapshot(session.values()),before)
-                    report['profiles'].append({'unit_type':unit_type,'catalog_number':catalog,'firmware':'2.5.00','spec_filename':filename,
-                                               'presets_passed':18,'raw_stage_bytes_checked':36,'database_reload_passed':True})
-                report['passed']=True
-            finally:
-                client.command('PROJECT CLOSE '+project)
-                client.command('PROJECT DELETE '+project)
-                if os.environ.get('CBUS_EXTENDED_MACROS_REPORT'):
-                    Path(os.environ['CBUS_EXTENDED_MACROS_REPORT']).write_text(json.dumps(report,indent=2)+'\n')
+            network=f'//{project}/254'
+            programmer=Programmer(client);store=UnitSpecStore(os.environ['CBUS_UNITSPEC_DIR'])
+            for index,(filename,unit_type,key) in enumerate(rows):
+                keys=ExtendedKeys(store.load(filename));path=f'{network}/p/{150+index}'
+                firmware,catalog=classic_tests.family_catalog('neo',filename)
+                NativeDatabase(client).create_unit(network,150+index,'Extended_'+str(index),unit_type,firmware,catalog_number=catalog)
+                with programmer.load(network,'/db'+path) as session:
+                    session.reset_defaults()
+                    session.set('Application','56 57')
+                    # Start as a scene to prove ordinary presets remove the
+                    # mode bit without overwriting the independent scene table.
+                    selectors=[0]*8;selectors[key-1]=1
+                    session.set('SceneKeySelector',' '.join(map(str,selectors)))
+                    baseline=session.values()
+                    for preset,vector in classic_tests.VECTORS.items():
+                        with self.subTest(unit_type=unit_type,preset=preset):
+                            opts={'timer_seconds':300} if preset=='timer' else {}
+                            self.assertTrue(keys.configure(session,key=key,preset=preset,group=17,**opts)['verified'])
+                            actual=session.values()
+                            self.assertEqual(tuple(int(actual[name].split()[key-1],0) for name in STAGES),vector)
+                            raw=session.get_raw_data(104+(key-1)*2,2).lines[-1].split('RawData=',1)[1]
+                            self.assertEqual(raw,bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])).hex())
+                            # SceneTable and every other non-preset parameter stay unchanged.
+                            self.assertEqual(classic_tests.unrelated(actual,LAYOUTS),classic_tests.unrelated(baseline,LAYOUTS))
+                    keys.configure(session,key=key,preset='timer',group=31,application='secondary',timer_seconds=300,expiry='ramp_off',
+                                   recall1=64,recall2=128,indicator_block=8)
+                    self.assertEqual(int(session.get_raw_data(69,1).lines[-1].split('RawData=',1)[1],16),1<<(key-1))
+                    self.assertEqual(int(session.get_raw_data(96+key-1,1).lines[-1].split('RawData=',1)[1],16)&135,7)
+                    for address,value in ((80+key-1,31),(120+key-1,64),(128+key-1,128),(136+key-1,1),(144+key-1,44)):
+                        self.assertEqual(int(session.get_raw_data(address,1).lines[-1].split('RawData=',1)[1],16),value)
+                    self.assertEqual(int(session.get_raw_data(72+key-1,1).lines[-1].split('RawData=',1)[1],16)&15,9)
+                    finals[path]=session.values()
+                    self.assertEqual(classic_tests.unrelated(finals[path],LAYOUTS),classic_tests.unrelated(baseline,LAYOUTS))
+                    session.save_to_source()
+                report['profiles'].append({'unit_type':unit_type,'catalog_number':catalog,'firmware':firmware,'spec_filename':filename,
+                                           'key':key,'presets_passed':18,'raw_stage_bytes_checked':36})
+            client.command('PROJECT SAVE '+project)
+            client.command('PROJECT CLOSE '+project)
+            client.command('PROJECT LOAD '+project)
+            client.command('PROJECT USE '+project)
+            for path,expected in finals.items():
+                with self.subTest(reload=path),programmer.load(network,'/db'+path) as session:
+                    self.assertEqual(session.values(),expected)
+            report['project_close_reload_passed']=True
+            report['passed']=True
+        if os.environ.get('CBUS_EXTENDED_MACROS_REPORT'):
+            Path(os.environ['CBUS_EXTENDED_MACROS_REPORT']).write_text(json.dumps(report,indent=2)+'\n')
+
+    def test_refused_profiles_and_cross_type_plans_before_writes(self):
+        from cbus_toolkit.cgate import CGateClient
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import Programmer
+        store=UnitSpecStore(os.environ['CBUS_UNITSPEC_DIR'])
+        for filename in (*REFUSED_PROFILES,'KEYM4_A.xml'):
+            with self.subTest(spec=filename),self.assertRaises(MacroError):ExtendedKeys(store.load(filename))
+        with classic_tests.native_endpoint() as (host,port),CGateClient(host,port,timeout=30) as client,\
+                classic_tests.closed_network_project(client,'ER') as project:
+            network=f'//{project}/254'
+            firmware,catalog=classic_tests.family_catalog('neo','KEYM2.xml')
+            NativeDatabase(client).create_unit(network,240,'Refuse','KEYM2',firmware,catalog_number=catalog)
+            with Programmer(client).load(network,f'/db{network}/p/240') as session:
+                before=session.values()
+                keym4=ExtendedKeys(store.load('KEYM4.xml'))
+                with self.assertRaisesRegex(MacroError,'unit type differs'):
+                    keym4.apply(session,keym4.plan(before,key=1,preset='on'))
+                self.assertEqual(session.values(),before)
 
 
 if __name__=='__main__':unittest.main()

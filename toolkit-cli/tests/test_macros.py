@@ -1,14 +1,19 @@
 """Classic macro vectors, transaction checks and opt-in native acceptance."""
+from contextlib import contextmanager
 from dataclasses import replace
 from html.parser import HTMLParser
+import json
 import os
 from pathlib import Path
+import socket
 import struct
 import unittest
 from uuid import uuid4
 import xml.etree.ElementTree as ET
 
-from cbus_toolkit.macros import ClassicKeys, KeyPlan, MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES
+from cbus_toolkit.macros import (ClassicKeys, EXCLUDED_PRESETS, GUARDED_PARAMETERS, KeyPlan, MacroApplyError,
+                                 MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, SUPPORTED_UNITS, _READ_FIELDS,
+                                 _numbers)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 
@@ -25,7 +30,7 @@ VECTORS = {"on": (13, 0, 0, 0), "off": (15, 0, 0, 0), "toggle": (11, 0, 0, 0),
            "trigger1": (12, 0, 0, 0), "trigger2": (6, 0, 0, 0), "unused": (0, 0, 0, 0)}
 
 
-def fixture(unit_type="KEY4"):
+def fixture(unit_type="KEY4", extra=()):
     parameters = {}
     rows = (("JPCommand", 0x32, 4, 4, 4, 1, [11] * 4),
             ("SRCommand", 0x32, 4, 4, 0, 1, [0] * 4),
@@ -38,7 +43,7 @@ def fixture(unit_type="KEY4"):
             ("TimerLowByte", 0x48, 4, 8, 0, 0, [0] * 4),
             ("TimerExpiryCommand", 0x4C, 4, 4, 0, 0, [15] * 4),
             ("LightLevelStore1", 0x11, 4, 8, 0, 0, [255] * 4),
-            ("LightLevelStore2", 0x15, 4, 8, 0, 0, [255] * 4))
+            ("LightLevelStore2", 0x15, 4, 8, 0, 0, [255] * 4)) + tuple(extra)
     for name, address, count, bits, offset, skip, default in rows:
         fields = {"Name": name, "Type": "int", "Address": str(address), "ArraySize": str(count),
                   "BitSize": str(bits), "BitAddress": str(offset), "ArraySkip": str(skip),
@@ -218,6 +223,52 @@ class MacroTests(unittest.TestCase):
         self.assertEqual(self.session.calls, [])
 
 
+class ClassicFamilyTests(unittest.TestCase):
+    def test_family_key_counts_and_refusals(self):
+        for unit_type, count in SUPPORTED_UNITS.items():
+            with self.subTest(unit_type=unit_type):
+                keys = ClassicKeys(fixture(unit_type))
+                keys.plan(keys.spec.defaults(), key=count, preset="on")
+                with self.assertRaises(MacroError):
+                    keys.plan(keys.spec.defaults(), key=count + 1, preset="on")
+        for unit_type in ("BCNC4A", "BCNC4B", "KEYV1SP", "KEYCIR1"):
+            with self.subTest(unit_type=unit_type), self.assertRaises(MacroError):
+                ClassicKeys(fixture(unit_type))
+        with self.assertRaisesRegex(MacroError, "forces fixed micro-function defaults"):
+            ClassicKeys(fixture("BCNC4A"))
+
+    def test_guarded_parameters_are_never_planned_or_written(self):
+        for unit_type, guarded in GUARDED_PARAMETERS.items():
+            extra = [(name, 0x6F, 1, 8, 0, 0, [0xA5]) for name in guarded]
+            spec = fixture(unit_type, extra)
+            keys = ClassicKeys(spec)
+            session = Session(spec)
+            with self.subTest(unit_type=unit_type):
+                plan = keys.plan(session.values(), key=keys.key_count, preset="timer", group=17,
+                                 timer_seconds=300, recall1=64, recall2=128)
+                self.assertFalse(set(plan.changes) & set(guarded))
+                keys.apply(session, plan)
+                self.assertFalse({name for name, _ in session.calls} & set(guarded))
+                self.assertEqual({name: session.current[name] for name in guarded}, {name: "165" for name in guarded})
+                forged = replace(plan, changes={**plan.changes, guarded[0]: (0,)})
+                with self.assertRaisesRegex(MacroError, "outside the classic key workflow"):
+                    keys.apply(session, forged)
+
+    def test_aux_types_refuse_bell_press_but_accept_other_presets(self):
+        for unit_type in ("KEYAUX4", "DINAUX4"):
+            keys = ClassicKeys(fixture(unit_type))
+            session = Session(keys.spec)
+            with self.subTest(unit_type=unit_type):
+                self.assertEqual(EXCLUDED_PRESETS[unit_type], {"bellpress"})
+                with self.assertRaisesRegex(MacroError, "AUX subset"):
+                    keys.plan(session.values(), key=1, preset="bellpress")
+                allowed = keys.plan(session.values(), key=1, preset="toggle")
+                with self.assertRaisesRegex(MacroError, "AUX subset"):
+                    keys.apply(session, replace(allowed, preset="bellpress"))
+                self.assertEqual(session.calls, [])
+                self.assertTrue(keys.apply(session, allowed)["verified"])
+
+
 class TableParser(HTMLParser):
     def __init__(self):
         super().__init__(); self.rows = []; self.row = None; self.cell = None
@@ -287,7 +338,72 @@ class VendorBinaryTests(unittest.TestCase):
         self.assertEqual(at(0x7F0E6C, 3), bytes.fromhex("8a45ff"))  # HighByte of AX
 
 
-@unittest.skipUnless(os.environ.get("CBUS_CGATE_TEST_HOST") and os.environ.get("CBUS_UNITSPEC_DIR"), "Set native server and unit specs for macro acceptance")
+NATIVE = bool(os.environ.get("CBUS_UNITSPEC_DIR") and (
+    os.environ.get("CBUS_CGATE_TEST_HOST") or
+    (os.environ.get("CBUS_NATIVE_SERVICE_BACKEND") == "local" and os.environ.get("CBUS_CGATE_JAVA"))))
+NATIVE_REASON = ("Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local "
+                 "with CBUS_CGATE_JAVA, for native preset acceptance")
+FAMILY_RECEIPT = Path(__file__).resolve().parents[1] / "research/fixtures/key-preset-family-equivalence.json"
+
+
+@contextmanager
+def native_endpoint():
+    """Yield an owned loopback C-Gate, or the explicitly configured disposable server."""
+    if os.environ.get("CBUS_NATIVE_SERVICE_BACKEND") == "local":
+        from research.local_cgate import LocalCGate
+        vendor = os.environ.get("CBUS_LOCAL_CGATE_VENDOR", Path(__file__).resolve().parents[1] / "research/vendor/cgate/app")
+        service = LocalCGate(vendor, java=os.environ["CBUS_CGATE_JAVA"])
+        # Project deletion needs the administrative level on the owned instance.
+        (service.work / "config/access.txt").write_text("interface 127.0.0.1 Clipsal\n")
+        with service:
+            yield "127.0.0.1", service.port
+    else:
+        yield os.environ["CBUS_CGATE_TEST_HOST"], int(os.environ.get("CBUS_CGATE_TEST_PORT", "20023"))
+
+
+@contextmanager
+def closed_network_project(client, prefix):
+    """Create a disposable project whose CNI target is an owned idle listener."""
+    project = prefix + uuid4().hex[:8 - len(prefix)].upper()
+    sentinel = socket.socket()
+    sentinel.bind(("127.0.0.1", 0)); sentinel.listen(1)
+    client.command("PROJECT NEW " + project)
+    try:
+        client.command("PROJECT USE " + project)
+        client.command(f"DBCREATENET 254 Preset_Offline Cni 127.0.0.1:{sentinel.getsockname()[1]}")
+        client.command("NET LOAD DB " + project)
+        client.command("PROJECT SAVE " + project)
+        yield project
+    finally:
+        try:
+            client.command("PROJECT CLOSE " + project)
+            client.command("PROJECT DELETE " + project)
+        finally:
+            sentinel.close()
+
+
+def family_catalog(family, filename):
+    row = next(row for row in json.loads(FAMILY_RECEIPT.read_text())["families"][family]["types"]
+               if row["spec_filename"] == filename)
+    return row["catalog_selection"]["firmware"], row["catalog_selection"]["catalog_numbers"][0]
+
+
+def sentinel_value(spec, name, current):
+    """Choose a valid value different from the current one for preservation checks."""
+    parameter = spec.get(name)
+    values = list(_numbers(current))
+    limit = _numbers(parameter.fields.get("MaxValue") or str((1 << parameter.bit_size) - 1))[0]
+    values[0] = values[0] + 1 if values[0] < limit else values[0] - 1
+    if not parameter.validate_value(values)["valid"]:
+        raise AssertionError("No valid sentinel for " + name)
+    return " ".join(map(str, values))
+
+
+def unrelated(values, workflow):
+    return {name: value for name, value in values.items() if name not in workflow}
+
+
+@unittest.skipUnless(NATIVE, NATIVE_REASON)
 class NativeMacroTests(unittest.TestCase):
     def test_every_preset_native_values_bytes_and_database_save_reload(self):
         from cbus_toolkit.cgate import CGateClient
@@ -295,7 +411,7 @@ class NativeMacroTests(unittest.TestCase):
         store = UnitSpecStore(os.environ["CBUS_UNITSPEC_DIR"])
         keys = ClassicKeys(store.load("KEY4.xml"))
         project = "K" + uuid4().hex[:7].upper()
-        with CGateClient(os.environ["CBUS_CGATE_TEST_HOST"], port=int(os.environ.get("CBUS_CGATE_TEST_PORT", "20023")), timeout=20) as client:
+        with native_endpoint() as (host, port), CGateClient(host, port=port, timeout=20) as client:
             client.command("PROJECT NEW " + project)
             try:
                 client.command("PROJECT USE " + project)
@@ -333,6 +449,94 @@ class NativeMacroTests(unittest.TestCase):
             finally:
                 client.command("PROJECT CLOSE " + project)
                 client.command("PROJECT DELETE " + project)
+
+    def test_family_types_every_preset_guarded_preservation_and_project_reload(self):
+        """All 18 presets on each newly admitted classic type through native PP."""
+        from cbus_toolkit.cgate import CGateClient
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import Programmer
+        store = UnitSpecStore(os.environ["CBUS_UNITSPEC_DIR"])
+        report = {"format": "cbus-classic-key-family-acceptance-v1", "types": [], "passed": False}
+        with native_endpoint() as (host, port), CGateClient(host, port=port, timeout=30) as client, \
+                closed_network_project(client, "KF") as project:
+            report["greeting"] = client.greeting
+            network, programmer = f"//{project}/254", Programmer(client)
+            finals = {}
+            for index, unit_type in enumerate(("KEYIR1", "KEYIR4", "KEYAUX4", "DINAUX4", "KEYBC2", "KEYBC4")):
+                keys = ClassicKeys(store.load(unit_type + ".xml"))
+                firmware, catalog = family_catalog("classic", unit_type + ".xml")
+                path, key = f"{network}/p/{230 + index}", keys.key_count
+                NativeDatabase(client).create_unit(network, 230 + index, "Family_" + str(index), unit_type,
+                                                   firmware, catalog_number=catalog)
+                with programmer.load(network, "/db" + path) as session:
+                    session.reset_defaults()
+                    session.set("Application", "56 255")
+                    guarded = {name: sentinel_value(keys.spec, name, value)
+                               for name, value in session.values().items() if name in keys.guarded}
+                    for name, value in guarded.items():
+                        session.set(name, value)
+                    baseline = session.values()
+                    self.assertEqual({name: _numbers(baseline[name]) for name in guarded},
+                                     {name: _numbers(value) for name, value in guarded.items()})
+                    passed = refused = 0
+                    for preset, vector in VECTORS.items():
+                        with self.subTest(unit_type=unit_type, preset=preset):
+                            before = session.values()
+                            options = {"timer_seconds": 300} if preset == "timer" else {}
+                            if preset in keys.excluded_presets:
+                                with self.assertRaisesRegex(MacroError, "AUX subset"):
+                                    keys.configure(session, key=key, preset=preset, group=17, **options)
+                                self.assertEqual(session.values(), before)
+                                refused += 1
+                                continue
+                            self.assertTrue(keys.configure(session, key=key, preset=preset, group=17, **options)["verified"])
+                            actual = session.values()
+                            self.assertEqual(tuple(int(actual[name].split()[key - 1], 0) for name in STAGES), vector)
+                            raw = session.get_raw_data(0x32 + 2 * (key - 1), 2).lines[-1].split("RawData=", 1)[1]
+                            self.assertEqual(raw, bytes([vector[0] << 4 | vector[1], vector[2] << 4 | vector[3]]).hex())
+                            self.assertEqual(unrelated(actual, _READ_FIELDS), unrelated(baseline, _READ_FIELDS))
+                            passed += 1
+                    keys.configure(session, key=key, preset="timer", group=31, timer_seconds=300, expiry="ramp_off",
+                                   recall1=64, recall2=128)
+                    finals[path] = session.values()
+                    self.assertEqual(unrelated(finals[path], _READ_FIELDS), unrelated(baseline, _READ_FIELDS))
+                    self.assertEqual({name: _numbers(finals[path][name]) for name in guarded},
+                                     {name: _numbers(value) for name, value in guarded.items()})
+                    session.save_to_source()
+                report["types"].append({"unit_type": unit_type, "firmware": firmware, "catalog_number": catalog,
+                                        "key": key, "presets_passed": passed, "presets_refused": refused,
+                                        "guarded_preserved": sorted(guarded)})
+            client.command("PROJECT SAVE " + project)
+            client.command("PROJECT CLOSE " + project)
+            client.command("PROJECT LOAD " + project)
+            client.command("PROJECT USE " + project)
+            for path, expected in finals.items():
+                with self.subTest(reload=path), programmer.load(network, "/db" + path) as session:
+                    self.assertEqual(session.values(), expected)
+            report["project_close_reload_passed"] = True
+            report["passed"] = True
+        if os.environ.get("CBUS_CLASSIC_FAMILY_REPORT"):
+            Path(os.environ["CBUS_CLASSIC_FAMILY_REPORT"]).write_text(json.dumps(report, indent=2) + "\n")
+
+    def test_native_sessions_refuse_cross_type_plans_before_writes(self):
+        from cbus_toolkit.cgate import CGateClient
+        from cbus_toolkit.native import NativeDatabase
+        from cbus_toolkit.programming import Programmer
+        store = UnitSpecStore(os.environ["CBUS_UNITSPEC_DIR"])
+        with native_endpoint() as (host, port), CGateClient(host, port=port, timeout=30) as client, \
+                closed_network_project(client, "KR") as project:
+            network = f"//{project}/254"
+            firmware, catalog = family_catalog("classic", "KEYIR4.xml")
+            NativeDatabase(client).create_unit(network, 240, "Refuse", "KEYIR4", firmware, catalog_number=catalog)
+            with Programmer(client).load(network, f"/db{network}/p/240") as session:
+                before = session.values()
+                key4 = ClassicKeys(store.load("KEY4.xml"))
+                with self.assertRaisesRegex(MacroError, "unit type differs"):
+                    key4.apply(session, key4.plan(before, key=1, preset="on"))
+                self.assertEqual(session.values(), before)
+            for filename in ("BCNC4A.xml", "KEYV1SP.xml"):
+                with self.subTest(spec=filename), self.assertRaises(MacroError):
+                    ClassicKeys(store.load(filename))
 
 
 if __name__ == "__main__":
