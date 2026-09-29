@@ -1874,6 +1874,25 @@ impl PciClient {
         ack: Option<u8>,
         route: ProgrammingRoute<'_>,
     ) -> Result<Vec<u8>> {
+        self.programming_exchange_fragments(unit, request, parameter, count, ack, route, false)
+            .await
+    }
+
+    /// Exchange one programming request. With `advancing`, every reply
+    /// fragment must name the logical parameter of its first byte, as native
+    /// C-Gate's paged `L` recall requires (`start + bytes received`); other
+    /// recalls repeat the requested parameter in every fragment.
+    #[allow(clippy::too_many_arguments)]
+    async fn programming_exchange_fragments(
+        &self,
+        unit: u8,
+        request: Cal,
+        parameter: u8,
+        count: usize,
+        ack: Option<u8>,
+        route: ProgrammingRoute<'_>,
+        advancing: bool,
+    ) -> Result<Vec<u8>> {
         let mut replies = self.packets.subscribe();
         let bytes = if !matches!(route, ProgrammingRoute::Oem) {
             let (bridged, hops) = match route {
@@ -1984,7 +2003,14 @@ impl PciClient {
                         {
                             return Err(Error::other("unit rejected programming selector"));
                         }
-                        Cal::Reply { parameter: p, data } if p == parameter && ack.is_none() => {
+                        Cal::Reply { parameter: p, data }
+                            if ack.is_none()
+                                && p == if advancing {
+                                    parameter.wrapping_add(result.len() as u8)
+                                } else {
+                                    parameter
+                                } =>
+                        {
                             if count == 0 {
                                 return Ok(data);
                             }
@@ -2387,8 +2413,55 @@ impl PciClient {
     /// selects its address; the only WRITE is the volatile 0x41 selector.
     /// Logical unit-spec addresses >=256 map to physical address = logical-256.
     pub async fn read_memory(&self, unit: u8, address: u32, length: usize) -> Result<Vec<u8>> {
-        self.read_memory_with_route(unit, address, length, ProgrammingRoute::Oem)
-            .await
+        self.read_memory_with_route(
+            unit,
+            address,
+            length,
+            ProgrammingRoute::Oem,
+            OemProgramming::Edlt.recall_limit(),
+        )
+        .await
+    }
+
+    /// Read OEM PP memory with the named method's native request limit.
+    /// GIU, SGIU and DALI reselect the pointer before every twelve-byte
+    /// recall, matching C-Gate's single-reply `aU` path.
+    pub async fn read_oem_memory(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: OemProgramming,
+    ) -> Result<Vec<u8>> {
+        self.read_memory_with_route(
+            unit,
+            address,
+            length,
+            ProgrammingRoute::Oem,
+            dialect.recall_limit(),
+        )
+        .await
+    }
+
+    /// Read OEM PP memory with its method limit through a one-to-six bridge
+    /// route.
+    pub async fn read_oem_memory_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: OemProgramming,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.read_memory_with_route(
+            unit,
+            address,
+            length,
+            ProgrammingRoute::Routed(bridges),
+            dialect.recall_limit(),
+        )
+        .await
     }
 
     /// Read a bounded OEM physical-memory range through a one-to-six bridge
@@ -2403,8 +2476,14 @@ impl PciClient {
         length: usize,
     ) -> Result<Vec<u8>> {
         validate_bridge_route(bridges)?;
-        self.read_memory_with_route(unit, address, length, ProgrammingRoute::Routed(bridges))
-            .await
+        self.read_memory_with_route(
+            unit,
+            address,
+            length,
+            ProgrammingRoute::Routed(bridges),
+            OemProgramming::Edlt.recall_limit(),
+        )
+        .await
     }
 
     async fn read_memory_with_route(
@@ -2413,6 +2492,7 @@ impl PciClient {
         address: u32,
         length: usize,
         route: ProgrammingRoute<'_>,
+        limit: usize,
     ) -> Result<Vec<u8>> {
         if length == 0 || length > 65536 || address.checked_add(length as u32).is_none() {
             return Err(Error::new(
@@ -2432,7 +2512,7 @@ impl PciClient {
         };
         let mut result = Vec::with_capacity(length);
         while result.len() < length {
-            let block = result.len() / 128;
+            let block = result.len() / limit;
             let offset = address + result.len() as u32;
             let mut selector = vec![0x41];
             selector
@@ -2457,7 +2537,7 @@ impl PciClient {
                     ),
                 )
             })?;
-            let count = (length - result.len()).min(128) as u8;
+            let count = (length - result.len()).min(limit) as u8;
             result.extend(
                 self.programming_exchange(
                     unit,
@@ -2713,6 +2793,118 @@ impl PciClient {
         Ok(result)
     }
 
+    /// Recall a `direct` PP parameter range as native C-Gate PP LOAD does:
+    /// consecutive `cg` requests of at most twelve bytes (`lP.N`), each
+    /// naming its own starting parameter and answered in full before the
+    /// next is sent. The range must stay inside the 256-parameter space.
+    pub async fn recall_direct_parameter(
+        &self,
+        unit: u8,
+        parameter: u8,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        self.recall_direct_parameter_with_route(
+            unit,
+            parameter,
+            length,
+            ProgrammingRoute::DirectChecksummed,
+        )
+        .await
+    }
+
+    /// Recall a `direct` PP parameter range in native twelve-byte blocks
+    /// through a one-to-six bridge source route.
+    pub async fn recall_direct_parameter_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        length: usize,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.recall_direct_parameter_with_route(
+            unit,
+            parameter,
+            length,
+            ProgrammingRoute::Routed(bridges),
+        )
+        .await
+    }
+
+    async fn recall_direct_parameter_with_route(
+        &self,
+        unit: u8,
+        parameter: u8,
+        length: usize,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<Vec<u8>> {
+        if length == 0 || length > u8::MAX as usize || usize::from(parameter) + length > 256 {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "direct recall requires 1..255 bytes within the parameter address space",
+            ));
+        }
+        let _lane = self.programming_lane.lock().await;
+        if self.programming_fault.load(Ordering::Acquire) {
+            return Err(Error::other(
+                "programming stream needs reconnect after an incomplete transaction",
+            ));
+        }
+        let mut transaction = Transaction {
+            client: self,
+            complete: false,
+        };
+        let result = self
+            .recall_standard_blocks(unit, parameter, length, route)
+            .await?;
+        transaction.complete = true;
+        Ok(result)
+    }
+
+    /// Recall a standard CAL range in native C-Gate's twelve-byte `cg`
+    /// requests. `lP` never asks a unit for more than twelve direct bytes at
+    /// once; each block names its own starting parameter and must be
+    /// answered in full before the next is sent. Callers hold the lane.
+    async fn recall_standard_blocks(
+        &self,
+        unit: u8,
+        parameter: u8,
+        length: usize,
+        route: ProgrammingRoute<'_>,
+    ) -> Result<Vec<u8>> {
+        let mut result = Vec::with_capacity(length);
+        while result.len() < length {
+            let block = result.len() / STANDARD_RECALL_LIMIT;
+            let offset = result.len();
+            let target = parameter + offset as u8;
+            let count = (length - offset).min(STANDARD_RECALL_LIMIT);
+            result.extend(
+                self.programming_exchange(
+                    unit,
+                    Cal::Recall {
+                        param: target,
+                        count: count as u8,
+                    },
+                    target,
+                    count,
+                    None,
+                    route,
+                )
+                .await
+                .map_err(|error| {
+                    programming_context(
+                        error,
+                        format_args!(
+                            "parameter recall unit {unit} parameter 0x{target:02X} \
+                             block {block} offset {offset} length {count}"
+                        ),
+                    )
+                })?,
+            );
+        }
+        Ok(result)
+    }
+
     /// Read the native KEYGL5 static widget-group mapping.
     ///
     /// C-Gate reads parameter `0xFA` with an exact length of 44 over the
@@ -2820,6 +3012,7 @@ impl PciClient {
                 } else {
                     ProgrammingRoute::Routed(bridges)
                 },
+                OemProgramming::Edlt.recall_limit(),
             )
             .await?;
         cbus_protocol::edlt_sync_metadata::decode_applications(&data)
@@ -2835,7 +3028,7 @@ impl PciClient {
         address: u32,
         length: usize,
     ) -> Result<Vec<u8>> {
-        self.recall_paged_parameter_with_route(unit, address, length, None)
+        self.recall_paged_parameter_with_route(unit, address, length, None, u8::MAX as usize)
             .await
     }
 
@@ -2848,8 +3041,48 @@ impl PciClient {
         length: usize,
     ) -> Result<Vec<u8>> {
         validate_bridge_route(bridges)?;
-        self.recall_paged_parameter_with_route(unit, address, length, Some(bridges))
+        self.recall_paged_parameter_with_route(
+            unit,
+            address,
+            length,
+            Some(bridges),
+            u8::MAX as usize,
+        )
+        .await
+    }
+
+    /// Recall a page-aware PP range with the named method's native C-Gate
+    /// request limit (`paged` twelve bytes, `ncc` 255), never crossing a page.
+    pub async fn recall_paged_method(
+        &self,
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: PagedProgramming,
+    ) -> Result<Vec<u8>> {
+        self.recall_paged_parameter_with_route(unit, address, length, None, dialect.recall_limit())
             .await
+    }
+
+    /// Recall a page-aware PP range with its method limit through a
+    /// one-to-six bridge route.
+    pub async fn recall_paged_method_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        length: usize,
+        dialect: PagedProgramming,
+    ) -> Result<Vec<u8>> {
+        validate_bridge_route(bridges)?;
+        self.recall_paged_parameter_with_route(
+            unit,
+            address,
+            length,
+            Some(bridges),
+            dialect.recall_limit(),
+        )
+        .await
     }
 
     async fn recall_paged_parameter_with_route(
@@ -2858,6 +3091,7 @@ impl PciClient {
         address: u32,
         length: usize,
         bridges: Option<&[u8]>,
+        limit: usize,
     ) -> Result<Vec<u8>> {
         if length == 0
             || length > 65_536
@@ -2887,9 +3121,9 @@ impl PciClient {
             let page = (logical >> 8) as u8;
             let parameter = logical as u8;
             let page_remaining = 256 - usize::from(parameter);
-            let count = (length - result.len()).min(page_remaining).min(255) as u8;
+            let count = (length - result.len()).min(page_remaining).min(limit) as u8;
             result.extend(
-                self.programming_exchange(
+                self.programming_exchange_fragments(
                     unit,
                     Cal::PagedRecall {
                         page,
@@ -2903,6 +3137,7 @@ impl PciClient {
                         ProgrammingRoute::DirectUnchecksummed,
                         ProgrammingRoute::Routed,
                     ),
+                    true,
                 )
                 .await
                 .map_err(|error| {
@@ -2933,8 +3168,15 @@ impl PciClient {
         data: &[u8],
         locked: bool,
     ) -> Result<()> {
-        self.store_paged_parameter_verified_with_route(unit, address, data, locked, None)
-            .await
+        self.store_paged_parameter_verified_with_route(
+            unit,
+            address,
+            data,
+            locked,
+            None,
+            u8::MAX as usize,
+        )
+        .await
     }
 
     /// Store and verify a page-aware logical range through a one-to-six
@@ -2948,8 +3190,59 @@ impl PciClient {
         locked: bool,
     ) -> Result<()> {
         validate_bridge_route(bridges)?;
-        self.store_paged_parameter_verified_with_route(unit, address, data, locked, Some(bridges))
-            .await
+        self.store_paged_parameter_verified_with_route(
+            unit,
+            address,
+            data,
+            locked,
+            Some(bridges),
+            u8::MAX as usize,
+        )
+        .await
+    }
+
+    /// Store a page-aware PP range and verify it with the named method's
+    /// native C-Gate recall limit.
+    pub async fn store_paged_method_verified(
+        &self,
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        locked: bool,
+        dialect: PagedProgramming,
+    ) -> Result<()> {
+        self.store_paged_parameter_verified_with_route(
+            unit,
+            address,
+            data,
+            locked,
+            None,
+            dialect.recall_limit(),
+        )
+        .await
+    }
+
+    /// Store and verify a page-aware PP range through a one-to-six bridge
+    /// route with the named method's native recall limit.
+    pub async fn store_paged_method_verified_routed(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        address: u32,
+        data: &[u8],
+        locked: bool,
+        dialect: PagedProgramming,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        self.store_paged_parameter_verified_with_route(
+            unit,
+            address,
+            data,
+            locked,
+            Some(bridges),
+            dialect.recall_limit(),
+        )
+        .await
     }
 
     async fn store_paged_parameter_verified_with_route(
@@ -2959,6 +3252,7 @@ impl PciClient {
         data: &[u8],
         locked: bool,
         bridges: Option<&[u8]>,
+        limit: usize,
     ) -> Result<()> {
         if data.is_empty()
             || data.len() > 65_536
@@ -3054,9 +3348,9 @@ impl PciClient {
             let parameter = logical as u8;
             let count = (data.len() - actual.len())
                 .min(256 - usize::from(parameter))
-                .min(255) as u8;
+                .min(limit) as u8;
             actual.extend(
-                self.programming_exchange(
+                self.programming_exchange_fragments(
                     unit,
                     Cal::PagedRecall {
                         page,
@@ -3070,6 +3364,7 @@ impl PciClient {
                         ProgrammingRoute::DirectUnchecksummed,
                         ProgrammingRoute::Routed,
                     ),
+                    true,
                 )
                 .await?,
             );
@@ -3615,19 +3910,8 @@ impl PciClient {
             )
             .await?;
         }
-        let count = data.len() as u8;
         let actual = self
-            .programming_exchange(
-                unit,
-                Cal::Recall {
-                    param: parameter,
-                    count,
-                },
-                parameter,
-                data.len(),
-                None,
-                route,
-            )
+            .recall_standard_blocks(unit, parameter, data.len(), route)
             .await?;
         if actual != data {
             return Err(Error::other(
@@ -3980,8 +4264,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            false,
+            OemProgramming::Edlt,
             ProgrammingRoute::Oem,
         )
         .await
@@ -4000,8 +4283,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            false,
+            OemProgramming::Edlt,
             ProgrammingRoute::Routed(bridges),
         )
         .await
@@ -4019,8 +4301,7 @@ impl PciClient {
             unit,
             address,
             data,
-            true,
-            false,
+            OemProgramming::Giu,
             ProgrammingRoute::Oem,
         )
         .await
@@ -4040,8 +4321,7 @@ impl PciClient {
             unit,
             address,
             data,
-            true,
-            false,
+            OemProgramming::Giu,
             ProgrammingRoute::Routed(bridges),
         )
         .await
@@ -4058,8 +4338,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            false,
+            OemProgramming::Sgiu,
             ProgrammingRoute::Oem,
         )
         .await
@@ -4078,8 +4357,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            false,
+            OemProgramming::Sgiu,
             ProgrammingRoute::Routed(bridges),
         )
         .await
@@ -4097,8 +4375,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            true,
+            OemProgramming::Dali,
             ProgrammingRoute::Oem,
         )
         .await
@@ -4118,8 +4395,7 @@ impl PciClient {
             unit,
             address,
             data,
-            false,
-            true,
+            OemProgramming::Dali,
             ProgrammingRoute::Routed(bridges),
         )
         .await
@@ -4130,10 +4406,12 @@ impl PciClient {
         unit: u8,
         address: u32,
         data: &[u8],
-        halt: bool,
-        settle: bool,
+        dialect: OemProgramming,
         route: ProgrammingRoute<'_>,
     ) -> Result<()> {
+        let halt = dialect == OemProgramming::Giu;
+        let settle = dialect == OemProgramming::Dali;
+        let limit = dialect.recall_limit();
         if data.is_empty()
             || data.len() > 65_536
             || address.checked_add(data.len() as u32).is_none()
@@ -4237,7 +4515,7 @@ impl PciClient {
                 route,
             )
             .await?;
-            let count = (data.len() - actual.len()).min(128) as u8;
+            let count = (data.len() - actual.len()).min(limit) as u8;
             actual.extend(
                 self.programming_exchange(
                     unit,
@@ -6544,6 +6822,138 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn direct_pp_recall_splits_at_native_twelve_byte_limit() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move { worker.recall_direct_parameter(5, 0x20, 25).await });
+        let data = (0..25u8).collect::<Vec<_>>();
+        for (request, start, count) in [
+            (b"\\4605001A200C6F\r".as_slice(), 0usize, 12usize),
+            (b"\\4605001A2C0C63\r".as_slice(), 12, 12),
+            (b"\\4605001A380162\r".as_slice(), 24, 1),
+        ] {
+            assert_eq!(line(&mut remote).await, request);
+            let mut cal = vec![0x81 + count as u8, 0x20 + start as u8];
+            cal.extend(&data[start..start + count]);
+            reply(&mut remote, 5, &cal).await;
+        }
+        assert_eq!(read.await.unwrap().unwrap(), data);
+        assert_eq!(
+            pci.recall_direct_parameter(5, 0xf8, 9)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn paged_method_recall_uses_native_limits_and_advancing_fragments() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move {
+            worker
+                .recall_paged_method(5, 0x01f4, 25, PagedProgramming::Paged)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\4605001B01F40C\r");
+        let mut cal = vec![0x8d, 0xf4];
+        cal.extend([1; 12]);
+        reply(&mut remote, 5, &cal).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001B02000C\r");
+        let mut cal = vec![0x8d, 0x00];
+        cal.extend([2; 12]);
+        reply(&mut remote, 5, &cal).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001B020C01\r");
+        reply(&mut remote, 5, &[0x82, 0x0c, 3]).await;
+        let mut expected = vec![1; 12];
+        expected.extend([2; 12]);
+        expected.push(3);
+        assert_eq!(read.await.unwrap().unwrap(), expected);
+
+        // NCC asks for the rest of the page at once. Native `L` names each
+        // fragment by its first byte; a fragment repeating the start
+        // parameter is not a continuation.
+        let worker = pci.clone();
+        let read = tokio::spawn(async move {
+            worker
+                .recall_paged_method(5, 0x03f4, 25, PagedProgramming::Ncc)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\4605001B03F40C\r");
+        reply(&mut remote, 5, &[0x89, 0xf4, 0, 1, 2, 3, 4, 5, 6, 7]).await;
+        reply(&mut remote, 5, &[0x85, 0xf4, 8, 9, 10, 11]).await;
+        reply(&mut remote, 5, &[0x85, 0xfc, 8, 9, 10, 11]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001B04000D\r");
+        reply(
+            &mut remote,
+            5,
+            &[0x89, 0x00, 12, 13, 14, 15, 16, 17, 18, 19],
+        )
+        .await;
+        reply(&mut remote, 5, &[0x86, 0x08, 20, 21, 22, 23, 24]).await;
+        assert_eq!(read.await.unwrap().unwrap(), (0..25).collect::<Vec<u8>>());
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn oem_method_recall_reselects_each_native_twelve_byte_block() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let read = tokio::spawn(async move {
+            worker
+                .read_oem_memory(5, 0x10, 25, OemProgramming::Giu)
+                .await
+        });
+        for (selector, recall, offset, count) in [
+            (
+                b"\\46050900A400411000B7\r".as_slice(),
+                b"\\460509001A010C85\r".as_slice(),
+                0u8,
+                12u8,
+            ),
+            (
+                b"\\46050900A400411C00AB\r".as_slice(),
+                b"\\460509001A010C85\r".as_slice(),
+                12,
+                12,
+            ),
+            (
+                b"\\46050900A4004128009F\r".as_slice(),
+                b"\\460509001A010190\r".as_slice(),
+                24,
+                1,
+            ),
+        ] {
+            assert_eq!(line(&mut remote).await, selector);
+            reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+            assert_eq!(line(&mut remote).await, recall);
+            let mut cal = vec![0x81 + count, 1];
+            cal.extend(offset..offset + count);
+            reply(&mut remote, 5, &cal).await;
+        }
+        assert_eq!(read.await.unwrap().unwrap(), (0..25).collect::<Vec<u8>>());
+
+        // eDLT keeps one fragment-assembled block for the same range.
+        let worker = pci.clone();
+        let read = tokio::spawn(async move {
+            worker
+                .read_oem_memory(5, 0x10, 25, OemProgramming::Edlt)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\46050900A400411000B7\r");
+        reply(&mut remote, 5, &[0x32, 0, 0x41]).await;
+        assert_eq!(line(&mut remote).await, b"\\460509001A011978\r");
+        let mut first = vec![0x91, 1];
+        first.extend(0..16u8);
+        reply(&mut remote, 5, &first).await;
+        let mut second = vec![0x8a, 1];
+        second.extend(16..25u8);
+        reply(&mut remote, 5, &second).await;
+        assert_eq!(read.await.unwrap().unwrap(), (0..25).collect::<Vec<u8>>());
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn paged_recall_carries_page_and_splits_at_page_boundary() {
         let (pci, mut remote, _) = setup().await;
         let worker = pci.clone();
@@ -7798,10 +8208,13 @@ mod tests {
         remote.get_mut().write_all(b"i.\r\n").await.unwrap();
         assert_eq!(line(&mut remote).await, b"\\460400A34C0100C6\r");
         reply(&mut remote, 4, &[0x32, 0x4c, 1]).await;
-        assert_eq!(line(&mut remote).await, b"\\4604001A400D4F\r");
-        let mut recalled = vec![0x8e, 0x40];
-        recalled.extend([0; 13]);
+        // Readback also honours native C-Gate's twelve-byte `cg` limit.
+        assert_eq!(line(&mut remote).await, b"\\4604001A400C50\r");
+        let mut recalled = vec![0x8d, 0x40];
+        recalled.extend([0; 12]);
         reply(&mut remote, 4, &recalled).await;
+        assert_eq!(line(&mut remote).await, b"\\4604001A4C014F\r");
+        reply(&mut remote, 4, &[0x82, 0x4c, 0]).await;
         write.await.unwrap().unwrap();
     }
 

@@ -49,5 +49,70 @@
     "No live bridge or routed unit was modified for this acceptance.",
     "Successful protocol acknowledgement and readback do not establish power-cycle persistence or every device-family firmware behavior.",
     "Routed C-Bus 3 Save-to-NVM extended-CAL composition is covered by native_cgate_routed_nvm_commit.json; live bridge delivery and power-cycle durability remain unverified."
-  ]
+  ],
+  "native_method_limits": {
+    "source": "C-Gate 3.4.0.2001 lP static arrays N/P, save loop and read planner; L, aU, bm, bn, bo and ct request/reply classes (owned CFR 0.152 output)",
+    "owned_decompile_sha256": {
+      "lP": "beb94436d7efdcd82cea329805feec139d07d5696889160fe5c41f868e85b847",
+      "L": "357d5820487f9422bf66886b6bde22527e9216ecb00b5623ff0a4c6e8b3baaed",
+      "aU": "88461b3b8ec6887a951c7c606e1c46464787b847ed5020fa235530ba2d824d8a",
+      "bm": "b59c3a6a47369661dcb49ae944df00c8e840dd548ced13b85fc4b4c50eb9ff67",
+      "bn": "2d1cda9428ab071a8e35a0b7a10e2d17527b2efbd2d3afab4c7c9514272f6670",
+      "bo": "1b68415bc857238ca8b1040e36e7cc2ff1e8680fada3720406e888d0aa143208",
+      "ct": "b87dbb4f124dd53f9df0138557b942d4a5cb90488d9e3c7b5ec9b397099b726a"
+    },
+    "store_group_bytes": {
+      "direct": 12,
+      "giu": 12,
+      "goc": 10,
+      "paged": 12,
+      "gocbyt": 10,
+      "sgiu": 12,
+      "dali": 12,
+      "goc2": 11,
+      "edlt": 12,
+      "ncc": 12
+    },
+    "recall_request_bytes": {
+      "direct": 12,
+      "giu": 12,
+      "goc": 6,
+      "paged": 12,
+      "gocbyt": 6,
+      "sgiu": 12,
+      "dali": 12,
+      "goc2": 255,
+      "edlt": 255,
+      "ncc": 255
+    },
+    "cmqttd_edlt_recall_block": 128,
+    "page_boundary": "Save groups end where the logical address is a multiple of 256; paged reads never cross a page.",
+    "store_tag": "Save-loop group index (n2 & 0xFF); OEM stores use fixed data tag 0x42.",
+    "paged_fragment_parameter": "L accepts a reply fragment only when its parameter is the start parameter plus bytes already received.",
+    "protection_classes": {
+      "none": 0,
+      "checksum": 2,
+      "lock": 3,
+      "factory": 4,
+      "factory_bit": 14,
+      "special": 5
+    },
+    "protection_save_rule": "Classes 0, 2 and 14 use the tagged ct STORE; class 3 sends dd UNLOCK first; classes 4 and 5 are skipped.",
+    "method_brackets": {
+      "giu": "bm run flag FC tag 03 value 00 before the first GIU STORE and value 01 after the save",
+      "dali": "one-second sleep before the first DALI STORE"
+    },
+    "native_observation": "research/verify_network.py --fixture key4 --backend local (2026-09-29): native PP LOAD recalled 1A2A0C for the six-byte UnitName and SAVE sent one six-byte STORE A82A00...",
+    "cmqttd_acceptance": [
+      "Transport tests direct_pp_recall_splits_at_native_twelve_byte_limit, paged_method_recall_uses_native_limits_and_advancing_fragments and oem_method_recall_reselects_each_native_twelve_byte_block pin the request sizes.",
+      "Service test physical_pp_save_writes_factory_bit_like_native_class_fourteen pins the class-14 STORE.",
+      "toolkit-cli/tests/test_cmqtt_programming_methods_interop.py derives complete CLI-to-cmqttd transcripts from these limits for all ten methods locally and through one or six bridges, including multi-group and page-crossing ranges."
+    ],
+    "cmqttd_deviations": [
+      "Reads exact parameter extents instead of N-byte blocks from each parameter start.",
+      "Does not halt a GIU during LOAD.",
+      "Reselects the page at the start of every paged STORE range and reads every range back after STORE.",
+      "Writes a whole changed parameter and numbers STORE tags from zero per parameter; native writes only changed bytes (except GOCBYT/GOC2) and merges adjacent same-class bytes into save-wide groups."
+    ]
+  }
 }

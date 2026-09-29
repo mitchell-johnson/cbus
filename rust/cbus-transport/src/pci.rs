@@ -89,6 +89,57 @@ impl GocProgramming {
     }
 }
 
+/// Native C-Gate page-aware programming dialect.
+///
+/// Both methods share the `0x39` page selector, `0x1B` paged RECALL and the
+/// tagged twelve-byte STORE. C-Gate 3.4 `lP.N` caps each `paged` RECALL at
+/// twelve bytes and each `ncc` RECALL at 255; neither crosses a page.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PagedProgramming {
+    /// Wireless/legacy paged units (twelve-byte recalls).
+    Paged,
+    /// C-Bus 3 NCC units (up to 255-byte fragmented recalls).
+    Ncc,
+}
+
+impl PagedProgramming {
+    fn recall_limit(self) -> usize {
+        match self {
+            Self::Paged => STANDARD_RECALL_LIMIT,
+            Self::Ncc => u8::MAX as usize,
+        }
+    }
+}
+
+/// Native C-Gate OEM-memory programming dialect (`0x41` pointer, `0x42`
+/// data). GIU, SGIU and DALI use the single-reply `aU` recall with C-Gate
+/// 3.4's twelve-byte `lP.N` limit; eDLT uses the fragment-assembling `bj`
+/// recall, for which cmqttd keeps its captured 128-byte block.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum OemProgramming {
+    /// eDLT memory (fragmented 128-byte blocks).
+    Edlt,
+    /// GIU memory (run flag halted around STOREs).
+    Giu,
+    /// SGIU memory.
+    Sgiu,
+    /// DALI-unit memory (one-second settle before STOREs).
+    Dali,
+}
+
+impl OemProgramming {
+    fn recall_limit(self) -> usize {
+        match self {
+            Self::Edlt => 128,
+            Self::Giu | Self::Sgiu | Self::Dali => STANDARD_RECALL_LIMIT,
+        }
+    }
+}
+
+/// Native C-Gate 3.4 `lP.N` single-request RECALL limit for `direct`
+/// parameters and for GIU/SGIU/DALI/paged memory.
+const STANDARD_RECALL_LIMIT: usize = 12;
+
 /// A confirmation code still unanswered after this long is abandoned.
 pub const CONFIRMATION_TIMEOUT: Duration = Duration::from_secs(30);
 /// Total transmission attempts for an unconfirmed frame.

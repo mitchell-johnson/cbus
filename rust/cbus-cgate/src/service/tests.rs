@@ -9813,6 +9813,113 @@ async fn physical_pp_save_factory_protected_clears_dirty_without_write() {
     // Cleanup runs via the PpSaveCleanup drop-guard.
 }
 
+/// C-Gate 3.4 `lP.a(Param, ...)` promotes a `factory` field of Type `bit`
+/// to its internal protection class 14, which the save loop writes with the
+/// ordinary tagged STORE (only non-bit factory and all special fields are
+/// skipped). A staged factory bit must therefore reach the unit and be read
+/// back, rather than being cleared silently like the int field above.
+#[tokio::test]
+async fn physical_pp_save_writes_factory_bit_like_native_class_fourteen() {
+    async fn pci_line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
+        let mut line = Vec::new();
+        reader.read_until(b'\r', &mut line).await.unwrap();
+        line
+    }
+    async fn pci_reply<W: tokio::io::AsyncWrite + Unpin>(writer: &mut W, source: u8, cal: &[u8]) {
+        let mut bytes = vec![0x86, source, 0x10, 0x00];
+        bytes.extend_from_slice(cal);
+        let sum = bytes.iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
+        bytes.push(0u8.wrapping_sub(sum));
+        let mut wire = hex::encode_upper(bytes).into_bytes();
+        wire.extend_from_slice(b"\r\n");
+        writer.write_all(&wire).await.unwrap();
+    }
+
+    let path = state_path();
+    let spec_dir = std::env::temp_dir().join(format!(
+        "cmqttd-pp-factory-bit-{}-{}.d",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&spec_dir).unwrap();
+    std::fs::write(
+        spec_dir.join("TESTUNIT.xml"),
+        r#"<UnitSpecification><Parameters>
+        <Param><Name>FactBit</Name><Type>bit</Type><Address>$30</Address><ArraySize>1</ArraySize><BitAddress>3</BitAddress><ProgramMethod>direct</ProgramMethod><Protection>factory</Protection></Param>
+        </Parameters></UnitSpecification>"#,
+    )
+    .unwrap();
+    let _cleanup = PpSaveCleanup::new(path.clone(), spec_dir.clone());
+
+    let (pci, remote) = pci();
+    let (remote_read, mut remote_write) = tokio::io::split(remote);
+    let mut remote_read = BufReader::new(remote_read);
+    let reset = tokio::spawn({
+        let pci = pci.clone();
+        async move { pci.pci_reset().await }
+    });
+    for _ in 0..8 {
+        pci_line(&mut remote_read).await;
+    }
+    reset.await.unwrap().unwrap();
+
+    let service =
+        Service::new(&fixture(), None, path.clone(), pci, Some(spec_dir.clone())).unwrap();
+    let mut client = ClientState::default();
+    for line in [
+        "[1] PP LOCK L //HARNESS/254",
+        "[2] PP START S L",
+        "[3] PP NEW S TESTUNIT 1.2.03",
+        "[4] PP SET S FactBit 1",
+    ] {
+        let response = service.handle(&mut client, line).await;
+        assert_eq!(response.status, 200, "{line}: {}", response.final_text);
+    }
+
+    let checker = service.clone();
+    let saving = tokio::spawn(async move {
+        service
+            .handle(&mut client, "[9] PP SAVE S //HARNESS/254/p/5")
+            .await
+    });
+    for (attribute, reply) in [
+        (
+            b"2101".as_slice(),
+            [0x89, 0x01, b'T', b'E', b'S', b'T', b'U', b'N', b'I', b'T'].as_slice(),
+        ),
+        (
+            b"2102".as_slice(),
+            [0x87, 0x02, b'1', b'.', b'2', b'.', b'0', b'3'].as_slice(),
+        ),
+    ] {
+        let request = pci_line(&mut remote_read).await;
+        assert!(
+            request.windows(4).any(|window| window == attribute),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        remote_write.write_all(&[code, b'.']).await.unwrap();
+        pci_reply(&mut remote_write, 5, reply).await;
+    }
+
+    // Pre-read the byte, STORE it with only bit 3 changed, then read back.
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001A30016A\r");
+    pci_reply(&mut remote_write, 5, &[0x82, 0x30, 0x41]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\460500A330004999\r");
+    pci_reply(&mut remote_write, 5, &[0x32, 0x30, 0x00]).await;
+    assert_eq!(pci_line(&mut remote_read).await, b"\\4605001A30016A\r");
+    pci_reply(&mut remote_write, 5, &[0x82, 0x30, 0x49]).await;
+
+    let response = saving.await.unwrap();
+    assert_eq!(response.status, 200, "{}", response.final_text);
+    let model = checker.model.lock().await;
+    let session = model.sessions.get("S").expect("session survives save");
+    assert!(session.dirty.is_empty(), "dirty={:?}", session.dirty);
+}
+
 /// P2 tag-filter pin: a dirty param whose spec `<Tag>` children do not
 /// include the SAVE's tag selection is NOT attempted under this tag
 /// selection — the planner `continue`s WITHOUT inserting it into `cleared`,

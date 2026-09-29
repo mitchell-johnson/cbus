@@ -118,6 +118,10 @@ def verify(*, oracle_port=20023, duration=15, output_dir=None, container="cbus-t
     if backend == "local":
         vendor = Path(os.environ.get("CBUS_LOCAL_CGATE_VENDOR", Path(__file__).parent / "vendor/cgate/app"))
         service = LocalCGate(vendor)
+        if fixture == "key4":
+            # Native PP LOCK/START/LOAD/SAVE refuse Program-level access with
+            # 420; the owned loopback-only service needs the Clipsal level.
+            (service.work / "config/access.txt").write_text("interface 127.0.0.1 Clipsal\n")
         with service:
             report = _verify_in_service(oracle_port=service.port, duration=duration,
                 output_dir=output_dir, fixture=fixture, backend=backend)

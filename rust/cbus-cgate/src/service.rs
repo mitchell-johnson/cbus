@@ -78,8 +78,8 @@ use cbus_protocol::{
 use cbus_transport::{
     conn::{self, Endpoint},
     pci::{
-        CBusEvent, GocProgramming, PatchApplyDisposition, PatchProgrammingBlock, PciClient,
-        ProgrammingLaneState,
+        CBusEvent, GocProgramming, OemProgramming, PagedProgramming, PatchApplyDisposition,
+        PatchProgrammingBlock, PciClient, ProgrammingLaneState,
     },
 };
 use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
@@ -324,6 +324,59 @@ const TELEPHONY_HELP: &[&str] = &[
 /// 10s per-write deadlines). A stalled pre-handshake connection must not
 /// hold a 64-slot semaphore permit forever.
 pub const TLS_HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// Protection class used by physical PP SAVE.
+///
+/// C-Gate 3.4 `lP.a(Param, ...)` promotes a `factory` field of Type `bit` to
+/// its internal class 14, which the save loop writes with the ordinary tagged
+/// STORE; only non-bit `factory` fields and every `special` field are
+/// skipped. Treat a factory bit as `none` so its staged edit is not dropped.
+fn save_protection(param: &unitspec::SpecParam) -> String {
+    let protection = param
+        .get("Protection")
+        .unwrap_or("none")
+        .trim()
+        .to_ascii_lowercase();
+    if protection == "factory"
+        && param
+            .get("Type")
+            .is_some_and(|kind| kind.trim().eq_ignore_ascii_case("bit"))
+    {
+        "none".to_string()
+    } else {
+        protection
+    }
+}
+
+fn paged_programming(param: &unitspec::SpecParam) -> PagedProgramming {
+    if param
+        .get("ProgramMethod")
+        .unwrap_or("")
+        .trim()
+        .eq_ignore_ascii_case("ncc")
+    {
+        PagedProgramming::Ncc
+    } else {
+        PagedProgramming::Paged
+    }
+}
+
+/// Native OEM dialect for a memory parameter. Methods without a narrower
+/// C-Gate limit keep the eDLT block used by the generic memory reader.
+fn oem_programming(param: &unitspec::SpecParam) -> OemProgramming {
+    match param
+        .get("ProgramMethod")
+        .unwrap_or("")
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "giu" => OemProgramming::Giu,
+        "sgiu" => OemProgramming::Sgiu,
+        "dali" => OemProgramming::Dali,
+        _ => OemProgramming::Edlt,
+    }
+}
 
 fn goc_programming(param: &unitspec::SpecParam) -> Option<GocProgramming> {
     match param
@@ -11591,8 +11644,8 @@ impl Service {
         }
         let mut layouts = Vec::with_capacity(selected.len());
         let mut recalls = HashMap::<u8, usize>::new();
-        let mut paged_ranges = Vec::<(u32, u32)>::new();
-        let mut memory_ranges = Vec::<(u32, u32)>::new();
+        let mut paged_ranges = Vec::<(PagedProgramming, u32, u32)>::new();
+        let mut memory_ranges = Vec::<(OemProgramming, u32, u32)>::new();
         let mut goc_ranges = Vec::<(GocProgramming, u32, u32)>::new();
         for param in &selected {
             let layout = match unitspec::ParameterLayout::for_param(param) {
@@ -11639,10 +11692,10 @@ impl Service {
                         .or_insert(count);
                 }
                 unitspec::ParameterTransfer::Paged { address, count } => {
-                    paged_ranges.push((address, address + count as u32));
+                    paged_ranges.push((paged_programming(param), address, address + count as u32));
                 }
                 unitspec::ParameterTransfer::Memory { address, count } => {
-                    memory_ranges.push((address, address + count as u32));
+                    memory_ranges.push((oem_programming(param), address, address + count as u32));
                 }
                 unitspec::ParameterTransfer::GocMemory { address, count } => {
                     let Some(dialect) = goc_programming(param) else {
@@ -11653,27 +11706,29 @@ impl Service {
             }
             layouts.push((*param, layout));
         }
+        // Ranges merge only within one native method dialect, so each read
+        // keeps that method's C-Gate request limit.
         paged_ranges.sort_unstable();
-        let mut paged_merged = Vec::<(u32, u32)>::new();
-        for (start, end) in paged_ranges {
+        let mut paged_merged = Vec::<(PagedProgramming, u32, u32)>::new();
+        for (dialect, start, end) in paged_ranges {
             if let Some(last) = paged_merged.last_mut() {
-                if start <= last.1 {
-                    last.1 = last.1.max(end);
+                if last.0 == dialect && start <= last.2 {
+                    last.2 = last.2.max(end);
                     continue;
                 }
             }
-            paged_merged.push((start, end));
+            paged_merged.push((dialect, start, end));
         }
         memory_ranges.sort_unstable();
-        let mut merged = Vec::<(u32, u32)>::new();
-        for (start, end) in memory_ranges {
+        let mut merged = Vec::<(OemProgramming, u32, u32)>::new();
+        for (dialect, start, end) in memory_ranges {
             if let Some(last) = merged.last_mut() {
-                if start <= last.1 {
-                    last.1 = last.1.max(end);
+                if last.0 == dialect && start <= last.2 {
+                    last.2 = last.2.max(end);
                     continue;
                 }
             }
-            merged.push((start, end));
+            merged.push((dialect, start, end));
         }
         goc_ranges.sort_unstable();
         let mut goc_merged = Vec::<(GocProgramming, u32, u32)>::new();
@@ -11689,11 +11744,11 @@ impl Service {
         let unique_bytes = recalls.values().sum::<usize>()
             + paged_merged
                 .iter()
-                .map(|(start, end)| (*end - *start) as usize)
+                .map(|(_, start, end)| (*end - *start) as usize)
                 .sum::<usize>()
             + merged
                 .iter()
-                .map(|(start, end)| (*end - *start) as usize)
+                .map(|(_, start, end)| (*end - *start) as usize)
                 .sum::<usize>()
             + goc_merged
                 .iter()
@@ -11712,9 +11767,9 @@ impl Service {
         ordered_recalls.sort_unstable_by_key(|(parameter, _)| *parameter);
         for (parameter, count) in ordered_recalls {
             let result = if route.is_empty() {
-                pci.recall_parameter(unit, parameter, count).await
+                pci.recall_direct_parameter(unit, parameter, count).await
             } else {
-                pci.recall_parameter_routed(&route, unit, parameter, count)
+                pci.recall_direct_parameter_routed(&route, unit, parameter, count)
                     .await
             };
             match result {
@@ -11731,12 +11786,12 @@ impl Service {
             }
         }
         let mut paged = Vec::<(u32, Vec<u8>)>::with_capacity(paged_merged.len());
-        for (start, end) in paged_merged {
+        for (dialect, start, end) in paged_merged {
             let result = if route.is_empty() {
-                pci.recall_paged_parameter(unit, start, (end - start) as usize)
+                pci.recall_paged_method(unit, start, (end - start) as usize, dialect)
                     .await
             } else {
-                pci.recall_paged_parameter_routed(&route, unit, start, (end - start) as usize)
+                pci.recall_paged_method_routed(&route, unit, start, (end - start) as usize, dialect)
                     .await
             };
             match result {
@@ -11751,15 +11806,16 @@ impl Service {
             }
         }
         let mut memory = Vec::<(u32, Vec<u8>)>::with_capacity(merged.len());
-        for (start, end) in merged {
+        for (dialect, start, end) in merged {
             let mut bytes = Vec::with_capacity((end - start) as usize);
             while bytes.len() < (end - start) as usize {
                 let address = start + bytes.len() as u32;
                 let count = ((end - address) as usize).min(65_536);
                 let result = if route.is_empty() {
-                    pci.read_memory(unit, address, count).await
+                    pci.read_oem_memory(unit, address, count, dialect).await
                 } else {
-                    pci.read_memory_routed(&route, unit, address, count).await
+                    pci.read_oem_memory_routed(&route, unit, address, count, dialect)
+                        .await
                 };
                 match result {
                     Ok(chunk) => bytes.extend(chunk),
@@ -11898,6 +11954,7 @@ impl Service {
         enum Space {
             Standard,
             Paged,
+            Ncc,
             Memory,
             Giu,
             Sgiu,
@@ -12038,11 +12095,7 @@ impl Service {
                 {
                     continue;
                 }
-                let protection = param
-                    .get("Protection")
-                    .unwrap_or("none")
-                    .trim()
-                    .to_ascii_lowercase();
+                let protection = save_protection(param);
                 if matches!(protection.as_str(), "factory" | "special") {
                     continue;
                 }
@@ -12166,11 +12219,7 @@ impl Service {
             {
                 continue;
             }
-            let protection = param
-                .get("Protection")
-                .unwrap_or("none")
-                .trim()
-                .to_ascii_lowercase();
+            let protection = save_protection(param);
             if matches!(protection.as_str(), "factory" | "special") {
                 cleared.insert(name.clone());
                 continue;
@@ -12204,10 +12253,11 @@ impl Service {
                 {
                     (Space::Standard, u32::from(parameter), count)
                 }
-                unitspec::ParameterTransfer::Paged { address, count }
-                    if matches!(method.as_str(), "paged" | "ncc") =>
-                {
+                unitspec::ParameterTransfer::Paged { address, count } if method == "paged" => {
                     (Space::Paged, address, count)
+                }
+                unitspec::ParameterTransfer::Paged { address, count } if method == "ncc" => {
+                    (Space::Ncc, address, count)
                 }
                 unitspec::ParameterTransfer::Memory { address, count }
                     if method == "edlt" && !locked =>
@@ -12302,26 +12352,38 @@ impl Service {
             let original = match space {
                 Space::Standard if count <= u8::MAX as usize && end <= 256 => {
                     if route.is_empty() {
-                        pci.recall_parameter(unit, start as u8, count).await
+                        pci.recall_direct_parameter(unit, start as u8, count).await
                     } else {
-                        pci.recall_parameter_routed(&route, unit, start as u8, count)
+                        pci.recall_direct_parameter_routed(&route, unit, start as u8, count)
                             .await
                     }
                 }
                 Space::Standard => return err(tag, 502, "502 Standard PP save range is too large"),
-                Space::Paged => {
-                    if route.is_empty() {
-                        pci.recall_paged_parameter(unit, start, count).await
+                Space::Paged | Space::Ncc => {
+                    let dialect = if space == Space::Ncc {
+                        PagedProgramming::Ncc
                     } else {
-                        pci.recall_paged_parameter_routed(&route, unit, start, count)
+                        PagedProgramming::Paged
+                    };
+                    if route.is_empty() {
+                        pci.recall_paged_method(unit, start, count, dialect).await
+                    } else {
+                        pci.recall_paged_method_routed(&route, unit, start, count, dialect)
                             .await
                     }
                 }
                 Space::Memory | Space::Giu | Space::Sgiu | Space::Dali => {
+                    let dialect = match space {
+                        Space::Giu => OemProgramming::Giu,
+                        Space::Sgiu => OemProgramming::Sgiu,
+                        Space::Dali => OemProgramming::Dali,
+                        _ => OemProgramming::Edlt,
+                    };
                     if route.is_empty() {
-                        pci.read_memory(unit, start, count).await
+                        pci.read_oem_memory(unit, start, count, dialect).await
                     } else {
-                        pci.read_memory_routed(&route, unit, start, count).await
+                        pci.read_oem_memory_routed(&route, unit, start, count, dialect)
+                            .await
                     }
                 }
                 Space::Goc => {
@@ -12440,17 +12502,29 @@ impl Service {
                         .await
                     }
                 }
-                Space::Paged => {
-                    if route.is_empty() {
-                        pci.store_paged_parameter_verified(unit, item.start, modified, item.locked)
-                            .await
+                Space::Paged | Space::Ncc => {
+                    let dialect = if item.space == Space::Ncc {
+                        PagedProgramming::Ncc
                     } else {
-                        pci.store_paged_parameter_verified_routed(
+                        PagedProgramming::Paged
+                    };
+                    if route.is_empty() {
+                        pci.store_paged_method_verified(
+                            unit,
+                            item.start,
+                            modified,
+                            item.locked,
+                            dialect,
+                        )
+                        .await
+                    } else {
+                        pci.store_paged_method_verified_routed(
                             &route,
                             unit,
                             item.start,
                             modified,
                             item.locked,
+                            dialect,
                         )
                         .await
                     }

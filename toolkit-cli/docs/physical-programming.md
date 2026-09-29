@@ -93,6 +93,64 @@ service read back the encoded value during that run. It does not prove behavior
 after power loss, every device/firmware combination, a live bridge route, or
 execution of the original Toolkit UI.
 
+## Native method and protection contract
+
+cmqttd follows the per-method limits of C-Gate 3.4's `lP` PP codec. Every
+STORE group holds at most twelve bytes (`direct`, `paged`, `ncc`, `edlt`,
+`giu`, `sgiu`, `dali`), ten bytes (`goc`, `gocbyt`) or eleven bytes (`goc2`),
+and `paged`/`ncc` groups also end at a 256-byte page. Page-aware methods
+select the page (`39`) before the first group on each page. OEM methods
+reselect the `41` pointer before each `42` data group. GIU writes its run
+flag halt (`FC 03 00`) before its STOREs and resume (`FC 03 01`) after them.
+DALI waits one second before its first STORE. Reads use the native single
+request limits: twelve bytes for `direct`, `paged`, `giu`, `sgiu` and `dali`,
+six for `goc`/`gocbyt`, and up to 255 for `goc2` and `ncc`; `edlt` keeps the
+captured 128-byte block. A paged or NCC reply fragment must name the
+parameter of its own first byte (`start + bytes received`), as native `L`
+requires.
+
+Protection follows the same save loop. `none` and `checksum` use the
+identical tagged STORE; the tag is a transaction index and no checksum field
+is rewritten. `lock` sends one `11` UNLOCK for each group's first parameter,
+then that group's STORE. `special` fields and non-bit `factory` fields are
+skipped. A `factory` field of Type `bit` is native class 14 and uses the
+ordinary STORE. When `physical-pp apply` edits a skipped field, the save is
+confirmed but the unit is unchanged. The fresh reload then reports
+`fresh_physical_readback_verified=false` and exits with status 1.
+
+[`pp-protection-matrix.json`](pp-protection-matrix.json) lists the
+method/protection pairs that the decoded Toolkit 1.18 specifications declare.
+It contains only names, declaration counts, per-type counts, source file
+names, and SHA-256 digests. It never retains specification text. The 280
+inputs admit 19 pairs:
+
+- `direct` with `none`, `checksum`, `lock`, `factory` and `special`
+- `paged` with `none`, `checksum`, `lock` and `factory`
+- `ncc` with `checksum` and `factory`
+- `sgiu` and `goc2` with `none` and `factory`
+- `edlt`, `giu`, `dali` and `gocbyt` with `none` only
+
+No specification uses `goc`. Only `direct` and `paged` declare factory bits.
+To regenerate the table, or to check it with `--check`, run
+`research/derive_pp_protection_matrix.py` with `CBUS_UNITSPEC_DIR`.
+
+cmqttd keeps several documented differences from the native codec:
+
+- It reads exact parameter extents. Native LOAD instead reads a whole
+  N-byte block from each parameter start.
+- It never halts a GIU during LOAD, so reads remain write-free.
+- It selects the page again at the start of each paged STORE range.
+- After every STORE range, it reads the complete range back.
+- It writes a whole parameter when any byte changed. Native C-Gate writes
+  only changed bytes, except for `gocbyt`/`goc2`.
+- It stores each changed parameter separately, numbering STORE tags from
+  zero. Native C-Gate merges adjacent fields with the same method and
+  protection, and numbers groups across the whole save.
+
+When one parameter changes in every byte, its STORE groups, tags and UNLOCK
+order match the native group plan. The extra writes and readbacks repeat
+values that are already on the unit.
+
 ## Evidence
 
 `tests/test_physical_programming.py` exercises all ten methods, both save forms,
@@ -103,23 +161,39 @@ order through the production socket client.
 `tests/test_cmqtt_interop.py` drives a direct-method physical write and fresh
 reload through the production Python CLI, real cmqttd, and an independent
 synthetic PCI. `tests/test_cmqtt_programming_methods_interop.py` extends that
-real product boundary through a one-bridge route for all ten methods. Its
-independent Python peer checks the literal route, unit, parameter, tag and
-count, injects valid wrong-route, wrong-unit and stale parameter/tag frames
-before each matching response, and verifies the final memory bytes after the
-CLI's fresh reload. Separate cases reject an over-count correlated read before
-any save and drop the PCI connection after one STORE to prove the mutation is
-reported uncertain and never replayed.
+real product boundary with an independent Python peer and a separately
+derived expected transcript. Its module docstring cites the source of each
+expectation. The peer checks the literal route, unit, checksum, parameter, tag
+and count. Before every matching response, it injects valid wrong-route,
+wrong-unit and stale parameter/tag frames. The tests pin the complete request
+transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
 
-Five focused one-bridge cases pin the complete outgoing checksummed PCI
-transcript, including physical LOAD, one save, verified STORE readback and a
-distinct fresh LOAD. They cover standard `direct` with `checksum` protection,
-`paged` with `lock` across the page-one/page-two boundary and both unlock
-challenges, OEM `edlt` memory, `goc2` memory, and `ncc` with the routed
-Save-to-NVM EXECUTE. The existing direct-network CLI/daemon test supplies the
-other route class. These cases establish only their synthetic schema and
-scripted response combinations; other method/protection combinations and
-hardware behavior still need acceptance.
+- All ten methods on the local network and through one bridge, with two-byte
+  fields.
+- All ten methods through one bridge with 23- or 25-byte fields. These cover
+  three STORE groups with their offsets and tags, twelve-byte recall blocks,
+  page-crossing `paged`/`ncc` ranges, fragmented NCC and eDLT replies, and
+  the GIU halt/resume bracket. They also check that the DALI settle is at
+  least one second.
+- `direct`, `ncc`, `giu` and `gocbyt` through six bridges.
+- Every admitted method/protection pair from the matrix, on the local
+  network and through one bridge. These include lock UNLOCK counts, factory
+  and special skips, and factory-bit writes.
+- Unchanged fields that are pre-read but never stored or committed.
+- The unit-wide NCC rule: a `direct` edit in a specification that declares
+  NCC fields is followed by Save-to-NVM EXECUTE and POLL.
+
+Separate cases reject an over-count correlated read before any save. Others
+drop the PCI after the first STORE of `direct`, `paged`, `ncc`, `giu`,
+`edlt`, `gocbyt` and `goc2`. Each drop must be reported as uncertain, with
+no later chunk, repeated STORE, GIU resume or NVM commit.
+
+`research/verify_network.py --fixture key4 --backend local` runs the owned
+C-Gate 3.4 service at the Clipsal access level. A 2026-09-29 run completed
+native UnitName LOAD, SAVE_TO_SOURCE, restore and disk reload. Native LOAD
+recalled twelve bytes (`1A2A0C`) for the six-byte field. SAVE sent one
+six-byte tagged STORE (`A82A00...`). The run still reports `incomplete`
+because it does not establish device checksum behavior.
 
 The machine-readable method roster and lower Rust scripted boundary are in
 `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
