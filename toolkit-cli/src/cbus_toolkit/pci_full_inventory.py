@@ -29,6 +29,8 @@ class PCIInventoryObservation:
     elapsed: float
     overall_timeout: float
     limits: dict
+    # Outgoing bridges of a routed inventory; () observes the local network.
+    bridges: tuple[int, ...] = ()
 
     @property
     def unattempted_addresses(self):
@@ -115,7 +117,7 @@ class PCIInventoryObservation:
     def connection_closed(self): return all(item.connection_closed for item in self.observations)
 
     def as_dict(self):
-        return {"format": "cbus-pci-inventory-observation-v1", "endpoint": {"host": self.host, "port": self.port},
+        value = {"format": "cbus-pci-inventory-observation-v1", "endpoint": {"host": self.host, "port": self.port},
                 "local_unit": self.local_unit, "status": self.status, "collection_complete": self.collection_complete,
                 "membership_unchanged": self.membership_unchanged, "consistent": self.consistent,
                 "complete": self.complete, "unique": self.unique, "healthy": self.healthy, "mmi_healthy": self.mmi_healthy,
@@ -132,6 +134,8 @@ class PCIInventoryObservation:
                 "connection_policy": "fresh_connection_per_observation", "scope": "standard_direct_install_mmi_and_identify4",
                 "atomic_snapshot": False, "authorizes_address_mutation": False, "automatic_retries": 0,
                 "physical_addresses_changed": False, "database_updated": False}
+        if self.bridges: value.update(scope="routed_install_mmi_and_identify4", route=list(self.bridges))
+        return value
 
 
 class PCIInventoryCollector:
@@ -146,13 +150,13 @@ class PCIInventoryCollector:
     def __init__(self, host, port=10001, *, local_unit, overall_timeout=600.0,
                  observation_timeout=10.0, confirmation_timeout=2.0, response_timeout=5.5,
                  quiet_period=2.0, max_mmi_frames=7, max_serial_frames=7,
-                 max_unrelated=64, max_bytes=65536, command_checksum=False):
+                 max_unrelated=64, max_bytes=65536, command_checksum=False, bridges=()):
         if (isinstance(overall_timeout, bool) or not isinstance(overall_timeout, (int, float)) or
                 not math.isfinite(overall_timeout) or not 0 < overall_timeout <= 3600):
             raise ValueError("overall_timeout must be finite and in (0,3600] seconds")
         common = dict(local_unit=local_unit, overall_timeout=observation_timeout,
                       confirmation_timeout=confirmation_timeout, max_unrelated=max_unrelated,
-                      max_bytes=max_bytes, command_checksum=command_checksum)
+                      max_bytes=max_bytes, command_checksum=command_checksum, bridges=bridges)
         # Constructors validate every child setting without opening a socket.
         mmi = PCIMMICollector(host, port, response_timeout=response_timeout, max_frames=max_mmi_frames, **common)
         serial = PCISerialCollector(host, port, quiet_period=quiet_period, max_frames=max_serial_frames, **common)
@@ -161,6 +165,7 @@ class PCIInventoryCollector:
         self.confirmation_timeout, self.response_timeout, self.quiet_period = mmi.confirmation_timeout, mmi.response_timeout, serial.quiet_period
         self.max_mmi_frames, self.max_serial_frames = max_mmi_frames, max_serial_frames
         self.max_unrelated, self.max_bytes, self.command_checksum = max_unrelated, max_bytes, command_checksum
+        self.bridges = mmi.bridges
         self._lock, self._used, self.last_observation = threading.Lock(), False, None
         self._absolute_deadline = None  # Optional enclosing workflow budget; never extends this sequence.
 
@@ -168,13 +173,13 @@ class PCIInventoryCollector:
         return PCIMMICollector(self.host, self.port, local_unit=self.local_unit, overall_timeout=timeout,
             confirmation_timeout=self.confirmation_timeout, response_timeout=self.response_timeout,
             max_frames=self.max_mmi_frames, max_unrelated=self.max_unrelated, max_bytes=self.max_bytes,
-            command_checksum=self.command_checksum)
+            command_checksum=self.command_checksum, bridges=self.bridges)
 
     def _serial_collector(self, timeout):
         return PCISerialCollector(self.host, self.port, local_unit=self.local_unit, overall_timeout=timeout,
             confirmation_timeout=self.confirmation_timeout, quiet_period=self.quiet_period,
             max_frames=self.max_serial_frames, max_unrelated=self.max_unrelated, max_bytes=self.max_bytes,
-            command_checksum=self.command_checksum)
+            command_checksum=self.command_checksum, bridges=self.bridges)
 
     def collect_inventory(self):
         with self._lock:
@@ -277,7 +282,8 @@ class PCIInventoryCollector:
             max_serial_frames=self.max_serial_frames, max_unrelated=self.max_unrelated, max_bytes=self.max_bytes,
             maximum_requests=258, command_checksum=self.command_checksum)
         observation = PCIInventoryObservation(self.host, self.port, self.local_unit, initial, final,
-            tuple(serials), planned, tuple(phases), termination, tuple(errors), last_clock-started, self.overall_timeout, limits)
+            tuple(serials), planned, tuple(phases), termination, tuple(errors), last_clock-started, self.overall_timeout, limits,
+            self.bridges)
         self.last_observation = observation
         if interruption is not None:
             try: interruption.pci_inventory_observation = observation.as_dict()

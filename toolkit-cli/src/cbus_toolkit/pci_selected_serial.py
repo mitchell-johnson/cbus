@@ -24,6 +24,7 @@ import time
 from .pci import Confirmation, Frame, FrameStream, IdentifyCAL, ReplyCAL, RecallCAL, encode_command
 from .pci_full_inventory import PCIInventoryCollector
 from .pci_inventory import MMIBlock, _MMIStream
+from .pci_routing import RoutedCALCommand, encode_routed_install_mmi, reply_network_route
 from .pci_local_options import PCILocalOptionsReader, parse_local_options
 from .pci_serial_address import _selected_serial, encode_serial_address
 from .pci_serial_address_transport import PCISerialAddressTransport
@@ -44,14 +45,14 @@ _U64_LIMIT = 2**64
 _I64_MIN = -2**63
 # Optional routed-plan fields shared with `cbus_transport::plan`. Absent on
 # a direct plan, so direct canonical bytes, fingerprints and markers are
-# unchanged; both present on a schema-only routed intent that no execution
-# path accepts yet.
+# unchanged; both present on a routed plan, whose `before` inventory is a
+# routed capture of the far network and whose execution re-derives the same
+# route from the bound project.
 PLAN_FIELDS = ('format','endpoint','local_unit','expected_local_serial','source','serial','destination',
                'settings','before','local_identity','local_options','expected_after','request_hex',
                'scope','atomic_observation','firmware_persistence_verified','exclusive_ownership_required')
 ROUTE_FIELDS = ('route','project_sha256')
 MAX_ROUTE_BRIDGES = 6
-ROUTED_EXECUTION_UNSUPPORTED = 'routed_execution_unsupported'
 _SHA256 = re.compile(r'[0-9a-f]{64}')
 
 
@@ -133,11 +134,21 @@ def _capture(document, expected_request):
     return raw
 
 
-def _raw_mmi(document, local, checksum):
-    raw = _capture(document, b'\\05FF00FAFF00'+(b'03' if checksum else b'')+b'g\r')
+def _route_marker(document, route, name):
+    # A routed observation names its bridges; a direct one carries no route.
+    if route: _same(document.get('route'), list(route), name+' route')
+    elif 'route' in document: raise ValueError(name+' route is inconsistent with a direct plan')
+
+
+def _raw_mmi(document, local, checksum, route=()):
+    route = tuple(route or ())
+    request = (encode_routed_install_mmi(route, checksum=checksum) if route
+               else b'\\05FF00FAFF00'+(b'03' if checksum else b'')+b'g\r')
+    raw = _capture(document, request)
     if document.get('format') != 'cbus-pci-mmi-observation-v1' or document.get('termination') != 'coverage_complete':
         raise ValueError('Unsupported MMI observation')
-    stream, events = _MMIStream(), []
+    _route_marker(document, route, 'MMI')
+    stream, events = _MMIStream(route, local), []
     for byte in raw: events.extend(stream.feed_byte(byte))
     if stream.buffer or not events or events[0] != Confirmation(b'g', '.'):
         raise ValueError('MMI confirmation/framing is incomplete')
@@ -146,7 +157,8 @@ def _raw_mmi(document, local, checksum):
         if not isinstance(item, MMIBlock) or item.application != 255 or item.start != len(states):
             raise ValueError('MMI blocks must independently cover the whole range without gaps or overlap')
         states.extend(item.states); blocks.append(item.as_dict())
-    if len(states) != 256 or states[local] == 0 or 3 in states:
+    # The local PCI anchors only its own network; a far network has none.
+    if len(states) != 256 or (not route and states[local] == 0) or 3 in states:
         raise ValueError('MMI coverage, known local presence or healthy states are missing')
     _same(document.get('local_unit'), local, 'MMI local address')
     _same(document.get('states'), states, 'MMI state vector')
@@ -155,15 +167,18 @@ def _raw_mmi(document, local, checksum):
     return states
 
 
-def _raw_serials(document, local, checksum):
+def _raw_serials(document, local, checksum, route=()):
+    route = tuple(route or ())
     address = document.get('address') if isinstance(document, dict) else None
     if type(address) is not int or not 0 <= address <= 255: raise ValueError('Invalid inventory address')
-    request = encode_command(address, IdentifyCAL(4), confirmation=b'g', checksum=checksum)
+    request = (RoutedCALCommand(address, IdentifyCAL(4), bridges=route).encode(confirmation=b'g', checksum=checksum)
+               if route else encode_command(address, IdentifyCAL(4), confirmation=b'g', checksum=checksum))
     raw = _capture(document, request)
     if document.get('format') != 'cbus-pci-serial-observation-v1' or document.get('termination') != 'quiet':
         raise ValueError('Serial collection did not complete its quiet window')
     _same(document.get('local_unit'), local, 'Serial local address')
-    stream, events = FrameStream(), []
+    _route_marker(document, route, 'Serial')
+    stream, events = FrameStream(routed=bool(route)), []
     for byte in raw: events.extend(stream.feed(bytes([byte])))
     if stream.buffer or not events or events[0] != Confirmation(b'g', '.'):
         raise ValueError('Serial confirmation/framing is incomplete')
@@ -174,7 +189,12 @@ def _raw_serials(document, local, checksum):
         if any(byte not in b'0123456789abcdefABCDEF' for byte in frame.raw):
             raise ValueError('Unexpected serial frame prefix')
         if frame.bare:
-            if address != local: raise ValueError('Remote bare serial cannot be attributed')
+            if route or address != local: raise ValueError('Remote bare serial cannot be attributed')
+        elif route:
+            # Exact Reply Network: nearest bridge, this PCI, remaining bridges, queried unit.
+            if (frame.source != route[0] or frame.destination != local or
+                    frame.route != reply_network_route(route, address)):
+                raise ValueError('Serial frame source/destination/route mismatch')
         elif frame.source != address or frame.destination != local or frame.route != b'\x00':
             raise ValueError('Serial frame source/destination/route mismatch')
         cal = frame.cals[0]
@@ -195,7 +215,8 @@ def _raw_serials(document, local, checksum):
         raise ValueError('Serial reply evidence differs from the capture')
     for actual, (frame, serial) in zip(recorded, replies):
         _keys(actual, ('source','destination','serial','known','data_hex','raw_hex','received_after_seconds'), 'Serial reply')
-        expected = {'source':frame.source, 'destination':frame.destination, 'serial':serial, 'known':True,
+        expected = {'source':address if route else frame.source, 'destination':frame.destination,
+                    'serial':serial, 'known':True,
                     'data_hex':frame.cals[0].data.hex(), 'raw_hex':frame.raw.hex(),
                     'received_after_seconds':actual['received_after_seconds']}
         _same(actual, expected, 'Serial reply')
@@ -205,21 +226,28 @@ def _raw_serials(document, local, checksum):
     return address, serials
 
 
-def _inventory_proof(document, endpoint, local, checksum):
-    """Reparse all captured protocol bytes; summaries cannot supply absence."""
+def _inventory_proof(document, endpoint, local, checksum, route=()):
+    """Reparse all captured protocol bytes; summaries cannot supply absence.
+
+    A routed inventory is the far network observed through ``route``: every
+    MMI and IDENTIFY4 capture must carry that exact outgoing route and
+    Reply Network, so a direct capture never stands in for it (or vice versa).
+    """
+    route = tuple(route or ())
     _json(document)
     if document.get('format') != 'cbus-pci-inventory-observation-v1': raise ValueError('Unsupported inventory format')
     _same(document.get('endpoint'), endpoint, 'Inventory endpoint')
     _same(document.get('local_unit'), local, 'Inventory local address')
+    _route_marker(document, route, 'Inventory')
     for key in ('complete','collection_complete','consistent','membership_unchanged','connection_closed','mmi_healthy'):
         if document.get(key) is not True: raise ValueError('Full consistent healthy inventory is required')
     if document.get('termination') != 'sequence_complete' or document.get('errors') != []:
         raise ValueError('Inventory collection did not complete')
-    first = _raw_mmi(document.get('initial_mmi'), local, checksum)
-    last = _raw_mmi(document.get('final_mmi'), local, checksum)
+    first = _raw_mmi(document.get('initial_mmi'), local, checksum, route)
+    last = _raw_mmi(document.get('final_mmi'), local, checksum, route)
     _same(first, last, 'Full MMI bookends')
     if not isinstance(document.get('serial_observations'), list): raise ValueError('Missing serial observations')
-    identities = [_raw_serials(item, local, checksum) for item in document['serial_observations']]
+    identities = [_raw_serials(item, local, checksum, route) for item in document['serial_observations']]
     addresses = [address for address, state in enumerate(first) if state]
     _same([address for address, _ in identities], addresses, 'Serial coverage')
     _same(document.get('planned_addresses'), addresses, 'Planned coverage')
@@ -288,22 +316,54 @@ def _route_fields(value, local):
     return route
 
 
-def _refuse_routed_execution(value):
-    # Embedded v1 observations are direct local-interface captures (serial
-    # replies with route 00); they never observe the far network.
-    if 'route' in value:
-        raise SelectedSerialPlanError(ROUTED_EXECUTION_UNSUPPORTED,
-            'Routed selected-serial execution is not implemented; refused before any I/O')
+def route_binding(value, project, *, source_network, target_network):
+    """Re-derive a routed plan's route from the supplied project; no I/O.
+
+    The project bytes must hash to the plan's ``project_sha256`` and the
+    topology planner must resolve ``source_network`` to ``target_network``
+    through exactly the plan's bridges. A direct plan takes no binding.
+    Returns reviewable binding evidence; refusals carry shared reasons.
+    """
+    route = value.get('route')
+    if route is None:
+        if project is not None or source_network is not None or target_network is not None:
+            raise SelectedSerialPlanError('route_binding', 'A direct plan takes no project or network binding')
+        return None
+    if project is None or source_network is None or target_network is None:
+        raise SelectedSerialPlanError('route_binding',
+            'A routed plan requires its project file, source network and target network to re-derive the route')
+    from .commissioning_route import project_sha256, read_project_snapshot, resolve_network_route
+    from .project import ProjectDocument, ProjectError
+    path = Path(project)
+    try:
+        snapshot = read_project_snapshot(path)
+        digest = project_sha256(snapshot)
+        if digest != value['project_sha256']:
+            raise SelectedSerialPlanError('route_binding',
+                'Project snapshot %s does not match plan project_sha256 %s' % (digest, value['project_sha256']))
+        derived = resolve_network_route(ProjectDocument.from_snapshot(snapshot, source=path),
+                                        source_network=source_network, target_network=target_network)
+    except ProjectError as error:
+        raise SelectedSerialPlanError('route_binding', 'Project topology cannot bind the route: %s' % error) from error
+    if list(derived) != list(route):
+        raise SelectedSerialPlanError('wrong_route',
+            'Plan route %s differs from project route %s for networks %d->%d; refused before any I/O'
+            % (list(route), list(derived), source_network, target_network))
+    return {'project_path': str(path.absolute()), 'project_sha256': digest, 'source_network': source_network,
+            'target_network': target_network, 'route': list(derived), 'route_rederived': True,
+            'physical_bridge_acceptance_verified': False}
 
 
-def _expected(before, serial, destination, local_serial, local):
+def _expected(before, serial, destination, local_serial, local, routed=False):
     identities = {row['address']:list(row['serials']) for row in before['identities']}
-    if identities.get(local) != [local_serial]: raise ValueError('Pinned local PCI serial does not match')
+    # The local PCI and its serial live on the local network, never on a far one.
+    if not routed and identities.get(local) != [local_serial]: raise ValueError('Pinned local PCI serial does not match')
     if len(identities.get(255, [])) != 2 or serial not in identities[255]:
         raise ValueError('Source 255 must contain exactly two distinct serials including the selected serial')
     if any(len(values)!=1 for address,values in identities.items() if address != 255):
         raise ValueError('Other duplicate addresses are outside the supported scope')
-    if destination == local or destination in identities or before['states'][destination] != 0:
+    if ((not routed and destination == local) or destination in identities or
+            before['states'][destination] != 0):
         raise ValueError('Destination must be independently empty and nonlocal')
     if before['states'][255] != 2:
         raise ValueError('The supported source fixture must have MMI state 2')
@@ -330,19 +390,23 @@ class SelectedSerialPlan:
         # Constructors validate settings/endpoint without I/O.
         coordinator = SelectedSerialCoordinator(**value['endpoint'],local_unit=value['local_unit'],
             expected_local_serial=value['expected_local_serial'],**value['settings'])
-        _route_fields(value,value['local_unit'])
+        route = tuple(_route_fields(value,value['local_unit']) or ())
         serial, _ = _selected_serial(value['serial'])
         if serial != value['serial'] or coordinator.expected_local_serial != value['expected_local_serial']:
             raise ValueError('Plan serials must be canonical')
         if type(value['source']) is not int or value['source'] != 255: raise ValueError('Only source 255 is supported')
-        request = encode_serial_address(serial,value['destination'],command_checksum=coordinator.command_checksum)
+        request = encode_serial_address(serial,value['destination'],command_checksum=coordinator.command_checksum,
+                                        bridges=route)
         _same(value['request_hex'],request.hex(),'Address request')
-        proof = _inventory_proof(value['before'],value['endpoint'],value['local_unit'],coordinator.command_checksum)
+        # Local identity and options stay direct: they prove the attached PCI.
+        proof = _inventory_proof(value['before'],value['endpoint'],value['local_unit'],coordinator.command_checksum,
+                                 route)
         local, observed = _raw_serials(value['local_identity'],value['local_unit'],coordinator.command_checksum)
         if local != value['local_unit'] or observed != [value['expected_local_serial']]:
             raise ValueError('Fresh local identity does not match the pinned serial')
         _options_proof(value['local_options'],value['local_unit'],coordinator.command_checksum)
-        expected = _expected(proof,serial,value['destination'],value['expected_local_serial'],value['local_unit'])
+        expected = _expected(proof,serial,value['destination'],value['expected_local_serial'],value['local_unit'],
+                             bool(route))
         _same(value['expected_after'],expected,'Expected selected-serial change')
         _same(value['scope'],'two_known_serials_at_255_explicit_empty_destination','Scope')
         _same(value['atomic_observation'],False,'Atomicity')
@@ -619,13 +683,18 @@ class SelectedSerialCoordinator:
         self._lock=threading.Lock();self._apply_used=False
         self.last_result=None;self.last_evidence=None
 
-    def _inventory(self):
+    def _inventory(self,route=()):
         s=self.settings
         return PCIInventoryCollector(self.host,self.port,local_unit=self.local_unit,
             overall_timeout=s['overall_timeout'],observation_timeout=s['observation_timeout'],
             confirmation_timeout=s['confirmation_timeout'],response_timeout=s['mmi_response_timeout'],
             quiet_period=s['quiet_period'],max_mmi_frames=s['max_mmi_frames'],max_serial_frames=s['max_serial_frames'],
-            max_unrelated=s['max_unrelated'],max_bytes=s['max_bytes'],command_checksum=self.command_checksum)
+            max_unrelated=s['max_unrelated'],max_bytes=s['max_bytes'],command_checksum=self.command_checksum,
+            bridges=tuple(route))
+
+    def _routed_inventory(self,route):
+        # Direct calls keep the historical zero-argument child factory.
+        return self._inventory(route) if route else self._inventory()
 
     def _local_identity(self):
         s=self.settings
@@ -639,10 +708,10 @@ class SelectedSerialCoordinator:
             response_timeout=self.settings['options_response_timeout'],overall_timeout=self.settings['observation_timeout'],
             command_checksum=self.command_checksum)
 
-    def _transport(self):
+    def _transport(self,route=()):
         return PCISerialAddressTransport(self.host,self.port,local_unit=self.local_unit,
             response_timeout=self.settings['address_response_timeout'],overall_timeout=self.settings['observation_timeout'],
-            command_checksum=self.command_checksum)
+            command_checksum=self.command_checksum,bridges=tuple(route))
 
     def _new_journal(self,path): return _Journal(path)
 
@@ -668,9 +737,12 @@ class SelectedSerialCoordinator:
         if time.monotonic() >= deadline: raise TimeoutError('Overall deadline reached during '+key)
         return result
 
-    def _before(self,evidence,deadline):
-        self._phase(evidence,'before',self._inventory(),'collect_inventory',deadline)
-        proof=_inventory_proof(evidence['before'],{'host':self.host,'port':self.port},self.local_unit,self.command_checksum)
+    def _before(self,evidence,deadline,route=()):
+        # A routed plan observes the far network through its bridges; the
+        # local identity and option byte always prove the attached PCI.
+        self._phase(evidence,'before',self._routed_inventory(route),'collect_inventory',deadline)
+        proof=_inventory_proof(evidence['before'],{'host':self.host,'port':self.port},self.local_unit,
+                               self.command_checksum,route)
         self._phase(evidence,'local_identity',self._local_identity(),'collect_serials',deadline,self.local_unit)
         local,serials=_raw_serials(evidence['local_identity'],self.local_unit,self.command_checksum)
         if local!=self.local_unit or serials!=[self.expected_local_serial]:
@@ -689,7 +761,7 @@ class SelectedSerialCoordinator:
             'errors':[],'journal':None,'atomic_observation':False,'firmware_persistence_verified':False,
             'physical_compatibility_verified':False,'exclusive_ownership_required':True,
             'automatic_retries':0,'automatic_rollback':False,'database_updated':False,
-            'deadline_scope':'transaction_after_validation_and_lock'}
+            'deadline_scope':'transaction_after_validation_and_lock','route_binding':None}
 
     def _error(self,error,evidence,journal=None):
         exchange=evidence.get('exchange')
@@ -710,19 +782,23 @@ class SelectedSerialCoordinator:
         return error
 
     def plan(self,serial,destination,*,source=255,route=None,project_sha256=None):
-        """Observe directly and build a plan; ``route`` makes it a schema-only routed intent."""
+        """Observe and build a plan; ``route`` observes the far network through it.
+
+        Use :func:`route_from_project` to derive ``route`` and ``project_sha256``
+        from a saved topology; apply and verify re-derive and compare them.
+        """
         routing={key:item for key,item in (('route',route),('project_sha256',project_sha256)) if item is not None}
-        _route_fields(routing,self.local_unit)
+        bridges=tuple(_route_fields(routing,self.local_unit) or ())
         serial,_=_selected_serial(serial)
-        request=encode_serial_address(serial,destination,command_checksum=self.command_checksum)
+        request=encode_serial_address(serial,destination,command_checksum=self.command_checksum,bridges=bridges)
         if type(source) is not int or source!=255: raise ValueError('Only source address 255 is supported')
-        if destination==self.local_unit: raise ValueError('Local PCI relocation is unsupported')
+        if not bridges and destination==self.local_unit: raise ValueError('Local PCI relocation is unsupported')
         with self._lock:
             evidence=self._base('plan')
             try:
                 deadline=time.monotonic()+self.settings['overall_timeout']
-                before=self._before(evidence,deadline)
-                expected=_expected(before,serial,destination,self.expected_local_serial,self.local_unit)
+                before=self._before(evidence,deadline,bridges) if bridges else self._before(evidence,deadline)
+                expected=_expected(before,serial,destination,self.expected_local_serial,self.local_unit,bool(bridges))
                 value={'format':'cbus-selected-serial-plan-v1','endpoint':{'host':self.host,'port':self.port},
                     'local_unit':self.local_unit,'expected_local_serial':self.expected_local_serial,'source':source,
                     'serial':serial,'destination':destination,'settings':dict(self.settings),
@@ -738,24 +814,33 @@ class SelectedSerialCoordinator:
                 self._error(error,evidence)
                 raise
 
-    def _validated_plan(self,plan):
+    def _validated_plan(self,plan,binding=None):
         if not isinstance(plan,SelectedSerialPlan): raise TypeError('Expected a validated SelectedSerialPlan')
         plan=SelectedSerialPlan.from_dict(plan.as_dict());value=plan.as_dict()
-        _refuse_routed_execution(value)
         _same(value['endpoint'],{'host':self.host,'port':self.port},'Coordinator endpoint')
         _same(value['local_unit'],self.local_unit,'Coordinator local address')
         _same(value['expected_local_serial'],self.expected_local_serial,'Coordinator local serial')
         _same(value['settings'],self.settings,'Coordinator settings')
-        return plan,value
+        # Route binding is pure: a wrong route or changed project refuses
+        # before any lease, marker, journal, connection or PCI byte.
+        binding=dict(binding or {})
+        unknown=set(binding)-{'project','source_network','target_network'}
+        if unknown: raise TypeError('Unsupported route binding options: '+', '.join(sorted(unknown)))
+        bound=route_binding(value,binding.get('project'),source_network=binding.get('source_network'),
+                            target_network=binding.get('target_network'))
+        return plan,value,bound
+
+    @staticmethod
+    def _route(value): return tuple(value.get('route') or ())
 
     def _classify(self,evidence,value):
-        after=evidence['after']
+        after=evidence['after'];route=self._route(value)
         evidence['after_collection_complete']=bool(after and after.get('collection_complete'))
-        try: observed=_inventory_proof(after,value['endpoint'],self.local_unit,self.command_checksum)
+        try: observed=_inventory_proof(after,value['endpoint'],self.local_unit,self.command_checksum,route)
         except (ValueError,TypeError,AttributeError) as error:
             evidence['errors'].append({'phase':'after_validation','type':type(error).__name__,'message':str(error)})
             return
-        before=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum)
+        before=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum,route)
         expected=value['expected_after']
         if observed==expected:
             evidence['outcome']='observed_expected_change';evidence['expected_identity_change']=True
@@ -784,17 +869,24 @@ class SelectedSerialCoordinator:
         except FileExistsError as error:
             raise SelectedSerialUncertain('Attempt identity already exists at %s; read-only recovery only'%marker) from error
 
-    def apply(self,plan,*,recovery_path,attempt_store=None):
+    def apply(self,plan,*,recovery_path,attempt_store=None,project=None,source_network=None,target_network=None):
         """Apply once, guarded by a canonical attempt marker shared with Rust.
 
         The marker lives beside the resolved journal, or in ``attempt_store``
         (an existing shared directory) so repeats contend across journal
         directories. An existing marker refuses before any PCI I/O.
+
+        A routed plan also needs ``project``, ``source_network`` and
+        ``target_network``: the route is re-derived before any I/O, and the
+        project hash is checked again immediately before the marker/send.
         """
-        plan,value=self._validated_plan(plan)
+        plan,value,bound=self._validated_plan(plan,{'project':project,'source_network':source_network,
+                                                   'target_network':target_network})
+        route=self._route(value)
         with self._lock:
             if self._apply_used: raise RuntimeError('A coordinator cannot apply twice; use read-only verify after an attempt')
             evidence=self._base('apply',plan);journal=None
+            evidence['route_binding']=bound
             try:
                 marker=attempt_identity_path(value,recovery_path,attempt_store)
                 _refuse_existing_attempt(marker)
@@ -804,12 +896,20 @@ class SelectedSerialCoordinator:
                 with EndpointLease(self.host,self.port):
                     self._apply_used=True
                     deadline=time.monotonic()+self.settings['overall_timeout']
-                    before=self._before(evidence,deadline)
-                    original=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum)
+                    before=self._before(evidence,deadline,route) if route else self._before(evidence,deadline)
+                    original=_inventory_proof(value['before'],value['endpoint'],self.local_unit,self.command_checksum,
+                                              route)
                     _same(before,original,'Fresh complete inventory')
-                    _expected(before,value['serial'],value['destination'],self.expected_local_serial,self.local_unit)
+                    _expected(before,value['serial'],value['destination'],self.expected_local_serial,self.local_unit,
+                              bool(route))
                     # Prepare the pure child before durably marking a possible send.
-                    transport=self._transport()
+                    transport=self._transport(route) if route else self._transport()
+                    if bound is not None:
+                        # The topology is bound again at the handoff: a project
+                        # replaced during observation refuses before any send.
+                        from .commissioning_route import assert_fresh_project
+                        assert_fresh_project(Path(bound['project_path']),bound['project_sha256'])
+                        evidence['route_binding']=dict(bound,topology_fresh_at_handoff=True)
                     if time.monotonic()>=deadline: raise TimeoutError('Overall deadline reached before journal creation')
                     # Reserve the independent recovery handle before the
                     # journal and the one-shot request, as the Rust lane does.
@@ -828,7 +928,7 @@ class SelectedSerialCoordinator:
                             exchange['receipt']['errors'] or exchange['receipt']['pending_hex']):
                         raise SelectedSerialUncertain('Address request outcome is uncertain; no replay or follow-up I/O was attempted')
                     journal.write(evidence)
-                    self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
+                    self._phase(evidence,'after',self._routed_inventory(route),'collect_inventory',deadline)
                     evidence['state']='after_observed';self._classify(evidence,value)
                     journal.write(evidence)
                     evidence['journal']={'path':str(journal.path),'last_update':dict(journal.last_update),'failed':False}
@@ -841,11 +941,16 @@ class SelectedSerialCoordinator:
                 self._error(error,evidence,journal)
                 raise
 
-    def verify(self,plan):
-        """Gather a fresh full inventory only. Never construct/use address transport."""
-        plan,value=self._validated_plan(plan)
+    def verify(self,plan,*,project=None,source_network=None,target_network=None):
+        """Gather a fresh full inventory only. Never construct/use address transport.
+
+        A routed plan re-derives its route from ``project`` first and then
+        observes the far network through it; the local network is not read.
+        """
+        plan,value,bound=self._validated_plan(plan,{'project':project,'source_network':source_network,
+                                                   'target_network':target_network})
         with self._lock:
-            evidence=self._base('verify',plan)
+            evidence=self._base('verify',plan);evidence['route_binding']=bound
             # A verification observes the same commissioning lanes an apply
             # would move through, so it holds the same host-local lease: a
             # contended observation refuses before PCI I/O (outcome
@@ -854,7 +959,7 @@ class SelectedSerialCoordinator:
             try:
                 with EndpointLease(self.host,self.port):
                     deadline=time.monotonic()+self.settings['overall_timeout']
-                    self._phase(evidence,'after',self._inventory(),'collect_inventory',deadline)
+                    self._phase(evidence,'after',self._routed_inventory(self._route(value)),'collect_inventory',deadline)
                     evidence['state']='after_observed';self._classify(evidence,value)
                     result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
                     final_evidence=result.as_dict()
@@ -891,8 +996,27 @@ class SelectedSerialCoordinator:
         validator=SelectedSerialCoordinator(**document['endpoint'],local_unit=document['local_unit'],
             expected_local_serial=document['expected_local_serial'],**document['settings'])
         expected=validator._base('apply')
-        # Journals written before markers existed carry no attempt_identity.
-        if 'attempt_identity' not in value: expected.pop('attempt_identity')
+        # Journals written before markers or route bindings lack those fields.
+        for key in ('attempt_identity','route_binding'):
+            if key not in value: expected.pop(key)
         _keys(value,expected,'Recovery journal')
         if value['operation']!='apply': raise ValueError('Recovery requires an apply journal')
         return plan
+
+
+def route_from_project(project, *, source_network, target_network):
+    """Derive ``(route, project_sha256)`` for a routed plan from a saved project.
+
+    Uses the same bounded snapshot read and topology planner as typed routed
+    WRITE/RECALL/IDENTIFY. A same-network (direct) path is refused: plan it
+    without a route instead.
+    """
+    from .commissioning_route import project_sha256, read_project_snapshot, resolve_network_route
+    from .project import ProjectDocument
+    path = Path(project)
+    snapshot = read_project_snapshot(path)
+    route = resolve_network_route(ProjectDocument.from_snapshot(snapshot, source=path),
+                                  source_network=source_network, target_network=target_network)
+    if not route:
+        raise SelectedSerialPlanError('invalid_route', 'Source and target are the same network; plan it as direct')
+    return list(route), project_sha256(snapshot)

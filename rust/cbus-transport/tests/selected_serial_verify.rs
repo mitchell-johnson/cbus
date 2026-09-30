@@ -24,6 +24,16 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
 
+/// The committed one-bridge routed plan, whose inventory is a routed capture.
+fn routed_plan_doc() -> serde_json::Value {
+    include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .find(|row| row["id"] == "plan-routed-one-bridge")
+        .expect("vector file must have a routed plan row")["document"]
+        .clone()
+}
+
 fn valid_plan_doc() -> serde_json::Value {
     let line = include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
         .lines()
@@ -469,9 +479,7 @@ async fn invalid_plan_is_rejected_before_any_request() {
 #[tokio::test(start_paused = true)]
 async fn routed_plan_is_refused_before_any_request() {
     let (pci, mut remote) = setup().await;
-    let mut doc = valid_plan_doc();
-    doc["route"] = serde_json::json!([1]);
-    doc["project_sha256"] = serde_json::Value::from("ab".repeat(32));
+    let doc = routed_plan_doc();
     let error = verify_plan(
         &serde_json::to_vec(&doc).unwrap(),
         &pci,

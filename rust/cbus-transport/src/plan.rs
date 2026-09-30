@@ -16,15 +16,21 @@
 //! persistence.
 //!
 //! The optional `route`/`project_sha256` pair declares a topology-bound
-//! routed intent. It is schema-only: embedded observations stay direct, and
-//! [`refuse_routed_execution`] stops apply/verify before any I/O.
+//! routed plan. Its `before` inventory is then a routed capture of the far
+//! network: every MMI and IDENTIFY4 request carries the route and every
+//! reply the exact Reply Network, while local identity and options stay
+//! direct. The Python coordinator executes such plans after re-deriving the
+//! route from the bound project; the Rust commands still refuse them with
+//! [`refuse_routed_execution`] before any I/O.
 
 use cbus_protocol::cal::Cal;
 use cbus_protocol::pci_observation::{
-    identify_request, installation_mmi_request, parse_capture, parse_mmi_capture, recall_request,
-    MmiEvent, PciEvent, PciFrame,
+    parse_capture, parse_routed_capture, parse_routed_mmi_capture, recall_request,
+    routed_identify_request, routed_installation_mmi_request, MmiEvent, PciEvent, PciFrame,
 };
-use cbus_protocol::serial_address::{encode_serial_address, parse_native_serial};
+use cbus_protocol::serial_address::{
+    encode_serial_address, encode_serial_address_routed, parse_native_serial,
+};
 use serde_json::{Map, Value};
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -56,8 +62,9 @@ pub struct ValidatedPlan {
     /// Endpoint port.
     pub port: u16,
     /// Optional outgoing bridge path (1..=6 distinct bytes in 1..=254). `None` is a
-    /// direct plan; `Some` is a topology-bound routed intent that no
-    /// execution path accepts yet (see [`refuse_routed_execution`]).
+    /// direct plan; `Some` is a topology-bound routed plan whose embedded
+    /// inventory was captured through this route (Rust execution still
+    /// refuses it; see [`refuse_routed_execution`]).
     pub route: Option<Vec<u8>>,
     /// Lowercase SHA-256 of the saved project file whose topology produced
     /// `route`. Present exactly when `route` is present.
@@ -969,12 +976,42 @@ fn capture(
 // MMI proof, mirroring `_raw_mmi`.
 // ---------------------------------------------------------------------------
 
-fn raw_mmi(document: &Value, local: u8, command_checksum: bool) -> Result<Vec<u64>, PlanError> {
+/// Mirror `_route_marker`: a routed observation names exactly its bridges; a
+/// direct one carries no route.
+fn route_marker(
+    doc: &Map<String, Value>,
+    route: &[u8],
+    reason: &'static str,
+    name: &str,
+) -> Result<(), PlanError> {
+    if route.is_empty() {
+        if doc.contains_key("route") {
+            return Err(PlanError::new(
+                reason,
+                format!("{name} route is inconsistent with a direct plan"),
+            ));
+        }
+        return Ok(());
+    }
+    same(
+        doc.get("route").unwrap_or(&Value::Null),
+        &Value::Array(route.iter().map(|b| Value::from(u64::from(*b))).collect()),
+        reason,
+        &format!("{name} route"),
+    )
+}
+
+fn raw_mmi(
+    document: &Value,
+    local: u8,
+    command_checksum: bool,
+    route: &[u8],
+) -> Result<Vec<u64>, PlanError> {
     let reason = "mmi_proof";
     let fail = |msg: &str| PlanError::new(reason, msg.to_string());
     let raw = capture(
         document,
-        &installation_mmi_request(command_checksum),
+        &routed_installation_mmi_request(route, command_checksum),
         reason,
     )?;
     let doc = document
@@ -985,7 +1022,8 @@ fn raw_mmi(document: &Value, local: u8, command_checksum: bool) -> Result<Vec<u6
     {
         return Err(fail("Unsupported MMI observation"));
     }
-    let (events, leftover) = parse_mmi_capture(&raw).map_err(|e| fail(&e))?;
+    route_marker(doc, route, reason, "MMI")?;
+    let (events, leftover) = parse_routed_mmi_capture(&raw, route, local).map_err(|e| fail(&e))?;
     if !leftover.is_empty() || events.is_empty() || events[0] != MmiEvent::Confirmation(b'g', '.') {
         return Err(fail("MMI confirmation/framing is incomplete"));
     }
@@ -1019,9 +1057,16 @@ fn raw_mmi(document: &Value, local: u8, command_checksum: bool) -> Result<Vec<u6
             ("marker".to_string(), Value::from(u64::from(block.marker))),
             ("raw_hex".to_string(), Value::from(hex::encode(&block.raw))),
         ])));
+        if let (Some(unit), Some(Value::Object(entry))) = (block.reply_unit, blocks.last_mut()) {
+            entry.insert("reply_unit".to_string(), Value::from(u64::from(unit)));
+        }
         states.extend(block_states);
     }
-    if states.len() != 256 || states[usize::from(local)] == 0 || states.contains(&3) {
+    // The local PCI anchors only its own network; a far network has none.
+    if states.len() != 256
+        || (route.is_empty() && states[usize::from(local)] == 0)
+        || states.contains(&3)
+    {
         return Err(fail(
             "MMI coverage, known local presence or healthy states are missing",
         ));
@@ -1076,6 +1121,7 @@ fn raw_serials(
     local: u8,
     command_checksum: bool,
     check_stored_serials: bool,
+    route: &[u8],
 ) -> Result<(u8, Vec<String>), PlanError> {
     let reason = "serial_proof";
     let fail = |msg: &str| PlanError::new(reason, msg.to_string());
@@ -1089,7 +1135,7 @@ fn raw_serials(
         .ok_or_else(|| fail("Invalid inventory address"))? as u8;
     let raw = capture(
         document,
-        &identify_request(address, 4, command_checksum),
+        &routed_identify_request(route, address, 4, command_checksum),
         reason,
     )?;
     if doc.get("format") != Some(&Value::from("cbus-pci-serial-observation-v1"))
@@ -1103,7 +1149,22 @@ fn raw_serials(
         reason,
         "Serial local address",
     )?;
-    let (events, leftover) = parse_capture(&raw).map_err(|e| fail(&e))?;
+    route_marker(doc, route, reason, "Serial")?;
+    let parsed = if route.is_empty() {
+        parse_capture(&raw)
+    } else {
+        parse_routed_capture(&raw)
+    };
+    let (events, leftover) = parsed.map_err(|e| fail(&e))?;
+    // Exact Reply Network: nearest bridge, this PCI, remaining bridges, unit.
+    let reply_route: Vec<u8> = if route.is_empty() {
+        vec![0x00]
+    } else {
+        let mut value = vec![route.len() as u8];
+        value.extend_from_slice(&route[1..]);
+        value.push(address);
+        value
+    };
     if !leftover.is_empty() || events.is_empty() || events[0] != PciEvent::Confirmation(b'g', '.') {
         return Err(fail("Serial confirmation/framing is incomplete"));
     }
@@ -1119,13 +1180,14 @@ fn raw_serials(
         if !frame.raw.iter().all(|b| b.is_ascii_hexdigit()) {
             return Err(fail("Unexpected serial frame prefix"));
         }
+        let expected_source = route.first().copied().unwrap_or(address);
         if frame.bare() {
-            if address != local {
+            if !route.is_empty() || address != local {
                 return Err(fail("Remote bare serial cannot be attributed"));
             }
-        } else if frame.source != Some(address)
+        } else if frame.source != Some(expected_source)
             || frame.destination != Some(local)
-            || frame.route != vec![0x00]
+            || frame.route != reply_route
         {
             return Err(fail("Serial frame source/destination/route mismatch"));
         }
@@ -1196,11 +1258,17 @@ fn raw_serials(
             return Err(fail("IDENTIFY4 must contain twelve bytes"));
         };
         let mut expected = Map::new();
+        // A Reply Network's outer source is the nearest bridge; the evidence
+        // records the queried unit that ends the exactly matched path.
         expected.insert(
             "source".to_string(),
-            frame
-                .source
-                .map_or(Value::Null, |s| Value::from(u64::from(s))),
+            if route.is_empty() {
+                frame
+                    .source
+                    .map_or(Value::Null, |s| Value::from(u64::from(s)))
+            } else {
+                Value::from(u64::from(address))
+            },
         );
         expected.insert(
             "destination".to_string(),
@@ -1248,6 +1316,7 @@ fn inventory_proof(
     endpoint: &Value,
     local: u8,
     command_checksum: bool,
+    route: &[u8],
 ) -> Result<BeforeProof, PlanError> {
     let fail = |msg: &str| PlanError::new("inventory_proof", msg.to_string());
     let doc = document
@@ -1268,6 +1337,7 @@ fn inventory_proof(
         "inventory_proof",
         "Inventory local address",
     )?;
+    route_marker(doc, route, "inventory_proof", "Inventory")?;
     for key in [
         "complete",
         "collection_complete",
@@ -1289,11 +1359,13 @@ fn inventory_proof(
         doc.get("initial_mmi").unwrap_or(&Value::Null),
         local,
         command_checksum,
+        route,
     )?;
     let last = raw_mmi(
         doc.get("final_mmi").unwrap_or(&Value::Null),
         local,
         command_checksum,
+        route,
     )?;
     if first != last {
         return Err(PlanError::new("mmi_proof", "Full MMI bookends"));
@@ -1304,7 +1376,7 @@ fn inventory_proof(
         .ok_or_else(|| fail("Missing serial observations"))?;
     let mut identities = Vec::new();
     for item in observations {
-        identities.push(raw_serials(item, local, command_checksum, true)?);
+        identities.push(raw_serials(item, local, command_checksum, true, route)?);
     }
     let addresses: Vec<u64> = first
         .iter()
@@ -1517,13 +1589,15 @@ fn expected_change(
     destination: u8,
     local_serial: &str,
     local: u8,
+    routed: bool,
 ) -> Result<(Vec<u64>, AddressIdentities), PlanError> {
     let fail = |msg: &str| PlanError::new("expected_after_mismatch", msg.to_string());
     let mut identities: HashMap<u8, Vec<String>> = HashMap::new();
     for (address, serials) in &before.identities {
         identities.insert(*address, serials.clone());
     }
-    if identities.get(&local) != Some(&vec![local_serial.to_string()]) {
+    // The local PCI and its serial live on the local network, never a far one.
+    if !routed && identities.get(&local) != Some(&vec![local_serial.to_string()]) {
         return Err(fail("Pinned local PCI serial does not match"));
     }
     match identities.get(&255) {
@@ -1542,7 +1616,7 @@ fn expected_change(
             "Other duplicate addresses are outside the supported scope",
         ));
     }
-    if destination == local
+    if (!routed && destination == local)
         || identities.contains_key(&destination)
         || before.states[usize::from(destination)] != 0
     {
@@ -1658,16 +1732,17 @@ fn validate_route(
     Ok((Some(bridges), Some(binding.to_string())))
 }
 
-/// Refuse any execution of a routed plan before I/O.
+/// Refuse Rust execution of a routed plan before I/O.
 ///
-/// Embedded v1 observations are direct local-interface captures (serial
-/// replies with route `[0x00]`); they never observe the far network, so a
-/// validated routed plan is a schema-only intent document.
+/// A routed plan's inventory is validated here, but Rust apply/verify have
+/// no project-topology binding or routed observation path yet. The Python
+/// coordinator (`cbus-toolkit serial-address`) executes routed plans.
 pub fn refuse_routed_execution(plan: &ValidatedPlan) -> Result<(), PlanError> {
     if plan.is_routed() {
         return Err(PlanError::new(
             ROUTED_EXECUTION_UNSUPPORTED,
-            "Routed selected-serial execution is not implemented; refused before any I/O",
+            "Routed selected-serial execution is implemented only by the Python coordinator; \
+             refused before any I/O",
         ));
     }
     Ok(())
@@ -1715,34 +1790,46 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
                 "Selected-serial destination must be an integer in the supported range 2..254",
             )
         })? as u8;
-    let request_bytes = encode_serial_address(&serial, destination, command_checksum, b'g')
-        .map_err(|_| {
-            PlanError::new(
-                "invalid_destination",
-                "Selected-serial destination must be an integer in the supported range 2..254",
-            )
-        })?;
+    let request_bytes = match &route {
+        Some(bridges) => {
+            encode_serial_address_routed(&serial, destination, bridges, command_checksum, b'g')
+        }
+        None => encode_serial_address(&serial, destination, command_checksum, b'g'),
+    }
+    .map_err(|_| {
+        PlanError::new(
+            "invalid_destination",
+            "Selected-serial destination must be an integer in the supported range 2..254",
+        )
+    })?;
     same(
         doc.get("request_hex").unwrap_or(&Value::Null),
         &Value::from(hex::encode(&request_bytes)),
         "request_mismatch",
         "Address request",
     )?;
+    // Local identity and options stay direct: they prove the attached PCI.
+    let bridges = route.as_deref().unwrap_or(&[]);
     let proof = inventory_proof(
         &doc["before"],
         &doc["endpoint"],
         local_unit,
         command_checksum,
+        bridges,
     )?;
     // Fresh local identity must match the pinned serial. The stored serial
     // list is compared against the re-parsed bytes here (rather than inside
     // the serial reparse) so a swapped serial list reports
     // `local_identity_mismatch` instead of `serial_proof`; accept/reject
     // verdicts are identical to the oracle either way.
-    let (observed_local, observed_serials) =
-        raw_serials(&doc["local_identity"], local_unit, command_checksum, false).map_err(|e| {
-            PlanError::new(e.reason, format!("Local identity reparse: {}", e.message))
-        })?;
+    let (observed_local, observed_serials) = raw_serials(
+        &doc["local_identity"],
+        local_unit,
+        command_checksum,
+        false,
+        &[],
+    )
+    .map_err(|e| PlanError::new(e.reason, format!("Local identity reparse: {}", e.message)))?;
     if observed_local != local_unit || observed_serials != vec![expected_local_serial.clone()] {
         return Err(PlanError::new(
             "local_identity_mismatch",
@@ -1766,6 +1853,7 @@ fn validate_plan(doc: &Map<String, Value>) -> Result<ValidatedPlan, PlanError> {
         destination,
         &expected_local_serial,
         local_unit,
+        route.is_some(),
     )?;
     same(
         doc.get("expected_after").unwrap_or(&Value::Null),

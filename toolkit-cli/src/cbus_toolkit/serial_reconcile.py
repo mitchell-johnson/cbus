@@ -134,8 +134,14 @@ def verify_journal(path):
         raise ReconcileError(f"Journal plan is invalid or tampered: {error}") from error
     validator = SelectedSerialCoordinator(**plan["endpoint"], local_unit=plan["local_unit"],
                                           expected_local_serial=plan["expected_local_serial"], **plan["settings"])
+    if "route" in plan:
+        raise ReconcileError("Routed selected-serial journals are not reconciled; the target-network "
+                             "database move is unimplemented")
+    expected = validator._base("apply")
+    if "route_binding" not in value:
+        expected.pop("route_binding")  # Journals written before routed execution.
     try:
-        _keys(value, validator._base("apply"), "Recovery journal")
+        _keys(value, expected, "Recovery journal")
     except ValueError as error:
         raise ReconcileError(f"Journal fields are unsupported or incomplete (pre-marker journals are unbound): {error}") from error
     if value["operation"] != "apply":

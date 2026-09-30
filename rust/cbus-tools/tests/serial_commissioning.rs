@@ -967,9 +967,17 @@ fn serial_apply_refuses_existing_journal_before_connect() {
 fn serial_commands_refuse_a_routed_plan_before_connect_or_journal() {
     let dead = closed_port();
     let plan = plan_file_for_port(dead, "routed-plan.json");
-    let mut doc: Value = serde_json::from_slice(&std::fs::read(&plan).unwrap()).unwrap();
-    doc["route"] = serde_json::json!([1]);
-    doc["project_sha256"] = Value::from("ab".repeat(32));
+    // The committed routed vector plan (a routed far-network capture),
+    // rebound to the dead port like the direct plan file.
+    let mut doc: Value = include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<Value>(line).unwrap())
+        .find(|row| row["id"] == "plan-routed-one-bridge")
+        .expect("vector file must have a routed plan row")["document"]
+        .clone();
+    let endpoint = serde_json::json!({"host": "127.0.0.1", "port": dead});
+    doc["endpoint"] = endpoint.clone();
+    doc["before"]["endpoint"] = endpoint;
     std::fs::write(&plan, serde_json::to_vec(&doc).unwrap()).unwrap();
     let journal = temp_path("routed-journal.json");
     let addr = format!("127.0.0.1:{dead}");

@@ -29,6 +29,16 @@ use tokio::net::TcpListener;
 const IDENTIFY_QUIET: Duration = Duration::from_secs(2);
 const ADDRESS_QUIET: Duration = Duration::from_secs(2);
 
+/// The committed one-bridge routed plan, whose inventory is a routed capture.
+fn routed_plan_doc() -> serde_json::Value {
+    include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+        .find(|row| row["id"] == "plan-routed-one-bridge")
+        .expect("vector file must have a routed plan row")["document"]
+        .clone()
+}
+
 fn valid_plan_doc() -> serde_json::Value {
     let line = include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
         .lines()
@@ -930,10 +940,7 @@ async fn invalid_plan_fails_before_any_io() {
 async fn routed_plan_is_refused_before_marker_journal_or_io() {
     let (pci, mut remote) = setup().await;
     let journal = journal_path("routed");
-    let mut doc = valid_plan_doc();
-    doc["route"] = serde_json::json!([1, 2]);
-    doc["project_sha256"] = serde_json::Value::from("ab".repeat(32));
-    let raw = serde_json::to_vec(&doc).unwrap();
+    let raw = serde_json::to_vec(&routed_plan_doc()).unwrap();
     assert!(validate_plan_document(&raw).unwrap().is_routed());
     let marker = attempt_identity_path(&raw, &journal).unwrap();
     let options = ApplyOptions {

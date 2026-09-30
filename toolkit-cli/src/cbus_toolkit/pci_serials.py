@@ -15,6 +15,7 @@ import threading
 import time
 
 from .pci import Confirmation, Frame, FrameStream, IdentifyCAL, Notification, ProtocolError, ReplyCAL, encode_command
+from .pci_routing import RoutedCALCommand, commissioning_bridges, reply_network_route
 
 
 def _byte(value, name):
@@ -63,6 +64,8 @@ class SerialObservation:
     max_frames: int
     bytes_received: int
     connection_closed: bool
+    # Outgoing bridges of a routed observation; () is the local network.
+    bridges: tuple[int, ...] = ()
 
     @property
     def serials(self):
@@ -84,7 +87,7 @@ class SerialObservation:
         return "absent" if not self.serials else "single" if len(self.serials) == 1 else "duplicate_address"
 
     def as_dict(self):
-        return {"format": "cbus-pci-serial-observation-v1", "address": self.address,
+        value = {"format": "cbus-pci-serial-observation-v1", "address": self.address,
                 "local_unit": self.local_unit, "status": self.status, "complete": self.complete,
                 "serials": list(self.serials), "replies": [reply.as_dict() for reply in self.replies],
                 "repeated_responses": self.repeated_responses, "confirmation": self.confirmation,
@@ -99,6 +102,8 @@ class SerialObservation:
                 "max_frames": self.max_frames, "scope": "one_address",
                 "physical_addresses_changed": False, "database_updated": False,
                 "automatic_retries": 0, "connection_closed": self.connection_closed}
+        if self.bridges: value.update(scope="one_address_routed", route=list(self.bridges))
+        return value
 
 
 class PCISerialCollector:
@@ -120,11 +125,16 @@ class PCISerialCollector:
     observation. Counts include repeated identical frames; saturation never
     proves absence of additional serials. Shorter explicit quiet periods are
     useful for tests but are marked as differing from the native default.
+
+    With ``bridges`` the request is the routed IDENTIFY4 and a reply counts
+    only on the exact Reply Network: nearest bridge as outer source, this PCI
+    as destination, the remaining bridges and then the queried address.
+    Other routes are unrelated; a bare reply cannot be attributed.
     """
 
     def __init__(self, host, port=10001, *, local_unit, quiet_period=2.0,
                  overall_timeout=10.0, confirmation_timeout=2.0, max_frames=7,
-                 max_unrelated=64, max_bytes=65536, command_checksum=False):
+                 max_unrelated=64, max_bytes=65536, command_checksum=False, bridges=()):
         if not isinstance(host, str) or "%" in host:
             raise ValueError("The bounded collector requires a numeric IPv4 or IPv6 address without a scope suffix")
         try: numeric_host = ipaddress.ip_address(host)
@@ -147,6 +157,7 @@ class PCISerialCollector:
             raise ValueError("command_checksum must be boolean")
         self.max_frames, self.max_unrelated, self.max_bytes = max_frames, max_unrelated, max_bytes
         self.command_checksum = command_checksum
+        self.bridges = commissioning_bridges(bridges)
         self._used = False
         self._lock = threading.Lock()
         self.last_observation = None
@@ -177,12 +188,18 @@ class PCISerialCollector:
             last_clock = time.monotonic()
             return last_clock
 
-        request = encode_command(address, IdentifyCAL(4), confirmation=b"g", checksum=self.command_checksum)
+        routed = bool(self.bridges)
+        if routed:
+            request = RoutedCALCommand(address, IdentifyCAL(4), bridges=self.bridges).encode(
+                confirmation=b"g", checksum=self.command_checksum)
+            expected_route = reply_network_route(self.bridges, address)
+        else:
+            request = encode_command(address, IdentifyCAL(4), confirmation=b"g", checksum=self.command_checksum)
         sent_request = b""
         received, replies, unrelated, errors = bytearray(), [], [], []
         confirmation = None
         termination = "connection_error"
-        stream = FrameStream()
+        stream = FrameStream(routed=routed)
         sock = None
         total_bytes = 0
         connection_closed = True
@@ -229,9 +246,16 @@ class PCISerialCollector:
             if not matching:
                 other(event); return
             if event.bare:
-                if address != self.local_unit:
+                if routed or address != self.local_unit:
                     other(event, "unattributed_serial")
                     stop("correlation_error", "A bare serial reply cannot identify a remote addressed unit")
+                    return
+            elif routed:
+                if event.source != self.bridges[0] or event.route != expected_route:
+                    other(event, "foreign_reply_network"); return
+                if event.destination != self.local_unit:
+                    other(event, "wrong_destination_or_route")
+                    stop("correlation_error", "Routed serial reply destination does not match this PCI request")
                     return
             elif event.source != address:
                 other(event); return
@@ -247,7 +271,9 @@ class PCISerialCollector:
             packed = int.from_bytes(cal.data[5:9], "big") if len(cal.data) == 12 else None
             serial = f"{packed >> 12}.{packed & 4095}" if packed is not None else None
             known = packed is not None and packed not in (0, 0xFFFFFFFF)
-            replies.append(SerialReply(event.source, event.destination, serial, known,
+            # A Reply Network's outer source is the nearest bridge; record the
+            # queried unit that ends the exactly matched path instead.
+            replies.append(SerialReply(address if routed else event.source, event.destination, serial, known,
                                        cal.data, event.raw, arrived - started))
             quiet_deadline = arrived + self.quiet_period
             if confirmation != ".":
@@ -348,7 +374,8 @@ class PCISerialCollector:
         observation = SerialObservation(address, self.local_unit, sent_request, bytes(received), confirmation,
                                  tuple(replies), tuple(unrelated), tuple(errors), termination,
                                  last_clock - started, self.quiet_period, self.overall_timeout,
-                                 self.confirmation_timeout, self.max_frames, total_bytes, connection_closed)
+                                 self.confirmation_timeout, self.max_frames, total_bytes, connection_closed,
+                                 self.bridges)
         self.last_observation = observation
         if interruption is not None:
             try: interruption.pci_serial_observation = observation.as_dict()

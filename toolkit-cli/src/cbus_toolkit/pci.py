@@ -223,11 +223,14 @@ def encode_command(unit: int | None, cal: CAL, *, addressing: str = "direct",
 
 
 def decode_frame(data: bytes, *, from_pci: bool = True, checksum: bool | None = None,
-                 bare: bool = False) -> Frame:
+                 bare: bool = False, routed: bool = False) -> Frame:
     """Decode a complete ASCII frame, retaining source and routing bytes.
 
     Incoming addressed traffic supports local routing 00 and the captured
-    programming response routing 01 00. Multi-network routes are rejected.
+    programming response routing 01 00. Multi-network routes are rejected
+    unless ``routed`` admits a Reply Network: ``route`` then holds its count
+    byte (1..6) followed by every entry, the last being the replying unit,
+    and ``source`` is the nearest bridge. Correlation stays with the caller.
     A CAL-only reply is never assigned a fabricated source address. Because
     0x86 can mean either a reply CAL or a packet header, use ``bare=True``
     when the interface is known to return naked CALs; otherwise a valid
@@ -274,6 +277,8 @@ def decode_frame(data: bytes, *, from_pci: bool = True, checksum: bool | None = 
                 route, offset = payload[3:4], 4
             elif payload[3:5] == b"\x01\x00":
                 route, offset = payload[3:5], 5
+            elif routed and 1 <= payload[3] <= 6 and len(payload) > 4 + payload[3]:
+                route, offset = payload[3:4 + payload[3]], 4 + payload[3]
             else:
                 raise ProtocolError("Unsupported response routing")
             return Frame(payload[1], payload[2], decode_cals(payload[offset:]), route, raw=raw)
@@ -297,9 +302,10 @@ class FrameStream:
     """Incremental parser; consumes all complete frames and retains fragments."""
 
     def __init__(self, *, from_pci: bool = True, checksum: bool | None = None,
-                 max_buffer: int = 8192, bare: bool = False):
+                 max_buffer: int = 8192, bare: bool = False, routed: bool = False):
         if max_buffer <= 0:
             raise ValueError("max_buffer must be positive")
+        self.routed = routed
         self.from_pci = from_pci
         self.checksum = checksum
         self.bare = bare
@@ -338,7 +344,8 @@ class FrameStream:
                 raise ProtocolError("PCI frame exceeds maximum buffer size")
             line = bytes(self.buffer[:end])
             del self.buffer[:end + 1]
-            events.append(decode_frame(line, from_pci=self.from_pci, checksum=self.checksum, bare=self.bare))
+            events.append(decode_frame(line, from_pci=self.from_pci, checksum=self.checksum, bare=self.bare,
+                                       routed=self.routed))
         return events
 
     def finish(self) -> None:

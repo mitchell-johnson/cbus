@@ -84,7 +84,7 @@ class PCISerialAddressTransport:
     """
 
     def __init__(self, host, port=10001, *, local_unit, response_timeout=2.0,
-                 overall_timeout=5.0, max_bytes=4096, confirmation=b"g", command_checksum=False):
+                 overall_timeout=5.0, max_bytes=4096, confirmation=b"g", command_checksum=False, bridges=()):
         if not isinstance(host, str) or "%" in host:
             raise ValueError("A numeric IPv4 or IPv6 endpoint without a scope suffix is required")
         try: address = ipaddress.ip_address(host)
@@ -95,7 +95,8 @@ class PCISerialAddressTransport:
         if type(local_unit) is not int or not 0 <= local_unit <= 255:
             raise ValueError("local_unit must be an integer in 0..255")
         # Pure codec preflight also validates confirmation and outgoing checksum.
-        encode_serial_address("0.1", 2, confirmation=confirmation, command_checksum=command_checksum)
+        encode_serial_address("0.1", 2, confirmation=confirmation, command_checksum=command_checksum,
+                              bridges=bridges)
         if type(max_bytes) is not int or not 1 <= max_bytes <= 4096:
             raise ValueError("max_bytes must be an integer in 1..4096")
         self.response_timeout = _seconds(response_timeout, "response_timeout")
@@ -105,6 +106,9 @@ class PCISerialAddressTransport:
         self.host, self.port, self.local_unit = str(address), port, local_unit
         self._family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
         self.max_bytes, self.confirmation, self.command_checksum = max_bytes, confirmation, command_checksum
+        # Routed transport sends the source-routed form once and correlates
+        # only the exact Reply Network receipt; () is the local network.
+        self.bridges = tuple(bridges)
         self._lock = threading.Lock(); self._used = False
         self._absolute_deadline = None  # Internal parent admission budget; cannot extend the local deadline.
         self.last_exchange = None; self.last_error = None
@@ -115,9 +119,10 @@ class PCISerialAddressTransport:
     def send_serial_address(self, serial, destination):
         """Preflight pure inputs, send once, and return only capture evidence."""
         request = encode_serial_address(serial, destination, confirmation=self.confirmation,
-                                        command_checksum=self.command_checksum)
+                                        command_checksum=self.command_checksum, bridges=self.bridges)
         empty = decode_serial_address_receipt(b"", serial=serial, destination=destination,
-                                             local_unit=self.local_unit, confirmation=self.confirmation)
+                                             local_unit=self.local_unit, confirmation=self.confirmation,
+                                             bridges=self.bridges)
         with self._lock:
             if self._used:
                 raise RuntimeError("Selected-serial transport is one-shot; requests must never be replayed automatically")
@@ -214,7 +219,8 @@ class PCISerialAddressTransport:
                 except BaseException as error: fail(error, "close")
         try:
             receipt = decode_serial_address_receipt(received, serial=empty.expected_serial,
-                destination=empty.expected_destination, local_unit=self.local_unit, confirmation=self.confirmation)
+                destination=empty.expected_destination, local_unit=self.local_unit, confirmation=self.confirmation,
+                bridges=self.bridges)
         except BaseException as error: fail(error, "receipt_parse")
         try: clock()
         except BaseException as error: fail(error, "final_clock")

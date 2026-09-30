@@ -118,7 +118,7 @@ class SelectedSerialTests(unittest.TestCase):
         rows=[json.loads(line) for line in (Path(__file__).resolve().parents[2]/'rust'/'testdata'/'vectors'
               /'selected_serial_plan.jsonl').read_text().splitlines() if line.strip()]
         route_reasons={'invalid_route','route_binding','route_proof'}
-        self.assertEqual(len(rows),35)
+        self.assertEqual(len(rows),40)
         with tempfile.TemporaryDirectory() as tmp:
             for row in rows:
                 if row['kind'] not in ('plan','raw'): continue
@@ -143,26 +143,18 @@ class SelectedSerialTests(unittest.TestCase):
                 '.cbus-selected-serial-attempt-sha256-55af93616aaeacb668e4b52f284a90cba1ccd7792fc77491caf22c44942b98cf.json')
         self.assertNotIn('route',SelectedSerialPlan.from_dict(rows[0]['document']).as_dict())
 
-    def test_routed_plan_builds_but_apply_and_verify_refuse_before_io(self):
+    def test_invalid_routed_plan_fields_refuse_before_io(self):
+        # Routed observation, binding and execution are covered by
+        # test_pci_selected_serial_routed over scripted bridge peers.
         sha='ab'*32
-        with tempfile.TemporaryDirectory() as tmp,conversation(successful_responses()+[b'g.'+BARE_PCI,OPTIONS]) as (endpoint,state):
+        with conversation([]) as (endpoint,state):
             subject=manager(endpoint)
             for route,binding,reason in (([],sha,'invalid_route'),([1],None,'route_binding'),
                                          (None,sha,'route_binding'),([16],sha,'route_proof')):
                 with self.subTest(route=route,binding=binding),self.assertRaises(implementation.SelectedSerialPlanError) as caught:
                     subject.plan(A,6,route=route,project_sha256=binding)
                 self.assertEqual(caught.exception.reason,reason)
-            self.assertEqual(state['requests'],[])
-            plan=subject.plan(A,6,route=[1,2],project_sha256=sha)
-            self.assertEqual(plan.as_dict()['route'],[1,2]);self.assertEqual(plan.as_dict()['project_sha256'],sha)
-            baseline=list(state['requests'])
-            journal=Path(tmp)/'journal.json'
-            for action in (lambda:subject.apply(plan,recovery_path=journal),lambda:subject.verify(plan)):
-                with self.assertRaises(implementation.SelectedSerialPlanError) as caught:action()
-                self.assertEqual(caught.exception.reason,'routed_execution_unsupported')
-            self.assertEqual(state['requests'],baseline)
-            self.assertFalse(subject._apply_used)
-            self.assertEqual(list(Path(tmp).iterdir()),[])
+        self.assertEqual(state['requests'],[])
 
     def test_attempt_marker_refuses_repeat_across_journals_before_io(self):
         with tempfile.TemporaryDirectory() as tmp:

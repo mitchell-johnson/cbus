@@ -2123,15 +2123,25 @@ def build_parser():
     for name, default in (("max-mmi-frames", 7), ("max-serial-frames", 7), ("max-unrelated", 64), ("max-bytes", 65536)):
         p.add_argument("--" + name, type=_number, default=default)
     p.add_argument("--checksum", action="store_true", help="Use the configured SRCHK command checksum mode")
+
+    def route_options(parser):
+        parser.add_argument("--project", type=Path,
+                            help="Routed mode: saved XML/CBZ project whose topology binds the bridge route")
+        parser.add_argument("--source-network", type=_byte, help="Routed mode: network attached to this PCI/CNI")
+        parser.add_argument("--target-network", type=_byte, help="Routed mode: far network holding the duplicate serials")
+
+    route_options(p)
     p = serial_ops.add_parser("apply", help="Repeat live guards and send exactly one command with a durable recovery journal")
     p.add_argument("plan", type=Path, help="Validated plan; endpoint and timing settings come from this file")
     p.add_argument("--recovery", type=Path, required=True, help="New recovery journal; caller must exclusively own commissioning access")
     p.add_argument("--attempt-store", type=Path, default=None,
                    help="Existing shared directory for the attempt marker (shared with Rust serial-apply), so repeats contend across journal locations")
+    route_options(p)
     p = serial_ops.add_parser("verify", help="Collect a fresh full inventory without replaying an address command")
     selection = p.add_mutually_exclusive_group(required=True)
     selection.add_argument("--plan", type=Path, help="Read the expected change from a saved plan")
     selection.add_argument("--recovery", type=Path, help="Read the plan from a recovery journal")
+    route_options(p)
     p = serial_ops.add_parser("reconcile", help="Move the database unit of a verified observed_expected_change journal; dry run unless --apply")
     p.add_argument("--journal", type=Path, required=True, help="Completed serial-address apply journal")
     p.add_argument("--project", type=Path, help="Legacy XML or CBZ project file")
@@ -3149,7 +3159,7 @@ def _serial_address(args):
 
 
 def _selected_serial_cli(args):
-    from .pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan
+    from .pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan, route_from_project
 
     def new_path(path):
         if path.exists() or path.is_symlink():
@@ -3165,7 +3175,14 @@ def _selected_serial_cli(args):
         coordinator = SelectedSerialCoordinator(args.host, args.port, local_unit=args.local_unit,
             expected_local_serial=args.expected_local_serial, overall_timeout=args.timeout,
             command_checksum=args.checksum, **{name: getattr(args, name) for name in names})
-        plan = coordinator.plan(args.serial, args.destination, source=args.source)
+        routing = {}
+        if (args.project, args.source_network, args.target_network) != (None, None, None):
+            if None in (args.project, args.source_network, args.target_network):
+                raise ValueError("Routed planning requires --project, --source-network and --target-network")
+            route, digest = route_from_project(args.project, source_network=args.source_network,
+                                               target_network=args.target_network)
+            routing = {"route": route, "project_sha256": digest}
+        plan = coordinator.plan(args.serial, args.destination, source=args.source, **routing)
         document = plan.as_dict()
         with args.output.open("x", encoding="utf-8") as output:
             json.dump(document, output, ensure_ascii=False, allow_nan=False, indent=2)
@@ -3181,8 +3198,10 @@ def _selected_serial_cli(args):
     document = plan.as_dict()
     coordinator = SelectedSerialCoordinator(**document["endpoint"], local_unit=document["local_unit"],
         expected_local_serial=document["expected_local_serial"], **document["settings"])
-    result = (coordinator.apply(plan, recovery_path=args.recovery, attempt_store=args.attempt_store)
-              if args.action == "apply" else coordinator.verify(plan))
+    binding = {"project": args.project, "source_network": args.source_network,
+               "target_network": args.target_network}
+    result = (coordinator.apply(plan, recovery_path=args.recovery, attempt_store=args.attempt_store, **binding)
+              if args.action == "apply" else coordinator.verify(plan, **binding))
     return result.as_dict(), int(not result.observed_expected_change)
 
 

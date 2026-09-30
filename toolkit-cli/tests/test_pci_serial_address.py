@@ -202,3 +202,44 @@ class SelectedSerialCodecTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class RoutedSelectedSerialCodecTests(unittest.TestCase):
+    def test_shared_routed_encode_vectors(self):
+        from pathlib import Path
+        rows=[json.loads(line) for line in (Path(__file__).resolve().parents[2]/'rust'/'testdata'/'vectors'
+              /'serial_address.jsonl').read_text().splitlines() if line.strip()]
+        routed=[row for row in rows if row['kind'] in ('encode_routed','encode_routed_error')]
+        self.assertGreaterEqual(len(routed),4)
+        for row in routed:
+            with self.subTest(row=row['id']):
+                call=lambda:encode_serial_address(row['serial'],row['destination'],bridges=row['bridges'],
+                    command_checksum=row['command_checksum'],confirmation=row['confirmation'].encode())
+                if row['kind']=='encode_routed': self.assertEqual(call(),row['expect_frame_ascii'].encode())
+                elif not row['bridges']:
+                    # Rust's separate routed encoder refuses no bridges; this
+                    # single Python encoder treats an empty route as direct.
+                    self.assertEqual(call(),encode_serial_address(row['serial'],row['destination'],
+                        command_checksum=row['command_checksum'],confirmation=row['confirmation'].encode()))
+                else:
+                    with self.assertRaises(ValueError):call()
+
+    def test_routed_receipt_requires_the_exact_reply_network(self):
+        one=literal_frame('86FD1001068700'+'18B10616'+'0000')
+        six=literal_frame('86FD1006FCFBFAF9F8068700'+'18B10616'+'0000')
+        self.assertEqual(parse(b'g.'+one,bridges=[253]).status,'matched')
+        self.assertEqual(parse(b'g.'+six,bridges=[253,252,251,250,249,248]).status,'matched')
+        self.assertEqual(parse(b'g.'+one,bridges=[253]).as_dict()['route'],[253])
+        for data,bridges,issue in ((b'g.'+one,[252],'source_mismatch'),
+                                   (b'g.'+six,[253,252,251,250,249,247],'route_mismatch'),
+                                   (b'g.'+literal_frame('86FD1001078700'+'18B10616'+'0000'),[253],'route_mismatch'),
+                                   (b'g.'+FRAME_A,[253],'source_mismatch'),
+                                   (b'g.'+one,[],'route_mismatch')):
+            with self.subTest(issue=issue,bridges=bridges):
+                if not bridges:
+                    # A direct request cannot parse a Reply Network at all.
+                    self.assertEqual(parse(data).status,'invalid');continue
+                receipt=parse(data,bridges=bridges)
+                self.assertEqual(receipt.status,'unverified');self.assertIn(issue,receipt.issues)
+        self.assertEqual(parse(one+b'g.',bridges=[253]).status,'ambiguous')
+        self.assertEqual(parse(b'g.'+one+one,bridges=[253]).status,'ambiguous')

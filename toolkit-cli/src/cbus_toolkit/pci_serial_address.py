@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .pci import Confirmation, Frame, FrameStream, Notification, ProtocolError, ReplyCAL
+from .pci_routing import commissioning_bridges, reply_network_route
 from .serials import parse_native_serial
 
 
@@ -30,19 +31,25 @@ def _confirmation(value):
     return value
 
 
-def encode_serial_address(serial, destination, *, command_checksum=False, confirmation=b"g"):
+def encode_serial_address(serial, destination, *, command_checksum=False, confirmation=b"g", bridges=()):
     """Encode one explicit serial/destination broadcast; do not transmit it.
 
     Original co.a(cn,int) checksums 00 + four big-endian serial bytes + target.
     Outgoing SRCHK adds a distinct checksum over the whole binary packet.
     The frame has no source-address field and cannot enforce source location.
+    With ``bridges`` the same CAL body is source-routed as a point-to-point-
+    to-multipoint packet (03, nearest bridge, 9 x count, remaining bridges,
+    FF 0F), the ``encode_serial_address_routed`` form in ``cbus-protocol``.
     """
     _, packed = _selected_serial(serial)
     destination, confirmation = _destination(destination), _confirmation(confirmation)
     if type(command_checksum) is not bool:
         raise ValueError("command_checksum must be boolean")
+    bridges = commissioning_bridges(bridges)
     body = b"\x00" + packed + bytes([destination])
-    payload = b"\x05\xff\x00\x0f" + body + bytes([-sum(body) & 255])
+    header = (bytes((0x03, bridges[0], 9 * len(bridges), *bridges[1:], 0xFF, 0x0F)) if bridges
+              else b"\x05\xff\x00\x0f")
+    payload = header + body + bytes([-sum(body) & 255])
     if command_checksum:
         payload += bytes([-sum(payload) & 255])
     return b"\\" + payload.hex().upper().encode("ascii") + confirmation + b"\r"
@@ -82,6 +89,8 @@ class SerialAddressReceipt:
     frames: tuple[Frame, ...]
     notifications: tuple[str, ...]
     pending: bytes
+    # Outgoing bridges of a routed request; () is the local network.
+    bridges: tuple[int, ...] = ()
 
     @property
     def matched(self):
@@ -95,7 +104,7 @@ class SerialAddressReceipt:
     def persistence_verified(self): return False
 
     def as_dict(self):
-        return {"format": "cbus-pci-serial-address-receipt-v1", "status": self.status,
+        value = {"format": "cbus-pci-serial-address-receipt-v1", "status": self.status,
                 "receipt_matches_request": self.matched, "expected_serial": self.expected_serial,
                 "expected_destination": self.expected_destination, "local_unit": self.local_unit,
                 "expected_confirmation": self.expected_confirmation.decode("ascii"), "raw_hex": self.raw.hex(),
@@ -107,13 +116,18 @@ class SerialAddressReceipt:
                 "notifications": list(self.notifications), "pending_hex": self.pending.hex(),
                 "movement_verified": False, "persistence_verified": False,
                 "requires_independent_verification": True, "io_performed": False}
+        if self.bridges: value["route"] = list(self.bridges)
+        return value
 
 
-def decode_serial_address_receipt(data, *, serial, destination, local_unit, confirmation=b"g"):
+def decode_serial_address_receipt(data, *, serial, destination, local_unit, confirmation=b"g", bridges=()):
     """Classify one bounded captured PCI exchange without I/O or state changes.
 
     A matched exchange requires one successful expected confirmation before
     one exact direct 86/target/local/00 receipt with CAL 87/00/selected serial.
+    With ``bridges`` the receipt must instead arrive on the exact Reply
+    Network: outer source the nearest bridge, destination this PCI, then the
+    remaining bridges and the new address. Any other path is a mismatch.
     Bare receipts, other headers/routes, missing confirmation and mismatches
     remain unverified. Multiple/foreign/reordered responses are ambiguous.
     Framing/checksum errors are invalid; missing/truncated input is incomplete.
@@ -128,7 +142,10 @@ def decode_serial_address_receipt(data, *, serial, destination, local_unit, conf
     raw = bytes(data)
     if len(raw) > 4096:
         raise ValueError("Receipt exceeds the supported 4096-byte captured exchange limit")
-    stream = FrameStream(max_buffer=4096)
+    bridges = commissioning_bridges(bridges)
+    expected_source = bridges[0] if bridges else destination
+    expected_route = reply_network_route(bridges, destination) if bridges else b"\x00"
+    stream = FrameStream(max_buffer=4096, routed=bool(bridges))
     events, issues, errors = [], [], []
     invalid = False
     try:
@@ -187,9 +204,9 @@ def decode_serial_address_receipt(data, *, serial, destination, local_unit, conf
             issues.append("bare_receipt_unattributed")
         elif reply.header != 0x86:
             issues.append("unsupported_receipt_header")
-        if reply.source != destination: issues.append("source_mismatch")
+        if reply.source != expected_source: issues.append("source_mismatch")
         if reply.destination != local_unit: issues.append("local_destination_mismatch")
-        if reply.route != b"\x00": issues.append("route_mismatch")
+        if reply.route != expected_route: issues.append("route_mismatch")
         if reply.packed_serial != packed: issues.append("serial_mismatch")
         if not reply.serial_known: issues.append("unknown_serial")
     if stream.buffer:
@@ -202,4 +219,5 @@ def decode_serial_address_receipt(data, *, serial, destination, local_unit, conf
     elif issues: status = "unverified"
     else: status = "matched"
     return SerialAddressReceipt(expected_serial, destination, local_unit, confirmation, raw, status,
-        tuple(dict.fromkeys(issues)), tuple(errors), confirmations, tuple(replies), frames, notifications, bytes(stream.buffer))
+        tuple(dict.fromkeys(issues)), tuple(errors), confirmations, tuple(replies), frames, notifications,
+        bytes(stream.buffer), bridges)

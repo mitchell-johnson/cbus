@@ -13,6 +13,7 @@ import threading
 import time
 
 from .pci import Confirmation, Frame, Notification, ProtocolError, decode_frame
+from .pci_routing import commissioning_bridges, encode_routed_install_mmi
 from .pci_serials import _byte, _seconds
 
 
@@ -23,21 +24,59 @@ class MMIBlock:
     states: tuple[int, ...]
     marker: int
     raw: bytes
+    # Routed blocks only: the replying unit ending the exact Reply Network.
+    reply_unit: int | None = None
 
     @property
     def end(self): return self.start + len(self.states)
 
     def as_dict(self):
-        return {"application": self.application, "start": self.start, "end_exclusive": self.end,
-                "states": list(self.states), "marker": self.marker, "raw_hex": self.raw.hex()}
+        value = {"application": self.application, "start": self.start, "end_exclusive": self.end,
+                 "states": list(self.states), "marker": self.marker, "raw_hex": self.raw.hex()}
+        if self.reply_unit is not None: value["reply_unit"] = self.reply_unit
+        return value
 
 
-def _decode_line(raw):
+@dataclass(frozen=True)
+class ForeignLine:
+    """A checksummed line that cannot belong to the routed MMI request."""
+    raw: bytes
+    reason: str
+
+
+def _decode_routed_line(raw, data, bridges, local_unit):
+    """One Reply Network extended-status block, or foreign traffic.
+
+    A routed MMI answer is an addressed 06/86 frame from the nearest bridge
+    to the local PCI whose count equals the route length and whose entries
+    repeat the remaining bridges, then the replying unit. Its single CAL is
+    extended status (E0|length, binary coding 00/40, application FF, block
+    start, two-bit states). The replying unit is recorded, not required.
+    """
+    if data[0] & 0xE0 == 0xC0: return ForeignLine(raw, "direct_mmi_block")
+    count = len(bridges)
+    if data[0] not in (0x06, 0x86) or len(data) < 6 or data[3] > 6:
+        return ForeignLine(raw, "unrouted_frame")
+    if (data[1] != bridges[0] or data[2] != local_unit or data[3] != count or
+            tuple(data[4:3 + count]) != bridges[1:]):
+        return ForeignLine(raw, "foreign_reply_network")
+    cal = data[4 + count:-1]
+    if (len(cal) < 4 or cal[0] & 0xE0 != 0xE0 or (cal[0] & 0x1F) + 1 != len(cal) or
+            cal[1] not in (0x00, 0x40) or cal[2] != 0xFF):
+        return ForeignLine(raw, "unsupported_routed_frame")
+    states = tuple((value >> shift) & 3 for value in cal[4:] for shift in (0, 2, 4, 6))
+    if cal[3] + len(states) > 256:
+        raise ProtocolError("MMI block extends beyond address 255")
+    return MMIBlock(cal[2], cal[3], states, cal[0], raw, data[3 + count])
+
+
+def _decode_line(raw, bridges=(), local_unit=None):
     if not raw or len(raw) % 2 or any(byte not in b"0123456789ABCDEFabcdef" for byte in raw):
         raise ProtocolError("MMI transport frame must contain even-length hexadecimal text")
     data = bytes.fromhex(raw.decode("ascii"))
     if len(data) < 2 or sum(data) & 255:
         raise ProtocolError("Invalid C-Bus checksum")
+    if bridges: return _decode_routed_line(raw, data, bridges, local_unit)
     if data[0] & 0xE0 != 0xC0:
         return decode_frame(raw, checksum=True)
     count = data[0] & 31
@@ -50,7 +89,9 @@ def _decode_line(raw):
 
 
 class _MMIStream:
-    def __init__(self): self.buffer = bytearray()
+    def __init__(self, bridges=(), local_unit=None):
+        self.buffer = bytearray()
+        self.bridges, self.local_unit = tuple(bridges), local_unit
 
     def feed_byte(self, byte):
         if byte in (0x11, 0x13): return ()
@@ -71,7 +112,7 @@ class _MMIStream:
                 if len(self.buffer) > 8192: raise ProtocolError("MMI transport frame exceeds buffer limit")
                 break
             raw = bytes(self.buffer[:end])
-            event = _decode_line(raw)
+            event = _decode_line(raw, self.bridges, self.local_unit)
             del self.buffer[:end + 1]; events.append(event)
         return events
 
@@ -94,6 +135,8 @@ class MMIObservation:
     max_frames: int
     bytes_received: int
     connection_closed: bool
+    # Outgoing bridges of a routed observation; () is the local network.
+    bridges: tuple[int, ...] = ()
 
     @property
     def coverage_complete(self): return all(state is not None for state in self.states)
@@ -118,15 +161,18 @@ class MMIObservation:
 
     @property
     def complete(self):
+        # The local PCI is absent from a far network, so a routed observation
+        # has no local-presence anchor; its Reply Network is the correlation.
         return (self.termination == "coverage_complete" and self.confirmation == "."
-                and self.coverage_complete and self.local_present and self.connection_closed and not self.errors)
+                and self.coverage_complete and (self.local_present or bool(self.bridges))
+                and self.connection_closed and not self.errors)
 
     @property
     def status(self):
         return "incomplete" if not self.complete else "mmi_errors" if self.error_addresses else "complete"
 
     def as_dict(self):
-        return {"format": "cbus-pci-mmi-observation-v1", "status": self.status, "complete": self.complete,
+        value = {"format": "cbus-pci-mmi-observation-v1", "status": self.status, "complete": self.complete,
                 "coverage_complete": self.coverage_complete, "local_unit": self.local_unit,
                 "local_present": self.local_present, "addresses": list(self.addresses),
                 "states": list(self.states), "error_addresses": list(self.error_addresses),
@@ -141,6 +187,8 @@ class MMIObservation:
                 "scope": "standard_direct_install_mmi", "serials_observed": False,
                 "physical_addresses_changed": False, "database_updated": False, "automatic_retries": 0,
                 "connection_closed": self.connection_closed}
+        if self.bridges: value.update(scope="routed_install_mmi", route=list(self.bridges))
+        return value
 
 
 class PCIMMICollector:
@@ -148,14 +196,16 @@ class PCIMMICollector:
 
     The caller supplies the known local PCI address and exclusive transport
     ownership. No SMART reset, local-address discovery, configuration or write
-    occurs. Standard direct C/D blocks are supported; routed/extended MMI is
-    rejected. A complete observation establishes contiguous protocol coverage,
-    not serial identity, uniqueness or an atomic physical network snapshot.
+    occurs. Standard direct C/D blocks are supported. With ``bridges`` the
+    one request is the routed PPM MMI and only exact Reply Network extended
+    status blocks count; direct blocks and other routes are unrelated. A
+    complete observation establishes contiguous protocol coverage, not serial
+    identity, uniqueness or an atomic physical network snapshot.
     """
 
     def __init__(self, host, port=10001, *, local_unit, overall_timeout=10.0,
                  confirmation_timeout=2.0, response_timeout=5.5, max_frames=7,
-                 max_unrelated=64, max_bytes=65536, command_checksum=False):
+                 max_unrelated=64, max_bytes=65536, command_checksum=False, bridges=()):
         if not isinstance(host, str) or "%" in host:
             raise ValueError("MMI collector requires a numeric IPv4 or IPv6 address without a scope suffix")
         try: numeric = ipaddress.ip_address(host)
@@ -175,6 +225,7 @@ class PCIMMICollector:
         if type(command_checksum) is not bool: raise ValueError("command_checksum must be boolean")
         self.max_frames, self.max_unrelated, self.max_bytes = max_frames, max_unrelated, max_bytes
         self.command_checksum = command_checksum
+        self.bridges = commissioning_bridges(bridges)
         self._used = False
         self._lock = threading.Lock()
         self.last_observation = None
@@ -197,12 +248,13 @@ class PCIMMICollector:
             last_clock = time.monotonic()
             return last_clock
 
-        request = b"\\05FF00FAFF00" + (b"03" if self.command_checksum else b"") + b"g\r"
+        request = (encode_routed_install_mmi(self.bridges, checksum=self.command_checksum) if self.bridges
+                   else b"\\05FF00FAFF00" + (b"03" if self.command_checksum else b"") + b"g\r")
         sent_request = b""
         states, blocks, unrelated, errors = [None] * 256, [], [], []
         received, total_bytes, confirmation = bytearray(), 0, None
         termination, sock, connection_closed = "connection_error", None, True
-        stream = _MMIStream()
+        stream = _MMIStream(self.bridges, self.local_unit)
         overall_deadline = started + self.overall_timeout
         if self._absolute_deadline is not None:
             overall_deadline = min(overall_deadline, self._absolute_deadline)
@@ -217,6 +269,8 @@ class PCIMMICollector:
 
         def other(event, reason="unrelated"):
             if isinstance(event, MMIBlock): item = {"kind": "mmi", **event.as_dict()}
+            elif isinstance(event, ForeignLine): item = {"kind": "routed_frame", "raw_hex": event.raw.hex(),
+                "line_reason": event.reason}
             elif isinstance(event, Frame): item = {"kind": "frame", "source": event.source,
                 "destination": event.destination, "route_hex": event.route.hex(), "raw_hex": event.raw.hex()}
             elif isinstance(event, Confirmation): item = {"kind": "confirmation", "code": event.code.decode(), "status": event.status}
@@ -239,7 +293,8 @@ class PCIMMICollector:
                 other(event)
                 if event.code == "!": stop("rejected", "PCI reported busy or rejected the request")
                 return
-            if not isinstance(event, MMIBlock): other(event); return
+            if not isinstance(event, MMIBlock):
+                other(event, event.reason if isinstance(event, ForeignLine) else "unrelated"); return
             if event.application != 255: other(event, "other_application"); return
             blocks.append(event)
             if confirmation != ".":
@@ -298,7 +353,8 @@ class PCIMMICollector:
                     if termination != "collecting": break
                 if termination == "collecting" and next_start == 256:
                     if stream.buffer: stop("truncated_frame", "Extra partial data followed completed MMI coverage")
-                    elif states[self.local_unit] == 0: stop("local_absent", "Complete MMI does not include the supplied local PCI address")
+                    elif not self.bridges and states[self.local_unit] == 0:
+                        stop("local_absent", "Complete MMI does not include the supplied local PCI address")
                     else: stop("coverage_complete")
         except ProtocolError as error: stop("framing_error", str(error))
         except (OSError, TimeoutError) as error: stop("transport_error" if sent_request else "connection_error", str(error))
@@ -319,7 +375,8 @@ class PCIMMICollector:
             stop("interrupted", "Final clock sample failed: " + type(error).__name__ + ": " + str(error))
         observation = MMIObservation(self.local_unit, tuple(states), tuple(blocks), sent_request, bytes(received), confirmation,
             tuple(unrelated), tuple(errors), termination, last_clock - started, self.overall_timeout,
-            self.confirmation_timeout, self.response_timeout, self.max_frames, total_bytes, connection_closed)
+            self.confirmation_timeout, self.response_timeout, self.max_frames, total_bytes, connection_closed,
+            self.bridges)
         self.last_observation = observation
         if interruption is not None:
             try: interruption.pci_mmi_observation = observation.as_dict()

@@ -210,3 +210,50 @@ def inspect_received_cal_route(raw: bytes) -> ReceivedCALRoute:
         raise ProtocolError('Expected exactly one CAL after the received route')
     return ReceivedCALRoute(payload[0], payload[1], payload[2],
                             tuple(payload[4:offset]), cal, payload[-1], data)
+
+
+def commissioning_bridges(bridges) -> tuple[int, ...]:
+    """Validate an outgoing commissioning route: 1..6 distinct bytes in 1..254.
+
+    This is the routed selected-serial plan rule; ``()`` means direct and is
+    returned unchanged. Zero (programming marker) and 255 (broadcast) never
+    name a bridge here.
+    """
+    if type(bridges) not in (tuple, list):
+        raise TypeError('bridges must be a tuple or list of bridge addresses')
+    if not bridges:
+        return ()
+    if (len(bridges) > 6 or len(set(bridges)) != len(bridges) or
+            any(type(value) is not int or not 1 <= value <= 254 for value in bridges)):
+        raise ValueError('A commissioning route has 1..6 distinct bridge addresses in 1..254')
+    return tuple(bridges)
+
+
+def encode_routed_install_mmi(bridges, *, checksum: bool = False, confirmation: bytes = b'g') -> bytes:
+    """Encode the routed installation MMI request (native NET PINGU form).
+
+    Point-to-point-to-multipoint header 03, nearest bridge, 9 x bridge count,
+    the remaining bridges, then application FF and SAL FA FF 00. It matches
+    ``cbus_protocol::pci_observation::routed_installation_mmi_request``.
+    """
+    bridges = commissioning_bridges(bridges)
+    if not bridges:
+        raise ValueError('A routed installation MMI requires at least one bridge')
+    _boolean(checksum, 'checksum')
+    payload = bytes((0x03, bridges[0], 9 * len(bridges), *bridges[1:], 0xFF, 0xFA, 0xFF, 0x00))
+    if checksum:
+        payload = add_checksum(payload)
+    return b'\\' + payload.hex().upper().encode('ascii') + _confirmation(confirmation) + b'\r'
+
+
+def reply_network_route(bridges, unit: int) -> bytes:
+    """Expected ``Frame.route`` bytes of a Reply Network from ``unit``.
+
+    The count byte equals the bridge count; entries are every bridge after
+    the nearest one followed by the replying unit. The nearest bridge is the
+    frame's outer source and the local PCI its destination.
+    """
+    bridges = commissioning_bridges(bridges)
+    if not bridges:
+        raise ValueError('A Reply Network requires at least one bridge')
+    return bytes((len(bridges), *bridges[1:], _byte(unit, 'unit')))

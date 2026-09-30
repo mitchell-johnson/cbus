@@ -45,6 +45,37 @@ pub fn installation_mmi_request(command_checksum: bool) -> Vec<u8> {
     encode_command(&[0x05, 0xFF, 0x00, 0xFA, 0xFF, 0x00], command_checksum)
 }
 
+/// Encode an addressed CAL IDENTIFY sent through `bridges` (nearest first)
+/// using confirmation code `g`: header `46`, nearest bridge, `9 x count`,
+/// the remaining bridges, then the far unit. No bridges is the direct form.
+pub fn routed_identify_request(
+    bridges: &[u8],
+    address: u8,
+    attribute: u8,
+    command_checksum: bool,
+) -> Vec<u8> {
+    let Some((first, rest)) = bridges.split_first() else {
+        return identify_request(address, attribute, command_checksum);
+    };
+    let mut payload = vec![0x46, *first, (bridges.len() as u8).wrapping_mul(9)];
+    payload.extend_from_slice(rest);
+    payload.extend_from_slice(&[address, 0x21, attribute]);
+    encode_command(&payload, command_checksum)
+}
+
+/// Encode the installation MMI request for the network reached through
+/// `bridges` (native `NET PINGU` point-to-point-to-multipoint form) using
+/// confirmation code `g`. No bridges is the direct form.
+pub fn routed_installation_mmi_request(bridges: &[u8], command_checksum: bool) -> Vec<u8> {
+    let Some((first, rest)) = bridges.split_first() else {
+        return installation_mmi_request(command_checksum);
+    };
+    let mut payload = vec![0x03, *first, (bridges.len() as u8).wrapping_mul(9)];
+    payload.extend_from_slice(rest);
+    payload.extend_from_slice(&[0xFF, 0xFA, 0xFF, 0x00]);
+    encode_command(&payload, command_checksum)
+}
+
 /// One checksummed frame line returned by a PCI.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PciFrame {
@@ -54,7 +85,9 @@ pub struct PciFrame {
     pub source: Option<u8>,
     /// Destination unit for an addressed response.
     pub destination: Option<u8>,
-    /// Exact direct/programming route bytes.
+    /// Exact direct/programming route bytes. A routed parse also admits a
+    /// Reply Network: its count byte (1..=6) followed by every entry, the
+    /// last being the replying unit; `source` is then the nearest bridge.
     pub route: Vec<u8>,
     /// Decoded CAL messages in wire order.
     pub cals: Vec<Cal>,
@@ -153,6 +186,17 @@ fn decode_observation_cals(mut data: &[u8]) -> Result<Vec<Cal>, String> {
 /// captured programming route `01 00`. A CAL-only reply is otherwise decoded
 /// as bare without fabricating a source address.
 pub fn parse_frame_line(line: &[u8]) -> Result<PciFrame, String> {
+    parse_frame_line_with_routes(line, false)
+}
+
+/// Parse one frame line like [`parse_frame_line`], additionally admitting a
+/// Reply Network route of one to six entries. Correlation stays with the
+/// caller, which compares the whole route with its expected path.
+pub fn parse_routed_frame_line(line: &[u8]) -> Result<PciFrame, String> {
+    parse_frame_line_with_routes(line, true)
+}
+
+fn parse_frame_line_with_routes(line: &[u8], routed: bool) -> Result<PciFrame, String> {
     if !is_hex_line(line) {
         return Err("Frame must contain an even number of hexadecimal characters".to_string());
     }
@@ -169,6 +213,10 @@ pub fn parse_frame_line(line: &[u8]) -> Result<PciFrame, String> {
                 (vec![0x00], 4)
             } else if body[3..5] == [0x01, 0x00] {
                 (vec![0x01, 0x00], 5)
+            } else if routed && (1..=6).contains(&body[3]) && body.len() > 4 + usize::from(body[3])
+            {
+                let end = 4 + usize::from(body[3]);
+                (body[3..end].to_vec(), end)
             } else {
                 addressed_error = Some("Unsupported response routing".to_string());
                 (Vec::new(), 0)
@@ -225,6 +273,16 @@ pub fn parse_frame_line(line: &[u8]) -> Result<PciFrame, String> {
 /// confirmations, and checksummed frame lines are returned in wire order;
 /// an incomplete tail is returned separately.
 pub fn parse_capture(raw: &[u8]) -> Result<(Vec<PciEvent>, Vec<u8>), String> {
+    parse_capture_with_routes(raw, false)
+}
+
+/// Incrementally parse a captured PCI response stream whose frames may carry
+/// a Reply Network route (see [`parse_routed_frame_line`]).
+pub fn parse_routed_capture(raw: &[u8]) -> Result<(Vec<PciEvent>, Vec<u8>), String> {
+    parse_capture_with_routes(raw, true)
+}
+
+fn parse_capture_with_routes(raw: &[u8], routed: bool) -> Result<(Vec<PciEvent>, Vec<u8>), String> {
     let mut buffer: Vec<u8> = Vec::new();
     let mut events = Vec::new();
     for &byte in raw {
@@ -268,7 +326,9 @@ pub fn parse_capture(raw: &[u8]) -> Result<(Vec<PciEvent>, Vec<u8>), String> {
             }
             let line: Vec<u8> = buffer.drain(..end).collect();
             buffer.remove(0);
-            events.push(PciEvent::Frame(parse_frame_line(&line)?));
+            events.push(PciEvent::Frame(parse_frame_line_with_routes(
+                &line, routed,
+            )?));
         }
     }
     Ok((events, buffer))
@@ -287,6 +347,8 @@ pub struct MmiBlock {
     pub marker: u8,
     /// Original hexadecimal line bytes, excluding the line terminator.
     pub raw: Vec<u8>,
+    /// Routed blocks only: the replying unit ending the exact Reply Network.
+    pub reply_unit: Option<u8>,
 }
 
 /// One event from an incremental installation MMI response capture.
@@ -348,11 +410,97 @@ fn parse_mmi_line(line: &[u8]) -> Result<Option<MmiBlock>, String> {
         states,
         marker: data[0],
         raw: line.to_vec(),
+        reply_unit: None,
+    }))
+}
+
+/// One Reply Network extended-status MMI block for `bridges`, or `None` for
+/// traffic that cannot belong to that routed request.
+///
+/// The frame is addressed `06`/`86` from the nearest bridge to `local`, its
+/// count equals the bridge count, and its entries repeat the remaining
+/// bridges followed by the replying unit (recorded, not required). Its single
+/// CAL is extended status: `E0|length`, binary coding `00`/`40`, application
+/// `FF`, block start and two-bit states.
+fn parse_routed_mmi_line(
+    line: &[u8],
+    bridges: &[u8],
+    local: u8,
+) -> Result<Option<MmiBlock>, String> {
+    if !is_hex_line(line) {
+        return Err("MMI transport frame must contain even-length hexadecimal text".to_string());
+    }
+    let data = hex::decode(line)
+        .map_err(|_| "MMI transport frame must contain even-length hexadecimal text".to_string())?;
+    if data.len() < 2 || !validate_cbus_checksum(&data) {
+        return Err("Invalid C-Bus checksum".to_string());
+    }
+    let count = bridges.len();
+    if count == 0
+        || data[0] & 0xE0 == 0xC0
+        || !matches!(data[0], 0x06 | 0x86)
+        || data.len() < 6
+        || data[3] > 6
+    {
+        return Ok(None);
+    }
+    if data[1] != bridges[0]
+        || data[2] != local
+        || usize::from(data[3]) != count
+        || data.len() < 5 + count
+        || data[4..3 + count] != bridges[1..]
+    {
+        return Ok(None);
+    }
+    let cal = &data[4 + count..data.len() - 1];
+    if cal.len() < 4
+        || cal[0] & 0xE0 != 0xE0
+        || usize::from(cal[0] & 0x1F) + 1 != cal.len()
+        || !matches!(cal[1], 0x00 | 0x40)
+        || cal[2] != 0xFF
+    {
+        return Ok(None);
+    }
+    let mut states = Vec::with_capacity((cal.len() - 4) * 4);
+    for byte in &cal[4..] {
+        for shift in [0, 2, 4, 6] {
+            states.push((byte >> shift) & 3);
+        }
+    }
+    if usize::from(cal[3]) + states.len() > 256 {
+        return Err("MMI block extends beyond address 255".to_string());
+    }
+    Ok(Some(MmiBlock {
+        application: cal[2],
+        start: cal[3],
+        states,
+        marker: cal[0],
+        raw: line.to_vec(),
+        reply_unit: Some(data[3 + count]),
     }))
 }
 
 /// Incrementally parse a captured installation MMI response stream.
 pub fn parse_mmi_capture(raw: &[u8]) -> Result<(Vec<MmiEvent>, Vec<u8>), String> {
+    parse_mmi_capture_for_route(raw, &[], 0)
+}
+
+/// Incrementally parse a routed installation MMI capture: only exact Reply
+/// Network extended-status blocks for `bridges` and `local` are blocks;
+/// direct blocks and other routes are [`MmiEvent::OtherFrame`].
+pub fn parse_routed_mmi_capture(
+    raw: &[u8],
+    bridges: &[u8],
+    local: u8,
+) -> Result<(Vec<MmiEvent>, Vec<u8>), String> {
+    parse_mmi_capture_for_route(raw, bridges, local)
+}
+
+fn parse_mmi_capture_for_route(
+    raw: &[u8],
+    bridges: &[u8],
+    local: u8,
+) -> Result<(Vec<MmiEvent>, Vec<u8>), String> {
     let mut buffer: Vec<u8> = Vec::new();
     let mut events = Vec::new();
     for &byte in raw {
@@ -393,7 +541,12 @@ pub fn parse_mmi_capture(raw: &[u8]) -> Result<(Vec<MmiEvent>, Vec<u8>), String>
             };
             let line: Vec<u8> = buffer.drain(..end).collect();
             buffer.remove(0);
-            match parse_mmi_line(&line)? {
+            let parsed = if bridges.is_empty() {
+                parse_mmi_line(&line)?
+            } else {
+                parse_routed_mmi_line(&line, bridges, local)?
+            };
+            match parsed {
                 Some(block) => events.push(MmiEvent::Block(block)),
                 None => events.push(MmiEvent::OtherFrame),
             }
@@ -437,6 +590,78 @@ mod tests {
                 data
             }] if data.len() == 6
         ));
+    }
+
+    #[test]
+    fn routed_requests_match_native_and_python_forms() {
+        assert_eq!(
+            routed_installation_mmi_request(&[0x20], true),
+            b"\\032009FFFAFF00DCg\r"
+        );
+        assert_eq!(
+            routed_installation_mmi_request(&[0xFD, 0xFC], true),
+            b"\\03FD12FCFFFAFF00FAg\r"
+        );
+        assert_eq!(
+            routed_identify_request(&[253, 252], 255, 4, false),
+            b"\\46FD12FCFF2104g\r"
+        );
+        assert_eq!(
+            routed_identify_request(&[], 16, 4, false),
+            identify_request(16, 4, false)
+        );
+    }
+
+    #[test]
+    fn routed_capture_keeps_the_whole_reply_network() {
+        // 86 FD(nearest bridge) 10(PCI) 02 FC(next bridge) 06(unit) 87 00 serial tail.
+        let mut payload = hex::decode("86FD1002FC06870018B106160000").unwrap();
+        payload.push(cbus_checksum(&payload));
+        let mut wire = b"g.".to_vec();
+        wire.extend_from_slice(hex::encode_upper(&payload).as_bytes());
+        wire.extend_from_slice(b"\r\n");
+        assert!(parse_capture(&wire).is_err());
+        let (events, pending) = parse_routed_capture(&wire).unwrap();
+        assert!(pending.is_empty());
+        let PciEvent::Frame(frame) = &events[1] else {
+            panic!("expected a frame")
+        };
+        assert_eq!((frame.source, frame.destination), (Some(0xFD), Some(0x10)));
+        assert_eq!(frame.route, [2, 0xFC, 6]);
+    }
+
+    #[test]
+    fn routed_mmi_accepts_only_the_exact_reply_network() {
+        let block = |bridges: &[u8], local: u8| {
+            let mut payload = vec![0x86, bridges[0], local, bridges.len() as u8];
+            payload.extend_from_slice(&bridges[1..]);
+            payload.extend_from_slice(&[0x01, 0xE0 | 5, 0x00, 0xFF, 0x00, 0x04, 0x00]);
+            payload.push(cbus_checksum(&payload));
+            let mut line = hex::encode_upper(&payload).into_bytes();
+            line.extend_from_slice(b"\r\n");
+            line
+        };
+        let (events, _) =
+            parse_routed_mmi_capture(&block(&[0xFD, 0xFC], 16), &[0xFD, 0xFC], 16).unwrap();
+        let MmiEvent::Block(parsed) = &events[0] else {
+            panic!("expected a routed block")
+        };
+        assert_eq!(
+            (parsed.start, parsed.states.len(), parsed.states[1]),
+            (0, 8, 1)
+        );
+        assert_eq!(parsed.reply_unit, Some(1));
+        for (wire, bridges, local) in [
+            (block(&[0xFE, 0xFC], 16), [0xFD, 0xFC], 16),
+            (block(&[0xFD, 0xFB], 16), [0xFD, 0xFC], 16),
+            (block(&[0xFD, 0xFC], 17), [0xFD, 0xFC], 16),
+        ] {
+            let (events, _) = parse_routed_mmi_capture(&wire, &bridges, local).unwrap();
+            assert_eq!(events, [MmiEvent::OtherFrame]);
+        }
+        let direct = b"D8FF000000000001000000000000000000000000000000000028\r\n";
+        let (events, _) = parse_routed_mmi_capture(direct, &[0xFD], 16).unwrap();
+        assert_eq!(events, [MmiEvent::OtherFrame]);
     }
 
     #[test]
