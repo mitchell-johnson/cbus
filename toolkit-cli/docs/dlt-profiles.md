@@ -3,8 +3,9 @@
 Status: **in progress** under the `dlt-edlt-widgets-and-labels` ledger row
 (work item P6.03). This page describes one profile registry for every Python
 DLT/eDLT gate, the classic Saturn/Neo/Decorator label-variant model, and the
-sanitized eDLT firmware-package inventory. It does not add eDLT widget support
-for any new type, firmware or catalogue number, and it does not establish any
+sanitized eDLT firmware-package inventory. Database eDLT editors admit every
+public KEYGL5 catalogue revision (see [KEYGL5 revisions](#keygl5-revisions));
+no other type or catalogue number is added, and nothing here establishes
 physical display, label-transfer or firmware behavior.
 
 ## Profile registry
@@ -41,12 +42,11 @@ Capability flags describe the vendor profile, not CLI support:
 ### Workflows and admission
 
 Each gate asks `refusal(workflow, unit_type, firmware, catalog_number)` and
-receives `None` or an explicit reason. The admitted identities preserve the
-earlier behavior exactly.
+receives `None` or an explicit reason.
 
 | Workflow | Identity checked | Admitted | Python gate |
 |---|---|---|---|
-| `edlt-database-widgets` | type, exact firmware, catalogue | KEYGL5 / 5.5.00 / 5055EDL | `EdltLighting` (all database eDLT editors) and its DBGET identity check |
+| `edlt-database-widgets` | type, canonical firmware, catalogue | KEYGL5 / 1.6.00..1.6.99, 1.7.00..1.7.99, 5.4.00..5.4.99, 5.5.00..5.5.99 / 5055EDL | `EdltLighting` (all database eDLT editors), its DBGET identity check and offline export plans |
 | `edlt-parent-metadata` | type, exact firmware, catalogue | KEYGL5 / 5.5.00 / 5055EDL | native XML parent/SceneManager metadata |
 | `edlt-global-source` | type, exact firmware, catalogue | KEYGL5 / 5.5.00 / 5055EDL | Global Programming / factory source export |
 | `edlt-label-clear` | type, exact firmware | KEYGL5 / 5.5.00 | `cgate edlt-label-clear` plan and live guard |
@@ -57,12 +57,16 @@ earlier behavior exactly.
 Physical IDENTIFY firmware accepts one- or two-digit components and is
 canonicalized to `M.m.pp` (for example `05.05.00` → `5.5.00`). An exhaustive
 test proves the accepted set equals the retired `0?5\.0?5\.0{1,2}` expression.
-Database and export identities remain exact strings.
+Database and export identities are exact strings: a range admits only the
+canonical `M.m.pp` spelling, so `5.5.0` and `05.05.00` are refused there.
 
 Refusal reasons are explicit, for example:
 
-- other KEYGL5 firmware: its catalogue revision shares `KEYGL5.xml`, but only
-  5.5.00 evidence is retained and it is not extrapolated;
+- other KEYGL5 firmware in a workflow without evidence for it: its catalogue
+  revision shares `KEYGL5.xml`, but that workflow's evidence is retained only
+  for the listed revisions and it is not extrapolated;
+- KEYGL5 internal revisions (1.5.01..1.5.99, 5.6.00..9): C-Gate marks the
+  revision `IsInternal`;
 - other KEYGL5 catalogue numbers: they share `KEYGL5.xml` with 5055EDL, but
   only 5055EDL evidence is retained;
 - classic types in an eDLT workflow: they have no eDLT widgets or
@@ -91,11 +95,90 @@ Two specification facts are recorded too: `KEYL5.xml` declares Type `KEYL5`,
 which no catalogue revision reports (C-Gate selects it for KEYBL5 and KEYML5),
 and `I_DLTF.xml` is a fragment that no specification includes.
 
+### KEYGL5 revisions
+
+The catalogue has six KEYGL5 revision rows for every catalogue number. All of
+them select the same `KEYGL5.xml` and C-Gate class `CBusEdlt`:
+
+| Revision | Catalogue flag | Database eDLT editors | Other eDLT workflows |
+|---|---|---|---|
+| 1.5.01..1.5.99 | `IsInternal` | refused | refused |
+| 1.6.00..1.6.99 | public | admitted | refused |
+| 1.7.00..1.7.99 | public | admitted | refused |
+| 5.4.00..5.4.99 | public | admitted | refused |
+| 5.5.00..5.5.99 | public, default | admitted | 5.5.00 only |
+| 5.6.00..9 | `IsInternal` | refused | refused |
+
+Layout and handling are identical across the public rows:
+
+- **Specification.** `KEYGL5.xml` (SHA-256 `812d2f92…`) declares `MinVersion`
+  0 and `MaxVersion` 9, has no includes and no version-conditional
+  parameters, so C-Gate builds one 874-parameter layout for every revision.
+- **C-Gate.** The decompiled `CBusEdlt` class never reads a version,
+  firmware or revision value.
+- **Original eDLT editor.** In the decompiled Toolkit 1.18.0.2754 eDLT editor
+  and `CBusLogicModel`, eight source files read unit firmware. None of them
+  selects a specification, layout, widget or editor path. The specification
+  comes from C-Gate by its catalogue-selected file name. The firmware uses are:
+  - `EDLTUnit.FirmwareVersionUnit` returns `n/a` for a database unit.
+  - `EDLTUnit.ConfigVersion` rewrites `ConfigVersionMajor/Minor` from the
+    firmware only for a network unit, and `BeforeSavePPData` does so only when
+    a database unit is saved to the network. A database save keeps the
+    `AfterLoadPPData` 1/0 normalization.
+  - `FrmBaseUnit` displays the firmware and shows the "Critical Update"
+    prompt when a network unit reports firmware older than the 1.7.0 package.
+    That comparison is a UI prompt only; it does not map packages to C-Bus
+    revisions.
+  - `TemplatesDialog` writes the firmware into a template. Template import
+    requires a non-empty firmware value but does not compare it.
+  - The `CBusBase*` model classes only store the value.
+- **Native acceptance.** Owned C-Gate 3.4.0.2001 on loopback created
+  synthetic database units KEYGL5 / 5055EDL at 1.6.00, 1.6.99, 1.7.00, 1.7.99,
+  5.4.00, 5.4.99, 5.5.00 and 5.5.99. Each unit went through the CLI export,
+  offline plan, dry-run and Lighting widget with static label text, then Page
+  Control groups 0, 42, 254 and 255, and `PROJECT SAVE/CLOSE/LOAD`. The label
+  bytes were read back. The native PP schema, defaults, Lighting changes, Page
+  Control changes and final parameters (unit address excluded) hashed
+  identically at every revision. The result reports the verified database
+  identity. Units at 1.5.01, 1.5.99 and 5.6.00, a 5.4.00 / 5085EDL unit and a
+  5.5.1 unit were refused before any write. The receipt is
+  [`research/fixtures/edlt-revision-native-acceptance.json`](../research/fixtures/edlt-revision-native-acceptance.json).
+
+Parent metadata, Global Programming source, label clear, factory default and
+the physical label read path stay at KEYGL5 5.5.00. They depend on physical
+firmware, or have their own evidence at 5.5.00 only. The physical decoder also
+requires the observed 5.5.00 configuration bytes.
+
+Reproduce the native receipt and the editor review:
+
+```sh
+CBUS_NATIVE_SERVICE_BACKEND=local CBUS_LOCAL_CGATE_VENDOR=/path/to/cgate/app \
+CBUS_CGATE_JAVA=/path/to/jdk11/bin/java CBUS_UNITSPEC_DIR=/path/to/decoded/unitspec \
+CBUS_EDLT_REVISION_REPORT=research/fixtures/edlt-revision-native-acceptance.json \
+PYTHONPATH=src:tests:. .venv/bin/python -m pytest tests/test_edlt_revisions.py -k NativeRevisionTests
+CBUS_DLT_VENDOR_ROOT=/path/to/research/vendor PYTHONPATH=src:tests .venv/bin/python -m pytest \
+  tests/test_edlt_revisions.py -k OriginalEditorReviewTests
+```
+
 ### Rust gates
 
-`cmqttd` keeps its own type-only KEYGL5 checks (`402 Target is not a supported
-eDLT` in `cbus-cgate/src/service.rs` and KEYGL5-only `NET SYNC` enrichment).
-They are not routed through this Python registry.
+`research/export_dlt_admission.py` writes the registry as
+`rust/cbus-cgate/src/dlt_profiles.json`. It also writes 565 exact
+decisions to `rust/testdata/vectors/dlt_profile_admission.jsonl`; `--check`
+and `tests/test_edlt_revisions.py` fail on drift. `cbus_cgate::dlt_profiles`
+embeds the table and ports `refusal`. Its test reproduces every vector,
+including the reason text and Python `repr` quoting.
+
+- `LABEL CLEAREDLT` and `DO ... FactoryDefault` in the hardware-backed service
+  check the database unit's `UnitType` and `FirmwareVersion` against the
+  `edlt-label-clear` workflow, which the Python clear and factory-default
+  guards also use. A refusal is `402 Target is not a supported eDLT: <reason>`
+  and sends no PCI traffic. `DO FactoryDefault` on a unit type outside the
+  `CBusEdlt` class keeps the native `402 Method not supported by object`.
+- `NET SYNC` 0xFB/WidgetGroups enrichment, the KEYGL5 `GET`/`SHOW` vendor
+  properties and the mock's `FactoryDefault` method follow the native
+  `CBusEdlt` class. They ask only whether the type is in the table's eDLT
+  family, because native C-Gate performs them for every revision.
 
 ## Classic DLT label variants
 
@@ -218,8 +301,10 @@ Regenerate both receipts from the owned installation:
 
 ## Remaining P6.03 work
 
-Other KEYGL5 revisions and catalogue numbers need their own widget/layout
-evidence before admission. Classic DLT key functions beyond label variants,
-label text and language transfer, the original classic dialogs, eDLT firmware
-package-to-revision mapping, the Rust cmqttd gates and all physical behavior
-remain open.
+KEYGL5 catalogue numbers other than 5055EDL, and non-database eDLT workflows
+at revisions other than 5.5.00, need their own evidence before admission.
+Physical behavior at 1.6.x, 1.7.x and 5.4.x is unverified. The original eDLT
+editor was reviewed from source and not executed at those revisions. Classic
+DLT key functions beyond label variants, label text and language transfer, the
+original classic dialogs, eDLT firmware package-to-revision mapping and all
+physical behavior remain open.
