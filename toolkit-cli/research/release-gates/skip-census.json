@@ -50,11 +50,11 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 458,
+    "test_modules": 460,
     "modules_without_skip_sites": 246,
-    "modules_with_skip_sites": 212,
+    "modules_with_skip_sites": 214,
     "modules_by_category": {
-      "cgate_test_host": 120,
+      "cgate_test_host": 121,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
@@ -67,20 +67,20 @@
       "private_vendor_tree": 8,
       "runtime_capability": 5,
       "rust_binaries": 7,
-      "unclassified": 3,
-      "unit_specs": 110,
+      "unclassified": 4,
+      "unit_specs": 111,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 113,
+      "all": 114,
       "partial": 18,
-      "none": 81
+      "none": 82
     },
-    "native_runnable_tests": 216,
-    "native_selected_required_tests": 216,
+    "native_runnable_tests": 217,
+    "native_selected_required_tests": 217,
     "native_excluded": 0,
-    "native_selection_selectors": 134
+    "native_selection_selectors": 135
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -2427,6 +2427,69 @@
             "NativeActivationTests::test_full_original_pp_raw_crc_metadata_and_reload",
             "OriginalActivationTests::test_original_modes_guards_values_and_conditional_metadata"
           ]
+        }
+      ]
+    },
+    "tests/test_edlt_add_dialog.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_add_dialog.py::AddDialogModelTests::test_messages_targets_and_hashes_match_evidence",
+          "kind": "body.call",
+          "condition": "not vendor",
+          "reason": "Set CBUS_TOOLKIT_RESEARCH_VENDOR to verify source hashes",
+          "environment": [
+            "CBUS_TOOLKIT_RESEARCH_VENDOR"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "AddDialogModelTests::test_messages_targets_and_hashes_match_evidence"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_add_dialog_native.py": {
+      "categories": [
+        "cgate_test_host",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_add_dialog_native.py::NativeAddDialogTests",
+          "kind": "decorator.skipUnless",
+          "condition": "all((os.environ.get(name) for name in ('CBUS_CGATE_TEST_HOST', 'CBUS_UNITSPEC_DIR')))",
+          "reason": "Select an owned native C-Gate and exact vendor schema for Add dialogs",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
         }
       ]
     },
