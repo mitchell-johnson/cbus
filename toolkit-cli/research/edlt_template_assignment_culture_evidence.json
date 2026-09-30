@@ -1,0 +1,37 @@
+{
+  "format": "cbus-edlt-template-assignment-culture-v1",
+  "captured_date": "2026-09-30",
+  "source": "edlt_template_assignment_culture_probe.cs",
+  "source_sha256": "b1fb8bc08548be47d96a8e030d09cad1859f987ae2a4cff66b3a0f136176dc1c",
+  "assembly": "CBusLogicModel.dll",
+  "assembly_sha256_verified_before_run": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+  "runtime": "owned Mono6.12.0 macOS64",
+  "compile_exit_code": 0,
+  "run_exit_code": 0,
+  "network_denied": true,
+  "cases": [
+    {
+      "culture": "en-US",
+      "input": "$i",
+      "original_value": "0xI"
+    },
+    {
+      "culture": "tr-TR",
+      "input": "$i",
+      "original_value": "0x\u0130"
+    }
+  ],
+  "stdout": "en-US\t0xI\ntr-TR\t0x\u0130\n",
+  "source_assembly_modified": false,
+  "original_setter_called": true,
+  "original_dialog_executed": false,
+  "original_parent_lifecycle_executed": false,
+  "physical_io": false,
+  "limits": [
+    "Fresh PPAttribute per culture within one process; initialization mode true.",
+    "Initial review recorded source/compile/output and pinned source assembly; actual loaded path/method-body receipts were not emitted.",
+    "Windows CLR and GUI were not executed."
+  ],
+  "purpose": "ASCII lowercase i in dollar-upper branch is culture-dependent, justifying conservative portable refusal.",
+  "reproduce": "python3.13 toolkit-cli/research/edlt_template_assignment_culture_original.py --logic-dll OWNED_DLL --mono-root OWNED_MONO --output NEW_DIRECTORY"
+}

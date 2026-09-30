@@ -1,0 +1,200 @@
+{
+  "format": "cbus-iope-scene-levels-acceptance-summary-v1",
+  "base_commit": "3847d49952acc8c8ed5e4f6381ac7c81a2f07474",
+  "family": "scene-levels",
+  "wheel_sha256": "5368f64ea1a598e50ea105376b896110234741001fb76664b3a75ec04ae78081",
+  "wheel_execution": "unpacked wheel imported modules match submitted source hashes in all four native receipts",
+  "offline": {
+    "passed": 31,
+    "subtests_passed": 245,
+    "skipped": 0
+  },
+  "native": {
+    "total_test_count": 8,
+    "new_test_count": 2,
+    "skipped": 0,
+    "profile_count": 9,
+    "positive_edits_or_noops": 243,
+    "unchanged_refusals": 243,
+    "raw_byte_assertions": 19440,
+    "cold_project_reload": true,
+    "percent_equality_and_mixed_sync_vectors": true,
+    "cli": {
+      "family": "scene-levels",
+      "offline_plan_matches_dry_run": true,
+      "dry_run_preserved_database": true,
+      "save_and_fresh_reload_passed": true,
+      "stale_plan_refused_without_changes": true,
+      "group_metadata_refused_without_changes": true,
+      "action_inventory_refused_without_changes": true,
+      "project_close_load_passed": true,
+      "unrelated_parameters_preserved": 121
+    },
+    "profile_refusals": [
+      {
+        "unit_type": "IOPE1R1",
+        "firmware": "0.9.99",
+        "unchanged": true
+      }
+    ],
+    "previous_receipts_refreshed": {
+      "test_count": 6,
+      "only_changed_top_level_field": "implementation_sha256"
+    },
+    "services": {
+      "count": 4,
+      "listener_ownership_verified": true,
+      "projects_adopted": false,
+      "cleanup_complete": true,
+      "private_temp_empty": true
+    },
+    "physical_hardware_verified": false,
+    "original_toolkit_form_executed": false
+  },
+  "source": {
+    "format": "cbus-iope-workflow-source-verification-v1",
+    "passed": true,
+    "original_code_executed": false,
+    "receipts": [
+      {
+        "receipt": "iope-environment-source-review.json",
+        "methods_verified": 12,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 0,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-output-source-review.json",
+        "methods_verified": 9,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 3,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-logic-source-review.json",
+        "methods_verified": 58,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 5,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-join-recovery-source-review.json",
+        "methods_verified": 14,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 1,
+        "data_ranges_verified": 39,
+        "literals_verified": 16,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-block-timer-source-review.json",
+        "methods_verified": 38,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 4,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-input-functions-source-review.json",
+        "methods_verified": 32,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 2,
+        "data_ranges_verified": 2,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-join-groups-source-review.json",
+        "methods_verified": 15,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 2,
+        "data_ranges_verified": 0,
+        "literals_verified": 3,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-scene-selectors-source-review.json",
+        "methods_verified": 47,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 1,
+        "data_ranges_verified": 0,
+        "literals_verified": 6,
+        "next_recovery_bounds_verified": 0
+      },
+      {
+        "receipt": "iope-template-transaction-source-review.json",
+        "methods_verified": 30,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 0,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 14
+      },
+      {
+        "receipt": "iope-scene-levels-source-review.json",
+        "methods_verified": 26,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 1,
+        "data_ranges_verified": 0,
+        "literals_verified": 0,
+        "next_recovery_bounds_verified": 0
+      }
+    ]
+  },
+  "independent_review_sha256": "f558fbe098e0f3443d47c2f6871d1ea9b9f9e5096aa12ffc8c85cfe51a31fa3f",
+  "component_boundary": "Fresh non-live temporary SceneManager command setter and static stable-table projection only; whole accepted SaveNeoScenes graph replacement, IOPE SaveScenes and input callbacks excluded",
+  "input_template_transaction": {
+    "status": "blocked-source-recovery-incomplete",
+    "callable_api_added": false,
+    "corrected_prior_advanced_row_branch": true,
+    "remaining_gates": [
+      "ordered macro/group factories and raw stage decoder",
+      "positive initialized entry graph and subset membership",
+      "complete dependent-stage effects and callback states",
+      "owned serializer, raw guards and rollback"
+    ],
+    "receipt": "research/fixtures/iope-template-transaction-source-review.json"
+  },
+  "checks": {
+    "independent_source_review": true,
+    "diff_check": true,
+    "registration_patch_apply_check": true,
+    "full_suite": false,
+    "rust_build": false,
+    "cpu_emulation": false,
+    "household_operations": false,
+    "shared_registration_changes": false
+  },
+  "sha256": {
+    "src/cbus_toolkit/iope_scene_levels.py": "deae0560cf158bc0c7f8b52ce8e95fbf49dc566e6e595d9abe8342ec8bbcf6d8",
+    "src/cbus_toolkit/iope_scene_selectors.py": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a",
+    "src/cbus_toolkit/iope_workflow_cli.py": "233492c1a3d72fa46efe9456663c51e763d574ea78fde122884fc1b4d9acb450",
+    "src/cbus_toolkit/din_output_settings.py": "55025c2b874a855cf552a915e7c78ef2b6d7fe82a9c0b9af4bd361453d20fc4c",
+    "tests/test_iope_scene_levels.py": "1c54a74a72e926a6e45cfcb531846b6d4812596352b7a404bbbfcf1c42c6b7f0",
+    "tests/test_iope_scene_levels_native.py": "b0f6ac8c07107f7dbbccec22d23406d7c50ab02c8eebeab415a1cdd9fa7274f2",
+    "tests/test_iope_workflow_cli.py": "f8d9a9b3e8c09686eb53d312e598a172c7c10c02027de2dfd780fc63c9fa998c",
+    "tests/test_iope_join_groups_native.py": "17a3b1e58b1f01cda4e4c7a2434361e613f5c28c82c0053f79cec4d151435e64",
+    "tests/test_iope_logic_native.py": "402a1bd6a4458edb0e19ffcf4adf3f8f38f6190b0f6649162feb3d8ad3a7a4c6",
+    "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881",
+    "research/verify_iope_workflow_sources.py": "4c82690daaad7012971770a66d4554b25e0fe3617cf7bf08e4d0e65edf686706",
+    "research/fixtures/iope-scene-levels-source-review.json": "321d518ac11bebe6771b7a4c71728ca50020f4131cf2d3381c777633726a8240",
+    "research/fixtures/iope-template-transaction-source-review.json": "f86ee8b48f8572e33a920909563a896947177e41890a147eb4669a493e0aeff0",
+    "research/fixtures/iope-input-functions-source-review.json": "9dd0133c006cf7fbbc77d0782f65f059e0c939a02e555801bbb019d348fbad61",
+    "research/fixtures/iope-scene-levels-native-acceptance.json": "d036e8d512a93b7e05b6f4bed84a685bbb2fa2c143492438fe9bb47f74f89ea2",
+    "research/fixtures/iope-workflow-native-acceptance.json": "2e97422676083ac597aa2f25acfe20aeb2dc7fa996a50b3895c815d08ae5ea02",
+    "research/fixtures/iope-logic-native-acceptance.json": "6776a41114224464c72caa8a249bb91d34c2424adeac71a32bcdf00d4f1e7b99",
+    "research/fixtures/iope-join-groups-native-acceptance.json": "ec308c2ba5b4e70b98d9a35473107788f460f39016fe45a1998b1ce245d245c7",
+    "docs/iope-scene-levels.md": "f1c7ff56a8ab9223fce26f2437df7debfe35abd7092658f7f927be2a5fa64e0d",
+    "docs/iope-template-transaction.md": "7f1983d03a45c5378785f8495b34ef2868024a8abbd1f1a7f465a5e12a3f226d",
+    "docs/iope-input-functions.md": "f8b6938ab865f934bd7fef5569c220415212d64ef639bfeefb3b445c9850d703",
+    "docs/iope-workflows.md": "559536e01e9efa3192d9220cbd03a9d990bde2da1b1498eaa044fb1e1b38a10f",
+    "docs/iope-workflow-registration.patch": "ff6e60f1078edcace3e59b21b2a26f2fe23dbb44093aa1fe2a26b3d363af4df5"
+  }
+}

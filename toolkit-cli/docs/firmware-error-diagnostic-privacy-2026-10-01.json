@@ -1,0 +1,30 @@
+{
+  "format": "cbus-firmware-error-diagnostics-privacy-regression-v1",
+  "red_normal_tests": {
+    "passed": 10,
+    "failed": 1
+  },
+  "green_normal_tests": 11,
+  "green_pytest_summary": "11 passed, 15 subtests passed in 0.78s",
+  "source_sha256": {
+    "toolkit-cli/src/cbus_toolkit/firmware_update_cli.py": "db1f36ff8ca7d8c9ed2809a9164e09d105c15fa2299aed69e066dbf8622698c0",
+    "toolkit-cli/tests/test_cli_firmware_update_errors.py": "b8e288e93ebcd5b989c167ebfcda05b7c4bf3f986d1dc0d583c6fc58d3f6d332"
+  },
+  "artifacts_sha256": {
+    "red.xml": "443832959083488a3b9fbc96160dda86f48a4267f97691a845404e1d52f81c47",
+    "red.log": "48bbb2c9bf8b7a828aa53416649dfaf52057a47977f8afd556db8d8bdad914b0",
+    "green.xml": "79b2b25672bd32ad570ba9e5dc3479108db5c824b08c073ec4ab0b074a90446b",
+    "green.log": "81a81c0239bed9d00b5141104e79a3c0440882ee331424d61ec62a197865c166"
+  },
+  "schema_decision": {
+    "error": "Operation failed",
+    "release_error": "USB release failed",
+    "close_error": "USB close failed",
+    "timing_error": "USB release timing failed"
+  },
+  "primary_error_and_exit_semantics_preserved": true,
+  "unknown_error_text_exported": false,
+  "original_attached_receipts_unchanged": true,
+  "test_scope": "Only test_cli_firmware_update_errors.py; injected fake USB backend, no native or hardware",
+  "git_mutations": false
+}

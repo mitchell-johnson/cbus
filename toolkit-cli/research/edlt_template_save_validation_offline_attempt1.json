@@ -1,0 +1,1777 @@
+{
+  "format": "cbus-edlt-template-save-validation-offline-evidence-v1",
+  "evidence_class": "synthetic software execution of source predicates",
+  "schema_scope": "owned synthetic exact-size KEYGL5 guard schema; not vendor defaults",
+  "input_sha256": {
+    "src/cbus_toolkit/edlt_template_save_validation.py": "6bd1336e59384e8ed9bdd8012935742a9b212ee7f1d9675ab5c7667f74b76882",
+    "src/cbus_toolkit/edlt_template_save_predicates.py": "79c5903ffe3e44b41be9e57d13cbca3646dcf956abf085fc81e052205cd7e00c",
+    "research/edlt_template_save_validation_source.json": "38bc92d171bbe96bcf978e830205e341ee42e7f88ba15dbfc15510891796b98c",
+    "research/edlt_template_serial_validation_source.json": "2ba5a0bfb93527d8d3b973450a98689900858c4663bb96b152bce8ed8a9813ba",
+    "research/edlt_template_scene_widget_validation_source.md": "3808e4ef5befb0074570cfcac52121429deb6b2100683cc1a112247d03d1dfd9",
+    "research/edlt_template_unit_validation_source.md": "15f989fd56c1e53eea9e128c0c6096dd8b174ef1c578f00de84be02793129243",
+    "research/edlt_template_unit_validation_source.json": "b16f63f32b4fb4aead14fc2205b1b705c3b6d22dfbc41db3339c9fcf109908e6",
+    "tests/test_edlt_reset.py": "a827f45f9f0bb3001fd756fce727759c48899f8dee1fba9ba29dca1dd12d68f7",
+    "tests/test_edlt_lifecycle.py": "e8404b452c70ba670062de9f6c3ec24f3aa027dc487b04b234cb042f1f058c74"
+  },
+  "historical_receipt_sha256": {
+    "research/edlt_template_terminal_evidence.json": "baff157bb54dc8581b8e3c4017578febb1503d4eb79e580c049a0ed757607f08",
+    "research/edlt_template_terminal_native_attempt1.json": "7926101e597d90ed2c9110a605e07db6b7d83d8fd0be62e709360eba201de549",
+    "research/fixtures/edlt-template-original-vectors.json": "03646382d5f8d77f778b9725b57fb8527f28555dba83fe5afeaf6b2134f208bd",
+    "research/fixtures/edlt-template-original-acceptance.json": "7f7dacad3d11485802a2dde39f236a02f333b280824cfa51c153d7688d96e715",
+    "research/fixtures/edlt-template-model-original-vectors.json": "52810dfdc803c37c9fc55fd15126428f6d2d21ec1f64d889715e350ff6f29b87",
+    "research/fixtures/edlt-template-model-original-acceptance.json": "88066fb2c8afe4a6d6b9a60b8cbc97354a267c2dcfa024aeaa9d095ce214c1fa",
+    "research/fixtures/edlt-template-reset-prelude-original-acceptance.json": "041388f2b95a160477e47f2de7f3def240275ee0794e2dce7e3436b104efc277"
+  },
+  "inputs_and_historical_receipts_unchanged": true,
+  "cases": [
+    {
+      "case": "blank-accepted",
+      "expected_outcome_from_source_contract": "source_predicates_passed",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          }
+        ],
+        "outcome": "source_predicates_passed",
+        "scene_widget": {
+          "label_errors": [],
+          "original_dialog_required": false,
+          "original_dialog_result_consumed": false,
+          "status_errors": [],
+          "valid": true
+        },
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": true,
+        "unit": {
+          "errors": [],
+          "skipped_scene_indices": [],
+          "valid": true,
+          "warning_ids": []
+        },
+        "validator_order": [
+          "serial",
+          "scene_widget",
+          "unit"
+        ],
+        "source_receipt_sha256": "2a47e905c72a42ea36815cd70056723d3aa775b07dd584b753b38fcb9b5ea645",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "19908fef65ece741a776439b44446f8e0754ca88c641af53381175ca658e22e4",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "serial-rejected",
+      "expected_outcome_from_source_contract": "serial_rejected",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [],
+        "outcome": "serial_rejected",
+        "scene_widget": null,
+        "serial": {
+          "last_four": "4096",
+          "outcome": "rejected",
+          "value": 4096
+        },
+        "source_predicates_passed": false,
+        "unit": null,
+        "validator_order": [
+          "serial"
+        ],
+        "source_receipt_sha256": "2a47e905c72a42ea36815cd70056723d3aa775b07dd584b753b38fcb9b5ea645",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "e6bffee3b12fec360052883143477f82757faac34decfe685015e51f1d86c1c9",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "culture-unproved",
+      "expected_outcome_from_source_contract": "unproven_serial_parse",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [],
+        "outcome": "unproven_serial_parse",
+        "scene_widget": null,
+        "serial": {
+          "last_four": "+001",
+          "outcome": "unproven_parse",
+          "value": null
+        },
+        "source_predicates_passed": false,
+        "unit": null,
+        "validator_order": [
+          "serial"
+        ],
+        "source_receipt_sha256": "2a47e905c72a42ea36815cd70056723d3aa775b07dd584b753b38fcb9b5ea645",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "39ec07ad2778c2d3ececa6caf41e3a799448a3a4af68492e9bfe4865de0f3bec",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "corridor-rejected",
+      "expected_outcome_from_source_contract": "unit_rejected",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 56,
+            "exists": true,
+            "group": 42,
+            "reason": "Widget GetGroup 6"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          }
+        ],
+        "outcome": "unit_rejected",
+        "scene_widget": {
+          "label_errors": [],
+          "original_dialog_required": false,
+          "original_dialog_result_consumed": false,
+          "status_errors": [],
+          "valid": true
+        },
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": false,
+        "unit": {
+          "errors": [
+            "The selected Corridor Link Group \"Synthetic first group\" is also being used in at least one key function. To resolve this error, either change the Corridor Link Group or remove it's associated key functions."
+          ],
+          "skipped_scene_indices": [],
+          "valid": false,
+          "warning_ids": []
+        },
+        "validator_order": [
+          "serial",
+          "scene_widget",
+          "unit"
+        ],
+        "source_receipt_sha256": "0ead8acce9465279cc00830c6f7c63676ab5ce485733036457c12917ba697095",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "52c5b3b5ca201a9ea540bfa76fe811084867ee89734a896151e5fa9f4c37e492",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "trailing-raw-normalization",
+      "expected_outcome_from_source_contract": "requires_validation_mutation",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [],
+        "outcome": "requires_validation_mutation",
+        "scene_widget": null,
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": false,
+        "stop": {
+          "first_invalid_byte": 13,
+          "original_operation": "SceneCycle trailing byte normalization",
+          "validator": "scene_widget",
+          "widget": 6
+        },
+        "unit": null,
+        "validator_order": [
+          "serial",
+          "scene_widget"
+        ],
+        "source_receipt_sha256": "23fe7084d650530fb82129288df7d6fccab18a68115220b09fc58647cc464bb3",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "19908fef65ece741a776439b44446f8e0754ca88c641af53381175ca658e22e4",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "dynamic-facts-unknown",
+      "expected_outcome_from_source_contract": "required_fact_missing",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          }
+        ],
+        "outcome": "required_fact_missing",
+        "scene_widget": null,
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": false,
+        "stop": {
+          "application": 202,
+          "field": "complete ordered DynamicAll",
+          "group": 42,
+          "level": 2,
+          "validator": "scene_widget"
+        },
+        "unit": null,
+        "validator_order": [
+          "serial",
+          "scene_widget"
+        ],
+        "source_receipt_sha256": "60d7706c40379e19a454130b0436a53c013051c94c5897fc0b758e9194754884",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "19908fef65ece741a776439b44446f8e0754ca88c641af53381175ca658e22e4",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "dynamic-text-image-conflict",
+      "expected_outcome_from_source_contract": "scene_widget_rejected",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          }
+        ],
+        "outcome": "scene_widget_rejected",
+        "scene_widget": {
+          "label_errors": [
+            {
+              "mode": "text",
+              "scenes": [
+                1
+              ],
+              "variant": 0,
+              "widget": 6
+            }
+          ],
+          "original_dialog_required": true,
+          "original_dialog_result_consumed": false,
+          "status_errors": [],
+          "valid": false
+        },
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": false,
+        "unit": null,
+        "validator_order": [
+          "serial",
+          "scene_widget"
+        ],
+        "source_receipt_sha256": "2c2b84b1b7f19c7294b0a9ef60adc3fde0ffc6561f1b8139f09342fe773800f2",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "84dee5e40c479a5bef0ead3538788115f357b65488efdd1b99c147c0dda57000",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "null-name-skips-status-index",
+      "expected_outcome_from_source_contract": "source_predicates_passed",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 255,
+            "reason": "Scene trigger getter"
+          }
+        ],
+        "outcome": "source_predicates_passed",
+        "scene_widget": {
+          "label_errors": [],
+          "original_dialog_required": false,
+          "original_dialog_result_consumed": false,
+          "status_errors": [],
+          "valid": true
+        },
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": true,
+        "unit": {
+          "errors": [],
+          "skipped_scene_indices": [],
+          "valid": true,
+          "warning_ids": []
+        },
+        "validator_order": [
+          "serial",
+          "scene_widget",
+          "unit"
+        ],
+        "source_receipt_sha256": "b5d9e0ced9120fd97d2c7f1127ff40684ff74065e16670cdfa57aafd96420b50",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "3c7f09116508e13dbe0fd21fe8e785f52987d53551ed66ae0dfef53aad567d9c",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    },
+    {
+      "case": "empty-name-checks-status-index",
+      "expected_outcome_from_source_contract": "expected_original_exception",
+      "upstream_unchanged": true,
+      "receipt": {
+        "format": "cbus-edlt-template-save-validation-stage-v1",
+        "consumed_facts": [
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene trigger getter"
+          },
+          {
+            "application": 202,
+            "exists": true,
+            "group": 42,
+            "reason": "Scene action getter"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "existing Scene action getter level"
+          },
+          {
+            "application": 202,
+            "group": 42,
+            "level": 2,
+            "reason": "Scene widget DynamicAll"
+          }
+        ],
+        "outcome": "expected_original_exception",
+        "scene_widget": null,
+        "serial": {
+          "last_four": "4095",
+          "outcome": "accepted",
+          "value": 4095
+        },
+        "source_predicates_passed": false,
+        "stop": {
+          "original_exception": "DynamicAll index access",
+          "scene": 1,
+          "validator": "scene_widget",
+          "widget": 6
+        },
+        "unit": null,
+        "validator_order": [
+          "serial",
+          "scene_widget"
+        ],
+        "source_receipt_sha256": "b5d9e0ced9120fd97d2c7f1127ff40684ff74065e16670cdfa57aafd96420b50",
+        "specification_sha256": "c285431bf7f0e3eac16a959bdae26bae2975c1f95b57be3ccbf629f4a69b0c56",
+        "cache_sha256": "2a2947ffd0e1e724aea866e9df660eca0cb284c5833ceb9ac950690d13d5621d",
+        "context_sha256": "84dee5e40c479a5bef0ead3538788115f357b65488efdd1b99c147c0dda57000",
+        "evidence_class": "source-predicate-projection",
+        "metadata_provenance": "caller-supplied frozen cache and control facts",
+        "getter_admission_policy": "refuse reads requiring writes or add-enabled missing objects",
+        "report_order_scope": "label before status; local slot order; native hash enumeration unproved",
+        "model_reloaded": false,
+        "before_save_executed": false,
+        "original_save_validation_verified": false,
+        "active_control_flush_verified": false,
+        "cache_freshness_verified": false,
+        "complete_parent_lifecycle_verified": false,
+        "validation_getter_side_effects_executed": false,
+        "unexecuted_phases": [
+          "active-control focus validation and binding flush",
+          "original WinForms serial, Scene-widget and unit validator execution",
+          "SceneCycle BindingList event suppression/rebuild",
+          "lookup add requests, getter setters and property notifications",
+          "validation dialogs and help callbacks",
+          "complete parent Reset/BeforeChange/AfterChange controls",
+          "BeforeSavePPData and CRC generation",
+          "SaveDialog/native host callback and save acknowledgement",
+          "PP SAVE_TO_SOURCE and project save with fresh reload"
+        ],
+        "apply_allowed": false,
+        "target_mutation_attempted": false,
+        "save_dispatched": false,
+        "saved": false,
+        "physical_device_verified": false
+      }
+    }
+  ],
+  "passed": true,
+  "original_validator_runtime_executed": false,
+  "original_assemblies_loaded": false,
+  "original_ui_executed": false,
+  "native_io_executed": false,
+  "physical_device_verified": false,
+  "apply_allowed": false,
+  "saved": false
+}

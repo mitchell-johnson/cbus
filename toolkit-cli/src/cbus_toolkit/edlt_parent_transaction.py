@@ -517,6 +517,15 @@ class EdltParentTransaction:
     def snapshot(self, values):
         return self.common.snapshot(values)
 
+    def template_lifecycle_stager(self):
+        """Create a separate local stage, requiring explicit source/cache facts.
+
+        This adapter does not admit template Apply as a parent operation.
+        """
+        from .edlt_template_lifecycle_stage import EdltTemplateLifecycleStage
+        spec, catalog_number, firmware = self._profile
+        return EdltTemplateLifecycleStage(spec, catalog_number=catalog_number, firmware=firmware)
+
     def _editor(self, kind):
         """Construct an extended panel editor only when its operation is used.
 

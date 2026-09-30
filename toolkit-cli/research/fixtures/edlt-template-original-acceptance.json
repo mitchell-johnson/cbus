@@ -1,0 +1,51 @@
+{
+  "format": "cbus-edlt-template-original-acceptance-v1",
+  "captured_date": "2026-09-30",
+  "passed": true,
+  "fixture": "edlt-template-original-vectors.json",
+  "fixture_sha256": "03646382d5f8d77f778b9725b57fb8527f28555dba83fe5afeaf6b2134f208bd",
+  "fresh_fixture_cases_verified": 73,
+  "unchanged_inputs": true,
+  "loaded_runtime_and_original_method_hashes_verified": true,
+  "network_denied": true,
+  "original_template_dialog_executed": false,
+  "original_parent_lifecycle_executed": false,
+  "physical_io": false,
+  "commands": [
+    {
+      "stage": "compile",
+      "returncode": 0,
+      "network_denied": true
+    },
+    {
+      "stage": "run",
+      "returncode": 0,
+      "network_denied": true
+    }
+  ],
+  "artifacts_sha256": {
+    "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run.stdout": "be306fafa57820076f454b75a940ef61a373178e02cbe0f7adaab58f11d2d223",
+    "run.stderr": "998e2815820f7da86ac69f3bc9942915a49ff0bf4251c8b58136b7e76253a8e3",
+    "Probe.exe": "d5fb0ab50174b3475c15f495b3cfc2b8141eb8370f5731bba90f91dd186811ec"
+  },
+  "source_sha256": {
+    "edlt_template_original.py": "b987f3ff6b6d097ceb76d047b850940ee65b87950f5f8b3e63dadcd1910013f8",
+    "edlt_template_original_probe.cs": "503bfa1d29b992492161b468edf1b40292170be2bf419ea07273a356174b46a3",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771",
+    "mscorlib.dll": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4"
+  },
+  "portable_original_vector_tests": {
+    "command": "PYTHONPATH=toolkit-cli/src python3.13 -m unittest discover -s toolkit-cli/tests -p test_edlt_template_original_vectors.py -v",
+    "tests": 6,
+    "passed": true,
+    "intentional_crc_scope_refusals": [
+      "hex-prefix-zero-width-space",
+      "hex-prefix-soft-hyphen"
+    ]
+  },
+  "scope": "Unchanged PPHelper static CRC helpers; framework XML/Application operation probes, no original form execution"
+}

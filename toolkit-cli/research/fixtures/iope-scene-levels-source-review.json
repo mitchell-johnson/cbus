@@ -1,0 +1,368 @@
+{
+  "format": "cbus-iope-scene-levels-source-review-v1",
+  "evidence_kind": "static original-instruction and form-resource review; no original execution",
+  "source_hashes": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "resource": {
+    "resource_name": "TFRMSCENEMANAGER",
+    "sha256": "18d3e7e79180f53c462f37c84d9080ebfb0e76f2492c2db07dbf5d54a18a0c8d",
+    "rva": "0x12ec724",
+    "size": 137279
+  },
+  "methods": [
+    {
+      "name": "System.TObject.InitInstance",
+      "start": "0x60620c",
+      "end": "0x606264",
+      "bytes_sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7",
+      "sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7"
+    },
+    {
+      "name": "ActnList.TCustomAction.Create",
+      "start": "0x7110f8",
+      "end": "0x71114c",
+      "bytes_sha256": "e42ae07870ca3c70b00efcbaff33f819b7fc054b4717dd938caecf068ab90b92",
+      "sha256": "e42ae07870ca3c70b00efcbaff33f819b7fc054b4717dd938caecf068ab90b92"
+    },
+    {
+      "name": "CIS_TInputKeyExtensionNeo.TNeoScene.AfterConstruction",
+      "start": "0xc99f68",
+      "end": "0xc9a1a8",
+      "bytes_sha256": "24898499b0d4537e6499e434d237c38091df631a70fb3723426ec3e51a2df553",
+      "sha256": "24898499b0d4537e6499e434d237c38091df631a70fb3723426ec3e51a2df553"
+    },
+    {
+      "name": "CIS_TInputKeyExtensionNeo.TNeoScene.InternalCreate",
+      "start": "0xc9a38c",
+      "end": "0xc9a3a0",
+      "bytes_sha256": "8603bc677b56e4d5aef4223850212f11917bc6c44fdeecb0fe5b725209f96707",
+      "sha256": "8603bc677b56e4d5aef4223850212f11917bc6c44fdeecb0fe5b725209f96707"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TCommandsDataSource.Create",
+      "start": "0xf8cf2c",
+      "end": "0xf8cf7c",
+      "bytes_sha256": "a59ce323a0b4c2cfb02f7c21c39bb80fe116584799dd1084987f4d5f4c458aab",
+      "sha256": "a59ce323a0b4c2cfb02f7c21c39bb80fe116584799dd1084987f4d5f4c458aab"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.LoadNeoScenes",
+      "start": "0xf88f34",
+      "end": "0xf892d8",
+      "bytes_sha256": "f5071af50aa2e81c382d6cea5fbefb8a3a49f25c9ed6e8d88b19cbe932b98b6e",
+      "sha256": "f5071af50aa2e81c382d6cea5fbefb8a3a49f25c9ed6e8d88b19cbe932b98b6e"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.Execute",
+      "start": "0xf87c40",
+      "end": "0xf87e48",
+      "bytes_sha256": "222c2fdb44fd951cdb66bb61d05afe818ab9e1ee4572b090137777bc7e416bee",
+      "sha256": "222c2fdb44fd951cdb66bb61d05afe818ab9e1ee4572b090137777bc7e416bee"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SetSelectedScene",
+      "start": "0xf88508",
+      "end": "0xf885b4",
+      "bytes_sha256": "fc85cc4c3ba66e21d9d29ad4df2da43be699367dfbbdadd637fafd43e57ee9e1",
+      "sha256": "fc85cc4c3ba66e21d9d29ad4df2da43be699367dfbbdadd637fafd43e57ee9e1"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.UpdateLiveScene",
+      "start": "0xf8ae10",
+      "end": "0xf8ae5c",
+      "bytes_sha256": "5749c3ef574a377b79517b8bac3160695ef1205a00bb7a07aa077b835728e05a",
+      "sha256": "5749c3ef574a377b79517b8bac3160695ef1205a00bb7a07aa077b835728e05a"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TCommandsDataSource.SetValue",
+      "start": "0xf8d1c8",
+      "end": "0xf8d458",
+      "bytes_sha256": "8cca9ac1dd60d704cd73ba15585db1e6a7e71b7b17a5b9607003cde0f9ef7d67",
+      "sha256": "8cca9ac1dd60d704cd73ba15585db1e6a7e71b7b17a5b9607003cde0f9ef7d67"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.actSyncSlidersExecute",
+      "start": "0xf8c1dc",
+      "end": "0xf8c25c",
+      "bytes_sha256": "15f5399e322a3d99167745a4d806c9d4d776e13606ee6b6349038c82c1d8041e",
+      "sha256": "15f5399e322a3d99167745a4d806c9d4d776e13606ee6b6349038c82c1d8041e"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.actUsePercentExecute",
+      "start": "0xf8c27c",
+      "end": "0xf8c374",
+      "bytes_sha256": "8f38c3995dd5097324a1fa00e8e71ff7863bfa7783da63e87cb116a2a4d5739f",
+      "sha256": "8f38c3995dd5097324a1fa00e8e71ff7863bfa7783da63e87cb116a2a4d5739f"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TCommandsDataSource.SetSyncLevels",
+      "start": "0xf8d188",
+      "end": "0xf8d1a4",
+      "bytes_sha256": "e26b72dbf79291cbe9d18e9811e40aca07ffe0428590ec05519bfc33e2a78413",
+      "sha256": "e26b72dbf79291cbe9d18e9811e40aca07ffe0428590ec05519bfc33e2a78413"
+    },
+    {
+      "name": "CIS_TfrmSceneManager.TCommandsDataSource.SetUsePercent",
+      "start": "0xf8d1a4",
+      "end": "0xf8d1c8",
+      "bytes_sha256": "40ffff7dd29852395cc4c784dfc5b009af07e258fcaa8acb48094ea2a2c8d826",
+      "sha256": "40ffff7dd29852395cc4c784dfc5b009af07e258fcaa8acb48094ea2a2c8d826"
+    },
+    {
+      "name": "CIS_TScene.TSceneCommand.InternalCreate",
+      "start": "0xd15a60",
+      "end": "0xd15cf4",
+      "bytes_sha256": "00995f8f2f6a8f586b57044232fa125390117eb072612f9664833be0d8a207aa",
+      "sha256": "00995f8f2f6a8f586b57044232fa125390117eb072612f9664833be0d8a207aa"
+    },
+    {
+      "name": "CIS_TScene.TSceneCommand.SetLevel",
+      "start": "0xd15e44",
+      "end": "0xd15ea4",
+      "bytes_sha256": "385d594548d0c70783074ba8503817323b3321222dfe6e62caaa1c6d4412e41b",
+      "sha256": "385d594548d0c70783074ba8503817323b3321222dfe6e62caaa1c6d4412e41b"
+    },
+    {
+      "name": "CIS_TScene.TSceneCommand.SetLevelAsPercent",
+      "start": "0xd15ea4",
+      "end": "0xd15f04",
+      "bytes_sha256": "2e463b62f43cfb2e455bd0bcfbf6b788f8bbbab50f14be98a2d695e0ea1b50d0",
+      "sha256": "2e463b62f43cfb2e455bd0bcfbf6b788f8bbbab50f14be98a2d695e0ea1b50d0"
+    },
+    {
+      "name": "CIS_TScene.TSceneCommand.HandleLevelAfterChange",
+      "start": "0xd16084",
+      "end": "0xd16170",
+      "bytes_sha256": "e255b80043a7ef6920cbddb8ffa21f3c8280a72046333eaddd8013b7df9f1dda",
+      "sha256": "e255b80043a7ef6920cbddb8ffa21f3c8280a72046333eaddd8013b7df9f1dda"
+    },
+    {
+      "name": "CIS_TScene.TSceneCommand.HandleLevelAsPercentAfterChange",
+      "start": "0xd16170",
+      "end": "0xd1622c",
+      "bytes_sha256": "c77f4abdf0c1db7cd0f48241849dacd11e57ee3f22ead45d863e11dea8891e41",
+      "sha256": "c77f4abdf0c1db7cd0f48241849dacd11e57ee3f22ead45d863e11dea8891e41"
+    },
+    {
+      "name": "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger",
+      "start": "0x8508d0",
+      "end": "0x850ac4",
+      "bytes_sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9",
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    {
+      "name": "CIS_CBus.PercentToLevel",
+      "start": "0x7f2aa0",
+      "end": "0x7f2ac8",
+      "bytes_sha256": "0559d6a4df3728a3ffe7a30d05fcfd41db35239df09d1aeef951295c694d0795",
+      "sha256": "0559d6a4df3728a3ffe7a30d05fcfd41db35239df09d1aeef951295c694d0795"
+    },
+    {
+      "name": "CIS_CBus.LevelToPercent",
+      "start": "0x7f2ac8",
+      "end": "0x7f2aec",
+      "bytes_sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a",
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadScenes",
+      "start": "0x12d7b44",
+      "end": "0x12d7e50",
+      "bytes_sha256": "1237ca13226ccd9de9457b084d0f236a56aed38f49f6a8af13504be46c3f3fe8",
+      "sha256": "1237ca13226ccd9de9457b084d0f236a56aed38f49f6a8af13504be46c3f3fe8"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.GetSceneTableAsString",
+      "start": "0x12dbe80",
+      "end": "0x12dc104",
+      "bytes_sha256": "432cd4aab15c42c4aaee0bb63636740a73ca03cb72470d4d45c2fdab7f0bdd2b",
+      "sha256": "432cd4aab15c42c4aaee0bb63636740a73ca03cb72470d4d45c2fdab7f0bdd2b"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.GetSceneTablePointersAsString",
+      "start": "0x12dc104",
+      "end": "0x12dc430",
+      "bytes_sha256": "64285b5398ba78114eb41ab573a4c5c2bcc4d52fb58c42ebb0b8a8ebf60a6e36",
+      "sha256": "64285b5398ba78114eb41ab573a4c5c2bcc4d52fb58c42ebb0b8a8ebf60a6e36"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveScenes",
+      "start": "0x12dc430",
+      "end": "0x12dc7a4",
+      "bytes_sha256": "4c4572ff0d18522682abb41db159957973411866628300d9f9b93f62ac88b7bf",
+      "sha256": "4c4572ff0d18522682abb41db159957973411866628300d9f9b93f62ac88b7bf"
+    }
+  ],
+  "profiles": {
+    "unit_types": [
+      "IOPE1R1",
+      "IOPE2R2",
+      "IOPE2C4"
+    ],
+    "firmware": "1.0.00..1.2.99",
+    "catalogues": {
+      "IOPE1R1": "5752PP/1R",
+      "IOPE2R2": "5752PP/2R",
+      "IOPE2C4": "5752PP/2R/2D"
+    }
+  },
+  "graph_admission": {
+    "positive_existing_objects": "every primary Lighting command group; app202 Trigger group; eight distinct existing selectors in complete LevelManager inventory",
+    "primary_lighting_application": "48..95",
+    "scene_index": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "scene_table_pointer": [
+      178,
+      194,
+      210,
+      226
+    ],
+    "scene_count": 4,
+    "commands_per_scene": 8,
+    "distinct_non_null_groups_per_scene": true,
+    "external_0x9d_pointer": false,
+    "cache_format": "cbus-iope-scene-selector-groups-v1"
+  },
+  "initialization": {
+    "constructor": {
+      "use_percent": false,
+      "sync_levels": false,
+      "live_groups": false
+    },
+    "admitted_entry": {
+      "use_percent": true,
+      "sync_levels": false,
+      "live_groups": false,
+      "fresh_manager": true,
+      "external_table": false
+    },
+    "proofs": [
+      "TCommandsDataSource.Create0xf8cf2c explicitly sets bytes+0x14 and+0x15 to0; FormCreate0xf8b1d8 creates that data source.",
+      "TNeoScene fresh allocation is zeroed by TObject.InitInstance0x60620c; InternalCreate0xc9a38c and AfterConstruction0xc99f68 leave LiveGroups+0x78 unchanged.",
+      "LoadNeoScenes0xf88f34 copies retained NeoScene+0x78 into temporary Scene.LiveGroups+0x84. SetSelectedScene0xf88508 calls UpdateLiveScene0xf8ae10, clearing all Live states and taking selected state from actLiveScene.Checked.",
+      "DFM actLiveScene/actSyncSliders/actUsePercent omit Checked; fresh TCustomAction.Create and allocation produce false. The admitted lifecycle excludes prior Live action selections.",
+      "Execute0xf87c40 at0xf87cf4 resets actUsePercent.Checked=false, then executes the enabled action0xf87d20; actUsePercentExecute0xf8c27c togglestrue and calls SetUsePercent0xf8d1a4.",
+      "Raw selection executes UsePercent action once after entry; percent selection keeps true. Explicit sync selection executes actSyncSliders0xf8c1dc once fromfalse; SetSyncLevels0xf8d188 sets byte+0x15."
+    ]
+  },
+  "control_transition": {
+    "numeric_row": "TCommandsDataSource.SetValue0xf8d1c8 column1 selects raw0..255 orpercent0..100; selectedsettertwice; sync iterates only selectedscenecommands inroworder",
+    "integer_equality": "TIntegerAttribute.SetAsInteger0x8508d0 compares retained value before SetValue, so equal percentage skips AfterChange and preserves same-display raw byte",
+    "percent_conversion": "only unequal loaded display invokes HandleLevelAsPercentAfterChange0xd16170; percent*255 div100",
+    "raw_display": "HandleLevelAfterChange0xd16084 computes (raw+2)*100 div255 under rawattributeFlag; display callbacks cannot reconvert flaggedraw",
+    "live": "only LiveGroups=true branch reaches network TargetLevel; admittedfreshfalse suppresses it",
+    "temporary_callback_input_effects": "temporary TSceneCommand level callbacks contain only guarded display/raw changes and Live-group branch; no inputtemplate/scene microfunction notifications"
+  },
+  "packing_projection": {
+    "rule": "GetSceneTableAsString0x12dbe80 concatenates all resolved nonnull group/level pairs in scene andcommandorder, with64 byteFF fill; admitted32pairsoccupyall64bytes",
+    "pointers": "GetSceneTablePointersAsString0x12dc104 startsB2 and adds previouscount*2; fourcounts8 yieldB2 C2 D2 E2",
+    "serialized_field": "SceneTable,64bytes at0xB2",
+    "preservation": "groupbytes, other scenes, unselected levelbytes and all other PP fields preserved",
+    "whole_save_suppression": "SaveScenes0x12dc430 has0x9d externaltable/sessionflag path; admittedcanonicalfreshgraph avoids that path. Module reproduces tableformula without executingSaveScenes."
+  },
+  "golden_vectors": [
+    {
+      "mode": "raw",
+      "before": 128,
+      "selection": 127,
+      "after": 127,
+      "display_before": 50,
+      "display_after": 50
+    },
+    {
+      "mode": "percent",
+      "before": [
+        126,
+        127,
+        128
+      ],
+      "selection": 50,
+      "after": [
+        126,
+        127,
+        128
+      ],
+      "reason": "loadeddisplay50 equality skip"
+    },
+    {
+      "mode": "percent",
+      "before": [
+        125,
+        126,
+        127,
+        128,
+        129,
+        0,
+        254,
+        255
+      ],
+      "selection": 50,
+      "sync_levels": true,
+      "after": [
+        127,
+        126,
+        127,
+        128,
+        127,
+        127,
+        127,
+        127
+      ]
+    },
+    {
+      "mode": "percent",
+      "before": [
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128
+      ],
+      "selection": 40,
+      "sync_levels": true,
+      "after": [
+        102,
+        102,
+        102,
+        102,
+        102,
+        102,
+        102,
+        102
+      ]
+    }
+  ],
+  "excluded": [
+    "SaveNeoScenes accepted graphcopy and parent/deepcallback effects",
+    "wholeIOPE SaveScenes",
+    "inputtemplate/microfunctionrecoding",
+    "objectcreation",
+    "scene/groupadd/remove",
+    "selectorchange",
+    "live mode",
+    "physicalI/O"
+  ],
+  "original_executed": false,
+  "native_database_acceptance": false,
+  "physical_verified": false,
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "form_resource_sha256": {
+    "TFRMSCENEMANAGER": "18d3e7e79180f53c462f37c84d9080ebfb0e76f2492c2db07dbf5d54a18a0c8d"
+  }
+}

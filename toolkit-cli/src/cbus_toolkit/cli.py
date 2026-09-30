@@ -1364,6 +1364,8 @@ def build_parser():
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("--compact", action="store_true", help="Emit single-line JSON")
     commands = parser.add_subparsers(dest="area", required=True)
+    from .edlt_templates_cli import options as edlt_template_options
+    edlt_template_options(commands)
     from .toolkit_preferences_cli import options as preference_options
     preference_options(commands)
     from .toolkit_updates_cli import options as update_options
@@ -2314,6 +2316,8 @@ def build_parser():
             _din_options(p)
     from .iope_cli import offline_options as iope_offline_options
     iope_offline_options(commands)
+    from .iope_workflow_cli import options as iope_workflow_options
+    iope_workflow_options(commands)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
     from .wireless_cli import options as wireless_options
@@ -3859,6 +3863,9 @@ def _memory(args):
 
 
 def run(args):
+    if args.area == "edlt-templates":
+        from .edlt_templates_cli import run as run_edlt_templates
+        return run_edlt_templates(args)
     if args.area == "cgate":
         from .toolkit_preferences_effects import apply_cgate_preferences
         apply_cgate_preferences(args)
@@ -4088,6 +4095,9 @@ def run(args):
     if args.area == "wireless":
         from .wireless_cli import offline as wireless_offline
         return wireless_offline(args)
+    if args.area == "iope-workflow":
+        from .iope_workflow_cli import run as iope_workflow_run
+        return iope_workflow_run(args)
     if args.area == "iope-settings":
         from .iope_cli import offline as iope_offline
         return iope_offline(args)
@@ -4319,6 +4329,7 @@ def main(argv=None):
     from .thermostat_schedule_cli import error_payload as schedule_error_payload
     from .physical_programming import physical_programming_error_payload
     from .dali_commissioning import error_payload as dali_error_payload
+    from .firmware_update_cli import error_payload as firmware_error_payload
     try:
         result, status = run(args)
         stream = args.area == "cgate" and args.action == "events"
@@ -4349,7 +4360,7 @@ def main(argv=None):
             return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
                           **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc), **dali_error_payload(exc),
-                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_parent_transaction_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **routed_write_error_payload(exc, args), **project_repair_error_payload(exc, args), **project_legacy_transform_error_payload(exc, args)},
+                          **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_parent_transaction_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **routed_write_error_payload(exc, args), **project_repair_error_payload(exc, args), **project_legacy_transform_error_payload(exc, args), **firmware_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
     except KeyboardInterrupt as exc:
@@ -4381,6 +4392,7 @@ def main(argv=None):
         result.update(project_legacy_transform_error_payload(exc, args))
         result.update(physical_programming_error_payload(exc))
         result.update(dali_error_payload(exc))
+        result.update(firmware_error_payload(exc, args))
         for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "unit_template_transaction_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):

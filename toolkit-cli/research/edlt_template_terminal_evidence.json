@@ -1,0 +1,869 @@
+{
+  "format": "cbus-edlt-template-terminal-evidence-v1",
+  "base_commit": "7a23fb5d",
+  "scope": "Reproduce the bounded original-IL terminal branch proxy without a form.\n\nCopies six branch bodies to an owned assembly, replacing original UI/model\ndependencies with recording stubs. This is not execution of the original form,\nvalidators, default binding/focus behavior, callback subscriber or persistence.",
+  "passed": true,
+  "input_sha256": {
+    "edlt_template_terminal_original.py": "c334b191a358e46a2efe56d8ead3b37135decf79504f274bf1170ccb6733badb",
+    "edlt_template_terminal_probe.cs": "fed2730338837412c3abd08016019eefcc2540082949f4a148026e741ccf65a4",
+    "eDLT.dll": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "SharpContainer.dll": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+    "mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771",
+    "mscorlib.dll": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4",
+    "System.dll": "5d5c56e3a70e873e8f8c514cc5db15c8647c8b0933b7eeae11a5e9705f5c8386",
+    "System.Core.dll": "18507d65f274356ca237e7ff69eae1bd5f4e3ef3ad4c611b83cb65eebdbcf65f",
+    "Mono.Cecil.dll": "2df316dbdc0999b76dcd09029b6c966b8bce8f21845f551d4075daed208f2c38"
+  },
+  "all_inputs_unchanged": true,
+  "network_denied": true,
+  "original_assembly_runtime_loaded": false,
+  "original_full_form_executed": false,
+  "original_validators_executed": false,
+  "binding_focus_validated": false,
+  "persistence_attempted": false,
+  "physical_device_verified": false,
+  "runtime_assemblies": [
+    {
+      "name": "mscorlib",
+      "sha256": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4"
+    },
+    {
+      "name": "TerminalProbe",
+      "sha256": "fc5bfb436d37e8374f0be83824256fddaea8abaa33b9344cbbf59869912ab501"
+    },
+    {
+      "name": "Mono.Cecil",
+      "sha256": "2df316dbdc0999b76dcd09029b6c966b8bce8f21845f551d4075daed208f2c38"
+    },
+    {
+      "name": "System.Core",
+      "sha256": "18507d65f274356ca237e7ff69eae1bd5f4e3ef3ad4c611b83cb65eebdbcf65f"
+    },
+    {
+      "name": "System",
+      "sha256": "5d5c56e3a70e873e8f8c514cc5db15c8647c8b0933b7eeae11a5e9705f5c8386"
+    }
+  ],
+  "method_proofs": [
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.Controls.TemplatesDialog::BtnLoadClick",
+      "metadata_token": "0x060001e7",
+      "rva": "0x0000f368",
+      "il_size": 1004,
+      "il_sha256": "ebacb0d4bf21135490c713393c15de72acc8e06979ece67366e64be5c377d63d",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "00bf",
+          "try_end": "014e",
+          "handler_start": "014e",
+          "handler_end": "0163"
+        },
+        {
+          "kind": "Catch",
+          "try_start": "0195",
+          "try_end": "01a5",
+          "handler_start": "01a5",
+          "handler_end": "01d0"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0256",
+          "try_end": "0362",
+          "handler_start": "0362",
+          "handler_end": "0377"
+        },
+        {
+          "kind": "Catch",
+          "try_start": "0033",
+          "try_end": "03a1",
+          "handler_start": "03a1",
+          "handler_end": "03d5"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0033",
+          "try_end": "03d7",
+          "handler_start": "03d7",
+          "handler_end": "03eb"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.Controls.TemplatesDialog::Dispose",
+      "metadata_token": "0x060001e8",
+      "rva": "0x0000f7dc",
+      "il_size": 30,
+      "il_sha256": "da5875e8bca68bd679ec6468bdd1aa253da939729247e593e9d40bea71cd81ca",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.Controls.TemplatesDialog::InitializeComponent",
+      "metadata_token": "0x060001e9",
+      "rva": "0x0000f7fc",
+      "il_size": 1996,
+      "il_sha256": "79f7ddfc3f672d67968a70f09bfec28f2e30fa0eca7a507bff8055982f202564",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ClearControlsRecursively",
+      "metadata_token": "0x060002da",
+      "rva": "0x000183bc",
+      "il_size": 88,
+      "il_sha256": "5b731e14913c4658f08d48ff93dd106d1c1b64131ecacd16d2eff76f646f3840",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "000c",
+          "try_end": "0046",
+          "handler_start": "0046",
+          "handler_end": "0057"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ResetUnit",
+      "metadata_token": "0x060002e8",
+      "rva": "0x00019004",
+      "il_size": 328,
+      "il_sha256": "758439e6df67570d72e98ea8678c1b573b54345ffabd9b3122a0c1d194607490",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "00c0",
+          "try_end": "00e5",
+          "handler_start": "00e5",
+          "handler_end": "00ef"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::SaveDialog",
+      "metadata_token": "0x060002eb",
+      "rva": "0x00019220",
+      "il_size": 21,
+      "il_sha256": "2ee838268ce61a4f4749fd29772b821809437ad16d56b1869d889e8e67a44989",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::SaveUnit",
+      "metadata_token": "0x060002ec",
+      "rva": "0x00019238",
+      "il_size": 310,
+      "il_sha256": "d5b93d1cbb1414afdeb382176142edf45fc2b30b5668ad3da5d3a224963243d4",
+      "exception_handlers": [
+        {
+          "kind": "Catch",
+          "try_start": "0028",
+          "try_end": "00bd",
+          "handler_start": "00bd",
+          "handler_end": "0135"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::SaveUnitThreadMain",
+      "metadata_token": "0x060002ef",
+      "rva": "0x00019880",
+      "il_size": 275,
+      "il_sha256": "122cde28877430e2e6cb7948edba3cb83f57aa0724d49e5c54611f2faf88af32",
+      "exception_handlers": [
+        {
+          "kind": "Catch",
+          "try_start": "0002",
+          "try_end": "00ec",
+          "handler_start": "00ec",
+          "handler_end": "0108"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0002",
+          "try_end": "010a",
+          "handler_start": "010a",
+          "handler_end": "0112"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::OnFormClosed",
+      "metadata_token": "0x060002fc",
+      "rva": "0x0001a22c",
+      "il_size": 125,
+      "il_sha256": "0d59b372eecc78f50124a728ce9e2d6627e02c23918ce29cb43838603747c394",
+      "exception_handlers": [
+        {
+          "kind": "Catch",
+          "try_start": "0000",
+          "try_end": "000e",
+          "handler_start": "000e",
+          "handler_end": "0027"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0048",
+          "try_end": "0063",
+          "handler_start": "0063",
+          "handler_end": "0071"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::Save",
+      "metadata_token": "0x0600030b",
+      "rva": "0x0001afb8",
+      "il_size": 186,
+      "il_sha256": "4f6974cf64d29f21c49667a6aaba7e69eea04c311c64792baeb1a905c64b0bc4",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "0078",
+          "try_end": "0095",
+          "handler_start": "0095",
+          "handler_end": "00a3"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ValidateSerialNumber",
+      "metadata_token": "0x06000316",
+      "rva": "0x0001b8f4",
+      "il_size": 88,
+      "il_sha256": "7c2f07d29072b34bfd4cd205852ebaf9dcec7f89db13dde14e0f8ec6092bea96",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::btnApply_Click",
+      "metadata_token": "0x06000319",
+      "rva": "0x0001ba43",
+      "il_size": 9,
+      "il_sha256": "05197708d2172a00b2ddb4bac17d8d9a12db6db2f74b566d8ebf11279b677eb4",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::btnCancel_Click",
+      "metadata_token": "0x0600031a",
+      "rva": "0x0001ba4d",
+      "il_size": 8,
+      "il_sha256": "8660ada235bfccf74824ef878a3dc056fb8cfc9ba607acd9b9d457fd5f1437cc",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::btnOk_Click",
+      "metadata_token": "0x0600031e",
+      "rva": "0x0001bcf2",
+      "il_size": 37,
+      "il_sha256": "b80e653ddbe52cc2d557236274d662fb09d227cd67c1b45808b51dd216d73c42",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ValidateSceneWidgetConfig",
+      "metadata_token": "0x06000320",
+      "rva": "0x0001bea4",
+      "il_size": 1062,
+      "il_sha256": "5faecbd46b710e7284107a751b5675835af7213a60bef700c1746c24d4ebdb9c",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "00b8",
+          "try_end": "01e7",
+          "handler_start": "01e7",
+          "handler_end": "01f3"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0035",
+          "try_end": "0227",
+          "handler_start": "0227",
+          "handler_end": "0233"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0265",
+          "try_end": "0301",
+          "handler_start": "0301",
+          "handler_end": "030f"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0317",
+          "try_end": "03b3",
+          "handler_start": "03b3",
+          "handler_end": "03c1"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::btnTemplates_Click",
+      "metadata_token": "0x0600032c",
+      "rva": "0x0001c5cc",
+      "il_size": 32,
+      "il_sha256": "62e4855749992e2855d485fb25c87984a1363be33afede874398204899d2863e",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::Dispose",
+      "metadata_token": "0x0600034d",
+      "rva": "0x0001d4f3",
+      "il_size": 30,
+      "il_sha256": "f52769c610b065125aa0911c262f36352fc79ea931af73ccb73ec5fbc6426f44",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::<Save>b__18",
+      "metadata_token": "0x06000357",
+      "rva": "0x0001afac",
+      "il_size": 10,
+      "il_sha256": "42beee073a9e3f228a8e0074256264cba0061dbb2e43178e0dd10d77223607df",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "method": "CBusLogicModel.Units.CBusBaseUnit::SaveUnit",
+      "metadata_token": "0x0600020d",
+      "rva": "0x00006f34",
+      "il_size": 1574,
+      "il_sha256": "2839773db5764f5434027cf96790172d9f3cb6d6991507932b766580febd585c",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "00c4",
+          "try_end": "0161",
+          "handler_start": "0161",
+          "handler_end": "016f"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0182",
+          "try_end": "027e",
+          "handler_start": "027e",
+          "handler_end": "028a"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0345",
+          "try_end": "0379",
+          "handler_start": "0379",
+          "handler_end": "0387"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0390",
+          "try_end": "03af",
+          "handler_start": "03af",
+          "handler_end": "03bd"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0473",
+          "try_end": "04b1",
+          "handler_start": "04b1",
+          "handler_end": "04bf"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "04c8",
+          "try_end": "04ec",
+          "handler_start": "04ec",
+          "handler_end": "04fa"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "05ca",
+          "try_end": "05e8",
+          "handler_start": "05e8",
+          "handler_end": "05f4"
+        }
+      ]
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "method": "CBusLogicModel.Units.CBusBaseUnit::BeforeSavePPData",
+      "metadata_token": "0x06000225",
+      "rva": "0x000081ba",
+      "il_size": 8,
+      "il_sha256": "ac51670c58738c823822c2c231350f7e9f9fd3f83739e2d9d98461ac861536ec",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "method": "CBusLogicModel.Units.CBusBaseUnit::AfterSavePPData",
+      "metadata_token": "0x06000226",
+      "rva": "0x000081c3",
+      "il_size": 8,
+      "il_sha256": "eae1fbea5bc7c261e6043d0551d4af79e41edd0810a982d75f9c510e9bce7271",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "method": "CBusLogicModel.Units.EDLT.EDLTUnit::IsValid",
+      "metadata_token": "0x0600045f",
+      "rva": "0x000121c0",
+      "il_size": 31,
+      "il_sha256": "443f45e870c1f26db676a4ab648457ce5712fa6e2267f29aa8c9dd58c020dead",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "method": "CBusLogicModel.Units.EDLT.EDLTUnit::BeforeSavePPData",
+      "metadata_token": "0x06000468",
+      "rva": "0x00012cf0",
+      "il_size": 530,
+      "il_sha256": "17b8c3872974cb593f576f210718a1022607fc8132b6a93cb01b4dcafae35755",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "01d7",
+          "try_end": "01f9",
+          "handler_start": "01f9",
+          "handler_end": "0205"
+        }
+      ]
+    },
+    {
+      "assembly": "SharpContainer.dll",
+      "method": "SharpContainer.SharkUnitDialogFactory::SaveUnit",
+      "metadata_token": "0x06000099",
+      "rva": "0x00003614",
+      "il_size": 23,
+      "il_sha256": "4096a643a03141cfdc7f88dca3a3eee6ff0070f7f746f3d88a150f891649c3c1",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "SharpContainer.dll",
+      "method": "SharpContainer.SharkUnitDialogFactory::DialogFormClosed",
+      "metadata_token": "0x060000a1",
+      "rva": "0x00003a34",
+      "il_size": 83,
+      "il_sha256": "1a030161cb5fb217e1c6ad4904572cd6171626b9d138a077553a664637e6c629",
+      "exception_handlers": []
+    },
+    {
+      "assembly": "SharpContainer.dll",
+      "method": "SharpContainer.SharkUnitDialogFactory::FireFormClosedEvent",
+      "metadata_token": "0x060000a4",
+      "rva": "0x00003b30",
+      "il_size": 31,
+      "il_sha256": "d79bb4d52b7be23814f95fc4bb7d11d872390983e2fb7e0bec1e67b624b08d18",
+      "exception_handlers": [
+        {
+          "kind": "Catch",
+          "try_start": "0008",
+          "try_end": "0015",
+          "handler_start": "0015",
+          "handler_end": "001e"
+        }
+      ]
+    },
+    {
+      "assembly": "SharpContainer.dll",
+      "method": "SharpContainer.SharkUnitDialogFactory::FrmKeyUnitSaveUnitDialogRequest",
+      "metadata_token": "0x060000af",
+      "rva": "0x00003f64",
+      "il_size": 59,
+      "il_sha256": "7b2f98ae73f66717100b426e9f2b83d420543807e6a4cbd61d67b75e336c794f",
+      "exception_handlers": [
+        {
+          "kind": "Catch",
+          "try_start": "0008",
+          "try_end": "0016",
+          "handler_start": "0016",
+          "handler_end": "003a"
+        }
+      ]
+    }
+  ],
+  "selected_call_sequences": {
+    "eDLT.FrmBaseUnit::SaveDialog": [
+      {
+        "offset": "000f",
+        "opcode": "callvirt",
+        "callee": "System.Void eDLT.FrmBaseUnit/SaveUnitDialogRequest::Invoke(System.Boolean)"
+      }
+    ],
+    "eDLT.FrmBaseUnit::Save": [
+      {
+        "offset": "0001",
+        "opcode": "call",
+        "callee": "System.Boolean eDLT.FrmBaseUnit::ValidateSerialNumber()"
+      },
+      {
+        "offset": "0011",
+        "opcode": "callvirt",
+        "callee": "System.ComponentModel.BindingList`1<CBusLogicModel.Units.EDLT.EDLTWidget> CBusLogicModel.Units.EDLT.EDLTUnit::get_Widgets()"
+      },
+      {
+        "offset": "001e",
+        "opcode": "ldftn",
+        "callee": "System.Boolean eDLT.FrmBaseUnit::<Save>b__18(CBusLogicModel.Units.EDLT.EDLTWidget)"
+      },
+      {
+        "offset": "0024",
+        "opcode": "newobj",
+        "callee": "System.Void System.Func`2<CBusLogicModel.Units.EDLT.EDLTWidget,System.Boolean>::.ctor(System.Object,System.IntPtr)"
+      },
+      {
+        "offset": "0033",
+        "opcode": "call",
+        "callee": "System.Collections.Generic.IEnumerable`1<!!0> System.Linq.Enumerable::Where<CBusLogicModel.Units.EDLT.EDLTWidget>(System.Collections.Generic.IEnumerable`1<!!0>,System.Func`2<!!0,System.Boolean>)"
+      },
+      {
+        "offset": "0038",
+        "opcode": "call",
+        "callee": "System.Boolean eDLT.FrmBaseUnit::ValidateSceneWidgetConfig(System.Collections.Generic.IEnumerable`1<CBusLogicModel.Units.EDLT.EDLTWidget>)"
+      },
+      {
+        "offset": "0041",
+        "opcode": "newobj",
+        "callee": "System.Void System.Collections.Generic.List`1<System.String>::.ctor()"
+      },
+      {
+        "offset": "004f",
+        "opcode": "callvirt",
+        "callee": "System.Boolean CBusLogicModel.Units.EDLT.EDLTUnit::IsValid(System.Collections.Generic.List`1<System.String>&)"
+      },
+      {
+        "offset": "0056",
+        "opcode": "newobj",
+        "callee": "System.Void System.Text.StringBuilder::.ctor()"
+      },
+      {
+        "offset": "005d",
+        "opcode": "callvirt",
+        "callee": "System.Int32 System.Collections.Generic.List`1<System.String>::get_Count()"
+      },
+      {
+        "offset": "006b",
+        "opcode": "callvirt",
+        "callee": "System.Text.StringBuilder System.Text.StringBuilder::AppendLine(System.String)"
+      },
+      {
+        "offset": "0072",
+        "opcode": "callvirt",
+        "callee": "System.Collections.Generic.List`1/Enumerator<!0> System.Collections.Generic.List`1<System.String>::GetEnumerator()"
+      },
+      {
+        "offset": "007c",
+        "opcode": "call",
+        "callee": "!0 System.Collections.Generic.List`1/Enumerator<System.String>::get_Current()"
+      },
+      {
+        "offset": "0084",
+        "opcode": "callvirt",
+        "callee": "System.Text.StringBuilder System.Text.StringBuilder::AppendLine(System.String)"
+      },
+      {
+        "offset": "008c",
+        "opcode": "call",
+        "callee": "System.Boolean System.Collections.Generic.List`1/Enumerator<System.String>::MoveNext()"
+      },
+      {
+        "offset": "009d",
+        "opcode": "callvirt",
+        "callee": "System.Void System.IDisposable::Dispose()"
+      },
+      {
+        "offset": "00a5",
+        "opcode": "callvirt",
+        "callee": "System.String System.Object::ToString()"
+      },
+      {
+        "offset": "00aa",
+        "opcode": "call",
+        "callee": "System.Void eDLT.FrmBaseUnit::InvalidFormDialog(System.String)"
+      },
+      {
+        "offset": "00b3",
+        "opcode": "call",
+        "callee": "System.Void eDLT.FrmBaseUnit::SaveDialog(System.Boolean)"
+      }
+    ],
+    "eDLT.FrmBaseUnit::btnApply_Click": [
+      {
+        "offset": "0002",
+        "opcode": "call",
+        "callee": "System.Boolean eDLT.FrmBaseUnit::Save(System.Boolean)"
+      }
+    ],
+    "eDLT.FrmBaseUnit::btnCancel_Click": [
+      {
+        "offset": "0002",
+        "opcode": "callvirt",
+        "callee": "System.Void eDLT.FrmBaseUnit::OnFormClosed(System.Windows.Forms.FormClosedEventArgs)"
+      }
+    ],
+    "eDLT.FrmBaseUnit::btnOk_Click": [
+      {
+        "offset": "0009",
+        "opcode": "call",
+        "callee": "System.Windows.Forms.Form System.Windows.Forms.ContainerControl::get_ParentForm()"
+      },
+      {
+        "offset": "0011",
+        "opcode": "call",
+        "callee": "System.Windows.Forms.Form System.Windows.Forms.ContainerControl::get_ParentForm()"
+      },
+      {
+        "offset": "0016",
+        "opcode": "callvirt",
+        "callee": "System.Void System.Windows.Forms.Form::Close()"
+      },
+      {
+        "offset": "001e",
+        "opcode": "call",
+        "callee": "System.Boolean eDLT.FrmBaseUnit::Save(System.Boolean)"
+      }
+    ],
+    "CBusLogicModel.Units.EDLT.EDLTUnit::IsValid": [
+      {
+        "offset": "0001",
+        "opcode": "callvirt",
+        "callee": "System.Collections.Generic.List`1<CBusLogicModel.CBusObjects.CBusGroup> CBusLogicModel.Units.CBusBaseUnit::GetKeyFunctionGroups()"
+      },
+      {
+        "offset": "000a",
+        "opcode": "call",
+        "callee": "System.Boolean CBusLogicModel.Units.EDLT.EDLTUnit::ValidateCorridorLinking(System.Collections.Generic.IEnumerable`1<CBusLogicModel.CBusObjects.CBusGroup>,System.Collections.Generic.List`1<System.String>&)"
+      },
+      {
+        "offset": "0012",
+        "opcode": "call",
+        "callee": "System.Boolean CBusLogicModel.Units.EDLT.EDLTUnit::ValidateScenes(System.Collections.Generic.List`1<System.String>&)"
+      }
+    ],
+    "SharpContainer.SharkUnitDialogFactory::FrmKeyUnitSaveUnitDialogRequest": [
+      {
+        "offset": "000f",
+        "opcode": "callvirt",
+        "callee": "System.Void SharpContainer.SharkPitEventHandlerBool::Invoke(System.Boolean)"
+      },
+      {
+        "offset": "0018",
+        "opcode": "call",
+        "callee": "System.Void SharpLogger.Log::LogException(System.Exception)"
+      },
+      {
+        "offset": "0022",
+        "opcode": "call",
+        "callee": "System.String System.Environment::get_NewLine()"
+      },
+      {
+        "offset": "0028",
+        "opcode": "callvirt",
+        "callee": "System.String System.Exception::get_Message()"
+      },
+      {
+        "offset": "002d",
+        "opcode": "call",
+        "callee": "System.String System.String::Format(System.String,System.Object,System.Object)"
+      },
+      {
+        "offset": "0032",
+        "opcode": "call",
+        "callee": "System.Windows.Forms.DialogResult System.Windows.Forms.MessageBox::Show(System.String)"
+      }
+    ]
+  },
+  "copied_methods": [
+    {
+      "method": "Save",
+      "metadata_token": "0x0600030b",
+      "rva": "0x0001afb8",
+      "instruction_count": 68,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    },
+    {
+      "method": "SaveDialog",
+      "metadata_token": "0x060002eb",
+      "rva": "0x00019220",
+      "instruction_count": 8,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    },
+    {
+      "method": "<Save>b__18",
+      "metadata_token": "0x06000357",
+      "rva": "0x0001afac",
+      "instruction_count": 5,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    },
+    {
+      "method": "btnApply_Click",
+      "metadata_token": "0x06000319",
+      "rva": "0x0001ba43",
+      "instruction_count": 5,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    },
+    {
+      "method": "btnOk_Click",
+      "metadata_token": "0x0600031e",
+      "rva": "0x0001bcf2",
+      "instruction_count": 15,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    },
+    {
+      "method": "btnCancel_Click",
+      "metadata_token": "0x0600031a",
+      "rva": "0x0001ba4d",
+      "instruction_count": 4,
+      "opcodes_preserved": true,
+      "dependency_operands_rebound": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "serial-rejected",
+      "result": "false",
+      "events": [
+        "serial-valid"
+      ]
+    },
+    {
+      "id": "scene-rejected",
+      "result": "false",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6"
+      ]
+    },
+    {
+      "id": "unit-rejected",
+      "result": "false",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid",
+        "invalid-form:Multiple validation errors have occurred: |first|second|"
+      ]
+    },
+    {
+      "id": "save-dispatched",
+      "result": "true",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid",
+        "save-request:false"
+      ]
+    },
+    {
+      "id": "save-no-subscriber",
+      "result": "true",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid"
+      ]
+    },
+    {
+      "id": "apply-dispatched",
+      "result": "void",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid",
+        "save-request:false"
+      ]
+    },
+    {
+      "id": "ok-dispatched",
+      "result": "void",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid",
+        "save-request:true"
+      ]
+    },
+    {
+      "id": "ok-global-no-parent",
+      "result": "void",
+      "events": [
+        "parent"
+      ]
+    },
+    {
+      "id": "ok-global-parent",
+      "result": "void",
+      "events": [
+        "parent",
+        "parent",
+        "parent-close"
+      ]
+    },
+    {
+      "id": "cancel",
+      "result": "void",
+      "events": [
+        "closed:null"
+      ]
+    },
+    {
+      "id": "serial-throws",
+      "result": "System.InvalidOperationException:serial",
+      "events": [
+        "serial-valid"
+      ]
+    },
+    {
+      "id": "scene-throws",
+      "result": "System.InvalidOperationException:scene",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6"
+      ]
+    },
+    {
+      "id": "unit-throws",
+      "result": "System.InvalidOperationException:unit",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid"
+      ]
+    },
+    {
+      "id": "callback-throws",
+      "result": "System.InvalidOperationException:callback",
+      "events": [
+        "serial-valid",
+        "widgets",
+        "scene-valid:6,6",
+        "unit-valid",
+        "save-request:false"
+      ]
+    }
+  ],
+  "local_report_sha256": "de7906ffb1bc19d83bcf014794912d9d44ac62f27b728109c1057558f326590b"
+}

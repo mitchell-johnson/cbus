@@ -1,0 +1,180 @@
+{
+  "format": "cbus-edlt-template-save-validation-source-v1",
+  "evidence_class": "source-proof",
+  "historical_chain": [
+    "7a23fb5d42d6f74a443df251622ca9f5f6e46565",
+    "48112a9cbbd507900479a243f2aae561b5188fcc",
+    "10cbfa07d188ad823aa69db7f73bf973cb122d80"
+  ],
+  "original_assembly_sha256": {
+    "eDLT.dll": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823"
+  },
+  "method_proofs_from_retained_evidence": [
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::Save",
+      "metadata_token": "0x0600030b",
+      "rva": "0x0001afb8",
+      "il_size": 186,
+      "il_sha256": "4f6974cf64d29f21c49667a6aaba7e69eea04c311c64792baeb1a905c64b0bc4",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "0078",
+          "try_end": "0095",
+          "handler_start": "0095",
+          "handler_end": "00a3"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ValidateSceneWidgetConfig",
+      "metadata_token": "0x06000320",
+      "rva": "0x0001bea4",
+      "il_size": 1062,
+      "il_sha256": "5faecbd46b710e7284107a751b5675835af7213a60bef700c1746c24d4ebdb9c",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "00b8",
+          "try_end": "01e7",
+          "handler_start": "01e7",
+          "handler_end": "01f3"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0035",
+          "try_end": "0227",
+          "handler_start": "0227",
+          "handler_end": "0233"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0265",
+          "try_end": "0301",
+          "handler_start": "0301",
+          "handler_end": "030f"
+        },
+        {
+          "kind": "Finally",
+          "try_start": "0317",
+          "try_end": "03b3",
+          "handler_start": "03b3",
+          "handler_end": "03c1"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ValidateSerialNumber",
+      "metadata_token": "0x06000316",
+      "rva": "0x0001b8f4",
+      "il_size": 88,
+      "il_sha256": "7c2f07d29072b34bfd4cd205852ebaf9dcec7f89db13dde14e0f8ec6092bea96",
+      "exception_handlers": []
+    }
+  ],
+  "source_excerpt_receipts": [
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "Save",
+      "line_start": 44797,
+      "line_end": 44896,
+      "extracted_utf8_sha256": "5d94e6e05b6bbb8bc8a2b4dc4ccdc3182f2d3d2a4c031d753eaad6ae6a9d9fcb"
+    },
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "ValidateSerialNumber",
+      "line_start": 45804,
+      "line_end": 45860,
+      "extracted_utf8_sha256": "e48cadfb4cc6d2cdaef054fae998c0a4f69a9f8d2efc174beff10eccb188449a"
+    },
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "ValidateSceneWidgetConfig",
+      "line_start": 46384,
+      "line_end": 46912,
+      "extracted_utf8_sha256": "23ca43922a707acd82f41de32038a37b6adf8b8f0bea89226900610bd757f05e"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "GetKeyFunctionGroups",
+      "line_start": 38481,
+      "line_end": 38530,
+      "extracted_utf8_sha256": "367412d7aa31321b2013db5932ff974463941709f8b5e35c15760b4dad3e7e26"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "IsValid",
+      "line_start": 38969,
+      "line_end": 38997,
+      "extracted_utf8_sha256": "99332b2c5a7381cb5cbc90c9149a638060e31939bfe017cef4ab11f5ffb86340"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "ValidateScenes",
+      "line_start": 40005,
+      "line_end": 40204,
+      "extracted_utf8_sha256": "f855d571333006cf5e906c5ef685098ae5e6842ba1bc7576f525fa5337668219"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "ValidateCorridorLinking",
+      "line_start": 40830,
+      "line_end": 40891,
+      "extracted_utf8_sha256": "f4dfebf9cf0ef8fa7443cceb0f68254554d31990ae2240edd3a819be5feabae6"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "StatusLabelAppGroupData.GetGroup",
+      "line_start": 43305,
+      "line_end": 43337,
+      "extracted_utf8_sha256": "086cc0a1e521ed4739dd0768801e840ee92783fbf0a31b61c7bd532801c9b589"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "Scene trigger/action getters and setters",
+      "line_start": 32629,
+      "line_end": 32847,
+      "extracted_utf8_sha256": "196daa3c53265fab63a5d3cab8fae88666eb5ad60b36536daefff00f88f15ad7"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "PPAttribute.SetValue raw inequality/dirty/notification",
+      "line_start": 54907,
+      "line_end": 55031,
+      "extracted_utf8_sha256": "ffc8dfcd7d0222455b1702e9bda9f165ece3197eeb07c71c39d10aff5ce4571e"
+    }
+  ],
+  "source_proof_complete_for_recovered_predicates": true,
+  "offline_admission_scope": [
+    "intact AfterLoad model receipt, before terminal projection",
+    "exact explicit serial verification control text; ASCII digit suffix profile",
+    "already existing add-enabled references only",
+    "exact raw SceneCycle trailing 0xFF fixed point",
+    "complete explicit initialized level DynamicAll Name/image-presence facts when read",
+    "lazy stable scene getters; refuse editable action -1 effects",
+    "existing seven-family key groups and first corridor TagName"
+  ],
+  "validator_order": [
+    "serial",
+    "scene_widget",
+    "unit: group acquisition, corridor, scenes"
+  ],
+  "residual_blockers": [
+    "control focus/binding flush and provenance",
+    "complete parent Reset/BeforeChange/AfterChange callback and control outcomes",
+    "unresolved getter mutation/add-request/notification effects",
+    "original dialog execution and native hash collection report order",
+    "SaveDialog native host subscriber and concrete save/reload receipts",
+    "freshness and original runtime acceptance"
+  ],
+  "original_validators_executed": false,
+  "original_ui_executed": false,
+  "native_io_executed_for_this_step": false,
+  "physical_device_verified": false,
+  "apply_allowed": false,
+  "saved": false
+}

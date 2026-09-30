@@ -1,0 +1,616 @@
+{
+  "format": "cbus-iope-logic-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "original_execution": false,
+  "analysis": "Static disassembly of MAP-named original PE methods, verified virtual method routing, and original form-resource control bindings. No original method emulation, GUI execution, native C-Gate execution, or physical operation was performed for this receipt.",
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMOUTPUTLOGIC": "a77a1cd1f044db6754f4fca054926378c6bfaca2931dae9c35a166eec71255f8",
+    "TFRMOUTPUTLOGICGROUP": "041d3178834d2213df561eeeb6f36bf437e354b896417732678873b057326e9d",
+    "TFRMOUTPUTLOGICRECOVERY": "360c3e0d54581d88e8e6e0729632314391230e2cb9619c78e41ac2697da124dd",
+    "TFRMOUTPUTLOGICRECOVERYLEVEL": "19e24c60b0cd144da9cd850b4ecb311035bbb3927d8df6da9a4edd8ddbe75745",
+    "TFRMOUTPUTLOGICRECOVERYMODAL": "4047a667e78716c1d1b8dbea618aa0e712b9789782f86d9d8c0cd17820aaf34d"
+  },
+  "methods": [
+    {
+      "name": "CIS_FlashGUI.PrepareFlashRadioGroupSimple",
+      "start": "0xc10a10",
+      "end": "0xc10afc",
+      "sha256": "230c6d4e48d9f9e0f3c75cdbf7c73d3b856cec6e896480f26390fc04d2573cfc"
+    },
+    {
+      "name": "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged",
+      "start": "0x84d8c4",
+      "end": "0x84da68",
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e"
+    },
+    {
+      "name": "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged",
+      "start": "0x84dc5c",
+      "end": "0x84dcac",
+      "sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9"
+    },
+    {
+      "name": "CIS_TBaseObject.TBASEObject.EndUpdate",
+      "start": "0x7682a4",
+      "end": "0x7682c8",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicFunction",
+      "start": "0xd29f20",
+      "end": "0xd29f44",
+      "sha256": "15e277efb3b793f4ac1095c71278a78c3b663d1cd146e71926c13f21f155a63f"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicGA13Associations",
+      "start": "0xd29f44",
+      "end": "0xd29f68",
+      "sha256": "c4eb3915c9ad57ea9358f72774ded276d158a0515a8c7c5105f6b15f83aa0e2a"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicGA14Associations",
+      "start": "0xd29f68",
+      "end": "0xd29f8c",
+      "sha256": "98dbf97922fa831fa44f56a5c3eba348719e14803fe71ccfa9da7eb69d462cdf"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicGA15Associations",
+      "start": "0xd29f8c",
+      "end": "0xd29fb0",
+      "sha256": "e9290543b72f9ffd159d1ffbc738c7f106a09f63b853dbea37bfc35c37e4d8c8"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicGA16Associations",
+      "start": "0xd29fb0",
+      "end": "0xd29fd4",
+      "sha256": "f149f4e298d5ad79bf0ad257ee540f882e2fc0c59fe45940c5f8cb01ca832422"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.GetLogicGAAssociation",
+      "start": "0xd29fd4",
+      "end": "0xd2a034",
+      "sha256": "5d2b7897f4aea960bea5473338576b9fca64d01d98a9001d9095d94dc1ee0727"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.InternalCreate",
+      "start": "0xd2a3dc",
+      "end": "0xd2a8c0",
+      "sha256": "78a1b7a3640803756719fe79bc87619c90ed5d6cb388df09112ef1e0567217b7"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicFunction",
+      "start": "0xd2aa8c",
+      "end": "0xd2aaec",
+      "sha256": "15e0ead4d18bd54c804df89827538f01a1b556df6bfd2f4e4dbd207475c0d48d"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicGA13Associations",
+      "start": "0xd2aaec",
+      "end": "0xd2ab48",
+      "sha256": "2391d0652cafceeb29219dbd052dee8f572d00c67a0abf9e6ae1420584bff531"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicGA14Associations",
+      "start": "0xd2ab48",
+      "end": "0xd2aba4",
+      "sha256": "cc42dc02196c696f39e6f3a0afda808b04ee0c0ebd01ccafb92c05cb30b1dec9"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicGA15Associations",
+      "start": "0xd2aba4",
+      "end": "0xd2ac00",
+      "sha256": "061e44db0ad4c56dbd784964c68afc0d1f420cbec4487003566d1028e1ed35d1"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicGA16Associations",
+      "start": "0xd2ac00",
+      "end": "0xd2ac5c",
+      "sha256": "d5db3eb63ba578485fcaa363701578ad85a805925e7efd81fd847f3e29ca2888"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLogicGAAssociation",
+      "start": "0xd2ac5c",
+      "end": "0xd2acb4",
+      "sha256": "d11072c16a11aaa6558d1f281bb6bf887b41cb3dc3788ab0e5011589dccc539b"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.GetGroup",
+      "start": "0xd298e4",
+      "end": "0xd29908",
+      "sha256": "20c7353053e63df7c78b3954f0d0a9479ee6efe25b59425667515f55c838db5a"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.GetLevelStoreEnable",
+      "start": "0xd29a80",
+      "end": "0xd29aa4",
+      "sha256": "482cb6c05f8c19d0673a49e168eb7a7d12a48223f0ada5e261cdd0707dc26035"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.GetLightLevel",
+      "start": "0xd29908",
+      "end": "0xd2992c",
+      "sha256": "1f8f2b54869b9dbab1b6237b128f0fb1e09028468e47f87d711793d6e02b391c"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.GroupChanged",
+      "start": "0xd2992c",
+      "end": "0xd29a80",
+      "sha256": "35ceddeb345c986cfbcded4ec61214bf1826b9be88da8f5bf4ed113c217d8198"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.InternalCreate",
+      "start": "0xd29aa4",
+      "end": "0xd29bdc",
+      "sha256": "8dd84c1a4b2114a659b17ec532b4ed0fcba55cd7365f5cc3f605bfee758031b5"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.SetGroup",
+      "start": "0xd29bf0",
+      "end": "0xd29c14",
+      "sha256": "4a6f99252c3de62f3b91d9a2b961b1d58163fd0fdf0046d8c6293a93a8d241b7"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.SetLevelStoreEnable",
+      "start": "0xd29c70",
+      "end": "0xd29ccc",
+      "sha256": "0a5b60d5abcefa75e2111e7ade67b96ba58efe3e9752ebdb8ab266604ad0b12f"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TLogicGroup.SetLightLevel",
+      "start": "0xd29c14",
+      "end": "0xd29c70",
+      "sha256": "742723a6f1f3d4560745802db3a42739ba7d5e955a0e323126d790c83c35c29c"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "start": "0x7ece44",
+      "end": "0x7ece6c",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "start": "0x7ece6c",
+      "end": "0x7ece94",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "start": "0x7ec640",
+      "end": "0x7ec674",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5"
+    },
+    {
+      "name": "CIS_TFlashCheckBox.TFlashCheckBox.CMChanged",
+      "start": "0xae8278",
+      "end": "0xae82d8",
+      "sha256": "e167f6335bb26ebba294e4facda4b27ebf8baf31acecc9d8d98cb148f9def71e"
+    },
+    {
+      "name": "CIS_TFlashCheckBox.TFlashCheckBox.Change",
+      "start": "0xae8248",
+      "end": "0xae8278",
+      "sha256": "e28f5e895c982ffe9a92d3fcedcbdbfafe88cb195d32758769d9ef645a7b258c"
+    },
+    {
+      "name": "CIS_TFlashCheckBox.TFlashCheckBox.ControllerValueChange",
+      "start": "0xae8120",
+      "end": "0xae8204",
+      "sha256": "a88dbece0e574e8fc0e537c3c3398a5a296ebc8104eafd7180eccea9a36ea7d8"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxTrackBar.ControllerValueChange",
+      "start": "0xc09b38",
+      "end": "0xc09be0",
+      "sha256": "c90dfc6489a2794dcd0a79230fdec3663785b64de7f63a28978d06e0ee31ce4e"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxTrackBarProperties.DoChanged",
+      "start": "0xc09ecc",
+      "end": "0xc0a020",
+      "sha256": "16fe95cd8dd38e435d46284f06c86f6c0d1ddee2c0b07ac0d662ae457fc26902"
+    },
+    {
+      "name": "CIS_TFlashRadioGroup.TFlashRadioGroup.Click",
+      "start": "0xbc06e4",
+      "end": "0xbc0824",
+      "sha256": "56805ba41683c2c2c3768da4b5f95e25046c3e66c907896696dabcaf2c3f3f54"
+    },
+    {
+      "name": "CIS_TFlashRadioGroup.TFlashRadioGroup.HandleFlashValueChanged",
+      "start": "0xbc0c34",
+      "end": "0xbc0d6c",
+      "sha256": "5a0b95531753780ba59e8d3a31f423511b2a70e35889f2065c93d73632765830"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadOutputs",
+      "start": "0x12d8150",
+      "end": "0x12d8900",
+      "sha256": "12808b9e00b7518cda3e9ff9b1267d8eaf47860d532b889686d04a88f09f0324"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveOutputs",
+      "start": "0x12dccb8",
+      "end": "0x12ddce0",
+      "sha256": "98c33037dcfa050bedf68b7bde8b11b1de7badf93a1e9e2a94133d4597deb6a5"
+    },
+    {
+      "name": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject",
+      "start": "0x7ddbf4",
+      "end": "0x7ddcb4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb"
+    },
+    {
+      "name": "CIS_TfrmIOPEPowerFailure.TfrmIOPEPowerFailure.btnLogicRecoveryClick",
+      "start": "0x11b735c",
+      "end": "0x11b73cc",
+      "sha256": "0b4192659d0e791cea5285213c94d830552bb2a44c9bc2c8a13dfcd094f0210e"
+    },
+    {
+      "name": "CIS_TfrmOutputLogic.TfrmOutputLogic.GetChannelLogicRadioGroup",
+      "start": "0x1192930",
+      "end": "0x1192ab0",
+      "sha256": "b0693b45f52caacf6982895a1d8c5b56e5553878390ddcd56d0db9a45e28a917"
+    },
+    {
+      "name": "CIS_TfrmOutputLogic.TfrmOutputLogic.HandleLogicAssociationAfterChange",
+      "start": "0x1192034",
+      "end": "0x11922e0",
+      "sha256": "0fc84f8733acd7b40d14aa317e8eb635da8a452217512847d93ed9750d63d8da"
+    },
+    {
+      "name": "CIS_TfrmOutputLogic.TfrmOutputLogic.SetCBusUnit",
+      "start": "0x1191ed8",
+      "end": "0x1192034",
+      "sha256": "d6e3204aa533055c05c1a3abe2ae6a9c2cd961f9f7be7b226ebcd3454e55e031"
+    },
+    {
+      "name": "CIS_TfrmOutputLogic.TfrmOutputLogic.SetupLevelAssignments",
+      "start": "0x11922f0",
+      "end": "0x1192824",
+      "sha256": "9d2a43a6ad398f3d86260d279d3a4591e52d6fdf824b69a052d81d53dac61f23"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.SetAllLogicAssociations",
+      "start": "0x1190c44",
+      "end": "0x1190d0c",
+      "sha256": "de858ba639671d9745fae401487d4d9d8f0ca307bb9181128d76c4c6b57a7859"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.GetLogicAssociationName",
+      "start": "0x11912fc",
+      "end": "0x1191468",
+      "sha256": "6e1b19cabe5e1e93f15c6c4908cee1b6c892c5b36053f684d5e3f223ec7def38"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.InitialiseSelectAllCheckbox",
+      "start": "0x1191468",
+      "end": "0x11914a4",
+      "sha256": "7ae232963fe0c9f15b01de88e9007cff8ce59310094496e444fe58bb814f336c"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.RefreshSelectAllCheckbox",
+      "start": "0x11914a4",
+      "end": "0x11915f0",
+      "sha256": "409add912bf62cd253d843f7dd88c310569478d6f50f5b9b150d9883aa98f1df"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.SetCBusUnit",
+      "start": "0x1190f88",
+      "end": "0x11912fc",
+      "sha256": "f03299b59da10e8837162d788ab979044ee1d75f35f69af72a1e63b0d4253a59"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.chkChannel1Click",
+      "start": "0x1190e24",
+      "end": "0x1190f64",
+      "sha256": "cf2814c91a0d4772f2f547bd65cb072b4cf741578603550658834cabb540455d"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicGroup.TfrmOutputLogicGroup.chkSelectAllClick",
+      "start": "0x1190d0c",
+      "end": "0x1190d64",
+      "sha256": "f54f5fa64bbc3e021486d860a41d3413d9d930941b95804d6daae187e830dbab"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecovery.TfrmOutputLogicRecovery.SetCBusUnit",
+      "start": "0x11b5864",
+      "end": "0x11b58f8",
+      "sha256": "442c0ac49f30535fc2a0e4232b6060384c4b9c476a2ade3954433daa57b4c1a7"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecovery.TfrmOutputLogicRecovery.SetupRecoveryLevels",
+      "start": "0x11b58f8",
+      "end": "0x11b5a90",
+      "sha256": "0a12379e91a8e159640b61f382390745654e7034aee6a8c7d05b795caeea4a5b"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecoveryLevel.TfrmOutputLogicRecoveryLevel.SetCBusUnit",
+      "start": "0x11b5068",
+      "end": "0x11b5308",
+      "sha256": "ca21945f7da9d12de1f7b92a88194ff36eb82ea82eb78427b36574e733f5e416"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecoveryLevel.TfrmOutputLogicRecoveryLevel.chkLevelStoreEnableClick",
+      "start": "0x11b5308",
+      "end": "0x11b5348",
+      "sha256": "f7d5aa33c3055900eee6f5ec3c4226282cd1bb55d782357555136fc36195bffe"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecoveryLevel.TfrmOutputLogicRecoveryLevel.trkRecoveryLevelPropertiesChange",
+      "start": "0x11b5348",
+      "end": "0x11b54f0",
+      "sha256": "34553838063a555d510584ffc96d6f983bbb28c4cf50ea4343feedccd4f2fe69"
+    },
+    {
+      "name": "CIS_TfrmOutputLogicRecoveryModal.TfrmOutputLogicRecoveryModal.SetCBusUnit",
+      "start": "0x11b5ed0",
+      "end": "0x11b61e4",
+      "sha256": "8bea0a08d20d84f3043c80ceadd90a3e8eb27cd4ea3943d2571e1abdf07b8c9c"
+    },
+    {
+      "name": "StdCtrls.TCustomCheckBox.SetChecked",
+      "start": "0x68a038",
+      "end": "0x68a04c",
+      "sha256": "2dd31e6946c58a2a3cd5150def186274c93e31f806a070df082774617c91a12a"
+    },
+    {
+      "name": "StdCtrls.TCustomCheckBox.SetState",
+      "start": "0x68a04c",
+      "end": "0x68a09c",
+      "sha256": "89423b148559fdc63f522fafc0aa8a1c1484599b151e92e9f1e81e129507f046"
+    }
+  ],
+  "method_hash_boundary": "Original PE bytes from each resolved MAP symbol through the next distinct MAP symbol; may include trailing literal data and alignment. Addresses are virtual addresses, not MAP segment offsets.",
+  "method_hash_verification": "Every retained method was independently rechecked against the original PE bytes and its next distinct MAP symbol while creating this receipt.",
+  "profiles": [
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "channels": 1,
+      "relays": [
+        1
+      ],
+      "dimmers": [],
+      "logic_groups": 4
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "channels": 2,
+      "relays": [
+        1,
+        2
+      ],
+      "dimmers": [],
+      "logic_groups": 4
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "channels": 4,
+      "relays": [
+        1,
+        2
+      ],
+      "dimmers": [
+        3,
+        4
+      ],
+      "logic_groups": 4
+    }
+  ],
+  "firmware_admission": "1.0.00..1.2.99; catalogue/specification intersection retained from the existing IOPE source review. Native runs establish only their specifically observed revisions.",
+  "control_sequence": [
+    "Apply explicit channel logic associations and functions before group selectors, while the logic recovery modal is absent.",
+    "Apply explicit logic group addresses in ascending logic group order, including the group-change cascade even for an unchanged address.",
+    "If any logic level_store or recovery_percent action is requested, enter the recovery modal phase once and normalize all four logic levels through displayed percentages in ascending logic group order.",
+    "Apply selected logic recovery controls in ascending logic group order, with level_store before recovery_percent within each selected row."
+  ],
+  "group_assignment": {
+    "model_state_required": 1,
+    "match": "Resolved group object identity; compare addresses only after exact application and group identity have been established.",
+    "unused_group_cascades": false,
+    "self_skipped": false,
+    "same_group_setter_skipped": false,
+    "scan_order": [
+      "all logic groups in collection order, including the selected row",
+      "all existing output channels in collection order"
+    ],
+    "copy_order": [
+      "LightLevel",
+      "LogicLevelStoreEnable"
+    ],
+    "effect": "For each matching non-unused group, copy that row or output channel recovery level and level-store setting into the selected logic row. Reads of the selected row during this scan observe earlier copies. The last matching output channel takes precedence over every logic row.",
+    "same_group_evidence": "TObjectReferenceAttribute.SetFlashObject skips its inner reference write for equal pointers but still ends its update. The original virtual table resolves EndUpdate to TCISAttribute.EndUpdate, which reaches TBASEObject.EndUpdate and then TFlashAttribute.Changed; the installed GroupChanged callback executes when the outer update depth reaches zero and the attribute is initialized.",
+    "preserve_peers": true,
+    "required_metadata": "Positive existing-group evidence for all four retained logic groups, each existing output channel group, and every requested non-unused group in the primary application. Address255 denotes the unused group; do not invent an original unused-selector refusal."
+  },
+  "recovery": {
+    "level_parameter": "LightLevelOutput",
+    "level_indices_zero_based": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "store_parameter": "LogicLevelStoreEnable",
+    "store_indices_zero_based": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "percentage_range": [
+      0,
+      100
+    ],
+    "raw_setter_admitted": false,
+    "use_raw_values": false,
+    "checkbox_effect": "Write the selected store Boolean, enable the slider exactly when false, then explicitly invoke the trackbar change handler. That handler writes PercentToLevel of the current displayed percentage before updating display text.",
+    "checkbox_dependent_level": "PercentToLevel(LevelToPercent(current raw level))",
+    "checkbox_force_255": false,
+    "explicit_percentage_effect": "While store is false, write PercentToLevel(selected percentage) into the selected logic level.",
+    "modal_initialization": "SetCBusUnit binds each available logic row in ascending order and explicitly invokes its checkbox handler; opening the logic recovery modal therefore normalizes all four logic levels once, including unselected rows and rows whose store setting is true.",
+    "modal_group_address_editable": false,
+    "modal_cancel_rollback_claimed": false,
+    "logic_peer_propagation": "The recovered generic logic recovery handlers and TLogicGroup level/store setters do not directly copy values into other logic rows or output channels. DIN-specific parent-form callbacks are not evidence for IOPE behavior."
+  },
+  "callback_boundaries": [
+    "TFlashCheckBox.ControllerValueChange temporarily suppresses inherited SetState click dispatch, then explicitly invokes its bound OnClick callback whenever its separate CMChanged re-entry flag is clear. This explicit dispatch does not compare old and new checkbox values.",
+    "Programmatic model changes while a recovery frame is bound can consequently invoke the checkbox handler and quantize its current displayed level. This contract orders all group address actions before binding the recovery modal.",
+    "The selected control sequence does not claim an arbitrary interleaving of open recovery frames, group selection, channel recovery edits, application changes, or other parent-form actions."
+  ],
+  "load_save_facts": [
+    "LoadOutputs loads each logic row by setting its group first, then LightLevelOutput[4+i], then LogicLevelStoreEnable[i]. The level default is zero and the group default is the unused sentinel.",
+    "SaveOutputs appends four output-channel recovery level slots before logic levels, padding nonexistent output channels with zero; it then writes each logic row level unconditionally, even when that logic row level-store setting is enabled.",
+    "The output-channel branch that saves a store-enabled channel level as255 does not apply to logic level slots4..7.",
+    "The bounded editor must preserve inactive output-channel levels and unrelated output parameters instead of claiming to reproduce whole-dialog SaveOutputs."
+  ],
+  "level_conversion_reference": "research/fixtures/din-output-level-original-vectors.json",
+  "preservation_contract": {
+    "logic_level_slots": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "output_level_slots_preserved": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "rule": "Only selected associations/functions/group addresses, recovery values copied by the selected group cascade, the explicit all-four modal initialization phase, and selected recovery controls may change. Preserve other output settings, inactive channel arrays, neighboring bits, input blocks, scenes, join/corridor state, and unrelated parameters.",
+    "whole_dialog_save": false,
+    "owned_parameters": [
+      "LogicGA13Associations",
+      "LogicGA14Associations",
+      "LogicGA15Associations",
+      "LogicGA16Associations",
+      "LogicFunction",
+      "OutputLogicGroupAddress",
+      "LogicLevelStoreEnable",
+      "LightLevelOutput"
+    ],
+    "read_only_parameters": [
+      "Application",
+      "OutputGroupAddress",
+      "LevelStoreEnable"
+    ],
+    "allowed_bit_masks": {
+      "0x6e": "0xf0",
+      "0x70": "0x8f",
+      "0x71": "0x8f",
+      "0x72": "0x8f",
+      "0x73": "0x8f"
+    },
+    "association_function_mask_condition": "Only explicit controls on existing output channels own their individual bits; the combined0x8f masks are maxima, not authorization to overwrite unselected fields or inactive channel slots."
+  },
+  "validation": {
+    "static_method_bytes_verified": true,
+    "form_resource_hashes_verified": true,
+    "original_gui_executed": false,
+    "original_methods_emulated": false,
+    "native_cgate_executed": false,
+    "physical_unit_executed": false,
+    "native_receipt": "Separate acceptance evidence is required; this receipt makes no database save/reload claim."
+  },
+  "limits": [
+    "No original GUI, VCL event-loop, original full-dialog, physical controller, network write, or power-cycle acceptance.",
+    "No whole-dialog SaveOutputs or BeforeSaveProgrammingInformation parity, and no parent-form input-block, scene, join, corridor, LightStateMachine, or potentiometer expiry rewrite claim.",
+    "No application change, missing-group creation, unresolved group identity, original group-selection metadata dialog, or arbitrary mixed recovery/group-selection event ordering.",
+    "No channel-recovery peer synchronization or DIN parent-specific OnLogicRecoveryLevelChange/OnLogicLevelStoreEnableChange behavior is claimed.",
+    "No modal cancellation rollback behavior is claimed; the original modal group labels are read-only and the visible terminal control closes the directly bound form."
+  ],
+  "application_admission": {
+    "primary_range": [
+      48,
+      95
+    ],
+    "basis": "Conservative bounded workflow scope, not a recovered universal original application restriction. All non-unused group addresses require positive existing-object evidence in this same primary application; no group objects are created."
+  },
+  "controls": [
+    {
+      "input": "channels[n].logic_groups",
+      "kind": "distinct subset of logic rows1..4",
+      "parameters": [
+        "LogicGA13Associations[n-1]",
+        "LogicGA14Associations[n-1]",
+        "LogicGA15Associations[n-1]",
+        "LogicGA16Associations[n-1]"
+      ],
+      "address": "0x70",
+      "array_size": 4,
+      "bits": 1,
+      "bit_addresses": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "scope": "Only existing profile output channels; replace the selected channel association set exactly."
+    },
+    {
+      "input": "channels[n].logic_function",
+      "choices": {
+        "and": 0,
+        "or": 1
+      },
+      "parameter": "LogicFunction[n-1]",
+      "address": "0x70",
+      "array_size": 4,
+      "bits": 1,
+      "bit_address": 7,
+      "scope": "Existing relay and dimmer channels alike; editable only when at least one final logic association is selected."
+    },
+    {
+      "input": "logic_groups[g].group_address",
+      "range": [
+        0,
+        255
+      ],
+      "parameter": "OutputLogicGroupAddress[g-1]",
+      "address": "0x5c",
+      "array_size": 4,
+      "bits": 8,
+      "scope": "Row selector is enabled only when at least one existing output channel is associated with it. Inactive channel bits do not enable it."
+    },
+    {
+      "input": "logic_groups[g].level_store",
+      "type": "boolean",
+      "parameter": "LogicLevelStoreEnable[g-1]",
+      "address": "0x6e",
+      "array_size": 4,
+      "bits": 1,
+      "bit_address": 4,
+      "scope": "All four logic rows; opening recovery also normalizes every logic level."
+    },
+    {
+      "input": "logic_groups[g].recovery_percent",
+      "range": [
+        0,
+        100
+      ],
+      "parameter": "LightLevelOutput[g+3]",
+      "address": "0x08",
+      "array_size": 8,
+      "bits": 8,
+      "scope": "All four logic rows, only while the selected row store flag is false; raw recovery setters are excluded."
+    }
+  ],
+  "association_function_facts": [
+    "Logic rows1..4 bind LogicGA13Associations through LogicGA16Associations respectively. Existing model output channel counts are1,2,4 for IOPE1R1,IOPE2R2,IOPE2C4; every admitted profile has four logic rows.",
+    "The radio group binds numeric ItemIndex values: AND is0 and OR is1, including IOPE2C4 dimmer channels. The source does not replace dimmer choices with minimum/maximum terminology.",
+    "Explicit channel association edits replace only the selected existing channel association bits. When all associations are cleared, the source disables the function selector and preserves its stored raw function.",
+    "A logic row group selector is enabled only if its association scan finds a selected existing channel. Inactive stored channel slots cannot enable either selector.",
+    "The bounded workflow evaluates channel controls in ascending channel order, associations before function; it then evaluates group selectors in ascending logic row order."
+  ]
+}

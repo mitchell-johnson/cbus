@@ -1,0 +1,142 @@
+{
+  "format": "cbus-iope-editor-followup-acceptance-summary-v1",
+  "base_commit": "690b0965198bf64fcba9834296eae34eb0441080",
+  "families": [
+    "logic",
+    "join-recovery",
+    "block-timer"
+  ],
+  "wheel_sha256": "acd3a1fb52e3c6fbfbd6cb9558d27e0bd69720b7a095776408d940342d937007",
+  "wheel_execution": "unpacked wheel package; native receipt hashes match imported modules and checkout source",
+  "offline": {
+    "passed": 81,
+    "subtests_passed": 773,
+    "deselected": 1,
+    "deselection": "pre-existing IopeNativeTest; both owned native matrices executed separately",
+    "final_join_source_gate": {
+      "passed": 11,
+      "subtests_passed": 281,
+      "skipped": 0
+    }
+  },
+  "native": {
+    "passed": true,
+    "test_count": 2,
+    "profile_count": 9,
+    "positive_edits": 246,
+    "unchanged_refusals": 234,
+    "raw_byte_assertions": 426,
+    "full_array_assertions": 261,
+    "cli_families": [
+      "logic",
+      "join-recovery",
+      "block-timer"
+    ],
+    "cold_project_reload": true,
+    "unsupported_native_0_9_99_refused": [
+      {
+        "unit_type": "IOPE1R1",
+        "firmware": "0.9.99",
+        "editors": [
+          "IopeLogic",
+          "IopeJoinRecovery",
+          "IopeBlockTimer"
+        ],
+        "unchanged": true
+      }
+    ],
+    "cleanup_complete": true,
+    "physical_hardware_verified": false,
+    "original_toolkit_form_executed": false
+  },
+  "previous_family_native_regression": {
+    "passed": true,
+    "test_count": 2,
+    "profile_count": 9,
+    "implementation_binding_refreshed": true,
+    "cleanup_complete": true
+  },
+  "source": {
+    "format": "cbus-iope-workflow-source-verification-v1",
+    "passed": true,
+    "original_code_executed": false,
+    "receipts": [
+      {
+        "receipt": "iope-environment-source-review.json",
+        "methods_verified": 12,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 0,
+        "data_ranges_verified": 0,
+        "literals_verified": 0
+      },
+      {
+        "receipt": "iope-output-source-review.json",
+        "methods_verified": 9,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 3,
+        "data_ranges_verified": 0,
+        "literals_verified": 0
+      },
+      {
+        "receipt": "iope-logic-source-review.json",
+        "methods_verified": 58,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 5,
+        "data_ranges_verified": 0,
+        "literals_verified": 0
+      },
+      {
+        "receipt": "iope-join-recovery-source-review.json",
+        "methods_verified": 14,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 1,
+        "data_ranges_verified": 39,
+        "literals_verified": 16
+      },
+      {
+        "receipt": "iope-block-timer-source-review.json",
+        "methods_verified": 38,
+        "unitspecs_verified": 4,
+        "form_resources_verified": 4,
+        "data_ranges_verified": 0,
+        "literals_verified": 0
+      }
+    ]
+  },
+  "checks": {
+    "independent_source_review": true,
+    "full_suite": false,
+    "rust_build": false,
+    "cpu_emulation": false,
+    "household_operations": false,
+    "registration_patch_apply_check": true,
+    "diff_check": true
+  },
+  "test_harness_correction": "Initial new matrix assertion assumed decimal native arrays; corrected to parse native hexadecimal too. No behavior changes; failed-run evidence retained privately.",
+  "remaining": [
+    "Original GUI/CPU-runtime acceptance",
+    "Physical timing, real-unit writes and power-cycle acceptance",
+    "Input functions, scenes, full join group editing, complex timer expiry and unrelated whole-dialog transforms"
+  ],
+  "sha256": {
+    "src/cbus_toolkit/iope_logic.py": "541c2bdf76d5ee33d59d7be7627ad111c5767aa95f9e3674d0e67c38b6c76905",
+    "src/cbus_toolkit/iope_join_recovery.py": "e9d3d6a20a8044bb0ce034a0d44a41b4c6fd0876ed0ab7b8e8bee189343b7c3c",
+    "src/cbus_toolkit/iope_block_timer.py": "7a787511857ce91a6aa4ff7f1f1bbc0b4b8e99e3de27bd7cbd821511cc6056d9",
+    "src/cbus_toolkit/iope_workflow_cli.py": "3797a874fb118450e1e24bfdd9f4f6c3a46f390f638b34587325f0a8adc9adaf",
+    "src/cbus_toolkit/iope_environment.py": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375",
+    "tests/test_iope_logic.py": "ae564460c0c99c0fee6b41f003d08dfa51bd2cb28cc75c2adbf6b4fcf042d500",
+    "tests/test_iope_join_recovery.py": "dcc187436ba3ba6bc8886acfbde034c33824337c207197cc1ab0d60bc46239b3",
+    "tests/test_iope_block_timer.py": "b75585ba706c6ccc8b812af21c4124598518e2ed20b8432020ac67e3d7099858",
+    "tests/test_iope_workflow_cli.py": "2834277e55b68444c799f5291b945966c164c5fc704dd5046cd907046d70d778",
+    "tests/test_iope_logic_native.py": "402a1bd6a4458edb0e19ffcf4adf3f8f38f6190b0f6649162feb3d8ad3a7a4c6",
+    "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881",
+    "research/fixtures/iope-logic-source-review.json": "5faf640277bb426bc861e1a30355107819ff33828e07ac197e0a17ffe3c1caa8",
+    "research/fixtures/iope-join-recovery-source-review.json": "7ef2405d53c3c204b33e13676f2e1578a232961638325e75c05d6526abecbb7d",
+    "research/fixtures/iope-block-timer-source-review.json": "a776a9cef31a045b3c5be34dc59607348d4424d2d1e301280473f30408f0edd1",
+    "research/fixtures/iope-logic-native-acceptance.json": "2426ddf482a58199289531a7860135605ae72a4275379e4b57c235672487b3fd",
+    "research/fixtures/iope-workflow-native-acceptance.json": "76fb1e1b6491df4af7c52ee87e4cfbf35279a6ac6f5484a58f1c4f99e497a2f5",
+    "research/verify_iope_workflow_sources.py": "2e0103f387eca056d429a90a217f52766fa42f81fc124b3e4a96d5d6ff0018a2",
+    "docs/iope-workflow-registration.patch": "ff6e60f1078edcace3e59b21b2a26f2fe23dbb44093aa1fe2a26b3d363af4df5"
+  },
+  "final_packaging": "Removed trailing blank lines, rebuilt wheel, then repeated the 81 focused tests and all four sequential native acceptance/integrity tests against this exact final wheel."
+}

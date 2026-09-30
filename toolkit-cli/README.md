@@ -1725,6 +1725,8 @@ no unit loads, native writes or device operations.
 
 ## Toolkit unit templates
 
+The eDLT template module offers bounded format/export/preview and separate immutable local lifecycle stages. Apply remains refused. See [integration boundaries](docs/edlt-template-integration-boundaries.md); the integrated root CLI registers `edlt-templates inspect|export|preview|apply`.
+
 Export and import Toolkit XML templates for classic KEY1, KEY2 and KEY4 units
 at firmware 1.2.67 (catalogues 5031N, 5032N and 5034N respectively):
 

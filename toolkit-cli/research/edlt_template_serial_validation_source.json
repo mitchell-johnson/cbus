@@ -1,0 +1,203 @@
+{
+  "format": "cbus-edlt-template-serial-validation-source-v1",
+  "scope": "Static source-derived contract only. No vendor/runtime execution or GUI/model binding validation.",
+  "original_assembly_sha256": {
+    "eDLT.dll": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823"
+  },
+  "method_proofs": [
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::Save",
+      "metadata_token": "0x0600030b",
+      "rva": "0x0001afb8",
+      "il_size": 186,
+      "il_sha256": "4f6974cf64d29f21c49667a6aaba7e69eea04c311c64792baeb1a905c64b0bc4",
+      "exception_handlers": [
+        {
+          "kind": "Finally",
+          "try_start": "0078",
+          "try_end": "0095",
+          "handler_start": "0095",
+          "handler_end": "00a3"
+        }
+      ]
+    },
+    {
+      "assembly": "eDLT.dll",
+      "method": "eDLT.FrmBaseUnit::ValidateSerialNumber",
+      "metadata_token": "0x06000316",
+      "rva": "0x0001b8f4",
+      "il_size": 88,
+      "il_sha256": "7c2f07d29072b34bfd4cd205852ebaf9dcec7f89db13dde14e0f8ec6092bea96",
+      "exception_handlers": []
+    }
+  ],
+  "source_excerpt_receipts": [
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "ValidateSerialNumber",
+      "line_start": 45804,
+      "line_end": 45860,
+      "extracted_utf8_sha256": "e48cadfb4cc6d2cdaef054fae998c0a4f69a9f8d2efc174beff10eccb188449a"
+    },
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "Save serial call and short circuit",
+      "line_start": 44797,
+      "line_end": 44815,
+      "extracted_utf8_sha256": "0851f7bd8be5549eb896076e66ca14f7f40205fe3a42fe9c82c987888e1ee6d7"
+    },
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "InitializeComponent serial binding/mask",
+      "line_start": 51374,
+      "line_end": 51428,
+      "extracted_utf8_sha256": "885ef04d08dd263025bd0a488be9858f2f4cf97a47da9f614fbef5ff33bc53c6"
+    },
+    {
+      "source_file": "eDLT.dll.il",
+      "description": "ScanBarcode",
+      "line_start": 42700,
+      "line_end": 42758,
+      "extracted_utf8_sha256": "d96cb1cd2f16be8e5d14f4c2911cc8f541689ae15310ffe986ccc40cb6cfb654"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "CBusBaseUnit serial accessors",
+      "line_start": 12512,
+      "line_end": 12592,
+      "extracted_utf8_sha256": "e564ae55e8d6a1e199f0eee3283dea4e5ad3d196e9ee05c75249943af3b401cc"
+    },
+    {
+      "source_file": "CBusLogicModel.dll.il",
+      "description": "PPHelper.FormatSerialNumber",
+      "line_start": 56761,
+      "line_end": 56830,
+      "extracted_utf8_sha256": "401948a0f9b5c206a7ec64f03063563c43514b9576d0a888e6c3714a0d392b1e"
+    }
+  ],
+  "input_contract": {
+    "required": "exact non-null tbSerialVer.Text snapshot",
+    "string_units": "UTF-16 code units",
+    "culture": "Convert.ToInt32(string) uses current-culture decimal integer parsing; portable bounded admission may constrain explicit text to ASCII decimal digits",
+    "cannot_derive_from_model": [
+      "current masked control text",
+      "pending user edit",
+      "binding/focus state",
+      "callback-provided scan control text"
+    ]
+  },
+  "offset_contract": {
+    "0001-000b": "Read control.Text into local string; no model getter",
+    "000c-0013": "Length below four jumps to true return",
+    "0015-002d": "Length above four selects final four UTF-16 code units",
+    "002e-0034": "Convert.ToInt32(string); no catch",
+    "0035-003f": "Integer in inclusive 0..4095 returns true",
+    "0041-0055": "Out-of-range shows OK/Error dialog caption Error - 2066; ignores result; returns false",
+    "0056-0057": "Return true"
+  },
+  "dialog": {
+    "caption": "Error - 2066",
+    "text": "The serial number you have entered is invalid.\r\n\r\nThe last 4 digits of the number must be between 0000 and 4095.",
+    "buttons": 0,
+    "icon": 16,
+    "result_consumed": false
+  },
+  "side_effects": {
+    "model_mutation": false,
+    "control_mutation": false,
+    "enumeration": false,
+    "decision_input": false,
+    "parse_failure": "uncaught FormatException from Convert.ToInt32; no false result or dialog",
+    "null_snapshot": "not an admissible control snapshot; direct null local would fail on String.Length"
+  },
+  "caller": {
+    "method": "FrmBaseUnit.Save",
+    "first_call_offset": "0001",
+    "false_return_offsets": [
+      "0008",
+      "0009"
+    ],
+    "later_stage": "ValidateSceneWidgetConfig then EDLTUnit.IsValid then SaveDialog",
+    "parse_exception_caught_by_Save": false
+  },
+  "binding_context": {
+    "InitializeComponent": "Text binding to FormattedSerialNumber with formatting enabled; mask twelve required numeric positions; initial ReadOnly=true",
+    "ScanBarcode": "callback by-reference serial and catalogue; nonempty serial assigned to control.Text; binding item0.WriteValue called explicitly afterwards",
+    "DatabaseUnit": "constructor sets serial ReadOnly=false for database units, true otherwise; validator itself ignores this flag"
+  },
+  "model_helpers": {
+    "CBusBaseUnit.get_SerialNumber": "returns _serialNumber directly",
+    "CBusBaseUnit.set_SerialNumber": "assigns _serialNumber directly",
+    "CBusBaseUnit.get_FormattedSerialNumber": "null/empty raw => empty; otherwise PPHelper.FormatSerialNumber(raw)",
+    "CBusBaseUnit.set_FormattedSerialNumber": "left-pad zero to UTF-16 length12; store first8 + dot + next4; longer values truncated; null throws; no range or numeric validation",
+    "PPHelper.FormatSerialNumber": "split raw on dot; other than exactly two parts => empty; Convert.ToInt32 each; format D8 followed by D4; conversion/format exceptions logged and return empty; split outside catch"
+  },
+  "synthetic_source_vectors": [
+    {
+      "text": "",
+      "result": true
+    },
+    {
+      "text": "123",
+      "result": true
+    },
+    {
+      "text": "0000",
+      "result": true
+    },
+    {
+      "text": "4095",
+      "result": true
+    },
+    {
+      "text": "4096",
+      "result": false
+    },
+    {
+      "text": "9999",
+      "result": false
+    },
+    {
+      "text": "123456784095",
+      "result": true
+    },
+    {
+      "text": "123456784096",
+      "result": false
+    },
+    {
+      "text": "abcd",
+      "result": "uncaught FormatException"
+    },
+    {
+      "text": "   1",
+      "result": true
+    },
+    {
+      "text": "+001",
+      "result": true
+    },
+    {
+      "text": "-001",
+      "result": false
+    },
+    {
+      "text": "12345",
+      "result": true
+    },
+    {
+      "text": "1234567890123",
+      "result": true
+    }
+  ],
+  "acceptance_boundary": {
+    "source_recovered": true,
+    "original_validator_executed": false,
+    "original_full_form_executed": false,
+    "binding_focus_validated": false,
+    "persistence_attempted": false,
+    "physical_device_verified": false
+  }
+}

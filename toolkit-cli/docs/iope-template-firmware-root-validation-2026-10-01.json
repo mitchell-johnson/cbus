@@ -1,0 +1,317 @@
+{
+  "acceptance": {
+    "additional_exact_guards": 7,
+    "excluded_nodes": {
+      "all_five_matched_before_execution": true,
+      "original_runtime_producers": [
+        "test_edlt.py::NativeEdltTests::test_default_widget_pp_bytes_crc_original_dll_and_saved_project_reload",
+        "test_edlt_lifecycle.py::OriginalLifecycleTests::test_full_original_stages_and_all_enable_input_pairs",
+        "test_edlt_lifecycle.py::NativeLifecycleTests::test_original_full_native_pp_crc_raw_save_and_reload",
+        "test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty"
+      ],
+      "out_of_scope_optional_metadata": [
+        "test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction"
+      ],
+      "source_actual": [
+        "tests/test_edlt.py::NativeEdltTests::test_default_widget_pp_bytes_crc_original_dll_and_saved_project_reload",
+        "tests/test_edlt_lifecycle.py::OriginalLifecycleTests::test_full_original_stages_and_all_enable_input_pairs",
+        "tests/test_edlt_lifecycle.py::NativeLifecycleTests::test_original_full_native_pp_crc_raw_save_and_reload",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty"
+      ],
+      "wheel_actual": [
+        "tests/test_edlt.py::NativeEdltTests::test_default_widget_pp_bytes_crc_original_dll_and_saved_project_reload",
+        "tests/test_edlt_lifecycle.py::OriginalLifecycleTests::test_full_original_stages_and_all_enable_input_pairs",
+        "tests/test_edlt_lifecycle.py::NativeLifecycleTests::test_original_full_native_pp_crc_raw_save_and_reload",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty"
+      ]
+    },
+    "historical_scope_estimates": "582/584 AST estimates in aggregate scope are preserved precollection history; actual collection and call/JUnit results are authoritative.",
+    "installed_wheel": {
+      "actual_imported_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+      "all_imports_under_isolated_venv": true,
+      "collected_tests": 642,
+      "collection_gate_sha256": "7c3138237b426d50d07efb7efb608e47d2a4ebb56162aa27908f6746bff257f8",
+      "exit_code": 0,
+      "imported_module_count": 213,
+      "junit_sha256": "a3aa3a2938abaa5cdc1f0a5979ce4c9f45049519df52f711ae8ab377cd873ddf",
+      "normal_tests": {
+        "failed": 0,
+        "passed": 642,
+        "skipped": 0
+      },
+      "receipt_sha256": "b18c83d854c2635de16fcba0c27793260d177857a9d4c4dc51d0465fc54da0df",
+      "subtests": {
+        "failed": 0,
+        "passed": 1951,
+        "skipped": 0
+      },
+      "wheel_sha256": "fa561df17d180c4f3539ad8ac3befadc63b27bed0ac6138f09daf539e8090800"
+    },
+    "junit_independently_verified": {
+      "source": {
+        "errors": 0,
+        "failures": 0,
+        "sha256": "b9e3dbbd1ffd35b0088ceb3ee617cd2d7805fccd9c5bf74c89a1321e7fba5776",
+        "skipped": 0,
+        "testcases": 642
+      },
+      "wheel": {
+        "errors": 0,
+        "failures": 0,
+        "sha256": "a3aa3a2938abaa5cdc1f0a5979ce4c9f45049519df52f711ae8ab377cd873ddf",
+        "skipped": 0,
+        "testcases": 642
+      }
+    },
+    "new_required_manifest_declarations_passed": 5,
+    "no_observation_triggered_reruns": true,
+    "selection_module_count": 54,
+    "source": {
+      "actual_imported_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+      "collected_tests": 642,
+      "collection_gate_sha256": "1dc1565144c8f9eb53cdfe1c31ec802dd5bfe45af08053386a6c1699a4441e27",
+      "exit_code": 0,
+      "imported_module_count": 213,
+      "junit_sha256": "b9e3dbbd1ffd35b0088ceb3ee617cd2d7805fccd9c5bf74c89a1321e7fba5776",
+      "normal_tests": {
+        "failed": 0,
+        "passed": 642,
+        "skipped": 0
+      },
+      "receipt_sha256": "8898a2e9e33fe8e1d335b66c5f57b57982aba397cfdb57a6cef721fbb0b144e1",
+      "source_stable": true,
+      "subtests": {
+        "failed": 0,
+        "passed": 1951,
+        "skipped": 0
+      }
+    },
+    "workflow_duplicate_provenance": {
+      "both_call_outcomes_in_call_events_and_junit": true,
+      "last_successful_raw_workflow_report_retained": true,
+      "matrix_call_nodes_per_context": 5,
+      "matrix_method_definitions": 4,
+      "no_observation_triggered_reruns": true,
+      "workflow_call_nodes_per_context": [
+        "tests/test_iope_scene_levels_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload",
+        "tests/test_iope_workflow_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload"
+      ]
+    }
+  },
+  "approval_and_artifact_storage": {
+    "approved_safer_preparation": "Verified local task-owned 0700 directory; constructed minimal explicit flags/paths; used public dependency links and tracked-reference copies only.",
+    "credentials_or_vendor_binaries_copied": false,
+    "document_privacy_hold_resolved_before_freeze": true,
+    "initial_preparation_rejected_before_execution": true,
+    "prior_private_environment_files_copied": false,
+    "raw_artifact_storage": "Private local task-owned external volume; no raw paths or environment files published.",
+    "reason": "Proposed copying prior private environment files."
+  },
+  "date": "2026-10-01",
+  "firmware_privacy_regression": {
+    "green_normal_tests": 11,
+    "green_pytest_summary": "11 passed, 15 subtests passed in 0.78s",
+    "helper_sha256": "db1f36ff8ca7d8c9ed2809a9164e09d105c15fa2299aed69e066dbf8622698c0",
+    "primary_error_exit_and_attached_original_receipts_preserved": true,
+    "public_path": "toolkit-cli/docs/firmware-error-diagnostic-privacy-2026-10-01.json",
+    "red_normal_tests": {
+      "failed": 1,
+      "passed": 10
+    },
+    "sha256": "936134f6d8080dd0dbd4af63c45ee2e58b6c82672abdd4b352df51100ca86e25",
+    "test_sha256": "b8e288e93ebcd5b989c167ebfcda05b7c4bf3f986d1dc0d583c6fc58d3f6d332"
+  },
+  "format": "cbus-iope-template-firmware-root-validation-v1",
+  "git_base": "c6c1fb1d14835c8483c54d5018ddfc899f26b5b1",
+  "historical_privacy_derivative": {
+    "full_json_equal_after_reversing_only_declared_normalization_and_metadata": true,
+    "new_historical_execution_performed": false,
+    "normalized_pointer_count": 3,
+    "public_path": "toolkit-cli/research/edlt_template_terminal_native_attempt1.json",
+    "public_sha256": "6c25b6db92c674c5936d857595ea726e9c41a5d869f15ed9413fc8c9535e3a08",
+    "raw_original_sha256": "7926101e597d90ed2c9110a605e07db6b7d83d8fd0be62e709360eba201de549",
+    "raw_retained_privately": true,
+    "technical_hashes_and_outcomes_unchanged": true
+  },
+  "import_policy": "Content consolidated with no-commit imports; raw private-coordinate source ancestry is not published.",
+  "integration_changes": [
+    "Registered actual shared iope-workflow CLI parser/dispatch and eDLT public/local-parent template interfaces.",
+    "Normalized new secondary firmware failure fields to fixed labels after a reproduced secret-bearing backend-string defect; original receipts and primary errors preserved.",
+    "Reconciled documentation, capability evidence, incomplete parity register and native declarations without broad completion reclassification."
+  ],
+  "limits": {
+    "cargo_workspace_run": false,
+    "category_ledger": {
+      "functional_denominator_complete": false,
+      "functional_percentage": null,
+      "implemented": 18,
+      "implemented_row_ratio_percent": 42.86,
+      "in_progress": 22,
+      "pending": 2,
+      "total": 42
+    },
+    "complete_original_gui_acceptance": false,
+    "full_suite_run": false,
+    "full_toolkit_parity": false,
+    "fully_accepted_obligations": 0,
+    "live_cbus_network_accessed": false,
+    "original_instruction_runtime_executed": false,
+    "physical_hardware_executed": false,
+    "rust_changes": false
+  },
+  "package_binding": {
+    "file_count": 316,
+    "parent_transaction_sha256": "1eb5474926710249964cf4fd2bedd3a30948f510b4a714bbe032aef2f95d0b9b",
+    "production_changes_after_acceptance": false,
+    "sha256_map_recorded_in": "iope-template-firmware-acceptance-2026-10-01.json#/package_binding/source_sha256",
+    "shared_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+    "source_wheel_installed_names_and_bytes_equal": true,
+    "wheel_sha256": "fa561df17d180c4f3539ad8ac3befadc63b27bed0ac6138f09daf539e8090800"
+  },
+  "public_artifacts": [
+    {
+      "aggregate_artifact_name": "sanitized-combined-acceptance.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-template-firmware-acceptance-2026-10-01.json",
+      "sha256": "b78f14070f5e4f783d937377f8955a045d622e4aad7d5856cd4a797cd2f9bbd3"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-workflow-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-workflow-source-2026-10-01.json",
+      "sha256": "7918443a3f5f8cec8d6e2c2f8b24d8856c30eb35cfe4713bddf6f7213725b45c"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-workflow-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-workflow-wheel-2026-10-01.json",
+      "sha256": "b17d4cebe2ea7e4b7a65539b0096bbfc9a54e765dc7b8be7ee52a712d4909a0e"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-logic-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-logic-source-2026-10-01.json",
+      "sha256": "b0c5661950717cad8bcc51f11195e397de6b0ca474b78e43368167a0ff31b0e4"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-logic-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-logic-wheel-2026-10-01.json",
+      "sha256": "75249ebedf8a91aa3ee52127bcd8973ce7c96bc4247afc3a5c4cac811be9b7e4"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-join-groups-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-join-groups-source-2026-10-01.json",
+      "sha256": "c4760acbcaea06ec37d4d7dc4845738ea857a375143993eae492870adafe105f"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-join-groups-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-join-groups-wheel-2026-10-01.json",
+      "sha256": "2c872d3f6ec4e3f38243fce6076fa30c4b538a236eb4583d1dc3f1a6b3ca45a8"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-scene-levels-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-scene-levels-source-2026-10-01.json",
+      "sha256": "bec0325077e480b4ccd1725140df710e62a7f29e6c29da5a14c8008347499929"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-iope-scene-levels-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/iope-native-scene-levels-wheel-2026-10-01.json",
+      "sha256": "714db9daee62d76382544d5410f7df415068a72668153c097aaef7551d1e0d1d"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-reset-prelude-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/edlt-template-reset-prelude-source-2026-10-01.json",
+      "sha256": "5a9fc233c0430bb94e2f2825ba1c3bd51103f9e34af68c63bfecbc9369710cc8"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-terminal-native-source.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/edlt-template-terminal-native-source-2026-10-01.json",
+      "sha256": "9020e5aa1d7674d71eb47d53028f6062222dcffc7a4991701a45efd39f139c9d"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-fresh-reset-prelude-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/edlt-template-reset-prelude-wheel-2026-10-01.json",
+      "sha256": "7187285410e4cbaecfcdbd6a9defd96f90d16114e61f38d067c58b7b12ac2604"
+    },
+    {
+      "aggregate_artifact_name": "sanitized-terminal-native-wheel.json",
+      "byte_identical_to_sanitized_artifact": true,
+      "public_path": "toolkit-cli/docs/edlt-template-terminal-native-wheel-2026-10-01.json",
+      "sha256": "63fd5a4ea2c1f8382630381a6ba1271ff69914ec1da683a50a6e90b96603d94d"
+    }
+  ],
+  "reference_binding": {
+    "accepted_snapshot_file_count": 2694,
+    "all_frozen_snapshot_hashes_independently_verified": true,
+    "new_public_derivatives_outside_frozen_snapshot": 13,
+    "publication_doc_only_deltas": {
+      "docs/technical-findings-2026-09-30.md": {
+        "accepted_snapshot_sha256": "d863087b2d1293b99fa7f342d612bee0bbb7f6082edd67bd5ec6c0989a4a3af7",
+        "publication_sha256": "4e383cf9f55ca7708b94403d8dd93b6159cc2a8d63aa56d7a96e8ec01dfb1a3d"
+      },
+      "toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md": {
+        "accepted_snapshot_sha256": "a49e19a62945713ac9afff2a31b9143041fca8e0c3cc0badb553dcd393e798d7",
+        "publication_sha256": "ec63cdaaaa06108096f4145b8f1d99fcbe2c46d902db8e4af0cf8f0e9559cc50"
+      },
+      "toolkit-cli/docs/implementation-status.md": {
+        "accepted_snapshot_sha256": "a23ed3911fe0f0f09351f5d5caf737969935140726207a80752e60c7c2914dd6",
+        "publication_sha256": "f03bdd207c43a70d246f05c5b4c4b402312dce7fd15a0645ef0fb4da3cdbc91a"
+      }
+    },
+    "qualification": "Frozen map binds the executed snapshot. Subsequent publication Markdown and evidence JSON are not falsely represented as executed reference bytes."
+  },
+  "source_imports": {
+    "edlt_templates": [
+      "7a23fb5d42d6f74a443df251622ca9f5f6e46565",
+      "48112a9cbbd507900479a243f2aae561b5188fcc",
+      "10cbfa07d188ad823aa69db7f73bf973cb122d80",
+      "d951e88222b264509e1fa3dedde46b4fc67f089a"
+    ],
+    "firmware": [
+      "3e658045847e4df962cc99856f9c6b1784764e65"
+    ],
+    "iope": [
+      "690b0965198bf64fcba9834296eae34eb0441080",
+      "1b512236bc6df56c910fb1710cdf14e2502fa7d0",
+      "3847d49952acc8c8ed5e4f6381ac7c81a2f07474",
+      "18d78566ae6db93c7f0cd5e8fd7d99bf62d29cda"
+    ]
+  },
+  "static_checks": {
+    "build_cgate_contract_inventory_check": "passed; 431 primary and 11 supplement paths",
+    "build_parity_register_check": "passed; 22103 source records, 487 obligations, 3 evidence records, census incomplete",
+    "git_diff_check": "passed",
+    "skip_census_check": "passed; 593 modules, 281 with skip sites, 258 native runnable/required selections"
+  },
+  "status": "focused_batch_verified",
+  "supporting_document_privacy": {
+    "normalized_before_snapshot_build_and_execution": true,
+    "normalized_document_sha256": "c4b061402a8fed25a0680dc5f3a74ba6ecaae39d4f77c688f4c0b2dda77c4c7e",
+    "normalized_reproduction_paths": 5,
+    "path": "toolkit-cli/docs/edlt-template-terminal-model-stage.md",
+    "source_document_sha256": "de8967b360f9c01864506d52b36e703f094d1123c21673db146e04b130dc446e"
+  },
+  "terminal_native_separate_qualification": {
+    "actual_imports_match_helper_reference_and_package_binding": true,
+    "complete_parent_lifecycle_verified": false,
+    "crcs_compared_per_context": 5,
+    "fresh_reload_confirmed": true,
+    "original_save_validation_verified": false,
+    "owned_cleanup_confirmed": true,
+    "parameters_compared_per_context": 874,
+    "pp_and_project_save_confirmed_per_context": true,
+    "source_and_wheel_passed": true,
+    "template_apply_executed": false,
+    "zero_cni_connections": true
+  }
+}

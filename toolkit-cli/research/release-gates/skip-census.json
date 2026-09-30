@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 564,
-    "modules_without_skip_sites": 293,
-    "modules_with_skip_sites": 271,
+    "test_modules": 593,
+    "modules_without_skip_sites": 312,
+    "modules_with_skip_sites": 281,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 8,
-      "native_cgate_local": 74,
+      "host_tool": 9,
+      "native_cgate_local": 78,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 93,
+      "original_toolkit": 97,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 9,
       "unclassified": 22,
-      "unit_specs": 139,
+      "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 134,
+      "all": 139,
       "partial": 20,
-      "none": 117
+      "none": 122
     },
-    "native_runnable_tests": 253,
-    "native_selected_required_tests": 253,
+    "native_runnable_tests": 258,
+    "native_selected_required_tests": 258,
     "native_excluded": 0,
-    "native_selection_selectors": 156
+    "native_selection_selectors": 161
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5427,6 +5427,54 @@
         }
       ]
     },
+    "tests/test_edlt_template_reset_prelude_original.py": {
+      "categories": [
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_template_reset_prelude_original.py::TemplateResetPreludeOriginalTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select the exact private original Reset specification for local fixture comparison",
+          "environment": [
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_edlt_templates_cli.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_templates_cli.py::EdltTemplatesCLITests::test_fifo_is_refused_without_waiting_for_a_writer",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo')",
+          "reason": "named pipe test requires POSIX",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_edlt_time_date.py": {
       "categories": [
         "cgate_test_host",
@@ -5983,6 +6031,248 @@
         }
       ]
     },
+    "tests/test_iope_block_timer.py": {
+      "categories": [
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_iope_block_timer.py::BlockTimerOriginalSourceTest",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Set original Toolkit EXE and decoded UnitSpecs for static source checks",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "BlockTimerOriginalSourceTest::test_original_hashes_methods_resources_and_layouts"
+          ]
+        }
+      ]
+    },
+    "tests/test_iope_environment.py": {
+      "categories": [
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_iope_environment.py::EnvironmentOriginalSourceTest",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Set original Toolkit EXE and decoded UnitSpecs for source byte checks",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "EnvironmentOriginalSourceTest::test_exact_source_hashes_named_method_ranges_and_layouts"
+          ]
+        }
+      ]
+    },
+    "tests/test_iope_join_groups.py": {
+      "categories": [
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_iope_join_groups.py::JoinGroupsOriginalSourceTest",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Set original Toolkit EXE and decoded UnitSpecs for exact source checks",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "JoinGroupsOriginalSourceTest::test_source_bytes_strings_and_layouts"
+          ]
+        }
+      ]
+    },
+    "tests/test_iope_join_groups_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_iope_join_groups_native.py::IopeJoinGroupsNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_iope_join_recovery.py": {
+      "categories": [
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_iope_join_recovery.py::JoinRecoveryOriginalSourceTest",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Set owned original Toolkit EXE and decoded UnitSpecs for exact source checks",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "JoinRecoveryOriginalSourceTest::test_exact_interface_table_thunks_strings_methods_and_specs"
+          ]
+        }
+      ]
+    },
+    "tests/test_iope_logic_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_iope_logic_native.py::IopeLogicNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_iope_scene_levels_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_iope_settings.py": {
       "categories": [
         "cgate_test_host",
@@ -6007,6 +6297,36 @@
           ],
           "categories": [
             "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_iope_workflow_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_iope_workflow_native.py::IopeWorkflowNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
             "native_cgate_local",
             "unit_specs"
           ],

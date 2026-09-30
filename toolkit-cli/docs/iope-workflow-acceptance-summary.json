@@ -1,0 +1,56 @@
+{
+  "format": "cbus-iope-workflow-acceptance-summary-v1",
+  "base_commit": "9a792616d9fd09efc2b8c1c597fb8eccee26da31",
+  "wheel_sha256": "2fd58c2be7b29fc1aa54dc1acd78e141babb00fca9eb0580651fd4bde54996d7",
+  "wheel_execution": "unpacked wheel package, imported implementation hashes equal checkout source",
+  "offline": {
+    "passed": 41,
+    "subtests_passed": 96,
+    "deselected": 1,
+    "deselection": "pre-existing IopeNativeTest; new native test executed separately"
+  },
+  "native": {
+    "passed": true,
+    "test_count": 2,
+    "profile_count": 9,
+    "positive_edits": 72,
+    "unchanged_refusals": 102,
+    "raw_byte_assertions": 162,
+    "cli_families": [
+      "output",
+      "environment"
+    ],
+    "cold_project_reload": true,
+    "physical_hardware_verified": false,
+    "original_toolkit_form_executed": false
+  },
+  "source": {
+    "passed": true,
+    "environment_methods": 12,
+    "output_methods": 9,
+    "output_resources": 3,
+    "unitspecs_per_receipt": 4,
+    "original_code_executed": false
+  },
+  "checks": {
+    "registration_patch_apply_check": true,
+    "independent_source_review": true,
+    "diff_check": true,
+    "full_suite": false,
+    "rust_build": false
+  },
+  "sha256": {
+    "src/cbus_toolkit/iope_environment.py": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375",
+    "src/cbus_toolkit/iope_output_settings.py": "cfab9a376a007618baa3024d11ce0058b5ab0f742aaea692f59a4df9011490c9",
+    "src/cbus_toolkit/iope_workflow_cli.py": "aa4b8720f2e5dde49f249a2e8830057f672376e34e483cc04d40726ea6adcf42",
+    "tests/test_iope_environment.py": "48e2b6139b233f187feaa6be828a23b571f1c6de9766ce0193de5af63bb672cd",
+    "tests/test_iope_output_settings.py": "e3b7764986e6fb2f1b23f0e17bd093dde9b3bfe9e8a1c90889ec11cf33f4fbfe",
+    "tests/test_iope_workflow_cli.py": "f3a2cba01edbaf0d585740365a4fad79dd55d5e03faae590ffc1c87ba6aed79e",
+    "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881",
+    "research/fixtures/iope-environment-source-review.json": "327cc7e2ac9cdc5c93d22feeb651fef74d2022a38062df3598f44d7bcd92534f",
+    "research/fixtures/iope-output-source-review.json": "e347cfc35bbf8ce4d9604231e7678cfed9022d63de898f7d7e5409c5b2e222a7",
+    "research/fixtures/iope-workflow-native-acceptance.json": "d163871ed80ffa19fa42787998e044ce85cb69b92c88d41b695757c061fe319d",
+    "research/verify_iope_workflow_sources.py": "af352c58e2a5a8c6ea39553a0b046f3cb01d1f1cdc47765c2539c464a5c2a76a",
+    "docs/iope-workflow-registration.patch": "ff6e60f1078edcace3e59b21b2a26f2fe23dbb44093aa1fe2a26b3d363af4df5"
+  }
+}

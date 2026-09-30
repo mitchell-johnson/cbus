@@ -1,0 +1,374 @@
+{
+  "format": "cbus-iope-input-functions-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "original_execution": false,
+  "evidence_kind": "Static PE/MAP blocker review; no callable edit contract is admitted.",
+  "status": "blocked-source-incomplete",
+  "profiles": [
+    "IOPE1R1",
+    "IOPE2R2",
+    "IOPE2C4"
+  ],
+  "firmware_range": [
+    "1.0.00",
+    "1.2.99"
+  ],
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": [
+    {
+      "name": "CIS_TInputSource.TBaseInput.MacroFunctionRefresh",
+      "start": "0xd4efb4",
+      "end": "0xd4efe0",
+      "sha256": "c2f71af6048c50e5628291bd737a87a83dc089e1d293f1ef3765268b06278325"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.HandleMacroFunctionTemplateAfterChangeEvent",
+      "start": "0xd4f1f8",
+      "end": "0xd4f2a0",
+      "sha256": "acb808682b9aef6753b64884a43ecafd0f75b436392d8ab337dccf8d64ca1afa"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.SetMacroFunctionTemplate",
+      "start": "0xd50348",
+      "end": "0xd50378",
+      "sha256": "28279bde7287094b8a306aaef2c0875434ade5a96fa6882e8c9040c7e6e299ca"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.RefreshInputAfterMicroFunctionCodeUpdate",
+      "start": "0xd51320",
+      "end": "0xd5133c",
+      "sha256": "35953e599a47e68612e4be7068eab6098b3a10f1d637d018e3cb043ac3da1104"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.HandleFunctionComboChange",
+      "start": "0x118b17c",
+      "end": "0x118b2b8",
+      "sha256": "d9521a8bfc0fe8ba3f864b96772b33ff21bb9035d66853ef4b21697e6021db10"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.SetShutterRelayRecallValues",
+      "start": "0x118b2b8",
+      "end": "0x118b328",
+      "sha256": "fec3d0ff5d45d21a8876a87c8a11dbeefa0ab755f390ca88a75eb0848be76bf0"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.AttemptExtensionClick",
+      "start": "0x118b328",
+      "end": "0x118b350",
+      "sha256": "0cf32de7e6b83657b167e521bd835bed27d6b9ace0c3460993e308993d4dec98"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadInputs",
+      "start": "0x12d75a8",
+      "end": "0x12d7b44",
+      "sha256": "4b49268d0f812b6f25e7e5bba69793843dbdab0b7ba018b55697a8d76994f8b4"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.SetSensorValues",
+      "start": "0x12de8d4",
+      "end": "0x12def10",
+      "sha256": "78795bad0b1ca626f96f3be162925e7be167cd5457861af3db23bdada58ce9dc"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.SetAuxValues",
+      "start": "0x12def10",
+      "end": "0x12df258",
+      "sha256": "a99ac94eec3744b39a09beed077acbe1817b1fe2e92d36f6effc587de36afc73"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveInputSources",
+      "start": "0x12df258",
+      "end": "0x12df4d4",
+      "sha256": "9535957a3be72a8c976bdb1b3eff80378a778b979680650f8de970cc7f8262b3"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate",
+      "start": "0xc96c60",
+      "end": "0xc96cb8",
+      "sha256": "f0257da639b24bd6eace5603830c373214f745de495af74adca68074195eba10"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_FunctionType",
+      "start": "0xc96cb8",
+      "end": "0xc96d6c",
+      "sha256": "e5e6b332b7af45e73ecb8c901ce5f8d809914b0f3d2a9cec212f86d8f4cdfc50"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_Microfunctions",
+      "start": "0xc96d6c",
+      "end": "0xc96dcc",
+      "sha256": "8353fdc15ee02b5a1dda85987bad889c1533283c8944e3e1da5ecb08da540920"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromMicroFunctions",
+      "start": "0xc974ac",
+      "end": "0xc9771c",
+      "sha256": "b8eb7e1b0b43faf34b9554c9cd8fea8e67da54913c11360b9a076e9538ca90fb"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup",
+      "start": "0xc97940",
+      "end": "0xc97b48",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.SetMicroFunctionCodeByKeyPressStage",
+      "start": "0xd4f170",
+      "end": "0xd4f1e4",
+      "sha256": "dc822ad94822517d61d6f6d82e1d15a7045624ac023fb26c983a01e94f976231"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.RefreshMacroFunctionFromTemplate",
+      "start": "0xd4f2ac",
+      "end": "0xd4f2d0",
+      "sha256": "73d30fce6a8d86aea3042145e909f6284b8039c0bc37bd2346527efaa0f75f1e"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.RefreshBlocksFromTemplate",
+      "start": "0xd4fac8",
+      "end": "0xd4fad4",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.SetMicroFunction",
+      "start": "0xd503ec",
+      "end": "0xd50480",
+      "sha256": "2d72286dd338bab1474e9eb9d17e062a8da52bcde1f7338fe0a9a5deafe61bfe"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.UpdateMicrofunctionCodes",
+      "start": "0xd50560",
+      "end": "0xd5098c",
+      "sha256": "c14356256ec9b672dc846f1e3ceb70f9c0cd66f38699cf0721dd6e07585c3fc9"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.UpdateMicrofunctionCodes",
+      "start": "0xd50e38",
+      "end": "0xd50e4c",
+      "sha256": "8744be8c53b113a960a8452dfc1866adf0b2bd9cd0a9ea440ef1fb9151e4b4d9"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.EnsureSceneObjectMatchesSelectedScenesInMicrofunctions",
+      "start": "0xd50ee4",
+      "end": "0xd51000",
+      "sha256": "77948d2fc9b78bb2d3432a2417287c26d812d5d838108338df847c54cb8388bf"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.RefreshBlocksFromTemplate",
+      "start": "0xd5130c",
+      "end": "0xd51320",
+      "sha256": "4043d891c54e7423fbeb1566c961001b6b59c84395dea47c1bfcd3e033a8fc76"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.RefreshMacroFunctionFromTemplate",
+      "start": "0xd513e0",
+      "end": "0xd51410",
+      "sha256": "f89b877c4a91938b2d0d51ee1ebfd95dcedc6d950136706ce44382f6a4cfdf85"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.EnsureAvailableMacrofunctionIsUsed",
+      "start": "0xd57e54",
+      "end": "0xd58068",
+      "sha256": "a49c90f596648cd01dbe8aa49a5405afad605873d83e45d43ba5d386c43359f3"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.Refresh",
+      "start": "0x11af1f0",
+      "end": "0x11af2e0",
+      "sha256": "03f3a59b28533584c4a8ed08761c21ff9a9f59f96811cd5d498f7f3066935c69"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.SetCBusUnit",
+      "start": "0x11af380",
+      "end": "0x11af528",
+      "sha256": "c649e16373b1db29706f37bcdecfa5d0e2b8a72dd11b59e25eba80a4e9e13af3"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.UpdateMicroFunction",
+      "start": "0x11b0cc8",
+      "end": "0x11b0f10",
+      "sha256": "cf4faa327d2795be77eafb534d38634449d0dadf001bb5c860dfad85c3199e0b"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.SetExpiryMicroFunctionCode",
+      "start": "0x11b0f10",
+      "end": "0x11b0f80",
+      "sha256": "40f5c36a84cae089dbb6af4bbfc1826494e8666229cc142eb56f16af1c3a515b"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.UpdateKeyParameters",
+      "start": "0x11b0f80",
+      "end": "0x11b14c0",
+      "sha256": "2554a633d82c15bb7376ace776482ce1be79eb99c86e3a60807b4ac303f06ff2"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.ComboPropertiesChange",
+      "start": "0x11b14c0",
+      "end": "0x11b1644",
+      "sha256": "5980573e9bae41878f0d8a422397d892d2492594d54bbc018b9e110bff8c705a"
+    }
+  ],
+  "resources": [
+    {
+      "name": "TFRMIOPEAUXINPUTS",
+      "type": 10,
+      "language": 0,
+      "size": 4736,
+      "sha256": "69d8cb18d839ec9b8dff412df637059b6798d9dbf65e450666588acc761e521d"
+    },
+    {
+      "name": "TFRMIOPEAUXMICROFUNCTIONS",
+      "type": 10,
+      "language": 0,
+      "size": 15869,
+      "sha256": "72cc72dba31609ec38888e7f9b2f9f9f86f55be9c21b128c58436df0cee81464"
+    }
+  ],
+  "writable_parameters": [],
+  "blockers": [
+    "Aux function selection requires complete flash-combobox selection binding, exact IOPE macro-template registration and recognition under positive application/scene/bistable graph dependencies.",
+    "Advanced Aux row editing still runs MacroFunctionRefresh and EnsureAvailableMacrofunctionIsUsed before the raw stage setter. The complete template factory matching, ReconcileTemplateAndGroup and application subset membership are not reproduced; an unavailable template is replaced with factory type26.",
+    "AssignTemplate assigns the default entire microfunction group and UpdateMicrofunctionCodes recodes all source stages using retained scene/ramp/preset data. A scalar stage write does not establish neighbor preservation.",
+    "Initialization and UpdateKeyParameters require exact row identities and dependent block/preset/scene/pot state. A bounded no-normalization entry guard has not been closed.",
+    "Full-dialog SaveInputSources rewrites every input-to-block Boolean association array and both sensor/aux value branches. A future component projection must disclose that full save is excluded and pin its owned serializer dependencies.",
+    "Aux simple-dropdown AttemptExtensionClick reads global preference object+0x1a and can execute a second dialog; capture its explicit policy rather than assuming no extension."
+  ],
+  "observed_rules": [
+    "HandleFunctionComboChange reaches MacroFunctionRefresh, AttemptExtensionClick, shutter recall overrides, SetupGroupCombos and RefreshOtherTabs.",
+    "HandleMacroFunctionTemplateAfterChangeEvent function type6 initializes zero block timer to300 and absent expiry command to microfunction type15 (Off).",
+    "SetShutterRelayRecallValues writes block LightStoreLevel249/252/255 for function types17/18/20 respectively.",
+    "TInputSource.RefreshInputAfterMicroFunctionCodeUpdate invokes EnsureSceneObjectMatchesSelectedScenesInMicrofunctions.",
+    "SaveInputSources calls SetSensorValues and SetAuxValues after serializing all input-to-block Boolean arrays.",
+    "TInputSource virtual+0x94 resolves RefreshBlocksFromTemplate -> base no-op; this call itself does not regenerate blocks.",
+    "TInputSource virtual+0x98 resolves RefreshMacroFunctionFromTemplate, which branches on scene-modify status; ordinary path assigns whole template.",
+    "TInputSource virtual+0x9c resolves UpdateMicrofunctionCodes -> base broad source-specific recoding; virtual+0xa0 resolves scene synchronization.",
+    "Advanced ComboPropertiesChange branches by row kind: top-level function row invokes UpdateMicroFunction and skips UpdateKeyParameters; child parameter rows invoke UpdateKeyParameters. Both routes then populate the combo and refresh this panel and other tabs.",
+    "Advanced UpdateMicroFunction calls SetMicroFunction, MacroFunctionRefresh and EnsureAvailableMacrofunctionIsUsed before SetMicroFunctionCodeByKeyPressStage.",
+    "Scene-modify RefreshMacroFunctionFromTemplate calls macro virtual+4, resolved CIS_TCustomFlashObject.Changed at0x7eaa10; it does not assign a template on that branch."
+  ],
+  "not_admitted": [
+    "Raw macro-byte edit API",
+    "Original input-function dialog lifecycle",
+    "Global preference or scene normalization",
+    "Native save/reload acceptance",
+    "Hardware or physical network operations"
+  ],
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMIOPEAUXINPUTS": "69d8cb18d839ec9b8dff412df637059b6798d9dbf65e450666588acc761e521d",
+    "TFRMIOPEAUXMICROFUNCTIONS": "72cc72dba31609ec38888e7f9b2f9f9f86f55be9c21b128c58436df0cee81464"
+  },
+  "raw_ranges": [
+    {
+      "name": "TInputSource_VMT_metadata",
+      "start": "0xd4e38c",
+      "end": "0xd4e52c",
+      "sha256": "708b97266726b52a388efa86f1a2716933142005003bbd8b183789302c6d6d11",
+      "size": 416
+    },
+    {
+      "name": "TBaseInput_VMT_metadata",
+      "start": "0xd4e1a0",
+      "end": "0xd4e38c",
+      "sha256": "e8a7dc16137bc240fbf6640093445ffa34777a67986e6aca5b685b51905361bb",
+      "size": 492
+    }
+  ],
+  "vmt_bindings": {
+    "TInputSource": {
+      "metadata": "0xd4e38c",
+      "self": "0xd4e3e4",
+      "slot_0x94": "0xd5130c",
+      "slot_0x98": "0xd513e0",
+      "slot_0x9c": "0xd50e38",
+      "slot_0xa0": "0xd51320"
+    }
+  },
+  "vmt_review_receipt": {
+    "evidence": "static PE little-endian pointers; no execution",
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "rows": [
+      {
+        "metadata": "0xd4e1a0",
+        "symbol": "CIS_TInputSource..TBaseInput",
+        "self_vmt": "0xd4e1f8",
+        "slots": {
+          "0x90": {
+            "target": "0xd4f2a0",
+            "symbol": "CIS_TInputSource.TBaseInput.RefreshMacrofunctionFromKeySecondary"
+          },
+          "0x94": {
+            "target": "0xd4fac8",
+            "symbol": "CIS_TInputSource.TBaseInput.RefreshBlocksFromTemplate"
+          },
+          "0x98": {
+            "target": "0xd4f2ac",
+            "symbol": "CIS_TInputSource.TBaseInput.RefreshMacroFunctionFromTemplate"
+          },
+          "0x9c": {
+            "target": "0xd50560",
+            "symbol": "CIS_TInputSource.TBaseInput.UpdateMicrofunctionCodes"
+          },
+          "0xa0": {
+            "target": "0xd4f164",
+            "symbol": "CIS_TInputSource.TBaseInput.RefreshInputAfterMicroFunctionCodeUpdate"
+          }
+        }
+      },
+      {
+        "metadata": "0xd4e38c",
+        "symbol": "CIS_TInputSource..TInputSource",
+        "self_vmt": "0xd4e3e4",
+        "slots": {
+          "0x90": {
+            "target": "0xd513c0",
+            "symbol": "CIS_TInputSource.TInputSource.RefreshMacrofunctionFromKeySecondary"
+          },
+          "0x94": {
+            "target": "0xd5130c",
+            "symbol": "CIS_TInputSource.TInputSource.RefreshBlocksFromTemplate"
+          },
+          "0x98": {
+            "target": "0xd513e0",
+            "symbol": "CIS_TInputSource.TInputSource.RefreshMacroFunctionFromTemplate"
+          },
+          "0x9c": {
+            "target": "0xd50e38",
+            "symbol": "CIS_TInputSource.TInputSource.UpdateMicrofunctionCodes"
+          },
+          "0xa0": {
+            "target": "0xd51320",
+            "symbol": "CIS_TInputSource.TInputSource.RefreshInputAfterMicroFunctionCodeUpdate"
+          }
+        }
+      },
+      {
+        "metadata": "0xc954e0",
+        "symbol": "CIS_TKeyMacroFunction..TKeyMacroFunction",
+        "self_vmt": "0xc95538",
+        "slots": {
+          "0x0": {
+            "target": "0x768268",
+            "symbol": "CIS_TBaseObject.TBASEObject.BeginUpdate"
+          },
+          "0x4": {
+            "target": "0x7eaa10",
+            "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.Changed"
+          },
+          "0x8": {
+            "target": "0x7682a4",
+            "symbol": "CIS_TBaseObject.TBASEObject.EndUpdate"
+          }
+        }
+      }
+    ]
+  },
+  "followup_correction_receipt": "iope-template-transaction-source-review.json"
+}

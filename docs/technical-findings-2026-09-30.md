@@ -120,6 +120,31 @@ and failed CI outcomes are unchanged. The
 records package identity, source imports and sanitized derivative provenance.
 Full GUI, radio, physical update/transfer and power-cycle acceptance remain open.
 
+## IOPE, template and failure-evidence integration — 1 October
+
+The [follow-up batch](../toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md)
+integrates the complete committed IOPE chain through `18d78566`, the four
+eDLT template revisions through `d951e882` and firmware CLI error reporting
+from `3e658045`, with separate integration fixes. Uncommitted owner validator
+investigations are excluded. Eight IOPE components now have public CLI
+registration; eDLT format/export/preview and the parent local stager are
+registered, with a separate guarded offline Save-validation stage; Apply remains refused. Firmware failure/cancellation adds
+bounded scalar lifecycle evidence and a read-only journal snapshot; backend
+error strings in new fields use fixed labels after a reproduced privacy defect.
+
+The [combined source/wheel receipt](../toolkit-cli/docs/iope-template-firmware-acceptance-2026-10-01.json)
+records 642 passed test nodes and 1,951 passed subtests in each context, with
+zero failures/skips and five deliberate pre-execution exclusions. One IOPE
+matrix method is collected under two module paths; both call nodes passed.
+Separate terminal-image database proofs compare 874 parameters and five CRCs
+per context, without executing Apply. Native/static provision is qualified
+separately. Historical owner hashes remain unchanged; the eDLT
+terminal native receipt is a declared sanitized derivative. Controller hardware,
+whole initialized template Apply and original firmware/physical acceptance
+remain open. See [IOPE integration](../toolkit-cli/docs/iope-integration-scope.md),
+[templates](../toolkit-cli/docs/edlt-template-integration-boundaries.md) and
+[firmware diagnostics](../toolkit-cli/docs/firmware-cli-error-evidence.md).
+
 ## Queued local work at this snapshot
 
 These are inspected owner revisions, **not public commit links or permission
@@ -130,9 +155,7 @@ Uncommitted follow-on work is intentionally excluded from accepted results.
 
 | Area | Owner commit sequence after its published equivalent | Retained result, supplementary path and exact gap |
 | --- | --- | --- |
-| eDLT templates | `7a23fb5d` → `48112a9c` | Format/preview, ordered assignments and second-model staging: 98 tests/420 subtests. `toolkit-cli/docs/edlt-template-{staged-lifecycle,rebind-recovery,terminal-recovery}.md` retain 67 assignment cases, 25 model-load cases, 31 proxy rebind cases and 14 terminal cases. Parent/registration patches remain unapplied in the owner snapshot; actual control binding and confirmed persistence are still required. Apply stays refused. |
-| IOPE | `690b0965` | Environment corridor/output controls: 41 tests/96 subtests, plus two separate native tests covering nine model/revision rows, 72 edits, 102 refusals and 162 raw-byte assertions. `toolkit-cli/docs/iope-{workflows,environment,output-settings}.md` and `iope-workflow-acceptance-summary.json` bind the historical wheel. Registration remains a separate integration patch. Logic/join-recovery/timer follow-on work must receive its own receipt. |
-| Firmware packages | `de74df7e` → `b058a43d` → `1b03e1da` integrated above | Immutable package execution admission, offline NCC transcripts and normalized payload interpretation now have focused source/wheel validation. Patchset analysis and CLI error-reporting follow-ups remain queued; vendor authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |
+| Firmware packages | `de74df7e` → `b058a43d` → `1b03e1da` integrated above | Immutable package execution admission, offline NCC transcripts and normalized payload interpretation now have focused source/wheel validation. Patchset analysis remains queued; CLI error-reporting is integrated in the next batch below; vendor authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |
 | Rust routed selected serial | `b7c8aa9b` | `docs/rust-selected-serial-routed.md` and its evidence JSON record 135 unique focused test functions, scoped Clippy/format checks and no full workspace build. One-shot apply/recovery is bound to exact topology and inventories; 1/2/6-bridge cases use scripted peers. Native routed mutation, actual bridge delivery, device persistence and routed database reconciliation remain unverified. Machine coordinates must be sanitized before the receipt is public. |
 
 ## Fresh source recovery: facts that must survive integration

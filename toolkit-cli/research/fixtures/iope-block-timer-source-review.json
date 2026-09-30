@@ -1,0 +1,294 @@
+{
+  "format": "cbus-iope-block-timer-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "original_execution": false,
+  "evidence_kind": "Static PE/MAP and inherited Delphi form-resource recovery. No emulation or original GUI execution.",
+  "profiles": [
+    "IOPE1R1",
+    "IOPE2R2",
+    "IOPE2C4"
+  ],
+  "firmware_range": [
+    "1.0.00",
+    "1.2.99"
+  ],
+  "firmware_boundary": "Inherited exact IOPE model/schema/catalogue admission; no extrapolation beyond native catalogue specifications.",
+  "entry": "TfrmIOPEEnvironment enabled-role timer button -> TfrmIOPEEnvironmentBlockTimer",
+  "expiry_commands": {
+    "idle": 0,
+    "toggle": 79,
+    "on": 71,
+    "off": 64
+  },
+  "writable_parameters": [
+    "TimerExpiryCommand",
+    "TimerHighByte",
+    "TimerLowByte"
+  ],
+  "rules": [
+    "Environment initialization must already be stable: reuse IopeEnvironment.plan with positive caller group metadata and refuse any changes.",
+    "FirstCorridorLinkEnable must be true. Selected block is current corridor, first office or an enabled second office; group must already exist and not be 255. Role selectors and group editing are not performed.",
+    "Environment wrapper never binds InputSource. Subclass SetBlock forces radio item1 before inherited initialization; inherited GetValues variant1 commits raw expiry and timer, skipping macro-group write because InputSource is nil.",
+    "Corridor button passes true flag, office buttons false; subclass SetValue_ExpiryTime sets minimum00:01:00 only for corridor. Existing corridor duration below60 is refused because initial control normalization is not reproduced.",
+    "Ordinary fresh block TimerMin attribute is initialized0; GetValues uses timer seconds encoded as uint16. TInputBlockB.HandleTimerMinAfterChange clamps only to that model minimum.",
+    "PopulateExpiryFunctionsCombo admits function types0,9,11,12,13,15,16,22,23,24. This workflow admits types0,11,13,15 only.",
+    "InitialiseKeyMicroFunctionFactory registers function type0/11/13/15 with new values0x00/0x4F/0x47/0x40. RegisterKeyMicroFunction stack arguments identify type and NewCBusValue.",
+    "GetMicrofunctionCodeForRampRateAndRecallLevel case-table targets0xC8E915/0xC8ED47/0xC8ED53/0xC8ED6B return0x00/0x4F/0x47/0x40 independently of retained ramp and recall. cmbExpiryFunctionChange only invokes preset dialog for types6/12 and scene-index remap for22/23; neither path is admitted.",
+    "Both retained and selected commands must be among the four simple full-byte commands; do not treat a classic nibble or unknown loaded command as a default.",
+    "LoadInputBlocks retains raw byte at block+0xAC; SaveTimerExpiryCommand serializes exactly those8 bytes. TimerHigh/Low split uint16 seconds. Other block slots and all non-owned parameters are preserved.",
+    "Apply recomputes the complete canonical plan, checks profile/native schema and all read dependencies, verifies staged readback and restores attempted fields on pre-save failure. This module never saves."
+  ],
+  "not_admitted": [
+    "Timer variant switching or Pot1/Pot2 expiry editing",
+    "Input macro functions and arbitrary input block timer entry",
+    "Ramp, recall, scene and unknown retained commands",
+    "Environment group selector edits, group creation or initialization rewrites",
+    "Existing corridor duration below60",
+    "Whole-dialog saves and original GUI lifecycle acceptance",
+    "Physical timing, real-unit writes, power-cycle persistence"
+  ],
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": [
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.btnOfficeBlockTimerClick",
+      "start": "0x11abe34",
+      "end": "0x11abe74",
+      "sha256": "38e9d2d1858adf1b7256fa54fb69255d4883ec050e3e2eb468f21f34038334de"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.btnSecondOfficeBlockTimerClick",
+      "start": "0x11ac770",
+      "end": "0x11ac7b0",
+      "sha256": "72bc19be8d2ef0310437e86e81fdbdc1863a8feac30c91d833b01ebb21841e0c"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.btnCorridorBlockTimerClick",
+      "start": "0x11ac7b0",
+      "end": "0x11ac7f0",
+      "sha256": "e58ea87285ea81921b3c2e79ca135d97dc2374da77d6d52ca648484794ddf097"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.ExecuteDialog_FunctionTimerOnly",
+      "start": "0x11ac8f0",
+      "end": "0x11ac978",
+      "sha256": "577a69b8f8d69146d3ac24714c7061683cb8bbce99aa2b5529c1c9d0c68d0e54"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.ExecuteDialog_FunctionTimerOnlyCorridor",
+      "start": "0x11ac978",
+      "end": "0x11acb44",
+      "sha256": "07beb6982dd5f41d23b785a80a36d476f99c7981fa9c4819c559b5475cee9262"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleCorridorEnableChecked",
+      "start": "0x11acd7c",
+      "end": "0x11ad188",
+      "sha256": "1a43d462a77b5cfbf7fcb4f0537711173072dd5997c69f80ae34bb8b9d48dd46"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.chkSecondOfficeEnabledClick",
+      "start": "0x11ac7f0",
+      "end": "0x11ac8f0",
+      "sha256": "13d86d2dc6638e1c9be48c81040de67da33eb237d1fb5a0dceb6ca7ccee82b5f"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironmentBlockTimer.TfrmIOPEEnvironmentBlockTimer.SetBlock",
+      "start": "0x11ab7f8",
+      "end": "0x11ab844",
+      "sha256": "20ca5b1d3e55a823c51adad089718429008483ee63841afe807e3d996b240ce6"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironmentBlockTimer.TfrmIOPEEnvironmentBlockTimer.SetValue_ExpiryTime",
+      "start": "0x11ab844",
+      "end": "0x11ab890",
+      "sha256": "7460bb758aa2b29cb0cda17bfe46283fce9460db1666e7b62c9d12f91115d2d6"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironmentBlockTimer.TfrmIOPEEnvironmentBlockTimer.SetupBlockGroup",
+      "start": "0x11ab890",
+      "end": "0x11aba34",
+      "sha256": "3fe5cb4df3ac416f7ffda944d6e8547958fd1be2f2ef6f4faa4ee34f5b4946c4"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.AfterConstruction",
+      "start": "0x1184ecc",
+      "end": "0x1184f98",
+      "sha256": "b2afa78ee3bf22e61a022bff81b24586dd9a8807c7bade2abbee993fefda892e"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.SetBlock",
+      "start": "0x11860c0",
+      "end": "0x11861a4",
+      "sha256": "01aa321ee115b6107ae7106d074b5f9c28e7955380565e265687965b54b867c6"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.SetIOPEUnit",
+      "start": "0x11862dc",
+      "end": "0x1186330",
+      "sha256": "7c540bc0ba1abbc525d38012ef14984655960ebf407a7403d4e3cf4c5f69971d"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.UpdateExpiryFunction",
+      "start": "0x11861a4",
+      "end": "0x1186298",
+      "sha256": "4df14ab389e09749f016c53fdbc3f31453ffcc6eb7041c983e244a0be937eecb"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.SetValue_ExpiryFunction",
+      "start": "0x11865e0",
+      "end": "0x1186644",
+      "sha256": "b56b62303967f8178189a1231d5f1be3e5ff0f96f35d733721e55fdb0caf5de3"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.SetValue_ExpiryTime",
+      "start": "0x1186330",
+      "end": "0x1186480",
+      "sha256": "327e7651c88d51d2bc8c4e2b5445014f20ad5ba9a1e2262591879d64ff05c2ca"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.PopulateExpiryFunctionsCombo",
+      "start": "0x1185e3c",
+      "end": "0x1185f34",
+      "sha256": "001cbea1b37d310f3bebc7546f7498e58e7b4527a536659409dd35d7adea183e"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.Execute",
+      "start": "0x1185f34",
+      "end": "0x11860c0",
+      "sha256": "29c09f1667fbecd22b29ac10e67f102d186aee1063ace9965ea2e531774e2a67"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.rgTimerVariantClick",
+      "start": "0x1186f3c",
+      "end": "0x118700c",
+      "sha256": "87ed162b22fd867f3544e1d5fd5c6b496bf579fa3412f632f8b7131354cfe2cc"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.cmbExpiryFunctionChange",
+      "start": "0x118590c",
+      "end": "0x1185a10",
+      "sha256": "a57ea547b97d6789b243dfe9a138ce366e8808b1a2bbbf0510c8c885ac473276"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.GetValues",
+      "start": "0x11866e0",
+      "end": "0x1186814",
+      "sha256": "e32523e7df6936738ca4bea71f94f465246199cca325033286ea4282c21f96e3"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.EncodeExpiryTime",
+      "start": "0x1186838",
+      "end": "0x11868c8",
+      "sha256": "e5c38610f5cee6d4684bea41a9000135553804d2478d8046124c09eb5dea1436"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.UpdateRampRateCombo",
+      "start": "0x1185570",
+      "end": "0x11857cc",
+      "sha256": "08c037d8af6b0baaadf0dd3a2ef82dda5b934a808e411986a206ea5d041e02e7"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.EnableRampRateCombo",
+      "start": "0x1185a10",
+      "end": "0x1185be0",
+      "sha256": "2bdebad74af665b4cfa8faa5948599ecb96955c9c060737c49f48cdfe14e3ff9"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.UpdateSceneCombo",
+      "start": "0x11857cc",
+      "end": "0x118590c",
+      "sha256": "f06c5b92471c182c3a320f6e254b66b8e401e5c1f5c852e37445ad25c49aa574"
+    },
+    {
+      "name": "CIS_TfrmIOPEBlockTimer.TfrmIOPEBlockTimer.cmbRampRatePropertiesChange",
+      "start": "0x1185ca4",
+      "end": "0x1185df4",
+      "sha256": "a956898c635b7018b01264787ee3ab6286c682382901b79faaa4d54c2a882b4f"
+    },
+    {
+      "name": "CIS_TKeyMicroFunction.InitialiseKeyMicroFunctionFactory",
+      "start": "0xc8db30",
+      "end": "0xc8e228",
+      "sha256": "a9c464e92809cc9721e89eb3bdb4f44a3261eceadc02994f8b86cb218bcfbdbe"
+    },
+    {
+      "name": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.RegisterKeyMicroFunction",
+      "start": "0xc8feac",
+      "end": "0xc8ff18",
+      "sha256": "b532c554989024a7e27b5b0473c330772bf5bc76a3f34603d546b59376faedbd"
+    },
+    {
+      "name": "CIS_TKeyMicroFunction.GetMicrofunctionCodeForRampRateAndRecallLevel",
+      "start": "0xc8e87c",
+      "end": "0xc8ef24",
+      "sha256": "1ca8b56a6ce355b9c63c6e34b88d79604e6a4d1f280c8ae197228edc87fb9617"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadInputBlocks",
+      "start": "0x12d64a8",
+      "end": "0x12d66b4",
+      "sha256": "3b080c3a6cd23aef786353d24bef394a52fdfff606b6ad525898ab794d81c596"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveTimerExpiryCommand",
+      "start": "0x12db634",
+      "end": "0x12db710",
+      "sha256": "4258efc5b77fb72edcb460ba96c097911d7106e672dcce10b9aeb37b05f676d2"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveTimerHighAndLowBytes",
+      "start": "0x12db710",
+      "end": "0x12db85c",
+      "sha256": "4b65d7d5aa5412dec43ecb56aacc4d3e2375cf592cd32569daa7c06e1d53d000"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.InternalCreate",
+      "start": "0xd5269c",
+      "end": "0xd528bc",
+      "sha256": "f781b41c6c40f97692f727897609fc036b6a17f969b601859da613f3bc523c66"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.GetTimerMin",
+      "start": "0xd52d84",
+      "end": "0xd52dac",
+      "sha256": "c2d312b68c3d0f52b559d80a301ed367b95e63ef3cbe9c391ae76145711dc7b2"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.SetTimer",
+      "start": "0xd52f48",
+      "end": "0xd52fa8",
+      "sha256": "1639cea6e84274138406e5000e5a1a5a2f7658f54d281bc077d4437573cc0c8b"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.SetTimerExpiryCommand",
+      "start": "0xd52fa8",
+      "end": "0xd52fcc",
+      "sha256": "13b7e9250316ad4b4c328bc405ef1cade4e20d6b2e5eacd0c9c532cb15b4d17d"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.HandleTimerAfterChange",
+      "start": "0xd52e94",
+      "end": "0xd52eb0",
+      "sha256": "5a32eab8b4ef9840daf22e91e2dc5ff892fabecc31ed860eb326c959d7dc091b"
+    },
+    {
+      "name": "CIS_TInputBlockB.TInputBlockB.HandleTimerMinAfterChange",
+      "start": "0xd52eb0",
+      "end": "0xd52eec",
+      "sha256": "f9e40caed1f88604f3935869b1a3507d9a6c2014659c36c6be473403434e0c73"
+    }
+  ],
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMENVIRONMENT": "1a2391ef0beba6140b9a13ed9a47813bb0f6d044457e0d712581c636763ddd02",
+    "TFRMIOPEBLOCKTIMER": "3ae70a2a03c2b1f0c1f659207854d1d2d79b835eead68ff49479289c384c30fc",
+    "TFRMIOPEENVIRONMENT": "5acf527a852b969033e065727e6667b469fdfa472c3f0161daa178255b6ea8aa",
+    "TFRMIOPEENVIRONMENTBLOCKTIMER": "e3af1796fa11e58dceede88fcd547dd809177eb4219e4c515b964a88c8b6b8ab"
+  }
+}

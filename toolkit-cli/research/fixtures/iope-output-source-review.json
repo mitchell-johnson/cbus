@@ -1,0 +1,208 @@
+{
+  "format": "cbus-iope-output-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "original_execution": false,
+  "analysis": "Static disassembly of MAP-named original PE methods and original DFM resources; existing level converter original-instruction evidence is referenced separately.",
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMOUTPUTTURNONLEVEL": "bb779abbdbc41768eaee2fc763157440aded9e120cd369a14893f978738e264d",
+    "TFRMOUTPUTRESTRIKECHANNEL": "8cc6019e8480b04bd0ba6da40a7b02742a42ddd01108a9dac03b919070a35bf3",
+    "TFRMOUTPUTRESTRIKEDELAY": "7f8f84db688fbb3904f1c07c4330ea9ee73ee593f350b8cbf1c0519ffe4eb154"
+  },
+  "methods": [
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadOutputs",
+      "start": "0x12d8150",
+      "end": "0x12d8900",
+      "sha256": "12808b9e00b7518cda3e9ff9b1267d8eaf47860d532b889686d04a88f09f0324"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveOutputs",
+      "start": "0x12dccb8",
+      "end": "0x12ddce0",
+      "sha256": "98c33037dcfa050bedf68b7bde8b11b1de7badf93a1e9e2a94133d4597deb6a5"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPE2C4.IsRelayChannel",
+      "start": "0xd5a284",
+      "end": "0xd5a2a0",
+      "sha256": "ee90d3cf0a3a477b182820c0c3c6a97125cb7dd5981ab607589e268eceb726ad"
+    },
+    {
+      "name": "CIS_TfrmOutputRestrikeDelay.FormatTimeShort",
+      "start": "0x1194d84",
+      "end": "0x1194e9c",
+      "sha256": "cfa51d63865eb7f90c70d4eaa913d5da0c7c4facf075df9b133dd976af831a2d"
+    },
+    {
+      "name": "CIS_TfrmOutputRestrikeDelay.TfrmOutputRestrikeDelay.HandleRestrikeChannelClick",
+      "start": "0x1194954",
+      "end": "0x1194ad8",
+      "sha256": "3311a3284e027c020a45e91c81f8b6377ce9346267de69950b8ac34d142a4265"
+    },
+    {
+      "name": "CIS_TfrmOutputRestrikeDelay.TfrmOutputRestrikeDelay.SetCBusUnit",
+      "start": "0x1194ad8",
+      "end": "0x1194d84",
+      "sha256": "217545348027bb1b07f4c1210d7d69ffb2df6c3f9f660cc9b78d5df6b66456b1"
+    },
+    {
+      "name": "CIS_TfrmOutputTurnOnLevel.TfrmOutputTurnOnLevel.SetCBusUnit",
+      "start": "0x1192ee8",
+      "end": "0x1193228",
+      "sha256": "c34e003119c8e0e88004d84b2e73f545143e0c65ef4ca7d4557acff7fb04b051"
+    },
+    {
+      "name": "CIS_TfrmOutputTurnOnLevel.TfrmOutputTurnOnLevel.trkMaxPropertiesChange",
+      "start": "0x11932a8",
+      "end": "0x119352c",
+      "sha256": "c449e6106769977d2251b60a7636f4a27ce43656fbddedd0ce30102cf8f3bee7"
+    },
+    {
+      "name": "CIS_TfrmOutputTurnOnLevel.TfrmOutputTurnOnLevel.trkMinPropertiesChange",
+      "start": "0x11935ac",
+      "end": "0x1193894",
+      "sha256": "8c92de8ffa73de043141d2885b21d50c787585e4bcc5cec1a9d0ed862622123e"
+    }
+  ],
+  "method_hash_boundary": "Original PE bytes from each resolved MAP symbol through the next distinct MAP symbol; may include trailing literal data and alignment. Addresses are virtual addresses, not MAP segment offsets.",
+  "profiles": [
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "channels": 1,
+      "relays": [
+        1
+      ],
+      "dimmers": []
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "channels": 2,
+      "relays": [
+        1,
+        2
+      ],
+      "dimmers": []
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "channels": 4,
+      "relays": [
+        1,
+        2
+      ],
+      "dimmers": [
+        3,
+        4
+      ]
+    }
+  ],
+  "firmware_admission": "1.0.00..1.2.99; catalogue/specification intersection retained from the existing IOPE source review. Native runs establish only their specifically observed revisions.",
+  "controls": [
+    {
+      "input": "channels[n].min_percent",
+      "range": [
+        0,
+        100
+      ],
+      "parameter": "MinDimmingLevel[n-1]",
+      "address": "0x78",
+      "array_size": 4,
+      "type": "int",
+      "bits": 8,
+      "scope": "Every existing relay threshold or dimmer minimum"
+    },
+    {
+      "input": "channels[n].max_percent",
+      "range": [
+        0,
+        100
+      ],
+      "parameter": "MaxDimmingLevel[n-3]",
+      "address": "0x7c",
+      "array_size": 2,
+      "type": "int",
+      "bits": 8,
+      "scope": "Only IOPE2C4 channels 3 and 4"
+    },
+    {
+      "input": "channels[n].restrike",
+      "type": "boolean",
+      "parameter": "RestrikeChannel[n-1]",
+      "address": "0x70",
+      "array_size": 4,
+      "bits": 1,
+      "bit_address": 6,
+      "scope": "Existing relay channels only"
+    },
+    {
+      "input": "restrike_delay",
+      "range": [
+        1,
+        254
+      ],
+      "parameter": "RestrikeDelay",
+      "address": "0x6f",
+      "array_size": 1,
+      "type": "int",
+      "bits": 8,
+      "display_seconds_multiplier": 10,
+      "scope": "Enabled only while at least one existing relay checkbox is selected"
+    }
+  ],
+  "control_sequence": [
+    "ascending channel number: minimum percentage, maximum percentage, restrike",
+    "shared restrike delay"
+  ],
+  "facts": [
+    "LoadOutputs at 0x12d8535..0x12d858a admits maximum only for zero-based channel index >1 and reads the maximum array at channel index-2.",
+    "SaveOutputs at 0x12dd5bf skips maximum append for zero-based channel indices <=1; other active channels append in channel order.",
+    "SetCBusUnit sets the initialization flag while binding controls. For relay channels it hides and unbinds maximum; for dimmers it binds maximum.",
+    "Turn On DFM binds both sliders to percentage interpretation (UseRawValues=False), maximum 100 and default minimum zero.",
+    "trkMinPropertiesChange compares displayed maximum <= displayed minimum outside initialization and moves the inverse maximum position down one; the paired percentage is minimum+1 with trackbar endpoint clipping.",
+    "trkMaxPropertiesChange compares displayed minimum >= displayed maximum outside initialization and moves the inverse minimum position up one; the paired percentage is maximum-1 with trackbar endpoint clipping.",
+    "The uncrossed maximum branch at 0x11933cf jumps to 0x11934d1, skipping neighbor position and Changed writes; a noncanonical raw minimum is preserved.",
+    "Restrike delay DFM binds UseRawValues=True, minimum1 and maximum254. FormatTimeShort formats raw*10 seconds below6, or raw//6 minutes and (raw%6)*10 seconds.",
+    "Restrike delay enablement scans existing IsRelayChannel rows and selected checkboxes; dimmer rows are hidden. Inactive/dimmer raw bits do not enable the control."
+  ],
+  "level_conversion_reference": "research/fixtures/din-output-level-original-vectors.json",
+  "preservation_contract": {
+    "owned_parameters": [
+      "MinDimmingLevel",
+      "MaxDimmingLevel",
+      "RestrikeChannel",
+      "RestrikeDelay"
+    ],
+    "restrike_masks": {
+      "0x70": "0x40",
+      "0x71": "0x40",
+      "0x72": "0x40",
+      "0x73": "0x40"
+    },
+    "rule": "Only explicit controls and paired slider cascades may change values; retain unselected and inactive array elements, unsupported stored bits, and unrelated parameters.",
+    "whole_dialog_save": false
+  },
+  "validation": {
+    "offline_test": "tests/test_iope_output_settings.py",
+    "native_test": "tests/test_iope_workflow_native.py",
+    "native_receipt": "research/fixtures/iope-workflow-native-acceptance.json",
+    "native_execution_claimed_by_this_receipt": false
+  },
+  "limits": [
+    "No original GUI, VCL interaction, lamp behavior, physical controller, network write or power-cycle acceptance.",
+    "No Output Logic association/function/recovery controls or output group assignment.",
+    "No whole-dialog SaveOutputs/BeforeSaveProgrammingInformation; unrelated output recovery, inactive-slot canonicalization, scenes, input blocks, join/corridor state, LightStateMachine and potentiometer expiry rewrites are not claimed.",
+    "Raw minimum/maximum setters are not admitted; selections are percentages with documented minimum-then-maximum order.",
+    "Native database save/reload evidence belongs to its separate receipt; the editor itself stages and verifies but does not save."
+  ]
+}

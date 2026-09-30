@@ -1,0 +1,848 @@
+{
+  "format": "cbus-iope-scene-selectors-source-review-v1",
+  "status": "bounded-existing-header-component",
+  "original_execution": false,
+  "implementation_changes": true,
+  "original_inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "unitspec": {
+    "name": "I_IOPE.xml",
+    "sha256": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13"
+  },
+  "methods": [
+    {
+      "start": "0x11888e4",
+      "end": "0x1188c84",
+      "symbols": [
+        "CIS_TfrmIOPEScene.TfrmIOPEScene.Initialise"
+      ],
+      "bytes_sha256": "365cca7714e8eae71a472988a001fea2e24ef2a33b3c34008a79b9ddab458597",
+      "file": "011888e4.asm",
+      "file_sha256": "df7e9d357c11fbdba315e668644fa9d3130e9800f1b90dbeb9b1e436c2457c8f",
+      "name": "CIS_TfrmIOPEScene.TfrmIOPEScene.Initialise",
+      "sha256": "365cca7714e8eae71a472988a001fea2e24ef2a33b3c34008a79b9ddab458597"
+    },
+    {
+      "start": "0x1188638",
+      "end": "0x1188690",
+      "symbols": [
+        "CIS_TfrmIOPEScene.TfrmIOPEScene.InvokeScenesDialog"
+      ],
+      "bytes_sha256": "d92566f37ce41b5f9df1b27b1459965361e0e902f10dcc9f4db8fdfbd8a1359f",
+      "file": "01188638.asm",
+      "file_sha256": "2ca51831ece013fd1290ebe5b47b07e5c042e68933928a662e08af6b5870b11a",
+      "name": "CIS_TfrmIOPEScene.TfrmIOPEScene.InvokeScenesDialog",
+      "sha256": "d92566f37ce41b5f9df1b27b1459965361e0e902f10dcc9f4db8fdfbd8a1359f"
+    },
+    {
+      "start": "0x1188c84",
+      "end": "0x1188dc4",
+      "symbols": [
+        "CIS_TfrmIOPEScene.TfrmIOPEScene.SetupRampRateTypeCombo"
+      ],
+      "bytes_sha256": "7d17b78a96eedf1c8d4bfaaa158b2b2c52f33158f902c1fabb76e6cda0490186",
+      "file": "01188c84.asm",
+      "file_sha256": "a65f0605420f90e347b760c97a0bad0e24420453763258fd50b488be7b7ec3aa",
+      "name": "CIS_TfrmIOPEScene.TfrmIOPEScene.SetupRampRateTypeCombo",
+      "sha256": "7d17b78a96eedf1c8d4bfaaa158b2b2c52f33158f902c1fabb76e6cda0490186"
+    },
+    {
+      "start": "0x1188e98",
+      "end": "0x11890a8",
+      "symbols": [
+        "CIS_TfrmIOPEScene.TfrmIOPEScene.SelectRampRateType1"
+      ],
+      "bytes_sha256": "520a5ab582896247c8851f9d83da61f5781aa3494f6a9fd354e9cd5f71449948",
+      "file": "01188e98.asm",
+      "file_sha256": "02291de68d6d86e6aca3f9f8aeb2c3eed02f9d8a5e88d99b5b43fd38495d13c6",
+      "name": "CIS_TfrmIOPEScene.TfrmIOPEScene.SelectRampRateType1",
+      "sha256": "520a5ab582896247c8851f9d83da61f5781aa3494f6a9fd354e9cd5f71449948"
+    },
+    {
+      "start": "0x12dc430",
+      "end": "0x12dc7a4",
+      "symbols": [
+        "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveScenes"
+      ],
+      "bytes_sha256": "4c4572ff0d18522682abb41db159957973411866628300d9f9b93f62ac88b7bf",
+      "file": "012dc430.asm",
+      "file_sha256": "f3344aed8735edbdf468d9391e84dc60e31785d89e2abad73397d816cf21b944",
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveScenes",
+      "sha256": "4c4572ff0d18522682abb41db159957973411866628300d9f9b93f62ac88b7bf"
+    },
+    {
+      "start": "0x12dbe80",
+      "end": "0x12dc104",
+      "symbols": [
+        "CIS_TIOPECGateAgent.GetSceneTableAsString"
+      ],
+      "bytes_sha256": "432cd4aab15c42c4aaee0bb63636740a73ca03cb72470d4d45c2fdab7f0bdd2b",
+      "file": "012dbe80.asm",
+      "file_sha256": "03b1089ea6e0088201005d39b6e09dd551581a39ed79473b929dbef6d60aa768",
+      "name": "CIS_TIOPECGateAgent.GetSceneTableAsString",
+      "sha256": "432cd4aab15c42c4aaee0bb63636740a73ca03cb72470d4d45c2fdab7f0bdd2b"
+    },
+    {
+      "start": "0x12dc104",
+      "end": "0x12dc430",
+      "symbols": [
+        "CIS_TIOPECGateAgent.GetSceneTablePointersAsString"
+      ],
+      "bytes_sha256": "64285b5398ba78114eb41ab573a4c5c2bcc4d52fb58c42ebb0b8a8ebf60a6e36",
+      "file": "012dc104.asm",
+      "file_sha256": "7ddf9db09a7ac963a067fee3692dd4187ac0cb3336a755f863085bf0ab7c115f",
+      "name": "CIS_TIOPECGateAgent.GetSceneTablePointersAsString",
+      "sha256": "64285b5398ba78114eb41ab573a4c5c2bcc4d52fb58c42ebb0b8a8ebf60a6e36"
+    },
+    {
+      "start": "0x12dc7a4",
+      "end": "0x12dc8fc",
+      "symbols": [
+        "CIS_TIOPECGateAgent.TIOPECGateAgent.GetSceneTablePointer"
+      ],
+      "bytes_sha256": "d1e8601955b2384cfdaad6c67bcfda64c3649fd20e0a44b731c53c1aa70608fc",
+      "file": "012dc7a4.asm",
+      "file_sha256": "a664979a6b92045fae2bcc0a75f84c1db389ac05d8095589df9e5b9da2dbef7a",
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.GetSceneTablePointer",
+      "sha256": "d1e8601955b2384cfdaad6c67bcfda64c3649fd20e0a44b731c53c1aa70608fc"
+    },
+    {
+      "start": "0x1182cac",
+      "end": "0x1182d08",
+      "symbols": [
+        "CIS_TfrmIOPESceneGroups.TfrmIOPESceneGroups.PerformScenesEdit"
+      ],
+      "bytes_sha256": "509fdc3eccaae83b375e04ceb97edff12a8a70161f110b60f0e1eaa6cf3292bf",
+      "file": "01182cac.asm",
+      "file_sha256": "ca02cc3dc755aeb7c5202dca4b9ea1cfa190eb7c9a11245008efdb41a50be74f",
+      "name": "CIS_TfrmIOPESceneGroups.TfrmIOPESceneGroups.PerformScenesEdit",
+      "sha256": "509fdc3eccaae83b375e04ceb97edff12a8a70161f110b60f0e1eaa6cf3292bf"
+    },
+    {
+      "start": "0xd50e20",
+      "end": "0xd50e38",
+      "symbols": [
+        "CIS_TInputSource.TInputSource.HandleSceneAfterChangeEvent"
+      ],
+      "bytes_sha256": "39ddf53b40eac3cdde4f7541bcd10e192f6b1e5682adff83212cb097d921ed37",
+      "file": "00d50e20.asm",
+      "file_sha256": "45de5f961271b9e8393409561f72f27b465978c3bf636ab3a108c45c27048e1c",
+      "name": "CIS_TInputSource.TInputSource.HandleSceneAfterChangeEvent",
+      "sha256": "39ddf53b40eac3cdde4f7541bcd10e192f6b1e5682adff83212cb097d921ed37"
+    },
+    {
+      "start": "0xd50e4c",
+      "end": "0xd50ee4",
+      "symbols": [
+        "CIS_TInputSource.TInputSource.UpdateSensorCommandsThatHaveSceneMicrofunctions"
+      ],
+      "bytes_sha256": "0ee92bd7c44f86f5a68962a7f40f32dbcaa2f83119c3b92ddad2e1c63ab509a0",
+      "file": "00d50e4c.asm",
+      "file_sha256": "8a98b71f90a5cadb7a4bd57328ade932b79eac8b5e90121bd5e06d5bcb271ece",
+      "name": "CIS_TInputSource.TInputSource.UpdateSensorCommandsThatHaveSceneMicrofunctions",
+      "sha256": "0ee92bd7c44f86f5a68962a7f40f32dbcaa2f83119c3b92ddad2e1c63ab509a0"
+    },
+    {
+      "start": "0xd513d4",
+      "end": "0xd513e0",
+      "symbols": [
+        "CIS_TInputSource.TInputSource.RefreshMacroFunctionFromSceneRampTemplate"
+      ],
+      "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "file": "00d513d4.asm",
+      "file_sha256": "1904e9144f829ce47d585b8c58937208545b4b6e1de95c68f463e6c92350ae72",
+      "name": "CIS_TInputSource.TInputSource.RefreshMacroFunctionFromSceneRampTemplate",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    {
+      "start": "0x12d7b44",
+      "end": "0x12d7e50",
+      "symbols": [
+        "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadScenes"
+      ],
+      "bytes_sha256": "1237ca13226ccd9de9457b084d0f236a56aed38f49f6a8af13504be46c3f3fe8",
+      "file": "012d7b44.asm",
+      "file_sha256": "0655cb881f4d4aabcd548bf676bcb8d0713f0c1c938071d5f49db41b19ba6a21",
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadScenes",
+      "sha256": "1237ca13226ccd9de9457b084d0f236a56aed38f49f6a8af13504be46c3f3fe8"
+    },
+    {
+      "start": "0xf87894",
+      "end": "0xf87a08",
+      "symbols": [
+        "CIS_TfrmSceneManager.ExecuteSceneManagerForInputUnit"
+      ],
+      "bytes_sha256": "2edde434999fde4cc1f16e7de103bd7b01a4706474e8d0b9c1d0d157c68d5896",
+      "file": "00f87894.asm",
+      "file_sha256": "50b8c544c9a285b3b876ba789bc2eeae4a90f71b80a7d917c1d618c888579d95",
+      "name": "CIS_TfrmSceneManager.ExecuteSceneManagerForInputUnit",
+      "sha256": "2edde434999fde4cc1f16e7de103bd7b01a4706474e8d0b9c1d0d157c68d5896"
+    },
+    {
+      "start": "0x1188690",
+      "end": "0x11887e8",
+      "symbols": [
+        "CIS_TfrmIOPEScene.TfrmIOPEScene.cmbRampRateType1PropertiesChange"
+      ],
+      "bytes_sha256": "7a1d0a264d8ec33d4e38352650a8446fbcd6f57dd99e50cb1cb59d52dfbc3563",
+      "file": "01188690.asm",
+      "file_sha256": "cf7168b3f3cd31dc232f83f5fa77c7952957cfa0c95eb073a3d54b04d1aa71a6",
+      "name": "CIS_TfrmIOPEScene.TfrmIOPEScene.cmbRampRateType1PropertiesChange",
+      "sha256": "7a1d0a264d8ec33d4e38352650a8446fbcd6f57dd99e50cb1cb59d52dfbc3563"
+    },
+    {
+      "start": "0x11aa598",
+      "end": "0x11aa6ec",
+      "symbols": [
+        "CIS_TfrmEnvironment.TfrmEnvironment.HandleJoinGroupChange"
+      ],
+      "bytes_sha256": "02ec962c23e2ab7d682ae378e3f3398e47057af3ad925454d948e6c98850068a",
+      "file": "011aa598.asm",
+      "file_sha256": "ccb98116f8b9beadffb651a5fd562522c38e61f2d0e1ef13d6356c8f7f7e380b",
+      "name": "CIS_TfrmEnvironment.TfrmEnvironment.HandleJoinGroupChange",
+      "sha256": "02ec962c23e2ab7d682ae378e3f3398e47057af3ad925454d948e6c98850068a"
+    },
+    {
+      "start": "0xd577b0",
+      "end": "0xd57818",
+      "symbols": [
+        "CIS_TIOPEUnit.TIOPEUnit.HandleJoinApplicationChange"
+      ],
+      "bytes_sha256": "44e9cdb23b7b05c8362e0b3983836db1d7adece03c21eb06a5e11469d38dccfd",
+      "file": "00d577b0.asm",
+      "file_sha256": "5387aea27ccff25212301b2ddceb813157847a65d26b7ea5f23d8889b1dd02c0",
+      "name": "CIS_TIOPEUnit.TIOPEUnit.HandleJoinApplicationChange",
+      "sha256": "44e9cdb23b7b05c8362e0b3983836db1d7adece03c21eb06a5e11469d38dccfd"
+    },
+    {
+      "start": "0xf87fec",
+      "end": "0xf88388",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.InitialiseControls"
+      ],
+      "bytes_sha256": "0b2873a3677c29a4a7aca4b6256e2f1da991df2dd2ed60381b4d117279369481",
+      "file": "00f87fec.asm",
+      "file_sha256": "c875594a4fda5a286d57ed2675014086f423e84eeec9ab83d37592c9ea0e6204",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.InitialiseControls",
+      "sha256": "0b2873a3677c29a4a7aca4b6256e2f1da991df2dd2ed60381b4d117279369481"
+    },
+    {
+      "start": "0xf87c40",
+      "end": "0xf87e48",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.Execute"
+      ],
+      "bytes_sha256": "222c2fdb44fd951cdb66bb61d05afe818ab9e1ee4572b090137777bc7e416bee",
+      "file": "00f87c40.asm",
+      "file_sha256": "37cbae410b016e90e9a541e834c171cc23e89c94f2a3bad1fbe34226dc1af7f2",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.Execute",
+      "sha256": "222c2fdb44fd951cdb66bb61d05afe818ab9e1ee4572b090137777bc7e416bee"
+    },
+    {
+      "start": "0xf8c3ac",
+      "end": "0xf8c3c8",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.HandleTriggerGroupChange"
+      ],
+      "bytes_sha256": "1f80a25692233e383d851fbbde0b1c28fffb06e86843839d56e243cbc2e95904",
+      "file": "00f8c3ac.asm",
+      "file_sha256": "051e727af8334bb6ecd81ea4bc91afc03ee09908b9c714c970e31c077ae06aa5",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.HandleTriggerGroupChange",
+      "sha256": "1f80a25692233e383d851fbbde0b1c28fffb06e86843839d56e243cbc2e95904"
+    },
+    {
+      "start": "0xf8c3c8",
+      "end": "0xf8c538",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.HandleTriggerGroupChanged"
+      ],
+      "bytes_sha256": "2e34170033c17d93bc885957325934586c2a2019e58a08ef72fcd8dc4a4fde3b",
+      "file": "00f8c3c8.asm",
+      "file_sha256": "fc5f74166fe5f0a8da2b739b34828d99c48d0826889cf37f7c793a38d233910c",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.HandleTriggerGroupChanged",
+      "sha256": "2e34170033c17d93bc885957325934586c2a2019e58a08ef72fcd8dc4a4fde3b"
+    },
+    {
+      "start": "0xf88d50",
+      "end": "0xf88e9c",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.SetUnitScenes"
+      ],
+      "bytes_sha256": "b38f31ee39c395b64190feb9fa2e7846783ceca22d5f33ee4ce43767ffbd048d",
+      "file": "00f88d50.asm",
+      "file_sha256": "60235852ab57fb611e763a0aaf1634d897d01e8efb97faa8889a00a7a0976339",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SetUnitScenes",
+      "sha256": "b38f31ee39c395b64190feb9fa2e7846783ceca22d5f33ee4ce43767ffbd048d"
+    },
+    {
+      "start": "0xf883b4",
+      "end": "0xf883d8",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.GetTriggerGroup"
+      ],
+      "bytes_sha256": "137aa4bdd4f7554a0f46c5774bcb7852644a4b238ac3ebc5a37a0083b4e36c57",
+      "file": "00f883b4.asm",
+      "file_sha256": "b1ef497affd7c98e58b6d0fef59e13b48fd4d1283c09a9dd89df2c0f383b0eca",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.GetTriggerGroup",
+      "sha256": "137aa4bdd4f7554a0f46c5774bcb7852644a4b238ac3ebc5a37a0083b4e36c57"
+    },
+    {
+      "start": "0xf88654",
+      "end": "0xf887a8",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.PopulateAvailableActionSelectors"
+      ],
+      "bytes_sha256": "d2698530478fb6e04f3d1b0c88fab92eaeded88b2ee56c0bae40bde69b3e7c5b",
+      "file": "00f88654.asm",
+      "file_sha256": "639cca341d7b33893f7188af5e098ccc0f9496eca16ec1f3df0bdcddb938585b",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.PopulateAvailableActionSelectors",
+      "sha256": "d2698530478fb6e04f3d1b0c88fab92eaeded88b2ee56c0bae40bde69b3e7c5b"
+    },
+    {
+      "start": "0xf887a8",
+      "end": "0xf887c8",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.UpdateActionSelectors"
+      ],
+      "bytes_sha256": "f2503fe6ac89b65cc91f8d144ca23c09cb520bd6b01d5fd372149d0233fb80fb",
+      "file": "00f887a8.asm",
+      "file_sha256": "f3c5cd91f26ac057a863fa0cd01ba8de09ab3f2ab6e8bc6b9a13de658afc6b39",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.UpdateActionSelectors",
+      "sha256": "f2503fe6ac89b65cc91f8d144ca23c09cb520bd6b01d5fd372149d0233fb80fb"
+    },
+    {
+      "start": "0xf87e48",
+      "end": "0xf87f14",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.SetupActionSelectorCombo"
+      ],
+      "bytes_sha256": "9bdf56b1f236b196a0677f9b3f3e775273d2d65738f7be473938d7b0b5f73bcb",
+      "file": "00f87e48.asm",
+      "file_sha256": "4ec212ec97fb987c7618c897cb089a2f6888106512f1fa82b2a8d15f9e7941d5",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SetupActionSelectorCombo",
+      "sha256": "9bdf56b1f236b196a0677f9b3f3e775273d2d65738f7be473938d7b0b5f73bcb"
+    },
+    {
+      "start": "0xf87f14",
+      "end": "0xf87fec",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.SetupActionSelectorAllOffCombo"
+      ],
+      "bytes_sha256": "7f975e93192f3a2d8701dcd69ec1377e9a3197b93616825b7ebf60eb55368289",
+      "file": "00f87f14.asm",
+      "file_sha256": "76ab1dcb78d45234a390c4aae6b1405763134bfd4baf3ea6355d95400cbbecd5",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SetupActionSelectorAllOffCombo",
+      "sha256": "7f975e93192f3a2d8701dcd69ec1377e9a3197b93616825b7ebf60eb55368289"
+    },
+    {
+      "start": "0xf88f34",
+      "end": "0xf892d8",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.LoadNeoScenes"
+      ],
+      "bytes_sha256": "f5071af50aa2e81c382d6cea5fbefb8a3a49f25c9ed6e8d88b19cbe932b98b6e",
+      "file": "00f88f34.asm",
+      "file_sha256": "b37fa361a633a7ff8d3fd1deac3cbcc6bb64b492565d550f911ce56b1ab35285",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.LoadNeoScenes",
+      "sha256": "f5071af50aa2e81c382d6cea5fbefb8a3a49f25c9ed6e8d88b19cbe932b98b6e"
+    },
+    {
+      "start": "0xf89760",
+      "end": "0xf89b3c",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.SaveNeoScenes"
+      ],
+      "bytes_sha256": "d0db069e80d23a822e331bc8c28feecc75fc6950db3ed56903de08fb25bbc359",
+      "file": "00f89760.asm",
+      "file_sha256": "b2c742cd27cec1204dbb3d1936849dbd15b0ff5195230f232906653df5d3cac6",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SaveNeoScenes",
+      "sha256": "d0db069e80d23a822e331bc8c28feecc75fc6950db3ed56903de08fb25bbc359"
+    },
+    {
+      "start": "0xf88c3c",
+      "end": "0xf88d24",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.UpdateSelectedScene"
+      ],
+      "bytes_sha256": "e8e38f53fd7396bc1ff4656767c0a06caf46c4522092039c5c9584d6cf73d0b8",
+      "file": "00f88c3c.asm",
+      "file_sha256": "c9f7109d5b0d9dbef8c4fd836f5476275527c0637c16d262a5baca013644eaad",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.UpdateSelectedScene",
+      "sha256": "e8e38f53fd7396bc1ff4656767c0a06caf46c4522092039c5c9584d6cf73d0b8"
+    },
+    {
+      "start": "0xf88388",
+      "end": "0xf883b4",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.GetSelectedScene"
+      ],
+      "bytes_sha256": "aca08c2d7b823a62da122566d51e1a8ce816ecfd25da3fcefe66ba42d5d622ab",
+      "file": "00f88388.asm",
+      "file_sha256": "bc45d6c1161246e83a9f8a9ddb9bcddacc11f0e40161b127d1e684e68715f2a3",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.GetSelectedScene",
+      "sha256": "aca08c2d7b823a62da122566d51e1a8ce816ecfd25da3fcefe66ba42d5d622ab"
+    },
+    {
+      "start": "0xd155d8",
+      "end": "0xd155fc",
+      "symbols": [
+        "CIS_TScene.TScene.SetActionSelector"
+      ],
+      "bytes_sha256": "df978373053da3e5932e30c24549f250d7df2dd40649c60cae4c24db87571d99",
+      "file": "00d155d8.asm",
+      "file_sha256": "f520eabadc15aaa84e0dfc1ebde9bbe38574816793c71cf433a169498e2015d6",
+      "name": "CIS_TScene.TScene.SetActionSelector",
+      "sha256": "df978373053da3e5932e30c24549f250d7df2dd40649c60cae4c24db87571d99"
+    },
+    {
+      "start": "0xd155fc",
+      "end": "0xd15620",
+      "symbols": [
+        "CIS_TScene.TScene.SetActionSelectorAllOff"
+      ],
+      "bytes_sha256": "e12b3c5c191703aae1c587a8a616c995efbe12544497ea3e4c16c8b74117e448",
+      "file": "00d155fc.asm",
+      "file_sha256": "8d5ff179a3f100702c8ca0398f86aa0506983992f7567fa836273caf06c3d38c",
+      "name": "CIS_TScene.TScene.SetActionSelectorAllOff",
+      "sha256": "e12b3c5c191703aae1c587a8a616c995efbe12544497ea3e4c16c8b74117e448"
+    },
+    {
+      "start": "0xc9a40c",
+      "end": "0xc9a470",
+      "symbols": [
+        "CIS_TInputKeyExtensionNeo.TNeoScene.SetRampRate"
+      ],
+      "bytes_sha256": "d27fce5f1728bd716dc3661a880c6a70b69da53536a8c53360dcf21b652b9f6c",
+      "file": "00c9a40c.asm",
+      "file_sha256": "601db65a97e666c454f971b5167e4af619bb8bfe7a7c7a4592c12de23ff78909",
+      "name": "CIS_TInputKeyExtensionNeo.TNeoScene.SetRampRate",
+      "sha256": "d27fce5f1728bd716dc3661a880c6a70b69da53536a8c53360dcf21b652b9f6c"
+    },
+    {
+      "start": "0xf87bc0",
+      "end": "0xf87bec",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.HandleActionSelectorIncludeItem"
+      ],
+      "bytes_sha256": "f544bb244fc16df7ca67ae7e3bba6bc6d9a1be36df8dcc6f83d5befc87c69b77",
+      "file": "00f87bc0.asm",
+      "file_sha256": "38aec3000cad4b899851cddf3e571fac95c55a9bc525dbb0f578c611d58253de",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.HandleActionSelectorIncludeItem",
+      "sha256": "f544bb244fc16df7ca67ae7e3bba6bc6d9a1be36df8dcc6f83d5befc87c69b77"
+    },
+    {
+      "start": "0xf87aa8",
+      "end": "0xf87bc0",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.ActionSelectorUsedElsewhere"
+      ],
+      "bytes_sha256": "1f527dc87bf99dfd74b46ca85ff7dfc885462a94bc20aaaedc540cda4cebe5ba",
+      "file": "00f87aa8.asm",
+      "file_sha256": "22a97234aa41d04551f4ca455f7f5d8e51b7b2b591111deb3145ce17866ea726",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.ActionSelectorUsedElsewhere",
+      "sha256": "1f527dc87bf99dfd74b46ca85ff7dfc885462a94bc20aaaedc540cda4cebe5ba"
+    },
+    {
+      "start": "0xf8cae4",
+      "end": "0xf8cc18",
+      "symbols": [
+        "CIS_TfrmSceneManager.TScenesDataSource.SetValue"
+      ],
+      "bytes_sha256": "50a8086df8960b21a8230bc3f5d1748e4ea07bf9434a2ae50e9c9eed804478fe",
+      "file": "00f8cae4.asm",
+      "file_sha256": "dd85fc8202deea832ef340339d9e5bb31596e97a2ef7f4ceb6b7b2b3f5db1bba",
+      "name": "CIS_TfrmSceneManager.TScenesDataSource.SetValue",
+      "sha256": "50a8086df8960b21a8230bc3f5d1748e4ea07bf9434a2ae50e9c9eed804478fe"
+    },
+    {
+      "start": "0xf896c8",
+      "end": "0xf89760",
+      "symbols": [
+        "CIS_TfrmSceneManager.AddCommands"
+      ],
+      "bytes_sha256": "37353913e2db2f472b941c661665eac220661a502bc9415ff1804d7147d64ad8",
+      "file": "00f896c8.asm",
+      "file_sha256": "971f32547a21312b549965daf2566c56a8047bb6ce399d946fa4e0f1b230abf3",
+      "name": "CIS_TfrmSceneManager.AddCommands",
+      "sha256": "37353913e2db2f472b941c661665eac220661a502bc9415ff1804d7147d64ad8"
+    },
+    {
+      "start": "0xc1052c",
+      "end": "0xc106b4",
+      "symbols": [
+        "CIS_FlashGUI.PrepareFlashCxLevelComboBox"
+      ],
+      "bytes_sha256": "5cd14ed4d018842a8712e0d25e57f28a43fed2db671101db9258183f95ab97a2",
+      "file": "00c1052c.asm",
+      "file_sha256": "cd1828dfd5395b4c62598f722348706ff19624eb76aa5a7a212e13f71bf9cb88",
+      "name": "CIS_FlashGUI.PrepareFlashCxLevelComboBox",
+      "sha256": "5cd14ed4d018842a8712e0d25e57f28a43fed2db671101db9258183f95ab97a2"
+    },
+    {
+      "start": "0x84f528",
+      "end": "0x84f57c",
+      "symbols": [
+        "CIS_Handles.TFlashElementController.SetAsElement"
+      ],
+      "bytes_sha256": "abcc396fa6d4502a64c1a91b6df22ea4b8a970f91bd7681934562e4894840191",
+      "file": "0084f528.asm",
+      "file_sha256": "001777f4ee0cacf626d7fe9e4e6be5194881c2518185578e422e80838f4833f3",
+      "name": "CIS_Handles.TFlashElementController.SetAsElement",
+      "sha256": "abcc396fa6d4502a64c1a91b6df22ea4b8a970f91bd7681934562e4894840191"
+    },
+    {
+      "start": "0xf88508",
+      "end": "0xf885b4",
+      "symbols": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.SetSelectedScene"
+      ],
+      "bytes_sha256": "fc85cc4c3ba66e21d9d29ad4df2da43be699367dfbbdadd637fafd43e57ee9e1",
+      "file": "00f88508.asm",
+      "file_sha256": "236cf1c421db50026b62f8f63faa43f5c3614b46e7c67bd1b5944cd1c34b0152",
+      "name": "CIS_TfrmSceneManager.TfrmSceneManager.SetSelectedScene",
+      "sha256": "fc85cc4c3ba66e21d9d29ad4df2da43be699367dfbbdadd637fafd43e57ee9e1"
+    },
+    {
+      "start": "0x84f484",
+      "end": "0x84f504",
+      "symbols": [
+        "CIS_Handles.TFlashElementController.Apply"
+      ],
+      "bytes_sha256": "485c1e1be4392491bb05156026e168e5c269f8f84c87575008a641f88c0a25db",
+      "file": "0084f484.asm",
+      "file_sha256": "07c5f588cda1ef483b8b9ba4f80000fc9705bf3fcb54febe5b6f50c913935782",
+      "name": "CIS_Handles.TFlashElementController.Apply",
+      "sha256": "485c1e1be4392491bb05156026e168e5c269f8f84c87575008a641f88c0a25db"
+    },
+    {
+      "start": "0xbbbee8",
+      "end": "0xbbbff4",
+      "symbols": [
+        "CIS_TFlashCxComboBox.TFlashCxComboBox.DoIndexChange"
+      ],
+      "bytes_sha256": "6b6afbec815029ae3ccf3dcbdebfb20549a7c83c6948396f97feebc35dd72ea6",
+      "file": "00bbbee8.asm",
+      "file_sha256": "975ed7f3a69416ce04241f7daded79fb769ae28506891f67f5cbd5bda5485f3c",
+      "name": "CIS_TFlashCxComboBox.TFlashCxComboBox.DoIndexChange",
+      "sha256": "6b6afbec815029ae3ccf3dcbdebfb20549a7c83c6948396f97feebc35dd72ea6"
+    },
+    {
+      "start": "0xbbc158",
+      "end": "0xbbc1c0",
+      "symbols": [
+        "CIS_TFlashCxComboBox.TFlashCxComboBox.HandleComboChange"
+      ],
+      "bytes_sha256": "12204f0e3aa43f1ab662ceca9bdc5923922f4c63865191d0da33639a03e9fd03",
+      "file": "00bbc158.asm",
+      "file_sha256": "c570c1ab6490f61a2e74bfd625cf9e22d26ef8eac74dd728b1a1e7fd406d8e61",
+      "name": "CIS_TFlashCxComboBox.TFlashCxComboBox.HandleComboChange",
+      "sha256": "12204f0e3aa43f1ab662ceca9bdc5923922f4c63865191d0da33639a03e9fd03"
+    },
+    {
+      "start": "0xbbc754",
+      "end": "0xbbc804",
+      "symbols": [
+        "CIS_TFlashCxComboBox.TFlashCxComboBox.RenderedValueChange"
+      ],
+      "bytes_sha256": "0b4c731958a6111a7e9ddb939e799c9fb39616cfcca4adbcc5f474355b1fda96",
+      "file": "00bbc754.asm",
+      "file_sha256": "3b477849978e804f3e960db6a3524a940804fae639bb3a5b66fc95e6439aadce",
+      "name": "CIS_TFlashCxComboBox.TFlashCxComboBox.RenderedValueChange",
+      "sha256": "0b4c731958a6111a7e9ddb939e799c9fb39616cfcca4adbcc5f474355b1fda96"
+    },
+    {
+      "start": "0xbbc0ac",
+      "end": "0xbbc108",
+      "symbols": [
+        "CIS_TFlashCxComboBox.TFlashCxComboBox.DoOnCanChangeElement"
+      ],
+      "bytes_sha256": "6fbeb9b167dfd63b2583cb806ff4f4fa2050d81edbabf459c6376fca17c964ac",
+      "file": "00bbc0ac.asm",
+      "file_sha256": "6dd34a6e954fec061ccfc0aceca4e5ba834dfa0abf81486c7322b351d9e2975c",
+      "name": "CIS_TFlashCxComboBox.TFlashCxComboBox.DoOnCanChangeElement",
+      "sha256": "6fbeb9b167dfd63b2583cb806ff4f4fa2050d81edbabf459c6376fca17c964ac"
+    },
+    {
+      "start": "0x84deb0",
+      "end": "0x84df14",
+      "symbols": [
+        "CIS_Handles.TFlashExpressionController.SetFromElement"
+      ],
+      "bytes_sha256": "b2258e55371e1bcad35f9ad975a2f418fe1b850611ab1f486d125ec6ca839966",
+      "file": "0084deb0.asm",
+      "file_sha256": "6c92f49d0accbf80597f05fae7b45b646e46cb75ac24408ffb5bdb5d31580557",
+      "name": "CIS_Handles.TFlashExpressionController.SetFromElement",
+      "sha256": "b2258e55371e1bcad35f9ad975a2f418fe1b850611ab1f486d125ec6ca839966"
+    }
+  ],
+  "decoded_literals": [
+    {
+      "address": "0xf89b18",
+      "utf16": "SceneTriggerGroup"
+    },
+    {
+      "address": "0xf89250",
+      "utf16": "SceneTriggerGroup"
+    },
+    {
+      "address": "0x12dc798",
+      "utf16": "0x9d"
+    },
+    {
+      "address": "0x12dc8d8",
+      "utf16": "SceneTablePointer"
+    },
+    {
+      "address": "0xf87ef4",
+      "utf16": "ActionSelector"
+    },
+    {
+      "address": "0xf87fc0",
+      "utf16": "ActionSelectorAllOff"
+    }
+  ],
+  "schema": {
+    "SceneTriggerGroup": {
+      "address": 103,
+      "count": 1
+    },
+    "SceneIndex": {
+      "address": 162,
+      "count": 4,
+      "bit_size": 3,
+      "bit_address": 0
+    },
+    "SceneCommandRampRate": {
+      "address": 162,
+      "count": 4,
+      "bit_size": 4,
+      "bit_address": 4
+    },
+    "ActionSelector": {
+      "address": 166,
+      "count": 4
+    },
+    "ActionSelectorAllOff": {
+      "address": 170,
+      "count": 4
+    },
+    "SceneTablePointer": {
+      "address": 174,
+      "count": 4
+    },
+    "SceneTable": {
+      "address": 178,
+      "count": 64
+    }
+  },
+  "resource": {
+    "resource_name": "TFRMSCENEMANAGER",
+    "sha256": "18d3e7e79180f53c462f37c84d9080ebfb0e76f2492c2db07dbf5d54a18a0c8d",
+    "rva": "0x12ec724",
+    "size": 137279
+  },
+  "profile_unit_specs": [
+    {
+      "filename": "IOPE1R1.xml",
+      "sha256": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f"
+    },
+    {
+      "filename": "IOPE2R2.xml",
+      "sha256": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803"
+    },
+    {
+      "filename": "IOPE2C4.xml",
+      "sha256": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+    }
+  ],
+  "whole_scene_manager_save": false,
+  "component_contract": {
+    "profiles": [
+      "IOPE1R1",
+      "IOPE2R2",
+      "IOPE2C4"
+    ],
+    "firmware": "1.0.00..1.2.99",
+    "cache_format": "cbus-iope-scene-selector-groups-v1",
+    "selection": "exactly one existing normal_selector or all_off_selector, scene1..4",
+    "trigger_group": "fixed existing application202 group",
+    "retained_actions": "eight distinct addresses1..254 all positively resolved in same group",
+    "retained_graph": "canonical index0..3,pointersB2 C2 D2 E2,four scenes with eight distinct non-null primaryLighting group commands each",
+    "preserved": "scene packed content/pointers/index/ramp/trigger and every parameter outside selected header array",
+    "excluded": [
+      "Trigger group change",
+      "Object creation",
+      "Normal or alloff unassigned selector255",
+      "Whole SceneManager accepted save",
+      "Whole IOPE SaveScenes",
+      "Input ramp/microfunction edits",
+      "Physical operations"
+    ]
+  },
+  "synthetic_vector": {
+    "applications": [
+      56,
+      57
+    ],
+    "trigger": 7,
+    "index": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "ramps": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "normal_before": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "alloff_before": [
+      20,
+      21,
+      22,
+      23
+    ],
+    "pointer": [
+      178,
+      194,
+      210,
+      226
+    ],
+    "table": [
+      1,
+      128,
+      2,
+      128,
+      3,
+      128,
+      4,
+      128,
+      5,
+      128,
+      6,
+      128,
+      7,
+      128,
+      8,
+      128,
+      9,
+      128,
+      10,
+      128,
+      11,
+      128,
+      12,
+      128,
+      13,
+      128,
+      14,
+      128,
+      15,
+      128,
+      16,
+      128,
+      17,
+      128,
+      18,
+      128,
+      19,
+      128,
+      20,
+      128,
+      21,
+      128,
+      22,
+      128,
+      23,
+      128,
+      24,
+      128,
+      25,
+      128,
+      26,
+      128,
+      27,
+      128,
+      28,
+      128,
+      29,
+      128,
+      30,
+      128,
+      31,
+      128,
+      32,
+      128
+    ],
+    "selection": {
+      "scene": 2,
+      "normal_selector": 30
+    },
+    "normal_after": [
+      10,
+      30,
+      12,
+      13
+    ],
+    "changed_byte": "0xA7",
+    "device_verified": false
+  },
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMSCENEMANAGER": "18d3e7e79180f53c462f37c84d9080ebfb0e76f2492c2db07dbf5d54a18a0c8d"
+  },
+  "strings": [
+    {
+      "start": "0xf89b18",
+      "size": 34,
+      "value": "SceneTriggerGroup",
+      "sha256": "751d02a4a1389dc6f228bae180fbd81168874dcf9332c60b5ea4559c7ccc52b2"
+    },
+    {
+      "start": "0xf89250",
+      "size": 34,
+      "value": "SceneTriggerGroup",
+      "sha256": "751d02a4a1389dc6f228bae180fbd81168874dcf9332c60b5ea4559c7ccc52b2"
+    },
+    {
+      "start": "0x12dc798",
+      "size": 8,
+      "value": "0x9d",
+      "sha256": "c44d45a028a45cda21e56b659b1f5dad0fed616eb7ea2a7b1204e596ff53bd70"
+    },
+    {
+      "start": "0x12dc8d8",
+      "size": 34,
+      "value": "SceneTablePointer",
+      "sha256": "26223f950591d2166b7480b4ab11e48b63b8f07e85e257d25a4836488d390e35"
+    },
+    {
+      "start": "0xf87ef4",
+      "size": 28,
+      "value": "ActionSelector",
+      "sha256": "6ee2f8ec7ea7ca219f94d95ba407c34429ea509e6a59957e3877c06db71f1db3"
+    },
+    {
+      "start": "0xf87fc0",
+      "size": 40,
+      "value": "ActionSelectorAllOff",
+      "sha256": "29d493b027475c9ec483aefd3a19bce147203968c039f91eba8bf9c9562c303e"
+    }
+  ]
+}

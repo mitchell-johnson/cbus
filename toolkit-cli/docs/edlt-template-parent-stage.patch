@@ -1,0 +1,25 @@
+# Historical proposed registration patch; adapted and implemented in the integrated root.
+# Provides local interfaces only; template Apply remains refused.
+diff --git a/toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py b/toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py
+--- a/toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py
++++ b/toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py
+@@ -517,7 +517,17 @@ class EdltParentTransaction:
+     def snapshot(self, values):
+         return self.common.snapshot(values)
+-
++
++    def template_lifecycle_stager(self):
++        """Create a separate local stage; it is not a parent Apply operation.
++
++        Caller supplies the exact post-BeforeChange token snapshot and cache.
++        The returned single-use adapter owns its receipt validation/cancel.
++        """
++        from .edlt_template_lifecycle_stage import EdltTemplateLifecycleStage
++        spec, catalog_number, firmware = self._profile
++        return EdltTemplateLifecycleStage(spec, catalog_number=catalog_number, firmware=firmware)
++
+     def _editor(self, kind):
+         """Construct an extended panel editor only when its operation is used.
+-
++
+         Older retained synthetic fixtures intentionally contain only the

@@ -1,0 +1,1157 @@
+{
+  "format": "cbus-edlt-template-original-v1",
+  "captured_date": "2026-09-30",
+  "scope": "Unchanged PPHelper static CRC helpers; framework XML/Application operation probes, no original form execution",
+  "original_static_helpers_executed": true,
+  "original_template_dialog_executed": false,
+  "original_parent_lifecycle_executed": false,
+  "physical_io": false,
+  "network_denied": true,
+  "source_proofs": [
+    {
+      "assembly": "eDLT.dll",
+      "assembly_sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "method": "TemplatesDialog::.ctor",
+      "metadata_token": "0x60001e5",
+      "method_rva": "0xefb8",
+      "method_file_offset": "0xd1b8",
+      "il_bytes_file_offset": "0xd1c4",
+      "il_size": 96,
+      "il_sha256": "69e8c63e746d2955f7aa3486297c7580850367bc773e9c59d18c7a5e6168f5ad",
+      "monodis_line": 23716
+    },
+    {
+      "assembly": "eDLT.dll",
+      "assembly_sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "method": "TemplatesDialog::BtnSaveClick",
+      "metadata_token": "0x60001e6",
+      "method_rva": "0xf024",
+      "method_file_offset": "0xd224",
+      "il_bytes_file_offset": "0xd230",
+      "il_size": 748,
+      "il_sha256": "325f3da8efda4cbf8a4f56741e37e71c571547cd3bfd2b0414b3d786a6eb3e2a",
+      "monodis_line": 23771
+    },
+    {
+      "assembly": "eDLT.dll",
+      "assembly_sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "method": "TemplatesDialog::BtnLoadClick",
+      "metadata_token": "0x60001e7",
+      "method_rva": "0xf368",
+      "method_file_offset": "0xd568",
+      "il_bytes_file_offset": "0xd574",
+      "il_size": 1004,
+      "il_sha256": "ebacb0d4bf21135490c713393c15de72acc8e06979ece67366e64be5c377d63d",
+      "monodis_line": 24034
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "assembly_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "method": "PPHelper::CalcTemplateCrc",
+      "metadata_token": "0x600066e",
+      "method_rva": "0x18fd0",
+      "method_file_offset": "0x171d0",
+      "il_bytes_file_offset": "0x171dc",
+      "il_size": 245,
+      "il_sha256": "fa1264636fafa5bb7062cf8ceadc3da7a2340f27e0474169e52df7cbdaf58c64",
+      "monodis_line": 57605
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "assembly_sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "method": "PPHelper::CalculateCrcForTemplate",
+      "metadata_token": "0x600066f",
+      "method_rva": "0x190d4",
+      "method_file_offset": "0x172d4",
+      "il_bytes_file_offset": "0x172e0",
+      "il_size": 106,
+      "il_sha256": "906c4e3e493f55ce91b1e439dd9c231987e564a84a3e27f5d1fd9f4f06d3d9d1",
+      "monodis_line": 57755
+    }
+  ],
+  "runtime_pins": {
+    "edlt_template_original.py": "b987f3ff6b6d097ceb76d047b850940ee65b87950f5f8b3e63dadcd1910013f8",
+    "edlt_template_original_probe.cs": "503bfa1d29b992492161b468edf1b40292170be2bf419ea07273a356174b46a3",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771",
+    "mscorlib.dll": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4"
+  },
+  "runtime_method_receipts": [
+    "method\tCalcTemplateCrc\t0x0600066e\tfa1264636fafa5bb7062cf8ceadc3da7a2340f27e0474169e52df7cbdaf58c64",
+    "method\tCalculateCrcForTemplate\t0x0600066f\t906c4e3e493f55ce91b1e439dd9c231987e564a84a3e27f5d1fd9f4f06d3d9d1"
+  ],
+  "unchanged_inputs": true,
+  "run_stdout_sha256": "be306fafa57820076f454b75a940ef61a373178e02cbe0f7adaab58f11d2d223",
+  "commands": [
+    {
+      "stage": "compile",
+      "returncode": 0,
+      "network_denied": true
+    },
+    {
+      "stage": "run",
+      "returncode": 0,
+      "network_denied": true
+    }
+  ],
+  "case_count": 73,
+  "cases": [
+    {
+      "id": "empty",
+      "kind": "crc",
+      "values": [],
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "empty-value",
+      "kind": "crc",
+      "values": [
+        ""
+      ],
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "space-only",
+      "kind": "crc",
+      "values": [
+        " \t\r\n"
+      ],
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "single-A",
+      "kind": "crc",
+      "values": [
+        "A"
+      ],
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "two-AB",
+      "kind": "crc",
+      "values": [
+        "AB"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "two-AC",
+      "kind": "crc",
+      "values": [
+        "AC"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "split-AB",
+      "kind": "crc",
+      "values": [
+        "A",
+        "B"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "three-ABC",
+      "kind": "crc",
+      "values": [
+        "ABC"
+      ],
+      "observations": [
+        {
+          "value": 2353
+        }
+      ]
+    },
+    {
+      "id": "trim-each",
+      "kind": "crc",
+      "values": [
+        "  A ",
+        "\tBC\r\n"
+      ],
+      "observations": [
+        {
+          "value": 2353
+        }
+      ]
+    },
+    {
+      "id": "hex",
+      "kind": "crc",
+      "values": [
+        "0x30 0xca"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "decimal-equivalent",
+      "kind": "crc",
+      "values": [
+        "48 202"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "leading-hex-space",
+      "kind": "crc",
+      "values": [
+        " 0x30 0xca"
+      ],
+      "observations": [
+        {
+          "value": 11695
+        }
+      ]
+    },
+    {
+      "id": "uppercase-prefix",
+      "kind": "crc",
+      "values": [
+        "0X30 0xca"
+      ],
+      "observations": [
+        {
+          "value": 60521
+        }
+      ]
+    },
+    {
+      "id": "hex-double-space",
+      "kind": "crc",
+      "values": [
+        "0x30  0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.ArgumentOutOfRangeException"
+        }
+      ]
+    },
+    {
+      "id": "hex-trailing-space",
+      "kind": "crc",
+      "values": [
+        "0x30 "
+      ],
+      "observations": [
+        {
+          "error": "System.ArgumentOutOfRangeException"
+        }
+      ]
+    },
+    {
+      "id": "hex-tab",
+      "kind": "crc",
+      "values": [
+        "0x30\t0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-bare-following",
+      "kind": "crc",
+      "values": [
+        "0x30 ca"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "hex-plus",
+      "kind": "crc",
+      "values": [
+        "0x30 +CA"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "hex-negative",
+      "kind": "crc",
+      "values": [
+        "0x30 -1"
+      ],
+      "observations": [
+        {
+          "error": "System.ArgumentException"
+        }
+      ]
+    },
+    {
+      "id": "hex-signed-max",
+      "kind": "crc",
+      "values": [
+        "0x7fffffff"
+      ],
+      "observations": [
+        {
+          "value": 54479
+        }
+      ]
+    },
+    {
+      "id": "hex-signed-min",
+      "kind": "crc",
+      "values": [
+        "0x80000000"
+      ],
+      "observations": [
+        {
+          "value": 27379
+        }
+      ]
+    },
+    {
+      "id": "hex-negative-one",
+      "kind": "crc",
+      "values": [
+        "0xffffffff"
+      ],
+      "observations": [
+        {
+          "value": 1166
+        }
+      ]
+    },
+    {
+      "id": "signed-min-decimal",
+      "kind": "crc",
+      "values": [
+        "-2147483648"
+      ],
+      "observations": [
+        {
+          "value": 27379
+        }
+      ]
+    },
+    {
+      "id": "negative-one-decimal",
+      "kind": "crc",
+      "values": [
+        "-1"
+      ],
+      "observations": [
+        {
+          "value": 1166
+        }
+      ]
+    },
+    {
+      "id": "hex-overflow",
+      "kind": "crc",
+      "values": [
+        "0x100000000"
+      ],
+      "observations": [
+        {
+          "error": "System.OverflowException"
+        }
+      ]
+    },
+    {
+      "id": "hex-empty",
+      "kind": "crc",
+      "values": [
+        "0x"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-leading-nul",
+      "kind": "crc",
+      "values": [
+        "\u00000x30 0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-middle-nul",
+      "kind": "crc",
+      "values": [
+        "0\u0000x30 0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-zero-width-space",
+      "kind": "crc",
+      "values": [
+        "\u200b0x30 0xca"
+      ],
+      "observations": [
+        {
+          "value": 65036
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-middle-zwj",
+      "kind": "crc",
+      "values": [
+        "0\u200dx30 0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-middle-zwnj",
+      "kind": "crc",
+      "values": [
+        "0\u200cx30 0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "hex-prefix-soft-hyphen",
+      "kind": "crc",
+      "values": [
+        "\u00ad0x30 0xca"
+      ],
+      "observations": [
+        {
+          "value": 29157
+        }
+      ]
+    },
+    {
+      "id": "hex-following-plus-prefix",
+      "kind": "crc",
+      "values": [
+        "0x30 +0xCA"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "hex-following-upper-prefix",
+      "kind": "crc",
+      "values": [
+        "0x30 0XCA"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "hex-following-plus-upper-prefix",
+      "kind": "crc",
+      "values": [
+        "0x30 +0XCA"
+      ],
+      "observations": [
+        {
+          "value": 53109
+        }
+      ]
+    },
+    {
+      "id": "hex-token-trailing-nul",
+      "kind": "crc",
+      "values": [
+        "0x30\u0000 0xca"
+      ],
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "unicode-low-byte-A",
+      "kind": "crc",
+      "values": [
+        "\u0141B"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "unicode-A",
+      "kind": "crc",
+      "values": [
+        "AB"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "unicode-surrogate",
+      "kind": "crc",
+      "values": [
+        "\ud83d\ude00Z"
+      ],
+      "observations": [
+        {
+          "value": 18221
+        }
+      ]
+    },
+    {
+      "id": "surrogate-low-equivalent",
+      "kind": "crc",
+      "values": [
+        "=\u0000Z"
+      ],
+      "observations": [
+        {
+          "value": 18221
+        }
+      ]
+    },
+    {
+      "id": "unicode-trim-nbsp",
+      "kind": "crc",
+      "values": [
+        "\u00a0AB\u00a0"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "unicode-trim-next-line",
+      "kind": "crc",
+      "values": [
+        "\u0085AB\u0085"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "unicode-no-trim-python-controls",
+      "kind": "crc",
+      "values": [
+        "\u001cAB\u001c"
+      ],
+      "observations": [
+        {
+          "value": 59333
+        }
+      ]
+    },
+    {
+      "id": "unicode-trim-em-space",
+      "kind": "crc",
+      "values": [
+        "\u2003AB\u2003"
+      ],
+      "observations": [
+        {
+          "value": 21019
+        }
+      ]
+    },
+    {
+      "id": "unicode-no-trim-zero-width",
+      "kind": "crc",
+      "values": [
+        "\u200bAB\u200b"
+      ],
+      "observations": [
+        {
+          "value": 61013
+        }
+      ]
+    },
+    {
+      "id": "xml-entity-string",
+      "kind": "crc",
+      "values": [
+        "A&amp;B"
+      ],
+      "observations": [
+        {
+          "value": 23507
+        }
+      ]
+    },
+    {
+      "id": "ordered-a",
+      "kind": "crc",
+      "values": [
+        "48 202",
+        "5.5.00",
+        "Synthetic",
+        "KEYGL5",
+        "0x01 0xff"
+      ],
+      "observations": [
+        {
+          "value": 10852
+        }
+      ]
+    },
+    {
+      "id": "ordered-b",
+      "kind": "crc",
+      "values": [
+        "48 202",
+        "5.5.00",
+        "KEYGL5",
+        "Synthetic",
+        "0x01 0xff"
+      ],
+      "observations": [
+        {
+          "value": 39154
+        }
+      ]
+    },
+    {
+      "id": "buffer-exact",
+      "kind": "crc",
+      "observations": [
+        {
+          "value": 21019
+        }
+      ],
+      "values_repeated": [
+        {
+          "text": "A",
+          "count": 65536
+        }
+      ]
+    },
+    {
+      "id": "buffer-overflow",
+      "kind": "crc",
+      "observations": [
+        {
+          "error": "System.IndexOutOfRangeException"
+        }
+      ],
+      "values_repeated": [
+        {
+          "text": "A",
+          "count": 65537
+        }
+      ]
+    },
+    {
+      "id": "raw-full",
+      "kind": "raw",
+      "bytes": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "start": 0,
+      "length": 4,
+      "observations": [
+        {
+          "value": 29031
+        }
+      ]
+    },
+    {
+      "id": "raw-start-one",
+      "kind": "raw",
+      "bytes": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "start": 1,
+      "length": 4,
+      "observations": [
+        {
+          "value": 51405
+        }
+      ]
+    },
+    {
+      "id": "raw-start-one-len-two",
+      "kind": "raw",
+      "bytes": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "start": 1,
+      "length": 2,
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "raw-zero",
+      "kind": "raw",
+      "bytes": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "start": 0,
+      "length": 0,
+      "observations": [
+        {
+          "value": 65261
+        }
+      ]
+    },
+    {
+      "id": "app-normal",
+      "kind": "application",
+      "value": "48 202",
+      "observations": [
+        {
+          "value": "0x30 0xca"
+        }
+      ]
+    },
+    {
+      "id": "app-empty",
+      "kind": "application",
+      "value": "",
+      "observations": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "app-repeated-space",
+      "kind": "application",
+      "value": "48  202",
+      "observations": [
+        {
+          "error": "System.ArgumentOutOfRangeException"
+        }
+      ]
+    },
+    {
+      "id": "app-leading-space",
+      "kind": "application",
+      "value": " 48 202",
+      "observations": [
+        {
+          "error": "System.ArgumentOutOfRangeException"
+        }
+      ]
+    },
+    {
+      "id": "app-trailing-space",
+      "kind": "application",
+      "value": "48 202 ",
+      "observations": [
+        {
+          "error": "System.ArgumentOutOfRangeException"
+        }
+      ]
+    },
+    {
+      "id": "app-tab",
+      "kind": "application",
+      "value": "48\t202",
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "app-negative",
+      "kind": "application",
+      "value": "-1 2147483647",
+      "observations": [
+        {
+          "value": "0xffffffff 0x7fffffff"
+        }
+      ]
+    },
+    {
+      "id": "app-plus",
+      "kind": "application",
+      "value": "+48 202",
+      "observations": [
+        {
+          "value": "0x30 0xca"
+        }
+      ]
+    },
+    {
+      "id": "app-hex",
+      "kind": "application",
+      "value": "0x30 202",
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "app-overflow",
+      "kind": "application",
+      "value": "2147483648",
+      "observations": [
+        {
+          "error": "System.OverflowException"
+        }
+      ]
+    },
+    {
+      "id": "app-newline",
+      "kind": "application",
+      "value": "48\n202",
+      "observations": [
+        {
+          "error": "System.FormatException"
+        }
+      ]
+    },
+    {
+      "id": "xml-inner",
+      "kind": "xml",
+      "value": "<UnitTemplate>\n<X>A&amp;B&#x41;&quot;&apos;</X><Y><nested a=\"&quot;\"/></Y><Z><![CDATA[A&B]]></Z><!--comment--><?test value?><Q> \n </Q></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "A&amp;BA\"'"
+        },
+        {
+          "node_type": "Element",
+          "name": "Y",
+          "inner_xml": "<nested a=\"&quot;\" />"
+        },
+        {
+          "node_type": "Element",
+          "name": "Z",
+          "inner_xml": "<![CDATA[A&B]]>"
+        },
+        {
+          "node_type": "Comment",
+          "name": "#comment",
+          "inner_xml": ""
+        },
+        {
+          "node_type": "ProcessingInstruction",
+          "name": "test",
+          "inner_xml": ""
+        },
+        {
+          "node_type": "Element",
+          "name": "Q",
+          "inner_xml": ""
+        }
+      ]
+    },
+    {
+      "id": "xml-preserve",
+      "kind": "xml",
+      "value": "<UnitTemplate xml:space=\"preserve\">\n<X> A </X>\n</UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "SignificantWhitespace",
+          "name": "#significant-whitespace",
+          "inner_xml": ""
+        },
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": " A "
+        },
+        {
+          "node_type": "SignificantWhitespace",
+          "name": "#significant-whitespace",
+          "inner_xml": ""
+        }
+      ]
+    },
+    {
+      "id": "xml-line-endings",
+      "kind": "xml",
+      "value": "<UnitTemplate><X>A\r\nB\rC\nD&#13;E&#10;F</X><Y>a&gt;b > c</Y></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "A\r\nB\rC\nD\rE\nF"
+        },
+        {
+          "node_type": "Element",
+          "name": "Y",
+          "inner_xml": "a&gt;b &gt; c"
+        }
+      ]
+    },
+    {
+      "id": "xml-duplicate-headers",
+      "kind": "xml",
+      "value": "<UnitTemplate><UnitType>WRONG</UnitType><UnitType>KEYGL5</UnitType><FirmwareVersion> </FirmwareVersion><CRC>65261</CRC><UnitType>OTHER</UnitType></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "WRONG"
+        },
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "KEYGL5"
+        },
+        {
+          "node_type": "Element",
+          "name": "FirmwareVersion",
+          "inner_xml": ""
+        },
+        {
+          "node_type": "Element",
+          "name": "CRC",
+          "inner_xml": "65261"
+        },
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "OTHER"
+        },
+        {
+          "post_first_crc_checksum": 7404
+        }
+      ]
+    },
+    {
+      "id": "xml-entity-dtd",
+      "kind": "xml",
+      "value": "<!DOCTYPE UnitTemplate [<!ENTITY x \"hello\">]><UnitTemplate><X>&x;</X></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "&x;"
+        }
+      ]
+    },
+    {
+      "id": "xml-scalar-template",
+      "kind": "xml",
+      "value": "<UnitTemplate>\r\n<Description>Synthetic</Description><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><CRC>0</CRC><Application>48 202</Application><FirmwareVersion>5.5.00</FirmwareVersion><UnitName>Synthetic</UnitName><UnitType>KEYGL5</UnitType><X>0x01 0xff</X></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "Description",
+          "inner_xml": "Synthetic"
+        },
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "KEYGL5"
+        },
+        {
+          "node_type": "Element",
+          "name": "FirmwareVersion",
+          "inner_xml": "5.5.00"
+        },
+        {
+          "node_type": "Element",
+          "name": "CRC",
+          "inner_xml": "0"
+        },
+        {
+          "node_type": "Element",
+          "name": "Application",
+          "inner_xml": "48 202"
+        },
+        {
+          "node_type": "Element",
+          "name": "FirmwareVersion",
+          "inner_xml": "5.5.00"
+        },
+        {
+          "node_type": "Element",
+          "name": "UnitName",
+          "inner_xml": "Synthetic"
+        },
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "KEYGL5"
+        },
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "0x01 0xff"
+        },
+        {
+          "post_first_crc_checksum": 10852
+        }
+      ]
+    },
+    {
+      "id": "xml-scalar-entities",
+      "kind": "xml",
+      "value": "<UnitTemplate><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><CRC>0</CRC><X>A&amp;B&#x41;&quot;&apos;&gt;</X><Y>A\r\nB\rC\nD&#13;E&#10;F</Y><Z>\u0141\ud83d\ude00</Z></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "KEYGL5"
+        },
+        {
+          "node_type": "Element",
+          "name": "FirmwareVersion",
+          "inner_xml": "5.5.00"
+        },
+        {
+          "node_type": "Element",
+          "name": "CRC",
+          "inner_xml": "0"
+        },
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "A&amp;BA\"'&gt;"
+        },
+        {
+          "node_type": "Element",
+          "name": "Y",
+          "inner_xml": "A\r\nB\rC\nD\rE\nF"
+        },
+        {
+          "node_type": "Element",
+          "name": "Z",
+          "inner_xml": "\u0141\ud83d\ude00"
+        },
+        {
+          "post_first_crc_checksum": 26770
+        }
+      ]
+    },
+    {
+      "id": "xml-second-crc",
+      "kind": "xml",
+      "value": "<UnitTemplate><UnitType>KEYGL5</UnitType><FirmwareVersion>5.5.00</FirmwareVersion><CRC>0</CRC><X>A</X><CRC>123</CRC><X>B</X></UnitTemplate>",
+      "observations": [
+        {
+          "node_type": "Element",
+          "name": "UnitType",
+          "inner_xml": "KEYGL5"
+        },
+        {
+          "node_type": "Element",
+          "name": "FirmwareVersion",
+          "inner_xml": "5.5.00"
+        },
+        {
+          "node_type": "Element",
+          "name": "CRC",
+          "inner_xml": "0"
+        },
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "A"
+        },
+        {
+          "node_type": "Element",
+          "name": "CRC",
+          "inner_xml": "123"
+        },
+        {
+          "node_type": "Element",
+          "name": "X",
+          "inner_xml": "B"
+        },
+        {
+          "post_first_crc_checksum": 61821
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Mono64 on macOS executes unchanged original helpers; Windows CLR is not executed.",
+    "XML cases execute the exact framework API sequence independently; they do not execute TemplatesDialog.",
+    "Application conversion cases execute exact framework operations independently; they do not execute TemplatesDialog.",
+    "No form/reset/model mutation or persistence is executed."
+  ]
+}

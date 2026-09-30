@@ -1,0 +1,675 @@
+{
+  "format": "cbus-iope-join-recovery-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754",
+  "original_execution": false,
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMIOPEPOWERFAILURE": "2afac217f4748f6c382b5109b0ba06f6ae7081525bb890d66cdf50e90ccf219c"
+  },
+  "methods": [
+    {
+      "name": "CIS_TIOPEUnit.RegisterEnumerations",
+      "start": "0xd54934",
+      "end": "0xd54a5c",
+      "sha256": "98155a50aac704eb5a1e4f2dc6a47b1538b406dd113c792c0025d698e408ce35"
+    },
+    {
+      "name": "CIS_IJoinMode.IsJoinActive",
+      "start": "0xca00e8",
+      "end": "0xca01fc",
+      "sha256": "dcbc0e6bfb2306c5621c6c9ce06b4c037257a9086bb7cda5d4cdb10eff81a1a8"
+    },
+    {
+      "name": "CIS_TfrmIOPEPowerFailure.TfrmIOPEPowerFailure.UpdateRestoreJoinOnPowerUp",
+      "start": "0x11b717c",
+      "end": "0x11b71a4",
+      "sha256": "02ff050d92a902f97d0fb7da5d1c19b2e1b9a2b3e4167b709f08b2432504ff5e"
+    },
+    {
+      "name": "CIS_TfrmIOPEPowerFailure.TfrmIOPEPowerFailure.SetCBusUnit",
+      "start": "0x11b6d1c",
+      "end": "0x11b702c",
+      "sha256": "29703957632a9e993d8c3c3b22549520908cf9907a5dc7e543a8c735e46629bd"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.InternalCreate",
+      "start": "0x12d3690",
+      "end": "0x12d5aa4",
+      "sha256": "a7862488d6e221eccdc7ff94d74596aac31b3a789ed8a5b608e988082680e019"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadJoinModeAttributes",
+      "start": "0x12d9afc",
+      "end": "0x12da644",
+      "sha256": "148299774fa1c98443d3ce113370192ff62125c4a0b1d944ac593ebb905e9149"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveJoinModeAttributes",
+      "start": "0x12da98c",
+      "end": "0x12db558",
+      "sha256": "68da0827d771b2a252064cd3835b6662a56f6672c537c818920857429914940e"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.IsJoinModeSupported",
+      "start": "0xd56250",
+      "end": "0xd56264",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "name": "SysUtils.Supports",
+      "start": "0x624c6c",
+      "end": "0x624d04",
+      "sha256": "d1b2045cd44634e576878636ba391e63cecc9c9b138de4149c68013511225a8e"
+    },
+    {
+      "name": "System.TObject.GetInterface",
+      "start": "0x6062c8",
+      "end": "0x606398",
+      "sha256": "27dfb7099648d8ed8c61e8d12d331c67c2897a945210cd4c47692cda4da68ce4"
+    },
+    {
+      "name": "System.TObject.GetInterfaceEntry",
+      "start": "0x606398",
+      "end": "0x6063dc",
+      "sha256": "5dfff97285d62cb1c40a9002ecad23d894a7529325a2f4819812d6948fe31977"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TFlashObject.QueryInterface",
+      "start": "0x7ef7a0",
+      "end": "0x7ef7cc",
+      "sha256": "4608b2da64c8f12ff7c5a43e3d59cf30023fd076bd0ccd1b7cdd09a3b69ea096"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.GetJoinGroup",
+      "start": "0xd56e50",
+      "end": "0xd56e74",
+      "sha256": "30a52deff715d00ff07e8509dfc5771f295dbf1cf89c96476eb4c16b165c6cbd"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.InternalCreate",
+      "start": "0xd54a5c",
+      "end": "0xd55f54",
+      "sha256": "7eef04e9c00cf59c90f4a0b6690b88723e0d2f5c659cd074f9b982b947cedc98"
+    }
+  ],
+  "raw_ranges": [
+    {
+      "label": "IOPE interface table",
+      "start": "0xd53d28",
+      "size": 256,
+      "sha256": "faf0e7b54ab1d33fdee046120bef2405c4a4cb64836c686bf35185511e1e61ba"
+    },
+    {
+      "label": "Join interface vtable",
+      "start": "0xd53c94",
+      "size": 36,
+      "sha256": "1818ee553357dda03fd4fb870a51af7fc8a322b6489db86c9277444d8efb7607"
+    },
+    {
+      "label": "GetJoinGroup thunk",
+      "start": "0xd53a88",
+      "size": 10,
+      "sha256": "03d3ccd8d22a4c62488ecb3c5e754d08289da5eea0c2b99f6ab13084f59f86f5"
+    },
+    {
+      "label": "IsJoinModeSupported thunk",
+      "start": "0xd53aa6",
+      "size": 18,
+      "sha256": "3688ac84b92cc36b5695270631394275f59bd00a3b512588da1f87346b5563f9"
+    },
+    {
+      "label": "IsJoinModeSupported VMT slot",
+      "start": "0xd5400c",
+      "size": 4,
+      "sha256": "348b3fa3760040d4c326c3fe8ce85484476823870ce663a68a1a256cb352d896"
+    },
+    {
+      "label": "TIOPE1R1 VMT header",
+      "start": "0xd542b0",
+      "size": 88,
+      "sha256": "450d25482d33db3c764cbd3d6208f9beb056b67de7a6293304dcc609fc9b073c"
+    },
+    {
+      "label": "TIOPE1R1 class name",
+      "start": "0xd544a4",
+      "size": 9,
+      "sha256": "3cf32d352fc44a31842aec2c0982abdfb428c0fb2ed1bcbb45bb1317b3fb4ff0"
+    },
+    {
+      "label": "TIOPEUnit VMT header",
+      "start": "0xd53e28",
+      "size": 88,
+      "sha256": "fb8d350d7c76108e8ea116e07cd67c57e9203470eee521a1898ae3b4f5bdde0e"
+    },
+    {
+      "label": "TIOPEUnit class name",
+      "start": "0xd5401c",
+      "size": 10,
+      "sha256": "7cfc91d2c11fd0cc3b8861b0dda99983503743a4c46dc6a09e10ad1dca3fcb17"
+    },
+    {
+      "label": "TCBUSUnit VMT header",
+      "start": "0xf2112c",
+      "size": 88,
+      "sha256": "e3cec801d2f6a314204671a9d7db47ff3cacb41751eea2a50b841c4aad76637d"
+    },
+    {
+      "label": "TCBUSUnit class name",
+      "start": "0xf2131e",
+      "size": 10,
+      "sha256": "7513ae79d4c791e4b4bd941d787985651af60cca17508804ab7d322db2572440"
+    },
+    {
+      "label": "TCGateObject VMT header",
+      "start": "0xf47474",
+      "size": 88,
+      "sha256": "059ac3da04a0d44bfa9217af300a5a69e2eb83cb0c1a6cb9bae0ea2ef488c929"
+    },
+    {
+      "label": "TCGateObject class name",
+      "start": "0xf47574",
+      "size": 13,
+      "sha256": "d1cce5e960345449fb89fc85458fe754845f2da040ed1e3b6544302f8ce52e0b"
+    },
+    {
+      "label": "TCBUSObject VMT header",
+      "start": "0xf4734c",
+      "size": 88,
+      "sha256": "719ebfa36aefe5a38f9b14bf74b9fe24121f11f62432e6b6c2c1ae650e1211a2"
+    },
+    {
+      "label": "TCBUSObject class name",
+      "start": "0xf47434",
+      "size": 12,
+      "sha256": "b10ffc94da2c21557b18484f285f5707a4283bcbcf51419ff1c0b52bf4e44d2b"
+    },
+    {
+      "label": "TPersistableObject VMT header",
+      "start": "0x7f3c9c",
+      "size": 88,
+      "sha256": "e92fea23928ec42011c667fdd7986afdf698719ab54ac19fc47aeb875d83bddd"
+    },
+    {
+      "label": "TPersistableObject class name",
+      "start": "0x7f3d84",
+      "size": 19,
+      "sha256": "aa146a8aca9262c01fa2bea6776c9ebbd99c8ecef74829a4c6528854b714a3d8"
+    },
+    {
+      "label": "TIdentifiableObject VMT header",
+      "start": "0x7f3b70",
+      "size": 88,
+      "sha256": "774f4be93c14625216de49d644d76683df32bf6d44ac3f8b847acca99fb5c379"
+    },
+    {
+      "label": "TIdentifiableObject class name",
+      "start": "0x7f3c44",
+      "size": 20,
+      "sha256": "d8bbd1d2695a5d5d79578b5330b208edffa8ad858a88547780d635e988248a78"
+    },
+    {
+      "label": "TFlashObject VMT header",
+      "start": "0x7e681c",
+      "size": 88,
+      "sha256": "ec4ac273409350d6f938c78b8b22e3a856688d7ba07130563ed022997b423263"
+    },
+    {
+      "label": "TFlashObject class name",
+      "start": "0x7e6902",
+      "size": 13,
+      "sha256": "10d26817b4769f0c5c0bff21fc284d0a81098ac12c0963d6e0f53863624c160e"
+    },
+    {
+      "label": "TFlashObject interface table",
+      "start": "0x7e67fc",
+      "size": 32,
+      "sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a"
+    },
+    {
+      "label": "TFoundationObject VMT header",
+      "start": "0x7e65ec",
+      "size": 88,
+      "sha256": "220d5a603e324d19ccb3d53b8f9dc815237f9e55bc062799782ad301dd8718d0"
+    },
+    {
+      "label": "TFoundationObject class name",
+      "start": "0x7e66ca",
+      "size": 18,
+      "sha256": "45c9cb9b775261c8fc2fe38649612a547e7636f33e63674797bdd97c48434795"
+    },
+    {
+      "label": "TCustomFlashObject VMT header",
+      "start": "0x7e64d0",
+      "size": 88,
+      "sha256": "6beaee6250fa7b21f52dada6f022c2953fd64b9a759459ca118f5ae1c0f18445"
+    },
+    {
+      "label": "TCustomFlashObject class name",
+      "start": "0x7e6598",
+      "size": 19,
+      "sha256": "82f88b25c91fea631ab455554e8caa09f42c579fdac88217ea1028a8d98a6d9a"
+    },
+    {
+      "label": "TFlashElement VMT header",
+      "start": "0x769ac4",
+      "size": 88,
+      "sha256": "e2439469e2b2e28d12fd554f7e972d612b108db07b5649c87eadbf6fafc0704a"
+    },
+    {
+      "label": "TFlashElement class name",
+      "start": "0x769b8e",
+      "size": 14,
+      "sha256": "896fec12c7dc517f4414c6b157b218c065c68e0a6bd3efecff98e3f5520f509f"
+    },
+    {
+      "label": "TManagedFlashObject VMT header",
+      "start": "0x7698a0",
+      "size": 88,
+      "sha256": "45394f9a8aea4073283151776d6ccc4d66ef5b8e9af6ba71aff08f9f3aec886d"
+    },
+    {
+      "label": "TManagedFlashObject class name",
+      "start": "0x769924",
+      "size": 20,
+      "sha256": "aebda547009a53f730c82cf8dc268fe899c25b8bf81f4ecf23d5cc6a257ee133"
+    },
+    {
+      "label": "TBASEObject VMT header",
+      "start": "0x76814c",
+      "size": 88,
+      "sha256": "06f8592bfa6790a63006f082ab00b8521eb5ccb152a4518b40dc15161790a4c6"
+    },
+    {
+      "label": "TBASEObject class name",
+      "start": "0x7681b0",
+      "size": 12,
+      "sha256": "5b99d7a4d10eebea0be6cd768bea4b4ec9703c991f71e1fe867b73b3afff14d4"
+    },
+    {
+      "label": "TObject VMT header",
+      "start": "0x6014a4",
+      "size": 88,
+      "sha256": "074b483f220fe167c7c13983373b06bdb5abf1db85e61260e88af28d5c31bf02"
+    },
+    {
+      "label": "TObject class name",
+      "start": "0x6015f8",
+      "size": 8,
+      "sha256": "73dd4abf4dab6009f7ed65e82199e872a381aba1ae8c610af49f39de86a1db61"
+    },
+    {
+      "label": "TIOPE2R2 VMT header",
+      "start": "0xd544dc",
+      "size": 88,
+      "sha256": "5f711ee3c6f8c6b6f364ede5e8efc3dfcf126edc0b8f8ba47d25e28534f8bafa"
+    },
+    {
+      "label": "TIOPE2R2 class name",
+      "start": "0xd546d0",
+      "size": 9,
+      "sha256": "e28cf7a3188b5fb943994cc9e3b8d613c6a66d5c8d68d558e8f02935e9d09077"
+    },
+    {
+      "label": "TIOPE2C4 VMT header",
+      "start": "0xd54708",
+      "size": 88,
+      "sha256": "e1995aaa1ca2b60b2e18a6acb68ac03aea8c882626ececcf6ce058568d0b7764"
+    },
+    {
+      "label": "TIOPE2C4 class name",
+      "start": "0xd548fc",
+      "size": 9,
+      "sha256": "c76b74d6d938b9af15fb4e13d32d769df0afa55bbf00dee8e26d58e6227988e9"
+    },
+    {
+      "label": "Join QueryInterface thunk",
+      "start": "0xd53aca",
+      "size": 13,
+      "sha256": "a0c7c65f9733d2c621633635394b5d6bde31808f1b5575c1541995b47ebe0fee"
+    }
+  ],
+  "strings": [
+    {
+      "start": "0xd549a8",
+      "size": 20,
+      "value": "First Join",
+      "sha256": "75fecdfe8bb862dbcdd5772c61c6e32fdbc3af62a9cd6e9bf585bae849d8cb6a"
+    },
+    {
+      "start": "0xd549cc",
+      "size": 22,
+      "value": "Second Join",
+      "sha256": "dd5b47e61eb6fe30638b3bf699d930ea36e8a877a9ab2048a3aef3dced5c6e7b"
+    },
+    {
+      "start": "0xd549f0",
+      "size": 18,
+      "value": "Quad Join",
+      "sha256": "d98bf4310f5a6ce5722d3b11349a45b877c0f199b44c23c499498f013eb6eae2"
+    },
+    {
+      "start": "0xd54a10",
+      "size": 14,
+      "value": "Restore",
+      "sha256": "388a273c812dae81d84d92581adf6ea41d6346e1e0184a6e6bf762e361ea8997"
+    },
+    {
+      "start": "0x12d4734",
+      "size": 46,
+      "value": "PrimJoin1EnabledStartup",
+      "sha256": "39a90cfb7a737e28fee0dfa450275cb679cfb1e3118acea42e1326bddcbd25e3"
+    },
+    {
+      "start": "0x12d4770",
+      "size": 46,
+      "value": "PrimJoin2EnabledStartup",
+      "sha256": "a11e9191d7f6ca8510a22f508bea80b1bd13f54c06ef435500f6403ef7441bc2"
+    },
+    {
+      "start": "0x12d47ac",
+      "size": 52,
+      "value": "ControlJoin1EnabledStartup",
+      "sha256": "d4d79c08bef6797e2e1ad17ef45f8ce79fcfe2f6defc82b42ad290e6c41715b5"
+    },
+    {
+      "start": "0x12d47f0",
+      "size": 52,
+      "value": "ControlJoin2EnabledStartup",
+      "sha256": "4128db4bb15dbdcf76aeda54f92d71c65b422e6eee895f533721dd4b0ce61fc6"
+    },
+    {
+      "start": "0x12d49d4",
+      "size": 54,
+      "value": "JoinEnableStateStoreEnabled",
+      "sha256": "a763e9e62a0cad7292f42c6ab4cdac7b55a1a7aa3245285834304fba74d7ccf9"
+    },
+    {
+      "start": "0x12d4c34",
+      "size": 54,
+      "value": "FirstJoinPrimaryApplication",
+      "sha256": "9b28cd4d0cc6eae91f266111c8f518189d4ab29fb6bd9b8b3c44842d24a50c39"
+    },
+    {
+      "start": "0x12d4c78",
+      "size": 56,
+      "value": "SecondJoinPrimaryApplication",
+      "sha256": "a0c62661fc6dc8a544db30f67dd9036f2a5216356f9a7ddc9f3ebed9b40f4c35"
+    },
+    {
+      "start": "0x12d4cc0",
+      "size": 66,
+      "value": "FirstJoinEnableControlApplication",
+      "sha256": "9c3562ab3b027a1f32f69279bf2e2eed4de1a431fcff8cdb7592237ebff42bce"
+    },
+    {
+      "start": "0x12d4d10",
+      "size": 68,
+      "value": "SecondJoinEnableControlApplication",
+      "sha256": "59830feb7d46aef4017d781c47dfbe5d8862f2d6d0ffdc942e4e0dacba5ad5aa"
+    },
+    {
+      "start": "0x11b6fb0",
+      "size": 40,
+      "value": "RestoreJoinOnPowerUp",
+      "sha256": "701f4a87b166da5af30ae2ebeef31f38622ea9909beada01ccd2beb4fd220f04"
+    },
+    {
+      "start": "0x11b6fe8",
+      "size": 64,
+      "value": "RestoreJoinOnPowerUp->EnumValues",
+      "sha256": "81694690aefbd4c877be903212632145b61a56cf72059da5703d955cb6dcf9b1"
+    },
+    {
+      "start": "0xd55a10",
+      "size": 18,
+      "value": "JoinGroup",
+      "sha256": "2cc2d26ef08e19ad89d239445f98d0e4285ed807edf892587f9e6f1853e12971"
+    }
+  ],
+  "eligibility": {
+    "interface_guid": "9e251564-172f-44b0-b1dc-12a0d165dc47",
+    "predicate": "IsJoinModeSupported AND NOT FirstJoinGroup.IsUnused",
+    "first_join_required": true,
+    "second_join_alone_sufficient": false,
+    "fallback_interface_guid": "bc2b848d-889f-4f38-844e-2445395922d8",
+    "fallback_absent_in_admitted_ancestry": true,
+    "inheritance": {
+      "profile_chains": {
+        "IOPE1R1": [
+          "0xd54308",
+          "0xd53e80",
+          "0xf21184",
+          "0xf474cc",
+          "0xf473a4",
+          "0x7f3cf4",
+          "0x7f3bc8",
+          "0x7e6874",
+          "0x7e6644",
+          "0x7e6528",
+          "0x769b1c",
+          "0x7698f8",
+          "0x7681a4",
+          "0x6014fc"
+        ],
+        "IOPE2R2": [
+          "0xd54534",
+          "0xd53e80",
+          "0xf21184",
+          "0xf474cc",
+          "0xf473a4",
+          "0x7f3cf4",
+          "0x7f3bc8",
+          "0x7e6874",
+          "0x7e6644",
+          "0x7e6528",
+          "0x769b1c",
+          "0x7698f8",
+          "0x7681a4",
+          "0x6014fc"
+        ],
+        "IOPE2C4": [
+          "0xd54760",
+          "0xd54534",
+          "0xd53e80",
+          "0xf21184",
+          "0xf474cc",
+          "0xf473a4",
+          "0x7f3cf4",
+          "0x7f3bc8",
+          "0x7e6874",
+          "0x7e6644",
+          "0x7e6528",
+          "0x769b1c",
+          "0x7698f8",
+          "0x7681a4",
+          "0x6014fc"
+        ]
+      },
+      "classes": {
+        "0xd54308": {
+          "name": "TIOPE1R1",
+          "parent_reference": "0xd53e28",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0xd53e80": {
+          "name": "TIOPEUnit",
+          "parent_reference": "0xf2112c",
+          "interface_table": "0xd53d28",
+          "interface_guids": [
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd",
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d",
+            "9e16dca5-a334-4c6f-95e2-47b7379e8388",
+            "5e1b6c23-aab4-4e9e-80d7-9fc97f83fcf0",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47",
+            "33fe407c-6868-4d49-90d1-3fcebae21121",
+            "e90bc197-a689-4f87-a458-ba541d928fb5",
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ]
+        },
+        "0xf21184": {
+          "name": "TCBUSUnit",
+          "parent_reference": "0xf47474",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0xf474cc": {
+          "name": "TCGateObject",
+          "parent_reference": "0xf4734c",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0xf473a4": {
+          "name": "TCBUSObject",
+          "parent_reference": "0x7f3c9c",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7f3cf4": {
+          "name": "TPersistableObject",
+          "parent_reference": "0x7f3b70",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7f3bc8": {
+          "name": "TIdentifiableObject",
+          "parent_reference": "0x7e681c",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7e6874": {
+          "name": "TFlashObject",
+          "parent_reference": "0x7e65ec",
+          "interface_table": "0x7e67fc",
+          "interface_guids": [
+            "00000000-0000-0000-0000-000000000000"
+          ]
+        },
+        "0x7e6644": {
+          "name": "TFoundationObject",
+          "parent_reference": "0x7e64d0",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7e6528": {
+          "name": "TCustomFlashObject",
+          "parent_reference": "0x769ac4",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x769b1c": {
+          "name": "TFlashElement",
+          "parent_reference": "0x7698a0",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7698f8": {
+          "name": "TManagedFlashObject",
+          "parent_reference": "0x76814c",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x7681a4": {
+          "name": "TBASEObject",
+          "parent_reference": "0x6014a4",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0x6014fc": {
+          "name": "TObject",
+          "parent_reference": "0x0",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0xd54534": {
+          "name": "TIOPE2R2",
+          "parent_reference": "0xd53e28",
+          "interface_table": "0x0",
+          "interface_guids": []
+        },
+        "0xd54760": {
+          "name": "TIOPE2C4",
+          "parent_reference": "0xd544dc",
+          "interface_table": "0x0",
+          "interface_guids": []
+        }
+      },
+      "vmt_offsets": {
+        "self": -88,
+        "interface_table": -84,
+        "class_name": -56,
+        "parent_reference": -48
+      },
+      "entry_size": 28
+    },
+    "dispatch": "SysUtils.Supports uses GetInterface; IOPE QueryInterface thunk calls inherited TFlashObject.QueryInterface, which also uses GetInterface. GetInterfaceEntry searches the pinned class/interface ancestry.",
+    "join_attribute": "TIOPEUnit InternalCreate object-reference member0x25c is JoinGroup; GetJoinGroup returns it; LoadJoinModeAttributes selects the first join PP pair into this member."
+  },
+  "recovery_ordinals": [
+    "first-join",
+    "second-join",
+    "quad-join",
+    "restore"
+  ],
+  "load_priority": [
+    "store => restore",
+    "(primary1 OR control1) AND (primary2 OR control2) => quad-join",
+    "primary2 OR control2 => second-join",
+    "otherwise first-join"
+  ],
+  "save": {
+    "initial_clear": [
+      "PrimJoin1EnabledStartup",
+      "PrimJoin2EnabledStartup",
+      "ControlJoin1EnabledStartup",
+      "ControlJoin2EnabledStartup",
+      "JoinEnableStateStoreEnabled"
+    ],
+    "application_selector": "FIRST JoinApplication only; Enable Control203 else exact Primary else no flags",
+    "first-join": [
+      1,
+      0,
+      0
+    ],
+    "second-join": [
+      0,
+      1,
+      0
+    ],
+    "quad-join": [
+      1,
+      1,
+      0
+    ],
+    "restore": [
+      0,
+      0,
+      1
+    ],
+    "vector_order": [
+      "selected app first startup",
+      "selected app second startup",
+      "store"
+    ],
+    "raw_masks": {
+      "0x1c": "0x3c",
+      "0x3e": "0x80"
+    }
+  },
+  "boundaries": [
+    "All three existing IOPE profiles; firmware1.0.00..1.2.99",
+    "Primary Lighting48..95 and positive caller group object evidence",
+    "Refuse dual-populated per-join application fields and mixed effective Join applications",
+    "Five recovery bits only; groups/application/allocation/scene data preserved",
+    "Full SaveJoinModeAttributes rewrites4group fields and12allocation arrays; those writes are outside this radio projection",
+    "No original GUI execution, CPU emulation, hardware, physical or persistence claims from static evidence"
+  ]
+}

@@ -1,0 +1,21 @@
+--- a/toolkit-cli/src/cbus_toolkit/cli.py
++++ b/toolkit-cli/src/cbus_toolkit/cli.py
+@@ -2306,6 +2306,8 @@
+             _din_options(p)
+     from .iope_cli import offline_options as iope_offline_options
+     iope_offline_options(commands)
++    from .iope_workflow_cli import options as iope_workflow_options
++    iope_workflow_options(commands)
+     from .dlt_cli import options as dlt_options
+     dlt_options(commands)
+     from .wireless_cli import options as wireless_options
+@@ -4071,6 +4073,9 @@
+     if args.area == "wireless":
+         from .wireless_cli import offline as wireless_offline
+         return wireless_offline(args)
++    if args.area == "iope-workflow":
++        from .iope_workflow_cli import run as iope_workflow_run
++        return iope_workflow_run(args)
+     if args.area == "iope-settings":
+         from .iope_cli import offline as iope_offline
+         return iope_offline(args)

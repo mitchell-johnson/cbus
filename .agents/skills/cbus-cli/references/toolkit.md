@@ -603,3 +603,18 @@ including lossy UTF-8 replacement expansion, before output. CBZ archive
 CRC/decompression/unsupported-codec failures are structured refusals. The
 class-specific OnColor proof changes the executable inventory only; it does
 not establish GUI or physical acceptance.
+
+## IOPE component workflows
+
+Use `cbus-toolkit iope-workflow` or `python -m cbus_toolkit.iope_workflow_cli`
+for the eight bounded IOPE1R1/IOPE2R2/IOPE2C4 components at 1.0.00..1.2.99.
+Database plans require the exact /db source and source-network lock, exclusive
+project ownership and every project network closed/idle. Existing group/action
+metadata is checked before staging and save. Inspect separate PP and project
+save attempts and fresh reload; an uncertain save is never replayed. Scene
+selectors use existing Level Address, not Value. Retained scene levels require
+the documented positive canonical graph; whole scene saving, template/input
+transactions, live groups and physical programming remain excluded. Read
+`toolkit-cli/docs/iope-workflows.md` and each component document.
+
+For eDLT template format/export/preview and issued assignment/second-model/Reset/terminal stages, read `toolkit-cli/docs/edlt-template-integration-boundaries.md`. Apply remains an unconditional refusal before target access. Do not equate source CRC, local normalization or a synthetic database durability receipt with original template Apply/OK.

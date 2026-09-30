@@ -19,11 +19,15 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
-The latest [Toolkit controls batch](toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md)
-adds conversion profiles, wireless database workflows, classic DLT ICON and
-delivery models, thermostat defaults, more project reports and early firmware
-codec refusal. It records focused source/wheel validation and the remaining
-GUI and physical acceptance work. The earlier
+The latest [IOPE and template batch](toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md)
+adds eight IOPE controller components, local eDLT template export/inspection/
+preview and guarded staging, plus firmware failure diagnostics. Its focused
+source and installed-wheel runs each passed 642 test nodes and 1,951 subtests,
+with separately qualified native database evidence. Template Apply, complete
+original GUI workflows and physical acceptance remain open. The earlier
+[Toolkit controls batch](toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md)
+records conversion, wireless, DLT, thermostat, report and firmware codec work;
+the
 [conversion, DLT and temperature batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-dlt-temperature.md)
 retains its separate validation record.
 The earlier [DALI/SENLL batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
@@ -143,6 +147,16 @@ WTXU project metadata creation and typed cached status/statistics reads.
 Physical unit actions require explicit opt-in; successful acknowledgements
 remain separate from hardware effects. See the [wireless scope](toolkit-cli/docs/wireless.md)
 and [conversion/wireless batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-wireless.md).
+
+Bounded IOPE Environment, output, logic, join, timer and retained scene components
+share the `iope-workflow` offline and closed-database CLI. Their nine-profile
+native matrices establish synthetic database persistence; complete parent/scene
+forms and hardware remain open. See [IOPE workflows](toolkit-cli/docs/iope-workflows.md).
+
+The `edlt-templates` command inspects, exports and previews bounded templates.
+Its separate local stages preserve assignment, second-model, Reset and terminal
+normalization evidence; complete template Apply remains refused. See the
+[template contract](toolkit-cli/docs/edlt-template-integration-boundaries.md).
 
 Firmware execution also binds package metadata and selected images to a
 bounded immutable snapshot. Resume checks that snapshot against the interrupted

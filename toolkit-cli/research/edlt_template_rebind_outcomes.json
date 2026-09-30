@@ -1,0 +1,926 @@
+{
+  "format": "cbus-edlt-template-rebind-outcomes-v1",
+  "scope": "classification of a pinned historical synthetic proxy capture only",
+  "capture_sha256": "626f0f0b81ecfb653423f2200ee754e9be660becbb806e78bc3a4718aa5ec446",
+  "case_count": 31,
+  "classifications": {
+    "dispatch_only": 7,
+    "propagated_failure": 21,
+    "returned_with_caught_failure": 3
+  },
+  "vendor_code_executed_by_classifier": false,
+  "il_vm_executed_by_classifier": false,
+  "actual_model_effects_verified": false,
+  "actual_control_binding_effects_verified": false,
+  "original_form_executed": false,
+  "control_disposal_verified": false,
+  "network_io_attempted": false,
+  "persisted": false,
+  "apply_allowed": false,
+  "cases": [
+    {
+      "capture_case_index": 0,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "338fc39f22960bab78488eac08b266760e499ad9fef130da4e5556e0310521fb",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 1,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 1,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 1,
+          "method": "System.Timers.Timer::Stop",
+          "receiver": "redraw-timer",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "c13ac86516fcc4600d3d2b93147061a506ebe6484306f49b13eff41dcfb3ddea",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 2,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 2,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 2,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "radioButton5",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "70a911ee84fdffa610539e188d922fc64705660abe1bc8fee7c997f7a99dd2ca",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 3,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 3,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 3,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "radioButton3",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "c0e161754510fea4cb0ffd85ed3079af2d69898cdd0f5e3ea628718b59083514",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 4,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 4,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 4,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "rbColourIndicatorOffFixedColour",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "72565e3b9a5f36f55f54988240c69884e2f469448392e535ca5bffcc072130bf",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 5,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 5,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 5,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "rbColourIndicatorOnFixedColour",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "7929b17cec63b63796affa04e16a54adf9133f5d21b8cd00f3d2193bee6c4926",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 6,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 6,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 6,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "radioButton4",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "3159dff06a167ba06fa40af379048f8c24d14b2f8459f7e40e3a0a8e0fa3c79b",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 7,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 7,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 7,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "radioButton6",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "3441931a5fde3829d87666d2135bdd9e3d398b242fc52e9a5d10a4fa6bbb186e",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 8,
+      "method": "BeforeChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 8,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 8,
+          "method": "System.Windows.Forms.RadioButton::set_Checked",
+          "receiver": "rbRestorePreset",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "04ec631b763250b2844560609e03c66d203121ec18600d0cb3b4293c8198e261",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 9,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "ec1f35d25297ee407d37f4e23f01aab1de8316f5a6875d047f1f3e006356bd32",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 10,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 1,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 1,
+          "method": "CBusLogicModel.Units.CBusBaseUnit::AfterLoadPPData",
+          "receiver": "unit",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "a98950bf9e3b806795e3f0efcc748ff96d4120d90eab8b9e80e139c97edc77f7",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 11,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 2,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 2,
+          "method": "eDLT.FrmBaseUnit::SetupForm",
+          "receiver": "form",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "e3d558aec0faac7169a5cb7c8a53ebdc52898853202a18b0a99f2fa23673e875",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 12,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 3,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": true,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "192917fd6facfd25f24a25f36b903e93cb3af38c2e35ae4556e74e7babb97607",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 13,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 4,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 4,
+          "method": "eDLT.FrmBaseUnit::SetUpControls",
+          "receiver": "form",
+          "arguments": [
+            "collection"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "07e27027261da41b3c796de380e614e7cc8a91f85090e1b5f181c8cbfde36f97",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 14,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 5,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 5,
+          "method": "CBusLogicModel.Units.CBusBaseUnit::PopulatePrimarySecondaryApplication",
+          "receiver": "unit",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "535dbf83dba3eacfc36dc266732077296d7c7b6592911f8701444e3770a6ace7",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 15,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 6,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 6,
+          "method": "System.Windows.Forms.BindingSource::ResetBindings",
+          "receiver": "main-binding",
+          "arguments": [
+            1
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "ebc71f2ca16fefb0ef6c01200da28f60d67a1a1d7cdebd3026de721074f7cca1",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 16,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 7,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 7,
+          "method": "eDLT.FrmBaseUnit::UpdateNavigationControl",
+          "receiver": "form",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "ee417ceb364a0d87a2411055ce4381407e49c2b12a21262d03dc2d5c4d580f53",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 17,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 8,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 8,
+          "method": "eDLT.FrmBaseUnit::ShowSelectedWidget",
+          "receiver": "form",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "cd65dc47fc38656c42c099e312e1c1d60ffec2ee0c3a09c062e44a06f5a104a2",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 18,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 9,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 9,
+          "method": "eDLT.FrmBaseUnit::tpKeyFunctions_SelectedIndexChanged",
+          "receiver": "form",
+          "arguments": [
+            "form",
+            null
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "12e9d36ab10e07f504c9e04e60f892d856527081955b545d61cb52c8ef76c310",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 19,
+      "method": "AfterChangePpAttributes",
+      "expanded": false,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": 10,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 10,
+          "method": "System.Timers.Timer::Start",
+          "receiver": "redraw-timer",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "0c8c16f3d21b09ea700e5afc5461047282f78746561988abb00d9ec704bf3115",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 20,
+      "method": "SetUpControls",
+      "expanded": true,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "9e948ed06383354ca4352ccfbcfa24fbeeeb8f5a473aacc08a5373abba5f861a",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 21,
+      "method": "SetUpControls",
+      "expanded": true,
+      "classification": "returned_with_caught_failure",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        "outer-combo",
+        "set_DataBindingObject"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 17,
+          "method": "eDLT.Controls.PPControls.ComboBoxAddEdit::set_DataBindingObject",
+          "receiver": "outer-combo",
+          "arguments": [
+            "unit"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [
+        {
+          "call_index": 18,
+          "method": "SharpLogger.Log::LogException",
+          "receiver": null,
+          "arguments": [
+            "ProxyFailure"
+          ],
+          "dispatch": "proxy",
+          "opaque_callback": true
+        },
+        {
+          "call_index": 21,
+          "method": "System.Windows.Forms.MessageBox::Show",
+          "receiver": null,
+          "arguments": [
+            "test cmbTemp injected at eDLT.Controls.PPControls.ComboBoxAddEdit::set_DataBindingObject"
+          ],
+          "dispatch": "proxy"
+        }
+      ],
+      "recorded_interpreted_catch_handlers": [
+        {
+          "caught_by_original_il": "SetUpControls",
+          "offset": 63,
+          "handler": 70,
+          "exception": "ProxyFailure"
+        }
+      ],
+      "recorded_later_callback_count": 10,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "1dbee3acf1a85f05d675ccd19d3f07196a1a8cd524a4c69b10bcb640343b1db5",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 22,
+      "method": "SetUpControls",
+      "expanded": true,
+      "classification": "returned_with_caught_failure",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        "nested-radio",
+        "set_DataBindingObject"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 14,
+          "method": "eDLT.Controls.PPControls.PPRadioButton::set_DataBindingObject",
+          "receiver": "nested-radio",
+          "arguments": [
+            "unit"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [
+        {
+          "call_index": 15,
+          "method": "SharpLogger.Log::LogException",
+          "receiver": null,
+          "arguments": [
+            "ProxyFailure"
+          ],
+          "dispatch": "proxy",
+          "opaque_callback": true
+        },
+        {
+          "call_index": 18,
+          "method": "System.Windows.Forms.MessageBox::Show",
+          "receiver": null,
+          "arguments": [
+            "test radio injected at eDLT.Controls.PPControls.PPRadioButton::set_DataBindingObject"
+          ],
+          "dispatch": "proxy"
+        }
+      ],
+      "recorded_interpreted_catch_handlers": [
+        {
+          "caught_by_original_il": "SetUpControls",
+          "offset": 118,
+          "handler": 125,
+          "exception": "ProxyFailure"
+        }
+      ],
+      "recorded_later_callback_count": 12,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "0a6d879c974ad3a90e1fbba51a3d8e1976996b184eab0e6b5c4360d9fe627643",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 23,
+      "method": "ResetControlBinding",
+      "expanded": true,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "434847043b84a5ebf7f5bbea276997a8161c390062b0a88887c0b47da6337f68",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 24,
+      "method": "ResetControlBinding",
+      "expanded": true,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        "nested-radio",
+        "set_DataBindingObject"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 14,
+          "method": "eDLT.Controls.PPControls.PPRadioButton::set_DataBindingObject",
+          "receiver": "nested-radio",
+          "arguments": [
+            "unit"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 2,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "07a50b7430b1e529eb40d65de328b9ab033beaab5f13088007470d785505773d",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 25,
+      "method": "PopulateWidgetPanels",
+      "expanded": true,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "7c1dc1aef2cde7e1df773d9ca15ceceb872b28639399effcc209e1eae7fddadd",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 26,
+      "method": "PopulateWidgetPanels",
+      "expanded": true,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        "old-panel1",
+        "Dispose"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 7,
+          "method": "System.ComponentModel.Component::Dispose",
+          "receiver": "old-panel1",
+          "arguments": [],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 1,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "560d4e0c2a5e4e7188fc4ed1b831e2851cd8c3e13fb0918db70d79d170c89429",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 27,
+      "method": "PopulateWidgetPanels",
+      "expanded": true,
+      "classification": "propagated_failure",
+      "interpreted_method_returned": false,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        null,
+        ".ctor"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 11,
+          "method": "eDLT.WidgetPanels.EnableWidget::.ctor",
+          "receiver": null,
+          "arguments": [
+            "unit"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "35f99135f7b8af0bef4a64694f3d280eba5b4970e02e6c8db17610c25d9205ed",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 28,
+      "method": "SetupForm",
+      "expanded": true,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "f8f58383552eb9ee4116466a817b1d862b246e1ff12201d4e4616d27307eb04d",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 29,
+      "method": "SetupForm",
+      "expanded": true,
+      "classification": "returned_with_caught_failure",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": [
+        "PP0",
+        "add_PropertyChanged"
+      ],
+      "recorded_failure_callbacks": [
+        {
+          "call_index": 6,
+          "method": "CBusLogicModel.PPAttribute::add_PropertyChanged",
+          "receiver": "PP0",
+          "arguments": [
+            "new-PropertyChangedEventHandler-5"
+          ],
+          "proxy_failure": true
+        }
+      ],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [
+        {
+          "call_index": 8,
+          "method": "SharpLogger.Log::LogException",
+          "receiver": null,
+          "arguments": [
+            "ProxyFailure"
+          ],
+          "dispatch": "proxy",
+          "opaque_callback": true
+        },
+        {
+          "call_index": 9,
+          "method": "eDLT.FrmBaseUnit::OnFormClosed",
+          "receiver": "form",
+          "arguments": [
+            null
+          ],
+          "dispatch": "proxy",
+          "opaque_callback": true
+        }
+      ],
+      "recorded_interpreted_catch_handlers": [
+        {
+          "caught_by_original_il": "SetupForm",
+          "offset": 41,
+          "handler": 210,
+          "exception": "ProxyFailure"
+        }
+      ],
+      "recorded_later_callback_count": 307,
+      "recorded_close_callback": true,
+      "full_trace_sha256_from_capture": "8c7c2a96c5663e644326e33abb419124dad88b163087187ba26e33c9e66e4cc9",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    },
+    {
+      "capture_case_index": 30,
+      "method": "AfterChangePpAttributes",
+      "expanded": true,
+      "classification": "dispatch_only",
+      "interpreted_method_returned": true,
+      "configured_failure_call_index": null,
+      "configured_failure_receiver_and_method": null,
+      "recorded_failure_callbacks": [],
+      "failure_callback_omitted_from_compact_capture": false,
+      "recorded_error_callbacks": [],
+      "recorded_interpreted_catch_handlers": [],
+      "recorded_later_callback_count": 0,
+      "recorded_close_callback": false,
+      "full_trace_sha256_from_capture": "08dd36db42cb5a3046e67b729feb7689454ee3993435986bf98078fa4780872c",
+      "actual_model_effects_verified": false,
+      "actual_control_binding_effects_verified": false,
+      "apply_allowed": false
+    }
+  ]
+}

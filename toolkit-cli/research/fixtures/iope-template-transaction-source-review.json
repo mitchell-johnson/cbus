@@ -1,0 +1,434 @@
+{
+  "format": "cbus-iope-template-transaction-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "status": "blocked-source-recovery-incomplete",
+  "source_complete_bounded_transaction": false,
+  "original_execution": false,
+  "cpu_emulation": false,
+  "evidence_kind": "Static PE/MAP audit of template replacement and dependent Aux stage recoding; no callable edit contract admitted.",
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": [
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.InternalCreate",
+      "start": "0xc96a5c",
+      "end": "0xc96bd4",
+      "sha256": "421a1128a248d2dc218dfd2db9e1aecb4496d39bbd72481b1c6b36cff1784e42"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate",
+      "start": "0xc96c60",
+      "end": "0xc96cb8",
+      "sha256": "f0257da639b24bd6eace5603830c373214f745de495af74adca68074195eba10"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_FunctionType",
+      "start": "0xc96cb8",
+      "end": "0xc96d6c",
+      "sha256": "e5e6b332b7af45e73ecb8c901ce5f8d809914b0f3d2a9cec212f86d8f4cdfc50"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_Microfunctions",
+      "start": "0xc96d6c",
+      "end": "0xc96dcc",
+      "sha256": "8353fdc15ee02b5a1dda85987bad889c1533283c8944e3e1da5ecb08da540920"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.SetFunctionType",
+      "start": "0xc97068",
+      "end": "0xc970ec",
+      "sha256": "bfa528164cf2ea13dde35c4fd53f785ccae1dafafecaf9e8df7ba322b49ab57f"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromMicroFunctions",
+      "start": "0xc974ac",
+      "end": "0xc9771c",
+      "sha256": "b8eb7e1b0b43faf34b9554c9cd8fea8e67da54913c11360b9a076e9538ca90fb"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup",
+      "start": "0xc97940",
+      "end": "0xc97b48",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.GetMicroFunctionGroupDefault",
+      "start": "0xc97da4",
+      "end": "0xc97e00",
+      "sha256": "e6e3e8fbe09bee725e61dc309e55c21534d63483a029e22c3165d7dec83b6350"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.ItemAndGroupByMicroFunctions",
+      "start": "0xc97ff8",
+      "end": "0xc98180",
+      "sha256": "e0f9938d3fea6ad29a9847d5308c1feb5f71030c73e08ab09e40e3d44b77d44d"
+    },
+    {
+      "name": "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.Assign",
+      "start": "0xc9237c",
+      "end": "0xc9245c",
+      "sha256": "3469dfb24a620f1b3f48aed011d16e6a36b11c7138ffa53f60883ae09fe013ff"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.MacroFunctionRefresh",
+      "start": "0xd4efb4",
+      "end": "0xd4efe0",
+      "sha256": "c2f71af6048c50e5628291bd737a87a83dc089e1d293f1ef3765268b06278325"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.SetMicroFunctionCodeByKeyPressStage",
+      "start": "0xd4f170",
+      "end": "0xd4f1e4",
+      "sha256": "dc822ad94822517d61d6f6d82e1d15a7045624ac023fb26c983a01e94f976231"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.HandleMacroFunctionTemplateAfterChangeEvent",
+      "start": "0xd4f1f8",
+      "end": "0xd4f2a0",
+      "sha256": "acb808682b9aef6753b64884a43ecafd0f75b436392d8ab337dccf8d64ca1afa"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.SetMicroFunction",
+      "start": "0xd503ec",
+      "end": "0xd50480",
+      "sha256": "2d72286dd338bab1474e9eb9d17e062a8da52bcde1f7338fe0a9a5deafe61bfe"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.UpdateMicrofunctionCodes",
+      "start": "0xd50560",
+      "end": "0xd5098c",
+      "sha256": "c14356256ec9b672dc846f1e3ceb70f9c0cd66f38699cf0721dd6e07585c3fc9"
+    },
+    {
+      "name": "CIS_TInputSource.TBaseInput.RefreshTemplateFromMacroFunction",
+      "start": "0xd5098c",
+      "end": "0xd509fc",
+      "sha256": "50de2df11e2d6f2a5b1b963d49a501c7f992be920751094314b507ed8e48b3ce"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.EnsureSceneObjectMatchesSelectedScenesInMicrofunctions",
+      "start": "0xd50ee4",
+      "end": "0xd51000",
+      "sha256": "77948d2fc9b78bb2d3432a2417287c26d812d5d838108338df847c54cb8388bf"
+    },
+    {
+      "name": "CIS_TInputSource.TInputSource.RefreshMacroFunctionFromTemplate",
+      "start": "0xd513e0",
+      "end": "0xd51410",
+      "sha256": "f89b877c4a91938b2d0d51ee1ebfd95dcedc6d950136706ce44382f6a4cfdf85"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.EnsureAvailableMacrofunctionIsUsed",
+      "start": "0xd57e54",
+      "end": "0xd58068",
+      "sha256": "a49c90f596648cd01dbe8aa49a5405afad605873d83e45d43ba5d386c43359f3"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.AvailableMacroFunctionsAux",
+      "start": "0xd59e58",
+      "end": "0xd59ec8",
+      "sha256": "d4896aabf15105ce1a23562d48aac4d478e453e6324700712974b3b8528aa7d0"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxInputs.SetupAuxFunctionCombos",
+      "start": "0x118a6e8",
+      "end": "0x118ab34",
+      "sha256": "053d1eb96c167ac085a6eb64540fa75b341a2a23177c136878ad0b9ba6e01d80"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.SetupFlashHooks",
+      "start": "0x118b004",
+      "end": "0x118b0f0",
+      "sha256": "1ac3d9119ce39a52b1ac0ae39e06f0990b623815173bf63216685f77cf1f6ea4"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.LoadGridValues",
+      "start": "0x11ae6a8",
+      "end": "0x11af1f0",
+      "sha256": "35571b9d49ee2a3f8014d63e1a909f06742798ce4d7021f2f097b9e552f77e56"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.Refresh",
+      "start": "0x11af1f0",
+      "end": "0x11af2e0",
+      "sha256": "03f3a59b28533584c4a8ed08761c21ff9a9f59f96811cd5d498f7f3066935c69"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.RefreshOtherTabs",
+      "start": "0x11af2e0",
+      "end": "0x11af344",
+      "sha256": "cf1978b13a39e152fe2b57310afc1f816f41e95d8a4147f3aa803e2c25f00932"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.GetKeyPressStageByRowID",
+      "start": "0x11af344",
+      "end": "0x11af380",
+      "sha256": "8d247c13d4f34eb38b8a513c1a06049dbe215a6e7cf5eb8688962b99dd6d7003"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.SetCBusUnit",
+      "start": "0x11af380",
+      "end": "0x11af528",
+      "sha256": "c649e16373b1db29706f37bcdecfa5d0e2b8a72dd11b59e25eba80a4e9e13af3"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.UpdateMicroFunction",
+      "start": "0x11b0cc8",
+      "end": "0x11b0f10",
+      "sha256": "cf4faa327d2795be77eafb534d38634449d0dadf001bb5c860dfad85c3199e0b"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.ComboPropertiesChange",
+      "start": "0x11b14c0",
+      "end": "0x11b1644",
+      "sha256": "5980573e9bae41878f0d8a422397d892d2492594d54bbc018b9e110bff8c705a"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.SetAuxValues",
+      "start": "0x12def10",
+      "end": "0x12df258",
+      "sha256": "a99ac94eec3744b39a09beed077acbe1817b1fe2e92d36f6effc587de36afc73"
+    }
+  ],
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "profiles": [
+    "IOPE1R1",
+    "IOPE2R2",
+    "IOPE2C4"
+  ],
+  "firmware_range": [
+    "1.0.00",
+    "1.2.99"
+  ],
+  "writable_parameters": [],
+  "correction": {
+    "method": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.ComboPropertiesChange",
+    "branch_address": "0x11b15f1",
+    "proof": [
+      "At0x11b155b a top-level function node sets parameter selector=-1.",
+      "At0x11b15f1 selector=-1 reaches UpdateMicroFunction call0x11b15f8 and unconditional jump0x11b15fe to0x11b1607.",
+      "A child parameter selector instead reaches UpdateKeyParameters call0x11b1601.",
+      "Both branches rejoin PopulateComboBoxList, Refresh, RefreshOtherTabs."
+    ],
+    "meaning": "The two update calls are alternative branches, not unconditional sequential calls."
+  },
+  "row_identity": {
+    "method": "0x11af344",
+    "row_id_to_stage": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "otherwise": 3
+    },
+    "stage_to_member": {
+      "0": "+0xb0",
+      "1": "+0xb4",
+      "2": "+0xb8",
+      "3": "+0xbc"
+    },
+    "stage_to_name": {
+      "0": "JP",
+      "1": "SR",
+      "2": "LP",
+      "3": "LR"
+    },
+    "grid_aux_identity": "Form field+0x290 selects Aux index0; any other admitted grid selects Aux index1; sender/class checks and exact node topology precede this."
+  },
+  "observed_rules": [
+    "AssignTemplate performs BeginUpdate, function metadata assignment, whole default group assignment, EndUpdate. Group.Assign includes JP/SR/LP/LR/VC/VT references.",
+    "GetMicroFunctionGroupDefault returns the first registered group when nonempty except macro function48 uses factory group105; empty groups return null.",
+    "ItemAndGroupByMicroFunctions0xc97ff8 searches templates in registration order and each template group in order; first JP/SR/LP/LR type match wins, with optional nonzero source-type filter.",
+    "RefreshFromMicroFunctions also has six-stage VC/VT matching, detects family4 scene usage, reconciles matched template/group, and on no match chooses template58 for scene family or26 otherwise plus group56.",
+    "ReconcileTemplateAndGroup reads byte flags+0x8c/+0x8d/+0x8e and remaps template/group identities; flags cannot be assumed from the selected raw byte alone.",
+    "Aux UpdateMicrofunctionCodes visits all four retained source stage members+0xb0/+0xb4/+0xb8/+0xbc and encodes with retained scene/ramp/preset selectors.",
+    "If Aux stage2 raw member+0xb8 is zero, microfunction types2/4/5 first seed0x19/0x11/0x17 respectively before encoding0xd5084f..0xd508c9.",
+    "Every SetMicroFunctionCodeByKeyPressStage invokes virtual+0xa0 scene synchronization after updating its member.",
+    "RefreshTemplateFromMacroFunction locks template callback+0xa4 while setting the recognized template. The template-after-change timer default precedes the lock check, so lock does not by itself suppress function6 block timer/expiry defaults.",
+    "UpdateMicroFunction retains the old selected stage code, sets its model microfunction, refreshes macro/template, checks availability, writes encoded stage code twice around scene-index adaptation, and can convert custom template26 with scene stages to template58.",
+    "SetAuxValues serializes four retained stage members for each Aux except template16 forces all four stored stage values to zero. Aux2 is serialized only when its collection count exceeds one.",
+    "Refresh reads both Aux grids when present; RefreshOtherTabs delegates to parent RefreshTabs. These callbacks are not a closed isolated dialog lifecycle."
+  ],
+  "reconciliation_flags": {
+    "offsets": [
+      "+0x8c",
+      "+0x8d",
+      "+0x8e"
+    ],
+    "semantics": "not yet positively identified",
+    "fresh_constructor": "Reviewed macro InternalCreate has no explicit writes to these flags.",
+    "bounded_writer_scan": "No matching byte mov writes in named-method ranges intersecting TInputSource0xd4e680..0xd51a00, TIOPEUnit0xd55000..0xd5a300, IOPE agent0x12d6200..0x12df700 and Aux/form region0x1189000..0x11b2000. This is neither a full writer census nor proof of runtime values.",
+    "stable_false_profile_admitted": false
+  },
+  "unitspec_stage_locations": [
+    {
+      "name": "Auxiliary1JP",
+      "address": "$96",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary1SR",
+      "address": "$97",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary1LP",
+      "address": "$98",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary1LR",
+      "address": "$99",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary2JP",
+      "address": "$9E",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary2SR",
+      "address": "$9F",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary2LP",
+      "address": "$A0",
+      "type": "int",
+      "protection": "checksum"
+    },
+    {
+      "name": "Auxiliary2LR",
+      "address": "$A1",
+      "type": "int",
+      "protection": "checksum"
+    }
+  ],
+  "remaining_blockers": [
+    {
+      "id": "ordered-factories",
+      "missing": "Complete ordered macro template registrations, group registrations/default assignment, function type/family raw decoder and all reachable matching/reconciliation branches. Four retained stages must be positively admitted before and after each operation.",
+      "why_flags_are_insufficient": "Stable flags resolve only reconciliation branches; they do not determine registration order, group defaults, byte decoding or first matching template."
+    },
+    {
+      "id": "initialized-entry",
+      "missing": "Exact LoadInputs/model creation through macro refresh/template event and non-normalizing top-level row initialization, with positive source type, input identity, application/scene/bistable graph and lock/updating state. A raw snapshot without this model is insufficient."
+    },
+    {
+      "id": "subset-membership",
+      "missing": "PopulateMacroFunctionsApp1/App2/Scene and exact positive application category/subset membership for the input and replacement template. EnsureAvailableMacrofunctionIsUsed fallback26 must be executed or explicitly refused."
+    },
+    {
+      "id": "dependent-state",
+      "missing": "Retained scene/ramp/preset selector decoder and source-specific stage2 zero seed; prove supported selection cannot enter scene synchronization, timer6 default, shutter/pot normalization or dependent tab mutation. Otherwise include those effects in ownership."
+    },
+    {
+      "id": "serializer-ownership",
+      "missing": "Exact owned PP projection including all four selected Aux stage parameters and every dependent changed field, complete raw read guard and rollback contract; explicitly exclude full-dialog SaveInputSources or reproduce its all-input allocations and sensor/Aux branches."
+    }
+  ],
+  "next_recovery_ranges": [
+    {
+      "name": "CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory",
+      "start": "0xc95b84",
+      "end": "0xc96a5c",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory",
+      "start": "0xc912c0",
+      "end": "0xc920e0",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.RegisterTemplate",
+      "start": "0xc984f8",
+      "end": "0xc9867c",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.RegisterKeyMicroFunctionGroup",
+      "start": "0xc92e0c",
+      "end": "0xc92efc",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.RegisterKeyMicroFunctionGroup",
+      "start": "0xc92efc",
+      "end": "0xc93020",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.GetTemplateAndGroup",
+      "start": "0xc986a0",
+      "end": "0xc98710",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.GetTemplateAndGroup",
+      "start": "0xc98710",
+      "end": "0xc98790",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.PopulateMacroFunctionsApp1",
+      "start": "0xd57300",
+      "end": "0xd57470",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.PopulateMacroFunctionsApp2",
+      "start": "0xd57470",
+      "end": "0xd575e0",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.PopulateMacroFunctionsScene",
+      "start": "0xd575e0",
+      "end": "0xd57768",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadInputs",
+      "start": "0x12d75a8",
+      "end": "0x12d7b44",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TfrmIOPEAuxMicroFunctions.TfrmIOPEAuxMicrofunctions.PopulateComboBoxList",
+      "start": "0x11b011c",
+      "end": "0x11b02c4",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_TFlashCxComboBox.TFlashCxComboBox.DoIndexChange",
+      "start": "0xbbbee8",
+      "end": "0xbbbff4",
+      "status": "required-recovery-not-closed"
+    },
+    {
+      "name": "CIS_FlashGUI.PrepareFlashCxComboBox",
+      "start": "0xc0ff4c",
+      "end": "0xc100c0",
+      "status": "required-recovery-not-closed"
+    }
+  ],
+  "decision": "No source-complete bounded transaction is established by this audit. A top-level advanced function-only row is narrower than the previous receipt stated and is a plausible next target; existing private EXE/MAP/spec inputs appear adequate for further static recovery. No additional hardware or CPU emulation is required to continue that source work.",
+  "not_admitted": [
+    "Raw macro-byte edit API",
+    "Assumed neighbor-stage preservation",
+    "Original dialog lifecycle",
+    "Native save/reload acceptance",
+    "Hardware or network operations"
+  ]
+}

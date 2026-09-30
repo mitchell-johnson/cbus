@@ -1,0 +1,6024 @@
+{
+  "format": "cbus-edlt-template-assignment-original-v1",
+  "captured_date": "2026-09-30",
+  "case_count": 67,
+  "scope": "Unchanged PPAttribute constructors/accessors; synthetic template assignment-loop and lookup proxies; fresh process per case",
+  "original_ppattribute_executed": true,
+  "original_dialog_executed": false,
+  "original_parent_lifecycle_executed": false,
+  "original_unit_lookup_executed": false,
+  "fresh_process_per_case": true,
+  "network_denied": true,
+  "physical_io": false,
+  "culture": "InvariantCulture",
+  "baseline_provisioning": "New original PPAttribute() in each new process; Name and dirty assigned through original properties, supplied raw tokens added directly to original Values BindingList before listeners attach",
+  "proxy_boundaries": [
+    "Template loop is a source-pinned harness sequence, not extracted original dialog IL",
+    "Lookup is linear case-sensitive FirstOrDefault over supplied attributes, not original CBusBaseUnit.GetPPAttribute",
+    "ListChanged and PropertyChanged listeners are synthetic recorders/fault injectors, not original bindings"
+  ],
+  "source_pins": {
+    "edlt_template_assignment_original.py": "a10f37c1b8bae7a05087049dc794cec382ad92ad347c3b7496e49d3f06b18c18",
+    "edlt_template_original.py": "b987f3ff6b6d097ceb76d047b850940ee65b87950f5f8b3e63dadcd1910013f8",
+    "edlt_template_assignment_probe.cs": "5f92d7f9ecb036a90acde20c859118a44c65ab8b1d7d50829466227a7fa9eeb7",
+    "CBusLogicModel.dll": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+    "mono-sgen64": "91b99fc4b1158785b43506f2d76f9998c31f0492128e5789fbaaab0e300afd49",
+    "mcs.exe": "857bb3129c3e2a5e7f8410db8fa5eb78139e934bb6279a72428597962311d771",
+    "mscorlib.dll": "86364b7803c92d8c88b590031f015f80b10b00641e9d067e07a529a131d815e4"
+  },
+  "original_method_receipts": [
+    "method\tget_HasBeenChanged\t0x0600064e\te2997966e7a24833034ab209e2e4e756331904d82ae9be59f8fea504cd6f77c0",
+    "method\tset_HasBeenChanged\t0x0600064f\tc6014d81e5390962f62e428afb28df2a7c3eb09d2ae278163264011bf700eaa0",
+    "method\tget_Name\t0x06000650\tc5983eae2fcc4d5e143930587f2c246d77a8146ff1ea22062b7b8ec7d3513734",
+    "method\tset_Name\t0x06000651\t22683ef98e8c7a4695ac22b293a8f95e65f36b63e1b0991dea872de6a9aa8d34",
+    "method\tget_Value\t0x06000652\t5031bb4fc4ea2a1eadf0955733bfee91e321e82b0abb7719ca939f1a17b1664d",
+    "method\tset_Value\t0x06000653\t77a4f21da7d331cd07bdf6ca0391a83abdaf39aceb2f2bbe12a53c7f7761dc7d",
+    "method\tget_ValueFull\t0x06000654\t5031bb4fc4ea2a1eadf0955733bfee91e321e82b0abb7719ca939f1a17b1664d",
+    "method\tset_ValueFull\t0x06000655\t2e7f764f58e5978a724957dd88f95ed764bd4aa01b987efd2ac62a8127b811c1",
+    "method\tget_ValueAsUtf8String\t0x06000656\t506585fb4568fb541292f163a62bae97a4f96bfec0ea977e6b6f52a97554e4d8",
+    "method\tset_ValueAsUtf8String\t0x06000657\ta8d8b0f75eadcd39f7ec7d66643e1faf7a73422dc1b6f2e7d20aa915a6eb71c0",
+    "method\tget_Item\t0x06000658\t46dfed1b7f28d685e524e357cd9d42f0cde95a3524ca11ba26ac8ab8082e865b",
+    "method\tset_Item\t0x06000659\t2234c89864637072916ece4f56d3ac4d03093495018c07ce2d1cde30352e442b",
+    "method\tget_Value1\t0x0600065a\taeff9194462c63be1ca95794240223e41d0817abc7d6b6eeb939273daa329d8c",
+    "method\tset_Value1\t0x0600065b\td23eeea163ec4a7a2f3cfea66e756a1a3bc200e40d904a7546645a276a2aa55f",
+    "method\tget_ValueAsBool\t0x0600065c\tee838ce79cde58ed888dbe6c5b0f1502d20827599a9242afff9be4083f681f6f",
+    "method\tset_ValueAsBool\t0x0600065d\tab055bff77b647fed764f0bb7076eff30f34a321c38fafa5e6b55d4fce8e7316",
+    "method\tget_ValueAsPercent\t0x0600065e\tbbd324fa9b866d923a849ec4e91ca90327752f910834ce7848b1425a3857bba7",
+    "method\tset_ValueAsPercent\t0x0600065f\t3bfa60b20b55ce450b3f88b3ed263d501dc102557de04dacac6e8e151918de36",
+    "method\tget_ValueAsInt\t0x06000660\tf635f0f7888238c7072e791fab87d72dad06a5db26815bf9f393136ba604b22f",
+    "method\tset_ValueAsInt\t0x06000661\t230ad79d6c98cc8cbb10a28ca58d197d1a40d0af9b0a9aa3488788fea2e1bc57",
+    "method\tget_ValuesAsInt\t0x06000662\t35d97cd92cacfc1fec48b1808eaa789dc8895388832fc7d622e9a63cc06e47bd",
+    "method\tset_ValuesAsInt\t0x06000663\t127aea4be036e6b968fdbee44644ae56d4947265bce52ffe3d14791f1c506e2e",
+    "method\tGetValue\t0x06000664\t642f37384715064eee4f5e71a67d0452f5bdae69ac1446ebbd435ba4d7068d64",
+    "method\tSetValue\t0x06000665\t89d3338c34dd492f6259e2f37f85c4981390273ca459dacb2a31169c7a027d92",
+    "method\tadd_PropertyChanged\t0x06000666\tec7a01f92c2223bd9c8c871bee4c7faba4052f4f09a9ecf179ac436fa38c6e86",
+    "method\tremove_PropertyChanged\t0x06000667\tdb0c4fa9087781c35290aafbf7520aeaba8d6c95870a341a05370e1f0e51ba32",
+    "method\tNotifyPropertyChanged\t0x06000668\t2ac68d91f85c1271e10c115751e5cbf8e1c6c00beb16922faac7f97a1a993bf6",
+    "method\t.ctor\t0x06000669\t4346130ce94414844a40aa0d0dcfb34e6c2736beb5846f0d1efc62a6e3be3ad6",
+    "method\t.cctor\t0x0600066a\t684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+  ],
+  "unchanged_inputs": true,
+  "cases": [
+    {
+      "id": "template-short-retains-tail",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X B C",
+          "value_full": "X B C",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "7e42e3f13a20df52e7d757a5f85939c47569d80cb617c86e7af5969894ac61b0"
+    },
+    {
+      "id": "template-long-appends",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y Z",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y Z",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 2,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "Z"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y Z",
+          "value_full": "X Y Z",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "Z"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "8d7b7cd095aa666c756c3437b1032beb98f42ec153bb16fef63e15d1ababb61e"
+    },
+    {
+      "id": "template-identical-no-dirty",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "A B",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "A B",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "ec5f1f02732ba426fa02d1d69120f12d609949a8893d6be7f73947badaaa6522"
+    },
+    {
+      "id": "template-identical-preserves-dirty",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": true
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "A B",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": true,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "A B",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": true,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "1fb581c3d497fd8c35700f737862dcfe961e70cd917555de3d1a91228dc10f03"
+    },
+    {
+      "id": "template-leading-empty-token",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": " X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": " X",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "",
+            "X",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X C",
+          "value_full": "X C",
+          "value1": "",
+          "dirty": true,
+          "tokens": [
+            "",
+            "X",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "3170c6aa19bccbb0dde15b9c71bdfb5dab58e61e61ea8776b5463cfc1ae5dae2"
+    },
+    {
+      "id": "template-double-space",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X  Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X  Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 2,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "",
+            "Y"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X  Y",
+          "value_full": "X  Y",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "",
+            "Y"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "027173df15d371e0940315c296ecdef49bf180775f67056cc0897f21e779acd1"
+    },
+    {
+      "id": "template-trailing-space",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X ",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X ",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X  C",
+          "value_full": "X  C",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "d9dc584944c83f6f0a03d12bc281dae110ec56a146ce7ff186937aa87515612c"
+    },
+    {
+      "id": "template-empty-retains-tail",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "",
+            "B"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "B",
+          "value_full": "B",
+          "value1": "",
+          "dirty": true,
+          "tokens": [
+            "",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "e135df686ac9b4253dcd792ace5eae61a6da40f44d1108b8d096067316796d98"
+    },
+    {
+      "id": "template-tab-is-one-token",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X\tY",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X\tY",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X\tY",
+            "B"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X\tY B",
+          "value_full": "X\tY B",
+          "value1": "X\tY",
+          "dirty": true,
+          "tokens": [
+            "X\tY",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "5b5a468e43f641cee8f3c8dfff080b738508070cb64adac4910212a2b3988e7e"
+    },
+    {
+      "id": "template-normalize-dollar",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0xAB",
+            "tail"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$ab",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xAB tail",
+          "value_full": "0xAB tail",
+          "value1": "0xAB",
+          "dirty": false,
+          "tokens": [
+            "0xAB",
+            "tail"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$ab",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xAB tail",
+          "value_full": "0xAB tail",
+          "value1": "0xAB",
+          "dirty": true,
+          "tokens": [
+            "0xAB",
+            "tail"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "07a0edee7dcff17cac4d79187a7073903c2e02a8415cb2fe261ee7314057ad8c"
+    },
+    {
+      "id": "template-normalize-dollar-x",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0xab",
+            "tail"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$xab",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xab tail",
+          "value_full": "0xab tail",
+          "value1": "0xab",
+          "dirty": false,
+          "tokens": [
+            "0xab",
+            "tail"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$xab",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xab tail",
+          "value_full": "0xab tail",
+          "value1": "0xab",
+          "dirty": true,
+          "tokens": [
+            "0xab",
+            "tail"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "4bb832a9001fcd04bd304cda9b0ec08e853c25667a0d49492c4e177e11d287b4"
+    },
+    {
+      "id": "template-normalize-minus-one",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0xff",
+            "tail"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "0xffffffff",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xff tail",
+          "value_full": "0xff tail",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "tail"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "0xffffffff",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xff tail",
+          "value_full": "0xff tail",
+          "value1": "0xff",
+          "dirty": true,
+          "tokens": [
+            "0xff",
+            "tail"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "8adc3fc729f733089c4399b7527be3a6990be563e569b6b1dfd1bbfecd380747"
+    },
+    {
+      "id": "template-uppercase-minus-one-unchanged",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "0xFFFFFFFF",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "0xFFFFFFFF",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0xFFFFFFFF"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xFFFFFFFF",
+          "value_full": "0xFFFFFFFF",
+          "value1": "0xFFFFFFFF",
+          "dirty": true,
+          "tokens": [
+            "0xFFFFFFFF"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "0cf25441fc58fd017fabf18068bc717edacc6d586f37441e457abbdb892ae86a"
+    },
+    {
+      "id": "template-uppercase-prefix-minus-one-unchanged",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "0Xffffffff",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "0Xffffffff",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0Xffffffff"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0Xffffffff",
+          "value_full": "0Xffffffff",
+          "value1": "0Xffffffff",
+          "dirty": true,
+          "tokens": [
+            "0Xffffffff"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "3e548528e727e27e5a2561ce0be717ed3d1eef6319697ecc1c52ef73fbe87964"
+    },
+    {
+      "id": "template-dollar-letter-i",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$i",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$i",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0xI"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xI",
+          "value_full": "0xI",
+          "value1": "0xI",
+          "dirty": true,
+          "tokens": [
+            "0xI"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "55f142a79b54ada061b44e564d148c337bd777cdb6ed6ffc4a02586709f02bf0"
+    },
+    {
+      "id": "template-dollar-sharp-s",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u00df",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u00df",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x\u00df"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x\u00df",
+          "value_full": "0x\u00df",
+          "value1": "0x\u00df",
+          "dirty": true,
+          "tokens": [
+            "0x\u00df"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "5c995ca4b5a64520929f0af143105c8a99d18de2406eb83c4d60f493ea81c619"
+    },
+    {
+      "id": "template-dollar-dotless-i",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u0131",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u0131",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x\u0131"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x\u0131",
+          "value_full": "0x\u0131",
+          "value1": "0x\u0131",
+          "dirty": true,
+          "tokens": [
+            "0x\u0131"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "ff67e0537c427e1c0cadbfaec6c15a7272faf971510a763a32db584986e541cd"
+    },
+    {
+      "id": "template-dollar-x-sharp-s",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$x\u00df",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$x\u00df",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x\u00df"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x\u00df",
+          "value_full": "0x\u00df",
+          "value1": "0x\u00df",
+          "dirty": true,
+          "tokens": [
+            "0x\u00df"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "b9903080568b96cb55c7bd1b80faf84447b15c649ae2506c0ef2c5410fb888ae"
+    },
+    {
+      "id": "template-dollar-empty-suffix",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x",
+          "value_full": "0x",
+          "value1": "0x",
+          "dirty": true,
+          "tokens": [
+            "0x"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "1cb120c0b0ea5ba3d6335354b2aae7d19ce3ee46de4654df312809a125c0375c"
+    },
+    {
+      "id": "template-dollar-x-empty-suffix",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$x",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$x",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x",
+          "value_full": "0x",
+          "value1": "0x",
+          "dirty": true,
+          "tokens": [
+            "0x"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "6171c54b6dd237bd3191d333edcd12142b738934d8f07eaf8b2dce4caf301030"
+    },
+    {
+      "id": "template-dollar-uppercase-x",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$Xab",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$Xab",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0xXAB"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xXAB",
+          "value_full": "0xXAB",
+          "value1": "0xXAB",
+          "dirty": true,
+          "tokens": [
+            "0xXAB"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "3684e4c47ddeca82b70d0673c195a22e9798bef142b5488fe19e01c034515afc"
+    },
+    {
+      "id": "template-dollar-ignorable-prefix",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u200dxab",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "$\u200dxab",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0\u200dxab"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0\u200dxab",
+          "value_full": "0\u200dxab",
+          "value1": "0\u200dxab",
+          "dirty": true,
+          "tokens": [
+            "0\u200dxab"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "39feb1e88f70b3998bd11bbd754cac2fd1c73cb5bc98d9ce543ef7f5b858f4d9"
+    },
+    {
+      "id": "template-dollar-leading-ignorable-prefix",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "\u200d$xab",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "\u200d$xab",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0$xab"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0$xab",
+          "value_full": "0$xab",
+          "value1": "0$xab",
+          "dirty": true,
+          "tokens": [
+            "0$xab"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "f37840db11acfc0237309bfc1a11b3aafee5f7c0edab9e527cf9663b1913a66f"
+    },
+    {
+      "id": "template-empty-baseline",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "A",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "A",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": true,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "dbb0b41b073723e22c3bc72238f5b56a5c8c8e90e189a47dde39ad26a5f5202a"
+    },
+    {
+      "id": "template-raw-null-baseline",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            null,
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "B",
+          "value_full": "B",
+          "value1": null,
+          "dirty": false,
+          "tokens": [
+            null,
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X B",
+          "value_full": "X B",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "0f669dc13dced4dc08ee83b29f0c26bc3dec983150914768c134bc02706c9be6"
+    },
+    {
+      "id": "template-null-input-failure",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "Value_setter",
+          "initialize_mode": true,
+          "error": "System.NullReferenceException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        }
+      ],
+      "stdout_sha256": "3a012cd8e2fbbb549954b20e45d66fc7aa0fa02b369d5bdecec01d67ff6fd234"
+    },
+    {
+      "id": "template-empty-raw-join",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "",
+            "",
+            "B",
+            ""
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "B ",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "B ",
+          "value_full": "B ",
+          "value1": "",
+          "dirty": false,
+          "tokens": [
+            "",
+            "",
+            "B",
+            ""
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "B ",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "B ",
+          "value_full": "B ",
+          "value1": "",
+          "dirty": false,
+          "tokens": [
+            "",
+            "",
+            "B",
+            ""
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "5c2eba861c8ea08eb90e400be0106ff53e509e972c958b1cc817b79cecb3b830"
+    },
+    {
+      "id": "template-duplicates-last-prefix-retains-tail",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "Z",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y C",
+          "value_full": "X Y C",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 1,
+          "mode": "template",
+          "name": "Value",
+          "value": "Z",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": true,
+          "tokens": [
+            "Z",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-1",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "Z Y C",
+          "value_full": "Z Y C",
+          "value1": "Z",
+          "dirty": true,
+          "tokens": [
+            "Z",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 1,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "957577b752e4da5f4e75ec660ded566c9cc5be3b6e036438c93fbf8bc486a51e"
+    },
+    {
+      "id": "template-unknown-no-mutation",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Unknown",
+          "value": "X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Unknown",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "5f94a5d319c7cc9ed0bf860827b8c2ab2c95bbe25624c4838dad8eff2dfd16f4"
+    },
+    {
+      "id": "template-case-sensitive-lookup",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "value",
+          "value": "X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "cf7637b3d943f8b53b571540a8015e9d23d0325f84f3f8fdd427beb6437ec3ac"
+    },
+    {
+      "id": "template-stale-initialize-cleared",
+      "initial_initialize_mode": true,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "A",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "A",
+          "index": 0
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "0a608c6cf9f5f992591072920ecbb87d984970e81f785d569365674f2eedcaab"
+    },
+    {
+      "id": "template-first-duplicate-baseline-name",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Value",
+          "tokens": [
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Value",
+          "value": "B",
+          "value_full": "B",
+          "value1": "B",
+          "dirty": false,
+          "tokens": [
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X",
+          "value_full": "X",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Value",
+          "value": "B",
+          "value_full": "B",
+          "value1": "B",
+          "dirty": false,
+          "tokens": [
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "80564175cfcf064e71e923af4f56925a350b55b5cd52fd931c8ac96438a67ee5"
+    },
+    {
+      "id": "application-normal",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Application",
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "48 202",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "48 202",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x30",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x30",
+            "0xca",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0x30 0xca TAIL",
+          "value_full": "0x30 0xca TAIL",
+          "value1": "0x30",
+          "dirty": true,
+          "tokens": [
+            "0x30",
+            "0xca",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "b5a44596267a36bcc4502dfd764e0703fdfe393e72282d3f713068c8d6c96b22"
+    },
+    {
+      "id": "application-short",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Application",
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "48",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "48",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0x30",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0x30 0xff TAIL",
+          "value_full": "0x30 0xff TAIL",
+          "value1": "0x30",
+          "dirty": true,
+          "tokens": [
+            "0x30",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "a30655f90acf4e412fc13ecbb6e8729a0533a437e98f719da8d90f80e90ce463"
+    },
+    {
+      "id": "application-empty",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Application",
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff TAIL",
+          "value_full": "0xff TAIL",
+          "value1": "",
+          "dirty": true,
+          "tokens": [
+            "",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "bb09d2464723a0d52cb3a237e77c4184f28ec8259f677066fe618675ef9e18cb"
+    },
+    {
+      "id": "application-negative",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Application",
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "-1 202",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "-1 202",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xca",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xca TAIL",
+          "value_full": "0xff 0xca TAIL",
+          "value1": "0xff",
+          "dirty": true,
+          "tokens": [
+            "0xff",
+            "0xca",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "2211372a14e5b14de7cbc22b079be5f2a6d25e5b5f7a358770f97aa93f8680cd"
+    },
+    {
+      "id": "application-double-space",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Application",
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "application_conversion",
+          "initialize_mode": false,
+          "error": "System.ArgumentOutOfRangeException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Application",
+          "value": "0xff 0xff TAIL",
+          "value_full": "0xff 0xff TAIL",
+          "value1": "0xff",
+          "dirty": false,
+          "tokens": [
+            "0xff",
+            "0xff",
+            "TAIL"
+          ]
+        }
+      ],
+      "stdout_sha256": "df2e56600c0ea1f46d1043e4a7b0f06b0fdff84c493008fd8e518cf70b0eef1f"
+    },
+    {
+      "id": "application-unknown-malformed-fails-before-lookup",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "application_conversion",
+          "initialize_mode": false,
+          "error": "System.ArgumentOutOfRangeException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        }
+      ],
+      "stdout_sha256": "32b15ee007b48fb789a3319de5e35b330ca5a0e8ff4f0b51efedfc4ff4c7deb6"
+    },
+    {
+      "id": "application-malformed-retains-stale-initialize",
+      "initial_initialize_mode": true,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Application",
+          "value": "48  202",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "application_conversion",
+          "initialize_mode": true,
+          "error": "System.ArgumentOutOfRangeException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        }
+      ],
+      "stdout_sha256": "a9976d0ae5b31b6a4150a52dea19fd0f6d06ef498f4facc5aab9ca8662f663e7"
+    },
+    {
+      "id": "direct-normal",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y C",
+          "value_full": "X Y C",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "16a18fbcc8f76a3e52b7642890c71b84978c36efb3ddcfdcc69eeeafe47eb6d0"
+    },
+    {
+      "id": "direct-initialize",
+      "initial_initialize_mode": true,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y C",
+          "value_full": "X Y C",
+          "value1": "X",
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": true
+        }
+      ],
+      "stdout_sha256": "362f3f497f087aa72f6d796d444535a336239bbcea26cc583b415c8d2c00a1dc"
+    },
+    {
+      "id": "full-clears-tail",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_full",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_full",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "Reset",
+          "new_index": -1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "X Y"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X Y"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y",
+          "value_full": "X Y",
+          "value1": "X Y",
+          "dirty": true,
+          "tokens": [
+            "X Y"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "fb8e248a4cdeedbe4d4c43186552475724e0d4dd7c6262358b17d1cc7c5d11d4"
+    },
+    {
+      "id": "value-null-fails-before-write",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_value",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_value",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "set_value",
+          "initialize_mode": false,
+          "error": "System.NullReferenceException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        }
+      ],
+      "stdout_sha256": "68c552bc5c024d95d245d53822494c8542769e9291c29a04718db5689207672f"
+    },
+    {
+      "id": "full-null-clears-then-fails",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_full",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_full",
+          "name": "Value",
+          "value": null,
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "Reset",
+          "new_index": -1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "set_full",
+          "initialize_mode": false,
+          "error": "System.NullReferenceException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        }
+      ],
+      "stdout_sha256": "bf79647c5f336b9f85664bb49ad38ad5a2ca7e0bd750484ac8b4d40e1c62c269"
+    },
+    {
+      "id": "full-dollar-uppercases-whole-string",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_full",
+          "name": "Value",
+          "value": "$ab cd",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_full",
+          "name": "Value",
+          "value": "$ab cd",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "Reset",
+          "new_index": -1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "0xAB CD"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "0xAB CD"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xAB CD",
+          "value_full": "0xAB CD",
+          "value1": "0xAB CD",
+          "dirty": true,
+          "tokens": [
+            "0xAB CD"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "429521782e4472ac7d5cf6e74be2edcb0e42171010ceb0abbdca472d7acaebda"
+    },
+    {
+      "id": "item-beyond-end-appends-one",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_item",
+          "name": "Value",
+          "value": "Z",
+          "index": 7
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_item",
+          "name": "Value",
+          "value": "Z",
+          "index": 7
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemAdded",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "A",
+            "Z"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "A",
+            "Z"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A Z",
+          "value_full": "A Z",
+          "value1": "A",
+          "dirty": true,
+          "tokens": [
+            "A",
+            "Z"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "73f39bd6d2a55b21834034fbb172e2f3fe948c657086334dd90533090d9be57f"
+    },
+    {
+      "id": "item-negative-fails",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_item",
+          "name": "Value",
+          "value": "Z",
+          "index": -1
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_item",
+          "name": "Value",
+          "value": "Z",
+          "index": -1
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "set_item",
+          "initialize_mode": false,
+          "error": "System.ArgumentOutOfRangeException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        }
+      ],
+      "stdout_sha256": "7212e47ba3f5f7066128f4157dae6798a9d317a23b894b72ed0113f1ebfa63d5"
+    },
+    {
+      "id": "direct-property-listener-failure",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": true,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "set_value",
+          "initialize_mode": false,
+          "error": "System.InvalidOperationException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X B",
+          "value_full": "X B",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        }
+      ],
+      "stdout_sha256": "330db6355e803e1dabd3706beb9a6c9fd00848c434f01d4d10f484d259b9cc5e"
+    },
+    {
+      "id": "template-property-listener-suppressed",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": true,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y",
+          "value_full": "X Y",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "9f647bbd36f44fa5747def6e6c9e09e2a2c7387440639317e1a46a86f93012af"
+    },
+    {
+      "id": "direct-list-listener-failure",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 2,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_value",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "set_value",
+          "initialize_mode": false,
+          "error": "System.InvalidOperationException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y C",
+          "value_full": "X Y C",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        }
+      ],
+      "stdout_sha256": "fdaf3178209e2a995036f358b386aabd3a4d2d09b31b855c5620d73c81b34ae4"
+    },
+    {
+      "id": "template-list-listener-failure-stale-init",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 2,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "Z",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B C",
+          "value_full": "A B C",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "B",
+            "C"
+          ]
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 1,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "Value_setter",
+          "initialize_mode": true,
+          "error": "System.InvalidOperationException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X Y C",
+          "value_full": "X Y C",
+          "value1": "X",
+          "dirty": false,
+          "tokens": [
+            "X",
+            "Y",
+            "C"
+          ]
+        }
+      ],
+      "stdout_sha256": "49e2e00fad1d88bbdcef292d1839ce4c291f3ca9de29360e9c96309e5c1f6cfa"
+    },
+    {
+      "id": "template-second-attribute-failure",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 2,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        },
+        {
+          "name": "Other",
+          "tokens": [
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "mode": "template",
+          "name": "Other",
+          "value": "Y",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Other",
+          "value": "B",
+          "value_full": "B",
+          "value1": "B",
+          "dirty": false,
+          "tokens": [
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "template",
+          "name": "Value",
+          "value": "X",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X",
+          "value_full": "X",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 1,
+          "name": "Other",
+          "value": "B",
+          "value_full": "B",
+          "value1": "B",
+          "dirty": false,
+          "tokens": [
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 1,
+          "mode": "template",
+          "name": "Other",
+          "value": "Y",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 1,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": true,
+          "dirty": false,
+          "tokens": [
+            "Y"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 1,
+          "boundary": "Value_setter",
+          "initialize_mode": true,
+          "error": "System.InvalidOperationException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-1",
+          "initialize_mode": true,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "X",
+          "value_full": "X",
+          "value1": "X",
+          "dirty": true,
+          "tokens": [
+            "X"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "failed-1",
+          "initialize_mode": true,
+          "attribute_index": 1,
+          "name": "Other",
+          "value": "Y",
+          "value_full": "Y",
+          "value1": "Y",
+          "dirty": false,
+          "tokens": [
+            "Y"
+          ]
+        }
+      ],
+      "stdout_sha256": "a4c4bc5739117038d21d1581c53a7c831092c7473626f0b65cf6fe27181947b4"
+    },
+    {
+      "id": "getter-int-empty",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "get_int",
+          "initialize_mode": false,
+          "error": "System.NullReferenceException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        }
+      ],
+      "stdout_sha256": "c701ac78fab16e3997cb157f027c59749585256966dfa05af9b8ff9ec6e078cd"
+    },
+    {
+      "id": "getter-int-null",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            null
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": [
+            null
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "get_int",
+          "initialize_mode": false,
+          "error": "System.NullReferenceException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": [
+            null
+          ]
+        }
+      ],
+      "stdout_sha256": "c5586449f3235252984ab33c17a990a41e7193ba66746be4caf40e0d6fc60385"
+    },
+    {
+      "id": "getter-int-signed-hex",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0xffffffff",
+            "tail"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xffffffff tail",
+          "value_full": "0xffffffff tail",
+          "value1": "0xffffffff",
+          "dirty": false,
+          "tokens": [
+            "0xffffffff",
+            "tail"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "int",
+          "value": -1
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xffffffff tail",
+          "value_full": "0xffffffff tail",
+          "value1": "0xffffffff",
+          "dirty": false,
+          "tokens": [
+            "0xffffffff",
+            "tail"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "1b4daa1b435c1838e55f6de7e28b216201584d18174f17374006ec9acc61f9f5"
+    },
+    {
+      "id": "getter-int-hex-whitespace",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0x ff "
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x ff ",
+          "value_full": "0x ff ",
+          "value1": "0x ff ",
+          "dirty": false,
+          "tokens": [
+            "0x ff "
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "int",
+          "value": 255
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x ff ",
+          "value_full": "0x ff ",
+          "value1": "0x ff ",
+          "dirty": false,
+          "tokens": [
+            "0x ff "
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "86f81b4b52e1abc88f7c2e20027b9c3e70d3118ce0c433707dca5f8ad59b17a4"
+    },
+    {
+      "id": "getter-int-decimal-whitespace",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            " 48 "
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": " 48 ",
+          "value_full": " 48 ",
+          "value1": " 48 ",
+          "dirty": false,
+          "tokens": [
+            " 48 "
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "int",
+          "value": 48
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": " 48 ",
+          "value_full": " 48 ",
+          "value1": " 48 ",
+          "dirty": false,
+          "tokens": [
+            " 48 "
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "49fa44012827a65aaedf723bdb4902ce126549d31531c07bb860666801460e13"
+    },
+    {
+      "id": "getter-int-bad",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "nope"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "nope",
+          "value_full": "nope",
+          "value1": "nope",
+          "dirty": false,
+          "tokens": [
+            "nope"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "get_int",
+          "initialize_mode": false,
+          "error": "System.FormatException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "nope",
+          "value_full": "nope",
+          "value1": "nope",
+          "dirty": false,
+          "tokens": [
+            "nope"
+          ]
+        }
+      ],
+      "stdout_sha256": "2271dcce9e7578bbe2230304045a8814730ad4e16c1366c08c086be823b1d192"
+    },
+    {
+      "id": "getter-bool-empty",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "",
+          "value_full": "",
+          "value1": null,
+          "dirty": false,
+          "tokens": []
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "3e1c1eccb7ce262d48db504d42055169f5c355ed30390a326597c1c200e8bd59"
+    },
+    {
+      "id": "getter-bool-zero",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0x0"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x0",
+          "value_full": "0x0",
+          "value1": "0x0",
+          "dirty": false,
+          "tokens": [
+            "0x0"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x0",
+          "value_full": "0x0",
+          "value1": "0x0",
+          "dirty": false,
+          "tokens": [
+            "0x0"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "b17e47ced85974975b7b52190ac7c04fd4de0b176bf0922cae6648e456ddc999"
+    },
+    {
+      "id": "getter-bool-upper-zero",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0X0"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0X0",
+          "value_full": "0X0",
+          "value1": "0X0",
+          "dirty": false,
+          "tokens": [
+            "0X0"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0X0",
+          "value_full": "0X0",
+          "value1": "0X0",
+          "dirty": false,
+          "tokens": [
+            "0X0"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "3ec0bd96abe17835856dcbd06ce21cf1d1baedce75404a731cac96c164fa3ad2"
+    },
+    {
+      "id": "getter-bool-decimal-zero",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0",
+          "value_full": "0",
+          "value1": "0",
+          "dirty": false,
+          "tokens": [
+            "0"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_bool",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0",
+          "value_full": "0",
+          "value1": "0",
+          "dirty": false,
+          "tokens": [
+            "0"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "d826659fbc0bdfb1ae8e88b7fb1575ceb985e3b469670c677aa2ba058ec0a127"
+    },
+    {
+      "id": "getter-values-little-endian",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "0x01",
+            "0x02"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_values_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x01 0x02",
+          "value_full": "0x01 0x02",
+          "value1": "0x01",
+          "dirty": false,
+          "tokens": [
+            "0x01",
+            "0x02"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_values_int",
+          "name": "Value",
+          "value": "",
+          "index": 0
+        },
+        {
+          "kind": "getter",
+          "type": "int",
+          "value": 513
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x01 0x02",
+          "value_full": "0x01 0x02",
+          "value1": "0x01",
+          "dirty": false,
+          "tokens": [
+            "0x01",
+            "0x02"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "137faab5195e40e0edcc8165d2b1dc28e9f32adf3fea6759a4d204b107302893"
+    },
+    {
+      "id": "getter-outside-is-null",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_item",
+          "name": "Value",
+          "value": "",
+          "index": 3
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_item",
+          "name": "Value",
+          "value": "",
+          "index": 3
+        },
+        {
+          "kind": "getter",
+          "type": "string",
+          "value": null
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "5bce050f68bcd8635acf675c7973e879e166d32c776191e410c400e3fe3bbc3e"
+    },
+    {
+      "id": "getter-negative-fails",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "get_item",
+          "name": "Value",
+          "value": "",
+          "index": -1
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "get_item",
+          "name": "Value",
+          "value": "",
+          "index": -1
+        },
+        {
+          "kind": "result",
+          "status": "error",
+          "operation_index": 0,
+          "boundary": "get_item",
+          "initialize_mode": false,
+          "error": "System.ArgumentOutOfRangeException"
+        },
+        {
+          "kind": "state",
+          "phase": "failed-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A",
+          "value_full": "A",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A"
+          ]
+        }
+      ],
+      "stdout_sha256": "62b5a3abb75b9c8b911ffe2bf129e889143c91ea705cbae2105f097a71f100f1"
+    },
+    {
+      "id": "integer-setter-clamp-negative",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_int",
+          "name": "Value",
+          "value": "-1",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_int",
+          "name": "Value",
+          "value": "-1",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "0x0",
+            "B"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "0x0",
+            "B"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0x0 B",
+          "value_full": "0x0 B",
+          "value1": "0x0",
+          "dirty": true,
+          "tokens": [
+            "0x0",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "7e61a4f40aaed8bcffb5631674946920f0ecda4cae954d9a3a0e47ee50211b7f"
+    },
+    {
+      "id": "integer-setter-clamp-overflow",
+      "initial_initialize_mode": false,
+      "list_listener_throw_on_event": 0,
+      "property_listener_throws": false,
+      "attributes": [
+        {
+          "name": "Value",
+          "tokens": [
+            "A",
+            "B"
+          ],
+          "dirty": false
+        }
+      ],
+      "operations": [
+        {
+          "mode": "set_int",
+          "name": "Value",
+          "value": "256",
+          "index": 0
+        }
+      ],
+      "observations": [
+        {
+          "kind": "state",
+          "phase": "baseline",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "A B",
+          "value_full": "A B",
+          "value1": "A",
+          "dirty": false,
+          "tokens": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "kind": "operation",
+          "operation_index": 0,
+          "mode": "set_int",
+          "name": "Value",
+          "value": "256",
+          "index": 0
+        },
+        {
+          "kind": "list_event",
+          "attribute_index": 0,
+          "change_type": "ItemChanged",
+          "new_index": 0,
+          "old_index": -1,
+          "initialize_mode": false,
+          "dirty": false,
+          "tokens": [
+            "0xFF",
+            "B"
+          ]
+        },
+        {
+          "kind": "property_event",
+          "attribute_index": 0,
+          "property": "Value",
+          "initialize_mode": false,
+          "dirty": true,
+          "tokens": [
+            "0xFF",
+            "B"
+          ]
+        },
+        {
+          "kind": "state",
+          "phase": "after-0",
+          "initialize_mode": false,
+          "attribute_index": 0,
+          "name": "Value",
+          "value": "0xFF B",
+          "value_full": "0xFF B",
+          "value1": "0xFF",
+          "dirty": true,
+          "tokens": [
+            "0xFF",
+            "B"
+          ]
+        },
+        {
+          "kind": "result",
+          "status": "ok",
+          "operation_index": 0,
+          "boundary": "completed",
+          "initialize_mode": false
+        }
+      ],
+      "stdout_sha256": "38e1db6b080c2cf5a200d886479a1f3d985ba70976d320d74e0a348734cf7a0f"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "format": "cbus-iope-join-groups-source-review-v1",
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": [
+    {
+      "name": "CIS_TfrmEnvironment.TfrmEnvironment.HandleJoinGroupChange",
+      "start": "0x11aa598",
+      "end": "0x11aa6ec",
+      "sha256": "02ec962c23e2ab7d682ae378e3f3398e47057af3ad925454d948e6c98850068a"
+    },
+    {
+      "name": "CIS_TfrmEnvironment.TfrmEnvironment.HandleJoinGroupOnIncludeItem",
+      "start": "0x11a9f9c",
+      "end": "0x11aa130",
+      "sha256": "2ceb2df72a7884f3398fbecb580481d949580b2e0665949eedb88320c24bfaa9"
+    },
+    {
+      "name": "CIS_TfrmEnvironment.TfrmEnvironment.SetCBusUnit",
+      "start": "0x11aa130",
+      "end": "0x11aa504",
+      "sha256": "905c40a9e9b0f48d0d6253ae6b7884cb5e394310040ca0528bee87c52a5d56d0"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleJoinGroupChange",
+      "start": "0x11ad2fc",
+      "end": "0x11ad3bc",
+      "sha256": "ee290b87afc7a1884aa0f6915c5c2de17e84aba116a1f4318206e61b0efb3f6c"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleSecJoinGroupOnIncludeItem",
+      "start": "0x11ad5c0",
+      "end": "0x11ad738",
+      "sha256": "f0235c5e3639735754550fa56a17e016452b17545d61783e5ba1288b8d11cdbd"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.SetCBusUnit",
+      "start": "0x11ac5b0",
+      "end": "0x11ac6a0",
+      "sha256": "1b62afdf8241fce115507b1d90b7306ce3967e85796cca5e63aa6926d5a6fbf1"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadJoinModeAttributes",
+      "start": "0x12d9afc",
+      "end": "0x12da644",
+      "sha256": "148299774fa1c98443d3ce113370192ff62125c4a0b1d944ac593ebb905e9149"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveJoinModeAttributes",
+      "start": "0x12da98c",
+      "end": "0x12db558",
+      "sha256": "68da0827d771b2a252064cd3835b6662a56f6672c537c818920857429914940e"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.HandleJoinApplicationChange",
+      "start": "0xd577b0",
+      "end": "0xd57818",
+      "sha256": "44e9cdb23b7b05c8362e0b3983836db1d7adece03c21eb06a5e11469d38dccfd"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.InternalCreate",
+      "start": "0xd54a5c",
+      "end": "0xd55f54",
+      "sha256": "7eef04e9c00cf59c90f4a0b6690b88723e0d2f5c659cd074f9b982b947cedc98"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.SetJoinApplication",
+      "start": "0xd5953c",
+      "end": "0xd59560",
+      "sha256": "c895d035088570a19ba427a7f8d745ca9c87c96874ff9854dc09f165f8533161"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.SetJoinGroup",
+      "start": "0xd59560",
+      "end": "0xd59584",
+      "sha256": "3521b237f54cd348ae0e06edf4f779fc61f0adc0a26b720786c2695bec6dcce4"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.SetSecJoinApplication",
+      "start": "0xd58a30",
+      "end": "0xd58a54",
+      "sha256": "ed67665aea714333981de6f83d196253dc6cc1efe334f99b0e168ad1ab81d644"
+    },
+    {
+      "name": "CIS_TIOPEUnit.TIOPEUnit.SetSecJoinGroup",
+      "start": "0xd58a54",
+      "end": "0xd58a78",
+      "sha256": "2aca287d42f117d9106a1d2b0cdc18f73558da4820c6891bb7b468d71c25b30b"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadAreaGroupAddress",
+      "start": "0x12d66b4",
+      "end": "0x12d66fc",
+      "sha256": "673ae4369f38a88f91fec39fdbe27f049e89ad601508c2d51f67eec93339c5b5"
+    }
+  ],
+  "strings": [
+    {
+      "start": "0x11aa440",
+      "size": 30,
+      "value": "JoinApplication",
+      "sha256": "b5220019bf267ea239aede061fba03c6e2a4c04030b4511df7066e3a33a83f9e"
+    },
+    {
+      "start": "0x11aa46c",
+      "size": 18,
+      "value": "JoinGroup",
+      "sha256": "2cc2d26ef08e19ad89d239445f98d0e4285ed807edf892587f9e6f1853e12971"
+    },
+    {
+      "start": "0x11ac668",
+      "size": 24,
+      "value": "SecJoinGroup",
+      "sha256": "af7314771e4951e8ff43124ee1a370be1ecba48c69c46ebda5482b7bc6b5746d"
+    }
+  ],
+  "source_rules": [
+    "Load chooses non255 Enable Control before Primary independently for first and second",
+    "Save group projection resets all four fields to255 and routes both group addresses using FIRST JoinApplication",
+    "JoinApplication has HandleJoinApplicationChange callback; group attributes and SecJoinApplication have no callback installed in InternalCreate",
+    "Changing first application clears BOTH groups; this component has no application selection",
+    "First/second selectors exclude used block objects, Area, opposite Join and active corridor object",
+    "IsUnused fast path accepts second unused object before conflicts",
+    "First change handlers only alter UI color/enabled state, including second selector eligibility",
+    "SetCBusUnit invokes corridor initialization; states needing corridor writes are refused"
+  ],
+  "limits": [
+    "Existing assigned first group, primary48..95 or Enable Control203",
+    "First-group clear, app changes, dual-populated and mixed effective applications refused",
+    "Complete Environment Save, recovery normalization, input allocation, macro/scene setters and group creation excluded",
+    "Native physical behavior unverified"
+  ],
+  "original_execution": false,
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+    "TFRMENVIRONMENT": "1a2391ef0beba6140b9a13ed9a47813bb0f6d044457e0d712581c636763ddd02",
+    "TFRMIOPEENVIRONMENT": "5acf527a852b969033e065727e6667b469fdfa472c3f0161daa178255b6ea8aa"
+  }
+}

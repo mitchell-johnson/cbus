@@ -1,0 +1,132 @@
+{
+  "format": "cbus-iope-environment-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754",
+  "original_execution": false,
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "methods": [
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.chkSecondOfficeEnabledClick",
+      "start": "0x11ac7f0",
+      "end": "0x11ac8f0",
+      "sha256": "13d86d2dc6638e1c9be48c81040de67da33eb237d1fb5a0dceb6ca7ccee82b5f"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.GetFirstUnusedCorridorLinkBlock",
+      "start": "0x11acc08",
+      "end": "0x11acce8",
+      "sha256": "1ae782744386e939e8eb98089d90826fed1dd537fe75ad9a56aec3071117a86c"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleCorridorEnableChecked",
+      "start": "0x11acd7c",
+      "end": "0x11ad188",
+      "sha256": "1a43d462a77b5cfbf7fcb4f0537711173072dd5997c69f80ae34bb8b9d48dd46"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleFirstCorridorBlockOnIncludeItem",
+      "start": "0x11ac6dc",
+      "end": "0x11ac770",
+      "sha256": "f961463bfc324fefa0c88ce153910f2d20ddc3c17bacda605cb30ecb3e2209cd"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleFirstOfficeBlockOnIncludeItem",
+      "start": "0x11ad268",
+      "end": "0x11ad2fc",
+      "sha256": "43c52b95d8170542ca88b82ab2d86e35e8b068bbdd93aa3dba838ad13ae58da3"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleLinkGroupOnIncludeItem",
+      "start": "0x11ad188",
+      "end": "0x11ad268",
+      "sha256": "ab17e8998d4da8e813311e6bcb5f2baf4915ff4eee4c6d488f86420547e99756"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.HandleSecondOfficeBlockOnIncludeItem",
+      "start": "0x11ad3bc",
+      "end": "0x11ad43c",
+      "sha256": "21390d03c503038c1a03f1d021701801c421957938a6ab194e8091d8ea5ee220"
+    },
+    {
+      "name": "CIS_TfrmIOPEEnvironment.TfrmIOPEEnvironment.InitialiseCorridorLinking",
+      "start": "0x11abe74",
+      "end": "0x11ac5b0",
+      "sha256": "5b009820a057a156c4ebbd0eebfa8bcc1a5ff8d7415aa8d1c204be520fef4bde"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadCorridorLinkAttributes",
+      "start": "0x12d6790",
+      "end": "0x12d68b8",
+      "sha256": "2f55c0a1cd01cfca228c33db98b8e1a89da54ac7bfdcca59fdafabfc58296a9a"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadInputBlockApplications",
+      "start": "0x12d63e4",
+      "end": "0x12d64a8",
+      "sha256": "cc2949027e677ff011cda70053eaf98cbba312018aaf796a80e95432381e1139"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadJoinModeAttributes",
+      "start": "0x12d9afc",
+      "end": "0x12da644",
+      "sha256": "148299774fa1c98443d3ce113370192ff62125c4a0b1d944ac593ebb905e9149"
+    },
+    {
+      "name": "CIS_TIOPECGateAgent.TIOPECGateAgent.SaveCorridorLinkAttributes",
+      "start": "0x12dbad8",
+      "end": "0x12dbc68",
+      "sha256": "dc55e5b8fc6233fe7a310bac287808e0bcc0292fe33e15bad0daf7b7dca2bfb4"
+    }
+  ],
+  "method_hash_boundary": "Original PE bytes from MAP symbol through the next MAP symbol; may include trailing literal data",
+  "writable_parameters": [
+    "CorridorGroupBlock",
+    "CorridorMasterGroup",
+    "FirstCorridorLinkEnable",
+    "FirstCorridorOfficeGroupBlock",
+    "SecondCorridorLinkEnable",
+    "SecondCorridorOfficeGroupBlock"
+  ],
+  "raw_masks": {
+    "0x60": "0xff",
+    "0x6b": "0xbf",
+    "0x6c": "0x0f"
+  },
+  "profiles": {
+    "IOPE1R1": "5752PP/1R",
+    "IOPE2R2": "5752PP/2R",
+    "IOPE2C4": "5752PP/2R/2D"
+  },
+  "firmware_admission": "1.0.00..1.2.99; catalogue/intersection bound retained from iope-settings-source-review.json",
+  "control_sequence": [
+    "initialize",
+    "enabled",
+    "corridor_block",
+    "first_office_block",
+    "second_office_enabled",
+    "second_office_block",
+    "master_group"
+  ],
+  "facts": [
+    "InitialiseCorridorLinking stores GetCorridorLinkActive at form+0x318 before virtual enable handler",
+    "HandleCorridorEnableChecked relocates index<=1 to2/3 and index<=3 to4 only when initial active flag is false and current checkbox true",
+    "GetFirstUnusedCorridorLinkBlock scans0..7 excluding all three current role references regardless activation",
+    "HandleCorridorEnableChecked clears second office when main checkbox false and always calls second-office click handler",
+    "chkSecondOfficeEnabledClick clears matching master and repairs duplicated second role without gating on second active",
+    "HandleLinkGroupOnIncludeItem admits unused; excludes consumed role groups, both joins and all input-block groups",
+    "LoadJoinModeAttributes chooses Enable Control group before Primary group for each join",
+    "SaveCorridorLinkAttributes writes master group address and zero-based role indices without rewriting input groups"
+  ],
+  "limits": [
+    "Static source recovery, not original GUI execution",
+    "Caller metadata must prove every consumed positive group object; no implicit creation",
+    "Primary/referenced input applications bounded to Lighting48..95",
+    "No join edits, timer/function dialogs, whole-form save, device or physical acceptance"
+  ]
+}

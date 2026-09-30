@@ -1,0 +1,21 @@
+# Historical proposed registration patch; adapted and implemented in the integrated root.
+# Provides local interfaces only; template Apply remains refused.
+--- a/toolkit-cli/src/cbus_toolkit/cli.py
++++ b/toolkit-cli/src/cbus_toolkit/cli.py
+@@ -1356,6 +1356,8 @@
+     parser.add_argument("--version", action="version", version=__version__)
+     parser.add_argument("--compact", action="store_true", help="Emit single-line JSON")
+     commands = parser.add_subparsers(dest="area", required=True)
++    from .edlt_templates_cli import options as edlt_template_options
++    edlt_template_options(commands)
+     from .toolkit_preferences_cli import options as preference_options
+     preference_options(commands)
+     from .toolkit_updates_cli import options as update_options
+@@ -3844,4 +3846,7 @@
+ def run(args):
++    if args.area == "edlt-templates":
++        from .edlt_templates_cli import run as run_edlt_templates
++        return run_edlt_templates(args)
+     if args.area == "cgate":
+         from .toolkit_preferences_effects import apply_cgate_preferences
+         apply_cgate_preferences(args)

@@ -1,0 +1,49 @@
+{
+  "format": "cbus-edlt-unit-validation-source-v1",
+  "evidence_class": "source-proof",
+  "original_runtime_executed": false,
+  "scope": "synthetic resolved getter values; no cache creation, UI execution, or persistence claim",
+  "scene_fields": ["item_count", "name_index", "resolved_trigger", "resolved_action"],
+  "cases": [
+    {
+      "name": "corridor-and-scenes-both-execute",
+      "primary_application": 56,
+      "corridor_link": 42,
+      "ordered_key_groups": [{"application": 56, "address": 42, "tag_name": "Synthetic A"}],
+      "scenes": [[1, 255, 255, -1]],
+      "expected": {"valid": false, "validator_order": ["corridor", "scenes"], "appended_error_count": 2, "scene_warning_ids": ["populated-missing-trigger-action", "populated-missing-name"]}
+    },
+    {
+      "name": "corridor-first-match-no-dedupe",
+      "primary_application": 56,
+      "corridor_link": 42,
+      "ordered_key_groups": [{"application": 57, "address": 42, "tag_name": "Synthetic Other App"}, {"application": 56, "address": 42, "tag_name": "Synthetic First"}, {"application": 56, "address": 42, "tag_name": "Synthetic Second"}],
+      "scenes": [],
+      "expected": {"valid": false, "corridor_tag_name": "Synthetic First", "appended_error_count": 1}
+    },
+    {
+      "name": "outer-skip-hides-later-pair-duplicate",
+      "primary_application": 56,
+      "corridor_link": 255,
+      "ordered_key_groups": [],
+      "scenes": [[1, 255, 255, -1], [0, 8, 9, 2], [0, 8, 9, 2]],
+      "expected": {"valid": false, "skipped_scene_indices_zero_based": [1, 2], "scene_warning_ids": ["populated-missing-trigger-action", "populated-missing-name"], "appended_error_count": 1}
+    },
+    {
+      "name": "negative-action-duplicates-empty-scenes",
+      "primary_application": 56,
+      "corridor_link": 255,
+      "ordered_key_groups": [],
+      "scenes": [[0, 255, 9, -1], [0, 255, 9, -1]],
+      "expected": {"valid": false, "scene_warning_ids": ["duplicate-trigger-action"], "appended_error_count": 1}
+    },
+    {
+      "name": "action-255-is-nonnegative-but-excluded-from-duplicates",
+      "primary_application": 56,
+      "corridor_link": 255,
+      "ordered_key_groups": [],
+      "scenes": [[1, 8, 9, 255], [0, 10, 9, 255]],
+      "expected": {"valid": true, "scene_warning_ids": [], "appended_error_count": 0}
+    }
+  ]
+}

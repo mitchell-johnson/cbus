@@ -1,0 +1,1 @@
+using System; using System.Globalization; using CBusLogicModel; class Review { static void Main() { foreach(var name in new [] {"en-US","tr-TR"}) { CultureInfo.CurrentCulture=new CultureInfo(name); var a=new PPAttribute(); PPAttribute.bInitialiseMode=true; a.Value="$i"; Console.WriteLine(name+"\t"+a.Value); } } }
