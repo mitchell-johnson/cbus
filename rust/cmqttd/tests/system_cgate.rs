@@ -2676,7 +2676,7 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         })
         .await;
         sys.pci
-            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x40, 0x42]));
         require(COMMAND_DRAIN, "GOC2 PP recall", || {
             sys.pci
                 .frames()
@@ -2869,7 +2869,7 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         })
         .await;
         sys.pci
-            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x40, 0x42]));
         require(COMMAND_DRAIN, "GOC2 PP save pre-read", || {
             sys.pci
                 .frames()
@@ -3140,7 +3140,7 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         })
         .await;
         sys.pci
-            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x00]));
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x40, 0x00]));
         require(COMMAND_DRAIN, "GOC2 PP readback selector", || {
             sys.pci
                 .frames()
@@ -3151,7 +3151,7 @@ async fn physical_pp_load_and_save_use_all_supported_routes_on_shared_pci() {
         })
         .await;
         sys.pci
-            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0xff, 0x42]));
+            .inject(&pci_wire(&[0x86, 5, 0x10, 0x01, 0x00, 0x32, 0x40, 0x42]));
         require(COMMAND_DRAIN, "GOC2 PP readback", || {
             sys.pci
                 .frames()

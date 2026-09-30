@@ -19,7 +19,10 @@ from daemon output.  Its sources are:
   tagged ``A0|n`` STORE, ``1A`` RECALL, ``39`` page select, ``1B`` paged
   RECALL whose fragments name ``start + received``, ``11`` UNLOCK, OEM ``41``
   little-endian selector and ``42`` data tag, GOC ``42`` big-endian selector
-  and ``[tag, hi, lo, data]`` STORE.
+  and ``[tag, hi, lo, data]`` STORE. GOC2 units acknowledge a selector or
+  STORE with the low address byte instead of ``FF`` (``bo`` with
+  ``CBusGOC2Dimmer.h()``; pinned by owned native C-Gate in
+  ``rust/testdata/fixtures/native_cgate_pp_method_transcripts.json``).
 * Native literal frames retained in ``rust/testdata/vectors``:
   ``tp-0101-cgate-protected-parameter-unlock`` (unchecksummed local UNLOCK),
   ``tp-cgate-cbus3-save-nvm-execute``/``-poll`` (unchecksummed local
@@ -394,6 +397,10 @@ class ProgrammingPCI(PCISimulator):
                 return method
         raise AssertionError(f"no {space} parameter covers 0x{address:X}")
 
+    def _goc_ack(self, address):
+        """GOC2 units acknowledge with the low address byte (native ``bo``)."""
+        return address & 0xFF if self._method("goc", address) == "goc2" else 0xFF
+
     def _standard(self, parameter):
         return any(start <= parameter < end for method, start, end in self.layout
                    if method not in PAGED + OEM + GOC)
@@ -610,6 +617,7 @@ class ProgrammingPCI(PCISimulator):
                 raise AssertionError(f"malformed WRITE {cal.hex()}")
             parameter, data = cal[1], cal[2:]
             tag = data[0]
+            ack = parameter
             if parameter == 0 and tag == 0x41 and len(data) in (3, 5):
                 self.oem_pointer = int.from_bytes(data[1:], "little")
             elif parameter == 1 and tag == 0x42 and self.oem_pointer is not None:
@@ -623,10 +631,12 @@ class ProgrammingPCI(PCISimulator):
                     self.run_flags.append((data[1], time.monotonic()))
             elif parameter == 0xFF and tag == 0x42 and len(data) == 3:
                 self.goc_pointer = int.from_bytes(data[1:], "big")
+                ack = self._goc_ack(self.goc_pointer)
             elif parameter == 0xFF and len(data) >= 4:
                 address = int.from_bytes(data[1:3], "big")
                 method = self._method("goc", address)
                 self._store("goc", method, tag, address, data[3:])
+                ack = self._goc_ack(address)
             elif self._standard(parameter):
                 method = self._method("standard", parameter)
                 self._store("standard", method, tag, parameter, data[1:])
@@ -636,8 +646,8 @@ class ProgrammingPCI(PCISimulator):
                 self._store("paged", method, tag, address, data[1:])
             else:
                 raise AssertionError(f"unclassified WRITE {cal.hex()}")
-            return self._answer(code, [bytes((0x32, parameter, tag))],
-                                bytes((0x32, parameter, tag ^ 0xFF)), envelope)
+            return self._answer(code, [bytes((0x32, ack, tag))],
+                                bytes((0x32, ack, tag ^ 0xFF)), envelope)
 
         raise AssertionError(f"unsupported CAL {cal.hex()}")
 

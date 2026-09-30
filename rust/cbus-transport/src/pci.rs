@@ -87,6 +87,21 @@ impl GocProgramming {
             Self::Goc2 => u8::MAX as usize,
         }
     }
+
+    /// Parameter byte a unit names in its selector or STORE acknowledgement.
+    ///
+    /// C-Gate 3.4 `bo` rewrites the expected `32`/`3B` parameter to the low
+    /// byte of the selected or stored address when `CBusGOCDimmer.h()` is
+    /// true, which only the `CBusGOC2Dimmer` class returns; every catalogue
+    /// revision using that class is a `goc2` specification. Owned native
+    /// C-Gate fails its GOC2 address selection when a unit acknowledges with
+    /// parameter `FF` instead (`native_cgate_pp_method_transcripts.json`).
+    fn ack_parameter(self, address: u16) -> u8 {
+        match self {
+            Self::Goc | Self::GocByt => u8::MAX,
+            Self::Goc2 => address as u8,
+        }
+    }
 }
 
 /// Native C-Gate page-aware programming dialect.
