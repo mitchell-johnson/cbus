@@ -1,0 +1,29 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "4967f8ef3d810451ff70305c914fec02e62a4ff804fb461faf94d821d31eecac",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "binary_sha256": {
+      "cbus-tools": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018",
+      "cmqttd": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023",
+      "cgate-mock": "0efb04d64c1c2cd2a82a725cde57366ce403283d34289f5dc00ea4701ec60c78"
+    },
+    "source_sha256": {
+      "rust/cbus-transport/src/commissioning_route.rs": "701710b3957789139307a73d62aeaf211a9c0a47e01f3c4337761c2010be4481",
+      "toolkit-cli/src/cbus_toolkit/serial_reconcile.py": "571030134f03ac3c859e8002547ee6f5550c6b9cd9b39aa37500f4133938fc91",
+      "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b",
+      "toolkit-cli/src/cbus_toolkit/commissioning_route.py": "58a4ad901f1031fdcc0492ea8bd5962a670fbd3caea418b0239c50455518251a",
+      "toolkit-cli/src/cbus_toolkit/cli.py": "eb4a17488f9a077fd74ca7bfabf93dc29c9dce735966bfc1c11b8a123edc7f16",
+      "toolkit-cli/tests/test_serial_reconcile_routed_cgate.py": "86687d978504b8b88f4b9407419a384a1ad809d78f7175a5ff926a22ab3a90ee"
+    },
+    "cargo_log_sha256": {
+      "rust-commissioning-route.log": "805b5e04bfe17df4cbc177e62c3428c386ed0e864b0b5846fedf7b9610d6fefb",
+      "rust-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust-clippy.log": "9f7a88392a0c35f14281173dcf9c415ca416b2ebaf1ff5f9915c1db1f8f9ab58",
+      "rust-release.log": "1d884dd00f0873a63a945fa0d5476e0e6fd8c46a7005daa328c4c374470acde7"
+    }
+  }
+}

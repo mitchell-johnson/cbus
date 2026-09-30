@@ -1,0 +1,9 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "cae54fd343c7295eb02e93ec954e9d0d44329d6a069dcbd17d39478d4032665c",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": "........................................................................................................................................................... [ 67%]\n........................................................... [ 93%]\n...............                              [100%]\n229 passed, 822 subtests passed in 378.43s (0:06:18)\n"
+}

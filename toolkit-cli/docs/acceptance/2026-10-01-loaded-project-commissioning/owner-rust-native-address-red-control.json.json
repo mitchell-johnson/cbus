@@ -1,0 +1,15 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "e6320cb46fddb439fa58fa83d2cb1d4ad72df8890d2d41d413795c8e21fe891d",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "observation": "after failed public Rust journey, before release rebuild; not sampled at failed-run start",
+    "binary_sha256": "6727d465de788636daf683beaaa49d00ff0b003ec584fc6caaf43818d652fff4",
+    "retained_binary_sha256": "6727d465de788636daf683beaaa49d00ff0b003ec584fc6caaf43818d652fff4",
+    "failed_log_sha256": "dbd55d8117e88ce91929a86cf7c01a24bcfa996289ec3f9163e5c935c9a14ad7",
+    "failed_junit_sha256": "37a7b3a862150ff24f22da5891d2df3983f7965612f3d3a107b53b50fdf9311f"
+  }
+}

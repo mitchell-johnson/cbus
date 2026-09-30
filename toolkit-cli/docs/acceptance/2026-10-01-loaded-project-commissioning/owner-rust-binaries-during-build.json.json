@@ -1,0 +1,18 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "3d78d5b1bdf87eaa1a0a456ac7d403259d1b0bf12a4790aba6576f8f7178e45a",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "cmqttd": {
+      "observation": "sampled during release build; prior identity must be confirmed by exact hash",
+      "sha256": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023"
+    },
+    "cgate-mock": {
+      "observation": "sampled during release build; prior identity must be confirmed by exact hash",
+      "sha256": "0efb04d64c1c2cd2a82a725cde57366ce403283d34289f5dc00ea4701ec60c78"
+    }
+  }
+}

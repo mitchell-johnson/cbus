@@ -134,8 +134,18 @@ receipt agreement, no ignored traffic, and the existing canonical-plan marker
 bound to the same plan, fingerprint, absolute journal path and scope. Missing,
 partial, inconsistent or uncertain proof refuses before database writes.
 Direct Rust v1 behavior is unchanged; legacy Rust v1, verify output and
-marker-only recovery cannot reconcile offline. Routed C-Gate is refused before
-connection. Direct journals still refuse bridge projects. See the reconciliation
+marker-only recovery cannot reconcile offline. Loaded routed C-Gate projects
+require `--route-project ORIGINAL_EXPORT --exclusive-project`, including planning;
+the immutable raw export must match the physical plan and the whole loaded
+project must equal its original or the record's exact candidate. Route, file
+freshness and every network's closed/idle state are rechecked through backup,
+SAVE/CLOSE/LOAD and no-op validation. Direct journals still refuse bridge
+projects. Python uncertain applies can export a separate fresh direct/routed
+handoff with `verify --recovery J --output V`; preserve the original journal
+and marker. C-Gate reconciliation records saved whole-project evidence and
+never replays a physical command or automatically restores/saves uncertainty.
+A saved original requires explicit `--retry-database --apply` after readback.
+See `toolkit-cli/docs/known-serial-commissioning-journey.md` and the reconciliation
 contract in `toolkit-cli/docs/physical-addressing.md` and the versioned evidence
 details in `docs/rust-selected-serial-routed.md`.
 After an `observed_expected_change` journal, `serial-address reconcile --journal J

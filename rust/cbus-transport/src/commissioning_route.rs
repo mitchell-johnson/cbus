@@ -599,8 +599,15 @@ fn xml_networks(payload: &[u8]) -> Result<Option<HashMap<u8, Network>>> {
         _ => return Ok(None),
     };
     validate_structure(project)?;
-    if scalar(project, "TagName", true)?.trim().is_empty() {
-        return Err(RouteBindingError::new("Project TagName must not be empty"));
+    // Exact native DBGETXML snapshots identify their Project with Address and
+    // omit the legacy TagName. An explicitly blank TagName still fails closed.
+    let identity = if children(project, "TagName").is_empty() {
+        scalar(project, "Address", true)?
+    } else {
+        scalar(project, "TagName", true)?
+    };
+    if identity.trim().is_empty() {
+        return Err(RouteBindingError::new("Project identity must not be empty"));
     }
     let mut networks = HashMap::new();
     for node in children(project, "Network") {
@@ -967,6 +974,36 @@ mod tests {
             "<Address>254</Address><Address>254</Address>",
         );
         assert!(snapshot_networks(duplicate.as_bytes()).is_err());
+    }
+
+    #[test]
+    fn native_address_identity_routes_exact_snapshots_without_legacy_tagname() {
+        for depth in [1, 6] {
+            let raw = String::from_utf8(line(depth))
+                .unwrap()
+                .replace("<TagName>HOUSE</TagName>", "<Address>HOUSE</Address>");
+            let networks = snapshot_networks(raw.as_bytes()).unwrap();
+            assert_eq!(
+                resolve_route(&networks, 254, 254 - depth).unwrap(),
+                (254 - depth..=253).rev().collect::<Vec<_>>()
+            );
+            assert!(raw.contains("<Address>HOUSE</Address>"));
+            assert!(!raw.contains("<TagName>HOUSE</TagName>"));
+        }
+    }
+
+    #[test]
+    fn missing_duplicate_native_identity_and_blank_legacy_tagname_refuse() {
+        let raw = String::from_utf8(line(1)).unwrap();
+        for identity in [
+            "",
+            "<Address></Address>",
+            "<Address>HOUSE</Address><Address>OTHER</Address>",
+            "<TagName></TagName><Address>HOUSE</Address>",
+        ] {
+            let invalid = raw.replace("<TagName>HOUSE</TagName>", identity);
+            assert!(snapshot_networks(invalid.as_bytes()).is_err(), "{identity}");
+        }
     }
 
     #[test]

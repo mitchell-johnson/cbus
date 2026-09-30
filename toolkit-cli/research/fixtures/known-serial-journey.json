@@ -1,0 +1,1793 @@
+{
+  "format": "cbus-known-serial-journey-v1",
+  "base_commit": "7cea3280456ab9512ce4609a73662ca5e9e83eaf",
+  "product": "cmqttd",
+  "commands": [
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "new",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "run",
+        "<owned-work>/seed-commands.txt"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH/254",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/empty-network.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "close",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "use",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/before.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH/254/p/255",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/before-unit.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "plan",
+        "101136.1558",
+        "6",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<pci-port>",
+        "--local-unit",
+        "16",
+        "--expected-local-serial",
+        "100966.1187",
+        "--output",
+        "<owned-work>/plan.json",
+        "--timeout",
+        "10",
+        "--observation-timeout",
+        "2",
+        "--confirmation-timeout",
+        "0.1",
+        "--mmi-response-timeout",
+        "0.1",
+        "--quiet-period",
+        "0.03",
+        "--options-response-timeout",
+        "0.03",
+        "--address-response-timeout",
+        "0.03"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "apply",
+        "<owned-work>/plan.json",
+        "--recovery",
+        "<owned-work>/apply.json",
+        "--attempt-store",
+        "<owned-work>/attempts"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "serial-address",
+        "verify",
+        "--recovery",
+        "<owned-work>/apply.json",
+        "--output",
+        "<owned-work>/verified.json"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_target_save.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH/254/p/255",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/before_target_save-saved-source.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_target_save.json",
+        "--apply",
+        "--retry-database"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_target_save.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/during_target_save_unsent.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH/254/p/255",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/during_target_save_unsent-saved-source.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/during_target_save_unsent.json",
+        "--apply",
+        "--retry-database"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/during_target_save_unsent.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/during_target_save_reply_lost.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/during_target_save_reply_lost.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_close.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_close.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_close.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_close.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_load.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/before_load.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_load.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_load.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_saved_readback.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/after_saved_readback.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "set-xml",
+        "//SYNTH/254",
+        "<owned-work>/seed-network.xml",
+        "--project",
+        "SYNTH",
+        "--readback"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "save",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/complete-db.json"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/complete-db.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "close",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "load",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "project",
+        "use",
+        "SYNTH"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH/254/p/6",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/reopened-unit.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/reopened-project.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/complete-db.json",
+        "--apply"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/tamper-before.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-source_serial.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/source_serial-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-unit_oid.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/unit_oid-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-source_path.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/source_path-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-candidate_address.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/candidate_address-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-backup_digest.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/backup_digest-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "reconcile",
+        "--journal",
+        "<owned-work>/verified.json",
+        "--cgate",
+        "127.0.0.1:<cgate-port>",
+        "--project-name",
+        "SYNTH",
+        "--network",
+        "254",
+        "--unit-type",
+        "KEYE1",
+        "--firmware",
+        "2.5.00",
+        "--exclusive-project",
+        "--record",
+        "<owned-work>/tampered-missing_saved_readback.json",
+        "--apply"
+      ],
+      "exit_status": 1
+    },
+    {
+      "argv": [
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "<cgate-port>",
+        "--timeout",
+        "15",
+        "database",
+        "get-xml",
+        "//SYNTH",
+        "--project",
+        "SYNTH",
+        "--output",
+        "<owned-work>/missing_saved_readback-unchanged.xml"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "serial-address",
+        "verify",
+        "--recovery",
+        "<owned-work>/apply.json"
+      ],
+      "exit_status": 0
+    }
+  ],
+  "hardware_io": false,
+  "native_process_launched": false,
+  "production_source_modified": true,
+  "physical_route": "direct",
+  "routed_cgate_reconciliation": "refused",
+  "seed": {
+    "public_raw_database_setup": true,
+    "network_opened": false,
+    "typed_network_new_blocker": "NET LOAD DB returns 408 Network definitions file not found on current cmqttd"
+  },
+  "independent_verification": {
+    "original_apply": "uncertain",
+    "fresh_outcome": "observed_expected_change",
+    "address_commands": 1,
+    "original_journal_unchanged": true,
+    "attempt_marker_unchanged": true,
+    "fixture_memory_policy": "bus_only",
+    "physical_parameters_unchanged": true
+  },
+  "interruption_recovery": [
+    {
+      "case": "before_target_save",
+      "fault_delivered": true,
+      "recovery": "explicit_database_only_retry_after_saved_original",
+      "outcome": "reconciled",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 2,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "during_target_save_unsent",
+      "fault_delivered": true,
+      "recovery": "explicit_database_only_retry_after_saved_original",
+      "outcome": "reconciled",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 2,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "during_target_save_reply_lost",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "before_close",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "after_close",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "before_load",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "after_load",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    },
+    {
+      "case": "after_saved_readback",
+      "fault_delivered": true,
+      "recovery": "saved_candidate_readback_without_mutation_or_save",
+      "outcome": "resumed_complete",
+      "fresh_process_rerun": "already_reconciled",
+      "saved_readback_verified": true,
+      "backup_readback_verified": true,
+      "target_save_intents_before_recovery": 1,
+      "target_save_intents_after_recovery": 1,
+      "physical_address_commands_total": 1,
+      "automatic_rollback": false,
+      "automatic_save_replay": false
+    }
+  ],
+  "whole_project_two_field_only": true,
+  "saved_reopened_journey": {
+    "outcome": "reconciled",
+    "reopened_address": "6",
+    "oid_preserved": true,
+    "reference_preserved": true,
+    "unit_metadata_preserved": true,
+    "other_pp_preserved": true,
+    "whole_project_two_field_only": true,
+    "physical_address_commands_total": 1
+  },
+  "record_tamper_refusals": [
+    {
+      "case": "source_serial",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    },
+    {
+      "case": "unit_oid",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    },
+    {
+      "case": "source_path",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    },
+    {
+      "case": "candidate_address",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    },
+    {
+      "case": "backup_digest",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    },
+    {
+      "case": "missing_saved_readback",
+      "exit_status": 1,
+      "project_unchanged": true,
+      "physical_address_commands_total": 1
+    }
+  ],
+  "final_independent_inventory": {
+    "outcome": "observed_expected_change",
+    "physical_address_commands_total": 1
+  },
+  "successful_journey": {
+    "outcome": "reconciled",
+    "reopened_address": "6",
+    "oid_preserved": true,
+    "unit_metadata_preserved": true,
+    "other_pp_preserved": true,
+    "rerun": "already_reconciled",
+    "current_database_matches_record": true,
+    "physical_address_commands_total": 1
+  },
+  "owned_processes_cleaned_up": true,
+  "finished_workflow": true,
+  "source_sha256": {
+    "toolkit-cli/src/cbus_toolkit/cli.py": "64c039f772f64febbfcab2c4194fa996ee9546a55b0544fbb09556213e192ebf",
+    "toolkit-cli/src/cbus_toolkit/serial_reconcile.py": "da62e314a9a570ec40eed7b7623b8145439a142fb6a70c553d3eb25b0568d6be",
+    "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "981cb03ea170f6072280997516b15bd881c1fa63a0adb02b8a65499156eee9a1",
+    "toolkit-cli/src/cbus_toolkit/addressing.py": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926",
+    "toolkit-cli/src/cbus_toolkit/native.py": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+    "toolkit-cli/src/cbus_toolkit/programming.py": "d55effc91e0e8c0530a6886b717ba3ebf81827dbf814d608855100cce7c4a7bc",
+    "toolkit-cli/src/cbus_toolkit/project.py": "631140325f242dfb3b61a7cd2c6489af5025d4d891b6f774142ed22f0227fbe5",
+    "toolkit-cli/src/cbus_toolkit/classic_replacement.py": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62",
+    "toolkit-cli/src/cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+    "toolkit-cli/research/known_serial_commissioning_journey.py": "4b58c95f35b4f63845157e6b00d22769ce1afd1bd0d4091ec6b1308d3efd82aa",
+    "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
+    "toolkit-cli/tests/test_serial_reconcile_recovery.py": "bf4e1913d2da85eed892255dc0b5c035c7f6c851cbef1126abbc3bfefe5f291d",
+    "toolkit-cli/tests/test_serial_reconcile.py": "eea108bcdfb24b3bb8d64468a48485442a6262eaca4485d139e7607c5a54530d",
+    "toolkit-cli/tests/test_simulator_duplicate_addressing.py": "60a8f30d8a2ff7c8c839847c99a70ea9aa6cbef1d05bc99ff2d5770847a2cf28",
+    "rust/cbus-cgate/src/service.rs": "00878bbed7eb3e2a073d4fdd4e16e64dd1f20a1cfa06c7c892d90dfc833b7592",
+    "rust/cbus-cgate/src/lib.rs": "24e7a11fa9a362de773aaaafdd9958e862331246aa1cf9083fbb300ca465e60e",
+    "rust/testdata/fixtures/native_cgate_project_copy_delete.json": "8948e7e0fba1218cb19db3c8cfb1d56ac6158bee52e781ab51c6c3acc47c759c"
+  },
+  "product_binary_sha256": "7e7d5d46e5e93256a4538b29170d03dca5da34fd46f872c130e5d7bbfa4e9341",
+  "execution": {
+    "python": "3.13.14",
+    "platform": "macOS arm64",
+    "exit_status": 0,
+    "public_cli_commands": 81,
+    "fixture_state": "owned temporary JSON/XML, removed after child exit",
+    "binary": "existing cmqttd, no rebuild in this slice",
+    "source_base_commit": "7cea3280456ab9512ce4609a73662ca5e9e83eaf"
+  },
+  "focused_validation": [
+    {
+      "scope": "direct reconciliation, fresh handoff and routed C-Gate pre-I/O refusal",
+      "passed": 17,
+      "skipped": 1,
+      "skip_reason": "original C-Gate runtime/vendor environment unconfigured",
+      "subtests_passed": 21,
+      "log_sha256": "b063fa64e7cd596deb3d950d2d25cb2ce1558fa2f7bfa3984ff4d25074e47a30"
+    },
+    {
+      "scope": "selected-serial CLI and routed offline reconciliation regression",
+      "passed": 23,
+      "subtests_passed": 65,
+      "log_sha256": "a368cdac15d3e4fa841ca9c1a03277e0ed017d1bcbd4b82cc2803f4e1491d086"
+    }
+  ],
+  "limits": {
+    "direct_fixture_journey_complete": true,
+    "routed_cgate_reconciliation_complete": false,
+    "native_cgate_executed": false,
+    "hardware_executed": false,
+    "power_cycle_verified": false,
+    "physical_pp_programmed": false,
+    "full_suite_run": false,
+    "broad_build_run": false,
+    "typed_new_network_workflow_complete": false
+  }
+}

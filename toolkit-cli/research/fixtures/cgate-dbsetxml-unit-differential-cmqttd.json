@@ -15,7 +15,7 @@
     "sha256": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023",
     "name": "cmqttd"
   },
-  "source_revision": "6d6e25490f1fa577a0c0c071a841c807e102060b",
+  "source_revision": "6b6b3b1238bd5ec55329757779066c2ef499db6b",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "098d4ad74d2ce6a8b396f18aaaed78032d9f8e0ae77003a2c1a00c49d0c7b359",
     "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
@@ -124,7 +124,7 @@
     "rust/cbus-transport/Cargo.toml": "8baaf563db7f58aeeeb96f6e25335d1c67b342ee472a96bb16c09e2b7de64f5f",
     "rust/cbus-transport/src/apply.rs": "c59dc52896fda2743af4dfbd5b0dff77478794fae830c283cb962b6c507004c2",
     "rust/cbus-transport/src/cni_discovery.rs": "3b6a13ba2c0d5da1c4df09a612b0cc47b343c6021a671a670995dd81e459d4a5",
-    "rust/cbus-transport/src/commissioning_route.rs": "d7319b145f666b3fedb3c30a0db01bec6ed7b617986a46f9cd7a590d0bba6760",
+    "rust/cbus-transport/src/commissioning_route.rs": "701710b3957789139307a73d62aeaf211a9c0a47e01f3c4337761c2010be4481",
     "rust/cbus-transport/src/conn.rs": "1483c7e96526b2c458b750722e1799f04d5eec9e112e2ccf860fb217dda3e3d6",
     "rust/cbus-transport/src/flow.rs": "7bd2078c84170d3e679034f3ca517bb4ab0fd4bd9f5b3af43564b9daa5e7f327",
     "rust/cbus-transport/src/framing.rs": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d",
@@ -608,7 +608,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "1f8b4a85947bee48c7a63dcb6e5624c1bcba7de49eb54a9c2dd1d67d6b6952dc",
+    "raw_file_sha256": "4a5972e0c89e58e2eaebf2afdaadce2381d59c37153414c6d6a52e7ac3b187a1",
     "raw_retained_privately": true,
     "field_mapping": [
       {

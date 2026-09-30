@@ -1,8 +1,9 @@
 """Reconcile one verified selected-serial move with the project database.
 
-The only admitted physical evidence is a complete ``serial-address apply``
-journal whose independently reparsed after-inventory equals the plan's exact
-expected identity map and whose attempt marker still binds the same plan.
+Admitted physical evidence is a complete ``serial-address apply`` journal, or
+a separate direct read-only verification handoff bound to an immutable apply
+journal and marker. Its independently reparsed after-inventory must equal the
+plan's exact expected identity map.
 The database unit carrying that serial is then moved from the journal's source
 address to its destination with its OID, metadata, programming and OID
 references preserved. No PCI, CNI or C-Bus network I/O is performed.
@@ -10,8 +11,9 @@ references preserved. No PCI, CNI or C-Bus network I/O is performed.
 Progress is kept in a separate reconciliation record beside the journal. It is
 created exclusively and advanced through ``physical_done`` -> ``db_pending`` ->
 ``db_done``. A rerun after ``db_done`` is a read-only no-op; a rerun after
-``db_pending`` re-reads the database and either completes the record, repeats
-an unstarted move or reports a conflict. Nothing is retried automatically.
+``db_pending`` re-reads the database. A loaded C-Gate project must be reopened
+to prove the saved image; repeating its database-only move requires explicit
+authorization after saved-original readback. No physical request is replayed.
 """
 from __future__ import annotations
 
@@ -26,8 +28,9 @@ import stat
 from uuid import UUID, uuid4
 
 from .pci_selected_serial import (
-    ATTEMPT_FORMAT, MAX_JOURNAL_BYTES, SelectedSerialCoordinator, SelectedSerialPlan, _Journal,
+    ATTEMPT_FORMAT, ATTEMPT_SCOPES, VERIFICATION_FORMAT, MAX_JOURNAL_BYTES, SelectedSerialCoordinator, SelectedSerialPlan, _Journal,
     _canonical_fingerprint, _hex, _inventory_proof, _json, _keys, _options_proof, _raw_serials, _unique_pairs,
+    recovery_binding,
 )
 from .commissioning_route import resolve_network_route
 from .pci_serial_address import decode_serial_address_receipt
@@ -36,9 +39,10 @@ from .serials import parse_native_serial
 
 
 RECORD_FORMAT = "cbus-serial-reconcile-record-v1"
+CGATE_RECORD_FORMAT = "cbus-serial-reconcile-record-v2"
 RESULT_FORMAT = "cbus-serial-reconcile-result-v1"
 PHASES = ("physical_done", "db_pending", "db_done")
-MAX_RECORD_BYTES = 1024 * 1024
+MAX_RECORD_BYTES = MAX_JOURNAL_BYTES
 _RECORD_KEYS = ("format", "phase", "journal", "move", "database", "unit", "before_sha256", "expected_sha256",
                 "backup", "database_changed", "history", "last_error", "rollback_errors", "bus_io_performed")
 # Fields whose exact values every completed selected-serial apply journal carries.
@@ -178,6 +182,8 @@ def verify_journal(path):
     value = _parse(raw, "Selected-serial journal")
     if not isinstance(value, dict):
         raise ReconcileError("Selected-serial journal must be a JSON object")
+    if value.get("format") == VERIFICATION_FORMAT:
+        return _verified_handoff(path, raw, value)
     if value.get("format") == ATTEMPT_FORMAT:
         raise ReconcileError("An attempt marker records only an uncertain attempt; reconcile a completed apply journal")
     if value.get("format") == "cbus-selected-serial-apply-v2":
@@ -254,12 +260,19 @@ def verify_journal(path):
                        "send_may_have_occurred", "read_only_recovery_only"), "Attempt marker")
         if record["format"] != ATTEMPT_FORMAT or record["attempt_id"] != "sha256:" + fingerprint:
             raise ValueError("marker ID differs from the journal plan")
+        if (record["operation"] != "apply" or record["send_may_have_occurred"] is not True or
+                record["read_only_recovery_only"] is not True or record["scope"] not in ATTEMPT_SCOPES):
+            raise ValueError("marker envelope does not describe a read-only recovery-only apply attempt")
         if _json(SelectedSerialPlan.from_dict(record["plan"]).as_dict()) != _json(plan):
             raise ValueError("marker embeds a different plan")
         # The marker stores the resolved journal path; the journal its absolute path.
         written = Path(recorded["path"])
         if record["journal"] not in (recorded["path"], str(written.parent.resolve() / written.name)):
             raise ValueError("marker names a different journal")
+        scope = (ATTEMPT_SCOPES[0] if Path(marker).parent.resolve() == Path(record["journal"]).parent.resolve()
+                 else ATTEMPT_SCOPES[1])
+        if record["scope"] != scope:
+            raise ValueError("marker scope does not match its journal directory")
     except (ValueError, TypeError) as error:
         raise ReconcileError(f"Attempt marker does not bind this journal (stale or tampered): {error}") from error
     return VerifiedMove(str(path.absolute()), hashlib.sha256(raw).hexdigest(), record["attempt_id"], marker,
@@ -267,6 +280,38 @@ def verify_journal(path):
                         value["receipt_matches_request"], route, plan.get("project_sha256"),
                         binding["source_network"] if binding else None,
                         binding["target_network"] if binding else None)
+
+
+def _verified_handoff(path, raw, value):
+    """Reparse a fresh observation without inventing a successful apply receipt."""
+    try:
+        _keys(value, ("format", "original", "verification", "address_command_replayed",
+                      "original_journal_modified"), "Verification handoff")
+        if value["address_command_replayed"] is not False or value["original_journal_modified"] is not False:
+            raise ValueError("handoff is not immutable read-only recovery")
+        original = value["original"]
+        if not isinstance(original, dict) or _json(recovery_binding(original["path"]), MAX_JOURNAL_BYTES) != _json(original, MAX_JOURNAL_BYTES):
+            raise ValueError("original journal or marker differs from the fresh verification binding")
+        plan = SelectedSerialPlan.from_dict(original["plan"]).as_dict()
+        validator = SelectedSerialCoordinator(**plan["endpoint"], local_unit=plan["local_unit"],
+            expected_local_serial=plan["expected_local_serial"], **plan["settings"])
+        observed = value["verification"]
+        expected = validator._base("verify", SelectedSerialPlan.from_dict(plan))
+        _keys(observed, expected, "Fresh verification")
+        binding = _routed_binding(observed, plan)
+        expected.update(after=observed["after"], route_binding=observed["route_binding"], state="after_observed")
+        validator._classify(expected, plan)
+        if expected["outcome"] != "observed_expected_change" or _json(expected, MAX_JOURNAL_BYTES) != _json(observed, MAX_JOURNAL_BYTES):
+            raise ValueError("fresh verification differs from the exact expected read-only inventory")
+        route = tuple(plan.get("route", ()))
+        if _inventory_proof(observed["after"], plan["endpoint"], plan["local_unit"], plan["settings"]["command_checksum"], route) != plan["expected_after"]:
+            raise ValueError("fresh raw inventory differs from the expected identity map")
+    except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
+        raise ReconcileError(f"Verification handoff is stale, tampered or incomplete: {error}") from error
+    return VerifiedMove(str(path.absolute()), hashlib.sha256(raw).hexdigest(), original["attempt_id"],
+        original["attempt_identity"], plan["serial"], plan["source"], plan["destination"],
+        dict(plan["endpoint"]), plan["local_unit"], False, route, plan.get("project_sha256"),
+        binding["source_network"] if binding else None, binding["target_network"] if binding else None)
 
 
 @dataclass(frozen=True)
@@ -537,14 +582,32 @@ class ProjectFileDatabase:
             raise ReconcileError("Reloaded project changed data outside the unit address")
 
 
-class CGateDatabase:
-    """A loaded C-Gate project, moved through verified ``DatabaseAddressing``."""
+def _project_digest(document):
+    """Native entity ordering is immaterial; opaque nested data keeps its order."""
+    from .classic_replacement import _canonical, _shape
+    from xml.dom import Node
+    def shape(node):
+        if node.nodeType != Node.ELEMENT_NODE or node.tagName not in ("Installation", "Project", "Network"):
+            return _canonical(node.toxml()) if node.nodeType == Node.ELEMENT_NODE and node.tagName == "Unit" else _shape(node)
+        attrs = tuple(sorted((node.attributes.item(i).name, node.attributes.item(i).value)
+                             for i in range(node.attributes.length)))
+        children = [shape(c) for c in node.childNodes if not (c.nodeType == Node.TEXT_NODE and not c.data.strip())]
+        return node.tagName, attrs, tuple(sorted(children, key=repr))
+    return hashlib.sha256(repr(shape(document.document.documentElement)).encode()).hexdigest()
 
-    def __init__(self, client, project, *, endpoint=None):
+
+class CGateDatabase:
+    """One exclusively owned closed project, with durable whole-project readback."""
+
+    def __init__(self, client, project, *, endpoint=None, exclusive_project=False, route_project=None):
         from .addressing import DatabaseAddressing
         from .native import _project
         self.client, self.project, self.endpoint = client, _project(project), endpoint
         self.addressing = DatabaseAddressing(client)
+        self.exclusive_project = exclusive_project
+        self.route_project = Path(route_project).absolute() if route_project is not None else None
+        self._routed_move = None
+        self._route_original_digest = None
 
     def identity(self):
         return {"kind": "cgate", "endpoint": self.endpoint, "project": self.project}
@@ -553,25 +616,300 @@ class CGateDatabase:
         from .programming import xml_text
         self.addressing.projects.operation("use", self.project)
         text = xml_text(self.addressing.database.get("//" + self.project, xml=True))
-        return ProjectDocument.from_bytes(text.encode("utf-8")), None
+        document = ProjectDocument.from_bytes(text.encode("utf-8"))
+        if _field(document.project, "Address") != self.project:
+            raise ReconcileError("C-Gate snapshot does not contain the selected project")
+        self._route(document)
+        return document, None
+
+    def _route(self, document):
+        move = self._routed_move
+        if move is None:
+            return
+        # Reconciliation can outlive several backup/save/reopen operations.
+        # Keep the caller's original route snapshot immutable throughout them.
+        if (self.route_project is None or
+                hashlib.sha256(_read_bounded(self.route_project, 128 * 1024 * 1024)).hexdigest() != move.project_sha256):
+            raise ReconcileError("Route project changed during C-Gate reconciliation")
+        try:
+            route = resolve_network_route(document, source_network=move.source_network,
+                                          target_network=move.target_network)
+        except ValueError as error:
+            raise ReconcileError(f"Routed C-Gate project topology is invalid: {error}") from error
+        if route != move.route:
+            raise ReconcileError("Routed C-Gate project topology differs from the journal route")
+
+    def bind_move(self, move, record, *, unit_type=None, firmware=None):
+        """Bind a loaded routed project to explicitly supplied original bytes.
+
+        The path recorded by a physical journal is evidence, never an instruction
+        to read that path. A caller supplies the original exported project again;
+        the same raw digest and the complete semantic project must agree. After a
+        move, the durable record reconstructs the only accepted candidate.
+        """
+        self._routed_move = move if move.route else None
+        if not move.route:
+            if self.route_project is not None:
+                raise ReconcileError("--route-project requires a routed journal")
+            return
+        if self.route_project is None:
+            raise ReconcileError("Routed C-Gate reconciliation requires --route-project with the original bound snapshot")
+        self._owned()
+        raw = _read_bounded(self.route_project, 128 * 1024 * 1024)
+        if hashlib.sha256(raw).hexdigest() != move.project_sha256:
+            raise ReconcileError("Route project changed or does not match the journal project_sha256")
+        original = ProjectDocument.from_snapshot(raw, source=self.route_project)
+        if _field(original.project, "Address") != self.project:
+            raise ReconcileError("Route project does not name the selected C-Gate project")
+        self._route(original)
+        unit, position = locate(original, move, network=move.target_network,
+                                unit_type=unit_type, firmware=firmware)
+        if position != "source":
+            raise ReconcileError("Original route project must contain the moved serial at its source")
+        self._route_original_digest = _project_digest(original)
+        allowed = {self._route_original_digest}
+        if record is not None:
+            state = record.value.get("cgate")
+            if not isinstance(state, dict) or state.get("before_project_sha256") != self._route_original_digest:
+                raise ReconcileError("C-Gate record original differs from the bound route project")
+            source = f"/network/{unit.network}/unit/{unit.address}"
+            original.update(source, {"Address": str(move.destination)})
+            original.set_parameter(f"/network/{unit.network}/unit/{move.destination}",
+                                   "UnitAddress", state.get("unit_address_after"))
+            self._route(original)
+            allowed.add(_project_digest(original))
+        current, _ = self.snapshot()
+        if _project_digest(current) not in allowed:
+            raise ReconcileError("Loaded C-Gate project differs from the bound whole original/candidate")
+
+    def _closed(self, document, *, project=None):
+        from .addressing import NetworkAddressing
+        guard = NetworkAddressing(self.client)
+        networks = [_address(_field(n, "Address")) for n in _elements(document.project, "Network") if _is_entity(n)]
+        if not networks or len(networks) != len(set(networks)):
+            raise ReconcileError("Project must contain unique networks")
+        self._route(document)
+        for network in networks:
+            guard._closed(guard._runtime(f"//{project or self.project}/{network}"))
+
+    def _owned(self):
+        if self.exclusive_project is not True:
+            raise ReconcileError("C-Gate apply/recovery requires --exclusive-project for all editing and reloading")
+
+    def _guard_project(self, *digests):
+        """Check a fresh whole model and runtime immediately before mutation.
+
+        Every durable intent can yield to another cooperating editor. Intent is
+        not a lease or permission to overwrite that editor's newer state.
+        """
+        self._owned()
+        document, _ = self.snapshot()
+        self._closed(document)
+        if _project_digest(document) not in digests:
+            raise ReconcileError("Whole project changed outside the bound move; refusing to close or save it")
+        return document
 
     def _path(self, unit, address):
         return f"//{self.project}/{unit.network}/p/{address}"
 
     def plan(self, unit, destination):
         from .classic_replacement import _digest
-        plan = self.addressing.plan(self._path(unit, unit.address), destination)
+        document, _ = self.snapshot()
+        self._closed(document)
+        plan = (self._routed_plan(document, unit, destination) if self._routed_move is not None else
+                self.addressing.plan(self._path(unit, unit.address), destination))
         if plan.oid != unit.oid:
             raise ReconcileError("C-Gate unit OID differs from the project inventory")
         self._address_plan = plan
+        self._before_project = document.raw_xml()
+        self._before_project_sha256 = _project_digest(document)
+        source = f"/network/{unit.network}/unit/{unit.address}"
+        document.update(source, {"Address": str(destination)})
+        document.set_parameter(f"/network/{unit.network}/unit/{destination}", "UnitAddress", dict(plan.parameters)["UnitAddress"])
+        self._route(document)
+        self._expected_project_sha256 = _project_digest(document)
         return {"before_sha256": plan.source_hash, "expected_sha256": _digest(plan.candidate_xml),
                 "source_path": plan.source, "destination_path": plan.destination,
                 "unit_address_before": dict(plan.source_parameters)["UnitAddress"],
-                "unit_address_after": dict(plan.parameters)["UnitAddress"]}
+                "unit_address_after": dict(plan.parameters)["UnitAddress"],
+                "before_project_sha256": self._before_project_sha256,
+                "expected_project_sha256": self._expected_project_sha256}
+
+    def _routed_plan(self, project, unit, destination):
+        """Stage a native two-field edit only after the separate route admission.
+
+        General database readdressing remains direct-only. This path repeats its
+        XML, PP and validation controls, with exact whole-project/topology proof
+        replacing the generic bridge refusal for a known ordinary unit.
+        """
+        from .addressing import AddressPlan, _pp_node
+        from .classic_replacement import _canonical, _digest, _document, _field as native_field, _set
+        if _project_digest(project) != self._route_original_digest:
+            raise ReconcileError("Routed database plan requires the bound whole original project")
+        move = self._routed_move
+        actual, position = locate(project, move, network=move.target_network,
+                                  unit_type=unit.unit_type, firmware=unit.firmware)
+        if position != "source" or actual != unit:
+            raise ReconcileError("Routed source identity differs from the bound unit")
+        source, target = self._path(unit, unit.address), self._path(unit, destination)
+        if source in project.raw_xml():
+            raise ReconcileError("Project contains a textual unit-path reference requiring explicit reconciliation")
+        if re.search(rf"/{unit.network}/p/{unit.address}(?![0-9])", project.raw_xml()):
+            raise ReconcileError("Project contains a textual unit-path reference requiring explicit reconciliation")
+        source_xml = self.addressing._xml(source)
+        document = _document(source_xml)
+        if (_canonical(source_xml) != _canonical(project.resolve(f"/network/{unit.network}/unit/{unit.address}").toxml()) or
+                native_field(document, "OID") != unit.oid or native_field(document, "Address") != str(unit.address)):
+            raise ReconcileError("Fresh C-Gate unit differs from the bound project identity")
+        if self.addressing._optional_xml(target) is not None:
+            raise ReconcileError("Destination unit address is occupied")
+        self.addressing._validate(source)
+        stored = _pp_node(document, "UnitAddress").getAttribute("Value")
+        if int(stored, 0) != unit.address:
+            raise ReconcileError("Stored PP UnitAddress differs from the source address")
+        network = f"//{self.project}/{unit.network}"
+        with self.addressing.programmer.load(network, "/db" + source) as session:
+            before = session.values()
+            if "UnitAddress" not in before or int(before["UnitAddress"], 0) != unit.address:
+                raise ReconcileError("Loaded PP UnitAddress differs from the source address")
+            session.set("UnitAddress", str(destination))
+            after = session.values()
+            if (int(after.get("UnitAddress", "-1"), 0) != destination or
+                    {k: v for k, v in before.items() if k != "UnitAddress"} !=
+                    {k: v for k, v in after.items() if k != "UnitAddress"}):
+                raise ReconcileError("Native UnitAddress staging changed other PP values")
+        _set(document, "Address", str(destination))
+        _pp_node(document, "UnitAddress").setAttribute("Value", after["UnitAddress"])
+        return AddressPlan(source, target, unit.oid, source_xml, _digest(source_xml),
+                           tuple(sorted(before.items())), tuple(sorted(after.items())), document.toxml())
+
+    def evidence(self, plan):
+        return {"format": "cbus-serial-reconcile-cgate-save-v1", "stage": "planned",
+                "before_xml": self._before_project, "before_project_sha256": self._before_project_sha256,
+                "expected_project_sha256": self._expected_project_sha256,
+                "unit_address_after": plan["unit_address_after"], "backup_confirmed": False,
+                "backup_readback_sha256": None, "saved_readback_verified": False}
+
+    def bind_record(self, move, record):
+        """Rederive both digests and the two-field candidate from the bound original."""
+        if record.value.get("format") != CGATE_RECORD_FORMAT or "cgate" not in record.value:
+            raise ReconcileError("Legacy C-Gate records lack durable saved-state evidence; resolve manually")
+        state = record.value["cgate"]
+        try:
+            _keys(state, ("format", "stage", "before_xml", "before_project_sha256", "expected_project_sha256",
+                          "unit_address_after", "backup_confirmed", "backup_readback_sha256",
+                          "saved_readback_verified"), "C-Gate save evidence")
+            if (state["format"] != "cbus-serial-reconcile-cgate-save-v1" or
+                    type(state["backup_confirmed"]) is not bool or type(state["saved_readback_verified"]) is not bool or
+                    state["stage"] not in ("planned", "baseline_save_intent", "baseline_save_complete", "backup_intent",
+                        "backup_complete", "database_write_intent", "database_write_complete", "target_save_intent",
+                        "target_save_complete", "close_intent", "close_complete", "load_intent", "load_complete", "readback_complete")):
+                raise ValueError("unsupported saved-state evidence")
+            if record.value["backup"] is not None and not re.fullmatch(r"B[0-9A-F]{7}", record.value["backup"]):
+                raise ValueError("backup identity is malformed")
+            if state["backup_confirmed"] and record.value["backup"] is None:
+                raise ValueError("confirmed backup identity is missing")
+            if state["backup_readback_sha256"] != (state["before_project_sha256"] if state["backup_confirmed"] else None):
+                raise ValueError("backup readback does not bind the original project")
+            if record.value["phase"] == "db_done" and (state["saved_readback_verified"] is not True or state["stage"] != "readback_complete"):
+                raise ValueError("completion lacks saved readback")
+            before = ProjectDocument.from_bytes(state["before_xml"].encode())
+            self._route(before)
+            if self._routed_move is not None and _project_digest(before) != self._route_original_digest:
+                raise ValueError("original differs from the bound route project")
+            if _field(before.project, "Address") != self.project or record.value["move"] != move.move():
+                raise ValueError("project or physical move differs")
+            unit, position = locate(before, move, network=record.value["unit"]["network"],
+                                    unit_type=record.value["unit"]["unit_type"], firmware=record.value["unit"]["firmware"])
+            paths = {"source_path": self._path(unit, move.source), "destination_path": self._path(unit, move.destination)}
+            if position != "source" or record.value["unit"] != unit.as_dict() | paths:
+                raise ValueError("original source identity/OID differs")
+            from .classic_replacement import _digest
+            source = f"/network/{unit.network}/unit/{unit.address}"
+            if _digest(before.resolve(source).toxml()) != record.value["before_sha256"]:
+                raise ValueError("original unit digest differs")
+            if _project_digest(before) != state["before_project_sha256"] or int(state["unit_address_after"], 0) != move.destination:
+                raise ValueError("original digest or candidate UnitAddress differs")
+            before.update(source, {"Address": str(move.destination)})
+            destination = f"/network/{unit.network}/unit/{move.destination}"
+            before.set_parameter(destination, "UnitAddress", state["unit_address_after"])
+            self._route(before)
+            if (_project_digest(before) != state["expected_project_sha256"] or
+                    _digest(before.resolve(destination).toxml()) != record.value["expected_sha256"]):
+                raise ValueError("candidate differs from the exact two-field move")
+        except (ValueError, TypeError, KeyError, AttributeError) as error:
+            raise ReconcileError(f"C-Gate record binding is invalid: {error}") from error
+
+    def _stage(self, record, stage, **fields):
+        record.value["cgate"].update(stage=stage, **fields)
+        record.value["history"].append({"event": stage, "at": _now()})
+        record._write()
+
+    def _backup_readback(self, record):
+        """Read the copied original; normalize only its repository project name."""
+        from .programming import xml_text
+        backup = record.value["backup"]
+        self.addressing.projects.operation("load", backup)
+        self.addressing.projects.operation("use", backup)
+        try:
+            text = xml_text(self.addressing.database.get("//" + backup, xml=True))
+            document = ProjectDocument.from_bytes(text.encode())
+            if _field(document.project, "Address") not in (backup, self.project):
+                raise ReconcileError("Backup readback names a different project")
+            document.update("/", {"Address": self.project})
+            self._closed(document, project=backup)
+            digest = _project_digest(document)
+            if digest != record.value["cgate"]["before_project_sha256"]:
+                raise ReconcileError("Backup differs from the bound whole original project")
+            return digest
+        finally:
+            self.addressing.projects.operation("use", self.project)
+
+    def _reopen(self, record):
+        """Discard only our bound loaded state and read the saved image; never SAVE."""
+        self._owned()
+        # LOAD is a no-op when already loaded, and recovers a lost CLOSE reply.
+        self.addressing.projects.operation("load", self.project)
+        document, _ = self.snapshot()
+        self._closed(document)
+        state = record.value["cgate"]
+        if _project_digest(document) not in (state["before_project_sha256"], state["expected_project_sha256"]):
+            raise ReconcileError("Loaded project changed outside the bound move; refusing to close or save it")
+        self._stage(record, "close_intent")
+        self._guard_project(state["before_project_sha256"], state["expected_project_sha256"])
+        self.addressing.projects.operation("close", self.project)
+        self._stage(record, "close_complete")
+        self._stage(record, "load_intent")
+        self.addressing.projects.operation("load", self.project)
+        self._stage(record, "load_complete")
+        reloaded, _ = self.snapshot()
+        self._closed(reloaded)
+        digest = _project_digest(reloaded)
+        if digest not in (state["before_project_sha256"], state["expected_project_sha256"]):
+            raise ReconcileError("Saved project conflicts with the bound original/candidate; resolve manually")
+        expected = digest == state["expected_project_sha256"]
+        self._stage(record, "readback_complete", saved_readback_verified=expected)
+        return expected
+
+    def recover(self, record, *, apply, retry_database=False):
+        if not apply:
+            raise ReconcileError("Pending C-Gate reconciliation needs --apply --exclusive-project to reopen and classify saved state")
+        if self._reopen(record):
+            if not record.value["cgate"]["backup_confirmed"]:
+                raise ReconcileError("Saved candidate has no confirmed original backup")
+            self._backup_readback(record)
+            record.advance("db_done", database_changed=True, last_error=None)
+            return True
+        if not retry_database:
+            raise ReconcileError("Saved project remains the original; database move is unconfirmed. "
+                                 "Use --retry-database --apply to authorize one database-only retry; no address command is replayed",
+                                 record=str(record.path), phase="db_pending", saved_candidate_verified=False)
+        return False
 
     def current(self, unit, plan):
         """Classify the unit by the digests of its native XML at both paths."""
         from .classic_replacement import _digest, _document, _field
+        self.addressing.projects.operation("use", self.project)
         for key, path in (("expected_sha256", plan["destination_path"]), ("before_sha256", plan["source_path"])):
             text = self.addressing._optional_xml(path)
             if text is not None and _field(_document(text), "OID") == unit.oid and _digest(text) == plan[key]:
@@ -579,22 +917,58 @@ class CGateDatabase:
         return None
 
     def apply(self, unit, destination, plan, record):
-        from .addressing import AddressingError
-        backup = "B" + uuid4().hex[:7].upper()
+        self._owned()
+        before, _ = self.snapshot()
+        self._closed(before)
+        state = record.value["cgate"]
+        if _project_digest(before) != state["before_project_sha256"]:
+            raise ReconcileError("Whole project changed before database mutation")
+        backup = record.value["backup"] or "B" + uuid4().hex[:7].upper()
         record.advance("db_pending", backup=backup)
         address_plan = getattr(self, "_address_plan", None) or self.addressing.plan(plan["source_path"], destination)
-        record.mark_attempted()
         try:
-            self.addressing.apply(address_plan, backup_project=backup)
-        except AddressingError as error:
-            record.fail(error, error.details.get("rollback_errors", []))
-            raise ReconcileError("C-Gate database move failed; reconciliation remains db_pending",
-                                 record=str(record.path), phase=record.value["phase"],
-                                 backup_project=backup, rollback_errors=error.details.get("rollback_errors", [])) from error
-        if self.current(unit, plan) != plan["expected_sha256"]:
-            raise ReconcileError("Saved C-Gate unit differs from the planned move")
-        if self.addressing._optional_xml(plan["source_path"]) is not None:
-            raise ReconcileError("Old database unit address remains occupied")
+            if not state["backup_confirmed"]:
+                # A fresh backup name never overwrites an uncertain previous copy.
+                if state["stage"] == "readback_complete":
+                    backup = "B" + uuid4().hex[:7].upper()
+                    record.advance("db_pending", backup=backup)
+                self._stage(record, "baseline_save_intent")
+                self._guard_project(state["before_project_sha256"])
+                self.addressing.projects.operation("save", self.project)
+                self._stage(record, "baseline_save_complete")
+                self._stage(record, "backup_intent")
+                self._guard_project(state["before_project_sha256"])
+                self.addressing.projects.operation("copy", self.project, backup)
+                digest = self._backup_readback(record)
+                self._stage(record, "backup_complete", backup_confirmed=True, backup_readback_sha256=digest)
+            else:
+                self._backup_readback(record)
+            current, _ = self.snapshot()
+            self._closed(current)
+            if _project_digest(current) != state["before_project_sha256"]:
+                raise ReconcileError("Whole project changed while creating the backup")
+            record.mark_attempted()
+            self._stage(record, "database_write_intent", saved_readback_verified=False)
+            # Durable intent may take time. Re-read the complete model and the
+            # route snapshot immediately before the sole database mutation.
+            self._guard_project(state["before_project_sha256"])
+            self.client.command_document("DBSETXML " + address_plan.source, address_plan.candidate_xml)
+            self._stage(record, "database_write_complete")
+            self.addressing._verify(address_plan)
+            candidate, _ = self.snapshot()
+            self._closed(candidate)
+            if _project_digest(candidate) != state["expected_project_sha256"]:
+                raise ReconcileError("Database mutation changed data outside the two planned fields")
+            self._stage(record, "target_save_intent")
+            self._guard_project(state["expected_project_sha256"])
+            self.addressing.projects.operation("save", self.project)
+            self._stage(record, "target_save_complete")
+            if not self._reopen(record):
+                raise ReconcileError("PROJECT SAVE did not persist the exact candidate")
+        except BaseException as error:
+            record.fail(error)
+            # Never restore, SAVE again, or replay an uncertain mutation.
+            raise
 
 
 class ReconcileRecord:
@@ -615,7 +989,9 @@ class ReconcileRecord:
         except (OSError, ValueError) as error:
             raise ReconcileError(f"Cannot read reconciliation record: {error}") from error
         value = _parse(raw, "Reconciliation record")
-        if (not isinstance(value, dict) or set(value) != set(_RECORD_KEYS) or value["format"] != RECORD_FORMAT or
+        if (not isinstance(value, dict) or
+                (value.get("format"), set(value)) not in ((RECORD_FORMAT, set(_RECORD_KEYS)),
+                    (CGATE_RECORD_FORMAT, set(_RECORD_KEYS) | {"cgate"})) or
                 value["phase"] not in PHASES or not isinstance(value["history"], list)):
             raise ReconcileError("Unsupported or malformed reconciliation record")
         return cls(path, value, raw)
@@ -657,13 +1033,15 @@ def default_record_path(journal):
     return journal.with_name(journal.name + ".reconcile.json")
 
 
-def reconcile(journal, database, *, apply=False, record_path=None, network=None, unit_type=None, firmware=None):
+def reconcile(journal, database, *, apply=False, record_path=None, network=None, unit_type=None, firmware=None,
+              retry_database=False):
     """Plan (default) or apply one database reconciliation for a verified move."""
     move = verify_journal(journal)
+    if retry_database and (not apply or not isinstance(database, CGateDatabase)):
+        raise ReconcileError("--retry-database requires --apply and a pending C-Gate record")
+    if apply and isinstance(database, CGateDatabase):
+        database._owned()
     if move.route:
-        if not isinstance(database, ProjectFileDatabase):
-            raise ReconcileError("Routed reconciliation requires an offline XML/CBZ project; "
-                                 "routed C-Gate database reconciliation is unsupported")
         if network is not None and (type(network) is not int or network != move.target_network):
             raise ReconcileError("Requested network differs from the routed journal target network")
         network = move.target_network
@@ -677,8 +1055,12 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
         if value["database"] != identity:
             raise ReconcileError("Reconciliation record belongs to a different database", record=str(record.path),
                                  recorded=value["database"])
-    if isinstance(database, ProjectFileDatabase):
+    if isinstance(database, (ProjectFileDatabase, CGateDatabase)):
         database.bind_move(move, record, unit_type=unit_type, firmware=firmware)
+    if isinstance(database, CGateDatabase) and record is not None:
+        database.bind_record(move, record)
+    if retry_database and (record is None or record.value["phase"] != "db_pending"):
+        raise ReconcileError("--retry-database requires an existing pending C-Gate record")
     result = {"format": RESULT_FORMAT, "mode": "apply" if apply else "dry_run", "journal": move.as_dict(),
               "move": move.move(), "database": identity, "record": None, "database_changed": False,
               "bus_io_performed": False, "hardware_programmed": False}
@@ -696,7 +1078,13 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
         matches = None
         if record.value["expected_sha256"] is not None:
             matches = _current(database, unit, record.value) == record.value["expected_sha256"]
+        if isinstance(database, CGateDatabase) and matches is not True:
+            raise ReconcileError("Completed C-Gate project differs from its saved candidate; resolve manually",
+                                 record=str(record.path), phase="db_done")
         return finish("already_reconciled", extra={"current_database_matches_record": matches})
+    if isinstance(database, CGateDatabase) and record is not None and record.value["phase"] == "db_pending":
+        if database.recover(record, apply=apply, retry_database=retry_database):
+            return finish("resumed_complete", changed=True)
     document, _ = database.snapshot()
     unit, position = locate(document, move, network=network, unit_type=unit_type, firmware=firmware)
     if record is not None and record.value["unit"]["oid"] != unit.oid:
@@ -720,6 +1108,9 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
             return finish("resumed_complete" if apply else "resume_pending", changed=True)
         if not apply:
             return finish("database_already_matches")
+        if isinstance(database, CGateDatabase):
+            raise ReconcileError("C-Gate destination has no bound original reconciliation record; "
+                                 "saved two-field move cannot be established")
         record = record or ReconcileRecord(record_path)
         if record.value is None:
             record.create(_record(move, identity, unit, None, "physical_done"))
@@ -731,14 +1122,24 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
         if record.value["before_sha256"] != plan["before_sha256"]:
             raise ReconcileError("Database unit changed while reconciliation was pending; resolve manually",
                                  record=str(record.path), phase="db_pending")
-        record.value["expected_sha256"] = plan["expected_sha256"]
+        if isinstance(database, CGateDatabase):
+            if (record.value["expected_sha256"] != plan["expected_sha256"] or
+                    record.value["cgate"]["expected_project_sha256"] != plan["expected_project_sha256"]):
+                raise ReconcileError("Fresh database-only retry differs from the bound two-field candidate")
+        else:
+            record.value["expected_sha256"] = plan["expected_sha256"]
     if not apply:
         return finish("planned")
     if record is None:
         record = ReconcileRecord(record_path)
-        record.create(_record(move, identity, unit, plan, "physical_done"))
+        record.create(_record(move, identity, unit, plan, "physical_done",
+                              cgate=database.evidence(plan) if isinstance(database, CGateDatabase) else None))
     elif record.value["phase"] == "physical_done":
         # No database write was marked; bind the record to the fresh plan.
+        if isinstance(database, CGateDatabase) and (
+                record.value["cgate"]["before_project_sha256"] != plan["before_project_sha256"] or
+                record.value["cgate"]["expected_project_sha256"] != plan["expected_project_sha256"]):
+            raise ReconcileError("Whole project changed after reconciliation planning")
         record.value.update(before_sha256=plan["before_sha256"], expected_sha256=plan["expected_sha256"])
         record.value["unit"].update(source_path=plan["source_path"], destination_path=plan["destination_path"])
     try:
@@ -758,6 +1159,12 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
 
 def _current(database, unit, plan):
     if isinstance(database, CGateDatabase):
+        if "cgate" in plan:
+            document, _ = database.snapshot()
+            database._closed(document)
+            digest = _project_digest(document)
+            return (plan["expected_sha256"] if digest == plan["cgate"]["expected_project_sha256"] else
+                    plan["before_sha256"] if digest == plan["cgate"]["before_project_sha256"] else None)
         return database.current(unit, {"source_path": plan["unit"]["source_path"],
                                        "destination_path": plan["unit"]["destination_path"],
                                        "before_sha256": plan["before_sha256"],
@@ -765,16 +1172,19 @@ def _current(database, unit, plan):
     return database.current()
 
 
-def _record(move, identity, unit, plan, phase):
+def _record(move, identity, unit, plan, phase, *, cgate=None):
     unit_record = unit.as_dict()
     unit_record["source_path"] = plan["source_path"] if plan else None
     unit_record["destination_path"] = plan["destination_path"] if plan else None
-    return {"format": RECORD_FORMAT, "phase": phase, "journal": move.as_dict(), "move": move.move(),
+    value = {"format": CGATE_RECORD_FORMAT if cgate is not None else RECORD_FORMAT, "phase": phase, "journal": move.as_dict(), "move": move.move(),
             "database": identity, "unit": unit_record,
             "before_sha256": plan["before_sha256"] if plan else None,
             "expected_sha256": plan["expected_sha256"] if plan else None,
             "backup": None, "database_changed": False, "history": [{"phase": phase, "at": _now()}],
             "last_error": None, "rollback_errors": [], "bus_io_performed": False}
+    if cgate is not None:
+        value["cgate"] = cgate
+    return value
 
 
 def _endpoint(text):
@@ -790,18 +1200,38 @@ def _endpoint(text):
 def run_cli(args):
     """``cbus-toolkit serial-address reconcile``; returns (result, exit status)."""
     options = dict(apply=args.apply, record_path=args.record, network=args.network,
-                   unit_type=args.unit_type, firmware=args.firmware)
+                   unit_type=args.unit_type, firmware=args.firmware, retry_database=args.retry_database)
     if args.project is not None:
-        if args.cgate is not None or args.project_name is not None:
+        if args.cgate is not None or args.project_name is not None or getattr(args, "route_project", None) is not None:
             raise ValueError("Use either --project or --cgate with --project-name")
         return reconcile(args.journal, ProjectFileDatabase(args.project), **options), 0
     if args.cgate is None or args.project_name is None:
         raise ValueError("Use --project FILE, or --cgate HOST:PORT with --project-name")
-    # Validate the physical evidence before opening any connection.
-    if verify_journal(args.journal).route:
-        raise ReconcileError("Routed C-Gate database reconciliation is unsupported; use the bound offline XML/CBZ project")
+    if args.retry_database and not args.apply:
+        raise ReconcileError("--retry-database requires --apply")
+    # Validate the physical evidence and explicit topology before connecting.
+    move = verify_journal(args.journal)
+    route_project = getattr(args, "route_project", None)
+    if move.route:
+        if route_project is None:
+            raise ReconcileError("Routed C-Gate reconciliation requires --route-project with the original bound snapshot")
+        raw = _read_bounded(route_project, 128 * 1024 * 1024)
+        if hashlib.sha256(raw).hexdigest() != move.project_sha256:
+            raise ReconcileError("Route project does not match the routed journal project_sha256")
+        document = ProjectDocument.from_snapshot(raw, source=route_project)
+        if (_field(document.project, "Address") != args.project_name or
+                resolve_network_route(document, source_network=move.source_network,
+                                      target_network=move.target_network) != move.route):
+            raise ReconcileError("Route project identity or topology differs from the routed journal")
+        if args.network is not None and args.network != move.target_network:
+            raise ReconcileError("Requested network differs from the routed journal target network")
+    elif route_project is not None:
+        raise ReconcileError("--route-project requires a routed journal")
+    if (args.apply or move.route) and not args.exclusive_project:
+        raise ReconcileError("C-Gate apply/recovery requires --exclusive-project")
     from .cgate import CGateClient
     host, port = _endpoint(args.cgate)
     with CGateClient(host, port, timeout=args.timeout, max_line_bytes=16 * 1024 * 1024 + 4096) as client:
-        database = CGateDatabase(client, args.project_name, endpoint=f"{host}:{port}")
+        database = CGateDatabase(client, args.project_name, endpoint=f"{host}:{port}",
+                                 exclusive_project=args.exclusive_project, route_project=route_project)
         return reconcile(args.journal, database, **options), 0

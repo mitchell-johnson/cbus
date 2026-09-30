@@ -2169,18 +2169,22 @@ def build_parser():
     selection = p.add_mutually_exclusive_group(required=True)
     selection.add_argument("--plan", type=Path, help="Read the expected change from a saved plan")
     selection.add_argument("--recovery", type=Path, help="Read the plan from a recovery journal")
+    p.add_argument("--output", type=Path, help="New reconciliation handoff bound to --recovery; preserves the original attempt")
     route_options(p)
     p = serial_ops.add_parser("reconcile", help="Move the database unit of a verified observed_expected_change journal; dry run unless --apply")
-    p.add_argument("--journal", type=Path, required=True, help="Completed serial-address apply journal")
+    p.add_argument("--journal", type=Path, required=True, help="Completed apply journal or fresh verification handoff")
     p.add_argument("--project", type=Path, help="Legacy XML or CBZ project file")
     p.add_argument("--cgate", help="C-Gate HOST:PORT whose loaded project is reconciled")
     p.add_argument("--project-name", help="C-Gate project name (with --cgate)")
+    p.add_argument("--route-project", type=Path, help="Original SHA-bound DBGETXML snapshot for routed C-Gate reconciliation")
     p.add_argument("--network", type=_byte, help="Restrict the serial match to one database network")
     p.add_argument("--unit-type", help="Require this database unit type")
     p.add_argument("--firmware", help="Require this database firmware version")
     p.add_argument("--record", type=Path, help="Reconciliation record; defaults to JOURNAL.reconcile.json")
     p.add_argument("--timeout", type=_positive, default=60, help="C-Gate command timeout")
     p.add_argument("--apply", action="store_true", help="Back up, move, save and verify; otherwise only plan")
+    p.add_argument("--exclusive-project", action="store_true", help="Own all editing/reloading of the closed C-Gate project")
+    p.add_argument("--retry-database", action="store_true", help="Explicitly retry only the database move after reopening proves the saved original; requires --apply")
 
     pci = commands.add_parser("pci", help="Direct CNI/PCI operations with source and parameter correlation")
     pci.add_argument("--host", default="127.0.0.1")
@@ -3248,6 +3252,13 @@ def _selected_serial_cli(args):
         new_path(args.recovery)
         if args.attempt_store is not None and not args.attempt_store.is_dir():
             raise ValueError(f"Shared attempt store is not a directory: {args.attempt_store}")
+    original = None
+    if args.action == "verify" and args.output is not None:
+        from .pci_selected_serial import recovery_binding
+        new_path(args.output)
+        if args.recovery is None:
+            raise ValueError("Verification handoff requires --recovery")
+        original = recovery_binding(args.recovery)
     plan = (SelectedSerialPlan.load(args.plan) if args.plan is not None
             else SelectedSerialCoordinator.load_recovery(args.recovery))
     document = plan.as_dict()
@@ -3257,6 +3268,9 @@ def _selected_serial_cli(args):
                "target_network": args.target_network}
     result = (coordinator.apply(plan, recovery_path=args.recovery, attempt_store=args.attempt_store, **binding)
               if args.action == "apply" else coordinator.verify(plan, **binding))
+    if original is not None and result.observed_expected_change:
+        from .pci_selected_serial import export_verification
+        return export_verification(args.output, original, result), 0
     return result.as_dict(), int(not result.observed_expected_change)
 
 

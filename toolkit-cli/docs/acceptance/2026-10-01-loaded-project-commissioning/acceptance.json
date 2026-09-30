@@ -1,0 +1,2273 @@
+{
+  "format": "cbus-loaded-project-commissioning-acceptance-v1",
+  "result": "passed",
+  "source_git_head_at_execution": "6b6b3b1238bd5ec55329757779066c2ef499db6b",
+  "source_revision_qualification": "Execution used a corrective working tree at the recorded HEAD; source fingerprints bind the tested files. The later publication commit contains those exact bytes.",
+  "python": {
+    "source": {
+      "unique_parent_tests": 229,
+      "parent_ids": [
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_cbz_members_are_preserved"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_database_already_at_destination_is_recorded_without_change"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_deleted_attempt_marker_makes_the_journal_stale"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_dry_run_plans_without_writing_then_apply_moves_and_rerun_is_noop"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_interrupted_before_save_repeats_the_unstarted_move"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_interrupted_between_save_and_record_resumes_to_db_done"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_journal_changed_after_reconciliation_started_is_refused"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_only_observed_expected_change_journals_are_admitted"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_pending_record_with_a_changed_database_reports_conflict"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_record_for_another_database_is_refused"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_serial_not_found_ambiguous_and_destination_occupied_refuse_without_record"
+        ],
+        [
+          "tests.test_serial_reconcile.EndToEndTests",
+          "test_simulator_apply_journal_then_cli_reconcile_synthetic_project"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_cli_missing_exclusive_project_refuses_before_cgate_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_cli_output_with_plan_refuses_before_io"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_tampered_bindings_raw_inventory_flags_and_plan_refuse_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_uncertain_send_fresh_handoff_and_offline_preservation"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_backup_copy_faults_do_not_overwrite_uncertain_copy_or_replay"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_baseline_save_faults_require_saved_original_and_explicit_database_retry"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_loaded_foreign_edit_refuses_recovery_before_close_or_save"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_open_or_busy_runtime_refuses_before_record_or_database_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_binding_raw_inventory_local_identity_and_receipt_tampering_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_bound_database_unit_guards_refuse_before_record_or_save"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_bridge_and_wgate_targets_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_cli_cgate_refused_before_client_construction"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_database_type_and_firmware_pins_refuse_before_record"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_db_done_reports_later_edit_without_writes"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_directory_sync_failure_stops_and_requires_explicit_recovery"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_fresh_exact_inventory_admits_lost_and_wrong_route_receipt"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_one_and_six_bridge_xml_and_cbz_scope_and_preservation"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_restart_after_write_is_read_only_and_preserves_original_backup"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_restart_before_write_and_changed_pending_or_backup_refuse"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_save_freshness_checks_after_candidate_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_wrong_network_and_initial_raw_project_hash_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.NativeRouteSnapshotTests",
+          "test_empty_legacy_tagname_and_missing_or_duplicate_native_identity_refuse"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.NativeRouteSnapshotTests",
+          "test_native_address_identity_routes_without_changing_the_raw_snapshot"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_cli_routed_admission_requires_snapshot_and_exclusive_before_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_complete_rust_apply_v2_public_cli_reconciles_same_loaded_routed_project"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_completed_python_marker_envelope_rejects_contradictory_values_before_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_foreign_loaded_project_pins_and_ownership_refuse_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_one_and_six_bridge_loaded_save_reload_backup_and_noop_preserve_whole_project"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_pending_saved_candidate_recovers_read_only_after_lost_save_reply"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_pending_unsaved_candidate_requires_explicit_database_only_retry"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_record_original_candidate_and_target_bindings_refuse_before_recovery_mutations"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_route_snapshot_changed_after_backup_stops_before_database_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_routed_uncertain_apply_fresh_handoff_reconciles_without_address_replay"
+        ],
+        [
+          "tests.test_serial_reconcile_cgate_boundaries.LoadedProjectBoundaryTests",
+          "test_route_snapshot_substitution_after_each_durable_intent_refuses_before_boundary"
+        ],
+        [
+          "tests.test_serial_reconcile_cgate_boundaries.LoadedProjectBoundaryTests",
+          "test_same_owner_loaded_edit_after_each_durable_intent_survives_refusal"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_actual_cli_symlink_parent_binds_canonical_marker_and_refuses_alias_abuse"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_actual_cli_xml_and_cbz_journals_reconcile_offline"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_attempt_marker_missing_or_changed_refused"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_legacy_rust_v1_and_missing_raw_proof_are_refused"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_restart_after_save_preserves_backup_and_does_not_repeat_write"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_strict_raw_capture_and_summary_mutations_refuse_before_writes"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_target_scope_and_project_pin_refused_before_writes"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_valid_checksums_cannot_hide_wrong_wire_identity_route_or_options"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_actual_main_cancelled_send_preserves_evidence_journal_and_never_retries"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_checksummed_fixture_restart_retains_selected_move_and_verification_uses_saved_endpoint"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_corrupt_plan_and_recovery_are_rejected_before_any_connection"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_destination_endpoint_and_timing_guards_fail_before_output_or_connection"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_literal_subprocess_sequence_exports_exact_plan_and_verifies_without_replay"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_missing_receipt_and_forged_success_have_independently_correct_exit_status"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_new_file_preflight_guards_existing_plan_journal_and_missing_parent_without_io"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_oversized_or_nonserializable_error_evidence_retains_original_error_and_journal"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_parser_requires_identity_and_prevents_saved_plan_endpoint_overrides"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_subprocess_apply_refuses_contended_endpoint_before_io"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_subprocess_attempt_store_refuses_repeat_across_journal_directories_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_marker_filename_matches_rust_vector"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_marker_refuses_repeat_across_journals_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_store_shares_markers_across_journal_directories"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_canonical_bytes_match_rust_fingerprint_encoder"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_cooperating_endpoint_contention_refuses_before_io_or_journal"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_cooperating_endpoint_contention_refuses_verify_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_directory_and_file_sync_interruptions_survive_close_errors"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_existing_journal_never_overwritten_and_original_interrupt_wins_cleanup"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_external_journal_growth_and_symlink_are_bounded_and_never_overwritten"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_first_child_interruption_survives_serialization_and_copy_interruptions"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_fixture_true_missing_wrong_and_forged_receipts_have_independent_restart_outcomes"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_independent_literal_peer_full_sequence_and_recovery_do_not_replay"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_invalid_routed_plan_fields_refuse_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_failure_before_and_after_replacement_never_invokes_transport"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_post_exchange_failure_stops_before_independent_verification"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_size_bound_includes_the_trailing_newline"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_late_final_journal_sync_is_uncertain_without_losing_after_inventory"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_malformed_or_truncated_receipt_stops_network_io_after_whole_capture"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_missing_attempt_store_refuses_before_io_or_journal"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_missing_final_coverage_preserves_after_identities_but_outcome_uncertain"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_occupied_destination_stale_source_and_partial_mmi_are_never_authority"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_options07_and_late_changed_local_identity_reject_before_co"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_parent_deadline_after_durable_marking_does_not_send_and_late_read_is_retained"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_plan_json_has_shared_depth_utf8_and_unicode_bounds"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_rust_vector_plan_applies_live_cross_implementation"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_send_error_and_interruption_retain_exchange_and_stop_network_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_shared_plan_vectors_including_routed_schema"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_state3_and_cross_address_serial_are_rejected_without_local_options_or_co"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_strict_plan_rejects_changed_expected_map_raw_bytes_and_serial_metadata"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_unexpected_second_move_is_reported_without_automatic_inverse_operation"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_verification_interruption_is_uncertain_and_never_constructs_transport"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_after_inventory_loss_duplicate_reorder_and_foreign_route_are_uncertain"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_binding_refusals_happen_before_any_io_or_file"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_direct_plan_refuses_a_route_binding"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_loss_duplicate_reorder_and_wrong_route_receipts_never_replay"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_one_and_six_bridge_plan_apply_verify_and_journal_recovery"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_reconnect_mid_receipt_is_uncertain_then_verified_read_only"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_routed_evidence_is_bound_to_its_route"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_stale_project_at_handoff_refuses_before_marker_or_send"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_wrong_route_is_refused_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialCLITests",
+          "test_cli_plans_applies_and_verifies_a_two_bridge_route_bound_to_its_project"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_two_bridge_plan_derives_outgoing_and_independent_ack_path"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_read_plan_uses_the_same_route_without_inventing_an_ack_tag"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_read_route_boundaries_cover_direct_through_six_bridges"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_direct_and_six_bridge_boundaries_are_exact"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_ambiguous_cycle_disconnected_and_overdepth_fail_closed"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_missing_malformed_and_unsupported_transitions_fail_before_a_plan"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_reverse_and_sibling_starts_are_not_inferred_for_a_direct_pci"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_target_and_project_identity_are_exact_and_output_is_preserving"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_stale_snapshot_is_rejected_and_recovery_uses_fresh_bytes"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_snapshot_reader_rejects_oversize_and_nonregular_sources_before_read"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_cbz_plan_parses_the_exact_bytes_bound_by_the_digest"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_recorder_retains_exact_failed_command_before_raising"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_recorder_retains_partial_timeout_outputs_and_no_success_status"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_routed_fixture_is_one_bridge252_single_address_and_bus_only"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_native_capture_preserves_three_internal_console_rows"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_unexpected_internal_row_is_not_filtered"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_missing_rust_console_row_fails_complete_comparison"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_inconsistent_rust_console_timestamp_is_rejected"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_client_tag_echo_must_match_exactly"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_reply_must_use_native_crlf"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_connected_server_with_wrong_greeting_is_behavior_failure"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_stale_native_capture_fails_before_probe"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-test-support/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/Cargo.toml]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/testdata/fixtures/native_cgate_dali_help.json]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(\"missing.json\")-include is missing]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(concat!(\"data\", \".json\"))-nonliteral include]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_inside_repository_but_outside_workspace_is_fingerprinted"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_outside_repository_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_source_resolving_outside_workspace_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_broken_tagged_reply_is_a_red_executed_case_not_a_blocked_skip"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_pre_fix_receipt_is_red_without_skipped_cases"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_all_eleven_cases_preserve_full_numeric_tagged_wire"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-[502] -[999] -numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-[502] --numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-2-\\r\\n-\\n-numeric prefix or CRLF]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-tag=Console-tag=Other-Console row]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-300--300 -continuation or terminal]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-40123-40125-owned peer port]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[5-1-20260928-120001-20260928-120010-timestamp changed]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[10-0-cmd5-cmd3-queried identity]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[7-0-408-200-None]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_extra_or_missing_console_row_is_rejected"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_live_reader_rejects_wrong_tag_or_lf_before_any_receipt_credit"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_native_fixture_byte_change_fails_closed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_altered_bundle_record_and_artifact_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_blocked_dimension_requires_known_unavailable_fixture_blockers"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_census_complete_cannot_hide_unresolved_scope"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_contract_domain_cannot_resolve_with_partial_axes"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_ledger_contract_and_route_only_claims_are_guarded"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_paths_have_independent_source_bound_obligations"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_closure_receipt_artifact_and_fingerprint_bind_closure"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_census_requires_one_counted_domain_per_scope_kind"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_fixture_is_derived_from_obligations_and_evidence"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_completed_roadmap_item_remains_in_work_item_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_denominator_history_versions_every_change"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_duplicate_json_keys_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_empty_or_placeholder_workflows_withhold_the_denominator"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_every_obligation_belongs_to_one_workflow_with_its_minimum_dimensions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_bytes_are_strictly_parsed_and_content_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_target_and_obligation_references_must_match"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_feature_ledger_bytes_are_strictly_parsed_and_digest_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_installed_wheel_refuses_to_recompute_fingerprints"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_missing_duplicate_and_unknown_ids_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_nonfunctional_scope_requires_an_exact_passed_disposition_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_dimension_requires_matching_passed_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_requires_explicit_hash_bound_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_offline_decision_only_receipt_can_exclude_physical_and_original"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_denominator_history_reconstructs_prior_versions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_physical_paths_are_blocked_by_matrix_fixtures"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_rejects_a_substituted_feature_ledger"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_forged_raw_prefix_with_updated_digests"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_rehashed_dynamic_payload_tampering"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_workflows_cover_toolkit_families_and_every_obligation"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_a_recognized_report_artifact"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_result_and_bound_oracle_artifacts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_decision_declarations_must_match_executed_report"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_report_cannot_relabel_failed_or_uncovered_cases"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_session_differential_cannot_claim_mismatched_payload"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_required_and_unexplained_skips_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_resolved_domains_and_scope_items_cannot_hide_unknown_work"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_scope_disposition_receipts_are_strict_and_reciprocal"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_sensitive_evidence_requires_physical_environment_and_original_oracle"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_differential_acceptance_rejects_missing_or_stale_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_builder_rejects_stale_or_missing_original_sources"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_rejects_broken_packaged_anchors"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_physical_applicability_rejects_stale_or_missing_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_skipped_cases_cannot_be_duplicated_or_claimed_executed"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_work_items_must_belong_to_the_authoritative_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_workflow_criteria_are_strict"
+        ]
+      ],
+      "passed_subtests_not_added_to_parent_counts": 822,
+      "profiles": [
+        {
+          "profile": "direct",
+          "actual_cli_calls": 112,
+          "cli_exit_counts": {
+            "0": 96,
+            "1": 16
+          },
+          "in_process_fault_cases": 10,
+          "record_tamper_refusals": 8,
+          "handoff_tamper_refusals": 3,
+          "literal_address_request_count": 1,
+          "owned_process_and_listener_cleanup": true
+        },
+        {
+          "profile": "routed",
+          "actual_cli_calls": 135,
+          "cli_exit_counts": {
+            "0": 116,
+            "1": 19
+          },
+          "in_process_fault_cases": 10,
+          "record_tamper_refusals": 8,
+          "handoff_tamper_refusals": 4,
+          "literal_address_request_count": 1,
+          "owned_process_and_listener_cleanup": true
+        }
+      ],
+      "verified_raw_file_artifact_bindings": 703,
+      "actual_imports_verified": true,
+      "all_current_input_bindings_unchanged": true,
+      "excluded_native_test": "tests/test_serial_reconcile.py::NativeReconcileTests::test_native_move_preserves_oid_reference_and_programming_through_reload"
+    },
+    "installed": {
+      "unique_parent_tests": 229,
+      "parent_ids": [
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_cbz_members_are_preserved"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_database_already_at_destination_is_recorded_without_change"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_deleted_attempt_marker_makes_the_journal_stale"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_dry_run_plans_without_writing_then_apply_moves_and_rerun_is_noop"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_interrupted_before_save_repeats_the_unstarted_move"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_interrupted_between_save_and_record_resumes_to_db_done"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_journal_changed_after_reconciliation_started_is_refused"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_only_observed_expected_change_journals_are_admitted"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_pending_record_with_a_changed_database_reports_conflict"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_record_for_another_database_is_refused"
+        ],
+        [
+          "tests.test_serial_reconcile.OfflineReconcileTests",
+          "test_serial_not_found_ambiguous_and_destination_occupied_refuse_without_record"
+        ],
+        [
+          "tests.test_serial_reconcile.EndToEndTests",
+          "test_simulator_apply_journal_then_cli_reconcile_synthetic_project"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_cli_missing_exclusive_project_refuses_before_cgate_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_cli_output_with_plan_refuses_before_io"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_tampered_bindings_raw_inventory_flags_and_plan_refuse_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.VerificationHandoffTests",
+          "test_uncertain_send_fresh_handoff_and_offline_preservation"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_backup_copy_faults_do_not_overwrite_uncertain_copy_or_replay"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_baseline_save_faults_require_saved_original_and_explicit_database_retry"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_loaded_foreign_edit_refuses_recovery_before_close_or_save"
+        ],
+        [
+          "tests.test_serial_reconcile_recovery.CGateRecoveryGuardTests",
+          "test_open_or_busy_runtime_refuses_before_record_or_database_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_binding_raw_inventory_local_identity_and_receipt_tampering_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_bound_database_unit_guards_refuse_before_record_or_save"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_bridge_and_wgate_targets_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_cli_cgate_refused_before_client_construction"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_database_type_and_firmware_pins_refuse_before_record"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_db_done_reports_later_edit_without_writes"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_directory_sync_failure_stops_and_requires_explicit_recovery"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_fresh_exact_inventory_admits_lost_and_wrong_route_receipt"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_one_and_six_bridge_xml_and_cbz_scope_and_preservation"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_restart_after_write_is_read_only_and_preserves_original_backup"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_restart_before_write_and_changed_pending_or_backup_refuse"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_save_freshness_checks_after_candidate_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed.RoutedReconcileTests",
+          "test_wrong_network_and_initial_raw_project_hash_refused"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.NativeRouteSnapshotTests",
+          "test_empty_legacy_tagname_and_missing_or_duplicate_native_identity_refuse"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.NativeRouteSnapshotTests",
+          "test_native_address_identity_routes_without_changing_the_raw_snapshot"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_cli_routed_admission_requires_snapshot_and_exclusive_before_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_complete_rust_apply_v2_public_cli_reconciles_same_loaded_routed_project"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_completed_python_marker_envelope_rejects_contradictory_values_before_connection"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_foreign_loaded_project_pins_and_ownership_refuse_before_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_one_and_six_bridge_loaded_save_reload_backup_and_noop_preserve_whole_project"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_pending_saved_candidate_recovers_read_only_after_lost_save_reply"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_pending_unsaved_candidate_requires_explicit_database_only_retry"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_record_original_candidate_and_target_bindings_refuse_before_recovery_mutations"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_route_snapshot_changed_after_backup_stops_before_database_write"
+        ],
+        [
+          "tests.test_serial_reconcile_routed_cgate.LoadedRoutedReconcileTests",
+          "test_routed_uncertain_apply_fresh_handoff_reconciles_without_address_replay"
+        ],
+        [
+          "tests.test_serial_reconcile_cgate_boundaries.LoadedProjectBoundaryTests",
+          "test_route_snapshot_substitution_after_each_durable_intent_refuses_before_boundary"
+        ],
+        [
+          "tests.test_serial_reconcile_cgate_boundaries.LoadedProjectBoundaryTests",
+          "test_same_owner_loaded_edit_after_each_durable_intent_survives_refusal"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_actual_cli_symlink_parent_binds_canonical_marker_and_refuses_alias_abuse"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_actual_cli_xml_and_cbz_journals_reconcile_offline"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_attempt_marker_missing_or_changed_refused"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_legacy_rust_v1_and_missing_raw_proof_are_refused"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_restart_after_save_preserves_backup_and_does_not_repeat_write"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_strict_raw_capture_and_summary_mutations_refuse_before_writes"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_target_scope_and_project_pin_refused_before_writes"
+        ],
+        [
+          "tests.test_rust_serial_reconcile.RustSerialReconcileTests",
+          "test_valid_checksums_cannot_hide_wrong_wire_identity_route_or_options"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_actual_main_cancelled_send_preserves_evidence_journal_and_never_retries"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_checksummed_fixture_restart_retains_selected_move_and_verification_uses_saved_endpoint"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_corrupt_plan_and_recovery_are_rejected_before_any_connection"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_destination_endpoint_and_timing_guards_fail_before_output_or_connection"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_literal_subprocess_sequence_exports_exact_plan_and_verifies_without_replay"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_missing_receipt_and_forged_success_have_independently_correct_exit_status"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_new_file_preflight_guards_existing_plan_journal_and_missing_parent_without_io"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_oversized_or_nonserializable_error_evidence_retains_original_error_and_journal"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_parser_requires_identity_and_prevents_saved_plan_endpoint_overrides"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_subprocess_apply_refuses_contended_endpoint_before_io"
+        ],
+        [
+          "tests.test_cli_selected_serial.SelectedSerialCLITests",
+          "test_subprocess_attempt_store_refuses_repeat_across_journal_directories_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_marker_filename_matches_rust_vector"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_marker_refuses_repeat_across_journals_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_attempt_store_shares_markers_across_journal_directories"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_canonical_bytes_match_rust_fingerprint_encoder"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_cooperating_endpoint_contention_refuses_before_io_or_journal"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_cooperating_endpoint_contention_refuses_verify_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_directory_and_file_sync_interruptions_survive_close_errors"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_existing_journal_never_overwritten_and_original_interrupt_wins_cleanup"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_external_journal_growth_and_symlink_are_bounded_and_never_overwritten"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_first_child_interruption_survives_serialization_and_copy_interruptions"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_fixture_true_missing_wrong_and_forged_receipts_have_independent_restart_outcomes"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_independent_literal_peer_full_sequence_and_recovery_do_not_replay"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_invalid_routed_plan_fields_refuse_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_failure_before_and_after_replacement_never_invokes_transport"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_post_exchange_failure_stops_before_independent_verification"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_journal_size_bound_includes_the_trailing_newline"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_late_final_journal_sync_is_uncertain_without_losing_after_inventory"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_malformed_or_truncated_receipt_stops_network_io_after_whole_capture"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_missing_attempt_store_refuses_before_io_or_journal"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_missing_final_coverage_preserves_after_identities_but_outcome_uncertain"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_occupied_destination_stale_source_and_partial_mmi_are_never_authority"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_options07_and_late_changed_local_identity_reject_before_co"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_parent_deadline_after_durable_marking_does_not_send_and_late_read_is_retained"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_plan_json_has_shared_depth_utf8_and_unicode_bounds"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_rust_vector_plan_applies_live_cross_implementation"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_send_error_and_interruption_retain_exchange_and_stop_network_io"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_shared_plan_vectors_including_routed_schema"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_state3_and_cross_address_serial_are_rejected_without_local_options_or_co"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_strict_plan_rejects_changed_expected_map_raw_bytes_and_serial_metadata"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_unexpected_second_move_is_reported_without_automatic_inverse_operation"
+        ],
+        [
+          "tests.test_pci_selected_serial.SelectedSerialTests",
+          "test_verification_interruption_is_uncertain_and_never_constructs_transport"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_after_inventory_loss_duplicate_reorder_and_foreign_route_are_uncertain"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_binding_refusals_happen_before_any_io_or_file"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_direct_plan_refuses_a_route_binding"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_loss_duplicate_reorder_and_wrong_route_receipts_never_replay"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_one_and_six_bridge_plan_apply_verify_and_journal_recovery"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_reconnect_mid_receipt_is_uncertain_then_verified_read_only"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_routed_evidence_is_bound_to_its_route"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_stale_project_at_handoff_refuses_before_marker_or_send"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialTests",
+          "test_wrong_route_is_refused_before_io"
+        ],
+        [
+          "tests.test_pci_selected_serial_routed.RoutedSelectedSerialCLITests",
+          "test_cli_plans_applies_and_verifies_a_two_bridge_route_bound_to_its_project"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_two_bridge_plan_derives_outgoing_and_independent_ack_path"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_read_plan_uses_the_same_route_without_inventing_an_ack_tag"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_read_route_boundaries_cover_direct_through_six_bridges"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_direct_and_six_bridge_boundaries_are_exact"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_ambiguous_cycle_disconnected_and_overdepth_fail_closed"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_missing_malformed_and_unsupported_transitions_fail_before_a_plan"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_reverse_and_sibling_starts_are_not_inferred_for_a_direct_pci"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_target_and_project_identity_are_exact_and_output_is_preserving"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_stale_snapshot_is_rejected_and_recovery_uses_fresh_bytes"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_snapshot_reader_rejects_oversize_and_nonregular_sources_before_read"
+        ],
+        [
+          "tests.test_commissioning_route",
+          "test_cbz_plan_parses_the_exact_bytes_bound_by_the_digest"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_recorder_retains_exact_failed_command_before_raising"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_recorder_retains_partial_timeout_outputs_and_no_success_status"
+        ],
+        [
+          "tests.test_known_serial_journey_producer.KnownSerialJourneyProducerTests",
+          "test_routed_fixture_is_one_bridge252_single_address_and_bus_only"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_native_capture_preserves_three_internal_console_rows"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_unexpected_internal_row_is_not_filtered"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_missing_rust_console_row_fails_complete_comparison"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_inconsistent_rust_console_timestamp_is_rejected"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_client_tag_echo_must_match_exactly"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_reply_must_use_native_crlf"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_connected_server_with_wrong_greeting_is_behavior_failure"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_stale_native_capture_fails_before_probe"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-test-support/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/Cargo.toml]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/testdata/fixtures/native_cgate_dali_help.json]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(\"missing.json\")-include is missing]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(concat!(\"data\", \".json\"))-nonliteral include]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_inside_repository_but_outside_workspace_is_fingerprinted"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_outside_repository_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_source_resolving_outside_workspace_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_broken_tagged_reply_is_a_red_executed_case_not_a_blocked_skip"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_pre_fix_receipt_is_red_without_skipped_cases"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_all_eleven_cases_preserve_full_numeric_tagged_wire"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-[502] -[999] -numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-[502] --numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-2-\\r\\n-\\n-numeric prefix or CRLF]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-tag=Console-tag=Other-Console row]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-300--300 -continuation or terminal]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-40123-40125-owned peer port]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[5-1-20260928-120001-20260928-120010-timestamp changed]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[10-0-cmd5-cmd3-queried identity]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[7-0-408-200-None]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_extra_or_missing_console_row_is_rejected"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_live_reader_rejects_wrong_tag_or_lf_before_any_receipt_credit"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_native_fixture_byte_change_fails_closed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_altered_bundle_record_and_artifact_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_blocked_dimension_requires_known_unavailable_fixture_blockers"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_census_complete_cannot_hide_unresolved_scope"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_contract_domain_cannot_resolve_with_partial_axes"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_ledger_contract_and_route_only_claims_are_guarded"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_paths_have_independent_source_bound_obligations"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_closure_receipt_artifact_and_fingerprint_bind_closure"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_census_requires_one_counted_domain_per_scope_kind"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_fixture_is_derived_from_obligations_and_evidence"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_completed_roadmap_item_remains_in_work_item_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_denominator_history_versions_every_change"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_duplicate_json_keys_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_empty_or_placeholder_workflows_withhold_the_denominator"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_every_obligation_belongs_to_one_workflow_with_its_minimum_dimensions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_bytes_are_strictly_parsed_and_content_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_target_and_obligation_references_must_match"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_feature_ledger_bytes_are_strictly_parsed_and_digest_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_installed_wheel_refuses_to_recompute_fingerprints"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_missing_duplicate_and_unknown_ids_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_nonfunctional_scope_requires_an_exact_passed_disposition_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_dimension_requires_matching_passed_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_requires_explicit_hash_bound_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_offline_decision_only_receipt_can_exclude_physical_and_original"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_denominator_history_reconstructs_prior_versions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_physical_paths_are_blocked_by_matrix_fixtures"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_rejects_a_substituted_feature_ledger"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_forged_raw_prefix_with_updated_digests"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_rehashed_dynamic_payload_tampering"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_workflows_cover_toolkit_families_and_every_obligation"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_a_recognized_report_artifact"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_result_and_bound_oracle_artifacts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_decision_declarations_must_match_executed_report"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_report_cannot_relabel_failed_or_uncovered_cases"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_session_differential_cannot_claim_mismatched_payload"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_required_and_unexplained_skips_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_resolved_domains_and_scope_items_cannot_hide_unknown_work"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_scope_disposition_receipts_are_strict_and_reciprocal"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_sensitive_evidence_requires_physical_environment_and_original_oracle"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_differential_acceptance_rejects_missing_or_stale_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_builder_rejects_stale_or_missing_original_sources"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_rejects_broken_packaged_anchors"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_physical_applicability_rejects_stale_or_missing_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_skipped_cases_cannot_be_duplicated_or_claimed_executed"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_work_items_must_belong_to_the_authoritative_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_workflow_criteria_are_strict"
+        ]
+      ],
+      "passed_subtests_not_added_to_parent_counts": 822,
+      "profiles": [
+        {
+          "profile": "direct",
+          "actual_cli_calls": 112,
+          "cli_exit_counts": {
+            "0": 96,
+            "1": 16
+          },
+          "in_process_fault_cases": 10,
+          "record_tamper_refusals": 8,
+          "handoff_tamper_refusals": 3,
+          "literal_address_request_count": 1,
+          "owned_process_and_listener_cleanup": true
+        },
+        {
+          "profile": "routed",
+          "actual_cli_calls": 135,
+          "cli_exit_counts": {
+            "0": 116,
+            "1": 19
+          },
+          "in_process_fault_cases": 10,
+          "record_tamper_refusals": 8,
+          "handoff_tamper_refusals": 4,
+          "literal_address_request_count": 1,
+          "owned_process_and_listener_cleanup": true
+        }
+      ],
+      "verified_raw_file_artifact_bindings": 705,
+      "actual_imports_verified": true,
+      "all_current_input_bindings_unchanged": true,
+      "excluded_native_test": "tests/test_serial_reconcile.py::NativeReconcileTests::test_native_move_preserves_oid_reference_and_programming_through_reload"
+    }
+  },
+  "wheel_sha256": "24b82dad0caeb7ab35e277693e9ee46e913bf8059918ae132b1a73495611f6fc",
+  "installed_source_equal_package_files": 324,
+  "release_binaries_sha256": {
+    "cmqttd": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023",
+    "cgate-mock": "0efb04d64c1c2cd2a82a725cde57366ce403283d34289f5dc00ea4701ec60c78",
+    "cbus-tools": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018"
+  },
+  "rust_focused_route_tests": 13,
+  "rust_fmt_clippy_release": "passed; owner logs and source bindings retained",
+  "six_current_differential_source_bindings": 1045,
+  "differential_cases_per_backend": {
+    "session": 9,
+    "tagged_session": 11,
+    "unit_exact_wire": 12,
+    "combined_network": 2
+  },
+  "test_census_modules": 611,
+  "native_manifest_sha256": "f720bc657a2613a5cbcf361173cbc936f0971ac056757b85cbac6537b60b756c",
+  "native_selection_rewritten": false,
+  "full_suite_run": false,
+  "native_release_gate_run": false,
+  "hardware_acceptance": false,
+  "physical_bridge_acceptance": false,
+  "power_cycle_acceptance": false,
+  "coverage_require_complete_exit": 1,
+  "broad_feature_ledger": {
+    "implemented": 18,
+    "total": 42,
+    "percentage": 42.86
+  },
+  "fully_accepted_functional_obligations": 0,
+  "denominator_ready": false,
+  "scope": "Duplicate source255, one known serial, empty destination, direct or exactly bound one-to-six route; public direct/one-bridge journeys and focused six-bridge/Rust-v2 integration. Fault injection is in-process; recovery uses fresh public CLI subprocesses.",
+  "qualifications": [
+    "The declared new functionality is a software milestone for issue32, not full issue32/native/Toolkit/hardware closure.",
+    "The native test is excluded before execution, never reported as passing. Offline success does not replace native or hardware acceptance.",
+    "Six differential comparisons use retained original captures, not newly executed original software.",
+    "Observed PID/socket cleanup covers sampled children only; maintained producers terminate/wait fast unsampled mock children.",
+    "Unique parent test IDs and unittest subtests are reported separately.",
+    "Actual CLI outputs remain byte-bound in private originals; coordinate-bearing public text and UTF-8 hex are explicitly transformed derivatives.",
+    "Full CI is monitored separately; local focused acceptance does not claim an overall green workflow."
+  ],
+  "artifacts": [
+    {
+      "path": "source-focused-before.json.json",
+      "sha256": "316f695f7490c2d6dfe85a0f89c868536f03315c4ad901ca1997f253f5caa305",
+      "raw_sha256": "d95de13c0ecd00453c3e4bd587c29b6189a3caa6a2fea8510e0831f0909b66ff",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "source-focused-after.json.json",
+      "sha256": "e62bfe7268b45978e6960a63d93667c0ad69e1e2f56300649b5f17f78c9bf97d",
+      "raw_sha256": "984ac6cd5890544508cf643ba2a0fbe8e7f0009cfd5c943109f1a03ab293b521",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-focused-result.json.json",
+      "sha256": "ae4d583e47aef4fdf84568698d8eb8b5e0f97ed9b6a5b118d662b46b4fc214a7",
+      "raw_sha256": "2a193a102f57270d3a4ad601f8a952f0f858370b5e1eb75a1516bfab7bdccfb6",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.command.json.json",
+      "sha256": "272f24431c96f971d95813e9407433fb52c41a380bd94774558808f07794c0e8",
+      "raw_sha256": "8c97ae15261eca12157aaf134f7954c2f8f7f61d3c480f7f413914d9096322d7",
+      "coordinate_fields": 21
+    },
+    {
+      "path": "source-focused.stdout.json",
+      "sha256": "80ff7beca28d8b63513f6deeb769c354f6d7a60607b017bbfb35016cbeac1ec3",
+      "raw_sha256": "cae54fd343c7295eb02e93ec954e9d0d44329d6a069dcbd17d39478d4032665c",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.stderr.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.xml.json",
+      "sha256": "88c56f62bdd5c2b2e083bca3faf258e41ca5287c3ca912e384c4936b42a19d35",
+      "raw_sha256": "47f6010fc707eb32017989256c85ab8a60a7046e563d8dd29065644c37833674",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-journey-before.json.json",
+      "sha256": "316f695f7490c2d6dfe85a0f89c868536f03315c4ad901ca1997f253f5caa305",
+      "raw_sha256": "d95de13c0ecd00453c3e4bd587c29b6189a3caa6a2fea8510e0831f0909b66ff",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "source-journey-after.json.json",
+      "sha256": "e62bfe7268b45978e6960a63d93667c0ad69e1e2f56300649b5f17f78c9bf97d",
+      "raw_sha256": "984ac6cd5890544508cf643ba2a0fbe8e7f0009cfd5c943109f1a03ab293b521",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-journey.command.json.json",
+      "sha256": "a6cada51e64f25b717228aba708c1f22da9aff93807ac8512896464af5371293",
+      "raw_sha256": "8b3ba7dc0c5f51da43479ce036d0982c74ba57eaf2a86aa54ace9992befbf5a4",
+      "coordinate_fields": 5
+    },
+    {
+      "path": "source-journey.stdout.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-journey.stderr.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-journey.json",
+      "sha256": "e2995678653e78b865d99c88610a9d102073eb28d1e38d3dd2854ae5c174564a",
+      "raw_sha256": "e25c2bc6f1ac4be4315b6da7e1494749f963a29e8d29eac1c26e324a8a874009",
+      "coordinate_fields": 1858
+    },
+    {
+      "path": "installed-focused-before.json.json",
+      "sha256": "f042df2766abacbe4bd846f7abc312d567aa4fb1fc8ee042204058f855685ad9",
+      "raw_sha256": "c38bfd0ff8d0c81ff148ea79e76b6b9135beca106638adc9432ddfb72bf9d84e",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "installed-focused-after.json.json",
+      "sha256": "71d4f8b32dbed350261f991c96460f3cd8dbe2851500aaf60dd55500760b79fd",
+      "raw_sha256": "975416da9f91047eccaeaa1353057b74d3ef5398202f3018f160dee344023bb1",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-focused-result.json.json",
+      "sha256": "ae4d583e47aef4fdf84568698d8eb8b5e0f97ed9b6a5b118d662b46b4fc214a7",
+      "raw_sha256": "2a193a102f57270d3a4ad601f8a952f0f858370b5e1eb75a1516bfab7bdccfb6",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.command.json.json",
+      "sha256": "582cbca096d3d6bd14b5a71dd832c43c1b2609848986f37ae2cb4c146cefb80f",
+      "raw_sha256": "a1bb1bee2439e20d45a6fa818f6dfcc4897cb6a5afbff0edb7142d42f628f982",
+      "coordinate_fields": 21
+    },
+    {
+      "path": "installed-focused.stdout.json",
+      "sha256": "2933d4c3cec5310b95d02dac8b52102558deb2eed3603afae39b55b4d953da2a",
+      "raw_sha256": "b00fad01705d88754523acbce9736fba59aa043fa5aa0ffdce3c79e63f2f1ecc",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.stderr.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.xml.json",
+      "sha256": "fa085d5249870f6121596cbb46468c30ae8412f10bf7ef8a7a5758e8078ab63a",
+      "raw_sha256": "7be7506cdf0833671d7b860587ad948857f44f3322dedc69e1866267ffe562e0",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-journey-before.json.json",
+      "sha256": "f042df2766abacbe4bd846f7abc312d567aa4fb1fc8ee042204058f855685ad9",
+      "raw_sha256": "c38bfd0ff8d0c81ff148ea79e76b6b9135beca106638adc9432ddfb72bf9d84e",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "installed-journey-after.json.json",
+      "sha256": "71d4f8b32dbed350261f991c96460f3cd8dbe2851500aaf60dd55500760b79fd",
+      "raw_sha256": "975416da9f91047eccaeaa1353057b74d3ef5398202f3018f160dee344023bb1",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-journey.command.json.json",
+      "sha256": "6fc762876d357235b95c05b5b2505dc87e6a55efae36e5fcbb6dcd83b577d288",
+      "raw_sha256": "b5c3eba3fd1efff67a5190adddc7fa6d070187cd9dd0bb339e44ea91914eddee",
+      "coordinate_fields": 6
+    },
+    {
+      "path": "installed-journey.stdout.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-journey.stderr.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-journey.json",
+      "sha256": "fc2aed0a61dbbf94cff1c5f365101bbf3fa38a62c3dd5dcb45d2fff1d5f983cb",
+      "raw_sha256": "c58ada17cc5e962516b60465281a28c4bb316a23c4d5e764bd997bc9805d851e",
+      "coordinate_fields": 1861
+    },
+    {
+      "path": "final-driver.py.json",
+      "sha256": "dbbf11aaa0ce5d3cacb87b9c7dd1c54b63d41fda326af09ae2749b82fd2c7316",
+      "raw_sha256": "4569e82f4e9eb8f1b72c28fd67fb228f2df5252b02e2067d6b4cc019d4e6ebb6",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "generate.py.json",
+      "sha256": "c50e5ed60fb0a4773c88b2eb833d3052d17107f415b95b28a470171f52f3febd",
+      "raw_sha256": "c8e65f0e58c15369805d4fce5373da3ecc5b4be175d42a4caa75d51bd1cc1006",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "frozen-bindings.json.json",
+      "sha256": "21064353dcaf8c2f2be36416fd707ee61e9a8a009e23e6121b4ac359de7ae41d",
+      "raw_sha256": "b73343a2cf900a3c05217165492baa8e5a9054871f16cb726eca4a0e9938eca6",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "generation-commands.json.json",
+      "sha256": "a1b706b12fa242cd56819fba080d3a4d9d091af19f5b1f0d404f06e5bd0f9fa3",
+      "raw_sha256": "77e12e80ab075ab644066f6adaf8d9c7b863eeac3aa655338eff54a3d2886100",
+      "coordinate_fields": 16
+    },
+    {
+      "path": "root-six-audit.json.json",
+      "sha256": "a73cf68816b80698bab916b880b69880a30ed7357ee9dbd6fa61bf7b7a708fd7",
+      "raw_sha256": "1c3290787fe9656fc8291182a5770250659d5eaa03cce699ff05c492a9874a18",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-build.command.json.json",
+      "sha256": "493dd1d0d5278e81970e0f0bf63448778f4a9f61c216122916f5fa0382ccfd1f",
+      "raw_sha256": "a32f42f19b0e9e9265975e11b7ede99b3f31311a8ec5614a4d3c741f4d21d002",
+      "coordinate_fields": 3
+    },
+    {
+      "path": "wheel-build.stdout.json",
+      "sha256": "fa9b00becd00a5bd4b8f4132b9cb0a22c5fd75614dc3cd3538d3ba0227a36f2b",
+      "raw_sha256": "5ab3bee85e47ea0f564c8830e486ad92cec22822efed0585104e9662cc98d3e0",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "wheel-build.stderr.json",
+      "sha256": "6555133ee1694c77f58d0d081b4046716f5e7f30370df48fe04535a34e484650",
+      "raw_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-install.command.json.json",
+      "sha256": "1325224b4ceaf23bf8ff334876bb43f87bb65cba62be36ad15f43e00ff8b7028",
+      "raw_sha256": "7be4aa9f39e71821766d1290d8140eb3a9c97dedafbcdb099c5a08d55f84e079",
+      "coordinate_fields": 5
+    },
+    {
+      "path": "wheel-install.stdout.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-install.stderr.json",
+      "sha256": "7db82d4bf7ea6e7b53119e3473124ceeacd444b7c635e43df94ce653933037c6",
+      "raw_sha256": "1a2e433d7b7c4182297aded7bb4e8d5453fbb028261c532673330ce650060829",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "wheel-console-help.command.json.json",
+      "sha256": "4155543884c925930f1d9d1db3a0d666a7c3efaed78dd62a48a322311c59cdc0",
+      "raw_sha256": "8d0cc55388d3f431e6357247c16d3ef6fb79ada3bb7f84e4891a338765c408c6",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "wheel-console-help.stdout.json",
+      "sha256": "2af9e25e4c83871db73038cf000610af2bc4b75ea339fa87867911ec4bd93b13",
+      "raw_sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-console-help.stderr.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-audit.json",
+      "sha256": "6af3eb852f7d7fdc8004db0827a268e99c142658ac53ad12b628ba4d96e8c34d",
+      "raw_sha256": "8848ff58fd238c402e1d5cfebfd31a2ab86a42e3921924606557a35b20416e7a",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "owner-rust-frozen-release.json.json",
+      "sha256": "7ef9b6a54737f757061520b080e6ce6089243d9e4a04e841cda9666fc808e080",
+      "raw_sha256": "4967f8ef3d810451ff70305c914fec02e62a4ff804fb461faf94d821d31eecac",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "owner-rust-commissioning-route.log.json",
+      "sha256": "5fba8bc031c369c64d1ced30c498fad320105e88c36944508f41be479ad4115a",
+      "raw_sha256": "805b5e04bfe17df4cbc177e62c3428c386ed0e864b0b5846fedf7b9610d6fefb",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "owner-rust-fmt.log.json",
+      "sha256": "c7b969c9f0435dd827fb3865e7f06f1dafc1a91d7c3341b5495075b934e9b606",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "owner-rust-clippy.log.json",
+      "sha256": "d8cb6c95639877610a6fefcec3edef2360cf99a074894f7f9a17ce8c5f7cf256",
+      "raw_sha256": "9f7a88392a0c35f14281173dcf9c415ca416b2ebaf1ff5f9915c1db1f8f9ab58",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "owner-rust-release.log.json",
+      "sha256": "e5513f4cff31eb942b5c411651f395898c5ac6d73803b82607a98b2a3d0a0ea8",
+      "raw_sha256": "1d884dd00f0873a63a945fa0d5476e0e6fd8c46a7005daa328c4c374470acde7",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "owner-final-frozen-product.log.json",
+      "sha256": "58b33d7672ec2e592359b191822e3d1cea358dd064d5ff9626ce51ed0153cd7f",
+      "raw_sha256": "81620a12e5e0c120ed97bb7405d0b16b56237afc0702eb572eec29b85d1c959e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "owner-final-frozen-product.xml.json",
+      "sha256": "b7e966d5222f8fe078c590ace5cb4a2ec97406224b6b7416f0a4867a2f6eff6e",
+      "raw_sha256": "a169109b1e6377c691d8e203ed3f5a310dc9ef0575faf4a4a583bccc44263a99",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "owner-rust-native-address-red-control.json.json",
+      "sha256": "e6a387a522347cd846e4752c15b0259cea57d1e4d36ccafc10a8ffee435c234c",
+      "raw_sha256": "e6320cb46fddb439fa58fa83d2cb1d4ad72df8890d2d41d413795c8e21fe891d",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "owner-rust-binaries-during-build.json.json",
+      "sha256": "485c7d394fe2525bb1706038fdc892eba9bcc3c93f07d4004aaf9a9ea6b5fd7c",
+      "raw_sha256": "3d78d5b1bdf87eaa1a0a456ac7d403259d1b0bf12a4790aba6576f8f7178e45a",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "six-replay-manifest.json",
+      "sha256": "b2cf252f8fb7ad96f70bb9ae6f9bf19e2affb2891ab6bf510c90314d07e25438",
+      "raw_sha256": "b1d7637d6dbfb8178877a9420602a27d6ffbd975b443e52d4992f3f28f13a3c4",
+      "coordinate_fields": 60
+    },
+    {
+      "path": "preparation-history.json",
+      "sha256": "01c186ea6fac6acd87e46ade9dad218a8d93bd658b574f76b6012021a66da0ed",
+      "raw_sha256": "d3f6f1cb41f6fff8145815a72d58f669b9006331bb25428c398b3152051f78a9",
+      "coordinate_fields": 0
+    }
+  ],
+  "coordinate_field_map": []
+}

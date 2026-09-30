@@ -40,7 +40,16 @@ restart, and fixes successful LOAD warning handling in the Python CLI.
 Native memory readback, complete Toolkit conversion workflows and physical
 acceptance remain open.
 
-The latest [routed commissioning and documentor batch](toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md)
+The [loaded-project commissioning workflow](toolkit-cli/docs/known-serial-commissioning-journey.md)
+now carries a known-serial move through direct or routed physical evidence,
+Python CLI database reconciliation in cmqttd, SAVE/CLOSE/LOAD and a verified
+whole-project readback. It preserves unit identities, references and other
+programming, and recovers uncertain saves without replaying the address command.
+Use `--route-project` for a loaded routed project and `--exclusive-project` for
+editing/reloading ownership. Its [source and installed-wheel acceptance](toolkit-cli/docs/feature-batch-2026-10-01-loaded-project-commissioning.md)
+uses disposable software peers; original Toolkit and hardware acceptance remain open.
+
+The preceding [routed commissioning and documentor batch](toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md)
 adds Rust apply/verify through one to six bridges, independent Python journal
 validation and offline project reconciliation, plus old Bytecraft DIMPR12 and
 NeoClassic SceneModify reports. Its focused source and wheel runs each passed

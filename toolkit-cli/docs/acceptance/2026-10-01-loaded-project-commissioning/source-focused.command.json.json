@@ -1,0 +1,210 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "8c97ae15261eca12157aaf134f7954c2f8f7f61d3c480f7f413914d9096322d7",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/4",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f6a1894cb48bd991e4bebf21d6d556707a661412df6d251aebe4ff70d9f71aba"
+    },
+    {
+      "json_pointer": "/argv/5",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "e3ccf8f272794095a5a0a1fd21dc3c1305c208d2a42deaad89b170169f717130"
+    },
+    {
+      "json_pointer": "/argv/6",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "4b178387cf4a6522d2f8ac37cff5ae7cfb56ee325445870c44e825b36da84d0e"
+    },
+    {
+      "json_pointer": "/argv/7",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "1a22fff7ff913a15c025999804f82f0d894a805ad91132aef64240999ab6ea95"
+    },
+    {
+      "json_pointer": "/argv/8",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "028d2742b5261b68f3ae7c5528ee5b01ad556830b46fa9a2eb3403939cd35b5c"
+    },
+    {
+      "json_pointer": "/argv/9",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "af0d8dbf47d9c19edde6d0af333a202bd119d3fd477805a37da815ba184747e8"
+    },
+    {
+      "json_pointer": "/argv/10",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "54abe3cc705edf413e225eff8cdc495c9deb68082070aff09b928199d3164fa6"
+    },
+    {
+      "json_pointer": "/argv/11",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "ce7d964032104e2c22d2cc63c46aa93f85dabf1ddb783c9e38d67874622dcc3c"
+    },
+    {
+      "json_pointer": "/argv/12",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "006b8107c7089b671f241ec1462d1e556a9be44f9f609faa4b2029b639120113"
+    },
+    {
+      "json_pointer": "/argv/13",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "ba48cabf678add0b40339e10d2cea4a407e292e50786b12d7c125bd592d01103"
+    },
+    {
+      "json_pointer": "/argv/14",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "bd028f2fc3e92e78243801b67b5043d87e6e5a1cd3430bf52fea66bb3eb89c0b"
+    },
+    {
+      "json_pointer": "/argv/15",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "1b3863fa56ee0d995f0d7d0c137968f82dd2c640d14f5e2d4d4b3c39837dde1e"
+    },
+    {
+      "json_pointer": "/argv/16",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "d549b6ac82f144b1b2de316f1bf96679e94374ecfeb8eaf017f9c89e3998f254"
+    },
+    {
+      "json_pointer": "/argv/17",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "e73bfba29b4ca8ef9200905bdd5b412a3057d8f9066ff1d04f2a5eaaa2fcbf4d"
+    },
+    {
+      "json_pointer": "/argv/18",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f0ec550904433bc631e314e2148a14822756f59c078813b0f447f6f360348e2a"
+    },
+    {
+      "json_pointer": "/argv/19",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "00028f01c154416fc3002582889e0bc82fabd4ff6c5312dfa8756ef081363da4"
+    },
+    {
+      "json_pointer": "/argv/20",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7d4f7a1bb3b895f9704018b99469638071ab1789f246ddf39b16aa4157185826"
+    },
+    {
+      "json_pointer": "/argv/21",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "419a6110059d067f25c41280ebcc970aa673127ecf98bcf69bcdc828e0e4b04b"
+    },
+    {
+      "json_pointer": "/argv/24",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "60ab3ceef7ec6b2aca30b2ed47fdaece8ebd68c7bafb10266d1c0639c2fb799f"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "f1e1234bfaf4cad9a7590254a7637b9b358fa2100aafd6b062847492480750df"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile.py::OfflineReconcileTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile.py::EndToEndTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile_recovery.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile_routed.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile_routed_cgate.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_serial_reconcile_cgate_boundaries.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_rust_serial_reconcile.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cli_selected_serial.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_pci_selected_serial.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_pci_selected_serial_routed.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_commissioning_route.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_known_serial_journey_producer.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_skip_census.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_release_gate.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_session_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_tagged_session_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_dbsetxml_unit_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_FINAL_ACCEPTANCE_ROOT}/source-focused.xml"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "cae54fd343c7295eb02e93ec954e9d0d44329d6a069dcbd17d39478d4032665c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

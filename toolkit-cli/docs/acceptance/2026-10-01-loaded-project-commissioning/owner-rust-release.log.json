@@ -1,0 +1,18 @@
+{
+  "format": "cbus-loaded-project-evidence-derivative-v1",
+  "raw_sha256": "1d884dd00f0873a63a945fa0d5476e0e6fd8c46a7005daa328c4c374470acde7",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "1d884dd00f0873a63a945fa0d5476e0e6fd8c46a7005daa328c4c374470acde7"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": "   Compiling cbus-transport v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-transport)\n   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cbus-tools v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-tools)\n   Compiling cbus-simulator v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-simulator)\n   Compiling cbus-golden-tests v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-golden-tests)\n   Compiling cbus-vector-check v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-vector-check)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `release` profile [optimized] target(s) in 2m 00s\n"
+}

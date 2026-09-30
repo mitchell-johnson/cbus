@@ -492,8 +492,14 @@ one-shot exchange require the exact Reply Network. Routed apply produces
 evidence. Preserve the original journal path and canonical attempt marker.
 `cbus-toolkit serial-address reconcile --journal J --project FILE` independently
 validates the complete proof before planning or applying an offline XML/CBZ
-move; partial/uncertain evidence, direct Rust v1 and routed live C-Gate
-reconciliation refuse. Read [the full contract](../../../../docs/rust-selected-serial-routed.md)
+move. For a loaded C-Gate project, pass `--cgate HOST:PORT --project-name P
+--route-project ORIGINAL_EXPORT --exclusive-project` instead of the offline
+`--project` selector. The exact original raw snapshot must match the plan
+and the complete loaded original/candidate; the transaction verifies backup
+and SAVE/CLOSE/LOAD durability. Native exports without legacy TagName use
+Project.Address. Partial/uncertain Rust evidence and direct Rust v1 refuse.
+Python uncertain evidence can use a separate fresh verification handoff.
+Read [the full contract](../../../../docs/rust-selected-serial-routed.md)
 and [reconciliation](../../../../toolkit-cli/docs/physical-addressing.md).
 
 The committed tests use scripted loopback peers. They prove ordering, wire count, evidence, and failure behavior, not physical-unit compatibility, movement cause, or persistence.

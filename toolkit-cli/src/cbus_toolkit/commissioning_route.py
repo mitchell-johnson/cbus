@@ -203,9 +203,14 @@ def assert_fresh_project(path: Path, expected_sha256: str) -> None:
 
 def _project_networks(project: ProjectDocument) -> tuple[str, dict[int, _Network]]:
     project.assert_valid()
-    name = _scalar(project.project, "TagName")
+    # Native DBGETXML projects identify the repository by Address and omit
+    # the legacy TagName. Preserve exact exported bytes instead of inventing
+    # a field merely to route a native snapshot.
+    name = _scalar(project.project, "TagName", required=False)
+    if not _children(project.project, "TagName"):
+        name = _scalar(project.project, "Address")
     if not name.strip():
-        raise ProjectError("Project TagName must not be empty")
+        raise ProjectError("Project identity must not be empty")
     result: dict[int, _Network] = {}
     for network_node in _children(project.project, "Network"):
         address = _decimal_byte(_scalar(network_node, "Address"), "Network Address")

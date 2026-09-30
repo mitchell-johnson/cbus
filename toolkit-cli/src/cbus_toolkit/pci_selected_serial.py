@@ -40,6 +40,7 @@ MAX_JSON_DEPTH = 127
 # per canonical plan and refuse repeats without send; the marker embeds the
 # validated plan so either side resumes read-only recovery from it.
 ATTEMPT_FORMAT = 'cbus-selected-serial-attempt-v1'
+VERIFICATION_FORMAT = 'cbus-selected-serial-verification-handoff-v1'
 ATTEMPT_SCOPES = ('resolved_journal_directory','operator_selected_attempt_store')
 _U64_LIMIT = 2**64
 _I64_MIN = -2**63
@@ -960,6 +961,10 @@ class SelectedSerialCoordinator:
                 with EndpointLease(self.host,self.port):
                     deadline=time.monotonic()+self.settings['overall_timeout']
                     self._phase(evidence,'after',self._routed_inventory(self._route(value)),'collect_inventory',deadline)
+                    if bound is not None:
+                        from .commissioning_route import assert_fresh_project
+                        assert_fresh_project(Path(bound['project_path']),bound['project_sha256'])
+                        evidence['route_binding']=dict(bound,topology_fresh_at_handoff=True)
                     evidence['state']='after_observed';self._classify(evidence,value)
                     result=SelectedSerialResult(_json(evidence,MAX_JOURNAL_BYTES))
                     final_evidence=result.as_dict()
@@ -1002,6 +1007,61 @@ class SelectedSerialCoordinator:
         _keys(value,expected,'Recovery journal')
         if value['operation']!='apply': raise ValueError('Recovery requires an apply journal')
         return plan
+
+
+def recovery_binding(path):
+    """Pin an existing apply journal and its marker before read-only recovery.
+
+    The marker alone remains sufficient for observation, but exporting database
+    authority requires the original apply journal as well. Nothing here permits
+    replay or replaces historical evidence with a successful apply result.
+    """
+    path = Path(path).absolute()
+    plan = SelectedSerialCoordinator.load_recovery(path)
+    value = _load(path, MAX_JOURNAL_BYTES)
+    if value.get('format') != 'cbus-selected-serial-result-v1':
+        raise ValueError('A verification handoff requires the original apply journal, not a marker or plan')
+    document = plan.as_dict()
+    fingerprint = _canonical_fingerprint(document)
+    marker = value.get('attempt_identity')
+    if (not isinstance(marker, str) or not Path(marker).is_absolute() or
+            Path(marker).name != f'.cbus-selected-serial-attempt-sha256-{fingerprint}.json'):
+        raise ValueError('Recovery journal has no plan-bound attempt marker')
+    marker_plan = SelectedSerialCoordinator.load_recovery(marker)
+    attempt = _load(marker, MAX_JOURNAL_BYTES)
+    written = value.get('journal')
+    if (not isinstance(written, dict) or not isinstance(written.get('path'), str) or
+            attempt.get('format') != ATTEMPT_FORMAT or marker_plan != plan or
+            Path(attempt['journal']) != Path(written['path']).resolve() or
+            Path(written['path']).resolve() != path.resolve()):
+        raise ValueError('Attempt marker does not bind this original journal')
+    scope = (ATTEMPT_SCOPES[0] if Path(marker).parent.resolve() == Path(attempt['journal']).parent.resolve()
+             else ATTEMPT_SCOPES[1])
+    if attempt['scope'] != scope:
+        raise ValueError('Attempt marker scope does not match its journal directory')
+    # _Journal reads a bounded regular file without following the final symlink.
+    original_raw = _Journal(path)._read_current()
+    marker_raw = _Journal(marker)._read_current()
+    if _json(json.loads(original_raw, object_pairs_hook=_unique_pairs), MAX_JOURNAL_BYTES) != _json(value, MAX_JOURNAL_BYTES):
+        raise ValueError('Recovery journal changed during validation')
+    if _json(json.loads(marker_raw, object_pairs_hook=_unique_pairs), MAX_JOURNAL_BYTES) != _json(attempt, MAX_JOURNAL_BYTES):
+        raise ValueError('Attempt marker changed during validation')
+    return {'path': str(path), 'sha256': hashlib.sha256(original_raw).hexdigest(),
+            'attempt_identity': marker, 'attempt_sha256': hashlib.sha256(marker_raw).hexdigest(),
+            'attempt_id': attempt['attempt_id'], 'plan': document}
+
+
+def export_verification(path, original, result):
+    """Create a separate fresh-observation handoff; leave apply evidence intact."""
+    if recovery_binding(original['path']) != original:
+        raise ValueError('Original journal or attempt marker changed during verification')
+    value = result.as_dict()
+    if value['plan'] != original['plan'] or value['operation'] != 'verify' or not result.observed_expected_change:
+        raise ValueError('Only fresh expected read-only verification can be handed off')
+    envelope = {'format': VERIFICATION_FORMAT, 'original': original, 'verification': value,
+                'address_command_replayed': False, 'original_journal_modified': False}
+    _Journal(path).write(envelope)
+    return envelope
 
 
 def route_from_project(project, *, source_network, target_network):

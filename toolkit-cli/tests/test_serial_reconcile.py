@@ -314,7 +314,7 @@ class NativeReconcileTests(unittest.TestCase):
                 original = xml_text(db.get("//RECON/254/p/255", xml=True))
                 with Programmer(client).load("//RECON/254", "/db//RECON/254/p/255") as session:
                     values = session.values()
-                database = CGateDatabase(client, "RECON", endpoint="local")
+                database = CGateDatabase(client, "RECON", endpoint="local", exclusive_project=True)
                 self.assertEqual(reconcile(journal, database)["outcome"], "planned")
                 result = reconcile(journal, database, apply=True)
                 self.assertEqual((result["outcome"], result["record"]["phase"]), ("reconciled", "db_done"))
@@ -333,7 +333,7 @@ class NativeReconcileTests(unittest.TestCase):
                 self.assertEqual({k: v for k, v in after.items() if k != "UnitAddress"},
                                  {k: v for k, v in values.items() if k != "UnitAddress"})
                 self.assertIsNotNone(backup)
-                again = reconcile(journal, CGateDatabase(fresh, "RECON", endpoint="local"), apply=True)
+                again = reconcile(journal, CGateDatabase(fresh, "RECON", endpoint="local", exclusive_project=True), apply=True)
                 self.assertEqual(again["outcome"], "already_reconciled")
                 self.assertTrue(again["current_database_matches_record"])
 

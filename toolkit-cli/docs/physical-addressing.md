@@ -75,7 +75,7 @@ The tests deliberately lose a reply after a real native mutation: the simulator 
 cbus-toolkit serial-address reconcile --journal new-recovery.json --project site.xml
 cbus-toolkit serial-address reconcile --journal new-recovery.json --project site.xml --apply
 cbus-toolkit serial-address reconcile --journal new-recovery.json \
-  --cgate 127.0.0.1:20023 --project-name PROJECT --apply
+  --cgate 127.0.0.1:20023 --project-name PROJECT --apply --exclusive-project
 ```
 
 The library entry point is `cbus_toolkit.serial_reconcile.reconcile(journal, database, apply=...)` with `ProjectFileDatabase(path)` or `CGateDatabase(client, project)`. The command performs no PCI, CNI or C-Bus I/O.
@@ -97,9 +97,18 @@ uncertain, in-progress, pre-marker, marker-only and tampered journals are
 refused before the database is opened. Read-only Rust `serial-verify` output
 cannot substitute for an apply journal.
 
+A Python uncertain apply can be followed by `serial-address verify --recovery
+JOURNAL --output verified.json`. That separate handoff binds the unchanged
+original journal and marker and requires an exact fresh expected inventory.
+For a routed attempt, supply the original project and source/target networks
+again. Marker-only and plan-only verification cannot export reconciliation
+authority. See [the loaded-project journey](known-serial-commissioning-journey.md).
+
 **Matching.** A direct journal names no C-Bus network, so the moved serial must match exactly one database unit across the project (native decimal-dot comparison; `--network` restricts the search). Ambiguous or missing serials, units without a valid OID, bridge/wireless-gateway units and a destination occupied by another unit are refused. `--unit-type` and `--firmware` add explicit database pins; the journal carries no physical type or firmware evidence, and these pins do not establish physical compatibility. Routed journals instead restrict matching to the recorded target network; `--network` is optional and, when supplied, must equal that target. The source network is never searched for the moved database unit. A database unit at the destination is reported as `database_already_matches` and is not changed. A unit at any other address means the journal or the database is stale, and the command stops.
 
-**Database move.** A C-Gate project uses the verified [database unit move](addressing.md#database-unit-moves), including its `B`-prefixed backup project, native PP `UnitAddress` encoding, save and post-save verification. A legacy XML or CBZ file is changed in memory: its Address field and stored PP `UnitAddress` are rewritten in the existing decimal or `0x` form, and everything else is kept, including the OID, metadata, other programming, opaque extensions, archive members and OID references. Direct journals still refuse projects with bridge interfaces. Routed journals admit their exact bound topology as described below. Both paths refuse textual unit-path references requiring explicit reconciliation. `--apply` writes an exclusive `.pre-reconcile-<id>` backup next to the file, saves it atomically and reloads it. The reload must match the planned content. After the two edited fields are reverted, the reloaded document must equal the original.
+**Database move.** A C-Gate project stages native database PP `UnitAddress`, verifies a `B`-prefixed original backup, applies the exact two-field Unit edit, saves, closes and loads the project, and compares the complete reopened content. It requires `--exclusive-project` and every project network closed/idle. It performs no physical PP SAVE/STORE or automatic rollback. Uncertain operations remain pending; an exact saved original requires explicit `--retry-database --apply` before one database-only retry. An exact saved candidate completes by readback. See [durable recovery](known-serial-commissioning-journey.md#durable-recovery).
+
+A legacy XML or CBZ file is changed in memory: its Address field and stored PP `UnitAddress` are rewritten in the existing decimal or `0x` form, and everything else is kept, including the OID, metadata, other programming, opaque extensions, archive members and OID references. Direct journals still refuse projects with bridge interfaces. Routed journals admit their exact bound topology as described below. Both paths refuse textual unit-path references requiring explicit reconciliation. Offline `--apply` writes an exclusive `.pre-reconcile-<id>` backup next to the file, saves it atomically and reloads it. The reload must match the planned content. After the two edited fields are reverted, the reloaded document must equal the original.
 
 **Routed offline admission.** A Python routed journal must retain complete
 before/after captures on the exact one-to-six-bridge Reply Network and a route
@@ -110,8 +119,11 @@ evidence. Receipt summaries must agree with the raw reparsed exchange; a lost
 or mismatched receipt can still accompany an accepted move when the clean
 completed exchange is followed by a fresh exact expected after-inventory.
 A receipt alone never proves movement. The caller supplies `--project FILE`;
-the recorded private project path is not followed. Routed C-Gate reconciliation
-is refused before connecting.
+the recorded private project path is not followed. For a loaded C-Gate project,
+supply that same original raw export with `--route-project FILE`, the selected
+project name and `--exclusive-project`, including for planning. The raw digest,
+complete original/candidate and rederived route must agree throughout recovery;
+the original snapshot must remain available after completion.
 
 Rust routed apply-v2 uses the independent Python validator
 `cbus_toolkit.rust_serial_reconcile`, rather than trusting Rust's summary or
@@ -157,7 +169,7 @@ On the first routed run, the supplied XML/CBZ file's raw SHA-256 must equal the 
 
 On restart, the recorded backup supplies the original bytes, which must still match the journal's original SHA-256. The implementation recomputes the exact candidate from those bytes, validates the record against that move, and then checks the current project's expected content digest. The backup must remain available, including for completed-record validation. A `db_pending` source state repeats only on an explicit `--apply` rerun; an exact destination state fsyncs the existing publication and completes only the record, and any changed pending state conflicts. A failed directory fsync cannot become `db_done` automatically. A valid `db_done` record performs no writes and reports whether current content still matches.
 
-**Reconciliation record.** Without `--apply`, nothing is written. With `--apply`, an exclusive record, by default `JOURNAL.reconcile.json` (`--record` selects another path), binds the journal SHA-256 and attempt ID, the database identity, unit OID, and the before/expected digests. The record moves through `physical_done`, `db_pending` (written before any database write, with the backup name), and `db_done`. It keeps a history, `database_changed`, and any `last_error` and `rollback_errors` values. Updates use checked atomic replacement and fsync. A rerun behaves as follows:
+**Reconciliation record.** Without `--apply`, no reconciliation record or persistent project edit is written. With `--apply`, an exclusive record, by default `JOURNAL.reconcile.json` (`--record` selects another path), binds the journal SHA-256 and attempt ID, the database identity, unit OID, and the before/expected digests. The record moves through `physical_done`, `db_pending` (written before any database write, with the backup name), and `db_done`. Offline records use v1; C-Gate records use v2 with whole-original/candidate, backup and saved-state evidence. Updates use checked atomic replacement and fsync. An offline rerun behaves as follows:
 
 * after `db_done`: returns `already_reconciled` without writing and reports whether the database still matches;
 * after `db_pending` with the unit already at its planned destination content, for example after an interruption between save and the record update: completes the record as `resumed_complete`;
