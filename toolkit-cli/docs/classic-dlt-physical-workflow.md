@@ -11,17 +11,18 @@ all ten named indicator fields and both complete bytes at `0x33`/`0x34`.
 Editing the database cannot bypass the physical stale-baseline check. The
 ordered controls and changed values are re-derived from the immutable plan.
 
-## Server identity dependency: blocked pending reviewed Rust seam
+## Server identity dependency: design confirmed, implementation pending
 
 The Python command is implemented, but its integrated acceptance remains
-blocked on a centrally reviewed cmqttd loaded-session identity contract and a
-rebuilt binary. The pre-existing server does not expose its freshly identified
+blocked on implementation of the centrally confirmed cmqttd loaded-session
+identity contract and a rebuilt binary. The pre-existing server does not expose
+its freshly identified
 physical type/firmware in PP INFO. A retained negative test demonstrated an
 incorrect successful delivery when physical firmware was `2.1.01` and the
 plan required `2.1.00`. That failing evidence remains open.
 
-The proposed `pp-info-loaded-identity-v1` contract puts three case-sensitive
-attributes on the physical session's PP INFO root:
+The confirmed `pp-info-loaded-identity-v1` design puts exactly three
+case-sensitive attributes on the physical session's PP INFO root:
 
 ```xml
 <Parameters UnitType="KEYML5" FirmwareVersion="2.1.00" Source="//TEST/254/p/5">
@@ -32,8 +33,19 @@ attributes on the physical session's PP INFO root:
 These must be the immutable IDENTIFY results and canonical Source of that
 successful physical LOAD. Python refuses missing, duplicate, malformed,
 namespaced, additional or mismatched attributes before the first PP SET.
-There is no database fallback. Older servers fail closed. The parser uses
-these proposed names; server compatibility is not yet confirmed.
+There is no database or inventory fallback. Older servers fail closed. The
+parser matches the confirmed attribute names; implementation compatibility is
+not yet verified against a rebuilt binary.
+
+The server design captures canonical Source, observed type/firmware and PCI
+generation in an immutable physical LOAD stamp. The stamp commits with PP/raw
+memory under the existing PCI commit guard. INFO checks session ownership and
+the connected/current generation through response construction. A failed or
+replacement LOAD, NEW, DB/FILE LOAD, uncertain SAVE, Source change, reconnect
+or session cleanup clears the stamp. No `PciGeneration` XML attribute is added.
+These are confirmed design requirements awaiting central implementation and
+its conflicting-DB, inventory-change, failed-reload, reconnect, session-name
+reuse, unchanged DB INFO and alternate SAVE destination tests.
 
 Identity is checked again after staging, before the journal or SAVE, and after
 a distinct fresh physical LOAD before completion. Each check also requires a
@@ -41,7 +53,9 @@ connected PCI with the same `pci_generation` as the initial preflight. A
 disconnect or generation change stops the workflow. These observed generation
 checks do not establish that Rust bound the session itself to a captured
 generation; `loaded_pci_generation_binding_verified=false` records that limit.
-The server's reconnect/invalidation contract remains part of central review.
+The server's reconnect/invalidation design is confirmed above; its runtime
+evidence remains pending. The generation-binding flag stays false until
+separate verified evidence supports that claim.
 
 Catalogue is verified only against the saved project database. The command
 does not establish a physical serial identity, display effects or power-cycle

@@ -10,6 +10,7 @@
   },
   "new_public_command": "cbus-toolkit cgate physical-pp dlt-indicators //TEST/254/p/5 --plan plan.json --journal journals/attempt.json",
   "proposed_loaded_identity_contract": "pp-info-loaded-identity-v1",
+  "server_contract_design_confirmed": true,
   "server_contract_confirmed": false,
   "updated_binary_journey_verified": false,
   "workflow_complete": false,
