@@ -1,0 +1,1057 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "bd857c746423db8247e42f690b823378bd2ecc9549df58395f0d8d799f0e9064",
+  "content_kind": "jsonl",
+  "coordinate_roles_applied": [
+    "cargo_target"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": [
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_committed_census_is_current_and_native_selection_complete"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_body_skip_calls_carry_their_guarding_condition"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_main_writes_failing_receipt_when_a_selected_test_skips"
+    },
+    {
+      "kind": "mock-start",
+      "argv": [
+        "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "--bind",
+        "127.0.0.1:0"
+      ],
+      "pid": 6629,
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT NEW TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:10001",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBADDSAFE //TEST/254 Unit 20 Lounge",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/UnitType KEY1",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/UnitName KEY1",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/FirmwareVersion 1.2.67",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_11cce57ddae7438c_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_11cce57ddae7438c cbus_cli_11cce57ddae7438c_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_11cce57ddae7438c /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP RESET_TO_DEFAULTS cbus_cli_11cce57ddae7438c",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_11cce57ddae7438c *",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP SAVE_TO_SOURCE cbus_cli_11cce57ddae7438c",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_11cce57ddae7438c",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_11cce57ddae7438c_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20/UnitType",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20/UnitName",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_214f600fe8bb47e6_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_214f600fe8bb47e6 cbus_cli_214f600fe8bb47e6_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_214f600fe8bb47e6 /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_214f600fe8bb47e6 *",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_214f600fe8bb47e6 UnitName",
+      "exception": "CGateError",
+      "code": 460,
+      "lines": [
+        "460 No such parameter: UnitName"
+      ],
+      "final": "460 No such parameter: UnitName",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_214f600fe8bb47e6",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_214f600fe8bb47e6_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP QUICKGET //TEST/254/p/20 UnitName",
+      "code": 315,
+      "lines": [
+        "315 UnitName=KEY1"
+      ],
+      "final": "315 UnitName=KEY1",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_2876d80e5fe247a2_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_2876d80e5fe247a2 cbus_cli_2876d80e5fe247a2_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_2876d80e5fe247a2 /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP SET cbus_cli_2876d80e5fe247a2 UnitAddress \"20\"",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP SAVE_TO_SOURCE cbus_cli_2876d80e5fe247a2",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_2876d80e5fe247a2",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_2876d80e5fe247a2_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_903bba1100d04ca3_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_903bba1100d04ca3 cbus_cli_903bba1100d04ca3_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_903bba1100d04ca3 /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitAddress=20",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_903bba1100d04ca3 *",
+      "code": 315,
+      "lines": [
+        "315 UnitAddress=20"
+      ],
+      "final": "315 UnitAddress=20",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_903bba1100d04ca3",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_903bba1100d04ca3_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20/UnitName",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_value_provision_can_pin_an_exact_selector"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_value_provision_can_pin_an_exact_selector"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_value_provision_can_pin_an_exact_selector"
+    },
+    {
+      "kind": "mock-start",
+      "argv": [
+        "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "--bind",
+        "127.0.0.1:0"
+      ],
+      "pid": 6628,
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT NEW TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBCREATENET 254 Local Cni 127.0.0.1:10001",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBADDSAFE //TEST/254 Unit 20 Lounge",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/UnitType KEY1",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/UnitName KEY1",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBSETSAFE //TEST/254/p/20/FirmwareVersion 1.2.67",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_f62b44481673472f_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_f62b44481673472f cbus_cli_f62b44481673472f_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_f62b44481673472f /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP RESET_TO_DEFAULTS cbus_cli_f62b44481673472f",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_f62b44481673472f *",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP SAVE_TO_SOURCE cbus_cli_f62b44481673472f",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_f62b44481673472f",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_f62b44481673472f_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PROJECT USE TEST",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOCK cbus_cli_613fa755763a408d_lock //TEST/254",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP START cbus_cli_613fa755763a408d cbus_cli_613fa755763a408d_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP LOAD cbus_cli_613fa755763a408d /db//TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/FirmwareVersion=1.2.67",
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "342-//TEST/254/p/20/UnitType=KEY1",
+        "342-//TEST/254/p/20/CatalogNumber=null",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP SET cbus_cli_613fa755763a408d UnitName \"PPNAME\"",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_613fa755763a408d UnitName",
+      "code": 315,
+      "lines": [
+        "315 UnitName=PPNAME"
+      ],
+      "final": "315 UnitName=PPNAME",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP GET cbus_cli_613fa755763a408d *",
+      "code": 315,
+      "lines": [
+        "315 UnitName=PPNAME"
+      ],
+      "final": "315 UnitName=PPNAME",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP SAVE_TO_SOURCE cbus_cli_613fa755763a408d",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP END cbus_cli_613fa755763a408d",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP UNLOCK cbus_cli_613fa755763a408d_lock",
+      "code": 200,
+      "lines": [
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "PP QUICKGET //TEST/254/p/20 UnitName",
+      "code": 315,
+      "lines": [
+        "315 UnitName=PPNAME"
+      ],
+      "final": "315 UnitName=PPNAME",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBGET //TEST/254/p/20/UnitName",
+      "code": 200,
+      "lines": [
+        "342-//TEST/254/p/20/UnitName=KEY1",
+        "200 OK"
+      ],
+      "final": "200 OK",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "DBGETXML //TEST/254/p/20",
+      "code": 344,
+      "lines": [
+        "343-Begin XML snippet",
+        "347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "347-<Unit><OID>00000000-0000-0000-0000-000000000003</OID><TagName>KEY1</TagName><Address>20</Address><UnitType>KEY1</UnitType><UnitName>KEY1</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitName\" Value=\"PPNAME\"/></Unit>",
+        "344 End XML snippet"
+      ],
+      "final": "344 End XML snippet",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "command",
+      "command": "NOOP",
+      "code": 200,
+      "lines": [
+        "200 OK."
+      ],
+      "final": "200 OK.",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_parameter_replies_terminate_with_native_315"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_cgate_dbsetxml_unit_differential.py::test_committed_original_vs_rust_mapper_receipt[mock]"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_skip_census.py::SkipCensusTests::test_interpreter_evaluates_gates_under_the_native_profile"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_and_provision_are_exact_without_retaining_values"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_cgate_dbsetxml_unit_differential.py::test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_cgate_dbsetxml_unit_differential.py::test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+    },
+    {
+      "kind": "mock-cleanup",
+      "processes": [
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0"
+          ],
+          "pid": 6628,
+          "exit": -9,
+          "terminal": true
+        },
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0"
+          ],
+          "pid": 6629,
+          "exit": -9,
+          "terminal": true
+        }
+      ],
+      "nodeid": "tests/test_cgate_dbsetxml_unit_differential.py::test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_manifest_rejects_malformed_or_misplaced_pins"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_native_gate_pins_match_the_owned_runtime_provenance"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_native_gate_pins_match_the_owned_runtime_provenance"
+    },
+    {
+      "kind": "test-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_release_gate.py::ReleaseGateTests::test_native_gate_pins_match_the_owned_runtime_provenance"
+    }
+  ],
+  "coordinate_field_map": [
+    {
+      "pointer": "/4/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/55/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/102/processes/0/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/102/processes/1/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    }
+  ]
+}

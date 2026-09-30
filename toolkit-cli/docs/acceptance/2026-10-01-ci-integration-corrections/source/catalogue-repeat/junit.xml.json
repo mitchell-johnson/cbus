@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "95409156d3881a6b8118c7732c4cfff5089b9ee9fabd7791939decf8f6923f9b",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "acceptance_hostname"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"0\" skipped=\"0\" tests=\"2\" time=\"0.074\" timestamp=\"2026-10-01T10:14:37.916113+13:00\" hostname=\"${CBUS_ACCEPTANCE_HOST}\"><testcase classname=\"tests.test_rust_cgate_interop.RustInteropTests\" name=\"test_parameter_replies_terminate_with_native_315\" time=\"0.013\" /><testcase classname=\"tests.test_rust_cgate_interop.RustInteropTests\" name=\"test_create_unit_parameter_round_trip\" time=\"0.011\" /></testsuite></testsuites>",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "95409156d3881a6b8118c7732c4cfff5089b9ee9fabd7791939decf8f6923f9b"
+    }
+  ]
+}

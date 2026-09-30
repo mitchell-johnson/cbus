@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "cb94c446f275adc74b4123bb69b443fe5706988607db5351e4a2bac5409f1dae",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "cargo_target"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 6 tests\ntest service::tests::programmer_retry_reload_admits_all_owners_before_any_read ... ok\ntest service::tests::programmer_retry_reload_rejects_unrestaged_dirty_and_raw_bits ... ok\ntest service::tests::programmer_retry_reload_cannot_replace_new_session_or_old_pci_epoch ... ok\ntest service::tests::programmer_retry_reload_later_failure_restores_only_unchanged_preparations ... ok\ntest service::tests::programmer_retry_reload_failure_and_identity_conflict_preserve_evidence ... ok\ntest service::tests::programmer_retry_reload_rejects_missing_owner_source_and_lock ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 447 filtered out; finished in 3.80s\n\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cb94c446f275adc74b4123bb69b443fe5706988607db5351e4a2bac5409f1dae"
+    }
+  ]
+}

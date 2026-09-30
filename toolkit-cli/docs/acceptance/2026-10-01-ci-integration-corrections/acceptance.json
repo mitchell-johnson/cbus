@@ -1,0 +1,1093 @@
+{
+  "format": "cbus-ci-integration-correction-acceptance-v1",
+  "source_git_head_at_execution": "1f5788dadf09ec460560768dc08f8da7503c9ced",
+  "source_revision_qualification": "Execution used the recorded corrective working tree at this HEAD; this HEAD alone does not contain the uncommitted correction. Source fingerprints and staged-byte verification bind the actual executed files.",
+  "result": "passed",
+  "rust_sources_sha256": {
+    "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+    "rust/cbus-cgate/src/service/tests.rs": "b6cac56b23ddccbab1b7a48419dd20e0bf4b8479fb1ad7b712467025eb42f187",
+    "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be",
+    "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+  },
+  "rust_targeted_tests": 24,
+  "rust_fmt_clippy_release": "passed",
+  "release_binaries_sha256": {
+    "cgate-mock": "6ad6647caf24ace9498b51fdc40b069ebbe26bbc4cc35be7ed5d8e8569d52090",
+    "cmqttd": "f8e9ec1ed5473b991d9477c4f73ce6be3fbf68e1833ab72b73f715b65219615a"
+  },
+  "wheel_sha256": "d9bb137485176c4a592e5d56c86f923a5b79fa92b4561b7fc715975a295bb586",
+  "wheel_installed_with": "uv pip install --offline --no-deps --reinstall into a fresh Python3.13 venv",
+  "installed_console_help_exit": 0,
+  "installed_source_identical_package_files": 324,
+  "python": {
+    "source": {
+      "unique_parent_tests": 55,
+      "synthetic_catalogue_repeat_tests": 2,
+      "unique_parent_ids": [
+        [
+          "tests.test_rust_cgate_interop.RustInteropTests",
+          "test_parameter_replies_terminate_with_native_315"
+        ],
+        [
+          "tests.test_rust_cgate_interop.RustInteropTests",
+          "test_create_unit_parameter_round_trip"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_inventory_is_deterministic_and_covers_both_routing_inventories"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_packaged_register_binds_every_scope_row_to_the_inventory"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_contract_inventory_bytes_are_digest_bound_by_the_register"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[LOGIN-resolved-session_auth_command_bypass]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[BROADCAST_EVENT-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[CMQTT CAPABILITIES-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[AIRCON REFRESH-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[AIRCON SET_WARD_ON-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY PAGED_STORE-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI SESSION LIST-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI SESSION NEW-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY SAVE_TO_NVM-unresolved-None]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DO-unresolved-None]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[SCENE-unresolved-None]"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_complete_typed_editor_saved_project_and_physical_delivery"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_missing_loaded_identity_contract_real_cli_refuses_before_first_set"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_lost_ack_no_replay_and_restart_read_only_recovery"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[physical-type]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[physical-firmware]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[shared-bit]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_database_edit_and_plan_guards_before_physical_io"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_pre_save_journal_failure_or_interruption_never_programs[failure0]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_pre_save_journal_failure_or_interruption_never_programs[failure1]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_real_cli_programs_all_ten_methods_through_one_routed_session"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_completed_save_journal_records_every_phase"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_incomplete_journal_refuses_repeat_saves_before_io_until_recovered"
+        ]
+      ],
+      "subtests_not_added_to_parent_count": true,
+      "passed_subtests_in_unique_selection": 54,
+      "cli_events": 144,
+      "cli_exit_counts": {
+        "0": 128,
+        "1": 15,
+        "130": 1
+      },
+      "imports_verified": true,
+      "bindings_stable": true,
+      "owned_daemons_terminal_or_absent": true
+    },
+    "installed": {
+      "unique_parent_tests": 55,
+      "synthetic_catalogue_repeat_tests": 2,
+      "unique_parent_ids": [
+        [
+          "tests.test_rust_cgate_interop.RustInteropTests",
+          "test_parameter_replies_terminate_with_native_315"
+        ],
+        [
+          "tests.test_rust_cgate_interop.RustInteropTests",
+          "test_create_unit_parameter_round_trip"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_inventory_is_deterministic_and_covers_both_routing_inventories"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_packaged_register_binds_every_scope_row_to_the_inventory"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_contract_inventory_bytes_are_digest_bound_by_the_register"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[LOGIN-resolved-session_auth_command_bypass]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[BROADCAST_EVENT-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[CMQTT CAPABILITIES-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[AIRCON REFRESH-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[AIRCON SET_WARD_ON-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY PAGED_STORE-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI SESSION LIST-resolved-not_required_by_programming_gate]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI SESSION NEW-resolved-required_when_gate_armed]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY SAVE_TO_NVM-unresolved-None]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[DO-unresolved-None]"
+        ],
+        [
+          "tests.test_cgate_contract_inventory",
+          "test_programming_gate_contract_tracks_service_policy[SCENE-unresolved-None]"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_complete_typed_editor_saved_project_and_physical_delivery"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_missing_loaded_identity_contract_real_cli_refuses_before_first_set"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_lost_ack_no_replay_and_restart_read_only_recovery"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[physical-type]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[physical-firmware]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[shared-bit]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_database_edit_and_plan_guards_before_physical_io"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_pre_save_journal_failure_or_interruption_never_programs[failure0]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_pre_save_journal_failure_or_interruption_never_programs[failure1]"
+        ],
+        [
+          "tests.test_dlt_physical_programming_interop",
+          "test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_real_cli_programs_all_ten_methods_through_one_routed_session"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_completed_save_journal_records_every_phase"
+        ],
+        [
+          "tests.test_cmqtt_programming_methods_interop",
+          "test_incomplete_journal_refuses_repeat_saves_before_io_until_recovered"
+        ]
+      ],
+      "subtests_not_added_to_parent_count": true,
+      "passed_subtests_in_unique_selection": 54,
+      "cli_events": 144,
+      "cli_exit_counts": {
+        "0": 128,
+        "1": 15,
+        "130": 1
+      },
+      "imports_verified": true,
+      "bindings_stable": true,
+      "owned_daemons_terminal_or_absent": true
+    }
+  },
+  "census_summary": {
+    "test_modules": 607,
+    "modules_without_skip_sites": 319,
+    "modules_with_skip_sites": 288,
+    "modules_by_category": {
+      "cgate_test_host": 133,
+      "external_cgate_project": 1,
+      "hardware": 1,
+      "host_platform": 17,
+      "host_tool": 10,
+      "native_cgate_local": 78,
+      "native_opt_in": 2,
+      "original_model_runtime": 4,
+      "original_toolkit": 102,
+      "private_evidence_input": 4,
+      "private_vendor_tree": 8,
+      "runtime_capability": 6,
+      "rust_binaries": 9,
+      "unclassified": 24,
+      "unit_specs": 148,
+      "vendor_firmware": 4,
+      "windows": 12
+    },
+    "native_modules": {
+      "all": 139,
+      "partial": 20,
+      "none": 129
+    },
+    "native_runnable_tests": 258,
+    "native_selected_required_tests": 258,
+    "native_excluded": 0,
+    "native_selection_selectors": 161
+  },
+  "native_manifest_sha256": "f720bc657a2613a5cbcf361173cbc936f0971ac056757b85cbac6537b60b756c",
+  "native_selection_rewritten": false,
+  "differential_comparisons_per_backend": {
+    "session": 9,
+    "tagged_session": 11,
+    "unit_exact_wire": 12,
+    "combined_network": 2
+  },
+  "public_six_replay_receipts": {
+    "receipts": [
+      {
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "raw_sha256": "7bd242b1bb7d8ca96d4e6c07aef11a69c1fa4e9ce7b491c7881f08ce8730052c",
+        "public_sha256": "9a2ce5e35a13631e5700daa498e461af55a7fe1cdae826a09e1d6f97ade7a8ea",
+        "source_files": 188,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "raw_sha256": "d1a1402cfcb69082d6ff31b7f5ad0d72b85092ad487c601e5fb723416a44ba83",
+        "public_sha256": "01923cf3c1494979ed90a5dbd1999e85b50db3415a208bc49267a310c31438b3",
+        "source_files": 169,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "raw_sha256": "1cbb5e91d829b64e399c8f0c6c729803ce1e8b20c99a84470c8f0e86cb1035e1",
+        "public_sha256": "8524d871bf2247028b017651c3461dd716fc12f3de4f4a5e38ff5d09ba7ab006",
+        "source_files": 181,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-session-differential-fixed.json",
+        "raw_sha256": "9f7038f2e5a5acd767592344d4d4c80fca8f5498b4c96975c2f406083a686495",
+        "public_sha256": "5db534054f10c1b102d56747eb1b31464a86b1118a4c6cfbe70c84d1c9545a99",
+        "source_files": 161,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "raw_sha256": "317e16e5940e964cc6371251bffe13618c027c796912d08ecc992e4623394595",
+        "public_sha256": "83a46c20ab9faee2deabe725825c1de1cc7764c17768bbbfd3a4f3e239bc5380",
+        "source_files": 183,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "raw_sha256": "593450d07d4a7dd720d0fee66023b0cc915810a3d17f8eb841b8d4a80b7031b3",
+        "public_sha256": "d76a16bde80f46d95af61290f142ef45050b8fde29b9c904ee1db3cba08b06b4",
+        "source_files": 163,
+        "root_maintained_helper_bytes_equal": true
+      }
+    ],
+    "all_source_bindings_current": true,
+    "all_public_coordinates_absent": true
+  },
+  "full_test_suite_run": false,
+  "native_release_gate_run": false,
+  "physical_hardware_acceptance": false,
+  "coverage_require_complete_exit": 1,
+  "broad_feature_ledger": {
+    "implemented": 18,
+    "total": 42,
+    "percentage": 42.86
+  },
+  "qualifications": [
+    "Initial red source/binary hashes were not sampled at execution.",
+    "Intermediate first corrected compile failures were visible in tool output, but green-lifecycle.log was reused for the first passing lifecycle run; no retained separate private compiler log. All other retained logs remain untouched.",
+    "Two early simulator launches per environment failed because the sandbox refused loopback bind; final runs had owned loopback access.",
+    "One current-inputs selection used six missing class-qualified node IDs; no tests executed in that attempt, and process inventory was sandbox-blocked. Logs/JUnit are retained; final corrected selections pass.",
+    "Repeated catalogue nodes and pre-correction checks are not counted as new unique tests.",
+    "Fast tagged/Unit mock replay PIDs were not sampled; all producers exited after maintained cleanup and observed endpoints were closed."
+  ],
+  "artifacts": [
+    {
+      "path": "source/namespace/before.json",
+      "sha256": "faaff2fe5064e36b00e40098e69b01ff7dbcec9a18f882b94caf2be881512c4c",
+      "raw_sha256": "f58a51bf7fc38f9fbca47edd49dbc3efb759ae1951acd0ba3d7c0d12df6aa48f",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/namespace/receipt.json",
+      "sha256": "40ef27f2cb4919516d7c36a7bf73734f4311b0fb3cba8d2c2b63ce7e90aee977",
+      "raw_sha256": "72e437aca5c080c38c121239426e709f6b596a12a3441ffbe129fb9877f353eb",
+      "coordinate_roles": [
+        "cargo_target",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/namespace/junit.xml.json",
+      "sha256": "efa583fa9dae3ffcf9b44889f92e49894440bc998373781d8e472bdd5050af66",
+      "raw_sha256": "6ff93ab4cad674bcf38df245da0dc70d63f23808eaf1d8976b5e66f5d044cd39",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "source/namespace/pytest.log.json",
+      "sha256": "515195027dd72a6670a9d342df6588b561323ef93d2bc28d6809976fe8c7ef9c",
+      "raw_sha256": "458fd649678ba8b7ea4e254fd648634696353ee18e9184cfa5412143578a8cdc",
+      "coordinate_roles": []
+    },
+    {
+      "path": "source/namespace/events.json",
+      "sha256": "37412022fc3c8690f1629d9f1a5079dd162adfd9fe37b14e064bedadcbec2f5a",
+      "raw_sha256": "a827a52cfea2ea1a3f171207bc482c3ae62a3da1b40ef0c7804db92c514c9f13",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "source/catalogue-repeat/before.json",
+      "sha256": "715054d2edc55d2e3291de5c2ddb2b7d6ae7b8de42b07758182eea9a297ce294",
+      "raw_sha256": "3c73612bd8c9516e3cc55bfdee59e72ef50c9bf7138aa9c154132e6a1a0dba21",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/catalogue-repeat/receipt.json",
+      "sha256": "909d08d35b0bd2382d1262381b5176258dbe10629340a0798efaff0b223612f0",
+      "raw_sha256": "714472619405f12ed40d5c941e885ac3cd144475b1408c6814a10797d97b80b6",
+      "coordinate_roles": [
+        "cargo_target",
+        "fresh_wheel_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/catalogue-repeat/junit.xml.json",
+      "sha256": "f69f3faab56d66a3b32c08157efb56630e6890f0fbf9b8c737884b08aa7c9e24",
+      "raw_sha256": "95409156d3881a6b8118c7732c4cfff5089b9ee9fabd7791939decf8f6923f9b",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "source/catalogue-repeat/pytest.log.json",
+      "sha256": "0efc54daa8100f391435ee5b359d741d3b2e86e4d63e585e7c600729d12bd63e",
+      "raw_sha256": "bfb94aa3bce5e5c9a8e413d4c0b8cbbecf5444cc553dd49310e15bc548c86a10",
+      "coordinate_roles": []
+    },
+    {
+      "path": "source/catalogue-repeat/events.json",
+      "sha256": "cd3baebd72a6627e04029e43e9a1909173118f1137b388c8834edea3907547bb",
+      "raw_sha256": "f6f1368f7171fc2a33c2159dd03cb2718d7dedb065666df11b0e86832d318e14",
+      "coordinate_roles": [
+        "cargo_target",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "source/current-inputs-and-dlt/before.json",
+      "sha256": "e184938a198e80145a568d1c33ffc62cd2429cffad9450140a9f494dd53c7013",
+      "raw_sha256": "0c128fe7a420ac3d85d2f7357823d383eb7dbd3826f59893c7035b2d18d41b11",
+      "coordinate_roles": [
+        "correction_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/current-inputs-and-dlt/receipt.json",
+      "sha256": "12dd44dada9fd928c0e0aeb7ad7de1e072ac1e51bb278e70fd0bd2f60bb23125",
+      "raw_sha256": "db0e935944020ed67f455ab68a78cf88189d166358235a1e63de233f2d0cf429",
+      "coordinate_roles": [
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "source/current-inputs-and-dlt/junit.xml.json",
+      "sha256": "e33535c0ef7464987ee9a80a0828e39bfc5e4a72cf6220511c29f85914017b2e",
+      "raw_sha256": "bc7387219cf21dcc0bec262036303c82d3e85b9538793b2151a1a1619696f09b",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "source/current-inputs-and-dlt/pytest.log.json",
+      "sha256": "af036443143eb85a1c3a26ad6df757a8eb7bf52f9ad023c78580a5540c4ae599",
+      "raw_sha256": "ee9f329d901f017c1ba71c8540366739b6107b377b190bd1490182465e57a419",
+      "coordinate_roles": []
+    },
+    {
+      "path": "source/current-inputs-and-dlt/events.json",
+      "sha256": "d7644c435f638a2a0497c5c1511540202e8e039cb214aef5b0b2c52ea68a3a30",
+      "raw_sha256": "04f106073145a25d2b93b6dd21761015f40d7e24971198c5a64b7cee47a9d71f",
+      "coordinate_roles": [
+        "correction_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "installed/namespace/before.json",
+      "sha256": "1fec9e017b5baf8d0fb6b6d0a3b915556b253c63943359f7897fa4b2b0e5fbd4",
+      "raw_sha256": "dcc692fcbab7575e25b4c02d9ddf4e7dc7c079a6c329d2c45b76a52a8617bab3",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "installed/namespace/receipt.json",
+      "sha256": "0ba671e57bc4d8cdad0c8ce84d3883257327797a610b4cf0ee9c19b5de570b0b",
+      "raw_sha256": "93c7bcd7f89666617ca31aecacc80df8cd1fb2f72bd48774a4702da53616ea4b",
+      "coordinate_roles": [
+        "cargo_target",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "installed/namespace/junit.xml.json",
+      "sha256": "87d057d0e592443fa2107982118825548dca43945e4d2e66dce24b168deae3a0",
+      "raw_sha256": "45248abfd9fc49625e275878c2116edfe55ae4e4058973f125e8e65777d23fbd",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "installed/namespace/pytest.log.json",
+      "sha256": "253493b2f7de70682cd09e01bfd052b32a7f10aaf5048f23adbdea435189f0c0",
+      "raw_sha256": "fefc818f77e6e6185b73acd31223c84ff3cbe6fec34b4ccef9d15ff6eb1b5add",
+      "coordinate_roles": []
+    },
+    {
+      "path": "installed/namespace/events.json",
+      "sha256": "2f1c1c10812a36c95c269b8127b00bd57e28bd24642e3a56eac2cbce2964eb79",
+      "raw_sha256": "bd857c746423db8247e42f690b823378bd2ecc9549df58395f0d8d799f0e9064",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "installed/catalogue-repeat/before.json",
+      "sha256": "18d90ac65ad76200b11b25bf4685b0bf0b096f2d36aec58bfbb1d553a5afd62e",
+      "raw_sha256": "af78dc43b9ecef830ba0e011153f2ae7ac7f516003fe2173f95dc131737d8f9f",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "installed/catalogue-repeat/receipt.json",
+      "sha256": "06aedaf0a25d774690d01562f7b03eeab2ddbbd209bbe3df78b2126bb1ccdca2",
+      "raw_sha256": "391051b50456746f84ee4ad57c933a12abae735d5c60c9e04622fa9d501c544d",
+      "coordinate_roles": [
+        "cargo_target",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "installed/catalogue-repeat/junit.xml.json",
+      "sha256": "553953baecff20f38c13a0ad696018ab3f04b588314a933d3110e7b6cbc35e58",
+      "raw_sha256": "8a56e7a09706a37ecc1d0e37cadcd71de58dfb9b17261305be01f27a62ad7d70",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "installed/catalogue-repeat/pytest.log.json",
+      "sha256": "0efc54daa8100f391435ee5b359d741d3b2e86e4d63e585e7c600729d12bd63e",
+      "raw_sha256": "bfb94aa3bce5e5c9a8e413d4c0b8cbbecf5444cc553dd49310e15bc548c86a10",
+      "coordinate_roles": []
+    },
+    {
+      "path": "installed/catalogue-repeat/events.json",
+      "sha256": "8820f6377d589bfbdc1e3a79c98b0d36d7bf8642f2f22f5e455c014887c2590b",
+      "raw_sha256": "7f525faa2feffa6b5d070fbd3e93444bdd114d73543fca50a23eb08eb6b00061",
+      "coordinate_roles": [
+        "cargo_target",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "installed/current-inputs-and-dlt/before.json",
+      "sha256": "3b593322e059ccd80a7fd2084b188cd73c32cc464e9e85cf7af9cb6acbcec5b4",
+      "raw_sha256": "6180040f169ec29b7d73a7419fead59bdf35f96f0db3cc515d539151abea5f4e",
+      "coordinate_roles": [
+        "correction_acceptance",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "installed/current-inputs-and-dlt/receipt.json",
+      "sha256": "6b369be0a49106686adb7632699bf05a14f39a5042fb08e2b7fc29884c6913e1",
+      "raw_sha256": "4c0741e3b516e9cb0388d713da998d4e926f5effe715910a2670bb0bac577ed6",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "installed/current-inputs-and-dlt/junit.xml.json",
+      "sha256": "d2eaaa7c0d5da4bae8502d02ca64ef7c83ebb11f1ea2485059c0b0cdde785611",
+      "raw_sha256": "f69f2e2506bd96db2e2452367176414c0eeb034076f1b8dfb7a681f201b4a167",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "installed/current-inputs-and-dlt/pytest.log.json",
+      "sha256": "e4b6b434fb06f65cc1e4e437349b387dfcf39753fcf14aaf309babfb671ec4bd",
+      "raw_sha256": "f44435278f4af19d4281f7ecb941ef3741ca5e4d25889bb3cd9dbc857ceceecf",
+      "coordinate_roles": []
+    },
+    {
+      "path": "installed/current-inputs-and-dlt/events.json",
+      "sha256": "a2d90c7729b07b7586b8b43516c9cf05a9ca7822a9c4bf388ac9c5efa9d6aead",
+      "raw_sha256": "faedfa66b3423c59754c129a881a84f58f34b71a2da3fff90e4d8494caedc8f3",
+      "coordinate_roles": [
+        "correction_acceptance",
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "rust/final-validation.json",
+      "sha256": "db19cbe68b4074b56f545541f060a212587d8ef314148c2624a1b522a20bef3f",
+      "raw_sha256": "e4a2422b30f1b3cc5e68db9a4d1148cea546c18de0e09f9c59cdc233ad0a315d",
+      "coordinate_roles": [
+        "repository_checkout",
+        "retry_acceptance"
+      ]
+    },
+    {
+      "path": "rust/red.log.json",
+      "sha256": "6b21f7c9678c642a1922f5cda1c72bb82a9edd8185a4cceb029d35613faf520b",
+      "raw_sha256": "02db26e259bf08f5c2f7c12c0cf9790fe1dc9d788b39ffdc75abff6c6bce691f",
+      "coordinate_roles": [
+        "cargo_target",
+        "repository_checkout"
+      ]
+    },
+    {
+      "path": "rust/final-controls.log.json",
+      "sha256": "e42a6ed5e0154a928a1fd8e9399c6603361a0210e2c504cb450be7607cb90bac",
+      "raw_sha256": "cb94c446f275adc74b4123bb69b443fe5706988607db5351e4a2bac5409f1dae",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "rust/final-identity.log.json",
+      "sha256": "ba82ac88c712119ae64ed06ae5b182cc8e85a06d45837dd5809857c8fe349faa",
+      "raw_sha256": "352d258c3712e8ba0c227fca48f8e0756ba38fbd6c1fb5e9cf207a1971b8daab",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "rust/final-save.log.json",
+      "sha256": "ac0fc5e9fb8b7c95a919b851f5c170e7bca55242435b3c0bfb0e70d5c02a1640",
+      "raw_sha256": "970210add1a69d21d5fe038d47a0e527a468a10ca3d8490188adc016c53442db",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "rust/final-routed.log.json",
+      "sha256": "030d191fabf9dd8c8455fd24d63aed6744e8846ca20c7c98232912aa68851cd4",
+      "raw_sha256": "600c2334d5f264113c85f8057603459c840c470a821208a2e07511f718f4ee0e",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "rust/final-session.log.json",
+      "sha256": "187eb59c30cd5158b15e672d3bd69d4435584cd1e632823f5192e1450e67c60d",
+      "raw_sha256": "9221dd5bf5f58faa064ee8bec6d7eedd32da26d2ef15b0610a57c128b3a94f2f",
+      "coordinate_roles": [
+        "cargo_target"
+      ]
+    },
+    {
+      "path": "rust/final-system.log.json",
+      "sha256": "89f53508165b180a36edc1176458eaa4f229b9886d26b05603d4eb1c3135b926",
+      "raw_sha256": "71bb1e259eb4d35c4a848e65bb9c1c764a76019f5be0e9a480ba3e1997ede9cb",
+      "coordinate_roles": [
+        "cargo_target",
+        "repository_checkout"
+      ]
+    },
+    {
+      "path": "publication/rust-checks.json",
+      "sha256": "c5e67fba50796af85d30b48988fac415d0dc1d48d2040686d738b6c17fdba5b9",
+      "raw_sha256": "03dbb4fec19dc815c45191bc2757351ecaeac905a5f02882ae027bf05d071c1a",
+      "coordinate_roles": []
+    },
+    {
+      "path": "publication/rust-fmt.log.json",
+      "sha256": "f38507f4f608dcdbb76621e4f869b31a6f4c72edd91b363ba4d08f2bdc800a7f",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_roles": []
+    },
+    {
+      "path": "publication/rust-clippy.log.json",
+      "sha256": "1c6099f56ceba34c6dd341704245285ec4528c1f4e6fc7cf25fd11d6b9c6d8ed",
+      "raw_sha256": "de17345390188d93469a83d18bea81302220aba5b8d96c098303b9555ea4b565",
+      "coordinate_roles": [
+        "repository_checkout"
+      ]
+    },
+    {
+      "path": "publication/rust-release.log.json",
+      "sha256": "561a18f9f8fdbc1ec9ea8275ed37f5dffa20b2ce77a37bdfb02d636b843b837a",
+      "raw_sha256": "87e9358f136fc308806731adec76296dfd37507ab4f7ba8083cfc16c86ac8046",
+      "coordinate_roles": [
+        "repository_checkout"
+      ]
+    },
+    {
+      "path": "publication/root-six-replay-audit.json",
+      "sha256": "9a4d2fef6722ad897f5f6aca757538bf1b63ff0f22eeba576ed01f17819d8262",
+      "raw_sha256": "bef4e75ed5df867424a8a9319f1e490c1ea7e80ba64b698379a8facbac244d7c",
+      "coordinate_roles": []
+    },
+    {
+      "path": "publication/coverage-require-complete.stdout.json",
+      "sha256": "cb17c42d31e53e58948e93ae85eef2d1df618d7bea40b70aa3363d32bcbc1035",
+      "raw_sha256": "96895d1eb3a5f3d34db40cb8db237fdefa83ace0341091607b138d6c85564e0d",
+      "coordinate_roles": []
+    },
+    {
+      "path": "publication/coverage-require-complete.stderr.json",
+      "sha256": "f38507f4f608dcdbb76621e4f869b31a6f4c72edd91b363ba4d08f2bdc800a7f",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_roles": []
+    },
+    {
+      "path": "replays/publication-audit.json",
+      "sha256": "8244a534080c6cc34125cc3ddad2614f4c437d67a64b03c746b4320eb80932f8",
+      "raw_sha256": "7b52265aa6ef25de37c770387b8f875f5352307f54e6005748afc1347891be6c",
+      "coordinate_roles": []
+    },
+    {
+      "path": "replays/cleanup-audit.json",
+      "sha256": "5dba010f1d1fd5cb02582e0e9ece73c35af582037bc13fc9cdab776b06ec3f48",
+      "raw_sha256": "d1fa274eda0e74691d935f0649bb3703f6ada30355138b7b2b7710b79e5c6163",
+      "coordinate_roles": []
+    },
+    {
+      "path": "wheel/wheel-audit.json",
+      "sha256": "1aaa15a363950c6ac88bc0cdd9c23ebabed122e4341a9cac5d5e53925f205e8e",
+      "raw_sha256": "f7988f20aef9a38030b8de95721695c3e5f111d030e8376c6e0a7bd120f9f714",
+      "coordinate_roles": []
+    },
+    {
+      "path": "wheel/wheel-install.log.json",
+      "sha256": "055de8a418011b8e1a5032f6588302f4f51e3f6f082e89aeb299f244b294fd8d",
+      "raw_sha256": "d1d361723877ead2afb41ccc42e01b110ba57b5f78e1e3a5417e768ea408f575",
+      "coordinate_roles": [
+        "fresh_wheel_acceptance"
+      ]
+    },
+    {
+      "path": "wheel/console-help.stdout.json",
+      "sha256": "0c105971b15b8e1da760ae20eecb51d04e759b7b7aaf582d47cbcfaaf1f5ae65",
+      "raw_sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e",
+      "coordinate_roles": []
+    },
+    {
+      "path": "retained-harness-failures/source-none/pytest.log.json",
+      "sha256": "99fb4e408b77df7e203be5f8c7a5a274cd9231429349e9dd3dd285ff2a47cbe2",
+      "raw_sha256": "98c076a33895154d0bfcda47e6a3fef66102151884e271fce569cf9396cc86ee",
+      "coordinate_roles": [
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "retained-harness-failures/source-none/junit.xml.json",
+      "sha256": "7de747f73da135548f6b4de9676db86ec1414c19547704bf7cb1c928c4721ce8",
+      "raw_sha256": "2e141985e1bbeac65fc70788494440f17cdfa856d75eb883300c2cefc7249284",
+      "coordinate_roles": [
+        "acceptance_hostname",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "retained-harness-failures/installed-none/pytest.log.json",
+      "sha256": "b409b878ec42844e54e8d9b2a15d3ffb045e9207a6199336bb143f6463c1e505",
+      "raw_sha256": "d69f164160acaab206d8f934f464addf3dc539b6eca213453f3dca1466520073",
+      "coordinate_roles": [
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "retained-harness-failures/installed-none/junit.xml.json",
+      "sha256": "87ec85ddabef0a3439c70bba1f6cf185d9728f93a1c424910f0fa73b90c3790c",
+      "raw_sha256": "2d70a550a5d054fb947a53cae7b52c03c5334886aa4092eb20a14060e5600cfa",
+      "coordinate_roles": [
+        "acceptance_hostname",
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "retained-harness-failures/python-source/pytest.log.json",
+      "sha256": "dbec0b58b2cbcde86b83067671707a489976fb4c61869cc79cb2d9cae1e01a8f",
+      "raw_sha256": "a8d9aac10ab947fd3d98baf171f0928e23c015a8c2751c894b775510a0a975f9",
+      "coordinate_roles": [
+        "toolkit_checkout"
+      ]
+    },
+    {
+      "path": "retained-harness-failures/python-source/junit.xml.json",
+      "sha256": "76307f1d6618775495602d76094d9e63df8da6e05f3536e391ff396de8580f19",
+      "raw_sha256": "6eb9f46a3c5ccb7eb1fb7cb8370c35820b5420a1def7281a503e785462d76917",
+      "coordinate_roles": [
+        "acceptance_hostname"
+      ]
+    },
+    {
+      "path": "retained-product-failures/namespace/pytest.log.json",
+      "sha256": "46852b3c9e418e61ff3be41c5b0ec20e4b6314e73fb8ee2b6fa9892e50251753",
+      "raw_sha256": "a7c876c0ad55e6254af183abcfca50ffe833d306d33ae9f56da4472b0c1a215a",
+      "coordinate_roles": [
+        "pre_correction_namespace"
+      ]
+    },
+    {
+      "path": "retained-product-failures/namespace/junit.xml.json",
+      "sha256": "fa62ab0632c1c7f26965ac3553537547312a0b7796cbd890eaf4a0e7a24ca6d7",
+      "raw_sha256": "3da9be25676da96645c128d8bfa66c7c125087c5f5fc91f715f8281acc0e48f5",
+      "coordinate_roles": [
+        "acceptance_hostname",
+        "pre_correction_namespace"
+      ]
+    },
+    {
+      "path": "retained-product-failures/namespace/receipt.json",
+      "sha256": "5862be8f2a02c894e8569a53fef2f5f468bb7b47c70a784be79349b246d5bd9d",
+      "raw_sha256": "566faec52c364439a0360f76c94445531d30fba0c063df4d8c299cbab39f62f4",
+      "coordinate_roles": [
+        "cargo_target",
+        "toolkit_checkout"
+      ]
+    }
+  ],
+  "previous_published_ci": {
+    "head_sha": "1f5788dadf09ec460560768dc08f8da7503c9ced",
+    "run_id": 36773002191,
+    "terminal_result": "failure",
+    "provenance": "Terminal classification delivered by the sole CI reviewer; root did not independently poll.",
+    "failure_categories": [
+      "stale source/installed census",
+      "two mock UnitName namespace expectations",
+      "native programmer lifecycle explicit RETRY conflict"
+    ],
+    "cmqttd_python": {
+      "passed": 137,
+      "skipped": 1
+    },
+    "native_physical_jobs": "skipped",
+    "corrective_exact_sha_ci": "not_yet_published"
+  },
+  "wheel_readme_and_licenses_match_source": true,
+  "staged_source_byte_verification": {
+    "status": "passed",
+    "scope": "Every source file bound by all six current replay receipts, all607 tracked Toolkit test modules, all324 packaged Python/JSON files and every staged change; verified against both index and working tree before commit."
+  },
+  "coordinate_derivative_qualification": "Every transformed string/key records its normalized JSON pointer and exact raw string SHA-256; the original full artifact bytes are privately archived. Replays use the separate maintained family sanitizer."
+}

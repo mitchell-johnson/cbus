@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "45248abfd9fc49625e275878c2116edfe55ae4e4058973f125e8e65777d23fbd",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "acceptance_hostname"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"0\" skipped=\"0\" tests=\"35\" time=\"4.661\" timestamp=\"2026-10-01T10:13:41.755118+13:00\" hostname=\"${CBUS_ACCEPTANCE_HOST}\"><testcase classname=\"tests.test_rust_cgate_interop.RustInteropTests\" name=\"test_parameter_replies_terminate_with_native_315\" time=\"0.014\" /><testcase classname=\"tests.test_rust_cgate_interop.RustInteropTests\" name=\"test_create_unit_parameter_round_trip\" time=\"0.017\" /><testcase classname=\"tests.test_skip_census.SkipCensusTests\" name=\"test_body_skip_calls_carry_their_guarding_condition\" time=\"0.001\" /><testcase classname=\"tests.test_skip_census.SkipCensusTests\" name=\"test_committed_census_is_current_and_native_selection_complete\" time=\"4.300\" /><testcase classname=\"tests.test_skip_census.SkipCensusTests\" name=\"test_interpreter_evaluates_gates_under_the_native_profile\" time=\"0.001\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_junit_records_skip_identity_and_cannot_pass_strict_gate\" time=\"0.001\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_main_writes_failing_receipt_when_a_selected_test_skips\" time=\"0.004\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_manifest_and_provision_are_exact_without_retaining_values\" time=\"0.003\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection\" time=\"0.002\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_manifest_rejects_malformed_or_misplaced_pins\" time=\"0.004\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_native_gate_pins_match_the_owned_runtime_provenance\" time=\"0.001\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_pinned_runtime_rejects_substituted_launcher_or_tampered_home\" time=\"0.017\" /><testcase classname=\"tests.test_release_gate.ReleaseGateTests\" name=\"test_value_provision_can_pin_an_exact_selector\" time=\"0.002\" /><testcase classname=\"tests.test_cgate_dbsetxml_unit_differential\" name=\"test_committed_original_vs_rust_mapper_receipt[mock]\" time=\"0.023\" /><testcase classname=\"tests.test_cgate_dbsetxml_unit_differential\" name=\"test_committed_original_vs_rust_mapper_receipt[cmqttd]\" time=\"0.024\" /><testcase classname=\"tests.test_cgate_dbsetxml_unit_differential\" name=\"test_mapper_receipt_rejects_mutated_original_and_rust_wire\" time=\"0.093\" /></testsuite></testsuites>",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "45248abfd9fc49625e275878c2116edfe55ae4e4058973f125e8e65777d23fbd"
+    }
+  ]
+}

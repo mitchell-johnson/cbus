@@ -1,0 +1,97 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "714472619405f12ed40d5c941e885ac3cd144475b1408c6814a10797d97b80b6",
+  "content_kind": "json",
+  "coordinate_roles_applied": [
+    "cargo_target",
+    "fresh_wheel_acceptance",
+    "toolkit_checkout"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": {
+    "exit": 0,
+    "parents": 2,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "bindings_stable": true,
+    "origins": {
+      "cbus_toolkit": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/__init__.py",
+      "cbus_toolkit.cgate": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/cgate.py",
+      "cbus_toolkit.native": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/native.py",
+      "cbus_toolkit.programming": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/programming.py"
+    },
+    "cleanup": {
+      "kind": "mock-cleanup",
+      "processes": [
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0",
+            "--unitspec",
+            "${CBUS_WHEEL_ACCEPTANCE_ROOT}/synthetic-specs"
+          ],
+          "pid": 7370,
+          "exit": -9,
+          "terminal": true
+        },
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0",
+            "--unitspec",
+            "${CBUS_WHEEL_ACCEPTANCE_ROOT}/synthetic-specs"
+          ],
+          "pid": 7371,
+          "exit": -9,
+          "terminal": true
+        }
+      ],
+      "nodeid": "tests/test_rust_cgate_interop.py::RustInteropTests::test_create_unit_parameter_round_trip"
+    }
+  },
+  "coordinate_field_map": [
+    {
+      "pointer": "/origins/cbus_toolkit",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "6b5054582bd3969808c332991792478eae666fe80c798b8603d97b2b6d3ade8d"
+    },
+    {
+      "pointer": "/origins/cbus_toolkit.cgate",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "3016d1ad3adaad99a214fbe74fa3bccbc7d6186a6536d798945f525a9d7d73ba"
+    },
+    {
+      "pointer": "/origins/cbus_toolkit.native",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "e86dec5c23a7dfabc1181d04f5e7eac06e2feec470af52c49126734ae8cd3bd0"
+    },
+    {
+      "pointer": "/origins/cbus_toolkit.programming",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "ec7b069b529b365cdb1daf75c7ef9f22f36575f98414e7861a6f1b31dc3aaa7b"
+    },
+    {
+      "pointer": "/cleanup/processes/0/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/cleanup/processes/0/argv/4",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "f1d46062ce47d9c3ff0211983fe5d7612a9655588a4c43e0b13c83833c2d3c5d"
+    },
+    {
+      "pointer": "/cleanup/processes/1/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/cleanup/processes/1/argv/4",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "f1d46062ce47d9c3ff0211983fe5d7612a9655588a4c43e0b13c83833c2d3c5d"
+    }
+  ]
+}

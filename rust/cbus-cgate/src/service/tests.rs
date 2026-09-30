@@ -22482,3 +22482,360 @@ async fn edlt_controls_share_the_python_profile_refusals_without_pci_io() {
 mod secondary_authorization;
 
 mod object_authorization;
+
+async fn retry_identity_fixture() -> (LoadedIdentityFixture, u64) {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    for line in [
+        "[create] PROGRAMMER CREATE R Retry Route",
+        "[set-task] PROGRAMMER ADD_INSTRUCTION R PP_SET S Indicator 0x56 0x78",
+        "[save-task] PROGRAMMER ADD_INSTRUCTION R PP_SAVE S //HARNESS/254/p/5",
+        "[staged] PP SET S Indicator 0x56 0x78",
+    ] {
+        assert_eq!(
+            fixture
+                .service
+                .handle(&mut fixture.owner, line)
+                .await
+                .status,
+            200
+        );
+    }
+    let serial = {
+        let mut model = fixture.service.model.lock().await;
+        model.sessions.get_mut("S").unwrap().physical_load = PpPhysicalLoadState::Invalidated;
+        model.programmers["r"].serial
+    };
+    (fixture, serial)
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_rejects_unrestaged_dirty_and_raw_bits() {
+    let (mut fixture, serial) = retry_identity_fixture().await;
+    {
+        let mut model = fixture.service.model.lock().await;
+        model
+            .sessions
+            .get_mut("S")
+            .unwrap()
+            .dirty
+            .insert("Other".into());
+    }
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    assert_eq!(
+        fixture
+            .service
+            .prepare_programmer_retry("r", serial)
+            .await
+            .unwrap()
+            .status,
+        408
+    );
+    assert_eq!(fixture.service.model.lock().await.sessions["S"], before);
+    assert_eq!(fixture.info().await.status, 408);
+    {
+        let mut model = fixture.service.model.lock().await;
+        let session = model.sessions.get_mut("S").unwrap();
+        session.dirty.remove("Other");
+        session.raw[0x21] = Some(0x79); // differs from the explicit staged value
+    }
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    assert_eq!(
+        fixture
+            .service
+            .prepare_programmer_retry("r", serial)
+            .await
+            .unwrap()
+            .status,
+        408
+    );
+    assert_eq!(fixture.service.model.lock().await.sessions["S"], before);
+    assert!(tokio::time::timeout(
+        Duration::from_millis(20),
+        database_pci_line(&mut fixture.peer)
+    )
+    .await
+    .is_err());
+    // A PP_SET owning bit zero does not authorize discarding bit seven in
+    // the same addressed byte. Byte-range coverage alone would accept this.
+    {
+        let mut model = fixture.service.model.lock().await;
+        let mut spec = model.spec_for("KEYML5").unwrap();
+        spec[0]
+            .fields
+            .retain(|(field, _)| !matches!(field.as_str(), "ArraySize" | "BitSize" | "BitAddress"));
+        spec[0].fields.extend([
+            ("ArraySize".into(), "1".into()),
+            ("BitSize".into(), "1".into()),
+            ("BitAddress".into(), "0".into()),
+        ]);
+        model.spec_cache.insert("KEYML5".into(), Some(spec));
+        let session = model.sessions.get_mut("S").unwrap();
+        session.params.insert("Indicator".into(), "0".into());
+        session.raw = session.raw_unit.clone();
+        session.raw[0x20] = Some(0x92); // loaded 0x12 plus an unowned bit
+        session.raw_changed = HashSet::from([0x20]);
+    }
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    assert_eq!(
+        fixture
+            .service
+            .prepare_programmer_retry("r", serial)
+            .await
+            .unwrap()
+            .status,
+        408
+    );
+    assert_eq!(fixture.service.model.lock().await.sessions["S"], before);
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_failure_and_identity_conflict_preserve_evidence() {
+    for mismatch in ["malformed", "firmware", "type"] {
+        let (mut fixture, serial) = retry_identity_fixture().await;
+        let before = fixture.service.model.lock().await.sessions["S"].clone();
+        let reloading = tokio::spawn({
+            let service = fixture.service.clone();
+            async move { service.prepare_programmer_retry("r", serial).await }
+        });
+        if mismatch == "type" {
+            fixture.identify(1, b"KEYGL5").await;
+            fixture.identify(2, b"2.1.00").await;
+        } else if mismatch == "firmware" {
+            fixture.identify(1, b"KEYML5").await;
+            fixture.identify(2, b"9.9.00").await;
+            let request = database_pci_line(&mut fixture.peer).await;
+            assert!(request.starts_with(b"\\4605001A2002"));
+            database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+        } else {
+            fixture.identify(1, &[0xff]).await;
+        }
+        assert!(reloading.await.unwrap().unwrap().status >= 400);
+        let after = fixture.service.model.lock().await.sessions["S"].clone();
+        assert_eq!(after.params, before.params);
+        assert_eq!(after.dirty, before.dirty);
+        assert_eq!(after.raw, before.raw);
+        assert_eq!(after.raw_unit, before.raw_unit);
+        assert_eq!(after.raw_changed, before.raw_changed);
+        assert_eq!(fixture.info().await.status, 408);
+        assert_eq!(
+            fixture
+                .service
+                .handle(&mut fixture.owner, "[direct] PP SAVE_TO_SOURCE S")
+                .await
+                .status,
+            408
+        );
+    }
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_cannot_replace_new_session_or_old_pci_epoch() {
+    for reconnect in [false, true] {
+        let (mut fixture, serial) = retry_identity_fixture().await;
+        let reloading = tokio::spawn({
+            let service = fixture.service.clone();
+            async move { service.prepare_programmer_retry("r", serial).await }
+        });
+        fixture.identify(1, b"KEYML5").await;
+        fixture.identify(2, b"2.1.00").await;
+        let request = database_pci_line(&mut fixture.peer).await;
+        assert!(request.starts_with(b"\\4605001A2002"));
+        if reconnect {
+            let (replacement, _remote) = pci();
+            fixture.service.set_pci(replacement).await;
+        } else {
+            for line in [
+                "[end] PP END S",
+                "[start] PP START S L",
+                "[new] PP NEW S KEYML5 2.1.00",
+            ] {
+                assert_eq!(
+                    fixture
+                        .service
+                        .handle(&mut fixture.owner, line)
+                        .await
+                        .status,
+                    200
+                );
+            }
+        }
+        let newer = fixture.service.model.lock().await.sessions["S"].clone();
+        database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+        assert!(reloading.await.unwrap().unwrap().status >= 400);
+        assert_eq!(fixture.service.model.lock().await.sessions["S"], newer);
+    }
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_rejects_missing_owner_source_and_lock() {
+    for fault in ["owner", "source", "lock", "ended"] {
+        let (mut fixture, serial) = retry_identity_fixture().await;
+        {
+            if fault == "owner" {
+                let mut worker = fixture.service.deploy_worker.lock().unwrap();
+                for ((s, _), origin) in &mut worker.instruction_clients {
+                    if *s == serial {
+                        origin.sessions.remove("S");
+                    }
+                }
+            } else {
+                let mut model = fixture.service.model.lock().await;
+                if fault == "ended" {
+                    model.sessions.remove("S");
+                } else {
+                    let session = model.sessions.get_mut("S").unwrap();
+                    if fault == "source" {
+                        session.source = Some("/db//HARNESS/254/p/5".into());
+                    } else {
+                        session.lock = "MissingLock".into();
+                    }
+                }
+            }
+        }
+        let before = fixture
+            .service
+            .model
+            .lock()
+            .await
+            .sessions
+            .get("S")
+            .cloned();
+        assert!(
+            fixture
+                .service
+                .prepare_programmer_retry("r", serial)
+                .await
+                .unwrap()
+                .status
+                >= 400,
+            "{fault}"
+        );
+        let after = fixture
+            .service
+            .model
+            .lock()
+            .await
+            .sessions
+            .get("S")
+            .cloned();
+        if let (Some(before), Some(after)) = (before, after) {
+            assert_eq!(before.params, after.params);
+            assert_eq!(before.raw, after.raw);
+            assert_eq!(after.physical_load, PpPhysicalLoadState::Invalidated);
+        }
+        assert!(
+            tokio::time::timeout(
+                Duration::from_millis(20),
+                database_pci_line(&mut fixture.peer)
+            )
+            .await
+            .is_err(),
+            "{fault}"
+        );
+    }
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_admits_all_owners_before_any_read() {
+    let (mut fixture, serial) = retry_identity_fixture().await;
+    {
+        let id = fixture.service.model.lock().await.programmers["r"].instructions[1].id;
+        let mut worker = fixture.service.deploy_worker.lock().unwrap();
+        let origin = worker.instruction_clients.get_mut(&(serial, id)).unwrap();
+        origin.sessions = ProgrammingNames::default();
+        origin.command_session = Some(999);
+    }
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    assert_eq!(
+        fixture
+            .service
+            .prepare_programmer_retry("r", serial)
+            .await
+            .unwrap()
+            .status,
+        420
+    );
+    assert_eq!(fixture.service.model.lock().await.sessions["S"], before);
+    assert!(tokio::time::timeout(
+        Duration::from_millis(20),
+        database_pci_line(&mut fixture.peer)
+    )
+    .await
+    .is_err());
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_later_failure_restores_only_unchanged_preparations() {
+    for newer_edit in [false, true] {
+        let (mut fixture, serial) = retry_identity_fixture().await;
+        for line in [
+            "[start-t] PP START T L",
+            "[set-t] PROGRAMMER ADD_INSTRUCTION R PP_SET T Indicator 0x56 0x78",
+            "[save-t] PROGRAMMER ADD_INSTRUCTION R PP_SAVE T //HARNESS/254/p/5",
+        ] {
+            assert_eq!(
+                fixture
+                    .service
+                    .handle(&mut fixture.owner, line)
+                    .await
+                    .status,
+                200
+            );
+        }
+        {
+            let mut model = fixture.service.model.lock().await;
+            let mut t = model.sessions["S"].clone();
+            t.name = "T".into();
+            model.sessions.insert("T".into(), t);
+        }
+        let originals = fixture.service.model.lock().await.sessions.clone();
+        let reloading = tokio::spawn({
+            let service = fixture.service.clone();
+            async move { service.prepare_programmer_retry("r", serial).await }
+        });
+        fixture.identify(1, b"KEYML5").await;
+        fixture.identify(2, b"2.1.00").await;
+        let request = database_pci_line(&mut fixture.peer).await;
+        assert!(request.starts_with(b"\\4605001A2002"));
+        database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+        let request = database_pci_line(&mut fixture.peer).await;
+        assert!(request.starts_with(b"\\4605002101"));
+        if newer_edit {
+            assert_eq!(
+                fixture
+                    .service
+                    .handle(
+                        &mut fixture.owner,
+                        "[new-edit] PP SET S Indicator 0x9A 0xBC"
+                    )
+                    .await
+                    .status,
+                200
+            );
+        }
+        let newer = fixture.service.model.lock().await.sessions["S"].clone();
+        let code = request[request.len() - 2];
+        fixture.peer.write_all(&[code, b'.']).await.unwrap();
+        database_pci_reply(&mut fixture.peer, 5, &[0x82, 1, 0xff]).await;
+        assert!(reloading.await.unwrap().unwrap().status >= 400);
+        let model = fixture.service.model.lock().await;
+        let s = &model.sessions["S"];
+        if newer_edit {
+            assert_eq!(s, &newer);
+        } else {
+            assert_eq!(s.params, originals["S"].params);
+            assert_eq!(s.raw, originals["S"].raw);
+            assert_eq!(s.dirty, originals["S"].dirty);
+            assert_eq!(s.physical_load, PpPhysicalLoadState::Invalidated);
+        }
+        assert_eq!(model.sessions["T"].params, originals["T"].params);
+        assert_eq!(model.sessions["T"].raw, originals["T"].raw);
+        assert!(tokio::time::timeout(
+            Duration::from_millis(20),
+            database_pci_line(&mut fixture.peer)
+        )
+        .await
+        .is_err());
+    }
+}

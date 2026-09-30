@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "970210add1a69d21d5fe038d47a0e527a468a10ca3d8490188adc016c53442db",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "cargo_target"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 8 tests\ntest service::tests::physical_pp_save_writes_factory_bit_like_native_class_fourteen ... ok\ntest service::tests::physical_pp_save_first_store_failure_reports_zero_confirmed_and_retains_dirty ... ok\ntest service::tests::physical_pp_save_reports_partial_write_evidence_and_retains_dirty ... ok\ntest service::tests::physical_pp_save_counts_paged_write_toward_confirmed_total ... ok\ntest service::tests::physical_pp_save_skips_unchanged_items_without_counting ... ok\ntest service::tests::physical_pp_save_nvm_failure_reports_confirmed_writes_and_retains_dirty ... ok\ntest service::tests::physical_pp_save_tag_filter_retains_untagged_dirty ... ok\ntest service::tests::physical_pp_save_factory_protected_clears_dirty_without_write ... ok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 445 filtered out; finished in 1.84s\n\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "970210add1a69d21d5fe038d47a0e527a468a10ca3d8490188adc016c53442db"
+    }
+  ]
+}

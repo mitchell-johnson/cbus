@@ -1,0 +1,72 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "566faec52c364439a0360f76c94445531d30fba0c063df4d8c299cbab39f62f4",
+  "content_kind": "json",
+  "coordinate_roles_applied": [
+    "cargo_target",
+    "toolkit_checkout"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": {
+    "exit": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "skips": 0,
+    "bindings_stable": true,
+    "mock_cleanup": [
+      {
+        "argv": [
+          "${CBUS_CARGO_TARGET}/release/cgate-mock",
+          "--bind",
+          "127.0.0.1:0"
+        ],
+        "pid": 86187,
+        "exit": -9,
+        "terminal": true
+      },
+      {
+        "argv": [
+          "${CBUS_CARGO_TARGET}/release/cgate-mock",
+          "--bind",
+          "127.0.0.1:0"
+        ],
+        "pid": 86188,
+        "exit": -9,
+        "terminal": true
+      }
+    ],
+    "origins": {
+      "package": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/__init__.py",
+      "programming": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/programming.py",
+      "native": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/native.py"
+    }
+  },
+  "coordinate_field_map": [
+    {
+      "pointer": "/mock_cleanup/0/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/mock_cleanup/1/argv/0",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "pointer": "/origins/package",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "6b5054582bd3969808c332991792478eae666fe80c798b8603d97b2b6d3ade8d"
+    },
+    {
+      "pointer": "/origins/programming",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "ec7b069b529b365cdb1daf75c7ef9f22f36575f98414e7861a6f1b31dc3aaa7b"
+    },
+    {
+      "pointer": "/origins/native",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "e86dec5c23a7dfabc1181d04f5e7eac06e2feec470af52c49126734ae8cd3bd0"
+    }
+  ]
+}

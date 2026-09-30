@@ -1,0 +1,18 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "02db26e259bf08f5c2f7c12c0cf9790fe1dc9d788b39ffdc75abff6c6bce691f",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "cargo_target",
+    "repository_checkout"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.34s\n     Running tests/system_cgate_programmer_lifecycle.rs (${CBUS_CARGO_TARGET}/debug/deps/system_cgate_programmer_lifecycle-86318037bdc189a4)\n\nrunning 1 test\ntest native_programmer_lifecycle_replays_against_cmqttd has been running for over 60 seconds\n\nthread 'native_programmer_lifecycle_replays_against_cmqttd' (6440002) panicked at cmqttd/tests/system_cgate_programmer_lifecycle.rs:537:21:\ndeploy_fault_partial_and_retry: P2 STOPPED: native [\"130-{\\\"progName\\\":\\\"P2\\\",\\\"progState\\\":\\\"STOPPED\\\",\\\"taskName\\\":\\\"Task2\\\",\\\"taskRoute\\\":\\\"Route2\\\",\\\"createdTime\\\":\\\"<timestamp>\\\",\\\"startedTime\\\":\\\"<timestamp>\\\",\\\"endedTime\\\":\\\"<timestamp>\\\",\\\"remainingSeconds\\\":0}\", \"200 OK.\"], cmqttd [\"130-{\\\"progName\\\":\\\"P2\\\",\\\"progState\\\":\\\"ERROR\\\",\\\"taskName\\\":\\\"Task2\\\",\\\"taskRoute\\\":\\\"Route2\\\",\\\"createdTime\\\":\\\"2026-09-30T20:49:19.135307Z\\\",\\\"startedTime\\\":\\\"2026-09-30T20:49:19.135349Z\\\",\\\"endedTime\\\":\\\"2026-09-30T20:49:19.136086Z\\\",\\\"remainingSeconds\\\":3}\", \"200 OK.\"], unsolicited []\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntest native_programmer_lifecycle_replays_against_cmqttd ... FAILED\n\nfailures:\n\nfailures:\n    native_programmer_lifecycle_replays_against_cmqttd\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 67.42s\n\nerror: test failed, to rerun pass `-p cmqttd --test system_cgate_programmer_lifecycle`\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "02db26e259bf08f5c2f7c12c0cf9790fe1dc9d788b39ffdc75abff6c6bce691f"
+    }
+  ]
+}

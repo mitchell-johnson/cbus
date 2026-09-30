@@ -125,21 +125,33 @@ class RustInteropTests(unittest.TestCase):
         self.client.command("PROJECT NEW TEST")
         self.client.command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
         from cbus_toolkit.native import NativeDatabase
-        from cbus_toolkit.programming import Programmer
+        from cbus_toolkit.programming import Programmer, xml_text
+        import xml.etree.ElementTree as ET
         NativeDatabase(self.client).create_unit(
             "//TEST/254", 20, "Lounge", "KEY1", "1.2.67")
         programmer = Programmer(self.client)
         with programmer.load("//TEST/254", "/db//TEST/254/p/20") as session:
+            # Frame an explicitly staged PP value, not scalar Unit metadata
+            # or an invented default when no specification is configured.
+            session.set("UnitName", "PPNAME")
             single = self.client.command(f"PP GET {session.name} UnitName")
             self.assertEqual(single.code, 315)
             self.assertEqual(len(single.lines), 1)
-            self.assertTrue(single.final.startswith("315 UnitName="))
+            self.assertEqual(single.final, "315 UnitName=PPNAME")
             all_values = self.client.command(f"PP GET {session.name} *")
             self.assertEqual(all_values.code, 315)
             self.assertTrue(all_values.final.startswith("315 "))
+            session.save_to_source()
         quick = programmer.quickget("//TEST/254/p/20", "UnitName")
         self.assertEqual(quick.code, 315)
-        self.assertTrue(quick.final.startswith("315 UnitName="))
+        self.assertEqual(quick.final, "315 UnitName=PPNAME")
+        scalar = self.client.command("DBGET //TEST/254/p/20/UnitName")
+        self.assertTrue(any(line.startswith("342-") and line.endswith("UnitName=KEY1")
+                            for line in scalar.lines))
+        document = ET.fromstring(xml_text(self.client.command("DBGETXML //TEST/254/p/20")))
+        self.assertEqual(document.findtext("UnitName"), "KEY1")
+        self.assertEqual({row.get("Name"): row.get("Value") for row in document.findall("PP")}["UnitName"],
+                         "PPNAME")
         self.assertEqual(self.client.command("NOOP").code, 200)
 
     def test_typed_wrapper_cycle(self):
@@ -242,6 +254,9 @@ class RustInteropTests(unittest.TestCase):
         self.assertTrue(any(
             line.startswith("342-") and line.endswith("=KEY1")
             for line in identity.lines))
+        scalar_name = self.client.command("DBGET //TEST/254/p/20/UnitName")
+        self.assertTrue(any(line.startswith("342-") and line.endswith("UnitName=KEY1")
+                            for line in scalar_name.lines))
         # A fresh session loading the database record reads back every
         # staged value. Identity travels struct-side (native `PP GET *`
         # carries no identity rows, as the eDLT snapshotter requires).
@@ -252,16 +267,24 @@ class RustInteropTests(unittest.TestCase):
         with Programmer(self.client).load("//TEST/254", "/db//TEST/254/p/20") as session:
             self.assertEqual((session.unit_type, session.firmware), ("KEY1", "1.2.67"))
             values = session.values()
+            if not UNITSPEC_DIR:
+                with self.assertRaises(CGateError) as absent:
+                    self.client.command(f"PP GET {session.name} UnitName")
+                self.assertEqual(absent.exception.response.code, 460)
         self.assertNotIn("FirmwareVersion", values)
         if UNITSPEC_DIR:
             self.assertTrue(values["UnitName"].startswith("NEWUNIT"))
             self.assertEqual(values["UnitAddress"], "20")
         else:
             # Without a catalogue the mock cannot invent reset defaults.
-            # The database name survives and UnitAddress is introduced
-            # only by the explicit SET/SAVE round-trip below.
-            self.assertEqual(values["UnitName"], "KEY1")
+            # Scalar UnitName stays separate; UnitAddress is introduced
+            # only by the explicit PP SET/SAVE round-trip below.
+            self.assertNotIn("UnitName", values)
             self.assertNotIn("UnitAddress", values)
+            # QUICKGET retains its documented database-field fallback;
+            # this does not introduce UnitName into the session PP namespace.
+            quick = Programmer(self.client).quickget("//TEST/254/p/20", "UnitName")
+            self.assertEqual(quick.final, "315 UnitName=KEY1")
         # Explicit staging round-trips verbatim through SAVE and LOAD.
         with Programmer(self.client).load("//TEST/254", "/db//TEST/254/p/20") as session:
             session.set("UnitAddress", "20")
@@ -269,6 +292,10 @@ class RustInteropTests(unittest.TestCase):
         with Programmer(self.client).load("//TEST/254", "/db//TEST/254/p/20") as session:
             reread = session.values()
         self.assertEqual(reread["UnitAddress"], "20")
+        self.assertEqual(reread.get("UnitName"), values.get("UnitName"))
+        scalar_name = self.client.command("DBGET //TEST/254/p/20/UnitName")
+        self.assertTrue(any(line.startswith("342-") and line.endswith("UnitName=KEY1")
+                            for line in scalar_name.lines))
 
     def test_event_modes_query_isolation_and_filtering(self):
         # Manual 4.5.83 subscription semantics through the production

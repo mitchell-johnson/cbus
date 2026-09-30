@@ -50,8 +50,8 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 602,
-    "modules_without_skip_sites": 314,
+    "test_modules": 607,
+    "modules_without_skip_sites": 319,
     "modules_with_skip_sites": 288,
     "modules_by_category": {
       "cgate_test_host": 133,
@@ -7627,7 +7627,7 @@
       "native": "all",
       "gated_tests": 2,
       "native_runnable_tests": 2,
-      "native_selected_tests": 30,
+      "native_selected_tests": 33,
       "sites": [
         {
           "scope": "tests/test_programming.py::NativeProgrammingTest",

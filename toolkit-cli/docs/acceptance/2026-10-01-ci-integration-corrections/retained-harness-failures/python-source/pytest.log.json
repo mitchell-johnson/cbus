@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "a8d9aac10ab947fd3d98baf171f0928e23c015a8c2751c894b775510a0a975f9",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "toolkit_checkout"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "ERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_packaged_register_accounts_for_all_committed_source_surfaces\n(no match in any of [<Module test_parity_register.py>])\n\nERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_packaged_evidence_artifacts_match_source_checkout\n(no match in any of [<Module test_parity_register.py>])\n\nERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_session_function_pilot_has_scoped_differential_and_physical_decisions\n(no match in any of [<Module test_parity_register.py>])\n\nERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_packaged_invalidation_rules_match_their_reports_and_checkout\n(no match in any of [<Module test_parity_register.py>])\n\nERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_evidence_invalidation_is_recomputed_from_a_source_checkout\n(no match in any of [<Module test_parity_register.py>])\n\nERROR: not found: ${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py::test_packaged_closure_receipt_closes_only_verified_items\n(no match in any of [<Module test_parity_register.py>])\n\n\nno tests ran in 0.16s\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "a8d9aac10ab947fd3d98baf171f0928e23c015a8c2751c894b775510a0a975f9"
+    }
+  ]
+}

@@ -922,6 +922,8 @@ struct DeployWorker {
     /// The connection that issued each ADD_INSTRUCTION, by (programmer
     /// serial, instruction id).
     instruction_clients: HashMap<(u64, u64), ClientState>,
+    /// Only an accepted explicit RETRY authorizes a fresh LOAD before replay.
+    retries: HashSet<u64>,
 }
 
 /// Prefix of a private broadcast carrying one PROGRAMMER instruction reply
@@ -11198,7 +11200,14 @@ impl Service {
                 return err(tag, status::ACCESS_DENIED, "420 Access denied");
             }
             match model.deploy_queue_requeue(tag, words) {
-                Ok(serial) => (serial, model.drain_events()),
+                Ok(serial) => {
+                    self.deploy_worker
+                        .lock()
+                        .unwrap_or_else(|p| p.into_inner())
+                        .retries
+                        .insert(serial);
+                    (serial, model.drain_events())
+                }
                 Err(response) => return response,
             }
         };
@@ -11335,6 +11344,295 @@ impl Service {
         }
     }
 
+    /// Explicit RETRY may rebase only changes wholly restaged by PP_SET before
+    /// the first SAVE. Reload under the original owner's connection, never the
+    /// RETRY issuer; an uncertain SAVE cannot otherwise revive PP provenance.
+    async fn prepare_programmer_retry(
+        self: &Arc<Self>,
+        key: &str,
+        serial: u64,
+    ) -> Option<Response> {
+        let mut prepared = Vec::new();
+        let response = self
+            .prepare_programmer_retry_inner(key, serial, &mut prepared)
+            .await;
+        if response.is_some() {
+            let mut model = self.model.lock().await;
+            for (before, after) in prepared {
+                if let Some(current) = model.sessions.get_mut(&before.name) {
+                    // Never overwrite edits, a replacement session or a SAVE
+                    // that happened after this preparation completed.
+                    if *current == after {
+                        let attempt = current.physical_load_attempt;
+                        *current = before;
+                        current.physical_load_attempt = attempt;
+                        current.physical_load = PpPhysicalLoadState::Invalidated;
+                    }
+                }
+            }
+        }
+        response
+    }
+
+    async fn prepare_programmer_retry_inner(
+        self: &Arc<Self>,
+        key: &str,
+        serial: u64,
+        prepared: &mut Vec<(crate::PpSession, crate::PpSession)>,
+    ) -> Option<Response> {
+        let instructions = {
+            let mut model = self.model.lock().await;
+            model
+                .programmer_by_serial(key, serial)?
+                .instructions
+                .clone()
+        };
+        let mut planned = Vec::new();
+        let mut seen = HashSet::new();
+        for instruction in &instructions {
+            if !matches!(instruction.kind.as_str(), "PP_SET" | "PP_SAVE") {
+                continue;
+            }
+            let Some(name) = instruction.arguments.first() else {
+                continue;
+            };
+            if !seen.insert(name.clone()) {
+                continue;
+            }
+            let owner = self
+                .deploy_worker
+                .lock()
+                .unwrap_or_else(|p| p.into_inner())
+                .instruction_clients
+                .get(&(serial, instruction.id))
+                .cloned();
+            let Some(owner) = owner else {
+                return Some(err(
+                    "retry-load",
+                    408,
+                    "408 RETRY requires original instruction ownership",
+                ));
+            };
+            let before = {
+                let mut model = self.model.lock().await;
+                let Some(session) = model.sessions.get(name).cloned() else {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY session is no longer present",
+                    ));
+                };
+                if session.physical_load != PpPhysicalLoadState::Invalidated {
+                    continue;
+                }
+                if !owner.sessions.contains(name) {
+                    return Some(err(
+                        "retry-load",
+                        420,
+                        "420 RETRY session belongs to another connection",
+                    ));
+                }
+                let worker = self.deploy_worker.lock().unwrap_or_else(|p| p.into_inner());
+                if instructions
+                    .iter()
+                    .filter(|i| {
+                        matches!(i.kind.as_str(), "PP_SET" | "PP_SAVE")
+                            && i.arguments.first() == Some(name)
+                    })
+                    .any(|i| {
+                        !worker
+                            .instruction_clients
+                            .get(&(serial, i.id))
+                            .is_some_and(|origin| {
+                                origin.command_session == owner.command_session
+                                    && origin.sessions.contains(name)
+                            })
+                    })
+                {
+                    return Some(err(
+                        "retry-load",
+                        420,
+                        "420 RETRY requires one original session owner for all PP edits",
+                    ));
+                }
+                drop(worker);
+                let mut restaged = HashSet::new();
+                for candidate in &instructions {
+                    if candidate.arguments.first() != Some(name) {
+                        continue;
+                    }
+                    if candidate.kind == "PP_SAVE" {
+                        break;
+                    }
+                    if candidate.kind == "PP_SET" {
+                        if let Some(parameter) = candidate.arguments.get(1) {
+                            restaged.insert(parameter.clone());
+                        }
+                    } else {
+                        return Some(err(
+                            "retry-load",
+                            408,
+                            "408 RETRY session has unsupported preparation",
+                        ));
+                    }
+                }
+                if !session.dirty.is_subset(&restaged) {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY would discard unstaged parameter changes",
+                    ));
+                }
+                let spec = session
+                    .unit_type
+                    .as_deref()
+                    .and_then(|kind| model.spec_for(kind));
+                let spec = spec.unwrap_or_default();
+                if session
+                    .dirty
+                    .iter()
+                    .any(|name| !spec.iter().any(|p| &p.name == name))
+                {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY requires schema-defined staged parameters",
+                    ));
+                }
+                let mut reconstructed = session.raw_unit.clone();
+                for parameter in spec.iter().filter(|p| session.dirty.contains(&p.name)) {
+                    let Ok(layout) = unitspec::ParameterLayout::for_param(parameter) else {
+                        return Some(err(
+                            "retry-load",
+                            408,
+                            "408 RETRY cannot reconstruct staged memory",
+                        ));
+                    };
+                    let (start, count) = layout.logical_range();
+                    let Some(slice) = reconstructed.get_mut(start..start.saturating_add(count))
+                    else {
+                        return Some(err(
+                            "retry-load",
+                            408,
+                            "408 RETRY has incomplete loaded memory",
+                        ));
+                    };
+                    let Some(mut bytes) = slice.iter().copied().collect::<Option<Vec<_>>>() else {
+                        return Some(err("retry-load", 408, "408 RETRY has unread loaded memory"));
+                    };
+                    let Some(value) = session.params.get(&parameter.name) else {
+                        return Some(err("retry-load", 408, "408 RETRY has missing staged value"));
+                    };
+                    if layout.encode_into(parameter, value, &mut bytes).is_err() {
+                        return Some(err(
+                            "retry-load",
+                            408,
+                            "408 RETRY cannot reconstruct staged value",
+                        ));
+                    }
+                    for (slot, value) in slice.iter_mut().zip(bytes) {
+                        *slot = Some(value);
+                    }
+                }
+                if session
+                    .raw_changed
+                    .iter()
+                    .any(|offset| reconstructed.get(*offset) != session.raw.get(*offset))
+                {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY would discard unstaged raw bits",
+                    ));
+                }
+                session.clone()
+            };
+            let Some(_source) = before
+                .source
+                .as_deref()
+                .filter(|source| !source.contains("/db/"))
+            else {
+                return Some(err(
+                    "retry-load",
+                    408,
+                    "408 RETRY requires a physical loaded source",
+                ));
+            };
+            planned.push((name.clone(), owner, before));
+        }
+        for (name, owner, before) in planned {
+            let source = before.source.as_deref().expect("preflight checked source");
+            let name = &name;
+            let line = internal_command(
+                "retry-load",
+                "PP",
+                "LOAD",
+                &[name.clone(), source.to_string()],
+            );
+            let attempt = {
+                let mut model = self.model.lock().await;
+                let Some(current) = model.sessions.get_mut(name) else {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY session ended before reload",
+                    ));
+                };
+                if *current != before {
+                    return Some(err(
+                        "retry-load",
+                        408,
+                        "408 RETRY session changed before reload",
+                    ));
+                }
+                let attempt = self
+                    .next_physical_pp_attempt
+                    .fetch_add(1, Ordering::Relaxed);
+                current.physical_load_attempt = attempt;
+                attempt
+            };
+            let response = self
+                .pp_load_physical(&owner, &line, "retry-load", &["PP", "LOAD", name, source])
+                .await;
+            let mut model = self.model.lock().await;
+            let Some(current) = model.sessions.get_mut(name) else {
+                return Some(err(
+                    "retry-load",
+                    408,
+                    "408 RETRY session ended during reload",
+                ));
+            };
+            // LOAD advances the attempt once. A concurrent transition must not
+            // have its state replaced by our retained failure evidence.
+            let matches = response.status < 400
+                && current.physical_load_attempt == attempt
+                && current.lock == before.lock
+                && current.source == before.source
+                && current.unit_type == before.unit_type
+                && current.firmware == before.firmware
+                && matches!(current.physical_load, PpPhysicalLoadState::Loaded(_));
+            if !matches {
+                if current.lock == before.lock && current.physical_load_attempt == attempt {
+                    let attempt = current.physical_load_attempt;
+                    *current = before;
+                    current.physical_load_attempt = attempt;
+                    current.physical_load = PpPhysicalLoadState::Invalidated;
+                }
+                return Some(if response.status >= 400 {
+                    response
+                } else {
+                    err(
+                        "retry-load",
+                        408,
+                        "408 RETRY physical identity changed during reload",
+                    )
+                });
+            }
+            prepared.push((before, current.clone()));
+        }
+        None
+    }
+
     /// Run one PROGRAMMER's instructions exactly once through the real
     /// service dispatch. The next instruction is chosen from the live queue
     /// each time, so work added while RUNNING is executed. A failed instruction
@@ -11346,6 +11644,13 @@ impl Service {
         serial: u64,
         queued: bool,
     ) {
+        let retry = self
+            .deploy_worker
+            .lock()
+            .unwrap_or_else(|p| p.into_inner())
+            .retries
+            .remove(&serial);
+        let mut retry_prepared = !retry;
         let mut failure = None;
         loop {
             let instruction = {
@@ -11410,8 +11715,18 @@ impl Service {
                     .cloned();
                 let response = match origin {
                     Some(mut origin) => {
-                        self.execute_programmer_instruction(&mut origin, &key, &instruction)
-                            .await
+                        let preparation = if !retry_prepared {
+                            retry_prepared = true;
+                            self.prepare_programmer_retry(&key, serial).await
+                        } else {
+                            None
+                        };
+                        if let Some(response) = preparation {
+                            response
+                        } else {
+                            self.execute_programmer_instruction(&mut origin, &key, &instruction)
+                                .await
+                        }
                     }
                     None => {
                         self.execute_programmer_instruction(&mut client, &key, &instruction)

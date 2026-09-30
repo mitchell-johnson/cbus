@@ -12,13 +12,13 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "sha256": "306a2d2636839faf4a559ee3efef1b9206b2bf6f68b8b53ea7d54f5c33ff399d",
+    "sha256": "6ad6647caf24ace9498b51fdc40b069ebbe26bbc4cc35be7ed5d8e8569d52090",
     "name": "cgate-mock"
   },
-  "source_revision": "4d44a4ebd2996da01458a78c4e2ce40d48d7a9ce",
+  "source_revision": "1f5788dadf09ec460560768dc08f8da7503c9ced",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "098d4ad74d2ce6a8b396f18aaaed78032d9f8e0ae77003a2c1a00c49d0c7b359",
-    "docs/cmqttd-cgate.md": "da335080d96e5bf742992053e4e5931e170d80b9337a416c50365f605f857f43",
+    "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
@@ -63,10 +63,10 @@
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
     "rust/cbus-cgate/src/service/tests/object_authorization.rs": "91bb06bec7ef2c28cd5d749ac62eba3076377322e76c1659433b67a48d93eab5",
     "rust/cbus-cgate/src/service/tests/secondary_authorization.rs": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd",
-    "rust/cbus-cgate/src/service/tests.rs": "0c9e0df0560d125a05b3bf73998a447a466dd5867de1d28e0429817a127a3c51",
+    "rust/cbus-cgate/src/service/tests.rs": "b6cac56b23ddccbab1b7a48419dd20e0bf4b8479fb1ad7b712467025eb42f187",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
     "rust/cbus-cgate/src/service/unravel_plan.rs": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb",
-    "rust/cbus-cgate/src/service.rs": "1b3515aee209d4345da135b806a75a54d5acccd52010ef7feffa9a94ff376c23",
+    "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
     "rust/cbus-cgate/src/show.rs": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c",
     "rust/cbus-cgate/src/unitspec.rs": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539",
     "rust/cbus-cgate/tests/server.rs": "fa35999aec2cc6969d64e39fb627befdd5f350f667874be1172f107df852801e",
@@ -185,7 +185,7 @@
     "toolkit-cli/src/cbus_toolkit/simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
     "toolkit-cli/tests/test_cgate_dbsetxml_unit_differential.py": "beb9ecd83694cb6386655b3425627a598e1c9aefc2cd306af96f2a1662621e5c",
     "toolkit-cli/tests/test_native_cgate_dbgetxml_framing_vm.py": "4029cc1f2ac0becc4850157738f44f8377eab25674549a08a4223794b2e296cd",
-    "toolkit-cli/tests/test_rust_cgate_interop.py": "e02500c9f5674549e0136bd3b61b28e79821959afc23c8b176720b487730514e"
+    "toolkit-cli/tests/test_rust_cgate_interop.py": "cc19e5f22e7d116774831398bc68197e1ed95d148bcd6aefdc7d7c4beff8d79d"
   },
   "normalization": "generated Network and Interface OIDs only; all XML bytes otherwise exact",
   "xml_wire_boundary": "native and Rust 343/347/344 with LF-only declaration; raw rows retained",
@@ -593,7 +593,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "895c05b0225801e96448d3ec4ae8fe843db4d0529d4152cf9b9a379681a497ef",
+    "raw_file_sha256": "d1a1402cfcb69082d6ff31b7f5ad0d72b85092ad487c601e5fb723416a44ba83",
     "raw_retained_privately": true,
     "field_mapping": [
       {

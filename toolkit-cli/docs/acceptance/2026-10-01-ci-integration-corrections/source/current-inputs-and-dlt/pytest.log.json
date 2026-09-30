@@ -1,0 +1,9 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "ee9f329d901f017c1ba71c8540366739b6107b377b190bd1490182465e57a419",
+  "content_kind": "text",
+  "coordinate_roles_applied": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "..................................... [ 94%]\n..                                                                       [100%]\n39 passed, 35 subtests passed in 75.58s (0:01:15)\n",
+  "coordinate_field_map": []
+}

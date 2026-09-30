@@ -1,0 +1,56 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "bef4e75ed5df867424a8a9319f1e490c1ea7e80ba64b698379a8facbac244d7c",
+  "content_kind": "json",
+  "coordinate_roles_applied": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": {
+    "receipts": [
+      {
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "raw_sha256": "7bd242b1bb7d8ca96d4e6c07aef11a69c1fa4e9ce7b491c7881f08ce8730052c",
+        "public_sha256": "9a2ce5e35a13631e5700daa498e461af55a7fe1cdae826a09e1d6f97ade7a8ea",
+        "source_files": 188,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "raw_sha256": "d1a1402cfcb69082d6ff31b7f5ad0d72b85092ad487c601e5fb723416a44ba83",
+        "public_sha256": "01923cf3c1494979ed90a5dbd1999e85b50db3415a208bc49267a310c31438b3",
+        "source_files": 169,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "raw_sha256": "1cbb5e91d829b64e399c8f0c6c729803ce1e8b20c99a84470c8f0e86cb1035e1",
+        "public_sha256": "8524d871bf2247028b017651c3461dd716fc12f3de4f4a5e38ff5d09ba7ab006",
+        "source_files": 181,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-session-differential-fixed.json",
+        "raw_sha256": "9f7038f2e5a5acd767592344d4d4c80fca8f5498b4c96975c2f406083a686495",
+        "public_sha256": "5db534054f10c1b102d56747eb1b31464a86b1118a4c6cfbe70c84d1c9545a99",
+        "source_files": 161,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "raw_sha256": "317e16e5940e964cc6371251bffe13618c027c796912d08ecc992e4623394595",
+        "public_sha256": "83a46c20ab9faee2deabe725825c1de1cc7764c17768bbbfd3a4f3e239bc5380",
+        "source_files": 183,
+        "root_maintained_helper_bytes_equal": true
+      },
+      {
+        "path": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "raw_sha256": "593450d07d4a7dd720d0fee66023b0cc915810a3d17f8eb841b8d4a80b7031b3",
+        "public_sha256": "d76a16bde80f46d95af61290f142ef45050b8fde29b9c904ee1db3cba08b06b4",
+        "source_files": 163,
+        "root_maintained_helper_bytes_equal": true
+      }
+    ],
+    "all_source_bindings_current": true,
+    "all_public_coordinates_absent": true
+  },
+  "coordinate_field_map": []
+}

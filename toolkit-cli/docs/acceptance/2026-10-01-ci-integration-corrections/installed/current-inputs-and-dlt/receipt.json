@@ -1,0 +1,206 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "4c0741e3b516e9cb0388d713da998d4e926f5effe715910a2670bb0bac577ed6",
+  "content_kind": "json",
+  "coordinate_roles_applied": [
+    "fresh_wheel_acceptance"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": {
+    "exit": 0,
+    "parents": 39,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "identities": [
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_inventory_is_deterministic_and_covers_both_routing_inventories"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_packaged_register_binds_every_scope_row_to_the_inventory"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_contract_inventory_bytes_are_digest_bound_by_the_register"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[LOGIN-resolved-session_auth_command_bypass]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[BROADCAST_EVENT-resolved-required_when_gate_armed]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[CMQTT CAPABILITIES-resolved-not_required_by_programming_gate]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[AIRCON REFRESH-resolved-not_required_by_programming_gate]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[AIRCON SET_WARD_ON-resolved-required_when_gate_armed]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY PAGED_STORE-resolved-required_when_gate_armed]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[DALI SESSION LIST-resolved-not_required_by_programming_gate]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[DALI SESSION NEW-resolved-required_when_gate_armed]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[DALI GATEWAY SAVE_TO_NVM-unresolved-None]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[DO-unresolved-None]"
+      ],
+      [
+        "tests.test_cgate_contract_inventory",
+        "test_programming_gate_contract_tracks_service_policy[SCENE-unresolved-None]"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_packaged_register_accounts_for_all_committed_source_surfaces"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_packaged_evidence_artifacts_match_source_checkout"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+      ],
+      [
+        "tests.test_parity_register.ParityRegisterTests",
+        "test_packaged_closure_receipt_closes_only_verified_items"
+      ],
+      [
+        "tests.test_cgate_session_differential",
+        "test_passed_receipt_rejects_missing_or_stale_source_binding"
+      ],
+      [
+        "tests.test_cgate_session_differential",
+        "test_cmqttd_receipt_is_separate_and_fully_executed"
+      ],
+      [
+        "tests.test_cgate_tagged_session_differential",
+        "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+      ],
+      [
+        "tests.test_cgate_tagged_session_differential",
+        "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+      ],
+      [
+        "tests.test_cgate_tagged_session_differential",
+        "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_complete_typed_editor_saved_project_and_physical_delivery"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_missing_loaded_identity_contract_real_cli_refuses_before_first_set"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_lost_ack_no_replay_and_restart_read_only_recovery"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_stale_physical_identity_or_baseline_refused_before_store[physical-type]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_stale_physical_identity_or_baseline_refused_before_store[physical-firmware]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_stale_physical_identity_or_baseline_refused_before_store[shared-bit]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_database_edit_and_plan_guards_before_physical_io"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_pre_save_journal_failure_or_interruption_never_programs[failure0]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_pre_save_journal_failure_or_interruption_never_programs[failure1]"
+      ],
+      [
+        "tests.test_dlt_physical_programming_interop",
+        "test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey"
+      ],
+      [
+        "tests.test_cmqtt_programming_methods_interop",
+        "test_real_cli_programs_all_ten_methods_through_one_routed_session"
+      ],
+      [
+        "tests.test_cmqtt_programming_methods_interop",
+        "test_completed_save_journal_records_every_phase"
+      ],
+      [
+        "tests.test_cmqtt_programming_methods_interop",
+        "test_incomplete_journal_refuses_repeat_saves_before_io_until_recovered"
+      ]
+    ],
+    "source_bindings_stable": true,
+    "installed_package_matches_source": true,
+    "actual_import_origins": {
+      "cbus_toolkit": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/__init__.py",
+      "cbus_toolkit.cli": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/cli.py",
+      "cbus_toolkit.parity": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/parity.py"
+    },
+    "cli_events": 144,
+    "cli_exit_counts": {
+      "0": 128,
+      "1": 15,
+      "130": 1
+    },
+    "owned_daemons_left": [],
+    "pytest_subtests_not_added_to_parent_counts": true
+  },
+  "coordinate_field_map": [
+    {
+      "pointer": "/actual_import_origins/cbus_toolkit",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "7fa160a173a9827c310f8863222115d8ea5a3c646f85b5096ac77d89f7903533"
+    },
+    {
+      "pointer": "/actual_import_origins/cbus_toolkit.cli",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "c6aa31c68504fa854d93373ef6b1c6fc1530735ff722eeb35c4222a84c73081d"
+    },
+    {
+      "pointer": "/actual_import_origins/cbus_toolkit.parity",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "1c7e496263139e9f45a1655f670ec8b52129c0212d4e285797f417c9f632ca6d"
+    }
+  ]
+}

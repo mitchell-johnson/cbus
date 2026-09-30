@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "87e9358f136fc308806731adec76296dfd37507ab4f7ba8083cfc16c86ac8046",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "repository_checkout"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cbus-vector-check v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-vector-check)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `release` profile [optimized] target(s) in 1m 49s\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "87e9358f136fc308806731adec76296dfd37507ab4f7ba8083cfc16c86ac8046"
+    }
+  ]
+}

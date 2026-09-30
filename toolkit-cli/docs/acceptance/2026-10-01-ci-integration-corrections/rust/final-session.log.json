@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "9221dd5bf5f58faa064ee8bec6d7eedd32da26d2ef15b0610a57c128b3a94f2f",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "cargo_target"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 1 test\ntest tests::pp_session_lifecycle ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 452 filtered out; finished in 0.00s\n\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "9221dd5bf5f58faa064ee8bec6d7eedd32da26d2ef15b0610a57c128b3a94f2f"
+    }
+  ]
+}

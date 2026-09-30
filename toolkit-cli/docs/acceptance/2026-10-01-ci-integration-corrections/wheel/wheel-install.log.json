@@ -1,0 +1,17 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "d1d361723877ead2afb41ccc42e01b110ba57b5f78e1e3a5417e768ea408f575",
+  "content_kind": "text",
+  "coordinate_roles_applied": [
+    "fresh_wheel_acceptance"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": "Using Python 3.13.14 environment at: ${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env\nResolved 1 package in 12ms\nPrepared 1 package in 28ms\nUninstalled 1 package in 14ms\nInstalled 1 package in 8ms\n - cbus-toolkit-cli==0.1.0\n + cbus-toolkit-cli==0.1.0 (from file://${CBUS_WHEEL_ACCEPTANCE_ROOT}/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl)\n",
+  "coordinate_field_map": [
+    {
+      "pointer": "/",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "d1d361723877ead2afb41ccc42e01b110ba57b5f78e1e3a5417e768ea408f575"
+    }
+  ]
+}

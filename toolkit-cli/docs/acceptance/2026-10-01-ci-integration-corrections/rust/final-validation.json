@@ -1,0 +1,308 @@
+{
+  "format": "cbus-ci-correction-evidence-derivative-v1",
+  "raw_sha256": "e4a2422b30f1b3cc5e68db9a4d1148cea546c18de0e09f9c59cdc233ad0a315d",
+  "content_kind": "json",
+  "coordinate_roles_applied": [
+    "repository_checkout",
+    "retry_acceptance"
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git; exit results, protocol payloads and source digests are retained.",
+  "content": {
+    "before": {
+      "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+      "rust/cbus-cgate/src/service/tests.rs": "b6cac56b23ddccbab1b7a48419dd20e0bf4b8479fb1ad7b712467025eb42f187",
+      "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "commands": [
+      {
+        "name": "final-controls",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "programmer_retry_reload",
+          "--",
+          "--nocapture"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-controls.log",
+        "log_sha256": "cb94c446f275adc74b4123bb69b443fe5706988607db5351e4a2bac5409f1dae",
+        "counts": {
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-identity",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "physical_pp_info_identity",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-identity.log",
+        "log_sha256": "352d258c3712e8ba0c227fca48f8e0756ba38fbd6c1fb5e9cf207a1971b8daab",
+        "counts": {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-save",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "physical_pp_save_",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-save.log",
+        "log_sha256": "970210add1a69d21d5fe038d47a0e527a468a10ca3d8490188adc016c53442db",
+        "counts": {
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-routed",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "bridged_pp_load_save_correlates_route_and_keeps_session_on_target_network",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-routed.log",
+        "log_sha256": "600c2334d5f264113c85f8057603459c840c470a821208a2e07511f718f4ee0e",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-session",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "pp_session_lifecycle",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-session.log",
+        "log_sha256": "9221dd5bf5f58faa064ee8bec6d7eedd32da26d2ef15b0610a57c128b3a94f2f",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-system",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cmqttd",
+          "--test",
+          "system_cgate_programmer_lifecycle",
+          "native_programmer_lifecycle_replays_against_cmqttd",
+          "--",
+          "--nocapture"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-system.log",
+        "log_sha256": "71bb1e259eb4d35c4a848e65bb9c1c764a76019f5be0e9a480ba3e1997ede9cb",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      }
+    ],
+    "qualifications": [
+      "Initial red source/binary hashes were not sampled at execution.",
+      "Intermediate first corrected compile failures were visible in tool output, but green-lifecycle.log was reused for the first passing lifecycle run; no retained separate private compiler log. All other retained logs remain untouched."
+    ],
+    "after": {
+      "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+      "rust/cbus-cgate/src/service/tests.rs": "b6cac56b23ddccbab1b7a48419dd20e0bf4b8479fb1ad7b712467025eb42f187",
+      "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "source_unchanged": true,
+    "logs": {
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-identity.log": "352d258c3712e8ba0c227fca48f8e0756ba38fbd6c1fb5e9cf207a1971b8daab",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/retry-controls-final.log": "bc75999c4ab1115ce650c5c146aa9e212a09764196014a051fcd66fa1ce4f598",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/retry-controls-frozen.log": "7297ec44764026a47e34617abdf914e4993df14243a97cd63783e5f19e3ec09e",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/red.log": "02db26e259bf08f5c2f7c12c0cf9790fe1dc9d788b39ffdc75abff6c6bce691f",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-system.log": "71bb1e259eb4d35c4a848e65bb9c1c764a76019f5be0e9a480ba3e1997ede9cb",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-controls.log": "cb94c446f275adc74b4123bb69b443fe5706988607db5351e4a2bac5409f1dae",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/retry-controls-final6.log": "f2e369aadd3327218d47dfe9193bdb9d37dc85e55e81d9ba741a45a498368f1b",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/retry-controls-final4.log": "d4b84aa96eabaeb9bf924ea640e99d94403dc3796e5c13d355e6dba729733084",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-routed.log": "600c2334d5f264113c85f8057603459c840c470a821208a2e07511f718f4ee0e",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/green-lifecycle.log": "e8f0ee238918294c503e29f7c810fb9cdc43538796f1a6067811c81bbfcf81e7",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/retry-controls.log": "e2bd4b03c5c76f9e757614611826a0def8163c56b15158047841f4f5f0fe56a7",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-session.log": "9221dd5bf5f58faa064ee8bec6d7eedd32da26d2ef15b0610a57c128b3a94f2f",
+      "${CBUS_RETRY_ACCEPTANCE_ROOT}/final-save.log": "970210add1a69d21d5fe038d47a0e527a468a10ca3d8490188adc016c53442db"
+    }
+  },
+  "coordinate_field_map": [
+    {
+      "pointer": "/commands/0/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/0/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "762c37c34a96be2adc1781c6053bb43adab3d6315e761aa33a2cd788fbe1f468"
+    },
+    {
+      "pointer": "/commands/1/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/1/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "04b931cba2f1a310abbb8fff718d30190027f8ff342fe7d7e6ef20f65c592a15"
+    },
+    {
+      "pointer": "/commands/2/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/2/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "e454631e98c0979bd3c4d583d0c12146db775cf835c77b7471b8417b17da5174"
+    },
+    {
+      "pointer": "/commands/3/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/3/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "8ba943c679bebec787e3c38d1e58c76b57a85129728bf3042402a0d25c9e9b55"
+    },
+    {
+      "pointer": "/commands/4/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/4/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "84be15e376eaddd9c9f43390571fd549d531038181def584aa5b2eb16034c498"
+    },
+    {
+      "pointer": "/commands/5/cwd",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "pointer": "/commands/5/log",
+      "action": "declared_coordinate_string_template",
+      "raw_string_sha256": "96b66234b94323f90cb7ffa29672d75c0a159185b72a52dca81c070da5d03bb8"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-identity.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "04b931cba2f1a310abbb8fff718d30190027f8ff342fe7d7e6ef20f65c592a15"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1retry-controls-final.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "80dd2ccda9985f282090e7875b22b8b983ba3a26d52183b308bd07fccfe2183f"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1retry-controls-frozen.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "0f87b58f6f08628a808d816424d1259df2243fd7319f52a73ed8a55ec9f4ba91"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1red.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "aae843f0dfd675000dec6adf7220c02892ca4e968cb452f08b3230b62bb8a011"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-system.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "96b66234b94323f90cb7ffa29672d75c0a159185b72a52dca81c070da5d03bb8"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-controls.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "762c37c34a96be2adc1781c6053bb43adab3d6315e761aa33a2cd788fbe1f468"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1retry-controls-final6.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "26fe8e57372fb47cf33c280bef105b13d73682b88b2cb21296dc3dbe58ae7066"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1retry-controls-final4.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "fc683afae3c22ea3fd97584fc37ce376dfebbe336f04b356626984562a2ea835"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-routed.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "8ba943c679bebec787e3c38d1e58c76b57a85129728bf3042402a0d25c9e9b55"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1green-lifecycle.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "1c9bd91c5accfdfda1d4ae33bbd5e9fd14765dcc78fceddd889a0a0bc145fac0"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1retry-controls.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "f98c9cdbbb8d19afb5212f6495183fc9a552886264ce3895b71e5b061ed0f02b"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-session.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "84be15e376eaddd9c9f43390571fd549d531038181def584aa5b2eb16034c498"
+    },
+    {
+      "pointer": "/logs/${CBUS_RETRY_ACCEPTANCE_ROOT}~1final-save.log",
+      "action": "coordinate_key_template",
+      "raw_string_sha256": "e454631e98c0979bd3c4d583d0c12146db775cf835c77b7471b8417b17da5174"
+    }
+  ]
+}
