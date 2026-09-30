@@ -280,9 +280,10 @@ def inspect(exe: Path, map_path: Path) -> dict:
         "routine_sha256": digests,
         "installation_names": {str(k): v for k, v in sorted(names.items())},
         "checks": {name: True for name in sorted(checks)},
-        "limit": ("Static source evidence only. The GetNewGroup search order, the relay default group "
-                  "tag, the [+0x1e0] and group 'new' flags, and generic AfterLoad/BeforeSave "
-                  "normalisation of untouched fields are not reproduced; the Toolkit was not executed."),
+        "limit": ("Static table evidence only. Template event flags, the relay-load skip, ordinary-load "
+                  "default group tags and the allocator are covered by thermostat_group_allocation_static.py. "
+                  "Manager-order-dependent allocation and existing-prefix rename/reuse remain unreplayed; "
+                  "this receipt does not cover generic untouched-field normalization or executed Toolkit GUI."),
     }
 
 

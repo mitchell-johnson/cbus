@@ -6,7 +6,7 @@ Expected values below are derived by hand from the recovered routines
 import unittest
 
 from cbus_toolkit.thermostat_post_load import (ThermostatPostLoadError, damper_modulation_save,
-                                               form_save_fans, replay_post_load, virtual_plant_type)
+                                               form_save_fans, form_save_scalars, replay_post_load, virtual_plant_type)
 
 OUTPUTS = ('CoolActivation', 'CoolStage1', 'CoolStage2', 'CoolStage3', 'CoolFanLow', 'CoolFanMedium',
            'CoolFanHigh', 'HeatActivation', 'HeatStage1', 'HeatStage2', 'HeatStage3', 'HeatFanLow',
@@ -28,6 +28,19 @@ def values(**changes):
 
 
 class PostLoadReplayTests(unittest.TestCase):
+    def test_scalar_brightness_uses_original_two_integer_divisions(self):
+        # Literal source-derived vectors in thermostat-settings-save-static.json.
+        inputs = {'BeepEnable': 1, 'VariableFanCoilEnable': 0, 'TemperatureUnits': 0,
+                  'ControlledZones': 1, 'InternalPlantType': 3, 'TimerEnable': 1}
+        fields = ('DisplayBacklightIdleBrightness', 'DisplayBacklightActiveBrightness',
+                  'KeyBacklightIdleBrightness', 'KeyBacklightActiveBrightness')
+        for raw, expected in ((0, 0), (1, 2), (2, 2), (3, 2), (4, 5), (5, 5), (6, 7),
+                              (63, 63), (64, 63), (127, 127), (128, 127), (129, 130),
+                              (252, 252), (253, 255), (254, 255), (255, 255)):
+            with self.subTest(raw=raw):
+                saved = form_save_scalars(inputs | dict.fromkeys(fields, raw), 'basic')
+                self.assertEqual({name: saved[name] for name in fields}, dict.fromkeys(fields, expected))
+
     def test_basic_reverse_cycle_assigns_cool_activation_and_creates_prefixed_groups(self):
         loaded = values(CoolStage1Output=1, CoolFanLowOutput=3, HeatActivationOutput=4, HeatStage1Output=1,
                         HeatFanLowOutput=3, InternalRelay1GroupNumber=1, InternalRelay3GroupNumber=3,
@@ -102,12 +115,24 @@ class PostLoadReplayTests(unittest.TestCase):
             replay_post_load(loaded, 'programmable', 1, {2: 'Lounge'})
         with self.assertRaisesRegex(ThermostatPostLoadError, 'CG01'):
             replay_post_load(loaded, 'programmable', 1, {7: '[CG01] Old'})
-        with self.assertRaisesRegex(ThermostatPostLoadError, 'Relay'):
-            replay_post_load(dict(loaded, InternalRelay2GroupNumber=8), 'programmable', 1, {})
         # AfterLoad keeps an unprefixed group at a loaded address, so the
         # later reassignment would need the unreplayed GetNewGroup search.
         with self.assertRaisesRegex(ThermostatPostLoadError, 'GetNewGroup'):
             replay_post_load(loaded, 'programmable', 1, {3: 'Fan'})
+
+    def test_template_afterload_ignores_all_stale_relay_addresses(self):
+        # The original template event sets the +0x1e0 flag; AfterLoad skips
+        # the relay getters, then the plant update assigns all five relays.
+        loaded = values(CoolStage1Output=1, CoolFanLowOutput=3, HeatActivationOutput=4)
+        for family in ('programmable', 'basic'):
+            for stale in (dict.fromkeys(range(1, 6), 200), dict(enumerate((0, 251, 252, 253, 254), 1))):
+                with self.subTest(family=family, stale=stale):
+                    changed = dict(loaded, **{f'InternalRelay{n}GroupNumber': a for n, a in stale.items()})
+                    replay = replay_post_load(changed, family, 1, {})
+                    self.assertEqual(replay, replay_post_load(loaded, family, 1, {}))
+                    self.assertEqual([replay.expected[f'InternalRelay{n}GroupNumber'] for n in range(1, 6)],
+                                     [1, 2, 3, 4, 255])
+                    self.assertTrue(set(stale.values()).isdisjoint(op.address for op in replay.group_operations))
 
     def test_form_save_fan_rules(self):
         # Heating-only plant without vent mode on a master: speed control and speeds are zeroed.

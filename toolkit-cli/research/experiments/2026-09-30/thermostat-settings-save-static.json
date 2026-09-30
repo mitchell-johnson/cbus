@@ -1,0 +1,245 @@
+{
+  "brightness_formula_for_bytes": "(((raw + 2) * 100) // 255 * 255) // 100",
+  "brightness_parameters": [
+    "DisplayBacklightIdleBrightness",
+    "DisplayBacklightActiveBrightness",
+    "KeyBacklightIdleBrightness",
+    "KeyBacklightActiveBrightness"
+  ],
+  "brightness_vectors": [
+    {
+      "raw": 0,
+      "saved": 0
+    },
+    {
+      "raw": 1,
+      "saved": 2
+    },
+    {
+      "raw": 2,
+      "saved": 2
+    },
+    {
+      "raw": 3,
+      "saved": 2
+    },
+    {
+      "raw": 4,
+      "saved": 5
+    },
+    {
+      "raw": 5,
+      "saved": 5
+    },
+    {
+      "raw": 6,
+      "saved": 7
+    },
+    {
+      "raw": 63,
+      "saved": 63
+    },
+    {
+      "raw": 64,
+      "saved": 63
+    },
+    {
+      "raw": 127,
+      "saved": 127
+    },
+    {
+      "raw": 128,
+      "saved": 127
+    },
+    {
+      "raw": 129,
+      "saved": 130
+    },
+    {
+      "raw": 252,
+      "saved": 252
+    },
+    {
+      "raw": 253,
+      "saved": 255
+    },
+    {
+      "raw": 254,
+      "saved": 255
+    },
+    {
+      "raw": 255,
+      "saved": 255
+    }
+  ],
+  "checks": {
+    "basic_beep_boolean": true,
+    "basic_brightness_roundtrip": true,
+    "basic_inherits_common_lifecycle": true,
+    "basic_temperature_units_clamp": true,
+    "basic_timer_clamp": true,
+    "brightness_literal_vectors": true,
+    "evap_program_clamp": true,
+    "fan_delay_load_divide_six_round": true,
+    "fan_delay_save_times_six": true,
+    "fan_single_pass_0x12": true,
+    "fan_single_pass_0x14": true,
+    "level_to_percent_integer_arithmetic": true,
+    "nonevap_program_clamp": true,
+    "percent_to_level_integer_arithmetic": true,
+    "programmable_beep_boolean": true,
+    "programmable_brightness_roundtrip": true,
+    "programmable_inherits_common_lifecycle": true,
+    "programmable_temperature_units_clamp": true,
+    "relay_drive_always_zero": true,
+    "routine_hashes": true,
+    "scalar_model_literal_vectors": true,
+    "send_interval_above_six_becomes_two": true,
+    "slave_internal_plant_and_zones_zero": true,
+    "time_units_clamp": true,
+    "variable_fan_coil_boolean": true,
+    "virtual_plant_eleven_saves_as_eight": true
+  },
+  "fan_single_pass_vectors": [
+    {
+      "first_save_expected": {
+        "CoolingPlantFanSpeeds": 1,
+        "HeatingPlantFanSpeeds": 0
+      },
+      "input": {
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanEnable": 1,
+        "CoolingPlantFanOffDelay": 0,
+        "CoolingPlantFanOnDelay": 0,
+        "CoolingPlantFanSpeedControlEnable": 1,
+        "CoolingPlantFanSpeeds": 0,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanEnable": 1,
+        "HeatingPlantFanOffDelay": 0,
+        "HeatingPlantFanOnDelay": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 20,
+        "VentPlantType": 0
+      },
+      "second_save_expected": {
+        "CoolingPlantFanSpeeds": 1,
+        "HeatingPlantFanSpeeds": 1
+      }
+    },
+    {
+      "first_save_expected": {
+        "CoolingPlantFanSpeeds": 0,
+        "HeatingPlantFanSpeeds": 1
+      },
+      "input": {
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanEnable": 1,
+        "CoolingPlantFanOffDelay": 0,
+        "CoolingPlantFanOnDelay": 0,
+        "CoolingPlantFanSpeedControlEnable": 1,
+        "CoolingPlantFanSpeeds": 0,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanEnable": 1,
+        "HeatingPlantFanOffDelay": 0,
+        "HeatingPlantFanOnDelay": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 18,
+        "VentPlantType": 0
+      },
+      "second_save_expected": {
+        "CoolingPlantFanSpeeds": 1,
+        "HeatingPlantFanSpeeds": 1
+      }
+    }
+  ],
+  "format": "cbus-thermostat-settings-save-static-v1",
+  "limits": [
+    "Static source evidence and independent scalar vectors; the original object model/form was not run.",
+    "Fan save is deliberately one pass: copying a zero source speed can require another later form save.",
+    "TemperatureOffset/TemperatureSendDifferential and other temperature fields consume the global Toolkit TemperatureUnit preference, not the thermostat TemperatureUnits PP setting.",
+    "No complete event-driven cross-control lifecycle, project-group creation, remote schedule, guard or remaining non-scalar normalization is established by this receipt."
+  ],
+  "model_module_sha256": "40935d1a09a01992d40c3d21165691588954bac552ea603309c221acdd3ea302",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_devices_accessed": false,
+  "routines": {
+    "CIS_CBus.LevelToPercent": {
+      "address": "0x7f2ac8",
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+    },
+    "CIS_CBus.PercentToLevel": {
+      "address": "0x7f2aa0",
+      "sha256": "0559d6a4df3728a3ffe7a30d05fcfd41db35239df09d1aeef951295c694d0795"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x1297738",
+      "sha256": "e9e5b47cc0d3ccda66271e5d888ffbffc0e213c94defa99a1718a813a7cea96e"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1297c98",
+      "sha256": "a5faac0e1ac58855344ea8bbff3f3a43846537028afbc6a0a747cb1c400d4d27"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1299b98",
+      "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x129471c",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.IntVirtualRestrictedPlantTypeToUnitPlantType": {
+      "address": "0x128df70",
+      "sha256": "9a742c38d2a7e04b84a44fab7bcf09d0512916295af28a465b204c0306a5abf8"
+    },
+    "CIS_TThermostat.TThermostat.CoolingFanControlEnabled": {
+      "address": "0xfea844",
+      "sha256": "89f4815316889fb531e9a15559fab027333e6ce505859334b58ade6edc269c62"
+    },
+    "CIS_TThermostat.TThermostat.HeatingFanControlEnabled": {
+      "address": "0xfeb358",
+      "sha256": "11a56b7dbea131e97b4c5234ec67c744f2ec5a49ddffc0b4e85133f1bb75f38a"
+    },
+    "CIS_TThermostatCommon.IntegerToZones": {
+      "address": "0xca56d4",
+      "sha256": "a2978f441b20a2a672a2dca0315e068fc3f8e9b80343df3be5570703b5026b03"
+    },
+    "CIS_TThermostatCommon.ZonesToInteger": {
+      "address": "0xca573c",
+      "sha256": "aed1d5cc9f6014cc8c10b0daf016ec38642a5fe7e68a2da4169f7c93eaca05d4"
+    }
+  },
+  "rules": {
+    "basic": {
+      "TimerEnable": "int(raw > 0)"
+    },
+    "both_families": {
+      "BeepEnable": "int(raw > 0)",
+      "EnableHVACRelayDrive": 0,
+      "TemperatureUnits_above_1": 0,
+      "VariableFanCoilEnable": "int(raw > 0)",
+      "master_InternalPlantType_11": 8,
+      "slave_InternalPlantType": 0,
+      "slave_InternalPlantZones": 0
+    },
+    "programmable": {
+      "EvapProgramEnabled_above_1": 0,
+      "NonEvapProgramEnabled_above_1": 1,
+      "SendInterval_above_6": 2,
+      "TimeUnits_above_1": 0
+    }
+  }
+}

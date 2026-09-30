@@ -512,6 +512,37 @@ def damper_modulation_save(value, plant):
     return DAMPER_MODULATION_FACTOR.get(plant, 1) * enabled
 
 
+BACKLIGHT_FIELDS = ('DisplayBacklightIdleBrightness', 'DisplayBacklightActiveBrightness',
+                    'KeyBacklightIdleBrightness', 'KeyBacklightActiveBrightness')
+
+
+def form_save_scalars(values, family):
+    """Recovered context-independent scalar AfterLoad/BeforeSave round trip.
+
+    Temperature offsets/differentials require the original process's separate
+    temperature preference and are deliberately outside this projection.
+    This is one save, not repeated normalization to a fixed point.
+    """
+    result = {name: (((values[name] + 2) * 100) // 255 * 255) // 100
+              for name in BACKLIGHT_FIELDS}
+    result.update({name: int(values[name] > 0) for name in ('BeepEnable', 'VariableFanCoilEnable')})
+    result['TemperatureUnits'] = values['TemperatureUnits'] if values['TemperatureUnits'] <= 1 else 0
+    result['EnableHVACRelayDrive'] = 0
+    if values['ControlledZones'] == 0:
+        result.update(InternalPlantType=0, InternalPlantZones=0)
+    elif values['InternalPlantType'] == 11:
+        result['InternalPlantType'] = 8
+    if family == 'programmable':
+        for name, maximum, fallback in (('TimeUnits', 1, 0), ('SendInterval', 6, 2),
+                                        ('EvapProgramEnabled', 1, 0), ('NonEvapProgramEnabled', 1, 1)):
+            result[name] = values[name] if values[name] <= maximum else fallback
+    elif family == 'basic':
+        result['TimerEnable'] = int(values['TimerEnable'] > 0)
+    else:
+        raise ThermostatPostLoadError('Unknown thermostat family')
+    return result
+
+
 @dataclass(frozen=True)
 class GroupOperation:
     action: str  # 'create' or 'rename'
@@ -638,15 +669,11 @@ def replay_post_load(values: Mapping[str, int], family: str, installation: int,
             model[attribute] = address
         else:
             model[attribute] = create_and_rename(DAMPER_NAMES[attribute], address)
-    for attribute in RELAYS:
-        address = values[pp_name(attribute)]
-        if address == 255:
-            model[attribute] = state.unused()
-        elif address in state.tags:
-            model[attribute] = address
-        else:
-            raise ThermostatPostLoadError('Relay group ' + str(address) + ' would be created with an'
-                                          ' unrecovered application default tag')
+    # HandleBeforeLoadTemplate sets the thermostat's +0x1e0 flag before
+    # AfterLoadProgrammingInformation. Its relay block is skipped while that
+    # flag is set. UpdateParametersForPlantType below assigns all five relay
+    # references in every branch before any of them is saved. In particular,
+    # stale PP relay addresses must not create groups or block this replay.
 
     def used_by_other(address, excluded):
         return any(model.get(a) == address for a in USAGE_CHECKED if a != excluded)

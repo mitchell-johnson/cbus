@@ -21,8 +21,8 @@
     "8": "Conventional Single Stage Heat/Cool USA System",
     "9": "Conventional 2 Stage Heat/Cool USA System"
   },
-  "limit": "Static source evidence only. The GetNewGroup search order, the relay default group tag, the [+0x1e0] and group 'new' flags, and generic AfterLoad/BeforeSave normalisation of untouched fields are not reproduced; the Toolkit was not executed.",
-  "model_module_sha256": "0bebcc5ef3b6258938338a7c86faf72ee9a63aca48eb629a620714d4822778ce",
+  "limit": "Static table evidence only. Template event flags, the relay-load skip, ordinary-load default group tags and the allocator are covered by thermostat_group_allocation_static.py. Manager-order-dependent allocation and existing-prefix rename/reuse remain unreplayed; this receipt does not cover generic untouched-field normalization or executed Toolkit GUI.",
+  "model_module_sha256": "40935d1a09a01992d40c3d21165691588954bac552ea603309c221acdd3ea302",
   "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
   "original_executed": false,
   "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",

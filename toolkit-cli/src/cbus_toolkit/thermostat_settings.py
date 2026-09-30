@@ -4,21 +4,24 @@ Edits one closed database PC_TSA/PC_TSA5 (THERMOSTATA) or PC_TSB/PC_TSB5
 (THERMOSTATB) unit at PP level.  Each value is checked against the caller's
 decoded unit specification.  Edits are also checked against the recovered
 Toolkit 1.18 form save (``thermostat_post_load``): a value that the original
-BeforeSaveProgrammingInformation would rewrite on its next save is refused,
-and the dependent fields the form save would rewrite are reported.  Apply
+recovered BeforeSaveProgrammingInformation projection would rewrite is refused,
+and the dependent fields the form save would rewrite are included.  Apply
 makes a backup, one PP save and a reload readback.  No physical thermostat
-is programmed.  Dialog enable/visibility rules are not reproduced.
+is programmed.  Individual dialog-rule diagnostics are source-backed; complete
+dialog enable/visibility and event ordering remain unreproduced.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from typing import Mapping
 from uuid import uuid4
 
 from .addressing import NetworkAddressing
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer
-from .thermostat_post_load import damper_modulation_save, form_save_fans, virtual_plant_type
+from .thermostat_post_load import damper_modulation_save, form_save_fans, form_save_scalars, virtual_plant_type
+from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
 from .unitspec import UnitSpecError, UnitSpecStore
@@ -53,9 +56,7 @@ def form_save(values: Mapping[str, int], family: str) -> dict[str, int]:
     result = form_save_fans(values)
     result['DamperModulationEnable'] = damper_modulation_save(values['DamperModulationEnable'],
                                                               virtual_plant_type(values))
-    if family == 'programmable':
-        result['EvapProgramEnabled'] = 0 if values['EvapProgramEnabled'] > 1 else values['EvapProgramEnabled']
-        result['NonEvapProgramEnabled'] = 1 if values['NonEvapProgramEnabled'] > 1 else values['NonEvapProgramEnabled']
+    result.update(form_save_scalars(values, family))
     return result
 
 
@@ -66,19 +67,25 @@ class SettingsPlan:
     before: tuple[tuple[str, str], ...]
     edits: tuple[tuple[str, int], ...]
     dependent: tuple[tuple[str, int, int], ...]
+    dialog_rules_json: str
 
     @property
     def expected(self):
-        return dict(self.edits)
+        return dict(self.edits) | {name: saved for name, _loaded, saved in self.dependent}
 
     def as_dict(self):
         before = dict(self.before)
         return {'family': self.family, 'unit_type': self.unit_type,
                 'changed_parameters': [{'name': n, 'before': _native_integer(before[n], n), 'after': v}
-                                       for n, v in self.edits if _native_integer(before[n], n) != v],
+                                       for n, v in sorted(self.expected.items())
+                                       if _native_integer(before[n], n) != v],
                 'requested': dict(self.edits),
+                'expected': self.expected,
                 'dependent_form_save_changes': [{'name': n, 'after_edit': a, 'form_save': b}
                                                 for n, a, b in self.dependent],
+                'form_save_replay': 'recovered-context-independent-fields-one-save',
+                'complete_form_lifecycle_reproduced': False,
+                'dialog_rule_subset': json.loads(self.dialog_rules_json),
                 'dialog_enable_rules_reproduced': False, 'physical_device_programmed': False}
 
 
@@ -97,13 +104,16 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         if name not in allowed:
             raise ThermostatTemplateError('Setting is not admitted for ' + unit_type + ': ' + str(name))
         parameter = spec.parameters.get(name)
-        if parameter is None or parameter.type != 'int' or parameter.array_size != 1:
+        if (parameter is None or parameter.type != 'int' or parameter.array_size != 1
+                or parameter.bit_size != 8):
             raise ThermostatTemplateError('Unit specification lacks one-byte setting: ' + name)
         if type(value) is bool or not isinstance(value, (int, str)):
             raise ThermostatTemplateError('Setting value must be an integer: ' + name)
         checked = parameter.validate_value(str(value) if isinstance(value, int) else value)
         if not checked['valid']:
             raise ThermostatTemplateError(name + ': ' + '; '.join(checked['errors']))
+        if not 0 <= checked['parsed'] <= 255:
+            raise ThermostatTemplateError('Setting value must be one unsigned byte: ' + name)
         parsed[name] = checked['parsed']
     for name, (low, high) in AFTERLOAD_FLAGS.items():
         if name in parsed and not low <= parsed[name] <= high:
@@ -115,17 +125,39 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         except ThermostatTemplateError:
             continue
     after = dict(current, **parsed)
+    missing = sorted(set(parsed) - set(current))
+    if missing:
+        raise ThermostatTemplateError('Unit snapshot lacks one-byte setting: ' + ', '.join(missing))
     try:
         saved = form_save(after, family)
     except KeyError as error:
         raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + str(error)) from error
+    missing = sorted(set(saved) - set(current))
+    if missing:
+        raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + ', '.join(missing))
     rewritten = sorted(name for name in parsed if name in saved and saved[name] != parsed[name])
     if rewritten:
         raise ThermostatTemplateError('The original form save would rewrite ' + ', '.join(
             f'{n}={saved[n]}' for n in rewritten) + '; choose values that survive it')
     dependent = tuple((n, after[n], v) for n, v in sorted(saved.items()) if after.get(n) != v)
+    # The form owns these writes even when the caller did not edit them.  Check
+    # every resulting value against the same specification before any staging.
+    for name, _loaded, value in dependent:
+        parameter = spec.parameters.get(name)
+        if (parameter is None or parameter.type != 'int' or parameter.array_size != 1
+                or parameter.bit_size != 8):
+            raise ThermostatTemplateError('Unit specification lacks one-byte form-save setting: ' + name)
+        checked = parameter.validate_value(str(value))
+        if not checked['valid']:
+            raise ThermostatTemplateError(name + ' form save: ' + '; '.join(checked['errors']))
+    try:
+        dialog = {'available': True, **recovered_dialog_rules(after, family)}
+    except (KeyError, ValueError) as error:
+        # This diagnostic is a separate collection of individual control rules,
+        # not the admission contract for raw PP edits or a replayed event loop.
+        dialog = {'available': False, 'reason': str(error), 'dialog_enable_rules_reproduced': False}
     return SettingsPlan(family, unit_type, tuple(sorted(snapshot.items())), tuple(sorted(parsed.items())),
-                        dependent)
+                        dependent, json.dumps(dialog, sort_keys=True))
 
 
 @dataclass(frozen=True)
@@ -242,12 +274,17 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                 self.last_evidence['project_operation_attempted'] = action
                 self._operation(action, plan.project)
             self._operation('use', plan.project)
+            if self._networks(plan.project) != plan.networks:
+                raise ThermostatTemplateError('Project networks changed after save/reload')
             address = int(plan.path.rsplit('/', 1)[1])
             text, identity, values = self._read(plan.path, plan.network, address)
             comparison = self._changed(plan, values)
-            before_identity, before_shape, _stored = _unit_record(plan.unit_xml, address)
-            _identity, after_shape, _stored = _unit_record(text, address)
-            preserved = identity == before_identity and after_shape == before_shape
+            before_identity, before_shape, before_stored = _unit_record(plan.unit_xml, address)
+            _identity, after_shape, after_stored = _unit_record(text, address)
+            expected = plan.settings.expected
+            preserved = (identity == before_identity and after_shape == before_shape
+                         and {n: v for n, v in before_stored.items() if n not in expected}
+                         == {n: v for n, v in after_stored.items() if n not in expected})
             self.last_evidence.update(reloaded_comparison=comparison, unit_record_preserved=preserved,
                                       unrelated_parameters_preserved=not comparison['unrelated_changes'])
             if comparison['setting_mismatches'] or comparison['unrelated_changes'] or not preserved:

@@ -1,0 +1,385 @@
+{
+  "acceptance": {
+    "native_backend": "C-Gate 3.4.0.2001",
+    "original_toolkit_form_executed": false,
+    "source_based_expected_values": true,
+    "tests_passed": 4,
+    "tests_skipped": 0
+  },
+  "cases": [
+    {
+      "dependent": [
+        {
+          "after_edit": 200,
+          "form_save": 201,
+          "name": "DisplayBacklightActiveBrightness"
+        },
+        {
+          "after_edit": 200,
+          "form_save": 201,
+          "name": "KeyBacklightActiveBrightness"
+        }
+      ],
+      "edits": {
+        "BacklightDimTime": 0,
+        "ControlledZones": 7,
+        "CoolingPlantFanOnDelay": 12,
+        "CoolingPlantInstalledZones": 0,
+        "CoolingPlantStages": 3,
+        "CoolingPlantType": 9,
+        "EvapProgramEnabled": 1,
+        "HeatCoolIntegralFactor": 150,
+        "HeatingPlantInstalledZones": 3,
+        "HeatingPlantStages": 2,
+        "HeatingPlantType": 1,
+        "InstalledZones": 31,
+        "KeyBacklightIdleBrightness": 255,
+        "MeasuredZones": 1,
+        "NonEvapProgramEnabled": 1,
+        "PlantCycleTime": 20,
+        "ScheduleControlledZones": 3,
+        "SendInterval": 6,
+        "TemperatureOffset": 254,
+        "TimeUnits": 1,
+        "UIAllocatedZones": 5
+      },
+      "state": "verified_saved",
+      "unit_type": "PC_TSA"
+    },
+    {
+      "dependent": [
+        {
+          "after_edit": 200,
+          "form_save": 201,
+          "name": "DisplayBacklightActiveBrightness"
+        },
+        {
+          "after_edit": 200,
+          "form_save": 201,
+          "name": "KeyBacklightActiveBrightness"
+        }
+      ],
+      "edits": {
+        "BacklightDimTime": 0,
+        "ControlledZones": 7,
+        "CoolingPlantFanOnDelay": 12,
+        "CoolingPlantInstalledZones": 0,
+        "CoolingPlantStages": 3,
+        "CoolingPlantType": 9,
+        "HeatCoolIntegralFactor": 150,
+        "HeatingPlantInstalledZones": 3,
+        "HeatingPlantStages": 2,
+        "HeatingPlantType": 1,
+        "InstalledZones": 31,
+        "KeyBacklightIdleBrightness": 255,
+        "MeasuredZones": 1,
+        "PlantCycleTime": 20,
+        "TemperatureOffset": 254,
+        "TimerEnable": 0,
+        "UIAllocatedZones": 5
+      },
+      "state": "verified_saved",
+      "unit_type": "PC_TSB"
+    },
+    {
+      "first_expected": {
+        "BeepEnable": 1,
+        "CoolingPlantFanOffDelay": 24,
+        "CoolingPlantFanSpeeds": 1,
+        "DamperModulationEnable": 2,
+        "DisplayBacklightActiveBrightness": 127,
+        "DisplayBacklightIdleBrightness": 2,
+        "EnableHVACRelayDrive": 0,
+        "EvapProgramEnabled": 0,
+        "HeatingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "NonEvapProgramEnabled": 1,
+        "PlantCycleTime": 15,
+        "SendInterval": 2,
+        "TemperatureUnits": 0,
+        "TimeUnits": 0,
+        "VariableFanCoilEnable": 1
+      },
+      "first_state": "verified_saved",
+      "second_expected": {
+        "HeatingPlantFanSpeeds": 1,
+        "PlantCycleTime": 15
+      },
+      "seed": {
+        "BeepEnable": 3,
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanOffDelay": 21,
+        "CoolingPlantFanSpeedControlEnable": 0,
+        "CoolingPlantFanSpeeds": 0,
+        "DamperModulationEnable": 1,
+        "DisplayBacklightActiveBrightness": 128,
+        "DisplayBacklightIdleBrightness": 1,
+        "EnableHVACRelayDrive": 1,
+        "EvapProgramEnabled": 3,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanOnDelay": 15,
+        "HeatingPlantFanSpeedControlEnable": 0,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 20,
+        "InternalPlantType": 2,
+        "KeyBacklightActiveBrightness": 0,
+        "KeyBacklightIdleBrightness": 254,
+        "NonEvapProgramEnabled": 3,
+        "SendInterval": 7,
+        "TemperatureUnits": 3,
+        "TimeUnits": 3,
+        "VariableFanCoilEnable": 3,
+        "VentPlantType": 0
+      },
+      "third_state": "already_applied",
+      "unit_type": "PC_TSA",
+      "unrelated_parameters_preserved": true
+    },
+    {
+      "first_expected": {
+        "BeepEnable": 1,
+        "CoolingPlantFanOffDelay": 24,
+        "CoolingPlantFanSpeeds": 1,
+        "DamperModulationEnable": 2,
+        "DisplayBacklightActiveBrightness": 127,
+        "DisplayBacklightIdleBrightness": 2,
+        "EnableHVACRelayDrive": 0,
+        "EvapProgramEnabled": 0,
+        "HeatingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "NonEvapProgramEnabled": 1,
+        "PlantCycleTime": 15,
+        "SendInterval": 2,
+        "TemperatureUnits": 0,
+        "TimeUnits": 0,
+        "VariableFanCoilEnable": 1
+      },
+      "first_state": "verified_saved",
+      "second_expected": {
+        "HeatingPlantFanSpeeds": 1,
+        "PlantCycleTime": 15
+      },
+      "seed": {
+        "BeepEnable": 3,
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanOffDelay": 21,
+        "CoolingPlantFanSpeedControlEnable": 0,
+        "CoolingPlantFanSpeeds": 0,
+        "DamperModulationEnable": 1,
+        "DisplayBacklightActiveBrightness": 128,
+        "DisplayBacklightIdleBrightness": 1,
+        "EnableHVACRelayDrive": 1,
+        "EvapProgramEnabled": 3,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanOnDelay": 15,
+        "HeatingPlantFanSpeedControlEnable": 0,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 20,
+        "InternalPlantType": 2,
+        "KeyBacklightActiveBrightness": 0,
+        "KeyBacklightIdleBrightness": 254,
+        "NonEvapProgramEnabled": 3,
+        "SendInterval": 7,
+        "TemperatureUnits": 3,
+        "TimeUnits": 3,
+        "VariableFanCoilEnable": 3,
+        "VentPlantType": 0
+      },
+      "third_state": "already_applied",
+      "unit_type": "PC_TSA5",
+      "unrelated_parameters_preserved": true
+    },
+    {
+      "first_expected": {
+        "BeepEnable": 1,
+        "CoolingPlantFanOffDelay": 24,
+        "CoolingPlantFanSpeeds": 1,
+        "DamperModulationEnable": 2,
+        "DisplayBacklightActiveBrightness": 127,
+        "DisplayBacklightIdleBrightness": 2,
+        "EnableHVACRelayDrive": 0,
+        "HeatingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "PlantCycleTime": 15,
+        "TemperatureUnits": 0,
+        "TimerEnable": 1,
+        "VariableFanCoilEnable": 1
+      },
+      "first_state": "verified_saved",
+      "second_expected": {
+        "HeatingPlantFanSpeeds": 1,
+        "PlantCycleTime": 15
+      },
+      "seed": {
+        "BeepEnable": 3,
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanOffDelay": 21,
+        "CoolingPlantFanSpeedControlEnable": 0,
+        "CoolingPlantFanSpeeds": 0,
+        "DamperModulationEnable": 1,
+        "DisplayBacklightActiveBrightness": 128,
+        "DisplayBacklightIdleBrightness": 1,
+        "EnableHVACRelayDrive": 1,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanOnDelay": 15,
+        "HeatingPlantFanSpeedControlEnable": 0,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 20,
+        "InternalPlantType": 2,
+        "KeyBacklightActiveBrightness": 0,
+        "KeyBacklightIdleBrightness": 254,
+        "TemperatureUnits": 3,
+        "TimerEnable": 3,
+        "VariableFanCoilEnable": 3,
+        "VentPlantType": 0
+      },
+      "third_state": "already_applied",
+      "unit_type": "PC_TSB",
+      "unrelated_parameters_preserved": true
+    },
+    {
+      "first_expected": {
+        "BeepEnable": 1,
+        "CoolingPlantFanOffDelay": 24,
+        "CoolingPlantFanSpeeds": 1,
+        "DamperModulationEnable": 2,
+        "DisplayBacklightActiveBrightness": 127,
+        "DisplayBacklightIdleBrightness": 2,
+        "EnableHVACRelayDrive": 0,
+        "HeatingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "PlantCycleTime": 15,
+        "TemperatureUnits": 0,
+        "TimerEnable": 1,
+        "VariableFanCoilEnable": 1
+      },
+      "first_state": "verified_saved",
+      "second_expected": {
+        "HeatingPlantFanSpeeds": 1,
+        "PlantCycleTime": 15
+      },
+      "seed": {
+        "BeepEnable": 3,
+        "ControlledZones": 1,
+        "CoolingPlantFanDefaultSpeed": 1,
+        "CoolingPlantFanOffDelay": 21,
+        "CoolingPlantFanSpeedControlEnable": 0,
+        "CoolingPlantFanSpeeds": 0,
+        "DamperModulationEnable": 1,
+        "DisplayBacklightActiveBrightness": 128,
+        "DisplayBacklightIdleBrightness": 1,
+        "EnableHVACRelayDrive": 1,
+        "HeatingPlantFanDefaultSpeed": 1,
+        "HeatingPlantFanOnDelay": 15,
+        "HeatingPlantFanSpeedControlEnable": 0,
+        "HeatingPlantFanSpeeds": 0,
+        "InternalPlantModes": 20,
+        "InternalPlantType": 2,
+        "KeyBacklightActiveBrightness": 0,
+        "KeyBacklightIdleBrightness": 254,
+        "TemperatureUnits": 3,
+        "TimerEnable": 3,
+        "VariableFanCoilEnable": 3,
+        "VentPlantType": 0
+      },
+      "third_state": "already_applied",
+      "unit_type": "PC_TSB5",
+      "unrelated_parameters_preserved": true
+    }
+  ],
+  "cni_connections": [],
+  "format": "native-thermostat-settings-normalization-integration-v1",
+  "physical_devices_accessed": false,
+  "raw_record_fault_injection": {
+    "hidden_pp_change_rejected": true,
+    "injected_only_into_readback": true,
+    "native_save_and_reload_completed": true,
+    "persistence_verified": false
+  },
+  "refusals": [
+    {
+      "edits": {
+        "InstalledZones": "32"
+      },
+      "error": "InstalledZones: Value 0 must be between 0 and 31",
+      "path": "//T3C13DE4/254/p/30"
+    },
+    {
+      "edits": {
+        "TimerEnable": "1"
+      },
+      "error": "Setting is not admitted for PC_TSA: TimerEnable",
+      "path": "//T3C13DE4/254/p/30"
+    },
+    {
+      "edits": {
+        "SendInterval": "1"
+      },
+      "error": "Setting is not admitted for PC_TSB: SendInterval",
+      "path": "//T3C13DE4/254/p/31"
+    },
+    {
+      "edits": {
+        "HeatingPlantFanOnDelay": "13"
+      },
+      "error": "The original form save would rewrite HeatingPlantFanOnDelay=12; choose values that survive it",
+      "path": "//T3C13DE4/254/p/30"
+    },
+    {
+      "edits": {
+        "EvapProgramEnabled": "2"
+      },
+      "error": "EvapProgramEnabled must be 0 or 1; the original load normalises other values",
+      "path": "//T3C13DE4/254/p/30"
+    },
+    {
+      "edits": {
+        "CoolStage1Output": "4"
+      },
+      "error": "Setting is not admitted for PC_TSB: CoolStage1Output",
+      "path": "//T3C13DE4/254/p/31"
+    }
+  ],
+  "service": {
+    "backend": "local",
+    "cleanup_complete": true,
+    "cleanup_errors": [],
+    "configured_ports": [
+      63511,
+      63512,
+      63513,
+      63514,
+      63515,
+      63516
+    ],
+    "exit_code": 143,
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+    "listener_ownership_verified": true,
+    "listeners": [
+      "127.0.0.1:63511",
+      "127.0.0.1:63512",
+      "127.0.0.1:63513",
+      "127.0.0.1:63514",
+      "127.0.0.1:63515",
+      "127.0.0.1:63516"
+    ],
+    "log_closed": true,
+    "pid": 99627,
+    "process_exit_confirmed": true,
+    "projects_adopted": false,
+    "reserved_sockets_closed": true,
+    "server_log_bytes": 240,
+    "server_log_hashed_bytes": 240,
+    "server_log_sha256": "6abd354ca9d5cc9d748278016d9c60f52328050802c25ae6f217ffe883c3e0c7",
+    "server_log_tail": [
+      "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+      "C-Gate is running."
+    ],
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "work_removed": true
+  }
+}

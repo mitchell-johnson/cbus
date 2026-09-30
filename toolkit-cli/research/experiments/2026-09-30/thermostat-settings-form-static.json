@@ -1,0 +1,364 @@
+{
+  "allowed_plant_modes": [
+    1,
+    19,
+    21,
+    31,
+    19,
+    21,
+    31,
+    31,
+    3,
+    31,
+    31,
+    31
+  ],
+  "checks": {
+    "Plant_zone_master_and": true,
+    "ZoneManagement_zone_master_and": true,
+    "allowed_modes_match_model": true,
+    "basic_hidden_field_names": true,
+    "checkbox_enabled_checked_vmt_slots": true,
+    "include_and_exclude_same_target_fields": true,
+    "initialization_sets_and_clears_flash_guard": true,
+    "installed_and_manager_controlled_not_zone_state_sources": true,
+    "mode_checkbox_field_names": true,
+    "plant_mode_bit_tests": true,
+    "quick_refresh_checks_flash_guard": true,
+    "vent_selector_field_name": true,
+    "zone_partial_and_full_same_source_fields": true,
+    "zone_source_fields_match_model": true,
+    "zone_transition_target_fields_match_model": true
+  },
+  "complete_dialog_reproduced": false,
+  "default_plant_modes": [
+    1,
+    19,
+    21,
+    31,
+    19,
+    21,
+    23,
+    31,
+    3,
+    31,
+    23,
+    21
+  ],
+  "format": "cbus-thermostat-settings-form-static-v1",
+  "limits": [
+    "Static inspection only; original GUI and its complete event order were not executed.",
+    "Quick-zone union is not an InstalledZones subset validation rule.",
+    "InstalledZones rewrite and VentPlantType fallback are guarded event effects, not unconditional PP load normalization.",
+    "Remaining controls, parent visibility, edit admission and group creation remain open."
+  ],
+  "method_spans": {
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "bytes": 6452,
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TThermostat.TPlantTypeAttribute.GetAllowedPlantModes": {
+      "bytes": 240,
+      "sha256": "7dcb5b0951457f17fdba5407f1061f891b8198583abe295f675ce76dada947ac",
+      "start": "0xfdabb4"
+    },
+    "CIS_TThermostat.TPlantTypeAttribute.GetDefaultPlantModes": {
+      "bytes": 244,
+      "sha256": "31f2ab7b42906a6f882a469305ca96888fa72b14ae7e6a7b6104d34e93bd93cd",
+      "start": "0xfdaac0"
+    },
+    "CIS_TThermostat.TThermostat.EvaporativeControlEnabled": {
+      "bytes": 128,
+      "sha256": "a6d2a6a3913bfe4c586922c9e24baa736599d23f22d412e4ca870eb668acccea",
+      "start": "0xfea6c4"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableControlsForMasterDisableForSlave": {
+      "bytes": 652,
+      "sha256": "229303c1e0dc35e1965cf5ae4ec6a3af4c3177b0c353336b0dfc99d4aefd9298",
+      "start": "0x1129154"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes": {
+      "bytes": 608,
+      "sha256": "298c3696b04ff794331398eafe4edd5b2994e30ff920879d1c068af82e164f56",
+      "start": "0x1128ef4"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableVentPlantType": {
+      "bytes": 136,
+      "sha256": "9b84f3d0ac918e9e3b30f3d437c3c9a044522f5f705a6d3e65c49f100bd2e78f",
+      "start": "0x1128e6c"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone": {
+      "bytes": 228,
+      "sha256": "f25c6f4819ad68bd93b9f3a93acb3156aa4c540b06635df9a5fdbe20ac2508a1",
+      "start": "0x1126f1c"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleEvaporativeCoolingUpdate": {
+      "bytes": 76,
+      "sha256": "6ab6153a4dc62e0615c459e7a88af0b8a265e08deb067d66b69d69040bc095d0",
+      "start": "0x1128cf8"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanCoilUpdate": {
+      "bytes": 132,
+      "sha256": "dfbb8534b9322dac9045fdc9e288b09393c6e0a1a461fa28dfad30be08aa815f",
+      "start": "0x1128bc8"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanSpeedsUpdate": {
+      "bytes": 84,
+      "sha256": "3b56741fa7fa0510f5a4828f686704a57efff16f3cce9030210baea23144f219",
+      "start": "0x1128c7c"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupComponents": {
+      "bytes": 444,
+      "sha256": "373777b230d098569b2d73ceac0fe5e595772bcb6c51bf5da630508dc226b0b7",
+      "start": "0x11289e4"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.EnableDisableZone": {
+      "bytes": 176,
+      "sha256": "68e092276f10610476a9fc8ddd1188ebdf902b62108c7afae16ec38013eb7368",
+      "start": "0x112dbf4"
+    },
+    "CIS_TcdThermostatTemplates.CheckBoxStateForZone": {
+      "bytes": 80,
+      "sha256": "4f51195fd2739142a294205029853dd05109b4e469b06a87affaf62504fb2867",
+      "start": "0x111e788"
+    },
+    "CIS_TcdThermostatTemplates.ExcludeZone": {
+      "bytes": 332,
+      "sha256": "93acec83c47062a921acf00fdbe2563f3ee9864fb5db984d0b74cc038db1b497",
+      "start": "0x111d98c"
+    },
+    "CIS_TcdThermostatTemplates.IncludeZone": {
+      "bytes": 448,
+      "sha256": "a1b459d1fd020791af52d6916e58740587faf194e7c4b542e87836abddabd7ee",
+      "start": "0x111d7cc"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleChbUsedZoneClick": {
+      "bytes": 520,
+      "sha256": "9943c710d58834b438a6a0e16d5e0693a94c25665581981df7eb64182561a358",
+      "start": "0x111db64"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.Initialise": {
+      "bytes": 364,
+      "sha256": "893f59464291150d433d290e06cae56c517b3ba59d0d7b8e359d6b71049dfaf6",
+      "start": "0x111df60"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions": {
+      "bytes": 384,
+      "sha256": "70e7b90e0184574cc18f6d5d35a76b2e87ae1cd535631bf93781d352fdf29b18",
+      "start": "0x111e97c"
+    },
+    "CIS_TcdThermostatTemplates.UpdateFlashZoneVariables": {
+      "bytes": 420,
+      "sha256": "d92ae488da5f4d633e146ccae3bff7579d20767ac120c9aac47808f1e073e454",
+      "start": "0x111e7d8"
+    },
+    "CIS_TcdThermostatTemplates.ZoneFullyOn": {
+      "bytes": 356,
+      "sha256": "0152a6839513c1408057b8ed6341262e5e1cd333c8bd0b61aa5523cc55e1e3bc",
+      "start": "0x111e624"
+    },
+    "CIS_TcdThermostatTemplates.ZonePartiallyOn": {
+      "bytes": 356,
+      "sha256": "3ea3a8566151a355516d1a4a23e1254af65b0294b76d7a109268c87f6cdfd058",
+      "start": "0x111e4c0"
+    },
+    "CIS_TcdThermostatUI.TcdThermostatUI.EnableDisableZone": {
+      "bytes": 168,
+      "sha256": "c9ecee076f9e893a780613f28bc50d9d695a479e7c3d0cf566719722661a00ae",
+      "start": "0x1120fc4"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.EnableDisableZone": {
+      "bytes": 848,
+      "sha256": "d2e954e5d14d2241ae384fec3bd4d297f915c969a17df0b27cb0f347d275e7cb",
+      "start": "0xfee6e0"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleEnableDisableZone": {
+      "bytes": 88,
+      "sha256": "f3457a5271fc0f68c92f9a3a266cd0c76d222dfc172583ffb13da5998c52f2c2",
+      "start": "0x1132d1c"
+    }
+  },
+  "model_module_sha256": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "published_control_fields": {
+    "TfrmThermostatPlant": {
+      "0x390": "gbPlantZones",
+      "0x394": "chbPlantZone1",
+      "0x398": "chbPlantZone2",
+      "0x39c": "chbPlantZone3",
+      "0x3a0": "chbPlantZone4",
+      "0x3a4": "btnFanControl",
+      "0x3a8": "Label2",
+      "0x3ac": "cmbInternalPlantType",
+      "0x3b0": "chbPlantUnswitchedZone",
+      "0x3b4": "gbPlantModes",
+      "0x3b8": "chbPlantModeHeat",
+      "0x3bc": "chbPlantModeCool",
+      "0x3c0": "chbPlantModeHeatCool",
+      "0x3c4": "chbPlantModeVent",
+      "0x3c8": "gbCycleLimiting",
+      "0x3cc": "lblPlantOnTime",
+      "0x3d0": "lblPlantOffTime",
+      "0x3d4": "cmbPlantMinimumOnTime",
+      "0x3d8": "cmbPlantMinimumOffTime",
+      "0x3dc": "gbPlantStages",
+      "0x3e0": "lblCoolingStages",
+      "0x3e4": "lblHeatingStages",
+      "0x3e8": "cmbCoolingPlantStages",
+      "0x3ec": "cmbHeatingPlantStages",
+      "0x3f0": "lblCyclesPerHour",
+      "0x3f4": "cmbPlantCycleTime",
+      "0x3f8": "gbRelayGroups",
+      "0x3fc": "lblRelay1",
+      "0x400": "lblRelay2",
+      "0x404": "lblRelay3",
+      "0x408": "lblRelay4",
+      "0x40c": "lblRelay5",
+      "0x410": "btnEvaporativeCooling",
+      "0x414": "btnCoolingGroups",
+      "0x418": "btnHeatingGroups",
+      "0x41c": "btnDamperGroups",
+      "0x420": "chbEnableHVACRelayDrive",
+      "0x424": "lblVentPlantType",
+      "0x428": "cmbVentPlantType",
+      "0x42c": "btnFanCoil",
+      "0x430": "ActionList2",
+      "0x434": "actEvaporativeCooling",
+      "0x438": "actHeatingGroups",
+      "0x43c": "actFanCoil",
+      "0x440": "actFanControl",
+      "0x444": "actDamperGroups",
+      "0x448": "actCoolingGroups",
+      "0x44c": "cmbInternalRelay1Group",
+      "0x450": "cmbInternalRelay2Group",
+      "0x454": "cmbInternalRelay3Group",
+      "0x458": "cmbInternalRelay4Group",
+      "0x45c": "cmbInternalRelay5Group"
+    },
+    "TfrmThermostatTempControl": {
+      "0x390": "gbMeasuredZones",
+      "0x394": "chbMeasuredUnswitchedZone",
+      "0x398": "chbMeasuredZone1",
+      "0x39c": "chbMeasuredZone2",
+      "0x3a0": "chbMeasuredZone3",
+      "0x3a4": "chbMeasuredZone4",
+      "0x3a8": "gbTempLimits",
+      "0x3ac": "Label23",
+      "0x3b0": "Label1",
+      "0x3b4": "btnTempOffset",
+      "0x3b8": "btnSetback",
+      "0x3bc": "btnEvapControl",
+      "0x3c0": "chbEnableGuard",
+      "0x3c4": "ActionList1",
+      "0x3c8": "actEvapControl",
+      "0x3cc": "actSetback",
+      "0x3d0": "chbEnableTemperatureSensor",
+      "0x3d4": "lblSetbackLevel",
+      "0x3d8": "Image1",
+      "0x3dc": "pnlGuard",
+      "0x3e0": "Label5",
+      "0x3e4": "Label11",
+      "0x3e8": "Label15",
+      "0x3ec": "Label26",
+      "0x3f0": "Label30",
+      "0x3f4": "Label19",
+      "0x3f8": "trkMaximumSetTemp",
+      "0x3fc": "trkMinimumSetTemp",
+      "0x400": "trkGuardMaximumLowerTemp",
+      "0x404": "trkGuardMinimumLowerTemp",
+      "0x408": "trkGuardLowerTemp",
+      "0x40c": "trkGuardUpperTemp",
+      "0x410": "trkGuardMaximumUpperTemp",
+      "0x414": "trkGuardMinimumUpperTemp",
+      "0x418": "trkSetbackLevel",
+      "0x41c": "lblSetbackMin",
+      "0x420": "lblSetbackMax",
+      "0x424": "lblSetbackValue",
+      "0x428": "btnPIDFactors"
+    },
+    "TfrmThermostatUI": {
+      "0x390": "gbUIAllocatedZones",
+      "0x394": "chbUnswitchedZone",
+      "0x398": "chbZone1",
+      "0x39c": "chbZone2",
+      "0x3a0": "chbZone3",
+      "0x3a4": "chbZone4",
+      "0x3a8": "gbDisplaySettings",
+      "0x3ac": "Label21",
+      "0x3b0": "lblTimeUnits",
+      "0x3b4": "lblDisplayedTemperature",
+      "0x3b8": "cmbTemperatureUnits",
+      "0x3bc": "cmbTimeUnits",
+      "0x3c0": "cmbZoneTemperatureDisplay",
+      "0x3c4": "chbBeepEnable",
+      "0x3c8": "chbTimerEnable",
+      "0x3cc": "btnBackLight",
+      "0x3d0": "chbEnableUserControlledZone"
+    },
+    "TfrmThermostatZoneManagement": {
+      "0x390": "gbCoolingPlant",
+      "0x394": "Label49",
+      "0x398": "lblCoolingZones",
+      "0x39c": "gbVentingPlant",
+      "0x3a0": "Label53",
+      "0x3a4": "lblVentingZones",
+      "0x3a8": "gbHeatingPlant",
+      "0x3ac": "Label48",
+      "0x3b0": "lblHeatingZones",
+      "0x3b4": "chbCoolingZone1",
+      "0x3b8": "chbCoolingZone2",
+      "0x3bc": "chbCoolingZone3",
+      "0x3c0": "chbCoolingZone4",
+      "0x3c4": "chbVentingZone1",
+      "0x3c8": "chbVentingZone2",
+      "0x3cc": "chbVentingZone3",
+      "0x3d0": "chbVentingZone4",
+      "0x3d4": "chbHeatingZone1",
+      "0x3d8": "chbHeatingZone2",
+      "0x3dc": "chbHeatingZone3",
+      "0x3e0": "chbHeatingZone4",
+      "0x3e4": "cmbCoolingPlantType",
+      "0x3e8": "cmbVentingPlantType",
+      "0x3ec": "cmbHeatingPlantType",
+      "0x3f0": "gbHeatCoolPlant",
+      "0x3f4": "Label51",
+      "0x3f8": "Label55",
+      "0x3fc": "cmbHeatCoolPlantType",
+      "0x400": "chbCoolingUnswitchedZone",
+      "0x404": "chbHeatingUnswitchedZone",
+      "0x408": "chbVentingUnswitchedZone",
+      "0x40c": "gbZoneManagerMode",
+      "0x410": "lblMasterUnit",
+      "0x414": "cmbMasterUnit",
+      "0x418": "btnRefreshFromMaster",
+      "0x41c": "Panel1",
+      "0x420": "rgZoneManagerMasterSlave",
+      "0x424": "lblMasterUnitNetwork",
+      "0x428": "cmbMasterUnitNetwork"
+    }
+  },
+  "zone_state_sources_in_original_order": [
+    "UIAllocatedZones",
+    "InternalPlantZones",
+    "MeasuredZones",
+    "ScheduleControlledZones",
+    "HeatingPlantInstalledZones",
+    "CoolingPlantInstalledZones",
+    "VentingPlantInstalledZones"
+  ],
+  "zone_transition_targets_in_original_order": [
+    "UsedZones",
+    "UIAllocatedZones",
+    "InternalPlantZones",
+    "MeasuredZones",
+    "ScheduleControlledZones",
+    "InstalledZones",
+    "ControlledZones",
+    "HeatingPlantInstalledZones",
+    "CoolingPlantInstalledZones",
+    "VentingPlantInstalledZones"
+  ]
+}

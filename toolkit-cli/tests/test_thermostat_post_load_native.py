@@ -156,8 +156,48 @@ class NativeThermostatPostLoadTests(unittest.TestCase):
                                            'post_load_changes': plan.overlay.post_load_changes,
                                            'groups': saved_groups, 'state': result['state']})
 
+    def test_stale_relay_snapshot_replays_without_creating_stale_groups(self):
+        # Native PP overlays replace these prior relay bytes. Static event
+        # wiring and the offline post-overlay test independently prove that
+        # the original template AfterLoad itself skips the relay getters.
+        units = []
+        stale = {f'InternalRelay{n}GroupNumber': 240 + n for n in range(1, 6)}
+        for address, application, (unit_type, catalog, family, _numbers) in zip((50, 51), (83, 84), CASES):
+            path = self.prepare(address, unit_type, catalog, application, family)
+            with self.session(path) as session:
+                for name, value in stale.items():
+                    session.set(name, str(value))
+                session.save_to_source()
+            units.append((path, application, family))
+        self.reload()
+        results = []
+        for path, application, family in units:
+            with self.session(path) as session:
+                before = dict(session.values())
+            self.assertEqual({n: int(before[n], 0) for n in stale}, stale)
+            manager = NativeThermostatTemplates(self.client, self.catalog)
+            plan = manager.plan(path, 1, exclusive_project=True)
+            result = manager.apply(plan, backup_project='B' + uuid4().hex[:7].upper())
+            self.assertEqual(result['state'], 'verified_saved', result)
+            self.projects.operation('use', self.project)
+            with self.session(path) as session:
+                after = dict(session.values())
+            expected = plan.overlay.expected
+            self.assertEqual({n: v for n, v in after.items() if n not in expected},
+                             {n: v for n, v in before.items() if n not in expected})
+            self.assertEqual([int(after[f'InternalRelay{n}GroupNumber'], 0) for n in range(1, 6)],
+                             [1, 2, 3, 4, 255])
+            saved_groups = groups(self.database, self.network, application)
+            self.assertEqual(saved_groups, HAND[('programmable', 1)][1])
+            self.assertTrue(set(stale.values()).isdisjoint(saved_groups))
+            results.append({'path': path, 'family': family, 'template': 1,
+                            'pre_load_relay_values': stale, 'groups': saved_groups,
+                            'unrelated_parameters_preserved': True, 'state': result['state']})
+        self.evidence['stale_relay_snapshots'] = results
+
     def test_outside_precondition_is_refused_without_writes(self):
         nine = self.prepare(40, 'PC_TSA', '5070THP,BK', 80, 'programmable')
+        basic_nine = self.prepare(43, 'PC_TSB', '5070THB,BK', 82, 'basic')
         blank = self.network + '/p/41'
         self.database.create_unit(self.network, 41, 'NoApp', 'PC_TSB', '5.4.01', catalog_number='5070THB,BK')
         taken = self.prepare(42, 'PC_TSB', '5070THB,BK', 81, 'basic')
@@ -165,7 +205,8 @@ class NativeThermostatPostLoadTests(unittest.TestCase):
         self.reload()
         before = xml_text(self.database.get('//' + self.project, xml=True))
         refusals = []
-        for path, number, text in ((nine, 9, 'Relay group'), (blank, 1, 'Application byte'),
+        for path, number, text in ((nine, 9, 'GetNewGroup'), (basic_nine, 9, 'GetNewGroup'),
+                                   (blank, 1, 'Application byte'),
                                    (taken, 1, 'CG01')):
             manager = NativeThermostatTemplates(self.client, self.catalog)
             with self.assertRaises(Exception) as caught:

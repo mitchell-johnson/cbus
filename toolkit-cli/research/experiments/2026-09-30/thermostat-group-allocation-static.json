@@ -1,0 +1,302 @@
+{
+  "checks": {
+    "0x111d32b": true,
+    "0x111d39a": true,
+    "0x111d461": true,
+    "0x111d4fa": true,
+    "0x1132c2b": true,
+    "0x1132c3e": true,
+    "0x1132fd8": true,
+    "0x113301c": true,
+    "0x128f64d": true,
+    "0x128f654": true,
+    "0xf261e5": true,
+    "0xf28a1b": true,
+    "0xf28a28": true,
+    "0xf28a38": true,
+    "0xf28a44": true,
+    "0xf28a69": true,
+    "0xf28a72": true,
+    "0xf28c32": true,
+    "0xf28c58": true,
+    "0xfe2865": true,
+    "0xfe286c": true,
+    "0xfe288a": true,
+    "0xfe289a": true,
+    "0xfe29e9": true,
+    "0xfe2fa8": true,
+    "0xfe2fd2": true,
+    "0xfe3001": true,
+    "0xfe3007": true,
+    "0xfe3015": true,
+    "0xfe3016": true,
+    "0xfe3043": true,
+    "0xfe304a": true,
+    "0xfe3111": true,
+    "0xfe3114": true,
+    "0xfe3127": true,
+    "0xfe3158": true,
+    "0xfe3491": true,
+    "afterload_disables_all_fourteen_group_new_overrides": true,
+    "correct_overload_selected": true,
+    "default_group_format": true,
+    "default_group_name": true,
+    "default_group_name_overrides": true,
+    "every_plant_branch_assigns_all_five_relays": true,
+    "template_skips_exactly_five_relay_loads": true
+  },
+  "format": "cbus-toolkit-thermostat-group-allocation-static-v1",
+  "method_spans": {
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.GetHasReservedGroupAddress255": {
+      "end": "0xf261f0",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "start": "0xf261dc"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetMaximumPossibleAddress": {
+      "end": "0xf28a8c",
+      "sha256": "766343aa5ad4b64969052f7e9f7c09c7a6bba3d493bd0560e425267c72476664",
+      "start": "0xf28a58"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetNextAvailableAddress": {
+      "end": "0xf28a58",
+      "sha256": "86d97f9573fd455b1ace8d5c2bb0fa8cb561faf611d45d824114eed6d53f0db7",
+      "start": "0xf289fc"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "end": "0xf28d10",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930",
+      "start": "0xf28b68"
+    },
+    "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications": {
+      "end": "0x136c174",
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e",
+      "start": "0x136bc30"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplication.Create": {
+      "end": "0x85af68",
+      "sha256": "571cba94dc0dbdee553d85d478afc0f22356cd782775017113fc6f2bf3d8b757",
+      "start": "0x85ae74"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetGroupName": {
+      "end": "0x85b30c",
+      "sha256": "0114adf84ee6a600c5a167903295d1d121e7831b8c583edb857df01d34633a8f",
+      "start": "0x85b2c4"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetStandardCBusApplication": {
+      "end": "0x85ad5c",
+      "sha256": "0c0093ac38ef500cd801c6017b44fdef641ef96ac383f3c4bb34417c6421019e",
+      "start": "0x85ad00"
+    },
+    "CIS_TThermostat.GetNewGroup": {
+      "end": "0xfe32bc",
+      "sha256": "4e5c5dbcade62497ebdd019e8e681d3ba2d7e157b07d0e7d3cee669c5562cc34",
+      "start": "0xfe2f3c"
+    },
+    "CIS_TThermostat.TPlantControlService.CreateAndRenameGroup": {
+      "end": "0xfe2a74",
+      "sha256": "e1932a6126eda2f6405fc5677e8fb6adff09dd659d29d17134f023912ebb9c7b",
+      "start": "0xfe2830"
+    },
+    "CIS_TThermostat.TPlantControlService.FindExistingGroup": {
+      "end": "0xfe2be4",
+      "sha256": "b375c529b20d7d4bdcf23c94e14b660eae67fe67fbdf31e31c172d8173bc8087",
+      "start": "0xfe2afc"
+    },
+    "CIS_TThermostat.TPlantControlService.GetGroup": {
+      "end": "0xfe35d0",
+      "sha256": "316f10ba72f693f6a9e1996b3155bde04dc4743f2f44707d37f23a602a05f49f",
+      "start": "0xfe32bc"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleBtnLoadClick": {
+      "end": "0x111d60c",
+      "sha256": "259f5544f591bcc46dfb6adb0766a767215c3568abb814ef8be89f64e5d2f4aa",
+      "start": "0x111d27c"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleBeforeLoadTemplate": {
+      "end": "0x1132ff8",
+      "sha256": "f5ed50f4e679d655acb0a17f51e18d816ce560a52a58c48432d438d61b1bebbc",
+      "start": "0x1132fc4"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleLoadTemplate": {
+      "end": "0x113303c",
+      "sha256": "968f432fe43ee5ee75db7b811b2d0b9e3db77d5a74b321ff4d7b11bfacfc6474",
+      "start": "0x1132ff8"
+    },
+    "CIS_TddThermostat.TddThermostat.InitialiseSubForms": {
+      "end": "0x1132c74",
+      "sha256": "185a180194e3779da70e14cedb824c65541a8fcceafed27e5858eb80e55e8702",
+      "start": "0x1132a24"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "recovered_not_implemented": {
+    "create_and_rename": "While the template flag is true, prefer an existing autogenerated tag before retaining/renaming the supplied-address group.",
+    "find_existing_group": "First case-insensitive tag match in forward manager order.",
+    "get_new_group": "First reuse exact autogenerated tag (case-insensitive). Otherwise walk the group-manager collection in reverse. For each same-prefix group, take first free address above it through 254. If none succeeds, take the lowest free address from 0 through 254; fail when full.",
+    "relay_default_name": {
+      "applicable_phase": "Ordinary AfterLoad only, not Load Template.",
+      "fallback": "Group",
+      "format": "%s %d",
+      "overrides": {
+        "172": "Communication Group",
+        "192": "Media Link Group",
+        "202": "Trigger Group",
+        "203": "Enable Network Variable"
+      }
+    }
+  },
+  "relay_assignments_by_plant_branch": {
+    "0": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "1": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "10": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "11": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "2": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "3": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ],
+      "Zoned 2 Stage Reverse Cycle System": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "4": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "5": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "6": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "7": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "8": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    },
+    "9": {
+      "<default>": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ],
+      "Conventional 2 Stage Heat/Cool USA System": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ],
+      "Conventional Single Stage Heat/Cool USA System": [
+        "InternalRelay1",
+        "InternalRelay2",
+        "InternalRelay3",
+        "InternalRelay4",
+        "InternalRelay5"
+      ]
+    }
+  },
+  "remaining_boundaries": [
+    "GetNewGroup and duplicate tag resolution need original manager order; DBGETXML order is not asserted to equal that order.",
+    "An order-independent allocator slice is possible only if all eligible prefix starting points produce the same first-free candidate, or none produces one before fallback.",
+    "Fresh installation 9 remains refused: stale relay loading is skipped, but W2 requests default group 5 already used by Y. Prefix groups 5,3,6,2 allow candidates 7,4,7,4.",
+    "Existing-prefix rename/reuse composition and general ordinary AfterLoad group side effects remain unreplayed; no original GUI or physical thermostat was executed."
+  ],
+  "template_phase": {
+    "afterload_group_new_override": false,
+    "all_five_relays_assigned_by_plant_update": true,
+    "cleared_after_plant_update": true,
+    "implemented_slice": "Skip unreachable relay AfterLoad reads, creations and refusals.",
+    "load_template_flag_offset": "0x1e0",
+    "relay_afterload_skipped": true,
+    "set_before_pp_load": true
+  },
+  "update_parameters_sha256": "7d498be685f0938bfe66b5bab77a002d2c9caaf87034a3475356df4b33508cd7"
+}

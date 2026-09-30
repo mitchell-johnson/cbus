@@ -1,0 +1,802 @@
+{
+  "baseline_commit": "98c297126b624a8be8a90d85cb53035344a97956",
+  "format": "cbus-thermostat-form-focused-acceptance-v1",
+  "full_test_suite_run": false,
+  "installed_wheel": {
+    "all_source_and_installed_package_files_match_wheel": true,
+    "native_command": "PYTHONPATH=tests:. <fresh-venv>/bin/python -m unittest tests.test_thermostat_settings_native tests.test_thermostat_post_load_native -q",
+    "native_receipts": [
+      {
+        "cases": [
+          {
+            "dependent": [
+              {
+                "after_edit": 200,
+                "form_save": 201,
+                "name": "DisplayBacklightActiveBrightness"
+              },
+              {
+                "after_edit": 200,
+                "form_save": 201,
+                "name": "KeyBacklightActiveBrightness"
+              }
+            ],
+            "edits": {
+              "BacklightDimTime": 0,
+              "ControlledZones": 7,
+              "CoolingPlantFanOnDelay": 12,
+              "CoolingPlantInstalledZones": 0,
+              "CoolingPlantStages": 3,
+              "CoolingPlantType": 9,
+              "EvapProgramEnabled": 1,
+              "HeatCoolIntegralFactor": 150,
+              "HeatingPlantInstalledZones": 3,
+              "HeatingPlantStages": 2,
+              "HeatingPlantType": 1,
+              "InstalledZones": 31,
+              "KeyBacklightIdleBrightness": 255,
+              "MeasuredZones": 1,
+              "NonEvapProgramEnabled": 1,
+              "PlantCycleTime": 20,
+              "ScheduleControlledZones": 3,
+              "SendInterval": 6,
+              "TemperatureOffset": 254,
+              "TimeUnits": 1,
+              "UIAllocatedZones": 5
+            },
+            "state": "verified_saved",
+            "unit_type": "PC_TSA"
+          },
+          {
+            "dependent": [
+              {
+                "after_edit": 200,
+                "form_save": 201,
+                "name": "DisplayBacklightActiveBrightness"
+              },
+              {
+                "after_edit": 200,
+                "form_save": 201,
+                "name": "KeyBacklightActiveBrightness"
+              }
+            ],
+            "edits": {
+              "BacklightDimTime": 0,
+              "ControlledZones": 7,
+              "CoolingPlantFanOnDelay": 12,
+              "CoolingPlantInstalledZones": 0,
+              "CoolingPlantStages": 3,
+              "CoolingPlantType": 9,
+              "HeatCoolIntegralFactor": 150,
+              "HeatingPlantInstalledZones": 3,
+              "HeatingPlantStages": 2,
+              "HeatingPlantType": 1,
+              "InstalledZones": 31,
+              "KeyBacklightIdleBrightness": 255,
+              "MeasuredZones": 1,
+              "PlantCycleTime": 20,
+              "TemperatureOffset": 254,
+              "TimerEnable": 0,
+              "UIAllocatedZones": 5
+            },
+            "state": "verified_saved",
+            "unit_type": "PC_TSB"
+          },
+          {
+            "first_expected": {
+              "BeepEnable": 1,
+              "CoolingPlantFanOffDelay": 24,
+              "CoolingPlantFanSpeeds": 1,
+              "DamperModulationEnable": 2,
+              "DisplayBacklightActiveBrightness": 127,
+              "DisplayBacklightIdleBrightness": 2,
+              "EnableHVACRelayDrive": 0,
+              "EvapProgramEnabled": 0,
+              "HeatingPlantFanOnDelay": 12,
+              "KeyBacklightIdleBrightness": 255,
+              "NonEvapProgramEnabled": 1,
+              "PlantCycleTime": 15,
+              "SendInterval": 2,
+              "TemperatureUnits": 0,
+              "TimeUnits": 0,
+              "VariableFanCoilEnable": 1
+            },
+            "first_state": "verified_saved",
+            "second_expected": {
+              "HeatingPlantFanSpeeds": 1,
+              "PlantCycleTime": 15
+            },
+            "seed": {
+              "BeepEnable": 3,
+              "ControlledZones": 1,
+              "CoolingPlantFanDefaultSpeed": 1,
+              "CoolingPlantFanOffDelay": 21,
+              "CoolingPlantFanSpeedControlEnable": 0,
+              "CoolingPlantFanSpeeds": 0,
+              "DamperModulationEnable": 1,
+              "DisplayBacklightActiveBrightness": 128,
+              "DisplayBacklightIdleBrightness": 1,
+              "EnableHVACRelayDrive": 1,
+              "EvapProgramEnabled": 3,
+              "HeatingPlantFanDefaultSpeed": 1,
+              "HeatingPlantFanOnDelay": 15,
+              "HeatingPlantFanSpeedControlEnable": 0,
+              "HeatingPlantFanSpeeds": 0,
+              "InternalPlantModes": 20,
+              "InternalPlantType": 2,
+              "KeyBacklightActiveBrightness": 0,
+              "KeyBacklightIdleBrightness": 254,
+              "NonEvapProgramEnabled": 3,
+              "SendInterval": 7,
+              "TemperatureUnits": 3,
+              "TimeUnits": 3,
+              "VariableFanCoilEnable": 3,
+              "VentPlantType": 0
+            },
+            "third_state": "already_applied",
+            "unit_type": "PC_TSA",
+            "unrelated_parameters_preserved": true
+          },
+          {
+            "first_expected": {
+              "BeepEnable": 1,
+              "CoolingPlantFanOffDelay": 24,
+              "CoolingPlantFanSpeeds": 1,
+              "DamperModulationEnable": 2,
+              "DisplayBacklightActiveBrightness": 127,
+              "DisplayBacklightIdleBrightness": 2,
+              "EnableHVACRelayDrive": 0,
+              "EvapProgramEnabled": 0,
+              "HeatingPlantFanOnDelay": 12,
+              "KeyBacklightIdleBrightness": 255,
+              "NonEvapProgramEnabled": 1,
+              "PlantCycleTime": 15,
+              "SendInterval": 2,
+              "TemperatureUnits": 0,
+              "TimeUnits": 0,
+              "VariableFanCoilEnable": 1
+            },
+            "first_state": "verified_saved",
+            "second_expected": {
+              "HeatingPlantFanSpeeds": 1,
+              "PlantCycleTime": 15
+            },
+            "seed": {
+              "BeepEnable": 3,
+              "ControlledZones": 1,
+              "CoolingPlantFanDefaultSpeed": 1,
+              "CoolingPlantFanOffDelay": 21,
+              "CoolingPlantFanSpeedControlEnable": 0,
+              "CoolingPlantFanSpeeds": 0,
+              "DamperModulationEnable": 1,
+              "DisplayBacklightActiveBrightness": 128,
+              "DisplayBacklightIdleBrightness": 1,
+              "EnableHVACRelayDrive": 1,
+              "EvapProgramEnabled": 3,
+              "HeatingPlantFanDefaultSpeed": 1,
+              "HeatingPlantFanOnDelay": 15,
+              "HeatingPlantFanSpeedControlEnable": 0,
+              "HeatingPlantFanSpeeds": 0,
+              "InternalPlantModes": 20,
+              "InternalPlantType": 2,
+              "KeyBacklightActiveBrightness": 0,
+              "KeyBacklightIdleBrightness": 254,
+              "NonEvapProgramEnabled": 3,
+              "SendInterval": 7,
+              "TemperatureUnits": 3,
+              "TimeUnits": 3,
+              "VariableFanCoilEnable": 3,
+              "VentPlantType": 0
+            },
+            "third_state": "already_applied",
+            "unit_type": "PC_TSA5",
+            "unrelated_parameters_preserved": true
+          },
+          {
+            "first_expected": {
+              "BeepEnable": 1,
+              "CoolingPlantFanOffDelay": 24,
+              "CoolingPlantFanSpeeds": 1,
+              "DamperModulationEnable": 2,
+              "DisplayBacklightActiveBrightness": 127,
+              "DisplayBacklightIdleBrightness": 2,
+              "EnableHVACRelayDrive": 0,
+              "HeatingPlantFanOnDelay": 12,
+              "KeyBacklightIdleBrightness": 255,
+              "PlantCycleTime": 15,
+              "TemperatureUnits": 0,
+              "TimerEnable": 1,
+              "VariableFanCoilEnable": 1
+            },
+            "first_state": "verified_saved",
+            "second_expected": {
+              "HeatingPlantFanSpeeds": 1,
+              "PlantCycleTime": 15
+            },
+            "seed": {
+              "BeepEnable": 3,
+              "ControlledZones": 1,
+              "CoolingPlantFanDefaultSpeed": 1,
+              "CoolingPlantFanOffDelay": 21,
+              "CoolingPlantFanSpeedControlEnable": 0,
+              "CoolingPlantFanSpeeds": 0,
+              "DamperModulationEnable": 1,
+              "DisplayBacklightActiveBrightness": 128,
+              "DisplayBacklightIdleBrightness": 1,
+              "EnableHVACRelayDrive": 1,
+              "HeatingPlantFanDefaultSpeed": 1,
+              "HeatingPlantFanOnDelay": 15,
+              "HeatingPlantFanSpeedControlEnable": 0,
+              "HeatingPlantFanSpeeds": 0,
+              "InternalPlantModes": 20,
+              "InternalPlantType": 2,
+              "KeyBacklightActiveBrightness": 0,
+              "KeyBacklightIdleBrightness": 254,
+              "TemperatureUnits": 3,
+              "TimerEnable": 3,
+              "VariableFanCoilEnable": 3,
+              "VentPlantType": 0
+            },
+            "third_state": "already_applied",
+            "unit_type": "PC_TSB",
+            "unrelated_parameters_preserved": true
+          },
+          {
+            "first_expected": {
+              "BeepEnable": 1,
+              "CoolingPlantFanOffDelay": 24,
+              "CoolingPlantFanSpeeds": 1,
+              "DamperModulationEnable": 2,
+              "DisplayBacklightActiveBrightness": 127,
+              "DisplayBacklightIdleBrightness": 2,
+              "EnableHVACRelayDrive": 0,
+              "HeatingPlantFanOnDelay": 12,
+              "KeyBacklightIdleBrightness": 255,
+              "PlantCycleTime": 15,
+              "TemperatureUnits": 0,
+              "TimerEnable": 1,
+              "VariableFanCoilEnable": 1
+            },
+            "first_state": "verified_saved",
+            "second_expected": {
+              "HeatingPlantFanSpeeds": 1,
+              "PlantCycleTime": 15
+            },
+            "seed": {
+              "BeepEnable": 3,
+              "ControlledZones": 1,
+              "CoolingPlantFanDefaultSpeed": 1,
+              "CoolingPlantFanOffDelay": 21,
+              "CoolingPlantFanSpeedControlEnable": 0,
+              "CoolingPlantFanSpeeds": 0,
+              "DamperModulationEnable": 1,
+              "DisplayBacklightActiveBrightness": 128,
+              "DisplayBacklightIdleBrightness": 1,
+              "EnableHVACRelayDrive": 1,
+              "HeatingPlantFanDefaultSpeed": 1,
+              "HeatingPlantFanOnDelay": 15,
+              "HeatingPlantFanSpeedControlEnable": 0,
+              "HeatingPlantFanSpeeds": 0,
+              "InternalPlantModes": 20,
+              "InternalPlantType": 2,
+              "KeyBacklightActiveBrightness": 0,
+              "KeyBacklightIdleBrightness": 254,
+              "TemperatureUnits": 3,
+              "TimerEnable": 3,
+              "VariableFanCoilEnable": 3,
+              "VentPlantType": 0
+            },
+            "third_state": "already_applied",
+            "unit_type": "PC_TSB5",
+            "unrelated_parameters_preserved": true
+          }
+        ],
+        "cni_connections": [],
+        "format": "native-thermostat-settings-integration-v1",
+        "original_toolkit_form_executed": false,
+        "physical_devices_accessed": false,
+        "raw_record_fault_injection": {
+          "hidden_pp_change_rejected": true,
+          "injected_only_into_readback": true,
+          "native_save_and_reload_completed": true,
+          "persistence_verified": false
+        },
+        "refusals": [
+          {
+            "edits": {
+              "InstalledZones": "32"
+            },
+            "error": "InstalledZones: Value 0 must be between 0 and 31",
+            "path": "//T1ACDF40/254/p/30"
+          },
+          {
+            "edits": {
+              "TimerEnable": "1"
+            },
+            "error": "Setting is not admitted for PC_TSA: TimerEnable",
+            "path": "//T1ACDF40/254/p/30"
+          },
+          {
+            "edits": {
+              "SendInterval": "1"
+            },
+            "error": "Setting is not admitted for PC_TSB: SendInterval",
+            "path": "//T1ACDF40/254/p/31"
+          },
+          {
+            "edits": {
+              "HeatingPlantFanOnDelay": "13"
+            },
+            "error": "The original form save would rewrite HeatingPlantFanOnDelay=12; choose values that survive it",
+            "path": "//T1ACDF40/254/p/30"
+          },
+          {
+            "edits": {
+              "EvapProgramEnabled": "2"
+            },
+            "error": "EvapProgramEnabled must be 0 or 1; the original load normalises other values",
+            "path": "//T1ACDF40/254/p/30"
+          },
+          {
+            "edits": {
+              "CoolStage1Output": "4"
+            },
+            "error": "Setting is not admitted for PC_TSB: CoolStage1Output",
+            "path": "//T1ACDF40/254/p/31"
+          }
+        ],
+        "service": {
+          "backend": "local",
+          "cleanup_complete": true,
+          "cleanup_errors": [],
+          "configured_ports": [
+            63636,
+            63637,
+            63638,
+            63639,
+            63640,
+            63641
+          ],
+          "exit_code": 143,
+          "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+          "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+          "listener_ownership_verified": true,
+          "listeners": [
+            "127.0.0.1:63636",
+            "127.0.0.1:63637",
+            "127.0.0.1:63638",
+            "127.0.0.1:63639",
+            "127.0.0.1:63640",
+            "127.0.0.1:63641"
+          ],
+          "log_closed": true,
+          "pid": 110,
+          "process_exit_confirmed": true,
+          "projects_adopted": false,
+          "reserved_sockets_closed": true,
+          "server_log_bytes": 240,
+          "server_log_hashed_bytes": 240,
+          "server_log_sha256": "c966cc582676c3cb59eeda6f9b9674665b2e41bdd49ec1a9209b8230d8f272ae",
+          "server_log_tail": [
+            "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+            "C-Gate is running."
+          ],
+          "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+          "work_removed": true
+        }
+      },
+      {
+        "cases": [
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] Y (heat/cool)",
+              "2": "[CG01] B (cool activation)",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)"
+            },
+            "hand_checked": true,
+            "path": "//TDC4E352/254/p/10",
+            "post_load_changes": {
+              "CoolActivationOutput": 2,
+              "EvapProgramEnabled": 0,
+              "InternalRelay2GroupNumber": 2
+            },
+            "state": "verified_saved",
+            "template": 1
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] Y (heat/cool)",
+              "2": "[CG01] B (cool activation)",
+              "20": "[CG01] Damper Zone 1",
+              "21": "[CG01] Damper Zone 2",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/11",
+            "post_load_changes": {
+              "CoolActivationOutput": 2,
+              "EvapProgramEnabled": 0,
+              "InternalRelay2GroupNumber": 2
+            },
+            "state": "verified_saved",
+            "template": 2
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] Y1 (cool/heat)",
+              "2": "[CG01] Y2 (cool/heat)",
+              "20": "[CG01] Damper Zone 1",
+              "21": "[CG01] Damper Zone 2",
+              "22": "[CG01] Damper Zone 3",
+              "23": "[CG01] Damper Zone 4",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)",
+              "5": "[CG01] Heat/cool fan speed"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/12",
+            "post_load_changes": {
+              "EvapProgramEnabled": 0
+            },
+            "state": "verified_saved",
+            "template": 3
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "255": "<Unused>",
+              "5": "[CG01] W (heat)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/13",
+            "post_load_changes": {
+              "CoolingPlantFanEnable": 0,
+              "EvapProgramEnabled": 0
+            },
+            "state": "verified_saved",
+            "template": 4
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] pump",
+              "2": "[CG01] fill",
+              "255": "<Unused>",
+              "3": "[CG01] cool fan speed 1",
+              "4": "[CG01] cool fan speed 2"
+            },
+            "hand_checked": true,
+            "path": "//TDC4E352/254/p/14",
+            "post_load_changes": {
+              "EvapProgramEnabled": 0,
+              "HeatActivationOutput": 255,
+              "HeatingPlantFanEnable": 0,
+              "HeatingPlantFanSpeedControlEnable": 1,
+              "HeatingPlantFanSpeeds": 2
+            },
+            "state": "verified_saved",
+            "template": 5
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] Y (cool)",
+              "2": "[CG01] Open",
+              "255": "<Unused>",
+              "3": "[CG01] G1 (fan speed 1)",
+              "4": "[CG01] G2 (fan speed 2)",
+              "5": "[CG01] Close"
+            },
+            "hand_checked": true,
+            "path": "//TDC4E352/254/p/15",
+            "post_load_changes": {
+              "EvapProgramEnabled": 0,
+              "HeatingPlantFanEnable": 0,
+              "HeatingPlantFanSpeedControlEnable": 1,
+              "HeatingPlantFanSpeeds": 2
+            },
+            "state": "verified_saved",
+            "template": 6
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "10": "[CG01] pump",
+              "11": "[CG01] dump",
+              "12": "[CG01] cool fan speed 1",
+              "13": "[CG01] cool fan speed 2",
+              "14": "[CG01] cool fan speed 3",
+              "20": "[CG01] Damper Zone 1",
+              "21": "[CG01] Damper Zone 2",
+              "22": "[CG01] Damper Zone 3",
+              "255": "<Unused>",
+              "3": "[CG01] G1 (heat fan speed 1)",
+              "4": "[CG01] G2 (heat fan speed 2)",
+              "5": "[CG01] W (heat)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/16",
+            "post_load_changes": {
+              "EvapProgramEnabled": 0
+            },
+            "state": "verified_saved",
+            "template": 7
+          },
+          {
+            "family": "programmable",
+            "groups": {
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "5": "[CG01] Y (cool)",
+              "6": "[CG01] W (heat)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/17",
+            "post_load_changes": {
+              "EvapProgramEnabled": 0
+            },
+            "state": "verified_saved",
+            "template": 8
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "1": "[CG01] Y (heat/cool)",
+              "2": "[CG01] B (cool activation)",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/18",
+            "post_load_changes": {
+              "CoolActivationOutput": 2,
+              "InternalRelay2GroupNumber": 2
+            },
+            "state": "verified_saved",
+            "template": 1
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "255": "<Unused>",
+              "5": "[CG01] W (heat)"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/19",
+            "post_load_changes": {
+              "CoolingPlantFanEnable": 0
+            },
+            "state": "verified_saved",
+            "template": 4
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "1": "[CG01] pump",
+              "2": "[CG01] fill",
+              "255": "<Unused>",
+              "3": "[CG01] cool fan speed 1",
+              "4": "[CG01] cool fan speed 2"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/20",
+            "post_load_changes": {
+              "HeatActivationOutput": 255,
+              "HeatingPlantFanEnable": 0,
+              "HeatingPlantFanSpeedControlEnable": 1,
+              "HeatingPlantFanSpeeds": 2
+            },
+            "state": "verified_saved",
+            "template": 5
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "1": "[CG01] Y (cool)",
+              "2": "[CG01] Open",
+              "255": "<Unused>",
+              "3": "[CG01] G1 (fan speed 1)",
+              "4": "[CG01] G2 (fan speed 2)",
+              "5": "[CG01] Close"
+            },
+            "hand_checked": false,
+            "path": "//TDC4E352/254/p/21",
+            "post_load_changes": {
+              "HeatingPlantFanEnable": 0,
+              "HeatingPlantFanSpeedControlEnable": 1,
+              "HeatingPlantFanSpeeds": 2
+            },
+            "state": "verified_saved",
+            "template": 6
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "5": "[CG01] Y (cool)",
+              "6": "[CG01] W (heat)"
+            },
+            "hand_checked": true,
+            "path": "//TDC4E352/254/p/22",
+            "post_load_changes": {},
+            "state": "verified_saved",
+            "template": 8
+          }
+        ],
+        "cni_connections": [],
+        "format": "native-thermostat-post-load-integration-v1",
+        "original_toolkit_form_executed": false,
+        "physical_devices_accessed": false,
+        "refusals": [
+          {
+            "error": "Original post-load replay is outside its precondition: Group 5 is taken; the original GetNewGroup search order is not replayed",
+            "path": "//TF4F5A5E/254/p/40",
+            "template": 9
+          },
+          {
+            "error": "Original post-load replay is outside its precondition: Group 5 is taken; the original GetNewGroup search order is not replayed",
+            "path": "//TF4F5A5E/254/p/43",
+            "template": 9
+          },
+          {
+            "error": "Post-load replay needs the unit Application byte to name its output application; use post_load=False for the pure overlay",
+            "path": "//TF4F5A5E/254/p/41",
+            "template": 1
+          },
+          {
+            "error": "Original post-load replay is outside its precondition: The output application already has [CG01] groups; original renaming then depends on unrecovered state",
+            "path": "//TF4F5A5E/254/p/42",
+            "template": 1
+          }
+        ],
+        "service": {
+          "backend": "local",
+          "cleanup_complete": true,
+          "cleanup_errors": [],
+          "configured_ports": [
+            63649,
+            63650,
+            63651,
+            63652,
+            63653,
+            63654
+          ],
+          "exit_code": 143,
+          "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+          "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+          "listener_ownership_verified": true,
+          "listeners": [
+            "127.0.0.1:63649",
+            "127.0.0.1:63650",
+            "127.0.0.1:63651",
+            "127.0.0.1:63652",
+            "127.0.0.1:63653",
+            "127.0.0.1:63654"
+          ],
+          "log_closed": true,
+          "pid": 185,
+          "process_exit_confirmed": true,
+          "projects_adopted": false,
+          "reserved_sockets_closed": true,
+          "server_log_bytes": 240,
+          "server_log_hashed_bytes": 240,
+          "server_log_sha256": "5891b8d3888b3d3f0f4d32f6dc71fa631dc727990685114fb9a566ea52fa75e0",
+          "server_log_tail": [
+            "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+            "C-Gate is running."
+          ],
+          "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+          "work_removed": true
+        },
+        "stale_relay_snapshots": [
+          {
+            "family": "programmable",
+            "groups": {
+              "1": "[CG01] Y (heat/cool)",
+              "2": "[CG01] B (cool activation)",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)"
+            },
+            "path": "//T8826D25/254/p/50",
+            "pre_load_relay_values": {
+              "InternalRelay1GroupNumber": 241,
+              "InternalRelay2GroupNumber": 242,
+              "InternalRelay3GroupNumber": 243,
+              "InternalRelay4GroupNumber": 244,
+              "InternalRelay5GroupNumber": 245
+            },
+            "state": "verified_saved",
+            "template": 1,
+            "unrelated_parameters_preserved": true
+          },
+          {
+            "family": "basic",
+            "groups": {
+              "1": "[CG01] Y (heat/cool)",
+              "2": "[CG01] B (cool activation)",
+              "255": "<Unused>",
+              "3": "[CG01] G (fan)",
+              "4": "[CG01] B (heat activation)"
+            },
+            "path": "//T8826D25/254/p/51",
+            "pre_load_relay_values": {
+              "InternalRelay1GroupNumber": 241,
+              "InternalRelay2GroupNumber": 242,
+              "InternalRelay3GroupNumber": 243,
+              "InternalRelay4GroupNumber": 244,
+              "InternalRelay5GroupNumber": 245
+            },
+            "state": "verified_saved",
+            "template": 1,
+            "unrelated_parameters_preserved": true
+          }
+        ]
+      }
+    ],
+    "native_tests_passed": 7,
+    "offline_command": "PYTHONPATH=tests:. <fresh-venv>/bin/python -m unittest tests.test_thermostat_settings tests.test_thermostat_settings_guard tests.test_thermostat_settings_dialog_rules tests.test_thermostat_post_load tests.test_thermostat_templates -q",
+    "offline_tests_passed": 39,
+    "package_file_count": 258,
+    "sha256": "b83c54fe4e59da29959752fb3e3007250f045db5c7630c217d336e2cf9e4ebc3",
+    "skipped": 0,
+    "source_tree_imported": false
+  },
+  "module_sha256": {
+    "thermostat_post_load.py": "40935d1a09a01992d40c3d21165691588954bac552ea603309c221acdd3ea302",
+    "thermostat_settings.py": "d79cd7ed1c4bfa37973d42d841db483be2078b1d7a08faf1159e90e473b8ca40",
+    "thermostat_settings_guard.py": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829",
+    "thermostat_templates.py": "fb87bb5d7eb46bc0ab5dbc7ff5bfbc724917105aa98e87ac3cbe1f70be792ab9"
+  },
+  "native_source": {
+    "command": "PYTHONPATH=src:tests:. python -m pytest tests/test_thermostat_settings_native.py tests/test_thermostat_post_load_native.py -q",
+    "junit_sha256": "968ee36f668bfceb1c80834be1a71e52674b89338aec5bfe32bd49045b2c5827",
+    "settings_receipt": "thermostat-settings-normalization-native.json",
+    "skipped": 0,
+    "template_receipt": "thermostat-post-load-relay-native.json",
+    "tests_passed": 7
+  },
+  "original_toolkit_form_executed": false,
+  "physical_devices_accessed": false,
+  "remaining": [
+    "Complete event ordering, parent visibility and raw-edit admission",
+    "Temperature normalization requiring global Toolkit preference",
+    "Exposed quick-zone save workflow",
+    "GetNewGroup manager order and existing-prefix rename/reuse",
+    "Template untouched-field normalization, ordinary group creation and remaining tabs",
+    "Physical thermostat acceptance"
+  ],
+  "scope": "Focused settings normalization, individual dialog rules and Load Template relay phase; incomplete original form parity",
+  "source": {
+    "command": "PYTHONPATH=src:tests:. python -m pytest tests/test_thermostat_settings.py tests/test_thermostat_settings_guard.py tests/test_thermostat_settings_dialog_rules.py tests/test_thermostat_post_load.py tests/test_thermostat_templates.py -q",
+    "junit_sha256": "ce47d43728999072a6875d308308ed3eb43163aabd565a7eeb138a9db88bc529",
+    "skipped": 0,
+    "subtests_passed": 62,
+    "tests_passed": 39
+  },
+  "static_receipts": {
+    "thermostat-group-allocation-static.json": "4a19fd3e0243b266177d73817b67f7ef36d2709933e474bffbd34c2d25026326",
+    "thermostat-post-load-static.json": "7d0063d39cddc7fa8111d8681a911f840df1dcb7ddcc4d84731c00bf2ca7b702",
+    "thermostat-settings-form-static.json": "d93ce9961950b5142942207f32448c892916a76af8d09ec80f23a9e552569e3c",
+    "thermostat-settings-save-static.json": "9d791bbba1a945fc29d13b88b4bedebd6cd7327fec0a3ce2c1477f1f56a60490"
+  },
+  "test_sha256": {
+    "test_thermostat_post_load.py": "717a9579014dcaf7ac62b97c41e65a65df38180c00f372ab9d39a10d6a9ab351",
+    "test_thermostat_post_load_native.py": "9aaa451b9c7888a28535cc0236f17ef685de8e2919dd13a82dd8f98a2017ec2e",
+    "test_thermostat_settings.py": "77133898794c8df55261d25b09330eb93185c2c333c3072b2151972386ba0099",
+    "test_thermostat_settings_dialog_rules.py": "d80481596d4935da051a7a253c74ae0d9021e842c4591e42c1353295b05ec331",
+    "test_thermostat_settings_guard.py": "7615eeefd9e71870d644baefeebe641e0a0287d59ad623c1d88f18e3c8be6a0f",
+    "test_thermostat_settings_native.py": "6880a916181d722f45f3c1d3016ec67562b9145824b61a9a897b17b464dc04d3",
+    "test_thermostat_templates.py": "bfb639d50f5a761066828b7ba8b6786ec2d7fb0bacaeb885c114a7dc9f017d76"
+  }
+}

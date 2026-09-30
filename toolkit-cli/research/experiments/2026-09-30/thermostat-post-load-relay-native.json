@@ -1,0 +1,364 @@
+{
+  "acceptance": {
+    "native_backend": "C-Gate 3.4.0.2001",
+    "original_toolkit_form_executed": false,
+    "source_based_expected_values": true,
+    "tests_passed": 3,
+    "tests_skipped": 0
+  },
+  "cases": [
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] Y (heat/cool)",
+        "2": "[CG01] B (cool activation)",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)"
+      },
+      "hand_checked": true,
+      "path": "//T94D222C/254/p/10",
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "EvapProgramEnabled": 0,
+        "InternalRelay2GroupNumber": 2
+      },
+      "state": "verified_saved",
+      "template": 1
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] Y (heat/cool)",
+        "2": "[CG01] B (cool activation)",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/11",
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "EvapProgramEnabled": 0,
+        "InternalRelay2GroupNumber": 2
+      },
+      "state": "verified_saved",
+      "template": 2
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] Y1 (cool/heat)",
+        "2": "[CG01] Y2 (cool/heat)",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "22": "[CG01] Damper Zone 3",
+        "23": "[CG01] Damper Zone 4",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)",
+        "5": "[CG01] Heat/cool fan speed"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/12",
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "state": "verified_saved",
+      "template": 3
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] W (heat)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/13",
+      "post_load_changes": {
+        "CoolingPlantFanEnable": 0,
+        "EvapProgramEnabled": 0
+      },
+      "state": "verified_saved",
+      "template": 4
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] pump",
+        "2": "[CG01] fill",
+        "255": "<Unused>",
+        "3": "[CG01] cool fan speed 1",
+        "4": "[CG01] cool fan speed 2"
+      },
+      "hand_checked": true,
+      "path": "//T94D222C/254/p/14",
+      "post_load_changes": {
+        "EvapProgramEnabled": 0,
+        "HeatActivationOutput": 255,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "state": "verified_saved",
+      "template": 5
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] Y (cool)",
+        "2": "[CG01] Open",
+        "255": "<Unused>",
+        "3": "[CG01] G1 (fan speed 1)",
+        "4": "[CG01] G2 (fan speed 2)",
+        "5": "[CG01] Close"
+      },
+      "hand_checked": true,
+      "path": "//T94D222C/254/p/15",
+      "post_load_changes": {
+        "EvapProgramEnabled": 0,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "state": "verified_saved",
+      "template": 6
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "10": "[CG01] pump",
+        "11": "[CG01] dump",
+        "12": "[CG01] cool fan speed 1",
+        "13": "[CG01] cool fan speed 2",
+        "14": "[CG01] cool fan speed 3",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "22": "[CG01] Damper Zone 3",
+        "255": "<Unused>",
+        "3": "[CG01] G1 (heat fan speed 1)",
+        "4": "[CG01] G2 (heat fan speed 2)",
+        "5": "[CG01] W (heat)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/16",
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "state": "verified_saved",
+      "template": 7
+    },
+    {
+      "family": "programmable",
+      "groups": {
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "5": "[CG01] Y (cool)",
+        "6": "[CG01] W (heat)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/17",
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "state": "verified_saved",
+      "template": 8
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "1": "[CG01] Y (heat/cool)",
+        "2": "[CG01] B (cool activation)",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/18",
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "InternalRelay2GroupNumber": 2
+      },
+      "state": "verified_saved",
+      "template": 1
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] W (heat)"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/19",
+      "post_load_changes": {
+        "CoolingPlantFanEnable": 0
+      },
+      "state": "verified_saved",
+      "template": 4
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "1": "[CG01] pump",
+        "2": "[CG01] fill",
+        "255": "<Unused>",
+        "3": "[CG01] cool fan speed 1",
+        "4": "[CG01] cool fan speed 2"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/20",
+      "post_load_changes": {
+        "HeatActivationOutput": 255,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "state": "verified_saved",
+      "template": 5
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "1": "[CG01] Y (cool)",
+        "2": "[CG01] Open",
+        "255": "<Unused>",
+        "3": "[CG01] G1 (fan speed 1)",
+        "4": "[CG01] G2 (fan speed 2)",
+        "5": "[CG01] Close"
+      },
+      "hand_checked": false,
+      "path": "//T94D222C/254/p/21",
+      "post_load_changes": {
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "state": "verified_saved",
+      "template": 6
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "5": "[CG01] Y (cool)",
+        "6": "[CG01] W (heat)"
+      },
+      "hand_checked": true,
+      "path": "//T94D222C/254/p/22",
+      "post_load_changes": {},
+      "state": "verified_saved",
+      "template": 8
+    }
+  ],
+  "cni_connections": [],
+  "format": "native-thermostat-post-load-relay-integration-v1",
+  "physical_devices_accessed": false,
+  "refusals": [
+    {
+      "error": "Original post-load replay is outside its precondition: Group 5 is taken; the original GetNewGroup search order is not replayed",
+      "path": "//TC94EAA3/254/p/40",
+      "template": 9
+    },
+    {
+      "error": "Original post-load replay is outside its precondition: Group 5 is taken; the original GetNewGroup search order is not replayed",
+      "path": "//TC94EAA3/254/p/43",
+      "template": 9
+    },
+    {
+      "error": "Post-load replay needs the unit Application byte to name its output application; use post_load=False for the pure overlay",
+      "path": "//TC94EAA3/254/p/41",
+      "template": 1
+    },
+    {
+      "error": "Original post-load replay is outside its precondition: The output application already has [CG01] groups; original renaming then depends on unrecovered state",
+      "path": "//TC94EAA3/254/p/42",
+      "template": 1
+    }
+  ],
+  "service": {
+    "backend": "local",
+    "cleanup_complete": true,
+    "cleanup_errors": [],
+    "configured_ports": [
+      63533,
+      63534,
+      63535,
+      63536,
+      63537,
+      63538
+    ],
+    "exit_code": 143,
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+    "listener_ownership_verified": true,
+    "listeners": [
+      "127.0.0.1:63533",
+      "127.0.0.1:63534",
+      "127.0.0.1:63535",
+      "127.0.0.1:63536",
+      "127.0.0.1:63537",
+      "127.0.0.1:63538"
+    ],
+    "log_closed": true,
+    "pid": 99660,
+    "process_exit_confirmed": true,
+    "projects_adopted": false,
+    "reserved_sockets_closed": true,
+    "server_log_bytes": 240,
+    "server_log_hashed_bytes": 240,
+    "server_log_sha256": "6d6a0324e39cacf8865e13d498484f7f71e7854fb9f0eeae66d4a0ef3171df1e",
+    "server_log_tail": [
+      "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+      "C-Gate is running."
+    ],
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "work_removed": true
+  },
+  "stale_relay_snapshots": [
+    {
+      "family": "programmable",
+      "groups": {
+        "1": "[CG01] Y (heat/cool)",
+        "2": "[CG01] B (cool activation)",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)"
+      },
+      "path": "//T6F986F2/254/p/50",
+      "pre_load_relay_values": {
+        "InternalRelay1GroupNumber": 241,
+        "InternalRelay2GroupNumber": 242,
+        "InternalRelay3GroupNumber": 243,
+        "InternalRelay4GroupNumber": 244,
+        "InternalRelay5GroupNumber": 245
+      },
+      "state": "verified_saved",
+      "template": 1,
+      "unrelated_parameters_preserved": true
+    },
+    {
+      "family": "basic",
+      "groups": {
+        "1": "[CG01] Y (heat/cool)",
+        "2": "[CG01] B (cool activation)",
+        "255": "<Unused>",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)"
+      },
+      "path": "//T6F986F2/254/p/51",
+      "pre_load_relay_values": {
+        "InternalRelay1GroupNumber": 241,
+        "InternalRelay2GroupNumber": 242,
+        "InternalRelay3GroupNumber": 243,
+        "InternalRelay4GroupNumber": 244,
+        "InternalRelay5GroupNumber": 245
+      },
+      "state": "verified_saved",
+      "template": 1,
+      "unrelated_parameters_preserved": true
+    }
+  ]
+}
