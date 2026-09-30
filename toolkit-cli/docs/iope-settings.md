@@ -16,8 +16,9 @@ specification outside the catalogued revisions.
 
 ## How Toolkit binds the dialog
 
-IOPE has no `TUnitNodeManagerFactory` registration, so the dialog map records
-it as having no static node manager. The `CIS_TfrmIOPE` initialization calls
+IOPE has no `TUnitNodeManagerFactory` registration, so `EditUnit` falls back
+to the `CommonCBusUnit` director; the dialog map records that path as
+`common_director_unit_dialog`. The `CIS_TfrmIOPE` initialization calls
 `TUnitDialogFactory.RegisterUnitDialog('IOPE1R1' | 'IOPE2R2' | 'IOPE2C4',
 TfrmIOPE)`. `TddCommonCBusUnit.Initialise` looks the unit type up
 case-insensitively with `TUnitDialogFactory.GetUnitDialog`. Load and save go

@@ -117,6 +117,7 @@ class DialogMapTests(unittest.TestCase):
                 unresolved_reasons=[{"code": "looks_fine", "detail": "x"}]
             ),
             "altered detail": lambda row: row["unresolved_reasons"][0].update(detail="x"),
+            "extra reason field": lambda row: row["unresolved_reasons"][0].update(note="x"),
             "claimed resolution": lambda row: row.update(status="resolved"),
             "unknown status": lambda row: row.update(status="partial"),
         }
@@ -197,6 +198,171 @@ class DialogMapTests(unittest.TestCase):
         self.assertEqual(document["unit_types"]["KEYA1"]["node_managers"], ["TnmKEYA1"])
         self.assertEqual(document["node_managers"]["TnmKEYA1"]["directors"], ["TddKeyM8", "TddNeoPro"])
         self.assertEqual(document["directors"]["TddNeoPro"]["dialog_forms"], ["TfrmNeoPro"])
+
+    def test_unit_dialog_factory_and_common_director_fallback_are_pinned(self):
+        document = committed()
+        factory = document["unit_dialog_factory"]
+        self.assertEqual(factory["call_sites"], 11)
+        self.assertEqual(factory["unresolved_call_sites"], [])
+        self.assertFalse(factory["original_executed"])
+        self.assertEqual(
+            {(row["unit_type"], row["form_class"]) for row in factory["registrations"]},
+            {
+                ("IOPE1R1", "TfrmIOPE"), ("IOPE2R2", "TfrmIOPE"), ("IOPE2C4", "TfrmIOPE"),
+                ("DMXDO12", "TfrmDMXGateway"), ("DIMAR3", "TfrmArchitecturalDimmer"),
+                ("DIMAR6", "TfrmArchitecturalDimmer"), ("DIMAR12", "TfrmArchitecturalDimmer"),
+                ("KEYGL5", "TfrmKEYGL5"), ("SENCT4", "TfrmSENCT4"), ("SENTEMP4", "TfrmPC_RDTS"),
+                ("C12DIMAR", "TfrmCArchitecturalDimmer"),
+            },
+        )
+        fallback = factory["director_fallback"]
+        self.assertEqual(
+            fallback["director_lookup_order"],
+            ["by_object", "by_unit_type", "by_descriptor:CommonCBusUnit"],
+        )
+        self.assertEqual(fallback["director"], "TddCommonCBusUnit")
+        by_id = {row["dialog_id"]: row for row in document["dialogs"]}
+        for dialog_id, form in (
+            ("dialog:14052.htm", "TFRMIOPE"),
+            ("dialog:8064.htm", "TFRMARCHITECTURALDIMMER"),
+            ("dialog:11739.htm", "TFRMDMXGATEWAY"),
+            ("dialog:18865.htm", "TFRMKEYGL5"),
+            ("dialog:14934.htm", "TFRMSENCT4"),
+        ):
+            with self.subTest(dialog_id):
+                row = by_id[dialog_id]
+                self.assertEqual(row["status"], "resolved")
+                self.assertEqual(row["form_resources"], [form])
+                self.assertEqual(
+                    {unit["dispatch"] for unit in row["unit_types"]}, {"common_director_unit_dialog"}
+                )
+                self.assertEqual(row["directors"], ["TddCommonCBusUnit"])
+
+    def test_shared_fallback_director_does_not_route_ledger_rows(self):
+        document = committed()
+        by_id = {row["dialog_id"]: row for row in document["dialogs"]}
+        # DIMAR and DMX share only the CommonCBusUnit fallback with IOPE and
+        # KEYGL5; they keep their own triage row.
+        for dialog_id in ("dialog:8064.htm", "dialog:11739.htm"):
+            self.assertEqual(by_id[dialog_id]["ledger_ids"], ["all-unit-parameter-encoding"])
+            self.assertEqual(by_id[dialog_id]["ledger_basis"], "help_branch_triage")
+
+    def test_executable_help_links_resolve_help_gaps(self):
+        document = committed()
+        links = {row["key"]: row["context_id"] for row in document["help_links"]["entries"]}
+        self.assertEqual(len(document["help_links"]["entries"]), 197)
+        self.assertEqual((links["TKEYM8"], links["TKEYA8"]), (5062, 5087))
+        self.assertEqual((links["TPC_TSA"], links["TPC_TSB"]), (2562, 2964))
+        by_id = {row["dialog_id"]: row for row in document["dialogs"]}
+        neo8 = by_id["dialog:9304.htm"]
+        self.assertEqual(neo8["unit_type_selection"], "executable_help_link_conflict")
+        self.assertEqual([unit["unit_type"] for unit in neo8["unit_types"]], ["KEYM8"])
+        self.assertEqual(neo8["other_help_unit_type_candidates"], ["KEYA8"])
+        self.assertEqual(neo8["status"], "resolved")
+        for dialog_id, types in (
+            ("dialog:3850.htm", ["PC_TSA", "PC_TSA5"]),
+            ("dialog:3851.htm", ["PC_TSB", "PC_TSB5"]),
+        ):
+            with self.subTest(dialog_id):
+                row = by_id[dialog_id]
+                self.assertEqual(row["unit_type_selection"], "executable_help_link_none")
+                self.assertEqual([unit["unit_type"] for unit in row["unit_types"]], types)
+                self.assertEqual(row["ledger_ids"], ["thermostat-configuration"])
+                self.assertEqual(row["status"], "resolved")
+
+    def test_help_only_unit_types_are_absent_from_the_executable(self):
+        document = committed()
+        absent = document["help_only_unit_types"]
+        self.assertEqual(sorted(absent), ["KEYH5", "PC_INTU", "WPAD2D1", "WPAD2R1"])
+        for name, presence in absent.items():
+            self.assertEqual(presence, {"utf16_literal": False, "short_string": False}, name)
+        by_id = {row["dialog_id"]: row for row in document["dialogs"]}
+        for dialog_id, subjects in (
+            ("dialog:19973.htm", ["KEYH5"]),
+            ("dialog:10747.htm", ["PC_INTU"]),
+            ("dialog:12558.htm", ["WPAD2D1", "WPAD2R1"]),
+        ):
+            reason = by_id[dialog_id]["unresolved_reasons"][0]
+            self.assertEqual(reason["code"], "help_unit_type_absent_from_executable")
+            self.assertEqual(reason["subjects"], subjects)
+
+    def test_unresolved_roster_is_pinned(self):
+        document = committed()
+        self.assertEqual((document["counts"]["resolved"], document["counts"]["unresolved"]), (101, 17))
+        self.assertEqual(
+            document["counts"]["unresolved_reasons"],
+            {"generic_ledger_only": 15, "help_unit_type_absent_from_executable": 3},
+        )
+        for row in document["dialogs"]:
+            for reason in row["unresolved_reasons"]:
+                with self.subTest(row["dialog_id"], code=reason["code"]):
+                    self.assertTrue(reason["subjects"])
+
+    def test_control_coverage_is_derived_from_committed_receipts(self):
+        document = committed()
+        table = {row["dialog_id"]: row for row in document["control_coverage_table"]}
+        expected = {
+            "dialog:9792.htm": (["din-output-settings"], 16, 27),
+            "dialog:14052.htm": (["iope-settings"], 28, 196),
+            "dialog:13876.htm": (["wireless-gateway-remote-switch"], 32, 41),
+        }
+        for dialog_id, (editors, mapped, total) in expected.items():
+            with self.subTest(dialog_id):
+                row = table[dialog_id]
+                self.assertEqual(row["editors"], editors)
+                self.assertEqual((row["controls_mapped"], row["controls_total"]), (mapped, total))
+                self.assertEqual(row["basis"], "control_receipt")
+        for dialog_id in ("dialog:11087.htm", "dialog:10112.htm", "dialog:3850.htm", "dialog:9303.htm",
+                          "dialog:11068.htm", "dialog:18865.htm"):
+            with self.subTest(dialog_id):
+                self.assertEqual(table[dialog_id]["controls_mapped"], 0)
+                self.assertEqual(table[dialog_id]["basis"], "no_control_level_receipt")
+        by_id = {row["dialog_id"]: row for row in document["dialogs"]}
+        iope = by_id["dialog:14052.htm"]
+        self.assertEqual(iope["implemented_editors"][0]["modules"][0], "src/cbus_toolkit/iope_settings.py")
+        mapped = {(row["control"], row["parameter"]) for row in iope["control_coverage"]["mapped_controls"]}
+        self.assertIn(("cmbLongPressTime", "LongPressTime"), mapped)
+        self.assertIn(("rgSensor2Enabled", "SensorNEnabled"), mapped)
+        self.assertEqual(
+            by_id["dialog:13876.htm"]["implemented_editors"][0]["link_basis"], "receipt_names_dialog"
+        )
+        for editor in dialog_map.IMPLEMENTED_EDITORS:
+            for path in editor["modules"] + [editor["documentation"]] + editor["receipts"]:
+                self.assertTrue((ROOT / path).is_file(), path)
+
+    def test_control_patterns_expand_ranges_alternatives_and_indices(self):
+        def names(text: str, candidates: list[str]) -> list[str]:
+            patterns = dialog_map._control_patterns(text)
+            return [name for name in candidates if any(p.fullmatch(name) for p in patterns)]
+
+        self.assertEqual(
+            names("chkLA1..chkLA4", ["chkLA1", "chkLA4", "chkLA5"]), ["chkLA1", "chkLA4"]
+        )
+        self.assertEqual(
+            names("cmbGlobal1..4RecallLevel", ["cmbGlobal2RecallLevel", "cmbGlobal5RecallLevel"]),
+            ["cmbGlobal2RecallLevel"],
+        )
+        self.assertEqual(
+            names("cmbRampRateGlobal1/2/3, cmbRampRateScene",
+                  ["cmbRampRateGlobal3", "cmbRampRateScene", "cmbRampRateGlobal4"]),
+            ["cmbRampRateGlobal3", "cmbRampRateScene"],
+        )
+        self.assertEqual(
+            names("rgSensorNEnabled (Disabled when On/Off)", ["rgSensor2Enabled", "rgSensorEnabled"]),
+            ["rgSensor2Enabled"],
+        )
+        self.assertEqual(names("cmbKeyKFunction", ["cmbKey10Function", "cmbKeyFunction"]), ["cmbKey10Function"])
+
+    def test_stale_receipt_form_digest_is_rejected(self):
+        executable = json.loads(
+            (ROOT / "docs/toolkit-executable-surface.json").read_text(encoding="utf-8")
+        )
+        for resource in executable["resources"]:
+            if resource["resource_name"] == "TFRMIOPEGLOBAL":
+                resource["resource_sha256"] = "0" * 64
+        editor = next(row for row in dialog_map.IMPLEMENTED_EDITORS if row["id"] == "iope-settings")
+        with self.assertRaisesRegex(ValueError, "stale form resource TFRMIOPEGLOBAL"):
+            dialog_map._receipt_form_resources([editor], executable)
 
     def test_committed_map_carries_identifiers_not_vendor_content(self):
         document = committed()

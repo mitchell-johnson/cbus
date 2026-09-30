@@ -48,8 +48,8 @@ EXECUTABLE_SURFACE_PATH = ROOT / "docs" / "toolkit-executable-surface.json"
 LEDGER_PATH = ROOT / "src" / "cbus_toolkit" / "capabilities.json"
 OUTPUT_PATH = ROOT / "docs" / "toolkit-dialog-map.json"
 
-SCHEMA_VERSION = 1
-FORMAT = "cbus-toolkit-dialog-map-v1"
+SCHEMA_VERSION = 2
+FORMAT = "cbus-toolkit-dialog-map-v2"
 EXPECTED_DIALOGS = 118
 GENERIC_LEDGER_IDS = frozenset({"toolkit-differential-acceptance", "toolkit-surface-census"})
 CATALOGUE_SOURCE = "research/vendor/cgate/app/unitspec/cbusunits.xml"
@@ -58,25 +58,31 @@ CATALOGUE_SOURCE = "research/vendor/cgate/app/unitspec/cbusunits.xml"
 # requires each type to occur literally in that row's ``limits`` text, so this
 # table cannot silently drift from the feature ledger.
 LEDGER_EXACT_UNIT_TYPES = {
-    "classic-key-presets": ("KEY1", "KEY2", "KEY4"),
+    "classic-key-presets": ("KEY1", "KEY2", "KEY4", "BCN2B", "BCN4B", "KEYV1SP"),
     "dlt-edlt-widgets-and-labels": ("KEYGL5",),
+    "interface-discovery-and-setup": ("WGATE5F", "WGATE5N"),
     "neo-core-key-presets": ("KEYA3", "KEYB4", "KEYE1", "KEYM4"),
-    "sensors-wizard-semantics": ("SENPILL",),
+    "sensors-wizard-semantics": (
+        "SENPILL", "SENPIROA", "SENPIRIA", "SENPIRIB", "IOPE1R1", "IOPE2R2", "IOPE2C4",
+    ),
+    "thermostat-configuration": ("PC_TSA", "PC_TSA5", "PC_TSB", "PC_TSB5"),
 }
 
 # Version strings in a dialog title, e.g. "(2.4.00)" or "(firmware 1.00)".
 FIRMWARE_HINT_RE = re.compile(r"\((?:firmware\s+)?(\d+\.\d+(?:\.\d+)?)\)")
 TOKEN_RE = re.compile(r"[A-Za-z0-9_]+")
+HELP_TOPIC_RE = re.compile(r"help:(\d+)\.htm")
 
 UNRESOLVED = {
-    "no_help_unit_type": "No exact unit-type or catalogue token and no non-navigation unit-type reference cross-link in the committed help metadata.",
-    "conflicting_help_links": "Unit-type reference pages and the product/dialog pages cross-link to disjoint unit types; the help metadata does not choose one.",
-    "unknown_unit_type": "A help unit type is absent from the catalogue, decoded specifications and static unit factory.",
+    "no_help_unit_type": "No exact unit-type or catalogue token, no non-navigation unit-type reference cross-link in the committed help metadata and no executable help link (TFormHelp.LoadConstants) to the dialog, its product topic or a same-titled linked topic.",
+    "conflicting_help_links": "Unit-type reference pages and the product/dialog pages cross-link to disjoint unit types, and no executable help link chooses between them.",
+    "unknown_unit_type": "A help unit type is absent from the catalogue, decoded specifications, static unit factory and unit-dialog factory.",
+    "help_unit_type_absent_from_executable": "A help unit type is absent from the catalogue, decoded specifications, static unit factory and unit-dialog factory, and neither a terminated UTF-16 literal nor a short string of its name occurs in the Toolkit executable: Toolkit 1.18 has no static path that instantiates or edits it (only TRegisterExtraUnits' external INI registration could add it at run time).",
     "firmware_hint_unmatched": "No catalogue, specification or factory firmware range contains the version named in the dialog title.",
-    "no_static_node_manager": "No TUnitNodeManagerFactory registration exists for a mapped unit type; its editor is dispatched outside the static node-manager/director chain.",
-    "no_director": "The registered node manager references no dialog-director class.",
-    "no_dialog_form": "The dialog director chain references no TfKipperBaseGUI form present in the executable surface.",
-    "generic_ledger_only": "No specific ledger row covers the mapped unit types or help branch; only the generic differential row applies.",
+    "no_static_node_manager": "No TUnitNodeManagerFactory or TUnitDialogFactory registration exists for a mapped unit type; EditUnit's CommonCBusUnit fallback director would find no unit dialog for it.",
+    "no_director": "The registered node manager references no dialog-director class and no TUnitDialogFactory registration exists for the unit type.",
+    "no_dialog_form": "The dialog director chain or unit-dialog registration references no form present in the executable surface.",
+    "generic_ledger_only": "No specific ledger row names the mapped unit types or shares their editor, and the help-branch triage is generic; only the generic differential row applies.",
 }
 
 
@@ -386,6 +392,172 @@ def _forms_for_director(image: _Image, chain: list[str]) -> dict[str, Any]:
     }
 
 
+COMMON_DESCRIPTOR = "CommonCBusUnit"
+
+
+def _unit_dialog_registrations(image: _Image) -> dict[str, Any]:
+    """Decode every static TUnitDialogFactory.RegisterUnitDialog call site.
+
+    Form initialisation sections load the factory singleton into EAX, the
+    form class reference into ECX and a constant type string into EDX, and
+    push a third string argument (nil at every static site).
+    """
+    factory = image.symbol("CIS_TUnitDialogFactory.UnitDialogFactory")
+    register = image.symbol("CIS_TUnitDialogFactory.TUnitDialogFactory.RegisterUnitDialog")
+    sites = image.call_sites({register})
+    registrations: list[dict] = []
+    unresolved: list[dict] = []
+    for start in sorted({image.procedure(site)[0].address for site, _ in sites}):
+        state: dict[str, tuple[str, int]] = {}
+        pushed: list[tuple[str, int]] = []
+        for instruction in image.procedure(start):
+            mnemonic, operands = instruction.mnemonic, instruction.op_str
+            if mnemonic == "mov":
+                match = re.fullmatch(r"(e[a-d]x), dword ptr \[(0x[0-9a-f]+)\]", operands)
+                if match:
+                    state[match[1]] = ("memory", int(match[2], 16))
+                elif operands == "eax, dword ptr [eax]" and state.get("eax", ("", 0))[0] == "memory":
+                    state["eax"] = ("variable", image.dword(state["eax"][1]))
+                elif match := re.fullmatch(r"(e[a-d]x), (0x[0-9a-f]+)", operands):
+                    state[match[1]] = ("immediate", int(match[2], 16))
+                elif match := re.match(r"(e[a-d]x),", operands):
+                    state[match[1]] = ("unknown", 0)
+                continue
+            if mnemonic == "push":
+                pushed.append(
+                    ("immediate", int(operands, 16))
+                    if re.fullmatch(r"0x[0-9a-f]+|0", operands) else ("unknown", 0)
+                )
+                continue
+            if mnemonic != "call":
+                continue
+            if operands.startswith("0x") and int(operands, 16) == register:
+                class_ref = state.get("ecx", ("unknown", 0))
+                type_ref = state.get("edx", ("unknown", 0))
+                chain = image.class_chain(class_ref[1]) if class_ref[0] == "memory" else None
+                type_name = image.unicode_literal(type_ref[1]) if type_ref[0] == "immediate" else None
+                owner = sorted(image.symbols.get(start, {"?"}))[0]
+                if (
+                    state.get("eax") != ("variable", factory)
+                    or chain is None
+                    or "TCustomForm" not in chain
+                    or type_name is None
+                    or pushed[-1:] != [("immediate", 0)]
+                ):
+                    unresolved.append({
+                        "procedure": owner,
+                        "reason": "Arguments are computed at run time, not constant at the call site.",
+                    })
+                else:
+                    registrations.append({
+                        "unit_type": type_name,
+                        "form_class": chain[0],
+                        "form_chain": chain[: chain.index("TForm")],
+                        "third_argument": None,
+                    })
+            state, pushed = {}, []
+    return {"call_sites": len(sites), "registrations": registrations, "unresolved": unresolved}
+
+
+def _common_director_fallback(image: _Image) -> dict[str, Any]:
+    """Prove the static EditUnit fallback that reaches the unit-dialog factory.
+
+    ``TCBusUnitGUIAgent.EditUnit`` asks the node-manager factory for a
+    director by object, then by the unit type, and when both return nil by
+    the constant ``CommonCBusUnit`` descriptor.  ``TddCommonCBusUnit.
+    Initialise`` looks the unit type up with ``TUnitDialogFactory.
+    GetUnitDialog``.  Both facts are required; a changed image raises.
+    """
+    edit_unit = "CIS_TCBusUnitGUIAgent.TCBusUnitGUIAgent.EditUnit"
+    by_object = image.symbol("CIS_TCISUnitNodeManagerFactory.TUnitNodeManagerFactory.GetDirectorClassByObject")
+    by_type = image.symbol("CIS_TCISUnitNodeManagerFactory.TUnitNodeManagerFactory.GetDirectorClass")
+    get_dialog = image.symbol("CIS_TUnitDialogFactory.TUnitDialogFactory.GetUnitDialog")
+    initialise = "CIS_TddCommonCBusUnit.TddCommonCBusUnit.Initialise"
+    order: list[str] = []
+    pending_literal = None
+    for instruction in image.procedure(image.symbol(edit_unit)):
+        if instruction.mnemonic == "mov" and (match := re.fullmatch(r"edx, (0x[0-9a-f]+)", instruction.op_str)):
+            pending_literal = image.unicode_literal(int(match[1], 16))
+        elif instruction.mnemonic == "call" and instruction.op_str.startswith("0x"):
+            target = int(instruction.op_str, 16)
+            if target == by_object:
+                order.append("by_object")
+            elif target == by_type:
+                order.append(f"by_descriptor:{pending_literal}" if pending_literal else "by_unit_type")
+            pending_literal = None
+    if order[-3:] != ["by_object", "by_unit_type", f"by_descriptor:{COMMON_DESCRIPTOR}"]:
+        raise ValueError("EditUnit no longer falls back to the CommonCBusUnit director")
+    callers = {
+        sorted(image.symbols.get(image.procedure(site)[0].address, {"?"}))[0]
+        for site, _ in image.call_sites({get_dialog})
+    }
+    if callers != {initialise}:
+        raise ValueError("GetUnitDialog callers changed")
+    return {
+        "procedure": edit_unit,
+        "director_lookup_order": order[-3:],
+        "fallback_descriptor": COMMON_DESCRIPTOR,
+        "unit_dialog_lookup": f"{initialise} -> TUnitDialogFactory.GetUnitDialog(unit type)",
+    }
+
+
+def _help_links(image: _Image) -> list[dict]:
+    """The TFormHelp.LoadConstants ``Name=<context id>`` table, in load order.
+
+    Keys are unit types, unit classes or form classes; each context id is a
+    help topic number.  Every entry is an IntToStr of an immediate followed by
+    a constant ``Name=`` literal; any other shape raises.
+    """
+    int_to_str = {
+        address for address, names in image.symbols.items() if "SysUtils.IntToStr" in names
+    }
+    rows: list[dict] = []
+    value = pending = None
+    for instruction in image.procedure(image.symbol("CIS_TKipperHelp.TFormHelp.LoadConstants")):
+        operands = instruction.op_str
+        if instruction.mnemonic == "mov" and (match := re.fullmatch(r"eax, (0x[0-9a-f]+|\d+)", operands)):
+            value = int(match[1], 0)
+        elif instruction.mnemonic == "call" and operands.startswith("0x") and int(operands, 16) in int_to_str:
+            pending, value = value, None
+        elif instruction.mnemonic == "mov" and (match := re.fullmatch(r"edx, (0x[0-9a-f]+)", operands)):
+            literal = image.unicode_literal(int(match[1], 16))
+            if literal and literal.endswith("="):
+                if pending is None:
+                    raise ValueError(f"Help constant {literal!r} has no immediate context id")
+                rows.append({"key": literal[:-1], "context_id": pending})
+                pending = None
+    if not rows:
+        raise ValueError("No help constants recovered")
+    return rows
+
+
+def _forms_for_form_class(image: _Image, chain: list[str]) -> dict[str, Any]:
+    """Frames and auxiliary forms a registered unit form's own methods reference."""
+    auxiliary: set[str] = set()
+    frames: set[str] = set()
+    for class_name in chain:
+        for _, address in image.methods.get(class_name, []):
+            for ref in image.class_refs(address):
+                if "TFrame" in ref[1:]:
+                    frames.add(ref[0])
+                elif "TCustomForm" in ref[1:] and ref[0] not in chain and ref[0] not in ("TForm", "TfrmCBusUnitBase"):
+                    auxiliary.add(ref[0])
+    return {"auxiliary_forms": sorted(auxiliary), "frames": sorted(frames)}
+
+
+def _literal_presence(exe_raw: bytes, names: list[str]) -> dict[str, dict[str, bool]]:
+    """Whether each name occurs as a terminated UTF-16 or Delphi short-string literal."""
+    result = {}
+    for name in sorted(set(names)):
+        utf16 = name.encode("utf-16-le")
+        ascii_name = name.encode("latin-1")
+        result[name] = {
+            "utf16_literal": re.search(rb"(?<![\x21-\x7e]\x00)" + re.escape(utf16) + rb"\x00\x00", exe_raw) is not None,
+            "short_string": bytes([len(ascii_name)]) + ascii_name in exe_raw,
+        }
+    return result
+
+
 def extract_vendor_facts(
     exe_path: Path, map_path: Path, catalog_path: Path, spec_dir: Path
 ) -> dict[str, Any]:
@@ -467,6 +639,28 @@ def extract_vendor_facts(
         name: _forms_for_director(image, director_chains[name])
         for name in sorted(director_chains)
     }
+    dialog_registrations = _unit_dialog_registrations(image)
+    fallback = _common_director_fallback(image)
+    fallback_managers = sorted(unit_types.get(COMMON_DESCRIPTOR, {}).get("node_managers", ()))
+    fallback_directors = sorted({
+        director for manager in fallback_managers for director in node_managers[manager]["directors"]
+    })
+    if len(fallback_directors) != 1:
+        raise ValueError("The CommonCBusUnit descriptor no longer names exactly one director")
+    unit_forms = {}
+    for row in dialog_registrations["registrations"]:
+        unit_forms.setdefault(row["form_class"], _forms_for_form_class(image, row["form_chain"]))
+    product_types = {
+        name for name, entry in unit_types.items()
+        if entry["catalogue_numbers"] or entry["factory_registrations"]
+    }
+    topics = {topic["id"]: topic for topic in surface["topics"]}
+    help_only = sorted(
+        {topics[topic_id]["title"] for topic_id in surface["unit_type_reference_entries"]}
+        - product_types
+        - {row["unit_type"] for row in dialog_registrations["registrations"]}
+    )
+    help_links = _help_links(image)
     if sha256(exe_path.read_bytes()).hexdigest() != exe_sha or digest(map_path) != map_sha:
         raise ValueError("Original files changed during inspection")
 
@@ -518,6 +712,36 @@ def extract_vendor_facts(
         "unit_types": type_rows,
         "node_managers": node_managers,
         "directors": directors,
+        "unit_dialog_factory": {
+            "status": "recovered_static_registrations",
+            "method": (
+                "Static decode of every call to TUnitDialogFactory.RegisterUnitDialog: factory "
+                "singleton in EAX, form class reference in ECX, constant UnicodeString type in "
+                "EDX and a pushed nil third string; plus the TCBusUnitGUIAgent.EditUnit director "
+                "lookup order whose last step is the constant CommonCBusUnit descriptor."
+            ),
+            "call_sites": dialog_registrations["call_sites"],
+            "registrations": dialog_registrations["registrations"],
+            "unresolved_call_sites": dialog_registrations["unresolved"],
+            "director_fallback": {
+                **fallback,
+                "node_managers": fallback_managers,
+                "director": fallback_directors[0],
+            },
+            "forms": unit_forms,
+            "original_executed": False,
+        },
+        "help_links": {
+            "status": "recovered_static_table",
+            "method": (
+                "Static decode of TFormHelp.LoadConstants: each IntToStr(immediate context id) "
+                "concatenated to a constant 'Name=' literal; keys are unit types, unit classes "
+                "or form classes and context ids are help topic numbers."
+            ),
+            "entries": help_links,
+            "original_executed": False,
+        },
+        "help_only_unit_types": _literal_presence(exe_raw, help_only),
     }
 
 
@@ -579,8 +803,30 @@ def _contains(version: str, minimum: str, maximum: str) -> bool:
     return True
 
 
+def _help_link_types(help_links: dict, unit_types: dict[str, dict]) -> dict[str, list[tuple[str, str]]]:
+    """Help topic id -> [(LoadConstants key, unit type)] for keys naming unit types.
+
+    A key names a unit type directly or is a unit class that the static unit
+    factory registers for it.  Form-class keys identify no unit type.
+    """
+    by_class: dict[str, set[str]] = defaultdict(set)
+    for name, entry in unit_types.items():
+        for row in entry["factory_registrations"]:
+            by_class[row["unit_class"]].add(name)
+    result: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    for row in help_links["entries"]:
+        named = {row["key"]} if row["key"] in unit_types else by_class.get(row["key"], set())
+        for unit_type in sorted(named):
+            pair = (row["key"], unit_type)
+            topic_id = f"help:{row['context_id']}.htm"
+            if pair not in result[topic_id]:
+                result[topic_id].append(pair)
+    return result
+
+
 def _help_evidence(dialog: dict, topics: dict, reference_by_file: dict, neighbours: dict,
-                   catalogue_index: dict, known_types: set[str]) -> dict[str, Any]:
+                   catalogue_index: dict, known_types: set[str],
+                   help_link_types: dict[str, list[tuple[str, str]]]) -> dict[str, Any]:
     topic = topics[dialog["topic_id"]]
     subtree = set(dialog["descendant_topic_ids"])
     product_id = topic["parent_id"]
@@ -618,6 +864,27 @@ def _help_evidence(dialog: dict, topics: dict, reference_by_file: dict, neighbou
                     "source_topic_id": source_id,
                 })
 
+    help_evidence = len(evidence)
+    # Executable help links (TFormHelp.LoadConstants) name the topic Toolkit
+    # opens for a unit type or class.  They decide only where the help
+    # metadata selects nothing or conflicts.
+    linked_topics = [(dialog["topic_id"], "executable_help_link_dialog_topics")]
+    linked_topics += [(topic_id, "executable_help_link_dialog_topics") for topic_id in sorted(subtree)]
+    if product_id:
+        linked_topics.append((product_id, "executable_help_link_product_topic"))
+    for file_name in sorted(_content_links(topic, neighbours)):
+        target_id = f"help:{file_name}"
+        if target_id in topics and dialog["title"] == f"{topics[target_id]['title']} dialog box":
+            linked_topics.append((target_id, "executable_help_link_titled_topic"))
+    for target_id, basis in linked_topics:
+        for key, unit_type in help_link_types.get(target_id, ()):
+            evidence.append({
+                "unit_type": unit_type,
+                "basis": basis,
+                "help_link_key": key,
+                "help_topic_id": target_id,
+            })
+
     def types(*bases: str) -> set[str]:
         return {row["unit_type"] for row in evidence if row["basis"] in bases}
 
@@ -631,11 +898,20 @@ def _help_evidence(dialog: dict, topics: dict, reference_by_file: dict, neighbou
     else:
         selected, rule = inbound | outbound, "one_directional_product_link"
     reason = None
-    if not evidence:
+    if not help_evidence:
         rule, reason = "none", "no_help_unit_type"
     elif not selected:
         rule, reason = "conflict", "conflicting_help_links"
     candidates = direct | inbound | outbound
+    linked = types(
+        "executable_help_link_dialog_topics",
+        "executable_help_link_product_topic",
+        "executable_help_link_titled_topic",
+    )
+    if reason and linked:
+        chosen = linked & candidates if reason == "conflicting_help_links" else linked
+        if chosen:
+            selected, rule, reason = chosen, f"executable_help_link_{rule}", None
     return {
         "evidence": evidence,
         "selection_rule": rule,
@@ -672,6 +948,335 @@ def _admitted_key_preset_types() -> dict[str, set[str]]:
     }
 
 
+# --------------------------------------------------------------------------
+# Implemented editors and control -> parameter receipts (P5.01, #38)
+# --------------------------------------------------------------------------
+
+# Committed Toolkit CLI editors that reproduce part of a dialog.  A dialog
+# links to an editor when one of its in-scope unit types is admitted by the
+# editor.  ``control_receipt`` names a committed static source review whose
+# ``controls`` rows bind named form controls to unit parameters; editors
+# without one are linked but map no controls.
+IMPLEMENTED_EDITORS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "din-output-settings",
+        "ledger_id": "all-unit-parameter-encoding",
+        "modules": ["src/cbus_toolkit/din_output_settings.py"],
+        "documentation": "docs/din-output-settings.md",
+        "receipts": [
+            "research/fixtures/din-output-settings-source-review.json",
+            "research/fixtures/din-output-settings-native-acceptance.json",
+            "research/fixtures/din-output-level-original-vectors.json",
+        ],
+        "control_receipt": {"path": "research/fixtures/din-output-settings-source-review.json", "section": None},
+        "unit_types_from": ("receipt_profiles", "research/fixtures/din-output-settings-source-review.json"),
+    },
+    {
+        "id": "iope-settings",
+        "ledger_id": "sensors-wizard-semantics",
+        "modules": ["src/cbus_toolkit/iope_settings.py", "src/cbus_toolkit/iope_cli.py"],
+        "documentation": "docs/iope-settings.md",
+        "receipts": [
+            "research/fixtures/iope-settings-source-review.json",
+            "research/fixtures/iope-settings-native-acceptance.json",
+        ],
+        "control_receipt": {"path": "research/fixtures/iope-settings-source-review.json", "section": None},
+        "unit_types_from": ("receipt_profiles", "research/fixtures/iope-settings-source-review.json"),
+    },
+    {
+        "id": "wireless-gateway-remote-switch",
+        "ledger_id": "interface-discovery-and-setup",
+        "modules": ["src/cbus_toolkit/wireless_gateway.py", "src/cbus_toolkit/wireless_cli.py"],
+        "documentation": "docs/wireless.md",
+        "receipts": [
+            "research/fixtures/wireless-source-review.json",
+            "research/fixtures/wireless-gateway-native-acceptance.json",
+        ],
+        "control_receipt": {"path": "research/fixtures/wireless-source-review.json", "section": "gateway"},
+        "unit_types_from": ("literal", ("WGATE5F",)),
+        # The receipt names the help dialog it reproduces; help selects only
+        # WGATE5N there, whose gateway class the editor refuses.
+        "dialog_ids_from": ("research/fixtures/wireless-source-review.json", "gateway"),
+    },
+    {
+        "id": "wireless-unit-globals",
+        "ledger_id": "interface-discovery-and-setup",
+        "modules": ["src/cbus_toolkit/wireless_unit_globals.py", "src/cbus_toolkit/wireless_cli.py"],
+        "documentation": "docs/wireless.md",
+        "receipts": [
+            "research/fixtures/wireless-source-review.json",
+            "research/fixtures/wireless-unit-globals-native-acceptance.json",
+        ],
+        "control_receipt": {"path": "research/fixtures/wireless-source-review.json", "section": "unit_globals"},
+        "unit_types_from": ("wireless_unit_globals", "research/fixtures/wireless-source-review.json"),
+    },
+    {
+        "id": "multisensor-settings",
+        "ledger_id": "sensors-wizard-semantics",
+        "modules": ["src/cbus_toolkit/sensors.py"],
+        "documentation": "docs/sensors.md",
+        "receipts": ["docs/sensor-profile-review.json", "docs/sensor-acceptance-summary.json"],
+        "control_receipt": None,
+        "unit_types_from": ("literal", ("SENPILL",)),
+    },
+    {
+        "id": "pir-sensor-settings",
+        "ledger_id": "sensors-wizard-semantics",
+        "modules": ["src/cbus_toolkit/pir_sensors.py"],
+        "documentation": "docs/sensors.md",
+        "receipts": ["docs/pir-sensor-review.json", "docs/pir-sensor-acceptance-summary.json"],
+        "control_receipt": None,
+        "unit_types_from": ("literal", ("SENPIROA", "SENPIRIA", "SENPIRIB")),
+    },
+    {
+        "id": "thermostat-settings",
+        "ledger_id": "thermostat-configuration",
+        "modules": ["src/cbus_toolkit/thermostat_settings.py", "src/cbus_toolkit/thermostat_settings_guard.py"],
+        "documentation": "docs/thermostat-settings.md",
+        "receipts": ["research/experiments/2026-09-30/thermostat-settings-native-acceptance.json"],
+        "control_receipt": None,
+        "unit_types_from": ("literal", ("PC_TSA", "PC_TSA5", "PC_TSB", "PC_TSB5")),
+    },
+    {
+        "id": "classic-key-presets",
+        "ledger_id": "classic-key-presets",
+        "modules": ["src/cbus_toolkit/macros.py", "src/cbus_toolkit/key_options_cli.py"],
+        "documentation": "docs/macros.md",
+        "receipts": [
+            "research/fixtures/key-preset-family-equivalence.json",
+            "docs/classic-key-family-acceptance-summary.json",
+        ],
+        "control_receipt": None,
+        "unit_types_from": ("key_preset_family", "classic-key-presets"),
+    },
+    {
+        "id": "neo-key-presets-and-indicators",
+        "ledger_id": "neo-core-key-presets",
+        "modules": [
+            "src/cbus_toolkit/extended_macros.py",
+            "src/cbus_toolkit/neo_indicators.py",
+            "src/cbus_toolkit/key_options_cli.py",
+        ],
+        "documentation": "docs/extended-macros.md",
+        "receipts": [
+            "research/fixtures/key-preset-family-equivalence.json",
+            "docs/extended-macros-acceptance-summary.json",
+        ],
+        "control_receipt": None,
+        "unit_types_from": ("key_preset_family", "neo-core-key-presets"),
+    },
+    {
+        "id": "edlt",
+        "ledger_id": "dlt-edlt-widgets-and-labels",
+        "modules": ["src/cbus_toolkit/edlt.py", "src/cbus_toolkit/edlt_parent_form.py"],
+        "documentation": "docs/edlt.md",
+        "receipts": ["research/fixtures/edlt-parent-form-evidence.json", "docs/edlt-remaining-controls.md"],
+        "control_receipt": None,
+        "unit_types_from": ("literal", ("KEYGL5",)),
+    },
+)
+
+# Form controls that hold a value (not layout, labels, buttons or actions).
+EDITABLE_CONTROL_RE = re.compile(
+    r"(CheckBox|ComboBox|Combo|Edit|TrackBar|RadioGroup|RadioButton|ApplicationSwitcher|ListBox|Memo)$"
+)
+CONTROL_TOKEN_RE = re.compile(r"[a-z]{2,4}[A-Z][A-Za-z0-9]*(?:\.\.[A-Za-z0-9]+)?(?:/[A-Za-z0-9]+)*")
+
+
+def _editor_unit_types(editor: dict) -> list[str]:
+    kind, value = editor["unit_types_from"]
+    if kind == "literal":
+        return sorted(value)
+    if kind == "key_preset_family":
+        return sorted(_admitted_key_preset_types().get(value, set()))
+    receipt = load_json(ROOT / value)
+    if kind == "receipt_profiles":
+        return sorted(
+            row["unit_type"] for row in receipt["profiles"] if row.get("admitted", True)
+        )
+    if kind == "wireless_unit_globals":
+        return sorted(receipt["unit_globals"]["profiles"]["unit_types"])
+    raise ValueError(f"Unknown editor unit-type source: {kind}")
+
+
+def _control_patterns(text: str) -> list[re.Pattern]:
+    """Regexes for the component names one receipt ``control`` string names.
+
+    ``chkLA1..chkLA4`` and ``cmbGlobal1..4RecallLevel`` are ranges,
+    ``cmbRampRateGlobal1/2/3`` lists digit alternatives, and an ``N`` or ``K``
+    between a lower- and an upper-case letter stands for an index.
+    """
+    patterns: list[re.Pattern] = []
+    for token in CONTROL_TOKEN_RE.findall(text):
+        names: list[str] = []
+        if ".." in token:
+            left, right = token.split("..", 1)
+            prefix = re.match(r"(.*?)(\d+)$", left)
+            if not prefix:
+                continue
+            end = re.match(r"(?:" + re.escape(prefix[1]) + r")?(\d+)(.*)$", right)
+            if not end:
+                continue
+            names += [f"{prefix[1]}{index}{end[2]}" for index in range(int(prefix[2]), int(end[1]) + 1)]
+        else:
+            first, *alternatives = token.split("/")
+            names.append(first)
+            stem = re.match(r"(.*?)(\d+)$", first)
+            for alternative in alternatives:
+                if stem and alternative.isdigit():
+                    names.append(f"{stem[1]}{alternative}")
+                elif re.fullmatch(CONTROL_TOKEN_RE, alternative):
+                    names.append(alternative)
+        for name in names:
+            parts = re.split(r"(?<=[a-z])[NK](?=[A-Z])", name)
+            patterns.append(re.compile(r"\d+".join(re.escape(part) for part in parts)))
+    return patterns
+
+
+def _embedded_resources(root_names: list[str], executable: dict) -> list[str]:
+    """Form resources plus every frame/sub-form their DFM components embed."""
+    by_name = {row["resource_name"]: row for row in executable["resources"]}
+    by_class = {row["root_class"]: row["resource_name"] for row in executable["resources"]}
+    seen: list[str] = []
+    pending = [name for name in root_names if name in by_name]
+    while pending:
+        name = pending.pop(0)
+        if name in seen:
+            continue
+        seen.append(name)
+        for component in by_name[name]["components"][1:]:
+            nested = by_class.get(component["class"])
+            if nested and nested not in seen:
+                pending.append(nested)
+    return sorted(seen)
+
+
+def _receipt_form_resources(editors: list[dict], executable: dict) -> list[str]:
+    """Form resources a control receipt pins by digest; a stale digest raises."""
+    by_name = {item["resource_name"]: item for item in executable["resources"]}
+    names: list[str] = []
+    for editor in editors:
+        if editor["control_receipt"] is None:
+            continue
+        receipt = load_json(ROOT / editor["control_receipt"]["path"])
+        pinned = receipt["inputs"].get("form_resource_sha256", {})
+        section = editor["control_receipt"]["section"]
+        # A sectioned receipt names the forms of each section separately.
+        wanted = sorted(receipt[section].get("forms", pinned)) if section else sorted(pinned)
+        for name in wanted:
+            value = pinned.get(name)
+            if name not in by_name or by_name[name]["resource_sha256"] != value:
+                raise ValueError(f"{editor['control_receipt']['path']} pins a stale form resource {name}")
+            names.append(name)
+    return names
+
+
+def _control_coverage(row: dict, editors: list[dict], executable: dict) -> dict[str, Any]:
+    by_name = {item["resource_name"]: item for item in executable["resources"]}
+    resources = _embedded_resources(
+        row["form_resources"] + row["frame_resources"] + _receipt_form_resources(editors, executable),
+        executable,
+    )
+    controls = [
+        (name, component["name"], component["class"])
+        for name in resources
+        for component in by_name[name]["components"][1:]
+        if EDITABLE_CONTROL_RE.search(component["class"])
+    ]
+    mapped: dict[tuple[str, str], dict] = {}
+    receipt_rows = 0
+    for editor in editors:
+        spec = editor["control_receipt"]
+        if spec is None:
+            continue
+        receipt = load_json(ROOT / spec["path"])
+        section = receipt[spec["section"]] if spec["section"] else receipt
+        for entry in section["controls"]:
+            receipt_rows += 1
+            form = entry.get("form")
+            parameter = entry.get("parameter") or entry.get("binding") or ", ".join(entry.get("parameters", []))
+            for pattern in _control_patterns(entry["control"]):
+                for resource, name, _ in controls:
+                    if form and by_name[resource]["root_class"] != form:
+                        continue
+                    if pattern.fullmatch(name):
+                        mapped.setdefault((resource, name), {
+                            "resource": resource,
+                            "control": name,
+                            "parameter": parameter,
+                            "receipt": spec["path"],
+                        })
+    result = {
+        "resources": resources,
+        "controls_total": len(controls),
+        "controls_mapped": len(mapped),
+        "receipt_control_rows": receipt_rows,
+        "mapped_controls": [mapped[key] for key in sorted(mapped)],
+        "basis": (
+            "control_receipt" if any(editor["control_receipt"] for editor in editors)
+            else "no_control_level_receipt"
+        ),
+    }
+    if not controls:
+        result["denominator_note"] = (
+            "The bound form resources carry no editable controls; the dialog's pages are "
+            "created at run time by classes this static map does not bind to resources."
+        )
+    return result
+
+
+def _link_editors(rows: list[dict], executable: dict) -> None:
+    admitted = {editor["id"]: set(_editor_unit_types(editor)) for editor in IMPLEMENTED_EDITORS}
+    named_dialogs = {
+        editor["id"]: set(load_json(ROOT / editor["dialog_ids_from"][0])[editor["dialog_ids_from"][1]]["dialog_ids"])
+        if "dialog_ids_from" in editor else set()
+        for editor in IMPLEMENTED_EDITORS
+    }
+    for row in rows:
+        scoped = {
+            unit["unit_type"] for unit in row["unit_types"]
+            if unit["known"] and unit.get("firmware_hint_matches", True)
+        }
+        editors = [
+            editor for editor in IMPLEMENTED_EDITORS
+            if scoped & admitted[editor["id"]] or row["dialog_id"] in named_dialogs[editor["id"]]
+        ]
+        if not editors:
+            continue
+        row["implemented_editors"] = [
+            {
+                "id": editor["id"],
+                "ledger_id": editor["ledger_id"],
+                "unit_types": sorted(scoped & admitted[editor["id"]]),
+                "link_basis": (
+                    "admitted_unit_type" if scoped & admitted[editor["id"]] else "receipt_names_dialog"
+                ),
+                "modules": editor["modules"],
+                "documentation": editor["documentation"],
+                "receipts": editor["receipts"],
+                "control_receipt": editor["control_receipt"]["path"] if editor["control_receipt"] else None,
+            }
+            for editor in editors
+        ]
+        row["control_coverage"] = _control_coverage(row, editors, executable)
+
+
+def check_editor_paths() -> None:
+    """Every linked editor module, document and receipt must exist.
+
+    Only the receipts that feed the derivation (unit-type rosters, control
+    rows and pinned form digests) change the map; a deterministic rebuild
+    detects those.  Module and prose edits do not stale the map.
+    """
+    paths = sorted({
+        path for editor in IMPLEMENTED_EDITORS
+        for path in editor["modules"] + [editor["documentation"]] + editor["receipts"]
+    })
+    missing = [path for path in paths if not (ROOT / path).is_file()]
+    if missing:
+        raise ValueError(f"Implemented-editor inputs are missing: {missing}")
+
+
 def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
                      triage: dict[str, str]) -> list[dict]:
     """Deterministically derive every dialog row from committed inputs and facts."""
@@ -704,23 +1309,51 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
             if not re.search(rf"(?<![A-Z0-9]){re.escape(unit_type)}(?![A-Z0-9])", limits):
                 raise ValueError(f"Ledger {ledger_id} limits no longer name {unit_type}")
 
-    def directors_of(unit_type: str) -> list[str]:
+    dialog_factory = facts["unit_dialog_factory"]
+    fallback_director = dialog_factory["director_fallback"]["director"]
+    # TUnitDialogFactory.GetUnitDialog compares type names case-insensitively.
+    unit_dialogs = {
+        row["unit_type"].upper(): row["form_class"] for row in dialog_factory["registrations"]
+    }
+    help_link_types = _help_link_types(facts["help_links"], unit_types)
+
+    def node_directors_of(unit_type: str) -> list[str]:
         return sorted({
             director
             for manager in unit_types.get(unit_type, {}).get("node_managers", [])
             for director in facts["node_managers"][manager]["directors"]
         })
 
-    ledger_directors = {
-        ledger_id: sorted({director for unit_type in exact for director in directors_of(unit_type)})
+    def dispatch_of(unit_type: str) -> tuple[str, list[str], str | None]:
+        """How EditUnit reaches the unit's editor: (path, directors, unit-dialog form)."""
+        directors = node_directors_of(unit_type)
+        if directors:
+            return "node_manager_director", directors, None
+        form = unit_dialogs.get(unit_type.upper())
+        if form:
+            return "common_director_unit_dialog", [fallback_director], form
+        if unit_types.get(unit_type, {}).get("node_managers"):
+            return "node_manager_without_director", [], None
+        return "no_node_manager", [], None
+
+    def editor_keys(unit_type: str) -> set[str]:
+        # The shared fallback director says nothing about the editor; the
+        # registered unit-dialog form does.
+        path, directors, form = dispatch_of(unit_type)
+        return {f"form:{form}"} if form else set(directors)
+
+    ledger_editors = {
+        ledger_id: sorted({key for unit_type in exact for key in editor_keys(unit_type)})
         for ledger_id, exact in LEDGER_EXACT_UNIT_TYPES.items()
     }
 
     rows = []
     for dialog in surface["device_dialog_candidates"]:
         reasons: list[str] = []
+        subjects: dict[str, list[str]] = defaultdict(list)
         help_result = _help_evidence(
-            dialog, topics, reference_by_file, neighbours, catalogue_index, known_types
+            dialog, topics, reference_by_file, neighbours, catalogue_index, known_types,
+            help_link_types,
         )
         if help_result["reason"]:
             reasons.append(help_result["reason"])
@@ -730,16 +1363,27 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
         for unit_type in help_result["selected"]:
             entry = unit_types.get(unit_type)
             if entry is None:
+                absent = facts["help_only_unit_types"].get(unit_type)
+                code = (
+                    "help_unit_type_absent_from_executable"
+                    if absent is not None and not any(absent.values())
+                    else "unknown_unit_type"
+                )
                 mapped.append({"unit_type": unit_type, "known": False})
-                if "unknown_unit_type" not in reasons:
-                    reasons.append("unknown_unit_type")
+                if code not in reasons:
+                    reasons.append(code)
+                subjects[code].append(unit_type)
                 continue
+            path, directors, form = dispatch_of(unit_type)
             row = {
                 "unit_type": unit_type,
                 "known": True,
                 "node_managers": entry["node_managers"],
-                "directors": directors_of(unit_type),
+                "dispatch": path,
+                "directors": directors,
             }
+            if form:
+                row["unit_dialog_form"] = form
             if hint is not None:
                 row["firmware_hint_matches"] = any(
                     _contains(hint, low, high) for low, high in _ranges_for(entry)
@@ -753,12 +1397,19 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
         ]
 
         directors = sorted({director for row in in_scope for director in row["directors"]})
-        dialog_forms = sorted({
-            form for director in directors
-            for form in facts["directors"][director]["dialog_forms"]
+        node_directors = sorted({
+            director for row in in_scope if row["dispatch"] == "node_manager_director"
+            for director in row["directors"]
         })
+        registered_forms = sorted({row["unit_dialog_form"] for row in in_scope if "unit_dialog_form" in row})
+        dialog_forms = sorted({
+            form for director in node_directors
+            for form in facts["directors"][director]["dialog_forms"]
+        } | set(registered_forms))
         frames = sorted({
-            frame for director in directors for frame in facts["directors"][director]["frames"]
+            frame for director in node_directors for frame in facts["directors"][director]["frames"]
+        } | {
+            frame for form in registered_forms for frame in dialog_factory["forms"][form]["frames"]
         })
         form_resources = sorted(
             resource_by_class[form] for form in dialog_forms if form in resource_by_class
@@ -767,9 +1418,14 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
             resource_by_class[frame] for frame in frames if frame in resource_by_class
         )
         if in_scope:
-            if any(not row["node_managers"] for row in in_scope):
+            for code, path in (
+                ("no_static_node_manager", "no_node_manager"),
+                ("no_director", "node_manager_without_director"),
+            ):
+                subjects[code] = [row["unit_type"] for row in in_scope if row["dispatch"] == path]
+            if subjects["no_static_node_manager"]:
                 reasons.append("no_static_node_manager")
-            elif any(not row["directors"] for row in in_scope):
+            elif subjects["no_director"]:
                 reasons.append("no_director")
             elif not form_resources or len(form_resources) != len(dialog_forms):
                 reasons.append("no_dialog_form")
@@ -781,9 +1437,10 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
         )
         basis = "ledger_limits_name_unit_type"
         if not ledger_ids:
+            scoped_editors = {key for unit_type in scoped_types for key in editor_keys(unit_type)}
             ledger_ids = sorted(
-                ledger_id for ledger_id, shared in ledger_directors.items()
-                if set(directors) & set(shared)
+                ledger_id for ledger_id, shared in ledger_editors.items()
+                if scoped_editors & set(shared)
             )
             basis = "shares_dialog_director_with_ledger_unit_type"
         triage_id = triage[dialog["id"]]
@@ -792,6 +1449,7 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
         if set(ledger_ids) & GENERIC_LEDGER_IDS:
             basis = "generic"
             reasons.append("generic_ledger_only")
+            subjects["generic_ledger_only"] = sorted(scoped_types)
 
         rows.append({
             "dialog_id": dialog["id"],
@@ -811,7 +1469,8 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
             "triage_ledger_id": triage_id,
             "status": "unresolved" if reasons else "resolved",
             "unresolved_reasons": [
-                {"code": code, "detail": UNRESOLVED[code]} for code in reasons
+                {"code": code, "detail": UNRESOLVED[code], "subjects": subjects.get(code, [])}
+                for code in reasons
             ],
         })
     return rows
@@ -839,6 +1498,8 @@ def build_document(facts: dict) -> dict:
     executable = load_json(EXECUTABLE_SURFACE_PATH)
     ledger = load_json(LEDGER_PATH)
     dialogs = assemble_dialogs(surface, executable, ledger, facts, _triage())
+    check_editor_paths()
+    _link_editors(dialogs, executable)
     counts = {
         "dialogs": len(dialogs),
         "resolved": sum(row["status"] == "resolved" for row in dialogs),
@@ -862,6 +1523,34 @@ def build_document(facts: dict) -> dict:
     }
     counts["catalogued_unit_types"] = len(catalogued)
     counts["catalogued_unit_types_reached_by_dialogs"] = len(set(catalogued) & reached)
+    selection_counts: dict[str, int] = defaultdict(int)
+    for row in dialogs:
+        selection_counts[row["unit_type_selection"]] += 1
+    counts["unit_type_selection"] = dict(sorted(selection_counts.items()))
+    counts["dispatch"] = dict(sorted(
+        (path, sum(
+            any(unit.get("dispatch") == path for unit in row["unit_types"]) for row in dialogs
+        ))
+        for path in sorted({
+            unit["dispatch"] for row in dialogs for unit in row["unit_types"] if "dispatch" in unit
+        })
+    ))
+    coverage_rows = [
+        {
+            "dialog_id": row["dialog_id"],
+            "editors": [editor["id"] for editor in row["implemented_editors"]],
+            "controls_mapped": row["control_coverage"]["controls_mapped"],
+            "controls_total": row["control_coverage"]["controls_total"],
+            "basis": row["control_coverage"]["basis"],
+        }
+        for row in dialogs if "implemented_editors" in row
+    ]
+    counts["dialogs_with_implemented_editors"] = len(coverage_rows)
+    counts["dialogs_with_control_receipts"] = sum(
+        row["basis"] == "control_receipt" for row in coverage_rows
+    )
+    counts["controls_mapped"] = sum(row["controls_mapped"] for row in coverage_rows)
+    counts["controls_in_editor_dialogs"] = sum(row["controls_total"] for row in coverage_rows)
     return {
         "schema_version": SCHEMA_VERSION,
         "format": FORMAT,
@@ -869,8 +1558,11 @@ def build_document(facts: dict) -> dict:
         "purpose": (
             "Deterministic map from each help device-dialog candidate to exact unit types, "
             "catalogue/firmware ranges, statically registered unit classes and node managers, "
-            "dialog-director forms and the most specific feature-ledger row. Identification "
-            "only: no control, parameter, original-differential or physical acceptance."
+            "dialog-director or unit-dialog-factory forms, executable help links and the most "
+            "specific feature-ledger row; for dialogs with implemented CLI editors, the editor "
+            "modules and the controls their committed static source reviews bind to unit "
+            "parameters. Identification only: a mapped control is not original-differential, "
+            "GUI or physical acceptance."
         ),
         "inputs": {**committed_inputs(), **facts["inputs"]},
         "ledger_exact_unit_types": {key: list(value) for key, value in LEDGER_EXACT_UNIT_TYPES.items()},
@@ -879,13 +1571,21 @@ def build_document(facts: dict) -> dict:
         "unit_types": facts["unit_types"],
         "node_managers": facts["node_managers"],
         "directors": facts["directors"],
+        "unit_dialog_factory": facts["unit_dialog_factory"],
+        "help_links": facts["help_links"],
+        "help_only_unit_types": facts["help_only_unit_types"],
+        "editable_control_class_rule": EDITABLE_CONTROL_RE.pattern,
         "counts": counts,
+        "control_coverage_table": coverage_rows,
         "catalogued_unit_types_without_dialog": [name for name in catalogued if name not in reached],
         "dialogs": dialogs,
     }
 
 
-FACT_KEYS = ("inputs", "unit_factory", "unit_types", "node_managers", "directors")
+FACT_KEYS = (
+    "inputs", "unit_factory", "unit_types", "node_managers", "directors",
+    "unit_dialog_factory", "help_links", "help_only_unit_types",
+)
 VENDOR_INPUTS = ("toolkit_executable", "toolkit_map", "unit_catalogue", "unitspec_directory")
 
 
@@ -933,6 +1633,7 @@ def validate_document(document: dict) -> dict:
             if not reasons or any(
                 not isinstance(reason, dict) or reason.get("code") not in UNRESOLVED
                 or reason.get("detail") != UNRESOLVED[reason["code"]]
+                or set(reason) != {"code", "detail", "subjects"}
                 for reason in reasons
             ):
                 raise ValueError(f"{row['dialog_id']} is unresolved without an explicit reason")

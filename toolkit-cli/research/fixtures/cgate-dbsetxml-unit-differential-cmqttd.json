@@ -12,10 +12,10 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/Users/mitchell/source/cbus-integrator-target/debug/cmqttd",
-    "sha256": "5ffcd59c3b02ad6c87b14180f393e41662d9d899031ccf09bbc46199c83fd634"
+    "path": "/Users/mitchell/source/cbus-wt-dialog-map-remaining/rust/target/debug/cmqttd",
+    "sha256": "e63b25a44fcefce95fa6438f3da6279d9b52ed3e66a0213f06c2ba3e06c66179"
   },
-  "source_revision": "22d71ed00e01b116afc5aecc4c3fb6f9fc27a3b3",
+  "source_revision": "d1fadf8cc86073be05765b0e3fda641a7251b878",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
     "docs/cmqttd-cgate.md": "544bc71bcef55475ca7ebf56f814920b3bdcf8f7e546158b38d574cfa1fbca98",
@@ -595,5 +595,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /Users/mitchell/source/cbus-integrator-target/debug/cgate-mock --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output-dir research/fixtures"
+  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /Users/mitchell/source/cbus-wt-dialog-map-remaining/rust/target/debug/cgate-mock --cmqttd-bin /Users/mitchell/source/cbus-wt-dialog-map-remaining/rust/target/debug/cmqttd --output-dir research/fixtures"
 }

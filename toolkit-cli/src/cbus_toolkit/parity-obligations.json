@@ -8,7 +8,7 @@
     "toolkit_surface": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401",
     "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
     "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
-    "toolkit_dialog_map": "57c366c34b729faa7d74081de7a7779d00cfc3910d7376f7d7143bda3b68e432",
+    "toolkit_dialog_map": "afc1b1a0d7fcf7a0dccc1f0556d07aa801b559464530787cf3af4e60e91ad073",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "16551589160a75d6e1aaa35299b51f8f173cca781cca5398c973e18be876c640",
@@ -17,16 +17,16 @@
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "9cd7623f10edd3cb44f8fa07c00bd241df529bcb5e849f51285de14e0436826b",
-    "cgate_tagged_session_differential_cmqttd": "496d2b2bc1b7f4606da64007a2dc5965244c64f2095a333c3de15561bd8d7743",
-    "cgate_session_physical_applicability": "c62f760786cf25684aede002f8be0a526073d116b3bf10fa6b6aabce97bb0117",
+    "cgate_session_differential_cmqttd": "6f62533a4bcf8053d20995c7a8217e1767b656a770ea6bbb700d89ab79fb09e2",
+    "cgate_tagged_session_differential_cmqttd": "c239977c005a0f76493526355ce833e2dfb3f4eb2d8660f0e114e5faed4d016c",
+    "cgate_session_physical_applicability": "feb822654e8fe3e5ec9d93497955f49d4c99f0c5742759c2c83ec810cba99c6c",
     "roadmap": "efd26399c5ecd889a57f106bb7311250bdb956a66bbe4f7d5afce5313ae8c33f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
     "parity_denominator_history": "abd8114e7ad40a54cac94dbe2f767f13519129400074de032a5eeec9635ce92c",
     "closure_receipts": "76e03b044a74d43f37fb7b57d9a701652b208b068ea13dd7b6b96891ebe00cf2"
   },
-  "evidence_bundle_sha256": "62f211c36e601cff7b10b0daed4508a5d3f292b428de032d3d25065f334c4b98",
+  "evidence_bundle_sha256": "448a97e998f7bcf1c75ce7896a0e845790652b1e0a18980763c68c72c77d8c01",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -2403,8 +2403,8 @@
       "scope_kind": "dialog",
       "count": 118,
       "resolved": false,
-      "dialog_map_resolved": 80,
-      "dialog_map_unresolved": 38
+      "dialog_map_resolved": 101,
+      "dialog_map_unresolved": 17
     },
     {
       "id": "macro_reference_leaves",
@@ -92859,13 +92859,10 @@
       "kind": "dialog",
       "source_id": "dialog:11037.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:9286.htm",
@@ -92944,11 +92941,8 @@
       "obligation_ids": [
         "ledger:dlt-edlt-widgets-and-labels"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:19973.htm",
@@ -92960,7 +92954,7 @@
       "dialog_map_status": "unresolved",
       "disposition": "provisional_obligation",
       "dialog_map_unresolved": [
-        "unknown_unit_type"
+        "help_unit_type_absent_from_executable"
       ]
     },
     {
@@ -93093,11 +93087,8 @@
       "obligation_ids": [
         "ledger:neo-core-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "conflicting_help_links"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:9305.htm",
@@ -93257,39 +93248,30 @@
       "kind": "dialog",
       "source_id": "dialog:9905.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:9926.htm",
       "kind": "dialog",
       "source_id": "dialog:9926.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:9938.htm",
       "kind": "dialog",
       "source_id": "dialog:9938.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:9967.htm",
@@ -93416,26 +93398,20 @@
       "kind": "dialog",
       "source_id": "dialog:4455.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:4457.htm",
       "kind": "dialog",
       "source_id": "dialog:4457.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:11068_1.htm",
@@ -93462,13 +93438,10 @@
       "kind": "dialog",
       "source_id": "dialog:11037_1.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:classic-key-presets"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:10112.htm",
@@ -93537,11 +93510,8 @@
       "obligation_ids": [
         "ledger:sensors-wizard-semantics"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_director"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:17704.htm",
@@ -93713,11 +93683,8 @@
       "obligation_ids": [
         "ledger:all-unit-parameter-encoding"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:8081.htm",
@@ -93726,11 +93693,8 @@
       "obligation_ids": [
         "ledger:all-unit-parameter-encoding"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:12053.htm",
@@ -93769,11 +93733,8 @@
       "obligation_ids": [
         "ledger:all-unit-parameter-encoding"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:5213.htm",
@@ -93832,11 +93793,8 @@
       "obligation_ids": [
         "ledger:all-unit-parameter-encoding"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:14052.htm",
@@ -93845,11 +93803,8 @@
       "obligation_ids": [
         "ledger:sensors-wizard-semantics"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:14054.htm",
@@ -93858,11 +93813,8 @@
       "obligation_ids": [
         "ledger:sensors-wizard-semantics"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:14053.htm",
@@ -93871,11 +93823,8 @@
       "obligation_ids": [
         "ledger:sensors-wizard-semantics"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_static_node_manager"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:3850.htm",
@@ -93884,11 +93833,8 @@
       "obligation_ids": [
         "ledger:thermostat-configuration"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_help_unit_type"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:3851.htm",
@@ -93897,11 +93843,8 @@
       "obligation_ids": [
         "ledger:thermostat-configuration"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "no_help_unit_type"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:5392.htm",
@@ -94004,7 +93947,7 @@
       "dialog_map_status": "unresolved",
       "disposition": "provisional_obligation",
       "dialog_map_unresolved": [
-        "unknown_unit_type"
+        "help_unit_type_absent_from_executable"
       ]
     },
     {
@@ -94086,7 +94029,7 @@
       "dialog_map_status": "unresolved",
       "disposition": "provisional_obligation",
       "dialog_map_unresolved": [
-        "unknown_unit_type",
+        "help_unit_type_absent_from_executable",
         "generic_ledger_only"
       ]
     },
@@ -94095,26 +94038,20 @@
       "kind": "dialog",
       "source_id": "dialog:13872.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:interface-discovery-and-setup"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:13876.htm",
       "kind": "dialog",
       "source_id": "dialog:13876.htm",
       "obligation_ids": [
-        "ledger:toolkit-differential-acceptance"
+        "ledger:interface-discovery-and-setup"
       ],
-      "dialog_map_status": "unresolved",
-      "disposition": "provisional_obligation",
-      "dialog_map_unresolved": [
-        "generic_ledger_only"
-      ]
+      "dialog_map_status": "resolved",
+      "disposition": "provisional_obligation"
     },
     {
       "id": "scope:dialog:dialog:1613.htm",
@@ -212570,9 +212507,14 @@
       "source_id": "TFRMARCHITECTURALDIMMER",
       "source_sha256": "8bb3a0a0a2ec10bd6fa8b9449d274e9f283e4468ac7409b8199e92830682466e",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:7887.htm",
+        "dialog:8064.htm",
+        "dialog:8081.htm"
+      ]
     },
     {
       "id": "scope:executable-control:660f3202b566490b3795",
@@ -212580,7 +212522,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer",
       "component_class": "TfrmArchitecturalDimmer",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212590,7 +212532,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212600,7 +212542,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlButtons/Panel1",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212610,7 +212552,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlButtons/Panel3",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212620,7 +212562,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlButtons/Panel3/ProgressBar1",
       "component_class": "TProgressBar",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212630,7 +212572,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212640,7 +212582,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212650,7 +212592,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212660,7 +212602,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212670,7 +212612,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21",
       "component_class": "TfrmUnitIDAreaFw2",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212680,7 +212622,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblArea",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212690,7 +212632,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/Label8",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212700,7 +212642,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/Label9",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212710,7 +212652,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblSerial",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212720,7 +212662,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblDescription",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212730,7 +212672,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/Label11",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212740,7 +212682,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/Label10",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212750,7 +212692,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblApplication",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212760,7 +212702,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblFirmwareVersion",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212770,7 +212712,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblTagName",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212780,7 +212722,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblCatalogNumber",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212790,7 +212732,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblDescriptionDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212800,7 +212742,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblTagNameDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212810,7 +212752,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblCatalogNumberDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212820,7 +212762,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/lblSecondaryFirmwareVersion",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212830,7 +212772,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/cmbArea",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212840,7 +212782,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtUnitName",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212850,7 +212792,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtUnitAddress",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212860,7 +212802,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtFirmwareVersion",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212870,7 +212812,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtNetwork",
       "component_class": "TEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212880,7 +212822,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtProject",
       "component_class": "TEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212890,7 +212832,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtTagname",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212900,7 +212842,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtCatalogNumber",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212910,7 +212852,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtDescription",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212920,7 +212862,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtSerial",
       "component_class": "TEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212930,7 +212872,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/cmbApplication",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212940,7 +212882,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/pnlUnitGraphic",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212950,7 +212892,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaFw21/edtSecondaryFirmwareVersion",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212960,7 +212902,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212970,7 +212912,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels/frmArchDimmerChannels1",
       "component_class": "TfrmArchDimmerChannels",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212980,7 +212922,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels/frmArchDimmerChannels1/pnlChannelBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -212990,7 +212932,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels/frmArchDimmerChannels1/pnlChannelBottom/pnlChannelRight",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213000,7 +212942,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels/frmArchDimmerChannels1/pnlChannelMain",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213010,7 +212952,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsChannels/frmArchDimmerChannels1/pnlChannelMain/grdChannels",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213020,7 +212962,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213030,7 +212972,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1",
       "component_class": "TfrmArchDimmerCBusDisable",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213040,7 +212982,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213050,7 +212992,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableLeft/grdMasks",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213060,7 +213002,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableLeft/pnlChannelEnableBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213070,7 +213012,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableRight",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213080,7 +213022,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableRight/GroupBox1",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213090,7 +213032,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsCBusDisable/frmArchDimmerCBusDisable1/pnlChannelEnableTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213100,7 +213042,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213110,7 +213052,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX/frmArchDimmerDMX1",
       "component_class": "TfrmArchDimmerDMX",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213120,7 +213062,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX/frmArchDimmerDMX1/pnlDMXBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213130,7 +213072,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX/frmArchDimmerDMX1/pnlDMXBottom/GroupBox8",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213140,7 +213082,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX/frmArchDimmerDMX1/pnlDMXGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213150,7 +213092,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDMX/frmArchDimmerDMX1/pnlDMXGrid/grdDMX",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213160,7 +213102,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213170,7 +213112,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1",
       "component_class": "TfrmArchDimmerLogic",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213180,7 +213122,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/Panel4",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213190,7 +213132,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/Panel4/GroupBox5",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213200,7 +213142,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213210,7 +213152,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213220,7 +213162,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213230,7 +213172,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogic",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213240,7 +213182,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogic/chkSelectAll1",
       "component_class": "TcxCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213250,7 +213192,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogic/chkSelectAll2",
       "component_class": "TcxCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213260,7 +213202,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogic/chkSelectAll3",
       "component_class": "TcxCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213270,7 +213212,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogic/chkSelectAll4",
       "component_class": "TcxCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213280,7 +213222,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/pnlLogicGroups",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213290,7 +213232,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsLogic/frmArchDimmerLogic1/pnlLogicAssignments/GroupBox6/Panel6/Panel9",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213300,7 +213242,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213310,7 +213252,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1",
       "component_class": "TfrmArchDimmerRecovery",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213320,7 +213262,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213330,7 +213272,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213340,7 +213282,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryLeft/grpRecoveryChannels",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213350,7 +213292,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213360,7 +213302,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213370,7 +213312,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups/Panel22",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213380,7 +213322,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups/Panel23",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213390,7 +213332,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups/Panel24",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213400,7 +213342,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups/Panel25",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213410,7 +213352,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsRecovery/frmArchDimmerRecovery1/pnlRecoverySliders/pnlRecoveryRight/grpRecoveryLogicGroups/Panel26",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213420,7 +213362,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213430,7 +213372,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1",
       "component_class": "TfrmArchDimmerFadeTimes",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213440,7 +213382,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1/pnlFadeTimesRight",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213450,7 +213392,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1/pnlFadeTimesRight/GroupBox7",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213460,7 +213402,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1/pnlFadeTimesLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213470,7 +213412,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1/pnlFadeTimesLeft/grdFadeTimes",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213480,7 +213422,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsFadeTimes/frmArchDimmerFadeTimes1/pnlFadeTimesLeft/Panel8",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213490,7 +213432,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsErrorReporting",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213500,7 +213442,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsErrorReporting/frmCBusOutputUnitErrorReporting1",
       "component_class": "TfrmCBusOutputUnitErrorReporting",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213510,7 +213452,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213520,7 +213462,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1",
       "component_class": "TfrmArchDimmerScenes",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213530,7 +213472,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213540,7 +213482,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213550,7 +213492,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213560,7 +213502,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneTop/GroupBox4",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213570,7 +213512,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneTop/grpAdvancedSceneManagement",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213580,7 +213522,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213590,7 +213532,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneGrid/grdEditScene",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213600,7 +213542,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneGrid/grdEditScene/tvEditScene",
       "component_class": "TcxGridTableView",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213610,7 +213552,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneGrid/grdEditScene/tvEditScene/SceneEditColFadeTimeEdit",
       "component_class": "TcxGridColumn",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213620,7 +213562,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213630,7 +213572,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlSceneEdit/grpEditingScene/pnlEditSceneBottom/btnEditSceneFadeTime",
       "component_class": "TButton",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213640,7 +213582,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlScenesList",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213650,7 +213592,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlScenesList/pnlSceneListBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213660,7 +213602,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlScenesList/pnlSceneListMain",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213670,7 +213612,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsScenes/frmArchDimmerScenes1/pnlScenesList/pnlSceneListMain/grdScenes",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213680,7 +213622,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213690,7 +213632,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1",
       "component_class": "TfrmArchDimmerSpecialScenes",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213700,7 +213642,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213710,7 +213652,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213720,7 +213662,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213730,7 +213672,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneTrigger",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213740,7 +213682,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213750,7 +213692,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom/pnlSpecialSceneParameters",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213760,7 +213702,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom/pnlSpecialSceneGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213770,7 +213712,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom/pnlSpecialSceneGrid/pnlEditSpecialSceneGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213780,7 +213722,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom/pnlSpecialSceneGrid/pnlEditSpecialSceneGrid/grdSpecialScenes",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213790,7 +213732,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlEditSpecialScene/grpSpecialScenes/pnlSpecialSceneBottom/pnlSpecialSceneGrid/pnlEditSpecialSceneGrid/pnlSpecialSceneChannelButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213800,7 +213742,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlSpecialScenesLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213810,7 +213752,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsSpecialScenes/frmArchDimmerSpecialScenes1/pnlSpecialScenes/pnlSpecialScenesLeft/grdSpecialSceneChooser",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213820,7 +213762,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213830,7 +213772,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1",
       "component_class": "TfrmCBusOutputUnitGlobalsWithLearn",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213840,7 +213782,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlUnitOptions",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213850,7 +213792,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlUnitOptions/grpUnitOptions",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213860,7 +213802,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlOperatingMode",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213870,7 +213812,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlOperatingMode/grpOperatingMode",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213880,7 +213822,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlLearnMode",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213890,7 +213832,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlLearnMode/grpLearnMode",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213900,7 +213842,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsWithLearn1/pnlLearnMode/grpLearnMode/frmUnitGlobalLearnModeNEW1",
       "component_class": "TfrmUnitGlobalLearnModeNEW",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213910,7 +213852,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213920,7 +213862,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1",
       "component_class": "TfrmArchDimmerDiagnosticLog",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213930,7 +213872,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1/pnlStatusLogMain",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213940,7 +213882,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1/pnlStatusLogMain/pnlLogGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213950,7 +213892,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1/pnlStatusLogMain/pnlLogGrid/grdLog",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213960,7 +213902,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1/pnlStatusLogMain/pnlLogActions",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213970,7 +213912,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsDiagnosticLog/frmArchDimmerDiagnosticLog1/pnlStatusLogMain/pnlLogActions/GroupBox3",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213980,7 +213922,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -213990,7 +213932,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1",
       "component_class": "TfrmCBusUnitStatus",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214000,7 +213942,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214010,7 +213952,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase/pnlLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214020,7 +213962,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase/pnlLeft/pnlAdvancedStatus",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214030,7 +213972,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase/pnlLeft/pnlStandardStatus",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214040,7 +213982,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase/pnlRight",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214050,7 +213992,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase/pnlRight/pnlButtonBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214060,7 +214002,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/pnlTabs/pcMain/tsStatus/frmDIMARXChannelStatus1",
       "component_class": "TfrmDIMARXChannelStatus",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -214070,7 +214012,7 @@
       "source_id": "TFRMARCHITECTURALDIMMER/frmArchitecturalDimmer/actButtons",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237269,9 +237211,12 @@
       "source_id": "TFRMDMXGATEWAY",
       "source_sha256": "ab71b20db72564de082709a693e8501c4de295632ad3044b374b0066f238a3f2",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:11739.htm"
+      ]
     },
     {
       "id": "scope:executable-control:d462f7d20cf8b36f2600",
@@ -237279,7 +237224,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway",
       "component_class": "TfrmDMXGateway",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237289,7 +237234,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237299,7 +237244,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237309,7 +237254,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237319,7 +237264,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237329,7 +237274,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDBase1",
       "component_class": "TfrmUnitIDBase",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237339,7 +237284,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDBase1/edtUnitName",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237349,7 +237294,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDBase1/edtTagname",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237359,7 +237304,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDBase1/edtCatalogNumber",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237369,7 +237314,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDBase1/edtDescription",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237379,7 +237324,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsMapping",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237389,7 +237334,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsMapping/frmCBusDMXGatewayMapping1",
       "component_class": "TfrmCBusDMXGatewayMapping",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237399,7 +237344,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsMapping/frmCBusDMXGatewayMapping1/Panel4",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237409,7 +237354,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsMapping/frmCBusDMXGatewayMapping1/Panel4/grdMappings",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237419,7 +237364,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237429,7 +237374,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1",
       "component_class": "TfrmCBusOutputUnitRecovery",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237439,7 +237384,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlStagger",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237449,7 +237394,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlStagger/pnlStaggerButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237459,7 +237404,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlRecoverySettings",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237469,7 +237414,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlRecoverySettings/gbRecovery",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237479,7 +237424,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlRecoverySettings/gbRecovery/pnlAutoLevelStore",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237489,7 +237434,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsRecovery/frmCBusOutputUnitRecovery1/pnlRecoverySettings/gbRecovery/pnlRecovery",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237499,7 +237444,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237509,7 +237454,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsNEW1",
       "component_class": "TfrmCBusOutputUnitGlobalsNEW",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237519,7 +237464,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsNEW1/pnlUnitOptions",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237529,7 +237474,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsNEW1/pnlUnitOptions/grpUnitOptions",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237539,7 +237484,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsNEW1/pnlOperatingMode",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237549,7 +237494,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsGlobal/frmCBusOutputUnitGlobalsNEW1/pnlOperatingMode/grpOperatingMode",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237559,7 +237504,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237569,7 +237514,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1",
       "component_class": "TfrmCBusUnitStatus",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237579,7 +237524,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/pnlTabs/pcMain/tsStatus/frmCBusUnitStatus1/pnlBase",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -237589,7 +237534,7 @@
       "source_id": "TFRMDMXGATEWAY/frmDMXGateway/actButtons",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:all-unit-parameter-encoding"
       ],
       "disposition": "pending_analysis"
     },
@@ -247825,9 +247770,14 @@
       "source_id": "TFRMIOPE",
       "source_sha256": "7e92e7c738d0a8c76c397a2e5f86ab7f460cf214b0cdcdfbe2624726503698c9",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:14052.htm",
+        "dialog:14053.htm",
+        "dialog:14054.htm"
+      ]
     },
     {
       "id": "scope:executable-control:9e03181066e08dc04628",
@@ -247835,7 +247785,7 @@
       "source_id": "TFRMIOPE/frmIOPE",
       "component_class": "TfrmIOPE",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247845,7 +247795,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247855,7 +247805,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247865,7 +247815,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/Panel5",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247875,7 +247825,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/Panel5/imgGraphic",
       "component_class": "TImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247885,7 +247835,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247895,7 +247845,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247905,7 +247855,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1",
       "component_class": "TfrmIOPESimple",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247915,7 +247865,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247925,7 +247875,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsSensor",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247935,7 +247885,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsSensor/frmIOPESimpleSensor1",
       "component_class": "TfrmIOPESimpleSensor",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247945,7 +247895,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsSensor/frmIOPESimpleSensor1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247955,7 +247905,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsSensor/frmIOPESimpleSensorScene1",
       "component_class": "TfrmIOPESimpleSensorScene",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247965,7 +247915,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsSensor/frmIOPESimpleSensorScene1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247975,7 +247925,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247985,7 +247935,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAux1",
       "component_class": "TfrmIOPESimpleAux",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -247995,7 +247945,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAux1/cxImageListAux",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248005,7 +247955,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAux1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248015,7 +247965,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAuxScene1",
       "component_class": "TfrmIOPESimpleAuxScene",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248025,7 +247975,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAuxScene1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248035,7 +247985,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone1/frmIOPESimpleZone1/PageControl1/tsAux/frmIOPESimpleAuxScene1/cxImageListAux",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248045,7 +247995,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248055,7 +248005,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2",
       "component_class": "TfrmIOPESimple",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248065,7 +248015,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248075,7 +248025,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsSensor",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248085,7 +248035,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsSensor/frmIOPESimpleSensor1",
       "component_class": "TfrmIOPESimpleSensor",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248095,7 +248045,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsSensor/frmIOPESimpleSensor1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248105,7 +248055,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsSensor/frmIOPESimpleSensorScene1",
       "component_class": "TfrmIOPESimpleSensorScene",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248115,7 +248065,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsSensor/frmIOPESimpleSensorScene1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248125,7 +248075,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248135,7 +248085,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAux1",
       "component_class": "TfrmIOPESimpleAux",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248145,7 +248095,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAux1/cxImageListAux",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248155,7 +248105,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAux1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248165,7 +248115,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAuxScene1",
       "component_class": "TfrmIOPESimpleAuxScene",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248175,7 +248125,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAuxScene1/cxImageListGroupScene",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248185,7 +248135,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple/tsZone2/frmIOPESimpleZone2/PageControl1/tsAux/frmIOPESimpleAuxScene1/cxImageListAux",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248195,7 +248145,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248205,7 +248155,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248215,7 +248165,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248225,7 +248175,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21",
       "component_class": "TfrmUnitIDAreaApp2",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248235,7 +248185,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtUnitName",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248245,7 +248195,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtTagname",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248255,7 +248205,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtCatalogNumber",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248265,7 +248215,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtDescription",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248275,7 +248225,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248285,7 +248235,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication2",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248295,7 +248245,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGlobal",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248305,7 +248255,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGlobal/frmIOPEGlobal",
       "component_class": "TfrmIOPEGlobal",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248315,7 +248265,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248325,7 +248275,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbInputGroups",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248335,7 +248285,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbInputGroups/frmIOPESensorInputs",
       "component_class": "TfrmIOPESensorInputs",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248345,7 +248295,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbInputGroups/frmIOPESensorInputs/ActionList1",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248355,7 +248305,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbInputGroups/frmIOPEAuxInputs",
       "component_class": "TfrmIOPEAuxInputs",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248365,7 +248315,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbInputGroups/frmIOPEAuxInputs/ActionList1",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248375,7 +248325,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248385,7 +248335,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups",
       "component_class": "TfrmOutputGroups",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248395,7 +248345,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/lblChannel2",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248405,7 +248355,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/lblChannel1",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248415,7 +248365,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/lblChannel3",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248425,7 +248375,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/lblChannel4",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248435,7 +248385,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/cmbOutputGroup2",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248445,7 +248395,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/cmbOutputGroup1",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248455,7 +248405,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/cmbOutputGroup3",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248465,7 +248415,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsGroups/gbOutputGroups/frmOutputGroups/cmbOutputGroup4",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248475,7 +248425,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsPowerFail",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248485,7 +248435,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsPowerFail/frmIOPEPowerFailure1",
       "component_class": "TfrmIOPEPowerFailure",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248495,7 +248445,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsPowerFail/frmIOPEPowerFailure1/frmOutputRecovery",
       "component_class": "TfrmOutputRecovery",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248505,7 +248455,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248515,7 +248465,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1",
       "component_class": "TfrmIOPESensorMicrofunctions",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248525,7 +248475,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/grdMicroFunctions",
       "component_class": "TcxTreeList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248535,7 +248485,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/imgGrd1Expand",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248545,7 +248495,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/imgGrd1Collapse",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248555,7 +248505,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/grdMicroFunctions2",
       "component_class": "TcxTreeList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248565,7 +248515,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/imgGrd2Expand",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248575,7 +248525,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/imgGrd2Collapse",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248585,7 +248535,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/StyleRepository",
       "component_class": "TcxStyleRepository",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248595,7 +248545,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsSensorFunctions/frmIOPESensorMicrofunctions1/StyleRepository/GridTableViewStyleSheetDevExpress",
       "component_class": "TcxGridTableViewStyleSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248605,7 +248555,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248615,7 +248565,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1",
       "component_class": "TfrmIOPEAuxMicrofunctions",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248625,7 +248575,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/grdMicroFunctions",
       "component_class": "TcxTreeList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248635,7 +248585,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/cxImageAuxM1",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248645,7 +248595,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/cxImageAuxB1",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248655,7 +248605,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/GroupBox1",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248665,7 +248615,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/GroupBox1/cxImage1",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248675,7 +248625,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/imgGrd1Expand",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248685,7 +248635,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/imgGrd1Collapse",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248695,7 +248645,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/grdMicroFunctions2",
       "component_class": "TcxTreeList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248705,7 +248655,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/cxImageAuxM2",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248715,7 +248665,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/cxImageAuxB2",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248725,7 +248675,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/imgGrd2Expand",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248735,7 +248685,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/imgGrd2Collapse",
       "component_class": "TcxImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248745,7 +248695,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsAuxFunctions/frmIOPEAuxMicrofunctions1/cxImageListBistable",
       "component_class": "TcxImageList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248755,7 +248705,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsEnvironment",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248765,7 +248715,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsEnvironment/frmIOPEEnvironment1",
       "component_class": "TfrmIOPEEnvironment",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248775,7 +248725,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsInputBlocks",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248785,7 +248735,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsInputBlocks/frmIOPEBlocks",
       "component_class": "TfrmIOPEBlocks",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248795,7 +248745,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248805,7 +248755,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes/frmIOPESceneGroups",
       "component_class": "TfrmIOPESceneGroups",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248815,7 +248765,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes/frmIOPESceneGroups/pnlBottom",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248825,7 +248775,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes/frmIOPESceneGroups/pnlBottom/lblTotalSceneMemoryUsage",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248835,7 +248785,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes/frmIOPESceneGroups/pnlMain",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248845,7 +248795,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsScenes/frmIOPESceneGroups/pnlMain/grdScenes",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248855,7 +248805,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsOutput",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248865,7 +248815,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsOutput/frmIOPEOutput1",
       "component_class": "TfrmIOPEOutput",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248875,7 +248825,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248885,7 +248835,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsStatus/frmIOPEStatus",
       "component_class": "TfrmIOPEStatus",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248895,7 +248845,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsStatus/frmIOPEStatus/pnlMessage",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248905,7 +248855,7 @@
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsStatus/frmIOPEStatus/pnlMessage/btnUpdateStatus",
       "component_class": "TButton",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248915,7 +248865,7 @@
       "source_id": "TFRMIOPE/frmIOPE/actButtons",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248924,7 +248874,7 @@
       "kind": "executable_event",
       "source_id": "TFRMIOPE/frmIOPE#OnShow=FormShow",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248933,7 +248883,7 @@
       "kind": "executable_event",
       "source_id": "TFRMIOPE/frmIOPE/pnlTop/pcSimple#OnChange=pcSimpleChange",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248942,7 +248892,7 @@
       "kind": "executable_event",
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication#OnChange=frmUnitIDAreaApp21cmbApplication2Change",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248951,7 +248901,7 @@
       "kind": "executable_event",
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication#OnCanChangeElement=frmUnitIDAreaApp21cmbApplicationCanChangeElement",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -248960,7 +248910,7 @@
       "kind": "executable_event",
       "source_id": "TFRMIOPE/frmIOPE/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication2#OnChange=frmUnitIDAreaApp21cmbApplication2Change",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -256209,9 +256159,12 @@
       "source_id": "TFRMKEYGL5",
       "source_sha256": "3abb4000508cca33636c56414251da0cfa680c7d0e20cd716c818cbbc6021e55",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:18865.htm"
+      ]
     },
     {
       "id": "scope:executable-control:c64aefa15ddbd516c9c1",
@@ -256219,7 +256172,7 @@
       "source_id": "TFRMKEYGL5/frmKEYGL5",
       "component_class": "TfrmKEYGL5",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256229,7 +256182,7 @@
       "source_id": "TFRMKEYGL5/frmKEYGL5/tmrClose",
       "component_class": "TTimer",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256238,7 +256191,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnClose=FormClose",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256247,7 +256200,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnCloseQuery=FormCloseQuery",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256256,7 +256209,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnCreate=FormCreate",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256265,7 +256218,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnDestroy=FormDestroy",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256274,7 +256227,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnKeyDown=FormKeyDown",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256283,7 +256236,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5#OnShow=FormShow",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256292,7 +256245,7 @@
       "kind": "executable_event",
       "source_id": "TFRMKEYGL5/frmKEYGL5/tmrClose#OnTimer=tmrCloseTimer",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:dlt-edlt-widgets-and-labels"
       ],
       "disposition": "pending_analysis"
     },
@@ -256830,6 +256783,7 @@
         "dialog:19973_3.htm",
         "dialog:9302.htm",
         "dialog:9303.htm",
+        "dialog:9304.htm",
         "dialog:9305.htm",
         "dialog:9311.htm",
         "dialog:9312.htm",
@@ -272079,6 +272033,7 @@
       "source_id": "TFRMNEOPRO",
       "source_sha256": "d94027e9286137c1337b8558ecd0dcc7d1acf63f87bf86367f54742e947be0ac",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "provisional_obligation",
@@ -272089,6 +272044,8 @@
         "dialog:10046.htm",
         "dialog:10059.htm",
         "dialog:10072.htm",
+        "dialog:11037.htm",
+        "dialog:11037_1.htm",
         "dialog:19973_1.htm",
         "dialog:19973_2.htm",
         "dialog:19973_3.htm",
@@ -272096,6 +272053,8 @@
         "dialog:30016.htm",
         "dialog:30028.htm",
         "dialog:30040.htm",
+        "dialog:4455.htm",
+        "dialog:4457.htm",
         "dialog:8113.htm",
         "dialog:8122.htm",
         "dialog:8132.htm",
@@ -272113,6 +272072,7 @@
         "dialog:9301.htm",
         "dialog:9302.htm",
         "dialog:9303.htm",
+        "dialog:9304.htm",
         "dialog:9305.htm",
         "dialog:9311.htm",
         "dialog:9312.htm",
@@ -272122,6 +272082,9 @@
         "dialog:9318.htm",
         "dialog:9319.htm",
         "dialog:9320.htm",
+        "dialog:9905.htm",
+        "dialog:9926.htm",
+        "dialog:9938.htm",
         "dialog:9967.htm",
         "dialog:9990.htm"
       ]
@@ -272132,6 +272095,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro",
       "component_class": "TfrmNeoPro",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272142,6 +272106,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced",
       "component_class": "TPanel",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272152,6 +272117,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272162,6 +272128,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272172,6 +272139,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsGlobal",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272182,6 +272150,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsPowerFail",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272192,6 +272161,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsKeyFunctions",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272202,6 +272172,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsBlocks",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272212,6 +272183,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsIndicators",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272222,6 +272194,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsScenes",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272232,6 +272205,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsEnvironment",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -272242,6 +272216,7 @@
       "source_id": "TFRMNEOPRO/frmNeoPro/pnlAdvanced/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
+        "ledger:classic-key-presets",
         "ledger:neo-core-key-presets"
       ],
       "disposition": "pending_analysis"
@@ -294258,9 +294233,12 @@
       "source_id": "TFRMSENCT4",
       "source_sha256": "aaa7a3136160a81c110916560eb2b826bd3d24e436e0df3c5b1ef17087230ba2",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:14934.htm"
+      ]
     },
     {
       "id": "scope:executable-control:1aca54f5c1f5147c621e",
@@ -294268,7 +294246,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4",
       "component_class": "TfrmSENCT4",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294278,7 +294256,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294288,7 +294266,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294298,7 +294276,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294308,7 +294286,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/lblDeviceID",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294318,7 +294296,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/lblDeviceIDUnique",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294328,7 +294306,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/Image1",
       "component_class": "TImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294338,7 +294316,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/pnlUnitGraphic",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294348,7 +294326,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/pnlUnitGraphic/imgUnitGraphic",
       "component_class": "TImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294358,7 +294336,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlTopLeft/cmbDeviceID",
       "component_class": "TcxComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294368,7 +294346,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294378,7 +294356,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel1",
       "component_class": "TfrmSENCT4Channel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294388,7 +294366,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel2",
       "component_class": "TfrmSENCT4Channel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294398,7 +294376,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel2/grpChannel",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294408,7 +294386,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel3",
       "component_class": "TfrmSENCT4Channel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294418,7 +294396,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel3/grpChannel",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294428,7 +294406,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel4",
       "component_class": "TfrmSENCT4Channel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294438,7 +294416,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTop/pnlChannels/frmSENCT4Channel4/grpChannel",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294448,7 +294426,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294458,7 +294436,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294468,7 +294446,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294478,7 +294456,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21",
       "component_class": "TfrmUnitIDAreaApp2",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294488,7 +294466,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/Label11",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294498,7 +294476,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/Label10",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294508,7 +294486,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblApplication",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294518,7 +294496,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblFirmwareVersion",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294528,7 +294506,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblCatalogNumber",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294538,7 +294516,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblDescriptionDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294548,7 +294526,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblTagNameDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294558,7 +294536,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblCatalogNumberDBSuffix",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294568,7 +294546,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblArea",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294578,7 +294556,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblApplication2",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294588,7 +294566,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblScanHint",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294598,7 +294576,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblDescription",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294608,7 +294586,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/lblTagName",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294618,7 +294596,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtCatalogNumber",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294628,7 +294606,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtSerial",
       "component_class": "TEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294638,7 +294616,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294648,7 +294626,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbArea",
       "component_class": "TFlashCxGroupComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294658,7 +294636,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication2",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294668,7 +294646,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtTagname",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294678,7 +294656,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/edtDescription",
       "component_class": "TFlashEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294688,7 +294666,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/pnlUnitGraphic",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294698,7 +294676,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsPeriodicBroadcast",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294708,7 +294686,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsPeriodicBroadcast/frmSENCT4PeriodicBroadcast",
       "component_class": "TfrmSENCT4PeriodicBroadcast",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294718,7 +294696,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsBroadcastOnChange",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294728,7 +294706,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsBroadcastOnChange/frmSENCT4BroadcastOnChange",
       "component_class": "TfrmSENCT4BroadcastOnChange",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294738,7 +294716,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsTriggeredBroadcast",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294748,7 +294726,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsTriggeredBroadcast/frmSENCT4TriggeredBroadcast",
       "component_class": "TfrmSENCT4TriggeredBroadcast",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294758,7 +294736,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294768,7 +294746,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds",
       "component_class": "TfrmSENCT4Thresholds",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294778,7 +294756,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds/pnlEvents",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294788,7 +294766,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds/pnlEvents/pnlEventGrid",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294798,7 +294776,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds/pnlEvents/pnlEventGrid/grdEvents",
       "component_class": "TcxGrid",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294808,7 +294786,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds/pnlEvents/pnlEventGrid/grdEvents/tvEvents",
       "component_class": "TcxGridTableView",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294818,7 +294796,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsHighLowThresholds/frmSENCT4Thresholds/pnlEvents/pnlEventGrid/grdEvents/tvEvents/EventColApplication",
       "component_class": "TcxGridColumn",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294828,7 +294806,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294838,7 +294816,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsStatus/frmSENCT4Status1",
       "component_class": "TfrmSENCT4Status",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294848,7 +294826,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsStatus/frmSENCT4Status1/pnlMessage",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294858,7 +294836,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsStatus/frmSENCT4Status1/pnlMessage/btnUpdateStatus",
       "component_class": "TButton",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294868,7 +294846,7 @@
       "source_id": "TFRMSENCT4/frmSENCT4/actButtons",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294877,7 +294855,7 @@
       "kind": "executable_event",
       "source_id": "TFRMSENCT4/frmSENCT4#OnShow=FormShow",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294886,7 +294864,7 @@
       "kind": "executable_event",
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication#OnCanChangeElement=frmUnitIDAreaApp21cmbApplicationCanChangeElement",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -294895,7 +294873,7 @@
       "kind": "executable_event",
       "source_id": "TFRMSENCT4/frmSENCT4/pnlTabs/pcMain/tsUnitIdentification/frmUnitIDAreaApp21/cmbApplication2#OnCanChangeElement=frmUnitIDAreaApp21cmbApplication2CanChangeElement",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:sensors-wizard-semantics"
       ],
       "disposition": "pending_analysis"
     },
@@ -303481,9 +303459,13 @@
       "source_id": "TFRMTHERMOSTAT",
       "source_sha256": "376f8bce2b425451492debbeb79ca9dc848836eeedde73897f60f55c4d9f9bf5",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:3850.htm",
+        "dialog:3851.htm"
+      ]
     },
     {
       "id": "scope:executable-control:b0f6f412a2306f4cb76d",
@@ -303491,7 +303473,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat",
       "component_class": "TfrmThermostat",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303501,7 +303483,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlNormal",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303511,7 +303493,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlNormal/pnlImage",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303521,7 +303503,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlNormal/pnlImage/imgGraphic",
       "component_class": "TImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303531,7 +303513,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlNormal/pnlTop",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303541,7 +303523,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303551,7 +303533,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlButtons/Panel1",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303561,7 +303543,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlButtons/Panel3",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303571,7 +303553,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlButtons/Panel3/ProgressBar1",
       "component_class": "TProgressBar",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303581,7 +303563,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303591,7 +303573,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303601,7 +303583,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303611,7 +303593,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsPlant",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303621,7 +303603,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsPlant/pnlPlant",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303631,7 +303613,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsZoneManagement",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303641,7 +303623,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsZoneManagement/pnlZoneManagement",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303651,7 +303633,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsUserInterface",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303661,7 +303643,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsUserInterface/pnlUserInterface",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303671,7 +303653,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsTemperatureControl",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303681,7 +303663,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsTemperatureControl/pnlMiscellaneous",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303691,7 +303673,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsScheduling",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303701,7 +303683,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsScheduling/pnlScheduling",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303711,7 +303693,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsCBus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303721,7 +303703,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsCBus/pnlCBus",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303731,7 +303713,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/pnlAdvanced/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303741,7 +303723,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/FlashDataLink",
       "component_class": "TFlashObjectLink",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303751,7 +303733,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/NetworkObjectLink",
       "component_class": "TFlashObjectLink",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303761,7 +303743,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/NetworkLink",
       "component_class": "TFlashExpressionLink",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -303771,7 +303753,7 @@
       "source_id": "TFRMTHERMOSTAT/frmThermostat/ApplicationObjectLink",
       "component_class": "TFlashExpressionLink",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:thermostat-configuration"
       ],
       "disposition": "pending_analysis"
     },
@@ -316794,9 +316776,13 @@
       "source_id": "TFRMWIRELESSGATEWAY",
       "source_sha256": "9efcd0379a54797c4cb9959f67b5a185ce259e2b7192a305381c0508702e6519",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
-      "disposition": "provisional_obligation"
+      "disposition": "provisional_obligation",
+      "dialog_ids": [
+        "dialog:13872.htm",
+        "dialog:13876.htm"
+      ]
     },
     {
       "id": "scope:executable-control:39b40cc0e002e78c59d9",
@@ -316804,7 +316790,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway",
       "component_class": "TfrmWirelessGateway",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316814,7 +316800,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316824,7 +316810,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal/Label8",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316834,7 +316820,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal/Panel5",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316844,7 +316830,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal/Panel5/imgGraphic",
       "component_class": "TImage",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316854,7 +316840,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal/edtLinkedNetwork",
       "component_class": "TEdit",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316864,7 +316850,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlNormal/rgMode",
       "component_class": "TcxRadioGroup",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316874,7 +316860,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlButtons",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316884,7 +316870,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316894,7 +316880,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain",
       "component_class": "TPageControl",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316904,7 +316890,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsUnitIdentification",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316914,7 +316900,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316924,7 +316910,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/cbConnectApplications",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316934,7 +316920,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/cbConnectApplications/lblApplication",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316944,7 +316930,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/cbConnectApplications/Label1",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316954,7 +316940,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/cbConnectApplications/cmbApplication1",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316964,7 +316950,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/cbConnectApplications/cmbApplication2",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316974,7 +316960,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbMessageDestinationBridgeType2",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316984,7 +316970,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbMessageDestinationBridgeType2/chkAdjacentNetwork",
       "component_class": "TFlashCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -316994,7 +316980,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbMessageDestinationBridgeType2/chkRemoteNetwork",
       "component_class": "TFlashCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317004,7 +316990,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbMessageDestinationBridgeType2/cmbNetworks",
       "component_class": "TFlashCxComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317014,7 +317000,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbNetworkSynchronisation",
       "component_class": "TGroupBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317024,7 +317010,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbNetworkSynchronisation/Label2",
       "component_class": "TLabel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317034,7 +317020,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbNetworkSynchronisation/chkSynchroniseToWired",
       "component_class": "TFlashCheckBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317044,7 +317030,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsConnection/gbNetworkSynchronisation/cmbStatusMonitorApplication",
       "component_class": "TFlashCxApplicationComboBox",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317054,7 +317040,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsGlobal",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317064,7 +317050,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsGlobal/pnlGlobal",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317074,7 +317060,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsRemotes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317084,7 +317070,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsRemotes/pnlRemotes",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317094,7 +317080,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsStatus",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317104,7 +317090,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsScenes",
       "component_class": "TTabSheet",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317114,7 +317100,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/pnlAdvanced/pcMain/tsScenes/pnlScenes",
       "component_class": "TPanel",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317124,7 +317110,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/ActionListButtons",
       "component_class": "TActionList",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },
@@ -317134,7 +317120,7 @@
       "source_id": "TFRMWIRELESSGATEWAY/frmWirelessGateway/ProjectObjectLink",
       "component_class": "TFlashObjectLink",
       "obligation_ids": [
-        "ledger:toolkit-surface-census"
+        "ledger:interface-discovery-and-setup"
       ],
       "disposition": "pending_analysis"
     },

@@ -87,11 +87,12 @@ changes no provisional source count, and supplies no physical cache readback.
   from an explicitly supplied Toolkit executable and MAP. The inputs are
   identified by SHA-256 and remain outside Git.
 - `docs/toolkit-dialog-map.json` (`research/map_dialog_candidates.py`) supplies
-  the ledger rows for the 118 dialog scope items. The 80 dialogs that resolve
-  unit types, a director form and a specific row use that row, and their form
-  resources, controls and events leave `toolkit-surface-census`. The other 38
-  keep their triage routing and carry `dialog_map_unresolved` reason codes.
-  This is scope routing, not acceptance.
+  the ledger rows for the 118 dialog scope items. The 101 dialogs that resolve
+  unit types, a director or unit-dialog form and a specific row use that row,
+  and their form resources, controls and events leave `toolkit-surface-census`.
+  The other 17 keep their triage routing and carry `dialog_map_unresolved`
+  reason codes. This is scope routing, not acceptance; the map's control
+  coverage table is identification, not control acceptance.
 
 Run:
 
