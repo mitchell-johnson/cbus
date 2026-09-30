@@ -50,16 +50,16 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 460,
+    "test_modules": 461,
     "modules_without_skip_sites": 246,
-    "modules_with_skip_sites": 214,
+    "modules_with_skip_sites": 215,
     "modules_by_category": {
-      "cgate_test_host": 121,
+      "cgate_test_host": 122,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 50,
+      "native_cgate_local": 51,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 65,
@@ -68,19 +68,19 @@
       "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 4,
-      "unit_specs": 111,
+      "unit_specs": 112,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 114,
+      "all": 115,
       "partial": 18,
       "none": 82
     },
-    "native_runnable_tests": 217,
-    "native_selected_required_tests": 217,
+    "native_runnable_tests": 218,
+    "native_selected_required_tests": 218,
     "native_excluded": 0,
-    "native_selection_selectors": 135
+    "native_selection_selectors": 136
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -4905,6 +4905,38 @@
             "CBUS_UNITSPEC_DIR"
           ],
           "categories": [
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_iope_settings.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_iope_settings.py::IopeNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
             "unit_specs"
           ],
           "offline": "skips",
