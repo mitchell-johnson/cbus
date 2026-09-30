@@ -1,0 +1,100 @@
+{
+  "data": {
+    "package_files": 324,
+    "wheel_sha256": "25a11ff4673e1a209f86989bec7aead03403c3f9ae90a8c98e6e9aa9c7cba404",
+    "roster_sha256": "af9f623a64733afb44cb1882f8f83bd3f721b01d3cc4caed8886cd61390358b1",
+    "modes": {
+      "source": {
+        "parent_tests": 102,
+        "unique_roster_sha256": "9ebd347d012a5eeb23204372d821e962ff795a6ad57ac42ca78a104d3ccf19bd",
+        "public_commands": 20,
+        "bytes_compared": 128,
+        "only_changed_addresses": [
+          51,
+          52
+        ],
+        "literal_before": "af8a",
+        "literal_after": "a58e",
+        "journal": "complete",
+        "save_attempts": 1,
+        "project_full_preservation": true,
+        "raw_receipt_sha256": "1a8936915d44133495aba96ac630419616994c99192cba18d76b7291b3199ce3",
+        "raw_junit_sha256": "2dfbf2a124b4c91c67eaaa69ad39ff9517605f018e255991de3e29f956e57fc2",
+        "artifact_hashes": {
+          "first-edit-attempt.json": "480fa173b67144da89a72efc12b54c597253a5e4ff91381116708a94574c8139",
+          "state.json": "f94a0be88e2ccf956aea0d59028e2c1cb282a3161e956b597bb987c293ffc240",
+          "after-physical-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "programming-methods-daemon.log": "10df5434cf67c0e1ce85afbfa2939029bc5e63d9c6f45bbe51ae15c3f063ae8a",
+          "before-unit.xml": "4c881a5bdac738176f8cfb0e513dab9a87d148ec4e6c9d80bfd6115fc831954c",
+          "reopened-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "peer-memory-after.json": "9488f49110b9e7f439143ef49ba2f7e9e89abe796a0aafb1ffc3716337555434",
+          "edited-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "before-parameters.json": "0132a1195474e88dc8c41a537708b6fd3ddd233330818f89baf4b728416fe660",
+          "after-physical-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "reopened-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+          "project.xml": "bdab4dd70452ea08f26fe6694b68bd63d3f3c0e979edd9ec636ef04c39d42b09",
+          "reopened-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "peer-wire-and-stores.json": "6a2ef72cab512717ce752fac8040e1a603290fbe70afa02d1b6effc83b478c68",
+          "first-edit-plan.json": "9a2ae6be14a7548082ee2f2c4fb9e99f4b80e68a0ada1894766dacf4a49a65be",
+          "first-edit-result.json": "22e97f9dc5272b9dfd4741453de877cb38281f4e96def8640598d1ba756da775",
+          "public-command-transcript.json": "8092ac77a9da6ce1ab68c4a187ad08c5657674d935f69d67c48264a3bf059472",
+          "before-project.xml": "c9e886326038112db788852b568903273079b93f04260939043d60172c325791",
+          "edited-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+          "edited-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "peer-memory-before.json": "dc02a32cdb15a53bba6c2295be2663b4f5dc8900378e401ca7a4461284063d3c"
+        }
+      },
+      "installed": {
+        "parent_tests": 102,
+        "unique_roster_sha256": "9ebd347d012a5eeb23204372d821e962ff795a6ad57ac42ca78a104d3ccf19bd",
+        "public_commands": 20,
+        "bytes_compared": 128,
+        "only_changed_addresses": [
+          51,
+          52
+        ],
+        "literal_before": "af8a",
+        "literal_after": "a58e",
+        "journal": "complete",
+        "save_attempts": 1,
+        "project_full_preservation": true,
+        "raw_receipt_sha256": "1426140ca2cf2c2611df06cca47a9882504f6f0287a23d30dc7fbd97e4115c9c",
+        "raw_junit_sha256": "6b39dcdbab00eafca09a2293cbc90d2d41872a56563127d71205373d84240568",
+        "artifact_hashes": {
+          "first-edit-attempt.json": "cc5ccdffe5871d7ea4939f13133221757b7509d505adc6f6960a9a57b4dcf5bf",
+          "state.json": "74a5780d89af128e3b7ce33cb3338466511ac9bc22ad0c4f94a7418886c8a2ce",
+          "after-physical-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "programming-methods-daemon.log": "8a86af8dfd2b0baa553fd905c2f91f4db74df5be3a5fb7b573584eb6b8c7d379",
+          "before-unit.xml": "4c881a5bdac738176f8cfb0e513dab9a87d148ec4e6c9d80bfd6115fc831954c",
+          "reopened-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "peer-memory-after.json": "9488f49110b9e7f439143ef49ba2f7e9e89abe796a0aafb1ffc3716337555434",
+          "edited-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "before-parameters.json": "0132a1195474e88dc8c41a537708b6fd3ddd233330818f89baf4b728416fe660",
+          "after-physical-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "reopened-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+          "project.xml": "bdab4dd70452ea08f26fe6694b68bd63d3f3c0e979edd9ec636ef04c39d42b09",
+          "reopened-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+          "peer-wire-and-stores.json": "8ee5426c8f40c68f0b5e4629432881e66a0c4888252e88a5101e4aec360289d0",
+          "first-edit-plan.json": "9a2ae6be14a7548082ee2f2c4fb9e99f4b80e68a0ada1894766dacf4a49a65be",
+          "first-edit-result.json": "ea93e6860c1a0a20b38194733a2efc51fc3819d6df6d3dc09d036da022dc2004",
+          "public-command-transcript.json": "f38842171695ecc526cf7909924e7fe640e48808c79f31503fdc330612d779f9",
+          "before-project.xml": "c9e886326038112db788852b568903273079b93f04260939043d60172c325791",
+          "edited-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+          "edited-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+          "peer-memory-before.json": "dc02a32cdb15a53bba6c2295be2663b4f5dc8900378e401ca7a4461284063d3c"
+        }
+      }
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "f3ab98964cbda7e3c722f40de57d6a89ae967aa65273ecbd9f2edee008b018b9",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

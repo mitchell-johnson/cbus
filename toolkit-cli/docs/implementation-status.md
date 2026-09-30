@@ -48,6 +48,17 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [classic DLT physical workflow](feature-batch-2026-10-01-dlt-physical-workflow.md)
+connects one saved KEYML5 `2.1.00` / `5055DL` Indicators plan to a guarded physical
+save, independent fresh LOAD and read-only recovery. The exact WFDLT/unit-4
+first edit covers page fallback followed by a five-second duration. cmqttd
+exposes immutable physical LOAD identity and invalidates stale or uncertain
+provenance. The scripted-peer journey preserves complete project metadata,
+nonindicator PP values and every physical byte outside the two indicator bytes.
+This is bounded software delivery for issue 36; broader original Toolkit,
+device and persistence gates remain open. Ledger and fully accepted obligation
+counts remain unchanged.
+
 The [database conversion and PP namespace batch](feature-batch-2026-10-01-conversion-pp.md)
 adds independent scalar/PP persistence, schema-ordered parameter replacement,
 failed-load preservation and successful native range-reset advisories. Fresh

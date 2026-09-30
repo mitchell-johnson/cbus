@@ -1801,14 +1801,28 @@ impl Unit {
     }
 }
 
-/// One in-memory programming session (`PP START name lock` … `PP END`).
-///
-/// Sessions hold staged parameter values plus the loaded/new identity.
-/// There is no catalogue, memory image or hardware behind them: `NEW`
-/// seeds identity parameters, `LOAD` of a `/db/` unit seeds from the
-/// database record, and `SAVE` writes staged values back to it. Anything
-/// requiring catalogue data, raw memory or live hardware answers with an
-/// explicit error instead of invented content.
+/// Physical identity observed by one successful, generation-bound PP LOAD.
+/// It is volatile provenance, not database or current inventory identity.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PpLoadedPhysicalIdentity {
+    pub unit_type: String,
+    pub firmware: String,
+    pub source: String,
+    pub pci_generation: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub(crate) enum PpPhysicalLoadState {
+    #[default]
+    NotPhysical,
+    Invalidated,
+    Loaded(PpLoadedPhysicalIdentity),
+}
+
+/// One volatile programming session (`PP START` … `PP END`).
+/// Database/new sessions hold staged data and model identity. The hardware
+/// service separately stamps successful physical LOAD provenance and validates
+/// its PCI epoch before publishing that identity through INFO.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PpSession {
     /// Session name (`PP <OP> name …`).
@@ -1823,6 +1837,11 @@ pub struct PpSession {
     pub firmware: Option<String>,
     /// Identity from `NEW` or `/db/` `LOAD`.
     pub catalog_number: Option<String>,
+    /// Service-owned successful physical LOAD provenance or its invalidation.
+    pub(crate) physical_load: PpPhysicalLoadState,
+    /// Service-issued attempt identity prevents an old completion replacing
+    /// a newer transition or a recreated session with the same name.
+    pub(crate) physical_load_attempt: u64,
     /// Staged parameter values.
     pub params: HashMap<String, String>,
     /// Parameters changed since the last successful load or save.
@@ -7408,6 +7427,8 @@ impl Server {
                 unit_type: None,
                 firmware: None,
                 catalog_number: None,
+                physical_load: PpPhysicalLoadState::NotPhysical,
+                physical_load_attempt: 0,
                 params: HashMap::new(),
                 dirty: HashSet::new(),
                 raw: vec![None; 2048],
@@ -7486,6 +7507,7 @@ impl Server {
             Err(r) => return r,
         };
         session.source = None;
+        session.physical_load = PpPhysicalLoadState::NotPhysical;
         session.unit_type = Some(words[3].to_string());
         session.firmware = Some(words[4].to_string());
         session.catalog_number = words.get(5).map(|s| s.to_string());
@@ -7529,6 +7551,7 @@ impl Server {
         };
         let mut warnings = Vec::new();
         session.source = Some(words[3].to_string());
+        session.physical_load = PpPhysicalLoadState::NotPhysical;
         session.params.clear();
         session.dirty.clear();
         session.unit_type = None;
@@ -7655,6 +7678,7 @@ impl Server {
             Err(error) => return err(tag, status::CONFLICT_STATE, &format!("408 {error}")),
         };
         session.source = None;
+        session.physical_load = PpPhysicalLoadState::NotPhysical;
         session.unit_type = Some(unit_type.to_string());
         session.firmware = None;
         session.catalog_number = None;
@@ -7960,8 +7984,19 @@ impl Server {
             Ok(v) => v,
             Err(r) => return r,
         };
+        if session.physical_load == PpPhysicalLoadState::Invalidated {
+            return err(
+                tag,
+                408,
+                "408 Physical PP loaded identity is invalidated; LOAD again",
+            );
+        }
         let wanted = words.get(3).copied().unwrap_or("*");
-        if let Some(unit_type) = session.unit_type.clone() {
+        let unit_type = match &session.physical_load {
+            PpPhysicalLoadState::Loaded(identity) => Some(identity.unit_type.clone()),
+            _ => session.unit_type.clone(),
+        };
+        if let Some(unit_type) = unit_type {
             if let Some(spec) = self.spec_for(&unit_type) {
                 return self.spec_info(tag, &session, &spec, wanted);
             }
@@ -7975,7 +8010,7 @@ impl Server {
             }
         };
         names.sort();
-        let mut xml = String::from("<Parameters>");
+        let mut xml = Self::pp_info_root(&session);
         for name in names {
             xml.push_str(&format!(
                 "<Param><Name>{}</Name><Type>int</Type><BitSize>8</BitSize><ArraySize>1</ArraySize><BitAddress>0</BitAddress><MinValue>0</MinValue><MaxValue>255</MaxValue><Value>{}</Value></Param>",
@@ -7985,6 +8020,18 @@ impl Server {
         }
         xml.push_str("</Parameters>");
         Self::info_envelope(tag, &xml)
+    }
+
+    fn pp_info_root(session: &PpSession) -> String {
+        match &session.physical_load {
+            PpPhysicalLoadState::Loaded(identity) => format!(
+                "<Parameters UnitType=\"{}\" FirmwareVersion=\"{}\" Source=\"{}\">",
+                xml_escape(&identity.unit_type),
+                xml_escape(&identity.firmware),
+                xml_escape(&identity.source),
+            ),
+            _ => "<Parameters>".to_string(),
+        }
     }
 
     /// Schema envelope shared by both INFO sources.
@@ -8015,7 +8062,7 @@ impl Server {
                 }
             }
         };
-        let mut xml = String::from("<Parameters>");
+        let mut xml = Self::pp_info_root(session);
         for param in selected {
             xml.push_str("<Param>");
             for (key, value) in &param.document_fields {

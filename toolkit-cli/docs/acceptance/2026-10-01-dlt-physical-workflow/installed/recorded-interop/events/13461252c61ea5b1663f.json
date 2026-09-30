@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52681",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "direct",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_completed_save_journal_re0/journals/attempt.json",
+        "--set",
+        "direct_a",
+        "0xA0 0xA5",
+        "--set",
+        "direct_b",
+        "0xC0 0xC3"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"9fe26c1115fc\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"direct\",\n  \"edits\": [\n    {\n      \"parameter\": \"direct_a\",\n      \"requested_value\": \"0xA0 0xA5\"\n    },\n    {\n      \"parameter\": \"direct_b\",\n      \"requested_value\": \"0xC0 0xC3\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"direct_a\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"$20\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"direct_b\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"$26\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"direct_a\": \"0x10 0x13\",\n    \"direct_b\": \"0x40 0x47\"\n  },\n  \"staged\": {\n    \"direct_a\": \"0xA0 0xA5\",\n    \"direct_b\": \"0xC0 0xC3\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_completed_save_journal_re0/journals/attempt.json\",\n    \"attempt_id\": \"sha256:2b3c5b33e4db496e61c54e555d36e7ba1b19ab6ce516fba3ebb3b983f8b325f2\",\n    \"phase\": \"complete\",\n    \"ranges\": 2,\n    \"write_planned_ranges\": 2\n  },\n  \"verified\": {\n    \"direct_a\": \"0xA0 0xA5\",\n    \"direct_b\": \"0xC0 0xC3\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_completed_save_journal_records_every_phase"
+    },
+    {
+      "kind": "pytest-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_completed_save_journal_records_every_phase"
+    }
+  ],
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "6500224d0e3b4c50daa7718f2ccd640a7ef9f300dd791fbbe3ff4d2e6a822467",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/0/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "jsonl",
+    "container_form": "data envelope; JSONL rows retained in original order"
+  }
+}

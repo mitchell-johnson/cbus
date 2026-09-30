@@ -1,0 +1,372 @@
+{
+  "data": {
+    "exit": 0,
+    "repeated_interop_cases": 14,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "repeats_not_added_to_original_unique102": true,
+    "inputs_stable": true,
+    "imports_and_extras_stable": true,
+    "installed_package_bytes_source_identical": true,
+    "private_recorder_unchanged": true,
+    "owned_daemons_left": [],
+    "subprocess_events": 141,
+    "inprocess_cli_events": 3,
+    "recorded_nodes": [
+      "tests/test_cmqtt_programming_methods_interop.py::test_completed_save_journal_records_every_phase",
+      "tests/test_cmqtt_programming_methods_interop.py::test_incomplete_journal_refuses_repeat_saves_before_io_until_recovered",
+      "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session",
+      "tests/test_dlt_physical_programming_interop.py::test_complete_typed_editor_saved_project_and_physical_delivery",
+      "tests/test_dlt_physical_programming_interop.py::test_database_edit_and_plan_guards_before_physical_io",
+      "tests/test_dlt_physical_programming_interop.py::test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey",
+      "tests/test_dlt_physical_programming_interop.py::test_lost_ack_no_replay_and_restart_read_only_recovery",
+      "tests/test_dlt_physical_programming_interop.py::test_missing_loaded_identity_contract_real_cli_refuses_before_first_set",
+      "tests/test_dlt_physical_programming_interop.py::test_pre_save_journal_failure_or_interruption_never_programs[failure0]",
+      "tests/test_dlt_physical_programming_interop.py::test_pre_save_journal_failure_or_interruption_never_programs[failure1]",
+      "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]",
+      "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[physical-firmware]",
+      "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[physical-type]",
+      "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[shared-bit]"
+    ],
+    "actual_imports": {
+      "modules": {
+        "cbus_toolkit": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/__init__.py",
+        "cbus_toolkit.cli": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/cli.py",
+        "cbus_toolkit.dlt_physical_programming": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/dlt_physical_programming.py",
+        "cbus_toolkit.physical_programming": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/physical_programming.py",
+        "cbus_toolkit.physical_programming_cli": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/physical_programming_cli.py",
+        "cbus_toolkit.dlt_indicators": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/dlt_indicators.py",
+        "cbus_toolkit.physical_pp_journal": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit/physical_pp_journal.py"
+      },
+      "extras": {
+        "pytest": {
+          "version": "9.1.1",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/pytest/__init__.py",
+          "module_sha256": "ee37885c9583f843390684dfb496907f87a0905128e7a3cf4ad227f49ff34c2d",
+          "metadata_sha256": "c5d032518012789cabc870d46589aca3aeda36cf9fa4399ee88bda3d10438451",
+          "record_sha256": "1de196646bedd7f396cff5af09fb627cf007837585a9aaa757e4159edef4c823"
+        },
+        "cryptography": {
+          "version": "50.0.1",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/cryptography/__init__.py",
+          "module_sha256": "9ad86e52b4dde0544e0a9518ad322a863cfab3a4fd763019ad5ee7675a0c9b6a",
+          "metadata_sha256": "8e9b5570da4686848ee5c6bb83fffc224bcddf9793136731dd050ce0c05fffe2",
+          "record_sha256": "c7999396b380e7c2945b24fb03ad9c28af17709138fbdbabab6ecea8c35db1f5"
+        },
+        "pefile": {
+          "version": "2024.8.26",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/pefile.py",
+          "module_sha256": "0d0eb68f0f169182613dc64b3ab50b20855508c1c1d2faafe8fccf23edb6a345",
+          "metadata_sha256": "8ad83a5f8659e8da6eeaabf2dafa0eebb8c05832a3def16a5db4dd0d52e72474",
+          "record_sha256": "ee786bdf01f83a88073a75faecacc479bc611690740f9e2bdda745679e500de1"
+        },
+        "unicorn": {
+          "version": "2.1.4",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/unicorn/__init__.py",
+          "module_sha256": "9ad32123bca674cf205c308fd4d0d2a4db877c9dc2afac4feab7c84c8cf7043b",
+          "metadata_sha256": "ce96de4160dc06c1bbcf35074cb542c9f296219f740aa0f34606f8837650c2e8",
+          "record_sha256": "9731d20f27dc91c835895397df9678a7b7aa23b1e8d37bdd4c86e1f091ef8b48"
+        },
+        "capstone": {
+          "version": "5.0.7",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/capstone/__init__.py",
+          "module_sha256": "17a8db1bfe9cb52a97cc89d4ddc9b3246b5d0ddd330fb592ea17060554032f8e",
+          "metadata_sha256": "6d420727782c7371638c9323fbd03b012c79f8832ef2a9400c9e56added714dd",
+          "record_sha256": "f2ce029d2ca34b52c5dd0f0ce8b4b058d5215fcf39d2c802ce68c42c5bf6af18"
+        },
+        "pyzipper": {
+          "version": "0.3.6",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/pyzipper/__init__.py",
+          "module_sha256": "a8dbd01475bc18d8c9f5b39724c6e2ad62a3d0d9e4be99769c6f9e513b94aa9c",
+          "metadata_sha256": "947ca5ffb2973c834a9cbacfdd64fb91eeeb960d8dd9a0a8f612650db3ebee38",
+          "record_sha256": "9770a776101787c9d3e030659180b76f860f10dae6cd095c9b0d0005985659b0"
+        },
+        "pyserial": {
+          "version": "3.5",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/serial/__init__.py",
+          "module_sha256": "5dec897fdef45a0eaf63eacda1e01d62e1e75490302584ae0238f75376592344",
+          "metadata_sha256": "42a8ab7e94ef0b7baa7e94cdac65d6b9254c608476f630120c990007bf472943",
+          "record_sha256": "f388cd2c200d490b1cda15d8a5213fdf39c9c6924fa7ed6fa2d4e95ab64bb675"
+        },
+        "pyusb": {
+          "version": "1.3.1",
+          "module_origin": "${CBUS_TOOLKIT_ROOT}/.venv/lib/python3.13/site-packages/usb/__init__.py",
+          "module_sha256": "273b5fba3dfeb5f9092224cfcc3f9f4f0e005ff9b7b4c5510558c81b0f3d825d",
+          "metadata_sha256": "a0d52a94c2f609d31e08426f171645431292fe50fba849039964d642f74157cd",
+          "record_sha256": "391740026d209f0dd62f299a559d7afd07cd4b8500572f1591c0302b3771d94d"
+        }
+      }
+    },
+    "artifacts": {
+      "before.json": "837465f2994b3d1c19d7f8193614a78271ebbf79a2097d9e76df5baeabfc8439",
+      "cases/test_complete_typed_editor_sav0/attempt.json": "af0cc85030b9e0f67709c02044771e35ef76d39e51de2b6665a8e07dcaa6898e",
+      "cases/test_complete_typed_editor_sav0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_complete_typed_editor_sav0/journey-result.json": "40fcffca3c09bc05e1cd59d00781667fd9141d17c9578683b7fd43a230cc3c7b",
+      "cases/test_complete_typed_editor_sav0/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_complete_typed_editor_sav0/programming-methods-daemon.log": "6e09f59161c929bce57183de484cc0e0cb2626689795621d813b9a1f2bf6bece",
+      "cases/test_complete_typed_editor_sav0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_complete_typed_editor_sav0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_complete_typed_editor_sav0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_complete_typed_editor_sav0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_complete_typed_editor_sav0/state.json": "5b09490cb08f8aa43400b97d0f940c50fc42c18488d930e574efa317dcc37dcf",
+      "cases/test_completed_save_journal_re0/journals/attempt.json": "4e53bc297d42abfe02fdf3bf27a67674c1332ddb90366f3fe0b6d0949b8901a7",
+      "cases/test_completed_save_journal_re0/programming-methods-daemon.log": "7012c50e796e8bf14b2612a5b592978cfd240a79b4b34101fd675d87c6be068d",
+      "cases/test_completed_save_journal_re0/project.xml": "3bde45ad711be2fbb1e032b11718e7e9ac35f0404049e80fab75274d7ef467a8",
+      "cases/test_completed_save_journal_re0/state.json": "4926ed82e12fbdce20eabe11102b338a04eb04da3d914b1a6f32f156a5e03aba",
+      "cases/test_completed_save_journal_re0/unitspec/PPTEST.xml": "272c76d1c1c4e44d77fddc783279ad72ce070ba562e84e1795e7f82aca00be29",
+      "cases/test_database_edit_and_plan_gu0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_database_edit_and_plan_gu0/plan.json": "9574d373c0468fd9bdca1d6e1bc04e02180c78477285e5d3d64df0c38bf594f7",
+      "cases/test_database_edit_and_plan_gu0/programming-methods-daemon.log": "361587ab3e80d0dd2f621127c6cf92258859fd063ff98af0e3fc8816f2a14b77",
+      "cases/test_database_edit_and_plan_gu0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_database_edit_and_plan_gu0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_database_edit_and_plan_gu0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_database_edit_and_plan_gu0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_database_edit_and_plan_gu0/state.json": "f9443716fa518b27a928ea518fe1ab09113a941ac77934ccf23d9221af8c73b4",
+      "cases/test_incomplete_journal_refuse0/journals/attempt.json": "77fad3d634c2041f589f1397944a6d351a8feef9545978e07e942f35f6412200",
+      "cases/test_incomplete_journal_refuse0/journals/third.json": "4a1688645f5a7fe38035e133101559417026090bfd334f439a1f542e4c9f91f7",
+      "cases/test_incomplete_journal_refuse0/programming-methods-daemon.log": "8f1998175524b61f8ff6194a3f46c17d6f7b8d2c593e32899ecf403d62c1b489",
+      "cases/test_incomplete_journal_refuse0/project.xml": "3bde45ad711be2fbb1e032b11718e7e9ac35f0404049e80fab75274d7ef467a8",
+      "cases/test_incomplete_journal_refuse0/restarted-daemon.log": "6ae975452a883301a35a119fd96d43e06b77889c73c8e1957da33976c5c28ed9",
+      "cases/test_incomplete_journal_refuse0/state.json": "c32c116c8a1f41069c908610eead176e060da52b34b5217f37dc0ebe84527040",
+      "cases/test_incomplete_journal_refuse0/unitspec/PPTEST.xml": "272c76d1c1c4e44d77fddc783279ad72ce070ba562e84e1795e7f82aca00be29",
+      "cases/test_issue36_first_two_control0/after-physical-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+      "cases/test_issue36_first_two_control0/after-physical-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+      "cases/test_issue36_first_two_control0/before-parameters.json": "0132a1195474e88dc8c41a537708b6fd3ddd233330818f89baf4b728416fe660",
+      "cases/test_issue36_first_two_control0/before-project.xml": "c9e886326038112db788852b568903273079b93f04260939043d60172c325791",
+      "cases/test_issue36_first_two_control0/before-unit.xml": "4c881a5bdac738176f8cfb0e513dab9a87d148ec4e6c9d80bfd6115fc831954c",
+      "cases/test_issue36_first_two_control0/edited-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+      "cases/test_issue36_first_two_control0/edited-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+      "cases/test_issue36_first_two_control0/edited-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+      "cases/test_issue36_first_two_control0/first-edit-attempt.json": "c4d57f27cabe4f1decdd6d7ec3f370028e320f75d09d4302882007d3771a8789",
+      "cases/test_issue36_first_two_control0/first-edit-plan.json": "9a2ae6be14a7548082ee2f2c4fb9e99f4b80e68a0ada1894766dacf4a49a65be",
+      "cases/test_issue36_first_two_control0/first-edit-result.json": "29004ebca7b10e4e1b3f6b3de73e1e5e8dba998e2813efb0e125705f05ac2060",
+      "cases/test_issue36_first_two_control0/peer-memory-after.json": "9488f49110b9e7f439143ef49ba2f7e9e89abe796a0aafb1ffc3716337555434",
+      "cases/test_issue36_first_two_control0/peer-memory-before.json": "dc02a32cdb15a53bba6c2295be2663b4f5dc8900378e401ca7a4461284063d3c",
+      "cases/test_issue36_first_two_control0/peer-wire-and-stores.json": "7e9dfe23fe4a37d92530678fc5b4e9d12d2c03e0cf8184ecc3fbda5f4002c7c6",
+      "cases/test_issue36_first_two_control0/programming-methods-daemon.log": "e766226d58228bcf5d600dd8b30ae6cbcca9c7fff3cb708346bd67753570457f",
+      "cases/test_issue36_first_two_control0/project.xml": "bdab4dd70452ea08f26fe6694b68bd63d3f3c0e979edd9ec636ef04c39d42b09",
+      "cases/test_issue36_first_two_control0/public-command-transcript.json": "940050bf7fbfaee2bf7f69cecc219cb8f93aa5696c3affe351f4d34da53f980e",
+      "cases/test_issue36_first_two_control0/reopened-parameters.json": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+      "cases/test_issue36_first_two_control0/reopened-project.xml": "90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598",
+      "cases/test_issue36_first_two_control0/reopened-unit.xml": "1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0",
+      "cases/test_issue36_first_two_control0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_issue36_first_two_control0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_issue36_first_two_control0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_issue36_first_two_control0/state.json": "a690cd36b85ce51a01a7d6a00829cae8e23f479ab005bd311fef6afeb39dd83b",
+      "cases/test_lost_ack_no_replay_and_re0/attempt.json": "8e5491ac6e0cef23625f77bb13cd6d100c4bcdcae4efa43dec075161cd42d74c",
+      "cases/test_lost_ack_no_replay_and_re0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_lost_ack_no_replay_and_re0/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_lost_ack_no_replay_and_re0/programming-methods-daemon.log": "cad7212a236e93e1f2b7cb89b05d1e4c56ea1574381fd0bb78299b588dd35858",
+      "cases/test_lost_ack_no_replay_and_re0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_lost_ack_no_replay_and_re0/restart.log": "061fe308a7b78020068ef6ed2adf1236b1ce63dba0656732f0e99fbbe39bdf66",
+      "cases/test_lost_ack_no_replay_and_re0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_lost_ack_no_replay_and_re0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_lost_ack_no_replay_and_re0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_lost_ack_no_replay_and_re0/state.json": "6620d175bfe47dabc5ae76b83dd351e1858df388d7694d8d416643e88815a648",
+      "cases/test_missing_loaded_identity_c0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_missing_loaded_identity_c0/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_missing_loaded_identity_c0/programming-methods-daemon.log": "c4edb74bbfec979068cd5d1f2b5a162ab5af24b0a40481497acce50998ec54cf",
+      "cases/test_missing_loaded_identity_c0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_missing_loaded_identity_c0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_missing_loaded_identity_c0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_missing_loaded_identity_c0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_missing_loaded_identity_c0/state.json": "8cfb691c7db72bcab246af361b84b93ffea59e96c4e9ddaaad12bf1cfe2f04b6",
+      "cases/test_pre_save_journal_failure_0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_pre_save_journal_failure_0/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_pre_save_journal_failure_0/programming-methods-daemon.log": "d1ae213cf6cc344235c863191ba6c7d7efc7fd05badd1f1982309181b876eb81",
+      "cases/test_pre_save_journal_failure_0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_pre_save_journal_failure_0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_0/state.json": "61284d94fab2a7f766237e0766c4a58cb15603c346a88e32a427119a9a247998",
+      "cases/test_pre_save_journal_failure_1/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_pre_save_journal_failure_1/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_pre_save_journal_failure_1/programming-methods-daemon.log": "db4aed4793cb079f989fb032e98ece4dd8315d82656b04106ba9e6de7eb8e8d3",
+      "cases/test_pre_save_journal_failure_1/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_pre_save_journal_failure_1/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_1/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_1/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_pre_save_journal_failure_1/state.json": "66871f70dcf7579350fdce83b1d104de721a5f90ebf84ecae673c0ce416cce1d",
+      "cases/test_real_cli_programs_all_ten0/journals/dali.json": "18295af78ce88c5574e2306ebbb439670cd3982f631fccb2a0f7206424366db8",
+      "cases/test_real_cli_programs_all_ten0/journals/direct.json": "66cd10098a7d79f99869bdeae892762bf78eb084353da929e74db344a8e40fc2",
+      "cases/test_real_cli_programs_all_ten0/journals/edlt.json": "13d57bd220ef79cdd9c01dacea73d267da53dac7bbda53888015739265bcd731",
+      "cases/test_real_cli_programs_all_ten0/journals/giu.json": "a3f0511099948c972c8892d30f9353d627e8ead6d6204afed7ee1f02c57b2d44",
+      "cases/test_real_cli_programs_all_ten0/journals/goc.json": "7e9f984d644834b522c6992af44dc9d16eb150616e5242f7e07cdcbad942b0e8",
+      "cases/test_real_cli_programs_all_ten0/journals/goc2.json": "654a1074775b92f5b06c093892426ebd0efe19d8246f863b860c8981954586b0",
+      "cases/test_real_cli_programs_all_ten0/journals/gocbyt.json": "a31a0fd7513e5afd7f1a0d15411ca6878b29cf21333b98b737c9ce53788b743a",
+      "cases/test_real_cli_programs_all_ten0/journals/ncc.json": "cf20e89e26226fba1a0ca7d40114f2ca383fc7ff594841fcaed121e7e0172c50",
+      "cases/test_real_cli_programs_all_ten0/journals/paged.json": "db79b0ec04778165f8e833d3c14cfbb73114727c5bb9971e6f77d800f5e7cc40",
+      "cases/test_real_cli_programs_all_ten0/journals/sgiu.json": "af9120697858bc309f47470b65cb4e680f403757414305b579d8e7b6a5957abf",
+      "cases/test_real_cli_programs_all_ten0/programming-methods-daemon.log": "ddaadfbda50682e433d74ddd0b144b2d05304d079fd070e53953ad4c5184e538",
+      "cases/test_real_cli_programs_all_ten0/project.xml": "3bde45ad711be2fbb1e032b11718e7e9ac35f0404049e80fab75274d7ef467a8",
+      "cases/test_real_cli_programs_all_ten0/state.json": "fccbdc4416b492bd11db7c45435e275b1a6e9bbe6c08f1f52b9adb17902751b7",
+      "cases/test_real_cli_programs_all_ten0/unitspec/PPTEST.xml": "82be08f4a60cac5ac7c6e5a2c704faae6009ad10e39dca0c344b933ba7bf007b",
+      "cases/test_stale_physical_identity_o0/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_stale_physical_identity_o0/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_stale_physical_identity_o0/programming-methods-daemon.log": "16a5d18dcf99eb0e2e5e64e0890699569e66fc04d5688db7ecf43dea12aa904a",
+      "cases/test_stale_physical_identity_o0/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_stale_physical_identity_o0/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o0/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o0/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o0/state.json": "8afc76810fc51887b7dd5f67b1d57e142f8fa10da5a163ea4fb9ebffe0b2bb1c",
+      "cases/test_stale_physical_identity_o1/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_stale_physical_identity_o1/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_stale_physical_identity_o1/programming-methods-daemon.log": "8c7ca97ce42ae29a4bcdd1a07e7eba44eaf4c31c85a022c332f057c654835aea",
+      "cases/test_stale_physical_identity_o1/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_stale_physical_identity_o1/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o1/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o1/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o1/state.json": "a17845270a722009179d3de54ad07f21b6fb03c21a6144968cab9e0ca8c3cad1",
+      "cases/test_stale_physical_identity_o2/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_stale_physical_identity_o2/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_stale_physical_identity_o2/programming-methods-daemon.log": "0aa2fae94a5a1331210da7bad4f10707737215060649074411ad1e9d12f79a5f",
+      "cases/test_stale_physical_identity_o2/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_stale_physical_identity_o2/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o2/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o2/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o2/state.json": "6192b109785f51f50fb312ee38fec625d707091e69ceda6099de1cc4885994aa",
+      "cases/test_stale_physical_identity_o3/before.json": "482d5eed56be0b1a46f50bb13ef888427b945667d66a7ef52dfbebe33e3d29e6",
+      "cases/test_stale_physical_identity_o3/plan.json": "12db400c7e10f61e8fbc036a3097191ab8a0e708646d4f80cdeb92b5a43d65f5",
+      "cases/test_stale_physical_identity_o3/programming-methods-daemon.log": "dc6438957fceb79a254c8464bfc954f7fed1fe043e1fdf2f71ed4c430ce2b31b",
+      "cases/test_stale_physical_identity_o3/project.xml": "fbfee36253f89e79601ca77744a0d3db3992acb296c60ca99ebe9a402c7a1611",
+      "cases/test_stale_physical_identity_o3/specs/KEYBL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o3/specs/KEYL5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o3/specs/KEYML5.xml": "a8a47a7fbc4ae13e354e8375178e2b363e9ef87d168b5d8f10208898ce543aaa",
+      "cases/test_stale_physical_identity_o3/state.json": "5edade0627c7d797b77ea0b56788d9752d8641039e04c85893c9f5e358538e4d",
+      "events/13461252c61ea5b1663f.jsonl": "80ac045d732326618096ccc6e2f3b28afdf0fbf198e5522b19bae7779469d605",
+      "events/14359050e50a4c697bf7.jsonl": "c7afbc7b8aafc83726382f77eb182cc21de8ab16a976cc7dad83739155beb3a2",
+      "events/16b398226a73664ec20b.jsonl": "a39b82caaf6c6442f8e71f7050075ce635a21e91286cd44792b2772b568921d9",
+      "events/2811a4526b244d256130.jsonl": "d1b384476a52d080e4fb76340e16d4ce85006b97d0994832862c0f219cc53a9f",
+      "events/4822e2f70f8cc910384b.jsonl": "ae62b201bd34fd0fb7ff2d3fa9f7bbe15cc12aa3537137f05b1bbe3472ce53be",
+      "events/54e3d4507a3ee514c8a3.jsonl": "81b4ba76d7e8537e56bfca198dd0d0cc902b0ceefb060afa4b41b0336df38811",
+      "events/6535eedc31dbe3156482.jsonl": "9eebb916775ca98c93ccffe5446ef8e8e59cf77e123491140fc6176c98c2636e",
+      "events/a598df1a2c6b9c6cddf2.jsonl": "1ca90bfc6f20cfa814930b476dcff065cc7c673855884df699e84383f6e3dadf",
+      "events/a8cf305b8cea6ed1ea7d.jsonl": "df984b3f782d3ccbcf50de460b9b0aaeef276b5ceae9295163ac3506806f210e",
+      "events/bfb25b3db02fbff8cb19.jsonl": "9fde8055e225342a9e7ea65883d8cf30d93816053338b0be4296fc087ccf8b8f",
+      "events/d86111597129ade4a714.jsonl": "cd71916ac207b2f4ae5167d21e9cda9636300bfb9860a17288ccc03a0b171cff",
+      "events/defe603ccbc69db09288.jsonl": "ebeeeac05dcf7e5401b6673b9f8e27778d0274a20a675003b0ad066cb6dc51f8",
+      "events/eb252fed7354f7a5f16e.jsonl": "4f7910201b6981ef10b2ddb7695528f58006737104450d382b175a343b7eb109",
+      "events/f6a66deb4c0c4ce046ff.jsonl": "100e74e0a281975b565f8ea128d62ffe1053cf6e1dc377390cc411d81e1afbe4",
+      "junit.xml": "f96a484134b5a3136e5dbdc207688f4b74b71869cf36ab6fc7b4e305d9dc7988",
+      "pytest.log": "700931c17580ebd4935ea65e15284e7c73129c8d017d807873f1270315d67e33"
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "bff4d2d00d3f6487b3a124ac25f8b3143b9e0823d3a89e4ea9d093089b03abbe",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.cli",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.dlt_physical_programming",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.physical_programming",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.physical_programming_cli",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.dlt_indicators",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/modules/cbus_toolkit.physical_pp_journal",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/pytest/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/cryptography/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/pefile/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/unicorn/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/capstone/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/pyzipper/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/pyserial/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/extras/pyusb/module_origin",
+        "roles": [
+          "toolkit_checkout"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

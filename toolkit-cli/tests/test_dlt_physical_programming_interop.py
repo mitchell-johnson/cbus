@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -18,11 +19,48 @@ from cbus_toolkit.memory import MemoryCodec, MemoryImage
 from cbus_toolkit.dlt_indicators import FIELDS
 from test_dlt_indicators import fixture
 from test_cmqtt_programming_methods_interop import (
-    ProgrammingPCI, _reply, needs_cmqttd, running_daemon, write_project,
+    ProgrammingPCI, _reply, needs_cmqttd, reply_frame, running_daemon, write_project,
 )
 
 
 TARGET = "//TEST/254/p/5"
+
+
+class FirstEditPCI(ProgrammingPCI):
+    """Literal direct unit-4 correlation, without changing the shared unit-5 peer."""
+
+    def _parse(self, line):
+        code = b""
+        if line and ord("g") <= line[-1] <= ord("z"):
+            code, line = line[-1:], line[:-1]
+        assert line.startswith(b"\\"), line
+        raw = bytes.fromhex(line[1:].decode("ascii"))
+        assert raw[:3] == b"\x46\x04\x00", raw.hex()
+        assert not sum(raw) & 0xFF, raw.hex()
+        cal = raw[3:-1]
+        with self._peer_lock:
+            self.requests.append({"wire_hex": raw.hex().upper(), "cal_hex": cal.hex().upper(),
+                                  "envelope": "direct", "confirmation": code.decode() or None,
+                                  "time": time.monotonic()})
+        return code, cal, "direct"
+
+    def _frames(self, cals, stale, envelope):
+        assert envelope == "direct"
+        self.noise_frames += 3
+        return (reply_frame((253,), cals[0], unit=4)
+                + reply_frame((), cals[0], unit=5)
+                + reply_frame((), stale, unit=4)
+                + b"".join(reply_frame((), cal, unit=4) for cal in cals))
+
+    def _command(self, line, context):
+        if line.startswith(b"\\"):
+            code, cal, envelope = self._parse(line)
+            if cal[:1] == b"\x21":
+                data = b"KEYML5" if cal[1] == 1 else b"2.1.00"
+                return self._answer(code, [_reply(cal[1], data)],
+                                    _reply(cal[1] ^ 3, data), envelope)
+            self.requests.pop()
+        return super()._command(line, context)
 
 
 class IndicatorPCI(ProgrammingPCI):
@@ -336,3 +374,137 @@ def test_pre_save_journal_failure_or_interruption_never_programs(tmp_path, monke
         assert not evidence["save_attempted"] and evidence["save_attempts"] == 0
         assert not evidence["saved"] and peer.memory == before and not peer.stores
         assert unit(port, "show") == after
+
+
+@needs_cmqttd
+def test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey(tmp_path):
+    """The issue's first edit, with retained public output and literal unit-4 wire."""
+    target = "//WFDLT/254/p/4"
+    specs, project, original_peer = setup(tmp_path)
+    document = ET.parse(project)
+    document.find(".//Project/TagName").text = "WFDLT"
+    node = document.find(".//Unit[@oid='target']")
+    node.find("Address").text = "4"
+    next(row for row in node.findall("PP") if row.get("Name") == "EnablePageFallback").set("Value", "0")
+    document.write(project, encoding="utf-8")
+    original_memory = deepcopy(original_peer.memory)
+    original_memory["standard"][0x34] = 0x8A
+    assert bytes(original_memory["standard"][address] for address in (0x33, 0x34)) == b"\xaf\x8a"
+    peer = FirstEditPCI((), [("direct", 0, 128)], original_memory)
+    transcript = []
+    journal = tmp_path / "first-edit-attempt.json"
+
+    def public(*arguments, status=0):
+        argv = [sys.executable, "-m", "cbus_toolkit", *map(str, arguments)]
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=60)
+        transcript.append({"argv": argv, "exit": result.returncode,
+                           "stdout": result.stdout, "stderr": result.stderr})
+        (tmp_path / "public-command-transcript.json").write_text(json.dumps(transcript, indent=2))
+        assert result.returncode == status, result.stdout + result.stderr
+        return json.loads(result.stdout if status == 0 else result.stderr)
+
+    def unit_metadata(raw):
+        root = ET.fromstring(raw)
+        for child in list(root):
+            if child.tag == "PP":
+                root.remove(child)
+        return ET.tostring(root, encoding="unicode")
+
+    try:
+        with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+            def remote(*arguments, status=0):
+                return public("cgate", "--host", "127.0.0.1", "--port", str(port),
+                              "--timeout", "8", *arguments, status=status)
+
+            def db_unit(*arguments):
+                return remote("unit", "--lock-address", "//WFDLT/254",
+                              "--source", "/db" + target, *arguments)
+
+            def snapshot(name):
+                remote("database", "get-xml", "//WFDLT", "--output", tmp_path / (name + "-project.xml"))
+                remote("database", "get-xml", target, "--output", tmp_path / (name + "-unit.xml"))
+
+            snapshot("before")
+            before_file = tmp_path / "before-parameters.json"
+            db_unit("export", before_file)
+            before = json.loads(before_file.read_text())["parameters"]
+            planned = public("dlt", "--spec-dir", specs, "indicators", "plan", "--file", before_file,
+                             "--indicator-control", "page_fallback=yes",
+                             "--indicator-control", "duration_seconds=5")
+            assert [(row["control"], row["value"]) for row in planned["requested"]] == [
+                ("page_fallback", True), ("duration_seconds", 5)]
+            plan_path = tmp_path / "first-edit-plan.json"
+            plan_path.write_text(json.dumps(planned, indent=2))
+            edited = db_unit("dlt-labels", "--spec-dir", specs, "--plan", plan_path)
+            assert edited["saved"] and edited["verified"]
+            db_unit("export", tmp_path / "edited-parameters.json")
+            after = json.loads((tmp_path / "edited-parameters.json").read_text())["parameters"]
+            assert {key: value for key, value in before.items() if key not in FIELDS} == {
+                key: value for key, value in after.items() if key not in FIELDS}
+            assert {key for key in before if before[key] != after[key]} == {"EnablePageFallback", "TimerDuration"}
+            snapshot("edited")
+            def project_without_target_pp(filename):
+                tree = ET.parse(filename)
+                selected = [row for row in tree.findall(".//Network") if row.findtext("Address") == "254"]
+                assert len(selected) == 1
+                units = [row for row in selected[0].findall("Unit") if row.findtext("Address") == "4"]
+                assert len(units) == 1
+                for child in list(units[0]):
+                    if child.tag == "PP":
+                        units[0].remove(child)
+                return ET.tostring(tree.getroot())
+
+            assert project_without_target_pp(tmp_path / "before-project.xml") == project_without_target_pp(
+                tmp_path / "edited-project.xml")
+            for action in ("save", "close", "load"):
+                remote("project", action, "WFDLT")
+            snapshot("reopened")
+            db_unit("export", tmp_path / "reopened-parameters.json")
+            assert json.loads((tmp_path / "reopened-parameters.json").read_text())["parameters"] == after
+            assert unit_metadata((tmp_path / "before-unit.xml").read_text()) == unit_metadata(
+                (tmp_path / "reopened-unit.xml").read_text())
+            assert ET.tostring(ET.parse(tmp_path / "edited-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "reopened-project.xml").getroot())
+            preview = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--dry-run")
+            assert not preview["saved"] and peer.memory == original_memory and not peer.stores
+            result = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--journal", journal)
+            assert result["saved"] and result["fresh_physical_readback_verified"] and result["save_attempts"] == 1
+            assert result["typed_validation"]["loaded"]["raw_hex"] == "af8a"
+            assert result["typed_validation"]["fresh"]["raw_hex"] == "a58e"
+            for phase in ("loaded", "staged", "fresh"):
+                assert result["typed_validation"][phase]["loaded_identity"] == {
+                    "UnitType": "KEYML5", "FirmwareVersion": "2.1.00", "Source": target}
+            expected_memory = deepcopy(original_memory)
+            expected_memory["standard"].update({0x33: 0xA5, 0x34: 0x8E})
+            assert peer.memory == expected_memory
+            check = remote("physical-pp", "inspect", target, "--method", "direct",
+                           *[word for name in FIELDS for word in ("--parameter", name)])
+            assert {key: int(value, 0) for key, value in check["values"].items()} == {
+                key: int(after[key], 0) for key in FIELDS}
+            assert json.loads(journal.read_text())["complete"]
+            stores_before_recovery = len(peer.stores)
+            request_boundary = len(peer.requests)
+            recovery = remote("physical-pp", "recover", "--journal", journal)
+            assert recovery["resolved"] and recovery["outcome"] == "observed_expected"
+            assert len(peer.stores) == stores_before_recovery
+            assert all(bytes.fromhex(row["cal_hex"])[0] in (0x21, 0x1A)
+                       for row in peer.requests[request_boundary:])
+            snapshot("after-physical")
+            assert ET.tostring(ET.parse(tmp_path / "reopened-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "after-physical-project.xml").getroot())
+            assert peer.noise_frames > 0 and not peer.unlocks and not peer.nvm
+            (tmp_path / "first-edit-result.json").write_text(json.dumps({
+                "profile": {"project": "WFDLT", "network": 254, "unit": 4},
+                "operations": planned["requested"], "literal_before": "af8a", "literal_after": "a58e",
+                "all_other_parameters_and_metadata_preserved": True,
+                "full_128_byte_memory_preserved_except_two_indicator_bytes": True,
+                "project_save_close_load_verified": True, "result": result, "recovery": recovery,
+            }, indent=2))
+    finally:
+        serializable = lambda value: value.hex() if isinstance(value, bytes) else str(value)
+        (tmp_path / "peer-memory-before.json").write_text(json.dumps(original_memory, indent=2))
+        (tmp_path / "peer-memory-after.json").write_text(json.dumps(peer.memory, indent=2))
+        (tmp_path / "peer-wire-and-stores.json").write_text(json.dumps({
+            "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
+            "nvm": peer.nvm, "noise_frames": peer.noise_frames,
+        }, indent=2, default=serializable))

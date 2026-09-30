@@ -12,13 +12,13 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/Volumes/external/mac-mini-offload/cbus-root-routed-documentors-acceptance-9jk4dteq/cargo-target/release/cgate-mock",
-    "sha256": "00edfc7bb0ca8c35bee9167f04debeafbf0e94b4fd539c7af7e2d44e2915896e"
+    "sha256": "306a2d2636839faf4a559ee3efef1b9206b2bf6f68b8b53ea7d54f5c33ff399d",
+    "name": "cgate-mock"
   },
-  "source_revision": "76b3c251508b3362c21ae9b9971578a3b961424d",
+  "source_revision": "4d44a4ebd2996da01458a78c4e2ce40d48d7a9ce",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "098d4ad74d2ce6a8b396f18aaaed78032d9f8e0ae77003a2c1a00c49d0c7b359",
-    "docs/cmqttd-cgate.md": "7c1ae0353db799ce389d6b8c0c2feaf739a63db77b790c47079ba07df40d2ee0",
+    "docs/cmqttd-cgate.md": "da335080d96e5bf742992053e4e5931e170d80b9337a416c50365f605f857f43",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
@@ -41,7 +41,7 @@
     "rust/cbus-cgate/src/dlt_profiles.rs": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "7796a72c846e3e1eacae7e0da30320dda0a227382718f36941d8e8781720f646",
-    "rust/cbus-cgate/src/lib.rs": "7feb6789775a9581aab972e68785f8a3d9c3cbbcb28052615ba90a84e72f4a24",
+    "rust/cbus-cgate/src/lib.rs": "c57ae1ea50030c4b5c3c3988a85722dffc6dbe9a603f886c186996b172c15ee6",
     "rust/cbus-cgate/src/main.rs": "c283a230ade13eee06839d53f58ab4793c7afc192e9196c3ef595adc083b27b9",
     "rust/cbus-cgate/src/manual.rs": "44dfe1283e540c4f27de61c23d9cdf2efac50df652241b9ab832bc4121e94f2f",
     "rust/cbus-cgate/src/native_archive.rs": "ed77c978d850cfac37f0a369684921cbf188eccb4c519a2e7b12ed05cd8dbf9f",
@@ -63,10 +63,10 @@
     "rust/cbus-cgate/src/service/pp_patch.rs": "bfb0971510a67368aca69b0b1843d068d3eae44b80d0c3ec77b65f0710deb50d",
     "rust/cbus-cgate/src/service/tests/object_authorization.rs": "91bb06bec7ef2c28cd5d749ac62eba3076377322e76c1659433b67a48d93eab5",
     "rust/cbus-cgate/src/service/tests/secondary_authorization.rs": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd",
-    "rust/cbus-cgate/src/service/tests.rs": "6284c7d7915a1d23735377c4b520283a35d5248b73d1604a674d64d8b446561f",
+    "rust/cbus-cgate/src/service/tests.rs": "0c9e0df0560d125a05b3bf73998a447a466dd5867de1d28e0429817a127a3c51",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
     "rust/cbus-cgate/src/service/unravel_plan.rs": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb",
-    "rust/cbus-cgate/src/service.rs": "929ae8e9f02cad92911d225e7f8b75ea39b277587ada819fafc6e49415fc4784",
+    "rust/cbus-cgate/src/service.rs": "1b3515aee209d4345da135b806a75a54d5acccd52010ef7feffa9a94ff376c23",
     "rust/cbus-cgate/src/show.rs": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c",
     "rust/cbus-cgate/src/unitspec.rs": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539",
     "rust/cbus-cgate/tests/server.rs": "fa35999aec2cc6969d64e39fb627befdd5f350f667874be1172f107df852801e",
@@ -590,5 +590,35 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python /Users/mitchell/source/cbus/toolkit-cli/research/cgate_dbsetxml_unit_differential.py --mock-bin /Volumes/external/mac-mini-offload/cbus-root-routed-documentors-acceptance-9jk4dteq/cargo-target/release/cgate-mock --cmqttd-bin /Volumes/external/mac-mini-offload/cbus-root-routed-documentors-acceptance-9jk4dteq/cargo-target/release/cmqttd --output-dir /private/tmp/cbus-rust-final.6QVKd5"
+  "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
+  "publication_sanitization": {
+    "format": "cbus-evidence-sanitized-derivative-v1",
+    "raw_file_sha256": "895c05b0225801e96448d3ec4ae8fe843db4d0529d4152cf9b9a379681a497ef",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/binary/path",
+        "action": "omit",
+        "roles": [
+          "local_rust_binary_coordinate"
+        ],
+        "artifact_name_pointer": "/binary/name"
+      },
+      {
+        "json_pointer": "/command",
+        "action": "role_template",
+        "roles": [
+          "cgate_mock_binary",
+          "cmqttd_binary",
+          "python_interpreter",
+          "report_output_directory",
+          "research_script"
+        ]
+      }
+    ],
+    "command_form": "role-based reproduction template; exact invocation retained privately",
+    "working_directory_role": "toolkit-cli; installed/source context remains in recorded scope",
+    "technical_payload_preserved": true,
+    "new_execution_claimed_by_sanitization": false
+  }
 }

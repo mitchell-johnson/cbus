@@ -1,0 +1,41 @@
+{
+  "data": {
+    "source": {
+      "CLI_events": 144,
+      "pytest_parent_result_records": 14,
+      "all_CLI_outputs_valid_json": true,
+      "actual_wrong_firmware_refusal": true,
+      "both_pre_save_failures_no_save": true,
+      "recoveries_read_only": 3,
+      "CLI_exit_counts": {
+        "0": 128,
+        "130": 1,
+        "1": 15
+      }
+    },
+    "installed": {
+      "CLI_events": 144,
+      "pytest_parent_result_records": 14,
+      "all_CLI_outputs_valid_json": true,
+      "actual_wrong_firmware_refusal": true,
+      "both_pre_save_failures_no_save": true,
+      "recoveries_read_only": 3,
+      "CLI_exit_counts": {
+        "0": 128,
+        "130": 1,
+        "1": 15
+      }
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "1fe7b50d2408bc93592970619c044e286196371c9df13234b2542b303f0bcffc",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

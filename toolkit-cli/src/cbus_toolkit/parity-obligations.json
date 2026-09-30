@@ -13,20 +13,20 @@
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "212fb435a9d1440b9c84f5ef8b91fe3e9778f6073233d23d9b1db86bd4ce0e1e",
     "cgate_capability_matrix": "128b300cc16fe4f8caad7ff380a1abf298c54c04111a1441b37048ce0df8ff3a",
-    "cgate_contract_inventory": "d36c2285dac730b033a0011cbe4761efd3f71f2b4e7db84361d52ba572626e79",
+    "cgate_contract_inventory": "b663fa4f5706cd00ad32ea32b8bf9d533331e30792dab9e32c806a0884e76697",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "f97c894ef322379e9b93c7631f4a0220cc6f8092e05b01b8e0ee1c241fda1dc2",
-    "cgate_tagged_session_differential_cmqttd": "a3c2261bc97085493bf8a08bf9f5c409c5e983bbd0fd29d30281ab52df7b95b8",
-    "cgate_session_physical_applicability": "c9e3f40aa8a87bee8dd5bf65e0fd4135ed468b13d86d0d2bb5e1e90bfb540015",
+    "cgate_session_differential_cmqttd": "afac9123370dd4b2eda132221601d9bb5c0e433794d74d69bc9e2a88de571975",
+    "cgate_tagged_session_differential_cmqttd": "08739f750e0a1d42547b2588e2d497f0db6e4528d7cb260fb56c30887b772d3e",
+    "cgate_session_physical_applicability": "3734c18e6b772b7822d89d793c271ced4ac9410426284e0c0126235186500153",
     "roadmap": "e4239324c06bea061627dc42061626056111fc465f821bd98c3e140c5e63894f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
     "parity_denominator_history": "6743465a137da2241cc1c1adb69cf809ace3238d9c0fbaaa20e19df069b130ca",
-    "closure_receipts": "76e03b044a74d43f37fb7b57d9a701652b208b068ea13dd7b6b96891ebe00cf2"
+    "closure_receipts": "6f055800e712d7e36607b65a9d83321b9bf6e16b34d7e95b8dd733a0d1245398"
   },
-  "evidence_bundle_sha256": "34ae65b464164e2e506fecaabd4a1bd23506ccffd78d3d3b3390437256ba4556",
+  "evidence_bundle_sha256": "13a07f82cbdb157ce811144950f10915cbcd486fb28b15585a75d4f98b1544b3",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -245,7 +245,7 @@
         ],
         "commands": [
           {
-            "command": "PYTHONPATH=src /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
+            "command": "PYTHONPATH=src \"${CBUS_EVIDENCE_PYTHON}\" -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
             "scope": "source checkout: four diagnostic/package-bundle modules",
             "passed": 62,
             "failures": 0,
@@ -254,7 +254,7 @@
             "exit_status": 0
           },
           {
-            "command": "PYTHONPATH=/private/tmp/cbus-p9-wheel-integrated-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_preferences_user_guard.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_windows_process_token.py -p no:cacheprovider",
+            "command": "PYTHONPATH=\"${CBUS_ACCEPTANCE_PYTHONPATH}\" \"${CBUS_EVIDENCE_PYTHON}\" -m pytest -q \"${CBUS_TEST_ROOT}/test_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_preferences_user_guard.py\" \"${CBUS_TEST_ROOT}/test_windows_process_token.py\" -p no:cacheprovider",
             "scope": "installed wheel: four diagnostic/package-bundle test files (62 cases) and two preference user/token test files (39 cases)",
             "passed": 101,
             "failures": 0,
@@ -263,7 +263,7 @@
             "exit_status": 0
           },
           {
-            "command": "PYTHONPATH=/private/tmp/cbus-p901-closure-wheel-final-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_parity_register.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_coverage_require_complete.py -p no:cacheprovider",
+            "command": "PYTHONPATH=\"${CBUS_ACCEPTANCE_PYTHONPATH}\" \"${CBUS_EVIDENCE_PYTHON}\" -m pytest -q \"${CBUS_TEST_ROOT}/test_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_parity_register.py\" \"${CBUS_TEST_ROOT}/test_coverage_require_complete.py\" -p no:cacheprovider",
             "scope": "installed closure wheel: four P9.01 diagnostic/package-bundle API/CLI modules plus parity-register and require-complete contract modules",
             "passed": 100,
             "failures": 0,

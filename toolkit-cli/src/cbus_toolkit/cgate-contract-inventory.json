@@ -11,10 +11,10 @@
       "sha256": "44dfe1283e540c4f27de61c23d9cdf2efac50df652241b9ab832bc4121e94f2f"
     },
     "service": {
-      "sha256": "929ae8e9f02cad92911d225e7f8b75ea39b277587ada819fafc6e49415fc4784"
+      "sha256": "1b3515aee209d4345da135b806a75a54d5acccd52010ef7feffa9a94ff376c23"
     },
     "event_mode": {
-      "sha256": "7feb6789775a9581aab972e68785f8a3d9c3cbbcb28052615ba90a84e72f4a24"
+      "sha256": "c57ae1ea50030c4b5c3c3988a85722dffc6dbe9a603f886c186996b172c15ee6"
     },
     "authorization_policy": {
       "sha256": "f108a1b4bbdab7f123c4460feffc511a6fb7ba5c82d6547cff422505a766295e"

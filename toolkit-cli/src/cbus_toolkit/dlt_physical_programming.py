@@ -27,11 +27,11 @@ _IDENTITY_ATTRIBUTES = frozenset(("UnitType", "FirmwareVersion", "Source"))
 
 
 def _loaded_identity(reply, source, identity):
-    """Parse the confirmed three-attribute design without any DB fallback.
+    """Parse physical LOAD provenance without any database fallback.
 
     XML parsers reject repeated attributes. Exact root/attribute names and a
     canonical physical Source make absence, namespaces and ambiguous metadata
-    admission failures. Compatibility still needs the centrally rebuilt server.
+    admission failures. Only the exact loaded-session contract is admitted.
     """
     document = xml_text(reply)
     if "<!DOCTYPE" in document or "<!ENTITY" in document:

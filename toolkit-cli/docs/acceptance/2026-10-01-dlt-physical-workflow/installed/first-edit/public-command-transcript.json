@@ -1,0 +1,846 @@
+{
+  "data": [
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT",
+        "--output",
+        "${CBUS_CASE_DIR}/before-project.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT\",\n  \"file\": \"${CBUS_CASE_DIR}/before-project.xml\",\n  \"bytes\": 1655,\n  \"sha256\": \"c9e886326038112db788852b568903273079b93f04260939043d60172c325791\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT/254/p/4",
+        "--output",
+        "${CBUS_CASE_DIR}/before-unit.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT/254/p/4\",\n  \"file\": \"${CBUS_CASE_DIR}/before-unit.xml\",\n  \"bytes\": 1173,\n  \"sha256\": \"4c881a5bdac738176f8cfb0e513dab9a87d148ec4e6c9d80bfd6115fc831954c\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//WFDLT/254",
+        "--source",
+        "/db//WFDLT/254/p/4",
+        "export",
+        "${CBUS_CASE_DIR}/before-parameters.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"file\": \"${CBUS_CASE_DIR}/before-parameters.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "dlt",
+        "--spec-dir",
+        "${CBUS_CASE_DIR}/specs",
+        "indicators",
+        "plan",
+        "--file",
+        "${CBUS_CASE_DIR}/before-parameters.json",
+        "--indicator-control",
+        "page_fallback=yes",
+        "--indicator-control",
+        "duration_seconds=5"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n  \"unit_type\": \"KEYML5\",\n  \"firmware\": \"2.1.00\",\n  \"catalog_number\": \"5055DL\",\n  \"expected\": {\n    \"TimerDuration\": [\n      15\n    ],\n    \"IndicatorPressedLevel\": [\n      10\n    ],\n    \"EnableNightlight\": [\n      0\n    ],\n    \"DisableTimerFlash\": [\n      1\n    ],\n    \"EnablePageFallback\": [\n      0\n    ],\n    \"EnableIndicatorPressedLevel\": [\n      1\n    ],\n    \"FirstKeyThrowAway\": [\n      0\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      0\n    ],\n    \"EnableNightlightOnToggleKey\": [\n      0\n    ],\n    \"EnableNightlightControl\": [\n      1\n    ]\n  },\n  \"changes\": {\n    \"TimerDuration\": [\n      5\n    ],\n    \"EnablePageFallback\": [\n      1\n    ]\n  },\n  \"requested\": [\n    {\n      \"control\": \"page_fallback\",\n      \"value\": true\n    },\n    {\n      \"control\": \"duration_seconds\",\n      \"value\": 5\n    }\n  ],\n  \"loaded\": {\n    \"page_fallback\": false,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"before\": {\n    \"page_fallback\": false,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 5,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 5\n  },\n  \"initialization_changes\": {},\n  \"save_normalizations\": {},\n  \"enabled_before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"enabled_after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"steps\": [\n    {\n      \"index\": 1,\n      \"control\": \"page_fallback\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 2,\n      \"control\": \"duration_seconds\",\n      \"value\": 5,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    }\n  ],\n  \"raw_preview\": [\n    {\n      \"address\": 51,\n      \"before\": 175,\n      \"after\": 165,\n      \"changed_mask\": 10,\n      \"owned_mask\": 255\n    },\n    {\n      \"address\": 52,\n      \"before\": 138,\n      \"after\": 142,\n      \"changed_mask\": 4,\n      \"owned_mask\": 125\n    }\n  ],\n  \"saved\": false,\n  \"device_verified\": false,\n  \"labels_transferred\": false,\n  \"raw_verification_scope\": \"staged-pp-session-before-save\",\n  \"original_full_form_save_executed\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//WFDLT/254",
+        "--source",
+        "/db//WFDLT/254/p/4",
+        "dlt-labels",
+        "--spec-dir",
+        "${CBUS_CASE_DIR}/specs",
+        "--plan",
+        "${CBUS_CASE_DIR}/first-edit-plan.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n  \"unit_type\": \"KEYML5\",\n  \"firmware\": \"2.1.00\",\n  \"catalog_number\": \"5055DL\",\n  \"expected\": {\n    \"TimerDuration\": [\n      15\n    ],\n    \"IndicatorPressedLevel\": [\n      10\n    ],\n    \"EnableNightlight\": [\n      0\n    ],\n    \"DisableTimerFlash\": [\n      1\n    ],\n    \"EnablePageFallback\": [\n      0\n    ],\n    \"EnableIndicatorPressedLevel\": [\n      1\n    ],\n    \"FirstKeyThrowAway\": [\n      0\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      0\n    ],\n    \"EnableNightlightOnToggleKey\": [\n      0\n    ],\n    \"EnableNightlightControl\": [\n      1\n    ]\n  },\n  \"changes\": {\n    \"TimerDuration\": [\n      5\n    ],\n    \"EnablePageFallback\": [\n      1\n    ]\n  },\n  \"requested\": [\n    {\n      \"control\": \"page_fallback\",\n      \"value\": true\n    },\n    {\n      \"control\": \"duration_seconds\",\n      \"value\": 5\n    }\n  ],\n  \"loaded\": {\n    \"page_fallback\": false,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"before\": {\n    \"page_fallback\": false,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 5,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 5\n  },\n  \"initialization_changes\": {},\n  \"save_normalizations\": {},\n  \"enabled_before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"enabled_after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"steps\": [\n    {\n      \"index\": 1,\n      \"control\": \"page_fallback\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 2,\n      \"control\": \"duration_seconds\",\n      \"value\": 5,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    }\n  ],\n  \"raw_preview\": [\n    {\n      \"address\": 51,\n      \"before\": 175,\n      \"after\": 165,\n      \"changed_mask\": 10,\n      \"owned_mask\": 255\n    },\n    {\n      \"address\": 52,\n      \"before\": 138,\n      \"after\": 142,\n      \"changed_mask\": 4,\n      \"owned_mask\": 125\n    }\n  ],\n  \"saved\": true,\n  \"device_verified\": false,\n  \"labels_transferred\": false,\n  \"raw_verification_scope\": \"staged-pp-session-before-save\",\n  \"original_full_form_save_executed\": false,\n  \"verified\": true,\n  \"raw_bytes_verified\": true,\n  \"raw_before_hex\": \"af8a\",\n  \"raw_after_hex\": \"a58e\",\n  \"parameters\": {\n    \"DisableTimerFlash\": \"1\",\n    \"EnableDynamicLabels\": \"1\",\n    \"EnableIndicatorPressedLevel\": \"1\",\n    \"EnableNightlight\": \"0\",\n    \"EnableNightlightControl\": \"1\",\n    \"EnableNightlightOnToggleKey\": \"0\",\n    \"EnableNightlightOnUserKeys\": \"0\",\n    \"EnablePageFallback\": \"1\",\n    \"EnableSceneToggle\": \"0\",\n    \"FirstKeyThrowAway\": \"0\",\n    \"GroupAddress\": \"255 255 255 255 255 255 255 255 255\",\n    \"IndicatorBlockAssignment\": \"0 1 2 3 4 5 6 7\",\n    \"IndicatorFunction\": \"2 2 2 2 2 2 2 2\",\n    \"IndicatorPressedLevel\": \"10\",\n    \"LabelFlavourLSB\": \"0 0 0 0 0 0 0 0\",\n    \"LabelFlavourMSB\": \"0 0 0 0 0 0 0 0\",\n    \"SceneKeySelector\": \"0 0 0 0 0 0 0 0\",\n    \"TimerDuration\": \"5\"\n  },\n  \"destination\": \"/db//WFDLT/254/p/4\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//WFDLT/254",
+        "--source",
+        "/db//WFDLT/254/p/4",
+        "export",
+        "${CBUS_CASE_DIR}/edited-parameters.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"file\": \"${CBUS_CASE_DIR}/edited-parameters.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT",
+        "--output",
+        "${CBUS_CASE_DIR}/edited-project.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT\",\n  \"file\": \"${CBUS_CASE_DIR}/edited-project.xml\",\n  \"bytes\": 1636,\n  \"sha256\": \"90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT/254/p/4",
+        "--output",
+        "${CBUS_CASE_DIR}/edited-unit.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT/254/p/4\",\n  \"file\": \"${CBUS_CASE_DIR}/edited-unit.xml\",\n  \"bytes\": 1154,\n  \"sha256\": \"1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "project",
+        "save",
+        "WFDLT"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK\"\n  ],\n  \"final\": \"200 OK\",\n  \"status\": 200\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "project",
+        "close",
+        "WFDLT"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK\"\n  ],\n  \"final\": \"200 OK\",\n  \"status\": 200\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "project",
+        "load",
+        "WFDLT"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK.\"\n  ],\n  \"final\": \"200 OK.\",\n  \"status\": 200\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT",
+        "--output",
+        "${CBUS_CASE_DIR}/reopened-project.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT\",\n  \"file\": \"${CBUS_CASE_DIR}/reopened-project.xml\",\n  \"bytes\": 1636,\n  \"sha256\": \"90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT/254/p/4",
+        "--output",
+        "${CBUS_CASE_DIR}/reopened-unit.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT/254/p/4\",\n  \"file\": \"${CBUS_CASE_DIR}/reopened-unit.xml\",\n  \"bytes\": 1154,\n  \"sha256\": \"1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//WFDLT/254",
+        "--source",
+        "/db//WFDLT/254/p/4",
+        "export",
+        "${CBUS_CASE_DIR}/reopened-parameters.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"file\": \"${CBUS_CASE_DIR}/reopened-parameters.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "physical-pp",
+        "dlt-indicators",
+        "//WFDLT/254/p/4",
+        "--plan",
+        "${CBUS_CASE_DIR}/first-edit-plan.json",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"110ab7a7f6e7\",\n  \"phase\": \"complete\",\n  \"source\": \"//WFDLT/254/p/4\",\n  \"destination\": \"//WFDLT/254/p/4\",\n  \"lock_address\": \"//WFDLT/254\",\n  \"method\": \"direct\",\n  \"edits\": [\n    {\n      \"parameter\": \"TimerDuration\",\n      \"requested_value\": \"5\"\n    },\n    {\n      \"parameter\": \"IndicatorPressedLevel\",\n      \"requested_value\": \"10\"\n    },\n    {\n      \"parameter\": \"EnableNightlight\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"DisableTimerFlash\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"EnablePageFallback\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"EnableIndicatorPressedLevel\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"FirstKeyThrowAway\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightOnUserKeys\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightOnToggleKey\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightControl\",\n      \"requested_value\": \"1\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 0,\n  \"save_attempted\": false,\n  \"saved\": false,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": false,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": true,\n  \"typed_validation\": {\n    \"loaded\": {\n      \"phase\": \"loaded\",\n      \"raw_hex\": \"af8a\",\n      \"all_fields_verified\": true,\n      \"loaded_identity\": {\n        \"UnitType\": \"KEYML5\",\n        \"FirmwareVersion\": \"2.1.00\",\n        \"Source\": \"//WFDLT/254/p/4\"\n      },\n      \"observed_pci_generation\": 0\n    },\n    \"staged\": {\n      \"phase\": \"staged\",\n      \"raw_hex\": \"a58e\",\n      \"all_fields_verified\": true,\n      \"loaded_identity\": {\n        \"UnitType\": \"KEYML5\",\n        \"FirmwareVersion\": \"2.1.00\",\n        \"Source\": \"//WFDLT/254/p/4\"\n      },\n      \"observed_pci_generation\": 0\n    }\n  },\n  \"parameters\": [\n    {\n      \"name\": \"TimerDuration\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"IndicatorPressedLevel\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlight\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"DisableTimerFlash\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnablePageFallback\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableIndicatorPressedLevel\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"FirstKeyThrowAway\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnUserKeys\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnToggleKey\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightControl\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"TimerDuration\": \"0xF\",\n    \"IndicatorPressedLevel\": \"0xA\",\n    \"EnableNightlight\": \"0x0\",\n    \"DisableTimerFlash\": \"0x1\",\n    \"EnablePageFallback\": \"0x0\",\n    \"EnableIndicatorPressedLevel\": \"0x1\",\n    \"FirstKeyThrowAway\": \"0x0\",\n    \"EnableNightlightOnUserKeys\": \"0x0\",\n    \"EnableNightlightOnToggleKey\": \"0x0\",\n    \"EnableNightlightControl\": \"0x1\"\n  },\n  \"staged\": {\n    \"TimerDuration\": \"5\",\n    \"IndicatorPressedLevel\": \"10\",\n    \"EnableNightlight\": \"0\",\n    \"DisableTimerFlash\": \"1\",\n    \"EnablePageFallback\": \"1\",\n    \"EnableIndicatorPressedLevel\": \"1\",\n    \"FirstKeyThrowAway\": \"0\",\n    \"EnableNightlightOnUserKeys\": \"0\",\n    \"EnableNightlightOnToggleKey\": \"0\",\n    \"EnableNightlightControl\": \"1\"\n  },\n  \"complete\": true,\n  \"persistence_requested\": false,\n  \"fresh_physical_readback_performed\": false,\n  \"dlt_indicators_evidence\": {\n    \"format\": \"cbus-dlt-indicators-physical-v1\",\n    \"source\": \"//WFDLT/254/p/4\",\n    \"database_source\": \"/db//WFDLT/254/p/4\",\n    \"plan\": {\n      \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n      \"unit_type\": \"KEYML5\",\n      \"firmware\": \"2.1.00\",\n      \"catalog_number\": \"5055DL\",\n      \"expected\": {\n        \"TimerDuration\": [\n          15\n        ],\n        \"IndicatorPressedLevel\": [\n          10\n        ],\n        \"EnableNightlight\": [\n          0\n        ],\n        \"DisableTimerFlash\": [\n          1\n        ],\n        \"EnablePageFallback\": [\n          0\n        ],\n        \"EnableIndicatorPressedLevel\": [\n          1\n        ],\n        \"FirstKeyThrowAway\": [\n          0\n        ],\n        \"EnableNightlightOnUserKeys\": [\n          0\n        ],\n        \"EnableNightlightOnToggleKey\": [\n          0\n        ],\n        \"EnableNightlightControl\": [\n          1\n        ]\n      },\n      \"changes\": {\n        \"TimerDuration\": [\n          5\n        ],\n        \"EnablePageFallback\": [\n          1\n        ]\n      },\n      \"requested\": [\n        {\n          \"control\": \"page_fallback\",\n          \"value\": true\n        },\n        {\n          \"control\": \"duration_seconds\",\n          \"value\": 5\n        }\n      ],\n      \"loaded\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"before\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"initialization_changes\": {},\n      \"save_normalizations\": {},\n      \"enabled_before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      },\n      \"steps\": [\n        {\n          \"index\": 1,\n          \"control\": \"page_fallback\",\n          \"value\": true,\n          \"before\": {\n            \"page_fallback\": false,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"enabled_after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": true,\n            \"pressed_level\": true,\n            \"nightlight_keys\": true,\n            \"nightlight_toggle\": true,\n            \"first_key_throwaway\": false\n          }\n        },\n        {\n          \"index\": 2,\n          \"control\": \"duration_seconds\",\n          \"value\": 5,\n          \"before\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 5,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 5\n          },\n          \"enabled_after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": true,\n            \"pressed_level\": true,\n            \"nightlight_keys\": true,\n            \"nightlight_toggle\": true,\n            \"first_key_throwaway\": false\n          }\n        }\n      ],\n      \"raw_preview\": [\n        {\n          \"address\": 51,\n          \"before\": 175,\n          \"after\": 165,\n          \"changed_mask\": 10,\n          \"owned_mask\": 255\n        },\n        {\n          \"address\": 52,\n          \"before\": 138,\n          \"after\": 142,\n          \"changed_mask\": 4,\n          \"owned_mask\": 125\n        }\n      ],\n      \"saved\": false,\n      \"device_verified\": false,\n      \"labels_transferred\": false,\n      \"raw_verification_scope\": \"staged-pp-session-before-save\",\n      \"original_full_form_save_executed\": false\n    },\n    \"database_edited_state_verified\": true,\n    \"physical_original_baseline_verified\": true,\n    \"unchanged_indicator_fields_verified\": false,\n    \"complete_indicator_bytes_verified\": false,\n    \"profile_verification\": \"database-catalogue-and-physical-loaded-session-identity\",\n    \"loaded_identity_contract\": \"pp-info-loaded-identity-v1\",\n    \"physical_loaded_identity_verified\": true,\n    \"fresh_physical_identity_verified\": false,\n    \"catalogue_verification_scope\": \"saved-project-database\",\n    \"loaded_pci_generation_binding_verified\": false,\n    \"physical_serial_verified\": false,\n    \"project_disk_persistence_verified\": false,\n    \"display_behavior_verified\": false,\n    \"database_raw_hex\": \"a58e\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "physical-pp",
+        "dlt-indicators",
+        "//WFDLT/254/p/4",
+        "--plan",
+        "${CBUS_CASE_DIR}/first-edit-plan.json",
+        "--journal",
+        "${CBUS_CASE_DIR}/first-edit-attempt.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"e38fa7003ec2\",\n  \"phase\": \"complete\",\n  \"source\": \"//WFDLT/254/p/4\",\n  \"destination\": \"//WFDLT/254/p/4\",\n  \"lock_address\": \"//WFDLT/254\",\n  \"method\": \"direct\",\n  \"edits\": [\n    {\n      \"parameter\": \"TimerDuration\",\n      \"requested_value\": \"5\"\n    },\n    {\n      \"parameter\": \"IndicatorPressedLevel\",\n      \"requested_value\": \"10\"\n    },\n    {\n      \"parameter\": \"EnableNightlight\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"DisableTimerFlash\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"EnablePageFallback\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"EnableIndicatorPressedLevel\",\n      \"requested_value\": \"1\"\n    },\n    {\n      \"parameter\": \"FirstKeyThrowAway\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightOnUserKeys\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightOnToggleKey\",\n      \"requested_value\": \"0\"\n    },\n    {\n      \"parameter\": \"EnableNightlightControl\",\n      \"requested_value\": \"1\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"typed_validation\": {\n    \"loaded\": {\n      \"phase\": \"loaded\",\n      \"raw_hex\": \"af8a\",\n      \"all_fields_verified\": true,\n      \"loaded_identity\": {\n        \"UnitType\": \"KEYML5\",\n        \"FirmwareVersion\": \"2.1.00\",\n        \"Source\": \"//WFDLT/254/p/4\"\n      },\n      \"observed_pci_generation\": 0\n    },\n    \"staged\": {\n      \"phase\": \"staged\",\n      \"raw_hex\": \"a58e\",\n      \"all_fields_verified\": true,\n      \"loaded_identity\": {\n        \"UnitType\": \"KEYML5\",\n        \"FirmwareVersion\": \"2.1.00\",\n        \"Source\": \"//WFDLT/254/p/4\"\n      },\n      \"observed_pci_generation\": 0\n    },\n    \"fresh\": {\n      \"phase\": \"fresh\",\n      \"raw_hex\": \"a58e\",\n      \"all_fields_verified\": true,\n      \"loaded_identity\": {\n        \"UnitType\": \"KEYML5\",\n        \"FirmwareVersion\": \"2.1.00\",\n        \"Source\": \"//WFDLT/254/p/4\"\n      },\n      \"observed_pci_generation\": 0\n    }\n  },\n  \"parameters\": [\n    {\n      \"name\": \"TimerDuration\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"IndicatorPressedLevel\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlight\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"DisableTimerFlash\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnablePageFallback\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableIndicatorPressedLevel\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"FirstKeyThrowAway\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnUserKeys\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnToggleKey\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightControl\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"TimerDuration\": \"0xF\",\n    \"IndicatorPressedLevel\": \"0xA\",\n    \"EnableNightlight\": \"0x0\",\n    \"DisableTimerFlash\": \"0x1\",\n    \"EnablePageFallback\": \"0x0\",\n    \"EnableIndicatorPressedLevel\": \"0x1\",\n    \"FirstKeyThrowAway\": \"0x0\",\n    \"EnableNightlightOnUserKeys\": \"0x0\",\n    \"EnableNightlightOnToggleKey\": \"0x0\",\n    \"EnableNightlightControl\": \"0x1\"\n  },\n  \"staged\": {\n    \"TimerDuration\": \"5\",\n    \"IndicatorPressedLevel\": \"10\",\n    \"EnableNightlight\": \"0\",\n    \"DisableTimerFlash\": \"1\",\n    \"EnablePageFallback\": \"1\",\n    \"EnableIndicatorPressedLevel\": \"1\",\n    \"FirstKeyThrowAway\": \"0\",\n    \"EnableNightlightOnUserKeys\": \"0\",\n    \"EnableNightlightOnToggleKey\": \"0\",\n    \"EnableNightlightControl\": \"1\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_CASE_DIR}/first-edit-attempt.json\",\n    \"attempt_id\": \"sha256:b12f28d61c0be3c8bd2278df00347bb229ace970fda3699ec0aebde3af2aba0f\",\n    \"phase\": \"complete\",\n    \"ranges\": 10,\n    \"write_planned_ranges\": 10\n  },\n  \"verified\": {\n    \"TimerDuration\": \"0x5\",\n    \"IndicatorPressedLevel\": \"0xA\",\n    \"EnableNightlight\": \"0x0\",\n    \"DisableTimerFlash\": \"0x1\",\n    \"EnablePageFallback\": \"0x1\",\n    \"EnableIndicatorPressedLevel\": \"0x1\",\n    \"FirstKeyThrowAway\": \"0x0\",\n    \"EnableNightlightOnUserKeys\": \"0x0\",\n    \"EnableNightlightOnToggleKey\": \"0x0\",\n    \"EnableNightlightControl\": \"0x1\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\",\n  \"dlt_indicators_evidence\": {\n    \"format\": \"cbus-dlt-indicators-physical-v1\",\n    \"source\": \"//WFDLT/254/p/4\",\n    \"database_source\": \"/db//WFDLT/254/p/4\",\n    \"plan\": {\n      \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n      \"unit_type\": \"KEYML5\",\n      \"firmware\": \"2.1.00\",\n      \"catalog_number\": \"5055DL\",\n      \"expected\": {\n        \"TimerDuration\": [\n          15\n        ],\n        \"IndicatorPressedLevel\": [\n          10\n        ],\n        \"EnableNightlight\": [\n          0\n        ],\n        \"DisableTimerFlash\": [\n          1\n        ],\n        \"EnablePageFallback\": [\n          0\n        ],\n        \"EnableIndicatorPressedLevel\": [\n          1\n        ],\n        \"FirstKeyThrowAway\": [\n          0\n        ],\n        \"EnableNightlightOnUserKeys\": [\n          0\n        ],\n        \"EnableNightlightOnToggleKey\": [\n          0\n        ],\n        \"EnableNightlightControl\": [\n          1\n        ]\n      },\n      \"changes\": {\n        \"TimerDuration\": [\n          5\n        ],\n        \"EnablePageFallback\": [\n          1\n        ]\n      },\n      \"requested\": [\n        {\n          \"control\": \"page_fallback\",\n          \"value\": true\n        },\n        {\n          \"control\": \"duration_seconds\",\n          \"value\": 5\n        }\n      ],\n      \"loaded\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"before\": {\n        \"page_fallback\": false,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"initialization_changes\": {},\n      \"save_normalizations\": {},\n      \"enabled_before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      },\n      \"steps\": [\n        {\n          \"index\": 1,\n          \"control\": \"page_fallback\",\n          \"value\": true,\n          \"before\": {\n            \"page_fallback\": false,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"enabled_after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": true,\n            \"pressed_level\": true,\n            \"nightlight_keys\": true,\n            \"nightlight_toggle\": true,\n            \"first_key_throwaway\": false\n          }\n        },\n        {\n          \"index\": 2,\n          \"control\": \"duration_seconds\",\n          \"value\": 5,\n          \"before\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 15,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 15\n          },\n          \"after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": 5,\n            \"pressed_level\": 10,\n            \"nightlight_keys\": false,\n            \"nightlight_toggle\": false,\n            \"first_key_throwaway\": false,\n            \"duration_selected_seconds\": 5\n          },\n          \"enabled_after\": {\n            \"page_fallback\": true,\n            \"pressed_enabled\": true,\n            \"duration_seconds\": true,\n            \"pressed_level\": true,\n            \"nightlight_keys\": true,\n            \"nightlight_toggle\": true,\n            \"first_key_throwaway\": false\n          }\n        }\n      ],\n      \"raw_preview\": [\n        {\n          \"address\": 51,\n          \"before\": 175,\n          \"after\": 165,\n          \"changed_mask\": 10,\n          \"owned_mask\": 255\n        },\n        {\n          \"address\": 52,\n          \"before\": 138,\n          \"after\": 142,\n          \"changed_mask\": 4,\n          \"owned_mask\": 125\n        }\n      ],\n      \"saved\": false,\n      \"device_verified\": false,\n      \"labels_transferred\": false,\n      \"raw_verification_scope\": \"staged-pp-session-before-save\",\n      \"original_full_form_save_executed\": false\n    },\n    \"database_edited_state_verified\": true,\n    \"physical_original_baseline_verified\": true,\n    \"unchanged_indicator_fields_verified\": true,\n    \"complete_indicator_bytes_verified\": true,\n    \"profile_verification\": \"database-catalogue-and-physical-loaded-session-identity\",\n    \"loaded_identity_contract\": \"pp-info-loaded-identity-v1\",\n    \"physical_loaded_identity_verified\": true,\n    \"fresh_physical_identity_verified\": true,\n    \"catalogue_verification_scope\": \"saved-project-database\",\n    \"loaded_pci_generation_binding_verified\": false,\n    \"physical_serial_verified\": false,\n    \"project_disk_persistence_verified\": false,\n    \"display_behavior_verified\": false,\n    \"database_raw_hex\": \"a58e\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "physical-pp",
+        "inspect",
+        "//WFDLT/254/p/4",
+        "--method",
+        "direct",
+        "--parameter",
+        "TimerDuration",
+        "--parameter",
+        "IndicatorPressedLevel",
+        "--parameter",
+        "EnableNightlight",
+        "--parameter",
+        "DisableTimerFlash",
+        "--parameter",
+        "EnablePageFallback",
+        "--parameter",
+        "EnableIndicatorPressedLevel",
+        "--parameter",
+        "FirstKeyThrowAway",
+        "--parameter",
+        "EnableNightlightOnUserKeys",
+        "--parameter",
+        "EnableNightlightOnToggleKey",
+        "--parameter",
+        "EnableNightlightControl"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-inspection-v1\",\n  \"operation_id\": \"233976944698\",\n  \"phase\": \"complete\",\n  \"source\": \"//WFDLT/254/p/4\",\n  \"lock_address\": \"//WFDLT/254\",\n  \"method\": \"direct\",\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"automatic_write_retries\": 0,\n  \"io_performed\": true,\n  \"save_attempted\": false,\n  \"saved\": false,\n  \"fresh_physical_readback_verified\": false,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"complete\": true,\n  \"parameters\": [\n    {\n      \"name\": \"TimerDuration\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"IndicatorPressedLevel\",\n      \"type\": \"int\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"51\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlight\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"DisableTimerFlash\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnablePageFallback\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableIndicatorPressedLevel\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"FirstKeyThrowAway\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnUserKeys\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightOnToggleKey\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    },\n    {\n      \"name\": \"EnableNightlightControl\",\n      \"type\": \"bit\",\n      \"array_size\": 1,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"52\",\n      \"tags\": []\n    }\n  ],\n  \"values\": {\n    \"TimerDuration\": \"0x5\",\n    \"IndicatorPressedLevel\": \"0xA\",\n    \"EnableNightlight\": \"0x0\",\n    \"DisableTimerFlash\": \"0x1\",\n    \"EnablePageFallback\": \"0x1\",\n    \"EnableIndicatorPressedLevel\": \"0x1\",\n    \"FirstKeyThrowAway\": \"0x0\",\n    \"EnableNightlightOnUserKeys\": \"0x0\",\n    \"EnableNightlightOnToggleKey\": \"0x0\",\n    \"EnableNightlightControl\": \"0x1\"\n  },\n  \"physical_load_completed\": true,\n  \"physical_readback_scope\": \"one-loaded-session\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "physical-pp",
+        "recover",
+        "--journal",
+        "${CBUS_CASE_DIR}/first-edit-attempt.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-recovery-v1\",\n  \"operation_id\": \"5c14dd8ee256\",\n  \"journal\": \"${CBUS_CASE_DIR}/first-edit-attempt.json\",\n  \"attempt_id\": \"sha256:b12f28d61c0be3c8bd2278df00347bb229ace970fda3699ec0aebde3af2aba0f\",\n  \"journal_phase\": \"complete\",\n  \"journal_nvm_commit\": \"not-required\",\n  \"destination\": \"//WFDLT/254/p/4\",\n  \"method\": \"direct\",\n  \"read_only\": true,\n  \"save_attempted\": false,\n  \"automatic_write_retries\": 0,\n  \"recorded_pci_generation\": 0,\n  \"fresh_pci_generation\": 0,\n  \"nvm_commit_observed\": false,\n  \"power_cycle_persistence_verified\": false,\n  \"ranges\": [\n    {\n      \"index\": 0,\n      \"parameter\": \"TimerDuration\",\n      \"logical_address\": 51,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 1,\n      \"parameter\": \"IndicatorPressedLevel\",\n      \"logical_address\": 51,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 2,\n      \"parameter\": \"EnableNightlight\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 3,\n      \"parameter\": \"DisableTimerFlash\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 4,\n      \"parameter\": \"EnablePageFallback\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 5,\n      \"parameter\": \"EnableIndicatorPressedLevel\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 6,\n      \"parameter\": \"FirstKeyThrowAway\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 7,\n      \"parameter\": \"EnableNightlightOnUserKeys\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 8,\n      \"parameter\": \"EnableNightlightOnToggleKey\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    },\n    {\n      \"index\": 9,\n      \"parameter\": \"EnableNightlightControl\",\n      \"logical_address\": 52,\n      \"length\": 1,\n      \"write_planned\": true,\n      \"journaled_store_state\": \"confirmed\",\n      \"fresh_sha256\": \"949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af\",\n      \"classification\": \"expected\"\n    }\n  ],\n  \"errors\": [],\n  \"outcome\": \"observed_expected\",\n  \"conclusive\": true,\n  \"nvm_commit_uncertain\": false,\n  \"resolved\": true,\n  \"resolution\": {\n    \"at\": \"2026-09-30T20:04:45.785+00:00\",\n    \"by\": \"apply\",\n    \"outcome\": \"complete\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT",
+        "--output",
+        "${CBUS_CASE_DIR}/after-physical-project.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT\",\n  \"file\": \"${CBUS_CASE_DIR}/after-physical-project.xml\",\n  \"bytes\": 1636,\n  \"sha256\": \"90a69f5614faf49ad01cddc5f84448d0d13f98903dcdbb2b256a8f957caa7598\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "51783",
+        "--timeout",
+        "8",
+        "database",
+        "get-xml",
+        "//WFDLT/254/p/4",
+        "--output",
+        "${CBUS_CASE_DIR}/after-physical-unit.xml"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-cgate-dbgetxml-export-v1\",\n  \"path\": \"//WFDLT/254/p/4\",\n  \"file\": \"${CBUS_CASE_DIR}/after-physical-unit.xml\",\n  \"bytes\": 1154,\n  \"sha256\": \"1c69fe3fcb4042b3555152ef8ce9a30c60cc32aee8fe0f7e264c7871f3c948f0\",\n  \"response\": \"344 End XML snippet\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "f38842171695ecc526cf7909924e7fe640e48808c79f31503fdc330612d779f9",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/0/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/16",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/5",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/9",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/17",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/19",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/argv/16",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/9/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/10/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/11/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/11/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/11/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/12/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/12/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/12/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/13/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/13/argv/16",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/13/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/14/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/14/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/15/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/15/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/15/argv/16",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/15/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/16/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/17/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/17/argv/13",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/17/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/18/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/18/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/18/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/19/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/19/argv/14",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/19/stdout",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

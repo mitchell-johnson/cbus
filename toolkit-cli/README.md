@@ -529,6 +529,12 @@ syntax and can communicate with hardware. Programming sessions release their
 locks on success and failure. Parameter exports use the CLI's JSON format and
 include database unit identity for compatibility checks.
 
+For a saved KEYML5 2.1.00/5055DL Indicators plan, use
+`cgate physical-pp dlt-indicators TARGET --plan FILE --journal FILE`.
+It checks the edited database state, physical LOAD identity and original
+indicator baseline, then saves once and verifies a separate physical reload.
+See the [complete edit/save/reopen/deliver/recover sequence](docs/classic-dlt-physical-workflow.md).
+
 For guarded physical programming through cmqttd, use the typed `physical-pp`
 family instead of assembling a raw PP batch:
 

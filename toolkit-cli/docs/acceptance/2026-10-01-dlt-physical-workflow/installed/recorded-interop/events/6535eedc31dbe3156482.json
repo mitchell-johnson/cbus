@@ -1,0 +1,521 @@
+{
+  "data": [
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "direct",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/direct.json",
+        "--set",
+        "direct",
+        "0xB0 0xC0"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"92af568a16de\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"direct\",\n  \"edits\": [\n    {\n      \"parameter\": \"direct\",\n      \"requested_value\": \"0xB0 0xC0\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"direct\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"direct\",\n      \"protection\": \"none\",\n      \"address\": \"$20\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"direct\": \"0x10 0x11\"\n  },\n  \"staged\": {\n    \"direct\": \"0xB0 0xC0\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/direct.json\",\n    \"attempt_id\": \"sha256:ab8e0a1849a8b5c923f79409f6a5f006225c9a85d157e7f977f14e9ec0de23d8\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"direct\": \"0xB0 0xC0\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "paged",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/paged.json",
+        "--set",
+        "paged",
+        "0xB1 0xC1"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"39a530f56944\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"paged\",\n  \"edits\": [\n    {\n      \"parameter\": \"paged\",\n      \"requested_value\": \"0xB1 0xC1\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"paged\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"paged\",\n      \"protection\": \"none\",\n      \"address\": \"$1FF\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"paged\": \"0x11 0x12\"\n  },\n  \"staged\": {\n    \"paged\": \"0xB1 0xC1\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/paged.json\",\n    \"attempt_id\": \"sha256:9d660cb68cf6062351267187e14e0fbaf0e5d0ed5b893125db06abcacfe7c808\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"paged\": \"0xB1 0xC1\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "ncc",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/ncc.json",
+        "--set",
+        "ncc",
+        "0xB2 0xC2"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"f58955771e10\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"ncc\",\n  \"edits\": [\n    {\n      \"parameter\": \"ncc\",\n      \"requested_value\": \"0xB2 0xC2\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"ncc\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"ncc\",\n      \"protection\": \"none\",\n      \"address\": \"$300\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"ncc\": \"0x12 0x13\"\n  },\n  \"staged\": {\n    \"ncc\": \"0xB2 0xC2\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/ncc.json\",\n    \"attempt_id\": \"sha256:dde875ed93188bcbe1ad8c40f91d998eeb0368bad9b5c31720c110c74724d67f\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"ncc\": \"0xB2 0xC2\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "edlt",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/edlt.json",
+        "--set",
+        "edlt",
+        "0xB3 0xC3"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"1cf1c0b9f55a\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"edlt\",\n  \"edits\": [\n    {\n      \"parameter\": \"edlt\",\n      \"requested_value\": \"0xB3 0xC3\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"edlt\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"edlt\",\n      \"protection\": \"none\",\n      \"address\": \"$110\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"edlt\": \"0x13 0x14\"\n  },\n  \"staged\": {\n    \"edlt\": \"0xB3 0xC3\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/edlt.json\",\n    \"attempt_id\": \"sha256:9a9df60b7453af5fe4361ffdd66bbbe694e6bb0b4a0ee4a3a6a10f39e0fc1cd8\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"edlt\": \"0xB3 0xC3\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "giu",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/giu.json",
+        "--set",
+        "giu",
+        "0xB4 0xC4"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"df0a88062bfd\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"giu\",\n  \"edits\": [\n    {\n      \"parameter\": \"giu\",\n      \"requested_value\": \"0xB4 0xC4\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"giu\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"giu\",\n      \"protection\": \"none\",\n      \"address\": \"$120\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"giu\": \"0x14 0x15\"\n  },\n  \"staged\": {\n    \"giu\": \"0xB4 0xC4\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/giu.json\",\n    \"attempt_id\": \"sha256:c7bec84ccb7c9324ca815457ac20423ec8c09e891955d25de7e1580867691a38\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"giu\": \"0xB4 0xC4\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "sgiu",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/sgiu.json",
+        "--set",
+        "sgiu",
+        "0xB5 0xC5"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"778b713d93c3\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"sgiu\",\n  \"edits\": [\n    {\n      \"parameter\": \"sgiu\",\n      \"requested_value\": \"0xB5 0xC5\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"sgiu\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"sgiu\",\n      \"protection\": \"none\",\n      \"address\": \"$130\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"sgiu\": \"0x15 0x16\"\n  },\n  \"staged\": {\n    \"sgiu\": \"0xB5 0xC5\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/sgiu.json\",\n    \"attempt_id\": \"sha256:8a6692a1dfdd9aa291ad9f76d5db4504b50bdaa7d173e43c8b885a4fe20ae319\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"sgiu\": \"0xB5 0xC5\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "dali",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/dali.json",
+        "--set",
+        "dali",
+        "0xB6 0xC6"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"713512deb268\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"dali\",\n  \"edits\": [\n    {\n      \"parameter\": \"dali\",\n      \"requested_value\": \"0xB6 0xC6\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"dali\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"dali\",\n      \"protection\": \"none\",\n      \"address\": \"$140\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"dali\": \"0x16 0x17\"\n  },\n  \"staged\": {\n    \"dali\": \"0xB6 0xC6\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/dali.json\",\n    \"attempt_id\": \"sha256:16a9cd2e0057ce6abf4a667fcdbc50f7ba9cd4a221e1afe8275c41aaf3d2f739\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"dali\": \"0xB6 0xC6\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "goc",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/goc.json",
+        "--set",
+        "goc",
+        "0xB7 0xC7"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"fcc0e4bbb781\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"goc\",\n  \"edits\": [\n    {\n      \"parameter\": \"goc\",\n      \"requested_value\": \"0xB7 0xC7\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"goc\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"goc\",\n      \"protection\": \"none\",\n      \"address\": \"$150\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"goc\": \"0x17 0x18\"\n  },\n  \"staged\": {\n    \"goc\": \"0xB7 0xC7\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/goc.json\",\n    \"attempt_id\": \"sha256:99b3f03e873f09cfa1759ace50e95a4969646ae8d8ca9f2ecca86df20bf091db\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"goc\": \"0xB7 0xC7\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "gocbyt",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/gocbyt.json",
+        "--set",
+        "gocbyt",
+        "0xB8 0xC8"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"e3d8313442f1\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"gocbyt\",\n  \"edits\": [\n    {\n      \"parameter\": \"gocbyt\",\n      \"requested_value\": \"0xB8 0xC8\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"gocbyt\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"gocbyt\",\n      \"protection\": \"none\",\n      \"address\": \"$160\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"gocbyt\": \"0x18 0x19\"\n  },\n  \"staged\": {\n    \"gocbyt\": \"0xB8 0xC8\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/gocbyt.json\",\n    \"attempt_id\": \"sha256:c70f13403e6b8fb2fe52162e163fd3e61618e68d87ddfd9c2e47a0499de6a08a\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"gocbyt\": \"0xB8 0xC8\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52651",
+        "--timeout",
+        "45",
+        "physical-pp",
+        "apply",
+        "//TEST/253/p/5",
+        "--method",
+        "goc2",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/goc2.json",
+        "--set",
+        "goc2",
+        "0xB9 0xC9"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-physical-pp-apply-v1\",\n  \"operation_id\": \"dca84571bb68\",\n  \"phase\": \"complete\",\n  \"source\": \"//TEST/253/p/5\",\n  \"destination\": \"//TEST/253/p/5\",\n  \"lock_address\": \"//TEST/253\",\n  \"method\": \"goc2\",\n  \"edits\": [\n    {\n      \"parameter\": \"goc2\",\n      \"requested_value\": \"0xB9 0xC9\"\n    }\n  ],\n  \"capabilities\": {\n    \"service\": \"cmqttd\",\n    \"physical_pp_load\": true,\n    \"physical_pp_save\": true,\n    \"physical_pp_routed_load\": true,\n    \"physical_pp_routed_save\": true,\n    \"physical_pp_routed_methods\": [\n      \"dali\",\n      \"direct\",\n      \"edlt\",\n      \"giu\",\n      \"goc\",\n      \"goc2\",\n      \"gocbyt\",\n      \"ncc\",\n      \"paged\",\n      \"sgiu\"\n    ],\n    \"physical_pp_routed_save_protection\": [\n      \"none\",\n      \"checksum\",\n      \"lock\"\n    ],\n    \"physical_pp_routed_lock_methods\": [\n      \"direct\",\n      \"ncc\",\n      \"paged\"\n    ],\n    \"physical_pp_routed_unsupported_methods\": [],\n    \"physical_pp_routed_lock\": true,\n    \"physical_pp_routed_nvm_commit\": true,\n    \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\",\n    \"physical_pp_routed_state_scope\": \"owned-session-target-network\",\n    \"pci_generation\": 0,\n    \"pci_connected\": true,\n    \"programming_lane_state\": \"ready\"\n  },\n  \"native_save_operation\": \"PP SAVE_TO_SOURCE\",\n  \"automatic_write_retries\": 0,\n  \"save_attempts\": 1,\n  \"save_attempted\": true,\n  \"saved\": true,\n  \"save_outcome_uncertain\": false,\n  \"staged_readback_verified\": true,\n  \"fresh_physical_readback_verified\": true,\n  \"power_cycle_persistence_verified\": false,\n  \"original_toolkit_workflow_executed\": false,\n  \"hardware_method_matrix_accepted\": false,\n  \"dry_run\": false,\n  \"parameters\": [\n    {\n      \"name\": \"goc2\",\n      \"type\": \"int\",\n      \"array_size\": 2,\n      \"program_method\": \"goc2\",\n      \"protection\": \"none\",\n      \"address\": \"$170\",\n      \"tags\": []\n    }\n  ],\n  \"before\": {\n    \"goc2\": \"0x19 0x1A\"\n  },\n  \"staged\": {\n    \"goc2\": \"0xB9 0xC9\"\n  },\n  \"journal\": {\n    \"path\": \"${CBUS_RECORDED_ROOT}/installed/cases/test_real_cli_programs_all_ten0/journals/goc2.json\",\n    \"attempt_id\": \"sha256:3468b9cf8fef81f017b501a890621d770acdad3701335af2f2f63ba9c68883c9\",\n    \"phase\": \"complete\",\n    \"ranges\": 1,\n    \"write_planned_ranges\": 1\n  },\n  \"verified\": {\n    \"goc2\": \"0xB9 0xC9\"\n  },\n  \"complete\": true,\n  \"fresh_physical_readback_performed\": true,\n  \"physical_readback_scope\": \"fresh-pp-load-after-confirmed-save\",\n  \"verification_comparison\": \"native-schema-type-aware\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    },
+    {
+      "kind": "pytest-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_cmqtt_programming_methods_interop.py::test_real_cli_programs_all_ten_methods_through_one_routed_session"
+    }
+  ],
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "b8aaa60ac576cd807d3a4cd0f9a2c01fb2c993f4816613afd30b5c5d86c54bc9",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/0/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/9/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/9/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/9/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "jsonl",
+    "container_form": "data envelope; JSONL rows retained in original order"
+  }
+}

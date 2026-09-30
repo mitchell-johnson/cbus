@@ -1,0 +1,53 @@
+{
+  "data": {
+    "exit": 0,
+    "unique_parent_tests": 126,
+    "duplicate_case_ids": 0,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "bindings_stable": true,
+    "test_selection": [
+      "tests/test_sanitize_evidence_receipts.py",
+      "tests/test_cgate_session_differential.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py",
+      "tests/test_parity_register.py"
+    ],
+    "actual_imports": {
+      "cbus_toolkit": "${CBUS_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/__init__.py",
+      "cbus_toolkit.parity": "${CBUS_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/parity.py"
+    },
+    "package_files": 324,
+    "artifacts": {
+      "junit.xml": "f7980e03a43018cfae042050c2ea8dc63409566f10a69bb513bcd12a13c00540",
+      "pytest.log": "d6fa7ffccd1708956cee229705b38684d9f7e29d6a32aa3175048bcb311a9e3c"
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "9f475f11c63048452c021e9e856476b1432fc9e2b173bce6f6ad896d8ef4a2dd",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/actual_imports/cbus_toolkit",
+        "roles": [
+          "acceptance_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/actual_imports/cbus_toolkit.parity",
+        "roles": [
+          "acceptance_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

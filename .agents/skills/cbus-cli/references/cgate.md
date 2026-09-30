@@ -925,6 +925,24 @@ refuses before PP SET. Inspect and dry-run do not require it. See
 `toolkit-cli/docs/physical-programming.md` and keep its live-bridge,
 device-matrix, Toolkit-workflow, and power-cycle exclusions in every report.
 
+For one saved classic DLT Indicators plan use
+`cgate physical-pp dlt-indicators TARGET --plan FILE --journal FILE`.
+The admitted profile is exactly KEYML5 `2.1.00` / `5055DL`. First apply the
+reviewed Indicators plan to `/db//...`, save and reopen the project, and verify
+its edited result. The physical unit must still match the plan's original
+baseline across all ten fields and both bytes at `0x33`/`0x34`.
+The command requires exactly `UnitType`, `FirmwareVersion` and canonical
+`Source` attributes on physical PP INFO; it never fills missing identity from
+the database or inventory. It rechecks identity and connected generation after
+staging and on a distinct fresh physical LOAD, sends one SAVE_TO_SOURCE, and
+retains a durable attempt journal. An uncertain attempt must be inspected with
+the existing read-only `physical-pp recover`, never replayed automatically.
+The client leaves `loaded_pci_generation_binding_verified=false` because the
+wire document does not expose the captured generation; internal Rust guard
+tests are separate evidence. See
+`toolkit-cli/docs/classic-dlt-physical-workflow.md` for the exact synthetic
+WFDLT/unit-4 journey, preservation checks and remaining GUI/hardware gates.
+
 Standard application control also uses a database-resolved route through one
 to six bridges for Lighting applications 48–95 (bare, `LIGHTING`, and `DO`
 ON/OFF/RAMP/STOP forms), Trigger application 202 EVENT/INDICATORKILL, and

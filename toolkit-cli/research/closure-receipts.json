@@ -156,7 +156,7 @@
         ],
         "commands": [
           {
-            "command": "PYTHONPATH=src /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
+            "command": "PYTHONPATH=src \"${CBUS_EVIDENCE_PYTHON}\" -m unittest tests.test_toolkit_update_bundle tests.test_cli_toolkit_update_bundle tests.test_toolkit_update_package_bundle tests.test_cli_toolkit_update_package_bundle -q",
             "scope": "source checkout: four diagnostic/package-bundle modules",
             "passed": 62,
             "failures": 0,
@@ -165,7 +165,7 @@
             "exit_status": 0
           },
           {
-            "command": "PYTHONPATH=/private/tmp/cbus-p9-wheel-integrated-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_preferences_user_guard.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_windows_process_token.py -p no:cacheprovider",
+            "command": "PYTHONPATH=\"${CBUS_ACCEPTANCE_PYTHONPATH}\" \"${CBUS_EVIDENCE_PYTHON}\" -m pytest -q \"${CBUS_TEST_ROOT}/test_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_preferences_user_guard.py\" \"${CBUS_TEST_ROOT}/test_windows_process_token.py\" -p no:cacheprovider",
             "scope": "installed wheel: four diagnostic/package-bundle test files (62 cases) and two preference user/token test files (39 cases)",
             "passed": 101,
             "failures": 0,
@@ -174,7 +174,7 @@
             "exit_status": 0
           },
           {
-            "command": "PYTHONPATH=/private/tmp/cbus-p901-closure-wheel-final-20260928/site:/private/tmp/cbus-parity-final-20260928/toolkit-cli:/private/tmp/cbus-parity-final-20260928/toolkit-cli/tests /Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python -m pytest -q /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_cli_toolkit_update_package_bundle.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_parity_register.py /private/tmp/cbus-parity-final-20260928/toolkit-cli/tests/test_coverage_require_complete.py -p no:cacheprovider",
+            "command": "PYTHONPATH=\"${CBUS_ACCEPTANCE_PYTHONPATH}\" \"${CBUS_EVIDENCE_PYTHON}\" -m pytest -q \"${CBUS_TEST_ROOT}/test_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_bundle.py\" \"${CBUS_TEST_ROOT}/test_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_cli_toolkit_update_package_bundle.py\" \"${CBUS_TEST_ROOT}/test_parity_register.py\" \"${CBUS_TEST_ROOT}/test_coverage_require_complete.py\" -p no:cacheprovider",
             "scope": "installed closure wheel: four P9.01 diagnostic/package-bundle API/CLI modules plus parity-register and require-complete contract modules",
             "passed": 100,
             "failures": 0,
@@ -244,5 +244,41 @@
         }
       }
     }
-  ]
+  ],
+  "publication_sanitization": {
+    "format": "cbus-evidence-sanitized-derivative-v1",
+    "raw_file_sha256": "76e03b044a74d43f37fb7b57d9a701652b208b068ea13dd7b6b96891ebe00cf2",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/receipts/0/integration/commands/0/command",
+        "action": "role_template",
+        "roles": [
+          "python_interpreter"
+        ]
+      },
+      {
+        "json_pointer": "/receipts/0/integration/commands/1/command",
+        "action": "role_template",
+        "roles": [
+          "acceptance_pythonpath",
+          "acceptance_test_file",
+          "python_interpreter"
+        ]
+      },
+      {
+        "json_pointer": "/receipts/0/integration/commands/2/command",
+        "action": "role_template",
+        "roles": [
+          "acceptance_pythonpath",
+          "acceptance_test_file",
+          "python_interpreter"
+        ]
+      }
+    ],
+    "command_form": "role-based reproduction template; exact invocation retained privately",
+    "working_directory_role": "toolkit-cli; installed/source context remains in recorded scope",
+    "technical_payload_preserved": true,
+    "new_execution_claimed_by_sanitization": false
+  }
 }

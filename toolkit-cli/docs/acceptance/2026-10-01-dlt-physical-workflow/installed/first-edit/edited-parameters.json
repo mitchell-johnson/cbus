@@ -1,0 +1,39 @@
+{
+  "data": {
+    "format": "cbus-cli-parameters-v1",
+    "unit_type": "KEYML5",
+    "firmware": "2.1.00",
+    "catalog_number": "5055DL",
+    "parameters": {
+      "DisableTimerFlash": "1",
+      "EnableDynamicLabels": "1",
+      "EnableIndicatorPressedLevel": "1",
+      "EnableNightlight": "0",
+      "EnableNightlightControl": "1",
+      "EnableNightlightOnToggleKey": "0",
+      "EnableNightlightOnUserKeys": "0",
+      "EnablePageFallback": "1",
+      "EnableSceneToggle": "0",
+      "FirstKeyThrowAway": "0",
+      "GroupAddress": "255 255 255 255 255 255 255 255 255",
+      "IndicatorBlockAssignment": "0 1 2 3 4 5 6 7",
+      "IndicatorFunction": "2 2 2 2 2 2 2 2",
+      "IndicatorPressedLevel": "10",
+      "LabelFlavourLSB": "0 0 0 0 0 0 0 0",
+      "LabelFlavourMSB": "0 0 0 0 0 0 0 0",
+      "SceneKeySelector": "0 0 0 0 0 0 0 0",
+      "TimerDuration": "5"
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "d000b6425130ae0b3d1910b1338c9a909609940b88de0567f8480ca616521494",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

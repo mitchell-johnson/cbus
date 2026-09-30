@@ -490,6 +490,33 @@ Reads are bounded, coalesced, source-correlated and serialized with MQTT traffic
 Unknown schemas, unsupported layouts, incomplete replies and changed or ended
 sessions fail without replacing the previously staged values.
 
+A successful physical LOAD also captures its observed unit type, firmware,
+canonical source and PCI generation with the recalled memory. Physical
+`PP INFO session *` exposes that immutable provenance as exactly three root
+attributes: `UnitType`, `FirmwareVersion` and `Source`. Database and inventory
+changes cannot replace it. INFO checks session ownership and the connected
+captured generation through response construction. Database, NEW and file
+sessions retain their existing plain `Parameters` root.
+
+A replacement LOAD attempt, NEW or file LOAD invalidates the previous physical
+stamp before validation; a failed replacement preserves staged values but INFO
+returns 408 until another successful LOAD. Reconnect and session cleanup also
+invalidate it. Physical SAVE invalidates the stamp before I/O. A confirmed SAVE
+to the same canonical source can retain the original LOAD provenance on the
+same generation; an uncertain SAVE cannot. SAVE to another physical destination
+may succeed, but INFO cannot relabel the old source's identity as the new one.
+There is no `PciGeneration` XML attribute and no claim that SAVE is a fresh LOAD.
+
+The typed classic DLT workflow is
+`cbus-toolkit cgate physical-pp dlt-indicators TARGET --plan FILE --journal FILE`.
+For KEYML5 `2.1.00` / `5055DL`, it requires the saved database's edited plan and
+the physical unit's original baseline, checks loaded identity before staging,
+again before saving and on a distinct fresh LOAD, and sends one SAVE_TO_SOURCE.
+Its generation observations and internal server guard have separate evidence
+boundaries. See
+[`classic DLT delivery and recovery`](../toolkit-cli/docs/classic-dlt-physical-workflow.md)
+for the complete sequence and the hardware, GUI and power-cycle gates.
+
 For a database-resolved route through one to six bridges, physical LOAD uses
 the same standard CAL, page-aware, OEM-memory and GOC request bodies inside the
 established source-route wrapper. Selector acknowledgements and responses must

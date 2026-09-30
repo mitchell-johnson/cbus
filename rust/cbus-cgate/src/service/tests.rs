@@ -5471,6 +5471,574 @@ fn pp_admin_and_programmer_auth_classification_keeps_reads_open() {
     ));
 }
 
+struct LoadedIdentityFixture {
+    service: Arc<Service>,
+    owner: ClientState,
+    peer: BufReader<tokio::io::DuplexStream>,
+    path: std::path::PathBuf,
+    specs: std::path::PathBuf,
+}
+
+impl Drop for LoadedIdentityFixture {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.path);
+        let _ = std::fs::remove_dir_all(&self.specs);
+    }
+}
+
+impl LoadedIdentityFixture {
+    async fn new() -> Self {
+        let path = state_path();
+        let specs = state_path().with_extension("loaded-identity-spec");
+        std::fs::create_dir_all(&specs).unwrap();
+        std::fs::write(specs.join("KEYML5.xml"), r#"<UnitSpecification><Parameters>
+          <Param><Name>Indicator</Name><Type>int</Type><Address>$20</Address><ArraySize>2</ArraySize><ProgramMethod>direct</ProgramMethod><Protection>none</Protection></Param>
+          </Parameters></UnitSpecification>"#).unwrap();
+        let (pci, remote) = pci();
+        let mut peer = BufReader::new(remote);
+        let reset = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.pci_reset().await }
+        });
+        for _ in 0..8 {
+            database_pci_line(&mut peer).await;
+        }
+        reset.await.unwrap().unwrap();
+        let service =
+            Service::new(&fixture(), None, path.clone(), pci, Some(specs.clone())).unwrap();
+        let mut owner = ClientState::default();
+        for line in ["[lock] PP LOCK L //HARNESS/254", "[start] PP START S L"] {
+            assert_eq!(service.handle(&mut owner, line).await.status, 200);
+        }
+        Self {
+            service,
+            owner,
+            peer,
+            path,
+            specs,
+        }
+    }
+
+    async fn identify(&mut self, attribute: u8, value: &[u8]) {
+        self.identify_unit(5, attribute, value).await;
+    }
+
+    async fn identify_unit(&mut self, unit: u8, attribute: u8, value: &[u8]) {
+        let request = database_pci_line(&mut self.peer).await;
+        assert!(
+            request.starts_with(format!("\\46{unit:02X}0021{attribute:02X}").as_bytes()),
+            "{request:?}"
+        );
+        let code = request[request.len() - 2];
+        self.peer.write_all(&[code, b'.']).await.unwrap();
+        let mut cal = vec![0x80 | (value.len() as u8 + 1), attribute];
+        cal.extend_from_slice(value);
+        database_pci_reply(&mut self.peer, unit, &cal).await;
+    }
+
+    async fn load(&mut self) -> Response {
+        let loading = tokio::spawn({
+            let service = self.service.clone();
+            let mut owner = self.owner.clone();
+            async move {
+                service
+                    .handle(&mut owner, "[load] PP LOAD S //HARNESS/0254/P/005")
+                    .await
+            }
+        });
+        self.identify(1, b"KEYML5").await;
+        self.identify(2, b"2.1.00").await;
+        let request = database_pci_line(&mut self.peer).await;
+        assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+        database_pci_reply(&mut self.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+        loading.await.unwrap()
+    }
+
+    async fn info(&mut self) -> Response {
+        self.service
+            .handle(&mut self.owner, "[info] PP INFO S *")
+            .await
+    }
+}
+
+fn loaded_identity_attributes(response: &Response) -> HashMap<String, String> {
+    assert_eq!(response.status, 344, "{response:?}");
+    let xml = response
+        .lines
+        .iter()
+        .find_map(|line| line.strip_prefix("347-"))
+        .unwrap();
+    let document = roxmltree::Document::parse(xml).unwrap();
+    let root = document.root_element();
+    assert_eq!(root.tag_name().name(), "Parameters");
+    root.attributes()
+        .map(|attribute| (attribute.name().to_string(), attribute.value().to_string()))
+        .collect()
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_is_load_provenance_not_current_database() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[db] PP LOAD S /db//HARNESS/254/p/5")
+            .await
+            .status,
+        200
+    );
+    assert!(loaded_identity_attributes(&fixture.info().await).is_empty());
+    assert_eq!(fixture.load().await.status, 200);
+    let expected = HashMap::from([
+        ("UnitType".to_string(), "KEYML5".to_string()),
+        ("FirmwareVersion".to_string(), "2.1.00".to_string()),
+        ("Source".to_string(), "//HARNESS/254/p/5".to_string()),
+    ]);
+    assert_eq!(loaded_identity_attributes(&fixture.info().await), expected);
+    {
+        let mut model = fixture.service.model.lock().await;
+        let unit = &mut model
+            .projects
+            .get_mut("HARNESS")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .units
+            .get_mut(&5)
+            .unwrap();
+        unit.unit_type = "KEYBL5".to_string();
+        unit.firmware = "9.9.99".to_string();
+        // Even a mutable session field cannot relabel its immutable load stamp.
+        model.sessions.get_mut("S").unwrap().unit_type = Some("KEYBL5".to_string());
+    }
+    assert_eq!(loaded_identity_attributes(&fixture.info().await), expected);
+    // Restore the staging schema and edit data without discarding provenance.
+    fixture
+        .service
+        .model
+        .lock()
+        .await
+        .sessions
+        .get_mut("S")
+        .unwrap()
+        .unit_type = Some("KEYML5".to_string());
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[set] PP SET S Indicator 0x56 0x78")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(loaded_identity_attributes(&fixture.info().await), expected);
+    let mut stranger = ClientState::default();
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut stranger, "[foreign] PP INFO S *")
+            .await
+            .status,
+        420
+    );
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut stranger, "[foreign-load] PP LOAD S malformed")
+            .await
+            .status,
+        420
+    );
+    assert_eq!(loaded_identity_attributes(&fixture.info().await), expected);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[end] PP END S")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[restart] PP START S L")
+            .await
+            .status,
+        200
+    );
+    assert!(loaded_identity_attributes(&fixture.info().await).is_empty());
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_is_invalidated_by_failed_reload_and_transitions() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    let loading = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[bad-load] PP LOAD S //HARNESS/254/p/5")
+                .await
+        }
+    });
+    fixture.identify(1, &[0xff]).await;
+    assert_eq!(loading.await.unwrap().status, 502);
+    {
+        let model = fixture.service.model.lock().await;
+        let after = &model.sessions["S"];
+        assert_eq!(after.params, before.params);
+        assert_eq!(after.raw, before.raw);
+        assert_eq!(after.raw_unit, before.raw_unit);
+    }
+    assert_eq!(fixture.info().await.status, 408);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[db] PP LOAD S /db//HARNESS/254/p/5")
+            .await
+            .status,
+        200
+    );
+    assert!(loaded_identity_attributes(&fixture.info().await).is_empty());
+    assert_eq!(fixture.load().await.status, 200);
+    assert_eq!(
+        fixture
+            .service
+            .handle(
+                &mut fixture.owner,
+                "[missing-file] PP LOAD_FROM_FILE S missing.xml"
+            )
+            .await
+            .status,
+        408
+    );
+    assert_eq!(fixture.info().await.status, 408);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[new] PP NEW S KEYML5 2.1.00")
+            .await
+            .status,
+        200
+    );
+    assert!(loaded_identity_attributes(&fixture.info().await).is_empty());
+    assert_eq!(fixture.load().await.status, 200);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[other] PP SAVE S malformed")
+            .await
+            .status,
+        400
+    );
+    assert_eq!(fixture.info().await.status, 408);
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_retains_original_stamp_after_confirmed_same_source_save() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    let original_stamp = fixture.service.model.lock().await.sessions["S"]
+        .physical_load
+        .clone();
+    let original_attributes = loaded_identity_attributes(&fixture.info().await);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[set] PP SET S Indicator 0x56 0x78")
+            .await
+            .status,
+        200
+    );
+    let saving = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[save] PP SAVE_TO_SOURCE S")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\460500A420005678"), "{request:?}");
+    assert_eq!(
+        fixture.info().await.status,
+        408,
+        "SAVE in progress must not publish the preceding LOAD stamp"
+    );
+    database_pci_reply(&mut fixture.peer, 5, &[0x32, 0x20, 0x00]).await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x56, 0x78]).await;
+    assert_eq!(saving.await.unwrap().status, 200);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"].physical_load,
+        original_stamp
+    );
+    assert_eq!(
+        loaded_identity_attributes(&fixture.info().await),
+        original_attributes
+    );
+    let repeated = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[repeat] PP SAVE S //HARNESS/0254/P/005")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    assert_eq!(repeated.await.unwrap().status, 200);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"].physical_load,
+        original_stamp
+    );
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"]
+            .source
+            .as_deref(),
+        Some("//HARNESS/254/p/5")
+    );
+    assert_eq!(
+        loaded_identity_attributes(&fixture.info().await),
+        original_attributes
+    );
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(30),
+            database_pci_line(&mut fixture.peer)
+        )
+        .await
+        .is_err(),
+        "unchanged repeat SAVE must not STORE again"
+    );
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_save_to_other_unit_does_not_relabel_load_provenance() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[set] PP SET S Indicator 0x56 0x78")
+            .await
+            .status,
+        200
+    );
+    let saving = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[save-other] PP SAVE S //HARNESS/0254/P/006")
+                .await
+        }
+    });
+    fixture.identify_unit(6, 1, b"KEYML5").await;
+    fixture.identify_unit(6, 2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(
+        request.starts_with(b"\\4606001A2002"),
+        "B recall: {request:?}"
+    );
+    database_pci_reply(&mut fixture.peer, 6, &[0x83, 0x20, 0x9a, 0xbc]).await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(
+        request.starts_with(b"\\460600A420005678"),
+        "only B may receive STORE: {request:?}"
+    );
+    database_pci_reply(&mut fixture.peer, 6, &[0x32, 0x20, 0x00]).await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(
+        request.starts_with(b"\\4606001A2002"),
+        "B STORE readback: {request:?}"
+    );
+    database_pci_reply(&mut fixture.peer, 6, &[0x83, 0x20, 0x56, 0x78]).await;
+    assert_eq!(saving.await.unwrap().status, 200);
+    {
+        let model = fixture.service.model.lock().await;
+        assert_eq!(
+            model.sessions["S"].source.as_deref(),
+            Some("//HARNESS/254/p/6")
+        );
+        assert_eq!(
+            model.sessions["S"].physical_load,
+            PpPhysicalLoadState::Invalidated
+        );
+    }
+    assert_eq!(
+        fixture.info().await.status,
+        408,
+        "A's LOAD identity must not be advertised as a LOAD of B"
+    );
+    // An independent fresh LOAD of A proves its two-byte image stayed exact.
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[start-a] PP START VERIFY_A L")
+            .await
+            .status,
+        200
+    );
+    let verifying = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[verify-a] PP LOAD VERIFY_A //HARNESS/254/p/5")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(
+        request.starts_with(b"\\4605001A2002"),
+        "A fresh recall: {request:?}"
+    );
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    assert_eq!(verifying.await.unwrap().status, 200);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["VERIFY_A"].params["Indicator"],
+        "0x12 0x34"
+    );
+    assert_eq!(fixture.info().await.status, 408);
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(30),
+            database_pci_line(&mut fixture.peer)
+        )
+        .await
+        .is_err(),
+        "no additional STORE may be sent"
+    );
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_is_invalidated_by_lost_same_source_save_ack() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[set] PP SET S Indicator 0x56 0x78")
+            .await
+            .status,
+        200
+    );
+    let saving = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[save] PP SAVE_TO_SOURCE S")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\460500A420005678"), "{request:?}");
+    // STORE reached the peer; its acknowledgement is deliberately lost.
+    let (replacement, _remote) = tokio::io::duplex(1);
+    drop(std::mem::replace(
+        &mut fixture.peer,
+        BufReader::new(replacement),
+    ));
+    let failed = saving.await.unwrap();
+    assert_eq!(failed.status, 502, "{failed:?}");
+    assert_eq!(fixture.info().await.status, 408);
+    let model = fixture.service.model.lock().await;
+    let session = &model.sessions["S"];
+    assert_eq!(session.physical_load, PpPhysicalLoadState::Invalidated);
+    assert_eq!(session.params["Indicator"], "0x56 0x78");
+    assert!(session.dirty.contains("Indicator"));
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_rejects_reconnect_and_old_load_commit() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    assert_eq!(fixture.load().await.status, 200);
+    let (replacement, _remote) = pci();
+    fixture.service.set_pci(replacement).await;
+    assert_eq!(fixture.info().await.status, 408);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"].physical_load,
+        PpPhysicalLoadState::Invalidated
+    );
+
+    let mut fixture = LoadedIdentityFixture::new().await;
+    let loading = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[old-load] PP LOAD S //HARNESS/254/p/5")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+    let (replacement, _remote) = pci();
+    fixture.service.set_pci(replacement).await;
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    assert_eq!(loading.await.unwrap().status, 408);
+    assert_eq!(fixture.info().await.status, 408);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"].physical_load,
+        PpPhysicalLoadState::Invalidated
+    );
+}
+
+#[tokio::test]
+async fn physical_pp_info_identity_old_load_cannot_replace_new_session_state() {
+    let mut fixture = LoadedIdentityFixture::new().await;
+    let loading = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            service
+                .handle(&mut owner, "[old-load] PP LOAD S //HARNESS/254/p/5")
+                .await
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture.identify(2, b"2.1.00").await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"), "{request:?}");
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[new] PP NEW S KEYBL5 9.9.99")
+            .await
+            .status,
+        200
+    );
+    let replacement = fixture.service.model.lock().await.sessions["S"].clone();
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    assert_eq!(loading.await.unwrap().status, 409);
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"],
+        replacement
+    );
+    assert!(loaded_identity_attributes(&fixture.info().await).is_empty());
+}
+
 #[tokio::test]
 async fn pp_reset_to_defaults_is_spec_backed_staged_and_persisted_only_by_save() {
     let path = state_path();

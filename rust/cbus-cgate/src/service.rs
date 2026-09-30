@@ -827,6 +827,7 @@ pub struct Service {
     /// Replacement epoch for operations that build a live snapshot outside
     /// the model lock. A reconnect invalidates every in-flight snapshot.
     pci_generation: AtomicU64,
+    next_physical_pp_attempt: AtomicU64,
     /// Serializes PCI replacement with the final generation check and commit.
     pci_generation_gate: Mutex<()>,
     project: String,
@@ -2020,6 +2021,7 @@ impl Service {
             startup_projects,
             pci: RwLock::new(pci),
             pci_generation: AtomicU64::new(0),
+            next_physical_pp_attempt: AtomicU64::new(1),
             pci_generation_gate: Mutex::new(()),
             project,
             network,
@@ -2223,6 +2225,14 @@ impl Service {
         }
         let mut model = self.model.lock().await;
         if matches!(event, CBusEvent::ConnectionLost) {
+            for session in model.sessions.values_mut() {
+                if session.physical_load != PpPhysicalLoadState::NotPhysical {
+                    session.physical_load = PpPhysicalLoadState::Invalidated;
+                    session.physical_load_attempt = self
+                        .next_physical_pp_attempt
+                        .fetch_add(1, Ordering::Relaxed);
+                }
+            }
             if let Some(project) = model.projects.get_mut(&self.project) {
                 for network in project.networks.values_mut() {
                     network.levels.clear();
@@ -4125,6 +4135,48 @@ impl Service {
         }
         if verb == "DEPLOY_QUEUE" && sub == "RETRY" {
             return self.deploy_queue_retry(client, tag, &words).await;
+        }
+        // A replacement attempt must never leave the preceding physical
+        // identity available after an early validation or I/O failure.
+        if verb == "PP" && matches!(sub, "LOAD" | "NEW" | "LOAD_FROM_FILE" | "SAVE") {
+            if let Some(name) = words.get(2) {
+                let mut model = self.model.lock().await;
+                if let Some(session) = model.sessions.get_mut(*name) {
+                    if !client.sessions.contains(name) {
+                        return err(
+                            tag,
+                            420,
+                            "420 Programming object belongs to another connection",
+                        );
+                    }
+                    let physical_load = sub == "LOAD"
+                        && words
+                            .get(3)
+                            .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"));
+                    let replacement = matches!(sub, "LOAD" | "NEW" | "LOAD_FROM_FILE");
+                    let source_change = sub == "SAVE"
+                        && words
+                            .get(3)
+                            .is_some_and(|source| source.to_ascii_lowercase().starts_with("/db/"))
+                        && matches!(&session.physical_load, PpPhysicalLoadState::Loaded(identity)
+                            if words.get(3).is_some_and(|source| *source != identity.source));
+                    if physical_load
+                        || source_change
+                        || (replacement
+                            && session.physical_load != PpPhysicalLoadState::NotPhysical)
+                    {
+                        session.physical_load = PpPhysicalLoadState::Invalidated;
+                        session.physical_load_attempt = self
+                            .next_physical_pp_attempt
+                            .fetch_add(1, Ordering::Relaxed);
+                    }
+                }
+            }
+        }
+        if verb == "PP" && sub == "INFO" {
+            if let Some(response) = self.pp_info_loaded(client, line, tag, &words).await {
+                return response;
+            }
         }
         if verb == "PP" && sub == "PATCH_VERSION" {
             return self.pp_patch_version(tag, &words).await;
@@ -11972,6 +12024,60 @@ impl Service {
         ok(tag, progress, "200 OK")
     }
 
+    /// Expose immutable LOAD provenance only on the same connected PCI epoch.
+    /// The generation guard remains held while model INFO constructs its XML.
+    async fn pp_info_loaded(
+        &self,
+        client: &ClientState,
+        line: &str,
+        tag: &str,
+        words: &[&str],
+    ) -> Option<Response> {
+        let name = *words.get(2)?;
+        {
+            let model = self.model.lock().await;
+            let session = model.sessions.get(name)?;
+            if !client.sessions.contains(name) {
+                return Some(err(
+                    tag,
+                    420,
+                    "420 Programming object belongs to another connection",
+                ));
+            }
+            if session.physical_load == PpPhysicalLoadState::NotPhysical {
+                return None;
+            }
+        }
+        let (generation, pci) = self.current_pci_epoch().await;
+        let Some(_generation_guard) = self.pci_commit_guard(generation, &pci).await else {
+            return Some(err(
+                tag,
+                408,
+                "408 Physical PP loaded identity is invalidated; LOAD again",
+            ));
+        };
+        let mut model = self.model.lock().await;
+        let Some(session) = model.sessions.get_mut(name) else {
+            return Some(err(tag, 404, "404 Session not found"));
+        };
+        if !client.sessions.contains(name) {
+            return Some(err(
+                tag,
+                420,
+                "420 Programming object belongs to another connection",
+            ));
+        }
+        if matches!(&session.physical_load, PpPhysicalLoadState::Loaded(identity)
+            if identity.pci_generation != generation)
+        {
+            session.physical_load = PpPhysicalLoadState::Invalidated;
+            session.physical_load_attempt = self
+                .next_physical_pp_attempt
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        Some(model.handle(line))
+    }
+
     async fn pp_load_physical(
         &self,
         client: &ClientState,
@@ -12006,7 +12112,7 @@ impl Service {
                 }
             }
         };
-        let (session_name, session_lock) = {
+        let (session_name, session_lock, load_attempt) = {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -12037,7 +12143,11 @@ impl Service {
                     "409 Session lock does not cover the physical network",
                 );
             }
-            (session.name.clone(), session.lock.clone())
+            (
+                session.name.clone(),
+                session.lock.clone(),
+                session.physical_load_attempt,
+            )
         };
 
         let (pci_generation, pci) = self.current_pci_epoch().await;
@@ -12409,14 +12519,25 @@ impl Service {
                 "409 Programming session ended during physical load",
             );
         };
-        if session.lock != session_lock || !lock_held || !client.sessions.contains(&session_name) {
+        if session.lock != session_lock
+            || !lock_held
+            || !client.sessions.contains(&session_name)
+            || session.physical_load_attempt != load_attempt
+        {
             return err(
                 tag,
                 409,
                 "409 Programming session changed during physical load",
             );
         }
-        session.source = Some(words[3].to_string());
+        let source = format!("//{project}/{network}/p/{unit}");
+        session.physical_load = PpPhysicalLoadState::Loaded(PpLoadedPhysicalIdentity {
+            unit_type: unit_type.clone(),
+            firmware: firmware.clone(),
+            source: source.clone(),
+            pci_generation,
+        });
+        session.source = Some(source);
         session.unit_type = Some(unit_type);
         session.firmware = Some(firmware);
         session.catalog_number = None;
@@ -12468,6 +12589,50 @@ impl Service {
         if (save_to_source && words.len() < 3) || (!save_to_source && words.len() < 4) {
             return err(tag, 400, "400 PP SAVE requires a session and destination");
         }
+        // Validate captured LOAD provenance before clearing it. Even a
+        // same-source SAVE may stop after an uncertain write, so no later
+        // INFO may present the preceding LOAD as its resulting image.
+        let loaded_identity = {
+            let (generation, pci) = self.current_pci_epoch().await;
+            let guard = self.pci_commit_guard(generation, &pci).await;
+            let mut model = self.model.lock().await;
+            let Some(session) = model.sessions.get_mut(words[2]) else {
+                return err(tag, 404, "404 Session not found");
+            };
+            if !client.sessions.contains(words[2]) {
+                return err(
+                    tag,
+                    420,
+                    "420 Programming object belongs to another connection",
+                );
+            }
+            match &session.physical_load {
+                PpPhysicalLoadState::Invalidated => {
+                    return err(
+                        tag,
+                        408,
+                        "408 Physical PP loaded identity is invalidated; LOAD again",
+                    );
+                }
+                PpPhysicalLoadState::Loaded(identity) => {
+                    let identity = identity.clone();
+                    let current = guard.is_some() && identity.pci_generation == generation;
+                    session.physical_load = PpPhysicalLoadState::Invalidated;
+                    session.physical_load_attempt = self
+                        .next_physical_pp_attempt
+                        .fetch_add(1, Ordering::Relaxed);
+                    if !current {
+                        return err(
+                            tag,
+                            408,
+                            "408 Physical PP loaded identity is invalidated; LOAD again",
+                        );
+                    }
+                    Some((identity, session.physical_load_attempt))
+                }
+                PpPhysicalLoadState::NotPhysical => None,
+            }
+        };
         let (
             session_name,
             session_lock,
@@ -12524,6 +12689,7 @@ impl Service {
         if project != self.project {
             return err(tag, 404, "404 Network is not connected to this service");
         }
+        let target = format!("//{project}/{network}/p/{unit}");
         if self.addressed_network(&session_lock_address) != Some(network) {
             return err(
                 tag,
@@ -12621,6 +12787,17 @@ impl Service {
         }
         let requires_nvm_commit = spec_requires_nvm_commit;
         let (pci_generation, pci) = self.current_pci_epoch().await;
+        if loaded_identity
+            .as_ref()
+            .is_some_and(|loaded| loaded.0.pci_generation != pci_generation || !pci.is_connected())
+        {
+            return err(
+                tag,
+                408,
+                "408 Physical PP loaded identity is invalidated; LOAD again",
+            );
+        }
+
         let live_type = match if route.is_empty() {
             pci.identify_first(unit, 1).await
         } else {
@@ -13152,12 +13329,32 @@ impl Service {
                 "409 Programming session ended during physical save",
             );
         };
-        if session.lock != session_lock || !lock_held || !client.sessions.contains(&session_name) {
+        if session.lock != session_lock
+            || !lock_held
+            || !client.sessions.contains(&session_name)
+            || loaded_identity
+                .as_ref()
+                .is_some_and(|(_, attempt)| session.physical_load_attempt != *attempt)
+        {
             return err(
                 tag,
                 409,
                 "409 Programming session changed during physical save",
             );
+        }
+        // A confirmed same-source save may retain the original LOAD identity
+        // provenance. Never assign that stamp to a different destination, a
+        // replaced session, or an uncertain save result.
+        if let Some((identity, attempt)) = loaded_identity {
+            if session.physical_load_attempt == attempt
+                && identity.source == target
+                && session.physical_load == PpPhysicalLoadState::Invalidated
+                && session.source.as_deref() == Some(identity.source.as_str())
+                && session.unit_type.as_deref() == Some(identity.unit_type.as_str())
+                && session.firmware.as_deref() == Some(identity.firmware.as_str())
+            {
+                session.physical_load = PpPhysicalLoadState::Loaded(identity);
+            }
         }
         session.source = Some(target);
         session.dirty.retain(|name| !cleared.contains(name));

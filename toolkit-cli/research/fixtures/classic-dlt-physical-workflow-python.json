@@ -11,15 +11,14 @@
   "new_public_command": "cbus-toolkit cgate physical-pp dlt-indicators //TEST/254/p/5 --plan plan.json --journal journals/attempt.json",
   "proposed_loaded_identity_contract": "pp-info-loaded-identity-v1",
   "server_contract_design_confirmed": true,
-  "server_contract_confirmed": false,
-  "updated_binary_journey_verified": false,
-  "workflow_complete": false,
+  "server_contract_confirmed": true,
+  "updated_binary_journey_verified": true,
+  "workflow_complete": true,
   "python_checks": {
     "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:tests python -m pytest tests/test_dlt_physical_programming.py tests/test_physical_programming.py tests/test_cli_physical_programming.py tests/test_dlt_indicators.py tests/test_cli_dlt_indicators.py -q -p no:cacheprovider -k 'not native'",
     "exit_status": 0,
     "passed": 85,
     "subtests_passed": 52,
-    "native_deselected": 4,
     "admission": [
       "missing-duplicate-malformed-or-wrong-loaded-identity-refused-before-set",
       "exact-case-sensitive-type-and-firmware",
@@ -35,7 +34,12 @@
       "database-catalogue-drift-before-physical-load-refused",
       "unchanged-shared-field-rechecked-on-fresh-load",
       "one-byte-change-still-journals-both-complete-bytes"
-    ]
+    ],
+    "selection_qualification": "Historical 85-test selector incorrectly excluded three mock/offline tests by name; all three passed separately. Final acceptance uses the exact single native node exclusion.",
+    "additional_mock_tests_deselected_by_name": 3,
+    "original_reported_native_deselected": 4,
+    "deselected_by_name": 4,
+    "true_native_opt_in_deselected": 1
   },
   "real_transport_missing_contract_negative": {
     "test": "test_missing_loaded_identity_contract_real_cli_refuses_before_first_set",
@@ -66,10 +70,64 @@
     "expected_cli_exit_status": 1,
     "actual_cli_exit_status": 0,
     "actual_saved": true,
-    "disposition": "red-pending-central-rust-loaded-session-identity-and-rebuilt-binary"
+    "disposition": "historical red execution retained; exact wrong-firmware refusal passed against rebuilt cmqttd in the current source checkpoint"
   },
   "physical_hardware_accessed": false,
   "original_gui_executed": false,
   "power_cycle_persistence_verified": false,
-  "loaded_pci_generation_binding_verified": false
+  "loaded_pci_generation_binding_verified": false,
+  "workflow_completion_scope": "bounded KEYML5 2.1.00 / 5055DL Indicators software journey with owned independent scripted PCI; full issue36 and hardware acceptance remain open",
+  "current_source_interop_checkpoint": {
+    "report": "../../docs/feature-batch-2026-10-01-dlt-physical-workflow.md",
+    "cmqttd_binary_sha256": "abfe7a434d7f3850e78c16ecff002b4012273eba3ad75c5b64fe5571c4955c95",
+    "passed": 14,
+    "typed_dlt_cases": 11,
+    "generic_regressions": 3,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "first_edit": {
+      "project": "WFDLT",
+      "network": 254,
+      "unit": 4,
+      "controls": [
+        "page_fallback=yes",
+        "duration_seconds=5"
+      ],
+      "public_commands": 20,
+      "literal_before": "af8a",
+      "literal_after": "a58e",
+      "peer_memory_bytes_checked": 128,
+      "changed_addresses": [
+        51,
+        52
+      ],
+      "save_attempts": 1,
+      "recovery": "observed_expected; reads only"
+    },
+    "scope": "source checkpoint before final package JSON/docstring freeze; final source and isolated-wheel acceptance reported separately"
+  },
+  "final_acceptance": {
+    "receipt": "toolkit-cli/docs/acceptance/2026-10-01-dlt-physical-workflow/acceptance.json",
+    "source_and_installed_wheel_each": {
+      "unique_normal_cases": 102,
+      "focused": 88,
+      "typed_dlt_interop": 11,
+      "generic_interop": 3,
+      "subtests": 64,
+      "native_opt_ins_excluded": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "publication_checks_per_environment": {
+      "unique_normal_cases": 126,
+      "subtests": 545,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "cmqttd_sha256": "abfe7a434d7f3850e78c16ecff002b4012273eba3ad75c5b64fe5571c4955c95",
+    "wheel_sha256": "25a11ff4673e1a209f86989bec7aead03403c3f9ae90a8c98e6e9aa9c7cba404"
+  }
 }

@@ -1,0 +1,669 @@
+{
+  "data": {
+    "profile": {
+      "project": "WFDLT",
+      "network": 254,
+      "unit": 4
+    },
+    "operations": [
+      {
+        "control": "page_fallback",
+        "value": true
+      },
+      {
+        "control": "duration_seconds",
+        "value": 5
+      }
+    ],
+    "literal_before": "af8a",
+    "literal_after": "a58e",
+    "all_other_parameters_and_metadata_preserved": true,
+    "full_128_byte_memory_preserved_except_two_indicator_bytes": true,
+    "project_save_close_load_verified": true,
+    "result": {
+      "format": "cbus-physical-pp-apply-v1",
+      "operation_id": "1ce438a266db",
+      "phase": "complete",
+      "source": "//WFDLT/254/p/4",
+      "destination": "//WFDLT/254/p/4",
+      "lock_address": "//WFDLT/254",
+      "method": "direct",
+      "edits": [
+        {
+          "parameter": "TimerDuration",
+          "requested_value": "5"
+        },
+        {
+          "parameter": "IndicatorPressedLevel",
+          "requested_value": "10"
+        },
+        {
+          "parameter": "EnableNightlight",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "DisableTimerFlash",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "EnablePageFallback",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "EnableIndicatorPressedLevel",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "FirstKeyThrowAway",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightOnUserKeys",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightOnToggleKey",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightControl",
+          "requested_value": "1"
+        }
+      ],
+      "capabilities": {
+        "service": "cmqttd",
+        "physical_pp_load": true,
+        "physical_pp_save": true,
+        "physical_pp_routed_load": true,
+        "physical_pp_routed_save": true,
+        "physical_pp_routed_methods": [
+          "dali",
+          "direct",
+          "edlt",
+          "giu",
+          "goc",
+          "goc2",
+          "gocbyt",
+          "ncc",
+          "paged",
+          "sgiu"
+        ],
+        "physical_pp_routed_save_protection": [
+          "none",
+          "checksum",
+          "lock"
+        ],
+        "physical_pp_routed_lock_methods": [
+          "direct",
+          "ncc",
+          "paged"
+        ],
+        "physical_pp_routed_unsupported_methods": [],
+        "physical_pp_routed_lock": true,
+        "physical_pp_routed_nvm_commit": true,
+        "physical_pp_routed_delivery_semantics": "reply-network-unit-parameter-tag-correlated-exactly-once-no-replay",
+        "physical_pp_routed_state_scope": "owned-session-target-network",
+        "pci_generation": 0,
+        "pci_connected": true,
+        "programming_lane_state": "ready"
+      },
+      "native_save_operation": "PP SAVE_TO_SOURCE",
+      "automatic_write_retries": 0,
+      "save_attempts": 1,
+      "save_attempted": true,
+      "saved": true,
+      "save_outcome_uncertain": false,
+      "staged_readback_verified": true,
+      "fresh_physical_readback_verified": true,
+      "power_cycle_persistence_verified": false,
+      "original_toolkit_workflow_executed": false,
+      "hardware_method_matrix_accepted": false,
+      "dry_run": false,
+      "typed_validation": {
+        "loaded": {
+          "phase": "loaded",
+          "raw_hex": "af8a",
+          "all_fields_verified": true,
+          "loaded_identity": {
+            "UnitType": "KEYML5",
+            "FirmwareVersion": "2.1.00",
+            "Source": "//WFDLT/254/p/4"
+          },
+          "observed_pci_generation": 0
+        },
+        "staged": {
+          "phase": "staged",
+          "raw_hex": "a58e",
+          "all_fields_verified": true,
+          "loaded_identity": {
+            "UnitType": "KEYML5",
+            "FirmwareVersion": "2.1.00",
+            "Source": "//WFDLT/254/p/4"
+          },
+          "observed_pci_generation": 0
+        },
+        "fresh": {
+          "phase": "fresh",
+          "raw_hex": "a58e",
+          "all_fields_verified": true,
+          "loaded_identity": {
+            "UnitType": "KEYML5",
+            "FirmwareVersion": "2.1.00",
+            "Source": "//WFDLT/254/p/4"
+          },
+          "observed_pci_generation": 0
+        }
+      },
+      "parameters": [
+        {
+          "name": "TimerDuration",
+          "type": "int",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "51",
+          "tags": []
+        },
+        {
+          "name": "IndicatorPressedLevel",
+          "type": "int",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "51",
+          "tags": []
+        },
+        {
+          "name": "EnableNightlight",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "DisableTimerFlash",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "EnablePageFallback",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "EnableIndicatorPressedLevel",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "FirstKeyThrowAway",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "EnableNightlightOnUserKeys",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "EnableNightlightOnToggleKey",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        },
+        {
+          "name": "EnableNightlightControl",
+          "type": "bit",
+          "array_size": 1,
+          "program_method": "direct",
+          "protection": "none",
+          "address": "52",
+          "tags": []
+        }
+      ],
+      "before": {
+        "TimerDuration": "0xF",
+        "IndicatorPressedLevel": "0xA",
+        "EnableNightlight": "0x0",
+        "DisableTimerFlash": "0x1",
+        "EnablePageFallback": "0x0",
+        "EnableIndicatorPressedLevel": "0x1",
+        "FirstKeyThrowAway": "0x0",
+        "EnableNightlightOnUserKeys": "0x0",
+        "EnableNightlightOnToggleKey": "0x0",
+        "EnableNightlightControl": "0x1"
+      },
+      "staged": {
+        "TimerDuration": "5",
+        "IndicatorPressedLevel": "10",
+        "EnableNightlight": "0",
+        "DisableTimerFlash": "1",
+        "EnablePageFallback": "1",
+        "EnableIndicatorPressedLevel": "1",
+        "FirstKeyThrowAway": "0",
+        "EnableNightlightOnUserKeys": "0",
+        "EnableNightlightOnToggleKey": "0",
+        "EnableNightlightControl": "1"
+      },
+      "journal": {
+        "path": "${CBUS_CASE_DIR}/first-edit-attempt.json",
+        "attempt_id": "sha256:3d06ad561fdcb43f3c007d37af364ab11c65cf61360433bcf9c7a033e46f69b0",
+        "phase": "complete",
+        "ranges": 10,
+        "write_planned_ranges": 10
+      },
+      "verified": {
+        "TimerDuration": "0x5",
+        "IndicatorPressedLevel": "0xA",
+        "EnableNightlight": "0x0",
+        "DisableTimerFlash": "0x1",
+        "EnablePageFallback": "0x1",
+        "EnableIndicatorPressedLevel": "0x1",
+        "FirstKeyThrowAway": "0x0",
+        "EnableNightlightOnUserKeys": "0x0",
+        "EnableNightlightOnToggleKey": "0x0",
+        "EnableNightlightControl": "0x1"
+      },
+      "complete": true,
+      "fresh_physical_readback_performed": true,
+      "physical_readback_scope": "fresh-pp-load-after-confirmed-save",
+      "verification_comparison": "native-schema-type-aware",
+      "dlt_indicators_evidence": {
+        "format": "cbus-dlt-indicators-physical-v1",
+        "source": "//WFDLT/254/p/4",
+        "database_source": "/db//WFDLT/254/p/4",
+        "plan": {
+          "format": "cbus-classic-dlt-indicator-plan-v1",
+          "unit_type": "KEYML5",
+          "firmware": "2.1.00",
+          "catalog_number": "5055DL",
+          "expected": {
+            "TimerDuration": [
+              15
+            ],
+            "IndicatorPressedLevel": [
+              10
+            ],
+            "EnableNightlight": [
+              0
+            ],
+            "DisableTimerFlash": [
+              1
+            ],
+            "EnablePageFallback": [
+              0
+            ],
+            "EnableIndicatorPressedLevel": [
+              1
+            ],
+            "FirstKeyThrowAway": [
+              0
+            ],
+            "EnableNightlightOnUserKeys": [
+              0
+            ],
+            "EnableNightlightOnToggleKey": [
+              0
+            ],
+            "EnableNightlightControl": [
+              1
+            ]
+          },
+          "changes": {
+            "TimerDuration": [
+              5
+            ],
+            "EnablePageFallback": [
+              1
+            ]
+          },
+          "requested": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 5
+            }
+          ],
+          "loaded": {
+            "page_fallback": false,
+            "pressed_enabled": true,
+            "duration_seconds": 15,
+            "pressed_level": 10,
+            "nightlight_keys": false,
+            "nightlight_toggle": false,
+            "first_key_throwaway": false,
+            "duration_selected_seconds": 15
+          },
+          "before": {
+            "page_fallback": false,
+            "pressed_enabled": true,
+            "duration_seconds": 15,
+            "pressed_level": 10,
+            "nightlight_keys": false,
+            "nightlight_toggle": false,
+            "first_key_throwaway": false,
+            "duration_selected_seconds": 15
+          },
+          "after": {
+            "page_fallback": true,
+            "pressed_enabled": true,
+            "duration_seconds": 5,
+            "pressed_level": 10,
+            "nightlight_keys": false,
+            "nightlight_toggle": false,
+            "first_key_throwaway": false,
+            "duration_selected_seconds": 5
+          },
+          "initialization_changes": {},
+          "save_normalizations": {},
+          "enabled_before": {
+            "page_fallback": true,
+            "pressed_enabled": true,
+            "duration_seconds": true,
+            "pressed_level": true,
+            "nightlight_keys": true,
+            "nightlight_toggle": true,
+            "first_key_throwaway": false
+          },
+          "enabled_after": {
+            "page_fallback": true,
+            "pressed_enabled": true,
+            "duration_seconds": true,
+            "pressed_level": true,
+            "nightlight_keys": true,
+            "nightlight_toggle": true,
+            "first_key_throwaway": false
+          },
+          "steps": [
+            {
+              "index": 1,
+              "control": "page_fallback",
+              "value": true,
+              "before": {
+                "page_fallback": false,
+                "pressed_enabled": true,
+                "duration_seconds": 15,
+                "pressed_level": 10,
+                "nightlight_keys": false,
+                "nightlight_toggle": false,
+                "first_key_throwaway": false,
+                "duration_selected_seconds": 15
+              },
+              "after": {
+                "page_fallback": true,
+                "pressed_enabled": true,
+                "duration_seconds": 15,
+                "pressed_level": 10,
+                "nightlight_keys": false,
+                "nightlight_toggle": false,
+                "first_key_throwaway": false,
+                "duration_selected_seconds": 15
+              },
+              "enabled_after": {
+                "page_fallback": true,
+                "pressed_enabled": true,
+                "duration_seconds": true,
+                "pressed_level": true,
+                "nightlight_keys": true,
+                "nightlight_toggle": true,
+                "first_key_throwaway": false
+              }
+            },
+            {
+              "index": 2,
+              "control": "duration_seconds",
+              "value": 5,
+              "before": {
+                "page_fallback": true,
+                "pressed_enabled": true,
+                "duration_seconds": 15,
+                "pressed_level": 10,
+                "nightlight_keys": false,
+                "nightlight_toggle": false,
+                "first_key_throwaway": false,
+                "duration_selected_seconds": 15
+              },
+              "after": {
+                "page_fallback": true,
+                "pressed_enabled": true,
+                "duration_seconds": 5,
+                "pressed_level": 10,
+                "nightlight_keys": false,
+                "nightlight_toggle": false,
+                "first_key_throwaway": false,
+                "duration_selected_seconds": 5
+              },
+              "enabled_after": {
+                "page_fallback": true,
+                "pressed_enabled": true,
+                "duration_seconds": true,
+                "pressed_level": true,
+                "nightlight_keys": true,
+                "nightlight_toggle": true,
+                "first_key_throwaway": false
+              }
+            }
+          ],
+          "raw_preview": [
+            {
+              "address": 51,
+              "before": 175,
+              "after": 165,
+              "changed_mask": 10,
+              "owned_mask": 255
+            },
+            {
+              "address": 52,
+              "before": 138,
+              "after": 142,
+              "changed_mask": 4,
+              "owned_mask": 125
+            }
+          ],
+          "saved": false,
+          "device_verified": false,
+          "labels_transferred": false,
+          "raw_verification_scope": "staged-pp-session-before-save",
+          "original_full_form_save_executed": false
+        },
+        "database_edited_state_verified": true,
+        "physical_original_baseline_verified": true,
+        "unchanged_indicator_fields_verified": true,
+        "complete_indicator_bytes_verified": true,
+        "profile_verification": "database-catalogue-and-physical-loaded-session-identity",
+        "loaded_identity_contract": "pp-info-loaded-identity-v1",
+        "physical_loaded_identity_verified": true,
+        "fresh_physical_identity_verified": true,
+        "catalogue_verification_scope": "saved-project-database",
+        "loaded_pci_generation_binding_verified": false,
+        "physical_serial_verified": false,
+        "project_disk_persistence_verified": false,
+        "display_behavior_verified": false,
+        "database_raw_hex": "a58e"
+      }
+    },
+    "recovery": {
+      "format": "cbus-physical-pp-recovery-v1",
+      "operation_id": "4e34196772c6",
+      "journal": "${CBUS_CASE_DIR}/first-edit-attempt.json",
+      "attempt_id": "sha256:3d06ad561fdcb43f3c007d37af364ab11c65cf61360433bcf9c7a033e46f69b0",
+      "journal_phase": "complete",
+      "journal_nvm_commit": "not-required",
+      "destination": "//WFDLT/254/p/4",
+      "method": "direct",
+      "read_only": true,
+      "save_attempted": false,
+      "automatic_write_retries": 0,
+      "recorded_pci_generation": 0,
+      "fresh_pci_generation": 0,
+      "nvm_commit_observed": false,
+      "power_cycle_persistence_verified": false,
+      "ranges": [
+        {
+          "index": 0,
+          "parameter": "TimerDuration",
+          "logical_address": 51,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "classification": "expected"
+        },
+        {
+          "index": 1,
+          "parameter": "IndicatorPressedLevel",
+          "logical_address": 51,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "classification": "expected"
+        },
+        {
+          "index": 2,
+          "parameter": "EnableNightlight",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 3,
+          "parameter": "DisableTimerFlash",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 4,
+          "parameter": "EnablePageFallback",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 5,
+          "parameter": "EnableIndicatorPressedLevel",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 6,
+          "parameter": "FirstKeyThrowAway",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 7,
+          "parameter": "EnableNightlightOnUserKeys",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 8,
+          "parameter": "EnableNightlightOnToggleKey",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        },
+        {
+          "index": 9,
+          "parameter": "EnableNightlightControl",
+          "logical_address": 52,
+          "length": 1,
+          "write_planned": true,
+          "journaled_store_state": "confirmed",
+          "fresh_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "classification": "expected"
+        }
+      ],
+      "errors": [],
+      "outcome": "observed_expected",
+      "conclusive": true,
+      "nvm_commit_uncertain": false,
+      "resolved": true,
+      "resolution": {
+        "at": "2026-09-30T20:04:09.303+00:00",
+        "by": "apply",
+        "outcome": "complete"
+      }
+    }
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "22e97f9dc5272b9dfd4741453de877cb38281f4e96def8640598d1ba756da775",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/result/journal/path",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/recovery/journal",
+        "roles": [
+          "first_edit_case_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

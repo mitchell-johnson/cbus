@@ -1,0 +1,508 @@
+{
+  "data": {
+    "requests": [
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "h",
+        "time": 133734.142227
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "i",
+        "time": 133734.175926791
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.209120958
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.242341291
+      },
+      {
+        "wire_hex": "4604001A3E015D",
+        "cal_hex": "1A3E01",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.312760416
+      },
+      {
+        "wire_hex": "4604001A500943",
+        "cal_hex": "1A5009",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.346047958
+      },
+      {
+        "wire_hex": "4604001A600834",
+        "cal_hex": "1A6008",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.414813375
+      },
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "j",
+        "time": 133734.634319
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "k",
+        "time": 133734.667527708
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.699686875
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.731009
+      },
+      {
+        "wire_hex": "4604001A3E015D",
+        "cal_hex": "1A3E01",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.802691541
+      },
+      {
+        "wire_hex": "4604001A500943",
+        "cal_hex": "1A5009",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.832859708
+      },
+      {
+        "wire_hex": "4604001A600834",
+        "cal_hex": "1A6008",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.904484583
+      },
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "l",
+        "time": 133734.935993166
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "m",
+        "time": 133734.966751666
+      },
+      {
+        "wire_hex": "4604001A330267",
+        "cal_hex": "1A3302",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133734.9999615
+      },
+      {
+        "wire_hex": "460400A33300A53B",
+        "cal_hex": "A33300A5",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.0323835
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.102590833
+      },
+      {
+        "wire_hex": "460400A33300A53B",
+        "cal_hex": "A33300A5",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.135752125
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.205151125
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.237849416
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.309077125
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.33908275
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.411047333
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.441209166
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.513204083
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.54462875
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.616853041
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.648014791
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.720114458
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.750546916
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.823664416
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.855619583
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.926808208
+      },
+      {
+        "wire_hex": "460400A334008E51",
+        "cal_hex": "A334008E",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133735.959015666
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.029192666
+      },
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "n",
+        "time": 133736.061168875
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "o",
+        "time": 133736.094360125
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.1273835
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.160255625
+      },
+      {
+        "wire_hex": "4604001A3E015D",
+        "cal_hex": "1A3E01",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.230291625
+      },
+      {
+        "wire_hex": "4604001A500943",
+        "cal_hex": "1A5009",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.263134208
+      },
+      {
+        "wire_hex": "4604001A600834",
+        "cal_hex": "1A6008",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.333283041
+      },
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "p",
+        "time": 133736.538381708
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "q",
+        "time": 133736.570703166
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.602014208
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.632476666
+      },
+      {
+        "wire_hex": "4604001A3E015D",
+        "cal_hex": "1A3E01",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.663875708
+      },
+      {
+        "wire_hex": "4604001A500943",
+        "cal_hex": "1A5009",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.703983208
+      },
+      {
+        "wire_hex": "4604001A600834",
+        "cal_hex": "1A6008",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133736.735817708
+      },
+      {
+        "wire_hex": "460400210194",
+        "cal_hex": "2101",
+        "envelope": "direct",
+        "confirmation": "r",
+        "time": 133736.943049416
+      },
+      {
+        "wire_hex": "460400210293",
+        "cal_hex": "2102",
+        "envelope": "direct",
+        "confirmation": "s",
+        "time": 133736.973500583
+      },
+      {
+        "wire_hex": "4604001A330168",
+        "cal_hex": "1A3301",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133737.0048915
+      },
+      {
+        "wire_hex": "4604001A340167",
+        "cal_hex": "1A3401",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133737.037804833
+      },
+      {
+        "wire_hex": "4604001A3E015D",
+        "cal_hex": "1A3E01",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133737.068420708
+      },
+      {
+        "wire_hex": "4604001A500943",
+        "cal_hex": "1A5009",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133737.107506458
+      },
+      {
+        "wire_hex": "4604001A600834",
+        "cal_hex": "1A6008",
+        "envelope": "direct",
+        "confirmation": null,
+        "time": 133737.140420375
+      }
+    ],
+    "stores": [
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 51,
+        "data": "a5",
+        "giu_running": true,
+        "time": 133735.032425291
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 51,
+        "data": "a5",
+        "giu_running": true,
+        "time": 133735.135762583
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.237893458
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.339097041
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.441221416
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.544640375
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.648025791
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.750558708
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.855639
+      },
+      {
+        "method": "direct",
+        "tag": 0,
+        "address": 52,
+        "data": "8e",
+        "giu_running": true,
+        "time": 133735.959026625
+      }
+    ],
+    "unlocks": [],
+    "nvm": [],
+    "noise_frames": 174
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "6a2ef72cab512717ce752fac8040e1a603290fbe70afa02d1b6effc83b478c68",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

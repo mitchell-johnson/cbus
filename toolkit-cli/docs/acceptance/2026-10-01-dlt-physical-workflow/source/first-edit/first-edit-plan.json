@@ -1,0 +1,210 @@
+{
+  "data": {
+    "format": "cbus-classic-dlt-indicator-plan-v1",
+    "unit_type": "KEYML5",
+    "firmware": "2.1.00",
+    "catalog_number": "5055DL",
+    "expected": {
+      "TimerDuration": [
+        15
+      ],
+      "IndicatorPressedLevel": [
+        10
+      ],
+      "EnableNightlight": [
+        0
+      ],
+      "DisableTimerFlash": [
+        1
+      ],
+      "EnablePageFallback": [
+        0
+      ],
+      "EnableIndicatorPressedLevel": [
+        1
+      ],
+      "FirstKeyThrowAway": [
+        0
+      ],
+      "EnableNightlightOnUserKeys": [
+        0
+      ],
+      "EnableNightlightOnToggleKey": [
+        0
+      ],
+      "EnableNightlightControl": [
+        1
+      ]
+    },
+    "changes": {
+      "TimerDuration": [
+        5
+      ],
+      "EnablePageFallback": [
+        1
+      ]
+    },
+    "requested": [
+      {
+        "control": "page_fallback",
+        "value": true
+      },
+      {
+        "control": "duration_seconds",
+        "value": 5
+      }
+    ],
+    "loaded": {
+      "page_fallback": false,
+      "pressed_enabled": true,
+      "duration_seconds": 15,
+      "pressed_level": 10,
+      "nightlight_keys": false,
+      "nightlight_toggle": false,
+      "first_key_throwaway": false,
+      "duration_selected_seconds": 15
+    },
+    "before": {
+      "page_fallback": false,
+      "pressed_enabled": true,
+      "duration_seconds": 15,
+      "pressed_level": 10,
+      "nightlight_keys": false,
+      "nightlight_toggle": false,
+      "first_key_throwaway": false,
+      "duration_selected_seconds": 15
+    },
+    "after": {
+      "page_fallback": true,
+      "pressed_enabled": true,
+      "duration_seconds": 5,
+      "pressed_level": 10,
+      "nightlight_keys": false,
+      "nightlight_toggle": false,
+      "first_key_throwaway": false,
+      "duration_selected_seconds": 5
+    },
+    "initialization_changes": {},
+    "save_normalizations": {},
+    "enabled_before": {
+      "page_fallback": true,
+      "pressed_enabled": true,
+      "duration_seconds": true,
+      "pressed_level": true,
+      "nightlight_keys": true,
+      "nightlight_toggle": true,
+      "first_key_throwaway": false
+    },
+    "enabled_after": {
+      "page_fallback": true,
+      "pressed_enabled": true,
+      "duration_seconds": true,
+      "pressed_level": true,
+      "nightlight_keys": true,
+      "nightlight_toggle": true,
+      "first_key_throwaway": false
+    },
+    "steps": [
+      {
+        "index": 1,
+        "control": "page_fallback",
+        "value": true,
+        "before": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 10,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false,
+          "duration_selected_seconds": 15
+        },
+        "after": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 10,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false,
+          "duration_selected_seconds": 15
+        },
+        "enabled_after": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      {
+        "index": 2,
+        "control": "duration_seconds",
+        "value": 5,
+        "before": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 10,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false,
+          "duration_selected_seconds": 15
+        },
+        "after": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 5,
+          "pressed_level": 10,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false,
+          "duration_selected_seconds": 5
+        },
+        "enabled_after": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      }
+    ],
+    "raw_preview": [
+      {
+        "address": 51,
+        "before": 175,
+        "after": 165,
+        "changed_mask": 10,
+        "owned_mask": 255
+      },
+      {
+        "address": 52,
+        "before": 138,
+        "after": 142,
+        "changed_mask": 4,
+        "owned_mask": 125
+      }
+    ],
+    "saved": false,
+    "device_verified": false,
+    "labels_transferred": false,
+    "raw_verification_scope": "staged-pp-session-before-save",
+    "original_full_form_save_executed": false
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "9a2ae6be14a7548082ee2f2c4fb9e99f4b80e68a0ada1894766dacf4a49a65be",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}

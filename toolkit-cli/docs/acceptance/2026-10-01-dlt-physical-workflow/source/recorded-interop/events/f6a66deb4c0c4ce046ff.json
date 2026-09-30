@@ -1,0 +1,398 @@
+{
+  "data": [
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//TEST/254",
+        "--source",
+        "/db//TEST/254/p/5",
+        "export",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/before.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"file\": \"${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/before.json\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "dlt",
+        "--spec-dir",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/specs",
+        "indicators",
+        "plan",
+        "--file",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/before.json",
+        "--indicator-control",
+        "page_fallback=yes",
+        "--indicator-control",
+        "duration_seconds=5",
+        "--indicator-control",
+        "pressed_level=12",
+        "--indicator-control",
+        "nightlight_keys=yes",
+        "--indicator-control",
+        "first_key_throwaway=yes"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n  \"unit_type\": \"KEYML5\",\n  \"firmware\": \"2.1.00\",\n  \"catalog_number\": \"5055DL\",\n  \"expected\": {\n    \"TimerDuration\": [\n      15\n    ],\n    \"IndicatorPressedLevel\": [\n      10\n    ],\n    \"EnableNightlight\": [\n      0\n    ],\n    \"DisableTimerFlash\": [\n      1\n    ],\n    \"EnablePageFallback\": [\n      1\n    ],\n    \"EnableIndicatorPressedLevel\": [\n      1\n    ],\n    \"FirstKeyThrowAway\": [\n      0\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      0\n    ],\n    \"EnableNightlightOnToggleKey\": [\n      0\n    ],\n    \"EnableNightlightControl\": [\n      1\n    ]\n  },\n  \"changes\": {\n    \"TimerDuration\": [\n      5\n    ],\n    \"IndicatorPressedLevel\": [\n      12\n    ],\n    \"FirstKeyThrowAway\": [\n      1\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      1\n    ]\n  },\n  \"requested\": [\n    {\n      \"control\": \"page_fallback\",\n      \"value\": true\n    },\n    {\n      \"control\": \"duration_seconds\",\n      \"value\": 5\n    },\n    {\n      \"control\": \"pressed_level\",\n      \"value\": 12\n    },\n    {\n      \"control\": \"nightlight_keys\",\n      \"value\": true\n    },\n    {\n      \"control\": \"first_key_throwaway\",\n      \"value\": true\n    }\n  ],\n  \"loaded\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 5,\n    \"pressed_level\": 12,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": true,\n    \"duration_selected_seconds\": 5\n  },\n  \"initialization_changes\": {},\n  \"save_normalizations\": {},\n  \"enabled_before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"enabled_after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": true\n  },\n  \"steps\": [\n    {\n      \"index\": 1,\n      \"control\": \"page_fallback\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 2,\n      \"control\": \"duration_seconds\",\n      \"value\": 5,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 3,\n      \"control\": \"pressed_level\",\n      \"value\": 12,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 4,\n      \"control\": \"nightlight_keys\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": true\n      }\n    },\n    {\n      \"index\": 5,\n      \"control\": \"first_key_throwaway\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": true,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": true\n      }\n    }\n  ],\n  \"raw_preview\": [\n    {\n      \"address\": 51,\n      \"before\": 175,\n      \"after\": 197,\n      \"changed_mask\": 106,\n      \"owned_mask\": 255\n    },\n    {\n      \"address\": 52,\n      \"before\": 142,\n      \"after\": 190,\n      \"changed_mask\": 48,\n      \"owned_mask\": 125\n    }\n  ],\n  \"saved\": false,\n  \"device_verified\": false,\n  \"labels_transferred\": false,\n  \"raw_verification_scope\": \"staged-pp-session-before-save\",\n  \"original_full_form_save_executed\": false\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//TEST/254",
+        "--source",
+        "/db//TEST/254/p/5",
+        "dlt-labels",
+        "--spec-dir",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/specs",
+        "--plan",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/plan.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"format\": \"cbus-classic-dlt-indicator-plan-v1\",\n  \"unit_type\": \"KEYML5\",\n  \"firmware\": \"2.1.00\",\n  \"catalog_number\": \"5055DL\",\n  \"expected\": {\n    \"TimerDuration\": [\n      15\n    ],\n    \"IndicatorPressedLevel\": [\n      10\n    ],\n    \"EnableNightlight\": [\n      0\n    ],\n    \"DisableTimerFlash\": [\n      1\n    ],\n    \"EnablePageFallback\": [\n      1\n    ],\n    \"EnableIndicatorPressedLevel\": [\n      1\n    ],\n    \"FirstKeyThrowAway\": [\n      0\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      0\n    ],\n    \"EnableNightlightOnToggleKey\": [\n      0\n    ],\n    \"EnableNightlightControl\": [\n      1\n    ]\n  },\n  \"changes\": {\n    \"TimerDuration\": [\n      5\n    ],\n    \"IndicatorPressedLevel\": [\n      12\n    ],\n    \"FirstKeyThrowAway\": [\n      1\n    ],\n    \"EnableNightlightOnUserKeys\": [\n      1\n    ]\n  },\n  \"requested\": [\n    {\n      \"control\": \"page_fallback\",\n      \"value\": true\n    },\n    {\n      \"control\": \"duration_seconds\",\n      \"value\": 5\n    },\n    {\n      \"control\": \"pressed_level\",\n      \"value\": 12\n    },\n    {\n      \"control\": \"nightlight_keys\",\n      \"value\": true\n    },\n    {\n      \"control\": \"first_key_throwaway\",\n      \"value\": true\n    }\n  ],\n  \"loaded\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 15,\n    \"pressed_level\": 10,\n    \"nightlight_keys\": false,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": false,\n    \"duration_selected_seconds\": 15\n  },\n  \"after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": 5,\n    \"pressed_level\": 12,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": false,\n    \"first_key_throwaway\": true,\n    \"duration_selected_seconds\": 5\n  },\n  \"initialization_changes\": {},\n  \"save_normalizations\": {},\n  \"enabled_before\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": false\n  },\n  \"enabled_after\": {\n    \"page_fallback\": true,\n    \"pressed_enabled\": true,\n    \"duration_seconds\": true,\n    \"pressed_level\": true,\n    \"nightlight_keys\": true,\n    \"nightlight_toggle\": true,\n    \"first_key_throwaway\": true\n  },\n  \"steps\": [\n    {\n      \"index\": 1,\n      \"control\": \"page_fallback\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 2,\n      \"control\": \"duration_seconds\",\n      \"value\": 5,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 15,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 15\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 3,\n      \"control\": \"pressed_level\",\n      \"value\": 12,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 10,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": false\n      }\n    },\n    {\n      \"index\": 4,\n      \"control\": \"nightlight_keys\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": false,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": true\n      }\n    },\n    {\n      \"index\": 5,\n      \"control\": \"first_key_throwaway\",\n      \"value\": true,\n      \"before\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": false,\n        \"duration_selected_seconds\": 5\n      },\n      \"after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": 5,\n        \"pressed_level\": 12,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": false,\n        \"first_key_throwaway\": true,\n        \"duration_selected_seconds\": 5\n      },\n      \"enabled_after\": {\n        \"page_fallback\": true,\n        \"pressed_enabled\": true,\n        \"duration_seconds\": true,\n        \"pressed_level\": true,\n        \"nightlight_keys\": true,\n        \"nightlight_toggle\": true,\n        \"first_key_throwaway\": true\n      }\n    }\n  ],\n  \"raw_preview\": [\n    {\n      \"address\": 51,\n      \"before\": 175,\n      \"after\": 197,\n      \"changed_mask\": 106,\n      \"owned_mask\": 255\n    },\n    {\n      \"address\": 52,\n      \"before\": 142,\n      \"after\": 190,\n      \"changed_mask\": 48,\n      \"owned_mask\": 125\n    }\n  ],\n  \"saved\": true,\n  \"device_verified\": false,\n  \"labels_transferred\": false,\n  \"raw_verification_scope\": \"staged-pp-session-before-save\",\n  \"original_full_form_save_executed\": false,\n  \"verified\": true,\n  \"raw_bytes_verified\": true,\n  \"raw_before_hex\": \"af8e\",\n  \"raw_after_hex\": \"c5be\",\n  \"parameters\": {\n    \"DisableTimerFlash\": \"1\",\n    \"EnableDynamicLabels\": \"1\",\n    \"EnableIndicatorPressedLevel\": \"1\",\n    \"EnableNightlight\": \"0\",\n    \"EnableNightlightControl\": \"1\",\n    \"EnableNightlightOnToggleKey\": \"0\",\n    \"EnableNightlightOnUserKeys\": \"1\",\n    \"EnablePageFallback\": \"1\",\n    \"EnableSceneToggle\": \"0\",\n    \"FirstKeyThrowAway\": \"1\",\n    \"GroupAddress\": \"255 255 255 255 255 255 255 255 255\",\n    \"IndicatorBlockAssignment\": \"0 1 2 3 4 5 6 7\",\n    \"IndicatorFunction\": \"2 2 2 2 2 2 2 2\",\n    \"IndicatorPressedLevel\": \"12\",\n    \"LabelFlavourLSB\": \"0 0 0 0 0 0 0 0\",\n    \"LabelFlavourMSB\": \"0 0 0 0 0 0 0 0\",\n    \"SceneKeySelector\": \"0 0 0 0 0 0 0 0\",\n    \"TimerDuration\": \"5\"\n  },\n  \"destination\": \"/db//TEST/254/p/5\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//TEST/254",
+        "--source",
+        "/db//TEST/254/p/5",
+        "show"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"DisableTimerFlash\": \"1\",\n  \"EnableDynamicLabels\": \"1\",\n  \"EnableIndicatorPressedLevel\": \"1\",\n  \"EnableNightlight\": \"0\",\n  \"EnableNightlightControl\": \"1\",\n  \"EnableNightlightOnToggleKey\": \"0\",\n  \"EnableNightlightOnUserKeys\": \"1\",\n  \"EnablePageFallback\": \"1\",\n  \"EnableSceneToggle\": \"0\",\n  \"FirstKeyThrowAway\": \"1\",\n  \"GroupAddress\": \"255 255 255 255 255 255 255 255 255\",\n  \"IndicatorBlockAssignment\": \"0 1 2 3 4 5 6 7\",\n  \"IndicatorFunction\": \"2 2 2 2 2 2 2 2\",\n  \"IndicatorPressedLevel\": \"12\",\n  \"LabelFlavourLSB\": \"0 0 0 0 0 0 0 0\",\n  \"LabelFlavourMSB\": \"0 0 0 0 0 0 0 0\",\n  \"SceneKeySelector\": \"0 0 0 0 0 0 0 0\",\n  \"TimerDuration\": \"5\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "project",
+        "save",
+        "TEST"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK\"\n  ],\n  \"final\": \"200 OK\",\n  \"status\": 200\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "project",
+        "close",
+        "TEST"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK\"\n  ],\n  \"final\": \"200 OK\",\n  \"status\": 200\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "project",
+        "load",
+        "TEST"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"lines\": [\n    \"200 OK.\"\n  ],\n  \"final\": \"200 OK.\",\n  \"status\": 200\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//TEST/254",
+        "--source",
+        "/db//TEST/254/p/5",
+        "show"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"DisableTimerFlash\": \"1\",\n  \"EnableDynamicLabels\": \"1\",\n  \"EnableIndicatorPressedLevel\": \"1\",\n  \"EnableNightlight\": \"0\",\n  \"EnableNightlightControl\": \"1\",\n  \"EnableNightlightOnToggleKey\": \"0\",\n  \"EnableNightlightOnUserKeys\": \"1\",\n  \"EnablePageFallback\": \"1\",\n  \"EnableSceneToggle\": \"0\",\n  \"FirstKeyThrowAway\": \"1\",\n  \"GroupAddress\": \"255 255 255 255 255 255 255 255 255\",\n  \"IndicatorBlockAssignment\": \"0 1 2 3 4 5 6 7\",\n  \"IndicatorFunction\": \"2 2 2 2 2 2 2 2\",\n  \"IndicatorPressedLevel\": \"12\",\n  \"LabelFlavourLSB\": \"0 0 0 0 0 0 0 0\",\n  \"LabelFlavourMSB\": \"0 0 0 0 0 0 0 0\",\n  \"SceneKeySelector\": \"0 0 0 0 0 0 0 0\",\n  \"TimerDuration\": \"5\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "physical-pp",
+        "dlt-indicators",
+        "//TEST/254/p/5",
+        "--plan",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/plan.json",
+        "--journal",
+        "${CBUS_RECORDED_ROOT}/source/cases/test_stale_physical_identity_o3/refused.json"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "{\"error\": \"Physical DLT indicator loaded values differ from the plan\", \"type\": \"DltLabelError\", \"physical_programming_evidence\": {\"format\": \"cbus-physical-pp-apply-v1\", \"operation_id\": \"bffd54c321af\", \"phase\": \"physical-load\", \"source\": \"//TEST/254/p/5\", \"destination\": \"//TEST/254/p/5\", \"lock_address\": \"//TEST/254\", \"method\": \"direct\", \"edits\": [{\"parameter\": \"TimerDuration\", \"requested_value\": \"5\"}, {\"parameter\": \"IndicatorPressedLevel\", \"requested_value\": \"12\"}, {\"parameter\": \"EnableNightlight\", \"requested_value\": \"0\"}, {\"parameter\": \"DisableTimerFlash\", \"requested_value\": \"1\"}, {\"parameter\": \"EnablePageFallback\", \"requested_value\": \"1\"}, {\"parameter\": \"EnableIndicatorPressedLevel\", \"requested_value\": \"1\"}, {\"parameter\": \"FirstKeyThrowAway\", \"requested_value\": \"1\"}, {\"parameter\": \"EnableNightlightOnUserKeys\", \"requested_value\": \"1\"}, {\"parameter\": \"EnableNightlightOnToggleKey\", \"requested_value\": \"0\"}, {\"parameter\": \"EnableNightlightControl\", \"requested_value\": \"1\"}], \"capabilities\": {\"service\": \"cmqttd\", \"physical_pp_load\": true, \"physical_pp_save\": true, \"physical_pp_routed_load\": true, \"physical_pp_routed_save\": true, \"physical_pp_routed_methods\": [\"dali\", \"direct\", \"edlt\", \"giu\", \"goc\", \"goc2\", \"gocbyt\", \"ncc\", \"paged\", \"sgiu\"], \"physical_pp_routed_save_protection\": [\"none\", \"checksum\", \"lock\"], \"physical_pp_routed_lock_methods\": [\"direct\", \"ncc\", \"paged\"], \"physical_pp_routed_unsupported_methods\": [], \"physical_pp_routed_lock\": true, \"physical_pp_routed_nvm_commit\": true, \"physical_pp_routed_delivery_semantics\": \"reply-network-unit-parameter-tag-correlated-exactly-once-no-replay\", \"physical_pp_routed_state_scope\": \"owned-session-target-network\", \"pci_generation\": 0, \"pci_connected\": true, \"programming_lane_state\": \"ready\"}, \"native_save_operation\": \"PP SAVE_TO_SOURCE\", \"automatic_write_retries\": 0, \"save_attempts\": 0, \"save_attempted\": false, \"saved\": false, \"save_outcome_uncertain\": false, \"staged_readback_verified\": false, \"fresh_physical_readback_verified\": false, \"power_cycle_persistence_verified\": false, \"original_toolkit_workflow_executed\": false, \"hardware_method_matrix_accepted\": false, \"dry_run\": false, \"complete\": false}, \"dlt_indicators_evidence\": {\"format\": \"cbus-dlt-indicators-physical-v1\", \"source\": \"//TEST/254/p/5\", \"database_source\": \"/db//TEST/254/p/5\", \"plan\": {\"format\": \"cbus-classic-dlt-indicator-plan-v1\", \"unit_type\": \"KEYML5\", \"firmware\": \"2.1.00\", \"catalog_number\": \"5055DL\", \"expected\": {\"TimerDuration\": [15], \"IndicatorPressedLevel\": [10], \"EnableNightlight\": [0], \"DisableTimerFlash\": [1], \"EnablePageFallback\": [1], \"EnableIndicatorPressedLevel\": [1], \"FirstKeyThrowAway\": [0], \"EnableNightlightOnUserKeys\": [0], \"EnableNightlightOnToggleKey\": [0], \"EnableNightlightControl\": [1]}, \"changes\": {\"TimerDuration\": [5], \"IndicatorPressedLevel\": [12], \"FirstKeyThrowAway\": [1], \"EnableNightlightOnUserKeys\": [1]}, \"requested\": [{\"control\": \"page_fallback\", \"value\": true}, {\"control\": \"duration_seconds\", \"value\": 5}, {\"control\": \"pressed_level\", \"value\": 12}, {\"control\": \"nightlight_keys\", \"value\": true}, {\"control\": \"first_key_throwaway\", \"value\": true}], \"loaded\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 15, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 15}, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 15, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 15}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": true, \"nightlight_toggle\": false, \"first_key_throwaway\": true, \"duration_selected_seconds\": 5}, \"initialization_changes\": {}, \"save_normalizations\": {}, \"enabled_before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": false}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": true}, \"steps\": [{\"index\": 1, \"control\": \"page_fallback\", \"value\": true, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 15, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 15}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 15, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 15}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": false}}, {\"index\": 2, \"control\": \"duration_seconds\", \"value\": 5, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 15, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 15}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": false}}, {\"index\": 3, \"control\": \"pressed_level\", \"value\": 12, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 10, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": false}}, {\"index\": 4, \"control\": \"nightlight_keys\", \"value\": true, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": false, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": true, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": true}}, {\"index\": 5, \"control\": \"first_key_throwaway\", \"value\": true, \"before\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": true, \"nightlight_toggle\": false, \"first_key_throwaway\": false, \"duration_selected_seconds\": 5}, \"after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": 5, \"pressed_level\": 12, \"nightlight_keys\": true, \"nightlight_toggle\": false, \"first_key_throwaway\": true, \"duration_selected_seconds\": 5}, \"enabled_after\": {\"page_fallback\": true, \"pressed_enabled\": true, \"duration_seconds\": true, \"pressed_level\": true, \"nightlight_keys\": true, \"nightlight_toggle\": true, \"first_key_throwaway\": true}}], \"raw_preview\": [{\"address\": 51, \"before\": 175, \"after\": 197, \"changed_mask\": 106, \"owned_mask\": 255}, {\"address\": 52, \"before\": 142, \"after\": 190, \"changed_mask\": 48, \"owned_mask\": 125}], \"saved\": false, \"device_verified\": false, \"labels_transferred\": false, \"raw_verification_scope\": \"staged-pp-session-before-save\", \"original_full_form_save_executed\": false}, \"database_edited_state_verified\": true, \"physical_original_baseline_verified\": false, \"unchanged_indicator_fields_verified\": false, \"complete_indicator_bytes_verified\": false, \"profile_verification\": \"database-catalogue-and-physical-loaded-session-identity\", \"loaded_identity_contract\": \"pp-info-loaded-identity-v1\", \"physical_loaded_identity_verified\": true, \"fresh_physical_identity_verified\": false, \"catalogue_verification_scope\": \"saved-project-database\", \"loaded_pci_generation_binding_verified\": false, \"physical_serial_verified\": false, \"project_disk_persistence_verified\": false, \"display_behavior_verified\": false, \"database_raw_hex\": \"c5be\"}}\n",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "subprocess.run",
+      "argv": [
+        "${CBUS_ACCEPTANCE_PYTHON}",
+        "-m",
+        "cbus_toolkit",
+        "cgate",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "52328",
+        "--timeout",
+        "8",
+        "unit",
+        "--lock-address",
+        "//TEST/254",
+        "--source",
+        "/db//TEST/254/p/5",
+        "show"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"DisableTimerFlash\": \"1\",\n  \"EnableDynamicLabels\": \"1\",\n  \"EnableIndicatorPressedLevel\": \"1\",\n  \"EnableNightlight\": \"0\",\n  \"EnableNightlightControl\": \"1\",\n  \"EnableNightlightOnToggleKey\": \"0\",\n  \"EnableNightlightOnUserKeys\": \"1\",\n  \"EnablePageFallback\": \"1\",\n  \"EnableSceneToggle\": \"0\",\n  \"FirstKeyThrowAway\": \"1\",\n  \"GroupAddress\": \"255 255 255 255 255 255 255 255 255\",\n  \"IndicatorBlockAssignment\": \"0 1 2 3 4 5 6 7\",\n  \"IndicatorFunction\": \"2 2 2 2 2 2 2 2\",\n  \"IndicatorPressedLevel\": \"12\",\n  \"LabelFlavourLSB\": \"0 0 0 0 0 0 0 0\",\n  \"LabelFlavourMSB\": \"0 0 0 0 0 0 0 0\",\n  \"SceneKeySelector\": \"0 0 0 0 0 0 0 0\",\n  \"TimerDuration\": \"5\"\n}\n",
+      "stderr": "",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    },
+    {
+      "kind": "pytest-call",
+      "outcome": "passed",
+      "nodeid": "tests/test_dlt_physical_programming_interop.py::test_stale_physical_identity_or_baseline_refused_before_store[edited-bit]"
+    }
+  ],
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "100e74e0a281975b565f8ea128d62ffe1053cf6e1dc377390cc411d81e1afbe4",
+    "raw_retained_privately": true,
+    "field_mapping": [
+      {
+        "json_pointer": "/0/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/0/stdout",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/5",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/1/argv/9",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/17",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/2/argv/19",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/3/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/4/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/5/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/6/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/7/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/14",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/8/argv/16",
+        "roles": [
+          "recorded_run_directory"
+        ],
+        "action": "local_coordinate_role_substitution"
+      },
+      {
+        "json_pointer": "/9/argv/0",
+        "roles": [
+          "acceptance_interpreter"
+        ],
+        "action": "local_coordinate_role_substitution"
+      }
+    ],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "jsonl",
+    "container_form": "data envelope; JSONL rows retained in original order"
+  }
+}

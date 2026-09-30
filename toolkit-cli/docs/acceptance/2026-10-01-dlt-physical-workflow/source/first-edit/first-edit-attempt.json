@@ -1,0 +1,326 @@
+{
+  "data": {
+    "attempt_id": "sha256:3d06ad561fdcb43f3c007d37af364ab11c65cf61360433bcf9c7a033e46f69b0",
+    "complete": true,
+    "format": "cbus-physical-pp-journal-v1",
+    "fresh_readback": {
+      "at": "2026-09-30T20:04:09.302+00:00",
+      "comparison": "native-schema-type-aware",
+      "verified": true
+    },
+    "history": [
+      {
+        "at": "2026-09-30T20:04:07.881+00:00",
+        "phase": "planned"
+      },
+      {
+        "at": "2026-09-30T20:04:07.882+00:00",
+        "phase": "save-sent"
+      },
+      {
+        "at": "2026-09-30T20:04:08.992+00:00",
+        "phase": "save-confirmed"
+      },
+      {
+        "at": "2026-09-30T20:04:09.302+00:00",
+        "phase": "readback-verified"
+      },
+      {
+        "at": "2026-09-30T20:04:09.303+00:00",
+        "phase": "complete"
+      }
+    ],
+    "nvm_commit": "not-required",
+    "operation": "physical-pp-save",
+    "phase": "complete",
+    "plan": {
+      "edits": [
+        {
+          "parameter": "TimerDuration",
+          "requested_value": "5"
+        },
+        {
+          "parameter": "IndicatorPressedLevel",
+          "requested_value": "10"
+        },
+        {
+          "parameter": "EnableNightlight",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "DisableTimerFlash",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "EnablePageFallback",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "EnableIndicatorPressedLevel",
+          "requested_value": "1"
+        },
+        {
+          "parameter": "FirstKeyThrowAway",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightOnUserKeys",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightOnToggleKey",
+          "requested_value": "0"
+        },
+        {
+          "parameter": "EnableNightlightControl",
+          "requested_value": "1"
+        }
+      ],
+      "method": "direct",
+      "native_save_operation": "PP SAVE_TO_SOURCE",
+      "operation_id": "1ce438a266db",
+      "pci_generation": 0,
+      "ranges": [
+        {
+          "changed": true,
+          "index": 0,
+          "length": 1,
+          "logical_address": 51,
+          "new_sha256": "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "old_sha256": "5a6e7a4754af8e7f47fc9493040d853e7b01e39d537cb1dd353c93b7ae58eb3d",
+          "parameter": "TimerDuration",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "int",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 1,
+          "length": 1,
+          "logical_address": 51,
+          "new_sha256": "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "old_sha256": "5a6e7a4754af8e7f47fc9493040d853e7b01e39d537cb1dd353c93b7ae58eb3d",
+          "parameter": "IndicatorPressedLevel",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "int",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 2,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnableNightlight",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 3,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "DisableTimerFlash",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 4,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnablePageFallback",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 5,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnableIndicatorPressedLevel",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 6,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "FirstKeyThrowAway",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 7,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnableNightlightOnUserKeys",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 8,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnableNightlightOnToggleKey",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        },
+        {
+          "changed": true,
+          "index": 9,
+          "length": 1,
+          "logical_address": 52,
+          "new_sha256": "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "old_sha256": "2d3193691934124461809fb9bc7e671215099fc7d961bfbe31943d40d477c890",
+          "parameter": "EnableNightlightControl",
+          "program_method": "direct",
+          "protection": "none",
+          "type": "bit",
+          "write_planned": true
+        }
+      ],
+      "requires_nvm_commit": false,
+      "schema_sha256": "24ccefcaf675847906f70fe42439375113f9f3f5292786706b4c3403f16cd504",
+      "unit": {
+        "destination": "//WFDLT/254/p/4",
+        "lock_address": "//WFDLT/254",
+        "network": 254,
+        "project": "WFDLT",
+        "source": "//WFDLT/254/p/4",
+        "unit": 4
+      }
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 1,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 2,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 3,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 4,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 5,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 6,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 7,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 8,
+        "store_state": "confirmed"
+      },
+      {
+        "index": 9,
+        "store_state": "confirmed"
+      }
+    ],
+    "read_only_recovery_only": true,
+    "recoveries": [
+      {
+        "at": "2026-09-30T20:04:10.106+00:00",
+        "classifications": [
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected",
+          "expected"
+        ],
+        "conclusive": true,
+        "errors": [],
+        "fresh_pci_generation": 0,
+        "fresh_sha256": [
+          "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "6922e93e3827642ce4b883c756b31abf80036649d3614bf5fcb3adda43b8ea32",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af",
+          "949f94d858ef6ad1333164d796a0d777fd82f9155ece7d6fad68c0b992f0e7af"
+        ],
+        "operation_id": "4e34196772c6",
+        "outcome": "observed_expected"
+      }
+    ],
+    "resolution": {
+      "at": "2026-09-30T20:04:09.303+00:00",
+      "by": "apply",
+      "outcome": "complete"
+    },
+    "resolved": true,
+    "save_reply": {
+      "at": "2026-09-30T20:04:08.992+00:00",
+      "confirmed": true
+    },
+    "send_may_have_occurred": true
+  },
+  "publication_sanitization": {
+    "format": "cbus-dlt-acceptance-sanitized-derivative-v1",
+    "raw_file_sha256": "480fa173b67144da89a72efc12b54c597253a5e4ff91381116708a94574c8139",
+    "raw_retained_privately": true,
+    "field_mapping": [],
+    "command_form": "actual recorded invocation with only declared local coordinate roles substituted; raw invocation remains private",
+    "technical_values_preserved": true,
+    "new_execution_claimed_by_sanitization": false,
+    "raw_format": "json",
+    "container_form": "data envelope"
+  }
+}
