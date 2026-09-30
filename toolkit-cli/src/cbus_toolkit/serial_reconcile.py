@@ -27,8 +27,10 @@ from uuid import UUID, uuid4
 
 from .pci_selected_serial import (
     ATTEMPT_FORMAT, MAX_JOURNAL_BYTES, SelectedSerialCoordinator, SelectedSerialPlan, _Journal,
-    _canonical_fingerprint, _inventory_proof, _json, _keys, _options_proof, _raw_serials, _unique_pairs,
+    _canonical_fingerprint, _hex, _inventory_proof, _json, _keys, _options_proof, _raw_serials, _unique_pairs,
 )
+from .commissioning_route import resolve_network_route
+from .pci_serial_address import decode_serial_address_receipt
 from .project import ProjectDocument, _address, _all_elements, _elements, _field, _is_entity, _name, _oid
 from .serials import parse_native_serial
 
@@ -95,6 +97,10 @@ class VerifiedMove:
     endpoint: dict
     local_unit: int
     receipt_matches_request: bool
+    route: tuple[int, ...] = ()
+    project_sha256: str | None = None
+    source_network: int | None = None
+    target_network: int | None = None
 
     def as_dict(self):
         return {"path": self.journal_path, "sha256": self.journal_sha256, "attempt_id": self.attempt_id,
@@ -102,8 +108,56 @@ class VerifiedMove:
                 "receipt_matches_request": self.receipt_matches_request}
 
     def move(self):
-        return {"serial": self.serial, "source": self.source, "destination": self.destination,
-                "endpoint": dict(self.endpoint), "local_unit": self.local_unit}
+        value = {"serial": self.serial, "source": self.source, "destination": self.destination,
+                 "endpoint": dict(self.endpoint), "local_unit": self.local_unit}
+        if self.route:
+            value.update(route=list(self.route), project_sha256=self.project_sha256,
+                         source_network=self.source_network, target_network=self.target_network)
+        return value
+
+
+def _routed_binding(value, plan):
+    """Validate handoff evidence without following its recorded project path."""
+    binding = value.get("route_binding")
+    if not plan.get("route"):
+        if binding is not None:
+            raise ValueError("a direct journal cannot carry a route binding")
+        return None
+    _keys(binding, ("project_path", "project_sha256", "source_network", "target_network", "route",
+                    "route_rederived", "physical_bridge_acceptance_verified", "topology_fresh_at_handoff"),
+          "Routed journal binding")
+    if not isinstance(binding["project_path"], str) or not Path(binding["project_path"]).is_absolute():
+        raise ValueError("route binding project path is not absolute")
+    for key in ("source_network", "target_network"):
+        if type(binding[key]) is not int or not 0 <= binding[key] <= 255:
+            raise ValueError("route binding network must be an integer in 0..255")
+    if (binding["source_network"] == binding["target_network"] or
+            binding["project_sha256"] != plan["project_sha256"] or
+            _json(binding["route"]) != _json(plan["route"]) or
+            binding["route_rederived"] is not True or binding["topology_fresh_at_handoff"] is not True or
+            binding["physical_bridge_acceptance_verified"] is not False):
+        raise ValueError("route binding differs from the completed routed handoff")
+    return binding
+
+
+def _receipt_proof(exchange, plan):
+    """Reparse the whole retained receipt; a missing match is not movement proof."""
+    raw = _hex(exchange.get("received_hex"), 4096)
+    receipt = decode_serial_address_receipt(raw, serial=plan["serial"], destination=plan["destination"],
+                                            local_unit=plan["local_unit"], bridges=plan.get("route", ()))
+    expected = {"format": "cbus-pci-serial-address-exchange-v1", "send_completed": True,
+                "bytes_received": len(raw), "retained_bytes": len(raw), "sent_byte_count": None,
+                "receipt": receipt.as_dict(), "correlation_status": receipt.status,
+                "retained_receipt_matches_request": receipt.matched,
+                "termination": "response_window_elapsed", "automatic_retries": 0,
+                "movement_verified": False, "persistence_verified": False,
+                "requires_independent_verification": True, "inventory_performed": False,
+                "database_updated": False, "request_has_source_address": False}
+    if any(_json(exchange.get(key)) != _json(wanted) for key, wanted in expected.items()):
+        raise ValueError("exchange receipt or summary differs from its raw evidence")
+    if type(exchange.get("max_bytes")) is not int or not max(1, len(raw)) <= exchange["max_bytes"] <= 4096:
+        raise ValueError("exchange byte bound is inconsistent")
+    return receipt.matched
 
 
 def verify_journal(path):
@@ -126,6 +180,9 @@ def verify_journal(path):
         raise ReconcileError("Selected-serial journal must be a JSON object")
     if value.get("format") == ATTEMPT_FORMAT:
         raise ReconcileError("An attempt marker records only an uncertain attempt; reconcile a completed apply journal")
+    if value.get("format") == "cbus-selected-serial-apply-v2":
+        from .rust_serial_reconcile import verify_rust_journal
+        return verify_rust_journal(path, raw, value)
     if value.get("format") != "cbus-selected-serial-result-v1":
         raise ReconcileError("Unsupported selected-serial journal format")
     try:
@@ -134,9 +191,6 @@ def verify_journal(path):
         raise ReconcileError(f"Journal plan is invalid or tampered: {error}") from error
     validator = SelectedSerialCoordinator(**plan["endpoint"], local_unit=plan["local_unit"],
                                           expected_local_serial=plan["expected_local_serial"], **plan["settings"])
-    if "route" in plan:
-        raise ReconcileError("Routed selected-serial journals are not reconciled; the target-network "
-                             "database move is unimplemented")
     expected = validator._base("apply")
     if "route_binding" not in value:
         expected.pop("route_binding")  # Journals written before routed execution.
@@ -157,8 +211,10 @@ def verify_journal(path):
         raise ReconcileError("Journal plan is not in canonical validated form")
     checksum, local, endpoint = plan["settings"]["command_checksum"], plan["local_unit"], plan["endpoint"]
     try:
-        before = _inventory_proof(value["before"], endpoint, local, checksum)
-        if before != _inventory_proof(plan["before"], endpoint, local, checksum):
+        binding = _routed_binding(value, plan)
+        route = tuple(plan.get("route", ()))
+        before = _inventory_proof(value["before"], endpoint, local, checksum, route)
+        if before != _inventory_proof(plan["before"], endpoint, local, checksum, route):
             raise ValueError("fresh before inventory differs from the plan")
         address, serials = _raw_serials(value["local_identity"], local, checksum)
         if address != local or serials != [plan["expected_local_serial"]]:
@@ -172,9 +228,9 @@ def verify_journal(path):
                 exchange.get("connection_closed") is not True or exchange["receipt"].get("errors") != [] or
                 exchange["receipt"].get("pending_hex")):
             raise ValueError("exchange is not the plan's single clean request")
-        if value["receipt_matches_request"] is not exchange.get("retained_receipt_matches_request"):
+        if value["receipt_matches_request"] is not _receipt_proof(exchange, plan):
             raise ValueError("receipt summary differs from its exchange")
-        after = _inventory_proof(value["after"], endpoint, local, checksum)
+        after = _inventory_proof(value["after"], endpoint, local, checksum, route)
         if after != plan["expected_after"]:
             raise ValueError("after inventory does not reparse to the expected identity map")
     except (ValueError, TypeError, KeyError, AttributeError) as error:
@@ -208,7 +264,9 @@ def verify_journal(path):
         raise ReconcileError(f"Attempt marker does not bind this journal (stale or tampered): {error}") from error
     return VerifiedMove(str(path.absolute()), hashlib.sha256(raw).hexdigest(), record["attempt_id"], marker,
                         plan["serial"], plan["source"], plan["destination"], dict(endpoint), local,
-                        value["receipt_matches_request"])
+                        value["receipt_matches_request"], route, plan.get("project_sha256"),
+                        binding["source_network"] if binding else None,
+                        binding["target_network"] if binding else None)
 
 
 @dataclass(frozen=True)
@@ -268,7 +326,7 @@ def locate(document, move, *, network=None, unit_type=None, firmware=None):
         raise ReconcileError(f"Matched database unit type {unit.unit_type!r} differs from {unit_type!r}")
     if firmware is not None and unit.firmware != firmware:
         raise ReconcileError(f"Matched database firmware {unit.firmware!r} differs from {firmware!r}")
-    if unit.unit_type == "BRIDGE" or unit.unit_type.startswith("WGATE"):
+    if unit.unit_type.upper().startswith(("BRIDGE", "WGATE")):
         raise ReconcileError("Bridge/wireless gateway readdress requires coupled topology changes")
     occupant = [u for u in units if u.network == unit.network and u.address == move.destination and u.oid != unit.oid]
     if occupant:
@@ -290,6 +348,7 @@ class ProjectFileDatabase:
 
     def __init__(self, path):
         self.path = Path(path).absolute()
+        self._routed_move = None
 
     def identity(self):
         return {"kind": "project_file", "path": str(self.path)}
@@ -297,6 +356,72 @@ class ProjectFileDatabase:
     def snapshot(self):
         raw = _read_bounded(self.path, 128 * 1024 * 1024)
         return ProjectDocument.from_snapshot(raw, source=self.path), raw
+
+    def _route(self, document):
+        """Re-derive both sides of the edit from the same bound topology."""
+        move = self._routed_move
+        if move is None:
+            return
+        try:
+            route = resolve_network_route(document, source_network=move.source_network,
+                                          target_network=move.target_network)
+        except ValueError as error:
+            raise ReconcileError(f"Routed project topology is invalid: {error}") from error
+        if route != move.route:
+            raise ReconcileError("Routed project topology differs from the journal route")
+
+    def _original(self, raw):
+        if self._routed_move is not None and hashlib.sha256(raw).hexdigest() != self._routed_move.project_sha256:
+            raise ReconcileError("Project changed or does not match the routed journal project_sha256")
+
+    def bind_move(self, move, record, *, unit_type=None, firmware=None):
+        """Pin a routed preimage, or recover its exact authorized candidate.
+
+        The handoff's private project path is never followed. The caller's
+        database must supply those original bytes, or its durable backup must
+        do so after our atomic save necessarily changed the project hash.
+        A record is not authority to accept an arbitrary expected digest: we
+        reconstruct the candidate from the SHA-bound original on every run.
+        """
+        self._routed_move = move if move.route else None
+        if not move.route:
+            return
+        current, current_raw = self.snapshot()
+        original_raw = current_raw
+        if record is not None and record.value["backup"] is not None:
+            backup = record.value["backup"]
+            if not isinstance(backup, str) or not Path(backup).is_absolute():
+                raise ReconcileError("Routed reconciliation backup path is malformed")
+            try:
+                original_raw = _read_bounded(backup, 128 * 1024 * 1024)
+            except (OSError, ValueError) as error:
+                raise ReconcileError(f"Cannot read routed reconciliation backup: {error}") from error
+        self._original(original_raw)
+        original = ProjectDocument.from_snapshot(original_raw, source=self.path)
+        self._route(original)
+        unit, position = locate(original, move, network=move.target_network,
+                                unit_type=unit_type, firmware=firmware)
+        before = self.digest(original)
+        evidence = self.candidate(original, unit, move.destination) if position == "source" else None
+        expected = self.digest(original)
+        if record is not None:
+            wanted_unit = unit.as_dict() | {
+                "source_path": evidence["source_path"] if evidence else None,
+                "destination_path": evidence["destination_path"] if evidence else None}
+            wanted = {"journal": move.as_dict(), "move": move.move(), "unit": wanted_unit,
+                      "before_sha256": before if evidence else None,
+                      "expected_sha256": expected if evidence else None, "bus_io_performed": False}
+            if any(_json(record.value[key]) != _json(value) for key, value in wanted.items()):
+                raise ReconcileError("Routed reconciliation record differs from the original bound project move")
+            if record.value["phase"] == "db_done":
+                # A completed record remains read-only, even if someone edits
+                # the project later. current() reports that mismatch.
+                return
+        if hashlib.sha256(current_raw).hexdigest() != move.project_sha256:
+            if (record is None or record.value["phase"] != "db_pending" or
+                    record.value["backup"] is None or self.digest(current) != expected):
+                raise ReconcileError("Project changed while routed reconciliation was pending; resolve manually")
+            self._route(current)
 
     @staticmethod
     def digest(document):
@@ -314,10 +439,12 @@ class ProjectFileDatabase:
     def candidate(self, document, unit, destination):
         """Apply the one move in memory and return evidence of what was preserved."""
         source = self._paths(unit, unit.address)
-        for node in _all_elements(document.project):
-            if _name(node) == "InterfaceType" and "".join(
-                    c.data for c in node.childNodes if c.nodeType == c.TEXT_NODE).strip().lower() == "bridge":
-                raise ReconcileError("Projects with bridge connections require coupled topology handling")
+        self._route(document)
+        if self._routed_move is None:
+            for node in _all_elements(document.project):
+                if _name(node) == "InterfaceType" and "".join(
+                        c.data for c in node.childNodes if c.nodeType == c.TEXT_NODE).strip().lower() == "bridge":
+                    raise ReconcileError("Projects with bridge connections require coupled topology handling")
         text = document.raw_xml()
         if re.search(rf"/{unit.network}/p/{unit.address}(?![0-9])", text):
             raise ReconcileError("Project contains a textual unit-path reference requiring explicit reconciliation")
@@ -335,11 +462,13 @@ class ProjectFileDatabase:
         document.set_parameter(target, "UnitAddress", encoded)
         if _oid(document.resolve(target)) != unit.oid or document._references({unit.oid}) != references:
             raise ReconcileError("Moving the unit changed its OID or OID references")
+        self._route(document)
         return {"source_path": source, "destination_path": target, "unit_address_before": stored,
                 "unit_address_after": encoded, "oid_references": references}
 
     def plan(self, unit, destination):
-        document, _ = self.snapshot()
+        document, raw = self.snapshot()
+        self._original(raw)
         before = self.digest(document)
         evidence = self.candidate(document, unit, destination)
         return {"before_sha256": before, "expected_sha256": self.digest(document), **evidence}
@@ -347,6 +476,15 @@ class ProjectFileDatabase:
     def current(self):
         document, _ = self.snapshot()
         return self.digest(document)
+
+    @staticmethod
+    def _sync_parent(path):
+        """Make a backup/create or project/replace directory entry durable."""
+        descriptor = os.open(Path(path).parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
     def backup(self, raw):
         suffix = self.path.suffix
@@ -356,6 +494,8 @@ class ProjectFileDatabase:
             handle.write(raw)
             handle.flush()
             os.fsync(handle.fileno())
+        if self._routed_move is not None:
+            self._sync_parent(target)
         if _read_bounded(target, len(raw)) != raw:
             raise ReconcileError("Project backup readback differs from the original")
         return str(target)
@@ -363,6 +503,7 @@ class ProjectFileDatabase:
     def apply(self, unit, destination, plan, record):
         """Backup, move, atomic save, then verify a fresh reload against the original."""
         document, raw = self.snapshot()
+        self._original(raw)
         if self.digest(document) != plan["before_sha256"]:
             raise ReconcileError("Project changed after planning")
         record.advance("db_pending", backup=self.backup(raw))
@@ -370,13 +511,20 @@ class ProjectFileDatabase:
         if self.digest(document) != plan["expected_sha256"]:
             raise ReconcileError("Candidate project differs from its plan")
         record.mark_attempted()
+        if self._routed_move is not None:
+            # Journal/backup fsyncs may take time; check the raw source again
+            # after the durable intent and immediately before replacement.
+            self._original(_read_bounded(self.path, 128 * 1024 * 1024))
         document.save(self.path)
+        if self._routed_move is not None:
+            self._sync_parent(self.path)
         self.verify_reload(raw, unit, destination, evidence, plan)
 
     def verify_reload(self, original_raw, unit, destination, evidence, plan):
         reloaded, _ = self.snapshot()
         if self.digest(reloaded) != plan["expected_sha256"]:
             raise ReconcileError("Reloaded project differs from the planned move")
+        self._route(reloaded)
         node = reloaded.resolve(evidence["destination_path"])
         if _oid(node) != unit.oid or reloaded._references({unit.oid}) != evidence["oid_references"]:
             raise ReconcileError("Reloaded project lost the unit OID or its references")
@@ -512,6 +660,13 @@ def default_record_path(journal):
 def reconcile(journal, database, *, apply=False, record_path=None, network=None, unit_type=None, firmware=None):
     """Plan (default) or apply one database reconciliation for a verified move."""
     move = verify_journal(journal)
+    if move.route:
+        if not isinstance(database, ProjectFileDatabase):
+            raise ReconcileError("Routed reconciliation requires an offline XML/CBZ project; "
+                                 "routed C-Gate database reconciliation is unsupported")
+        if network is not None and (type(network) is not int or network != move.target_network):
+            raise ReconcileError("Requested network differs from the routed journal target network")
+        network = move.target_network
     record_path = Path(record_path).absolute() if record_path is not None else default_record_path(journal)
     record = ReconcileRecord.load(record_path)
     identity = database.identity()
@@ -522,6 +677,8 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
         if value["database"] != identity:
             raise ReconcileError("Reconciliation record belongs to a different database", record=str(record.path),
                                  recorded=value["database"])
+    if isinstance(database, ProjectFileDatabase):
+        database.bind_move(move, record, unit_type=unit_type, firmware=firmware)
     result = {"format": RESULT_FORMAT, "mode": "apply" if apply else "dry_run", "journal": move.as_dict(),
               "move": move.move(), "database": identity, "record": None, "database_changed": False,
               "bus_io_performed": False, "hardware_programmed": False}
@@ -554,6 +711,11 @@ def reconcile(journal, database, *, apply=False, record_path=None, network=None,
                 raise ReconcileError("Database unit is at the destination but differs from the planned move; "
                                      "resolve manually", record=str(record.path), phase="db_pending")
             if apply:
+                if move.route:
+                    # A previous rename may have succeeded before its parent
+                    # directory fsync failed; make that publication durable
+                    # before declaring recovery complete. Never repeat save.
+                    database._sync_parent(database.path)
                 record.advance("db_done", database_changed=True, last_error=None)
             return finish("resumed_complete" if apply else "resume_pending", changed=True)
         if not apply:
@@ -636,7 +798,8 @@ def run_cli(args):
     if args.cgate is None or args.project_name is None:
         raise ValueError("Use --project FILE, or --cgate HOST:PORT with --project-name")
     # Validate the physical evidence before opening any connection.
-    verify_journal(args.journal)
+    if verify_journal(args.journal).route:
+        raise ReconcileError("Routed C-Gate database reconciliation is unsupported; use the bound offline XML/CBZ project")
     from .cgate import CGateClient
     host, port = _endpoint(args.cgate)
     with CGateClient(host, port, timeout=args.timeout, max_line_bytes=16 * 1024 * 1024 + 4096) as client:

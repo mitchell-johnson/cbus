@@ -1,0 +1,360 @@
+{
+  "format": "cbus-rust-journal-parent-alias-fix-acceptance-v1",
+  "result": "passed",
+  "scope": "Narrow Python validator fix with actual Rust release producer over owned fake PCI and offline project files",
+  "command": [
+    "<toolkit-python>",
+    "-m",
+    "pytest",
+    "tests/test_rust_serial_reconcile.py",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=<owned-alias-regression-directory>/results.xml"
+  ],
+  "results": {
+    "tests_passed": 8,
+    "subtests_passed": 48,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 69.33,
+    "counting_boundary": "These tests overlap the final combined source/wheel module selection. Do not add these counts to that selection or claim additional unique coverage."
+  },
+  "raw_artifact_provenance": {
+    "receipt_sha256": "1ff1b238fe586660479f3539b950206dc47cc3e66bef9f0e0d00c91496044c55",
+    "log_sha256": "c64c953895bd50bd02c8bc4b86933e4e142dfb6770b219604c8e5d8533a148ae",
+    "junit_sha256": "ccbbdd4dc6ff96799c044a1a0c7b180aae1dc9a35ce1d7c8962312a2b8a26548",
+    "raw_artifacts_retained_privately": true
+  },
+  "sanitization": {
+    "normalized_json_pointer_fields": {
+      "/command/0": "<toolkit-python>",
+      "/command/7": "--junitxml=<owned-alias-regression-directory>/results.xml"
+    },
+    "normalization_scope": "Absolute interpreter and JUnit-output locations only; source/binary hashes, results and disk telemetry preserved. Private paths/host labels/endpoints excluded from this public receipt."
+  },
+  "source_sha256_before": {
+    "toolkit-cli/src/cbus_toolkit/rust_serial_reconcile.py": "add2b9451ded7cc318e44cd9c1e5d5e554ae76ce4a70c4a91b63bbba5d5fedc2",
+    "toolkit-cli/tests/test_rust_serial_reconcile.py": "6f159fcd1881f2c377c2d00f57997d2be06238125377f54ea310356cea9ad1cc"
+  },
+  "source_sha256_after": {
+    "toolkit-cli/src/cbus_toolkit/rust_serial_reconcile.py": "add2b9451ded7cc318e44cd9c1e5d5e554ae76ce4a70c4a91b63bbba5d5fedc2",
+    "toolkit-cli/tests/test_rust_serial_reconcile.py": "6f159fcd1881f2c377c2d00f57997d2be06238125377f54ea310356cea9ad1cc"
+  },
+  "source_unchanged_during_test": true,
+  "rust_release_cbus_tools_sha256": "6727d465de788636daf683beaaa49d00ff0b003ec584fc6caaf43818d652fff4",
+  "disk_telemetry": {
+    "start_free_bytes": 4317741056,
+    "minimum_sampled_free_bytes": 4305846272,
+    "end_free_bytes": 4307603456,
+    "samples": [
+      {
+        "time": 1790775596.277167,
+        "free_bytes": 4317741056
+      },
+      {
+        "time": 1790775597.283777,
+        "free_bytes": 4317564928
+      },
+      {
+        "time": 1790775598.290452,
+        "free_bytes": 4317343744
+      },
+      {
+        "time": 1790775599.300562,
+        "free_bytes": 4317130752
+      },
+      {
+        "time": 1790775600.300776,
+        "free_bytes": 4316958720
+      },
+      {
+        "time": 1790775601.307572,
+        "free_bytes": 4316782592
+      },
+      {
+        "time": 1790775602.317638,
+        "free_bytes": 4316594176
+      },
+      {
+        "time": 1790775603.327722,
+        "free_bytes": 4316418048
+      },
+      {
+        "time": 1790775604.337823,
+        "free_bytes": 4316241920
+      },
+      {
+        "time": 1790775605.338156,
+        "free_bytes": 4316065792
+      },
+      {
+        "time": 1790775606.34779,
+        "free_bytes": 4315889664
+      },
+      {
+        "time": 1790775607.357924,
+        "free_bytes": 4315619328
+      },
+      {
+        "time": 1790775608.3680189,
+        "free_bytes": 4315394048
+      },
+      {
+        "time": 1790775609.3780868,
+        "free_bytes": 4315197440
+      },
+      {
+        "time": 1790775610.388184,
+        "free_bytes": 4314992640
+      },
+      {
+        "time": 1790775611.398314,
+        "free_bytes": 4314800128
+      },
+      {
+        "time": 1790775612.408436,
+        "free_bytes": 4314595328
+      },
+      {
+        "time": 1790775613.4137359,
+        "free_bytes": 4314386432
+      },
+      {
+        "time": 1790775614.4177501,
+        "free_bytes": 4314181632
+      },
+      {
+        "time": 1790775615.427834,
+        "free_bytes": 4313915392
+      },
+      {
+        "time": 1790775616.4339252,
+        "free_bytes": 4313710592
+      },
+      {
+        "time": 1790775617.4340942,
+        "free_bytes": 4313534464
+      },
+      {
+        "time": 1790775618.434516,
+        "free_bytes": 4313337856
+      },
+      {
+        "time": 1790775619.444652,
+        "free_bytes": 4313157632
+      },
+      {
+        "time": 1790775620.45119,
+        "free_bytes": 4312956928
+      },
+      {
+        "time": 1790775621.4608781,
+        "free_bytes": 4312780800
+      },
+      {
+        "time": 1790775622.470943,
+        "free_bytes": 4312604672
+      },
+      {
+        "time": 1790775623.474045,
+        "free_bytes": 4312424448
+      },
+      {
+        "time": 1790775624.47716,
+        "free_bytes": 4312129536
+      },
+      {
+        "time": 1790775625.485384,
+        "free_bytes": 4311953408
+      },
+      {
+        "time": 1790775626.489934,
+        "free_bytes": 4311621632
+      },
+      {
+        "time": 1790775627.5000498,
+        "free_bytes": 4311441408
+      },
+      {
+        "time": 1790775628.502192,
+        "free_bytes": 4311261184
+      },
+      {
+        "time": 1790775629.505662,
+        "free_bytes": 4311080960
+      },
+      {
+        "time": 1790775630.4365308,
+        "free_bytes": 4310802432
+      },
+      {
+        "time": 1790775631.446656,
+        "free_bytes": 4310585344
+      },
+      {
+        "time": 1790775632.4536781,
+        "free_bytes": 4310376448
+      },
+      {
+        "time": 1790775633.46376,
+        "free_bytes": 4310122496
+      },
+      {
+        "time": 1790775634.47227,
+        "free_bytes": 4309921792
+      },
+      {
+        "time": 1790775635.482368,
+        "free_bytes": 4309741568
+      },
+      {
+        "time": 1790775636.4894998,
+        "free_bytes": 4309549056
+      },
+      {
+        "time": 1790775637.489634,
+        "free_bytes": 4309372928
+      },
+      {
+        "time": 1790775638.49412,
+        "free_bytes": 4309069824
+      },
+      {
+        "time": 1790775639.5041862,
+        "free_bytes": 4308881408
+      },
+      {
+        "time": 1790775640.507582,
+        "free_bytes": 4308705280
+      },
+      {
+        "time": 1790775641.517673,
+        "free_bytes": 4308520960
+      },
+      {
+        "time": 1790775642.527796,
+        "free_bytes": 4308340736
+      },
+      {
+        "time": 1790775643.537876,
+        "free_bytes": 4308148224
+      },
+      {
+        "time": 1790775644.547919,
+        "free_bytes": 4307935232
+      },
+      {
+        "time": 1790775645.553615,
+        "free_bytes": 4307644416
+      },
+      {
+        "time": 1790775646.558579,
+        "free_bytes": 4307472384
+      },
+      {
+        "time": 1790775647.5686688,
+        "free_bytes": 4307296256
+      },
+      {
+        "time": 1790775648.570297,
+        "free_bytes": 4307124224
+      },
+      {
+        "time": 1790775649.572254,
+        "free_bytes": 4306915328
+      },
+      {
+        "time": 1790775650.582365,
+        "free_bytes": 4306743296
+      },
+      {
+        "time": 1790775651.588938,
+        "free_bytes": 4306563072
+      },
+      {
+        "time": 1790775652.589532,
+        "free_bytes": 4306235392
+      },
+      {
+        "time": 1790775653.5949912,
+        "free_bytes": 4306055168
+      },
+      {
+        "time": 1790775654.605108,
+        "free_bytes": 4305846272
+      },
+      {
+        "time": 1790775655.6055958,
+        "free_bytes": 4309684224
+      },
+      {
+        "time": 1790775656.615581,
+        "free_bytes": 4309512192
+      },
+      {
+        "time": 1790775657.617771,
+        "free_bytes": 4309336064
+      },
+      {
+        "time": 1790775658.6238458,
+        "free_bytes": 4309159936
+      },
+      {
+        "time": 1790775659.628533,
+        "free_bytes": 4308623360
+      },
+      {
+        "time": 1790775660.6368299,
+        "free_bytes": 4308447232
+      },
+      {
+        "time": 1790775661.638937,
+        "free_bytes": 4308279296
+      },
+      {
+        "time": 1790775662.649029,
+        "free_bytes": 4308103168
+      },
+      {
+        "time": 1790775663.655618,
+        "free_bytes": 4307845120
+      },
+      {
+        "time": 1790775664.662396,
+        "free_bytes": 4307595264
+      },
+      {
+        "time": 1790775665.636194,
+        "free_bytes": 4307603456
+      }
+    ],
+    "initial_minimum_required_bytes": 536870912,
+    "sample_interval_seconds": 1,
+    "limitation": "Samples do not guarantee allocation availability between observations; this run completed without ENOSPC."
+  },
+  "guarded_cases": [
+    "Actual Rust CLI supplies lexical operator symlink-parent journal while marker records canonical parent plus unchanged filename; Python admits the original artifact.",
+    "Existing direct/routed frame, summary, route, target, project, canonical-plan and attempt-marker guards remain enforced.",
+    "Marker with unrelated journal filename is refused before project write.",
+    "Wrong marker scope is refused before project write.",
+    "Rebinding the operator directory symlink to a copied journal is refused.",
+    "Journal filename symlink is refused; restoring the original location is admitted.",
+    "Offline XML/CBZ reconciliation, mutation refusals, attempt-marker changes and restart preservation remain covered by the selected module."
+  ],
+  "implementation_boundary": {
+    "allowed_modified_files": [
+      "toolkit-cli/src/cbus_toolkit/rust_serial_reconcile.py",
+      "toolkit-cli/tests/test_rust_serial_reconcile.py"
+    ],
+    "path_rule": "Keep exact lexical absolute caller journal location. Bind marker journal to strict-resolved current parent plus unresolved filename; compare canonical parents for marker scope.",
+    "journal_and_attempt_marker_file_symlinks_refused": true,
+    "filesystem_lock_or_atomic_path_resolution_claimed": false,
+    "race_limitation": "Path checks are observations, not a filesystem lock. Concurrent parent or file replacement is not an authenticated history or atomic filesystem guarantee; retain exclusive ownership.",
+    "native_vendor_runtime_executed": false,
+    "physical_network_or_hardware_accessed": false,
+    "original_instructions_executed": false,
+    "new_rust_build_performed": false
+  },
+  "prior_failures": "This narrow pass does not supersede or hide the earlier combined source interoperability setup failures and ENOSPC cascade. Those artifacts remain preserved separately."
+}

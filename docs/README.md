@@ -10,6 +10,7 @@ The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bri
 - [Technical findings and evidence index — 30 September 2026](technical-findings-2026-09-30.md): published and queued work, source-recovery corrections, canonical domain contracts, test evidence and remaining acceptance gaps.
 - [Integrated Toolkit controls batch](../toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md): conversion, wireless, DLT, thermostat and documentor functions, firmware codec admission, source/wheel evidence and historical receipt corrections.
 - [IOPE, templates and firmware diagnostics](../toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md): controller components, local template stages, lifecycle error projection and focused acceptance.
+- [Routed commissioning and documentors](../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md): Rust routed apply/verify, independently validated offline reconciliation and bounded Bytecraft/SceneModify reports.
 
 - [Status](status.md): completed functionality, known limits, and remaining validation.
 - [Architecture](architecture.md): data flow and crate responsibilities.

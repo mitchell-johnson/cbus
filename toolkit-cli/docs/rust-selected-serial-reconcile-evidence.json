@@ -1,0 +1,209 @@
+{
+  "format": "cbus-rust-selected-serial-reconcile-software-evidence-v1",
+  "issue": 28,
+  "base_commit": "2abc4ab363a4ca0042ee663391e7ea71b22a6345",
+  "revision_binding": "Source hashes identify the implementation and tests in the commit containing this receipt. The integration handoff supplies the resulting commit SHA.",
+  "scope": "Routed Rust apply-v2 commissioning-frame journal producer and independent Python offline XML/CBZ reconciliation validator",
+  "execution": {
+    "platform": "macOS arm64",
+    "python": "3.13.14",
+    "pytest": "9.1.1",
+    "rustc": "1.92.0 (ded5c06cf 2025-12-08)",
+    "cargo": "1.92.0 (344c4567c 2025-10-21)",
+    "endpoints": "Owned ephemeral loopback and in-memory duplex PCI peers only",
+    "storage": "New task-owned external-volume target and temporary directories",
+    "binary": "cbus-tools debug build",
+    "binary_sha256": "5a5dc100e9f05b2fe9d2f7fcaed37a4b40f95f7b788dc7d5e6c47101ad865342"
+  },
+  "test_runs": [
+    {
+      "command": "CBUS_TOOLS_BIN=<task-built-cbus-tools> PYTHONPATH=src:. PYTHONDONTWRITEBYTECODE=1 TMPDIR=<task-owned-temp> python -m pytest tests/test_serial_reconcile.py tests/test_serial_reconcile_routed.py tests/test_rust_serial_reconcile.py -k 'not NativeReconcileTests' -q -p no:cacheprovider",
+      "exit_status": 0,
+      "tests_passed": 32,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-reconcile-final.log",
+      "log_sha256": "520a20261ad33f3cf43b2f5d13f19da33b20f8c9fc035116b4ecc35cde0f740f",
+      "subtests_passed": 100,
+      "tests_deselected": 1,
+      "deselected": "NativeReconcileTests: this slice authorizes synthetic PCI and offline files only",
+      "refinement_note": "This combined run followed checksum-mode and identity-count fixes. The following final narrow run additionally exercised the uppercase-wire and single-terminator refusals."
+    },
+    {
+      "command": "CBUS_TOOLS_BIN=<task-built-cbus-tools> PYTHONPATH=src:. PYTHONDONTWRITEBYTECODE=1 TMPDIR=<task-owned-temp> python -m pytest tests/test_rust_serial_reconcile.py -q -p no:cacheprovider",
+      "exit_status": 0,
+      "tests_passed": 7,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-producer-final.log",
+      "log_sha256": "be5569911e660b8aa4346a1bec67a770f06510a3108a9763d36a9f6c81865135",
+      "subtests_passed": 48,
+      "tests_deselected": 0,
+      "final_current_source_run": true
+    },
+    {
+      "command": "cargo test -p cbus-transport --lib --offline selected_serial",
+      "exit_status": 0,
+      "tests_passed": 40,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-transport-final.log",
+      "log_sha256": "8bbd264e763b35123fcb5474f1b6a0edf1c6c381533b493a2a05f24bcfa6ef05",
+      "tests_ignored": 0
+    },
+    {
+      "command": "cargo test -p cbus-transport --offline --test selected_serial_apply --test selected_serial_plan --test selected_serial_verify",
+      "exit_status": 0,
+      "tests_passed": 48,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-integration-final.log",
+      "log_sha256": "bd7622e6c1fedba6239486a43119a52b1abfc03e2d2dbe86e0b09e5d61e5765d",
+      "tests_ignored": 0,
+      "breakdown": {
+        "selected_serial_apply": 23,
+        "selected_serial_plan": 2,
+        "selected_serial_verify": 23
+      },
+      "shared_plan_vectors": 40
+    },
+    {
+      "command": "cargo test -p cbus-tools --offline --test serial_commissioning",
+      "exit_status": 0,
+      "tests_passed": 32,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-cli-final.log",
+      "log_sha256": "1b2270bb6247ab592f76f7465a1b47377153f3273d1b5caca078be87f9c8d21d",
+      "tests_ignored": 0
+    },
+    {
+      "command": "cargo test -p cbus-transport --lib --offline goc2_parameter_ff_acknowledgement_never_completes_a_store",
+      "exit_status": 0,
+      "tests_passed": 1,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "log": "rust-v2-goc2-final.log",
+      "log_sha256": "b7c47a85a3bbd8ac54c5b9b0f79b45cec0f38c2e657aafdb8bba8d62d88f6171",
+      "tests_ignored": 0
+    }
+  ],
+  "other_checks": [
+    {
+      "command": "cargo clippy -p cbus-transport -p cbus-tools --all-targets --offline -- -D warnings",
+      "exit_status": 0,
+      "log_sha256": "009448f16ca83c03bf7d3f180610315d29a453c7118da9352370937a58d766a3"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_status": 0
+    },
+    {
+      "command": "AST syntax checks for the three affected Python files",
+      "exit_status": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_status": 0
+    }
+  ],
+  "final_cli_fixtures": [
+    {
+      "bridges": 1,
+      "project_format": "XML",
+      "command_checksum": false,
+      "all_routed_response_checksums": false,
+      "actual_cli_address_requests": 1
+    },
+    {
+      "bridges": 6,
+      "project_format": "CBZ",
+      "command_checksum": true,
+      "all_routed_response_checksums": true,
+      "actual_cli_address_requests": 1
+    }
+  ],
+  "fixture_provenance": [
+    "The rebuilt Rust CLI writes the journal and durable canonical-plan marker against an independent literal-wire PCI peer.",
+    "The independent Python validator admits each original producer artifact at its actual path before test isolation relocates journal/marker paths.",
+    "Each final fixture records exactly one remote selected-serial command, four complete MMI bookends and one destination identity probe after the scripted move.",
+    "No real endpoints, private paths, original journal coordinates or serials are stored in this receipt."
+  ],
+  "schema_binding": {
+    "routed_journal": "cbus-selected-serial-apply-v2",
+    "reconciliation_proof": "cbus-rust-selected-serial-reconciliation-v1",
+    "inventory": "cbus-selected-serial-inventory-frames-v1",
+    "frame_capture": "cbus-selected-serial-frame-capture-v1",
+    "attempt_marker": "cbus-selected-serial-attempt-v1",
+    "scope": "commissioning_frames",
+    "raw_connection_capture": false,
+    "direct_rust_v1_behavior_unchanged": true,
+    "legacy_rust_v1_offline_admission": false
+  },
+  "executed_coverage": [
+    "Actual Rust CLI journal to independently validated offline XML/CBZ move with original marker provenance",
+    "Strict schema/source/request/confirmation/route/source-unit/serial/options/inventory and expected-readback binding",
+    "Before/after complete MMI coverage, every present identity, direct local serial and final option66 checks",
+    "Checksum-off original preservation plus separate parser normalization, and checksum-on missing-checksum refusal",
+    "Wrong wire source/route/unit/serial/options even with valid checksums refuses before project writes",
+    "Unknown version/field, incomplete stream, contradictory metadata, missing/changed marker and legacy v1 refusal",
+    "Exactly one direct local identity reply and at most seven remote replies, uppercase wire hex and one original terminator",
+    "XML/CBZ Address and PP UnitAddress changes preserve OID, other PP values, references and opaque archive members",
+    "Dry-run no mutation; durable backup; after-save interruption completes only the record; subsequent apply is read-only",
+    "Existing Python direct/routed reconciliation, Rust direct v1, routed read-only marker recovery, deadlines and interruption regressions",
+    "Existing GOC2 reserved parameter FF remains unable to complete a store"
+  ],
+  "technical_learnings": [
+    "Summary-only Rust v1 lacks independently reparsable fresh observations and remains refused offline; admission required a routed-only evidence version.",
+    "Rust receipt matching originally reparsed checksum-free original frames with a checksum-requiring parser. Matching now uses the same validated parser copy as the proof, preserving originals.",
+    "Review exposed checksum synthesis not bound to the plan mode and local identity deduplication hiding duplicate replies. Both were dynamically reproduced and tightened before final validation.",
+    "The raw envelope must also match the Rust strict reader: uppercase wire hex and one CR, LF or CRLF terminator. Looser hex/terminator acceptance was reproduced and refused.",
+    "Source/schema strings and a retained canonical marker establish internal consistency; operator-controlled evidence is not cryptographically authenticated."
+  ],
+  "source_sha256": {
+    "rust/cbus-transport/src/apply.rs": "c59dc52896fda2743af4dfbd5b0dff77478794fae830c283cb962b6c507004c2",
+    "rust/cbus-transport/src/verify.rs": "6d9d1c53831e78eb899f86c10e832b0ae2151684602d908af3f4645cc306d502",
+    "rust/cbus-transport/src/pci.rs": "289d92f6bbb910ab5917dd93b9e029aa4e4aa2793b454e9bf9c5dfb9ef028c41",
+    "rust/cbus-transport/src/pci/programming.rs": "5b6a0e2143accbc51f4f40135fc08e36214c562670092adf40af72ff679b54b0",
+    "rust/cbus-transport/src/pci/selected_serial_observation.rs": "3b64863416bd16c2fd2a018d7964fcfa783fac3f571a08ad02847560640cb591",
+    "rust/cbus-transport/src/framing.rs": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d",
+    "rust/cbus-transport/src/commissioning_route.rs": "d7319b145f666b3fedb3c30a0db01bec6ed7b617986a46f9cd7a590d0bba6760",
+    "rust/cbus-protocol/src/decode.rs": "1c9850a14124a4937d7f0cb033040e69485d3a71a64aedfb38f46d0b6f8d5fee",
+    "rust/cbus-protocol/src/pci_observation.rs": "ad6bb0976fbeb0ffcd32eb7be563b052a67be1d2785f6f43ff78471c1943fa95",
+    "rust/cbus-protocol/src/packet.rs": "e171602e6585a80aa05f7d97e70412a94845bcb837ed19283ac2b298c2b830ce",
+    "rust/cbus-transport/tests/selected_serial_apply.rs": "9ae52ade32f643916253a8593eb2de1263b2bc270f2347d35cc0e1a637cf1685",
+    "rust/cbus-transport/tests/selected_serial_plan.rs": "db9f4da8471c3863548a61ab8c1fd361eeb553b1ccc4cea1c48cdb81d51e18a5",
+    "rust/cbus-transport/tests/selected_serial_verify.rs": "ab67044ecd1cfecb7b4ffa40897e01b21d654c301d9963dc4b31743365f49bab",
+    "rust/cbus-tools/tests/serial_commissioning.rs": "c4228c090e104bd4588672191fa38904c3a3d5fd6ef9eda5bd4664fc06f295bb",
+    "toolkit-cli/src/cbus_toolkit/serial_reconcile.py": "ac3e9aa082e8e474cd0118b9666cc836ef98515819b33610faa334103f912527",
+    "toolkit-cli/src/cbus_toolkit/rust_serial_reconcile.py": "7d5fcb9a38fea46ab5e67239d6f024e4cb33da24b6e663267f8370559b64aff6",
+    "toolkit-cli/src/cbus_toolkit/pci.py": "fc7e0176c23e99125ca5bd611089cfe7e4152dd6c10f378dd263e27849c7a0a4",
+    "toolkit-cli/src/cbus_toolkit/pci_inventory.py": "bf0a9f17a55b5c7bf4110abc7a030d899595375741a47dc78028182634f0c504",
+    "toolkit-cli/src/cbus_toolkit/pci_routing.py": "1eda04dd3201db4db8937f3d81e4dfc51b94a04ab3b66c5bd8e8302cdceee639",
+    "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "bddad8eba6144df48908e36cd94199a3a9b5a1263efd86808379ba173ff1ac17",
+    "toolkit-cli/src/cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+    "toolkit-cli/src/cbus_toolkit/commissioning_route.py": "2a632b78b2a3c16d924e5aaef4c6dc0de5131d751ed41142af245b851dfb8f3b",
+    "toolkit-cli/src/cbus_toolkit/project.py": "631140325f242dfb3b61a7cd2c6489af5025d4d891b6f774142ed22f0227fbe5",
+    "toolkit-cli/tests/test_rust_serial_reconcile.py": "4399655231a35b88ac9481cc24f9aa6c1fd112b6787c493d17215429ebc60275",
+    "toolkit-cli/tests/test_serial_reconcile.py": "cd0df3d5fddefac51370570069e64fae6fe896bdd2544e0210e4cd2d0f005c50",
+    "toolkit-cli/tests/test_serial_reconcile_routed.py": "d62b08364f90bcf614fb354819a1fb8a9b83e9600fb6e28cf622bb790587ede6",
+    "toolkit-cli/tests/test_pci_selected_serial_routed.py": "0045adf01c9288e29152b34f2fa7fcbdaeaaf9b89122799982e3c2b7243a1da7"
+  },
+  "historical_receipts": {
+    "docs/rust-selected-serial-routed-evidence.json": "Historical b7c8aa9 execution; not regenerated for current-source hashes",
+    "toolkit-cli/docs/serial-reconcile-routed-evidence.json": "Historical 2abc4ab reconciliation; not regenerated for current-source hashes"
+  },
+  "evidence_limits": {
+    "native_cgate_process_launched": false,
+    "native_routed_commissioning_executed": false,
+    "hardware_io_performed": false,
+    "physical_bridge_acceptance_verified": false,
+    "firmware_persistence_verified": false,
+    "movement_cause_verified": false,
+    "complete_raw_connection_capture": false,
+    "authenticated_producer_history": false,
+    "routed_cgate_database_reconciliation_supported": false,
+    "full_suite_run": false,
+    "broad_workspace_build_run": false
+  }
+}

@@ -9,13 +9,12 @@ use cbus_transport::apply::{
     attempt_identity_path, attempt_identity_path_in_store, load_recovery, ApplyError, ApplyOnce,
     ApplyOptions,
 };
+use cbus_transport::commissioning_route::{validate_route_binding, RouteBinding};
 use cbus_transport::conn::Endpoint;
 use cbus_transport::inventory::InventoryOptions;
-use cbus_transport::plan::{
-    refuse_routed_execution, validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES,
-};
+use cbus_transport::plan::{validate_plan_document_with_value, ValidatedPlan, MAX_PLAN_BYTES};
 use cbus_transport::verify::{
-    extract_snapshots, verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome,
+    extract_snapshots, verify_plan_bound, VerifyEvidence, VerifyOptions, VerifyOutcome,
 };
 use cbus_transport::{conn, PciClient};
 use clap::{Parser, Subcommand};
@@ -33,6 +32,21 @@ mod cni_scan;
 struct Cli {
     #[command(subcommand)]
     command: Command,
+}
+
+#[derive(clap::Args)]
+struct SerialRouteArgs {
+    /// Exact XML/CBZ project snapshot bound by the routed plan's SHA-256;
+    /// required with both network selectors for routed plans, refused for direct plans
+    #[arg(long)]
+    project: Option<PathBuf>,
+    /// Directly attached project source network; topology is checked before
+    /// connecting and the live local PCI serial is checked before remote reads
+    #[arg(long)]
+    source_network: Option<u8>,
+    /// Project network containing the selected serial; derives the bridge route
+    #[arg(long)]
+    target_network: Option<u8>,
 }
 
 #[derive(Subcommand)]
@@ -153,6 +167,8 @@ enum Command {
     /// observation while other plan transport settings are validated but
     /// never enforced. The plan's `command_checksum` IS enforced (the
     /// session must match the peer): checksum-off plans speak bare frames.
+    /// For routed plans the same timeout separately bounds connection and
+    /// PCI initialization.
     /// The plan comes from a file (`--plan`) or from the embedded
     /// plan in a recovery journal (`--journal`, resuming verification from
     /// a crashed/interrupted apply without the plan file); exactly one of
@@ -172,6 +188,8 @@ enum Command {
         /// before connecting); mutually exclusive with --plan
         #[arg(long, conflicts_with = "plan", required_unless_present = "plan")]
         journal: Option<PathBuf>,
+        #[command(flatten)]
+        route: SerialRouteArgs,
         /// Overall observation deadline in seconds, in (0, 3600]
         #[arg(long, default_value_t = 300.0)]
         timeout: f64,
@@ -185,7 +203,8 @@ enum Command {
     /// the CNI; stop `cmqttd` or any other current owner before running it.
     /// The journal must not exist (exclusive creation, checked before connecting);
     /// `--timeout` separately bounds the fresh-before and post-send
-    /// observations. The exact one-shot send and its bounded receipt capture
+    /// observations, and connection/PCI initialization for routed plans.
+    /// The exact one-shot send and its bounded receipt capture
     /// use the same PCI connection as those observations, all in the plan's
     /// `command_checksum` session mode. The journal is
     /// recovery evidence that also carries the embedded plan. An additional
@@ -209,6 +228,8 @@ enum Command {
         /// different recovery-journal directories (must be preserved)
         #[arg(long)]
         attempt_store: Option<PathBuf>,
+        #[command(flatten)]
+        route: SerialRouteArgs,
         /// Per-observation deadline in seconds, in (0, 3600]
         #[arg(long, default_value_t = 300.0)]
         timeout: f64,
@@ -306,6 +327,7 @@ fn main() {
             pci,
             plan,
             journal,
+            route,
             timeout,
         } => {
             let rt = tokio::runtime::Runtime::new().unwrap();
@@ -313,6 +335,7 @@ fn main() {
                 &pci,
                 plan.as_deref(),
                 journal.as_deref(),
+                &route,
                 timeout,
             )) {
                 Ok(code) => std::process::exit(code),
@@ -327,6 +350,7 @@ fn main() {
             plan,
             journal,
             attempt_store,
+            route,
             timeout,
         } => {
             let rt = tokio::runtime::Runtime::new().unwrap();
@@ -335,6 +359,7 @@ fn main() {
                 &plan,
                 &journal,
                 attempt_store.as_deref(),
+                &route,
                 timeout,
             )) {
                 Ok(code) => std::process::exit(code),
@@ -934,7 +959,6 @@ fn load_plan_for_cli(
     }
     let (plan, document) = validate_plan_document_with_value(&raw)
         .map_err(|e| format!("plan: invalid plan document: {e}"))?;
-    refuse_routed_execution(&plan).map_err(|e| format!("plan: {e}"))?;
     // Snapshot extraction is part of "corrupt plan" rejection: a plan whose
     // embedded before/expected snapshots cannot be read must fail before
     // connecting, not after a wasted observation.
@@ -951,7 +975,7 @@ fn load_plan_for_cli(
 /// journal's embedded endpoint. The library `load_recovery` is the bounded
 /// guarded gate (symlink/non-regular refusal, size bound, strict
 /// embedded-plan validation); the embedded plan bytes are then pinned from
-/// the journal for `verify_plan` (which revalidates them) and re-checked
+/// the journal for `verify_plan_bound` (which revalidates them) and re-checked
 /// here, so the exact bytes used are the bytes bound to `--pci`. Every
 /// corruption class (unreadable journal, corrupt envelope, wrong format,
 /// missing/unvalidatable embedded plan, missing snapshots, endpoint
@@ -966,7 +990,6 @@ fn load_journal_for_cli(
     // the same journal evidence; do not reopen the path and introduce a
     // substitution or unbounded-read window.
     let recovery = load_recovery(journal_path).map_err(|e| e.to_string())?;
-    refuse_routed_execution(&recovery.plan).map_err(|e| format!("plan: {e}"))?;
     let plan_value: Value = serde_json::from_slice(&recovery.plan_document)
         .map_err(|e| format!("journal: invalid embedded plan: {e}"))?;
     extract_snapshots(&plan_value)
@@ -988,6 +1011,20 @@ async fn connect_pci(host: String, port: u16) -> Result<Arc<PciClient>, String> 
         .await
         .map_err(|e| format!("pci_reset: {e}"))?;
     Ok(pci)
+}
+
+async fn connect_plan_pci(
+    plan: &ValidatedPlan,
+    total_deadline: Duration,
+) -> Result<Arc<PciClient>, String> {
+    let connection = connect_pci(plan.host.clone(), plan.port);
+    if plan.is_routed() {
+        tokio::time::timeout(total_deadline, connection)
+            .await
+            .map_err(|_| "connect/init: routed PCI deadline elapsed".to_string())?
+    } else {
+        connection.await
+    }
 }
 
 fn verify_options(total_deadline: Duration) -> VerifyOptions {
@@ -1025,6 +1062,7 @@ fn verify_json(
     evidence: &VerifyEvidence,
     raw: &[u8],
     total_deadline: Duration,
+    route_binding: Option<&RouteBinding>,
 ) -> Value {
     let mut value = json!({
         "format": "cbus-selected-serial-verify-v1",
@@ -1066,6 +1104,9 @@ fn verify_json(
         "endpoint": {"host": plan.host, "port": plan.port},
     });
     value["timeouts"] = timeouts_json(raw, total_deadline);
+    if let Some(binding) = route_binding {
+        value["route_binding"] = binding.evidence();
+    }
     value
 }
 
@@ -1087,6 +1128,7 @@ fn apply_failure_json(
     unexpected_changes: Value,
     journal_path: Option<&Path>,
     receipt_matched: Value,
+    route_binding: Option<&RouteBinding>,
 ) -> Value {
     let mut value = json!({
         "format": "cbus-selected-serial-apply-v1",
@@ -1126,6 +1168,9 @@ fn apply_failure_json(
         "journal": journal_path.map(|path| path.to_string_lossy().into_owned()),
     });
     value["timeouts"] = timeouts_json(raw, total_deadline);
+    if let Some(binding) = route_binding {
+        value["route_binding"] = binding.evidence();
+    }
     value
 }
 
@@ -1133,6 +1178,7 @@ async fn serial_verify_cmd(
     pci: &str,
     plan_path: Option<&Path>,
     journal_path: Option<&Path>,
+    route: &SerialRouteArgs,
     timeout: f64,
 ) -> Result<i32, String> {
     let (raw, plan, total_deadline, journal) = match (plan_path, journal_path) {
@@ -1150,12 +1196,19 @@ async fn serial_verify_cmd(
             return Err("either --plan or --journal is required (mutually exclusive)".to_string());
         }
     };
+    let route_binding = validate_route_binding(
+        &plan,
+        route.project.as_deref(),
+        route.source_network,
+        route.target_network,
+    )
+    .map_err(|error| format!("route binding: {error}"))?;
     // Match Python's advisory endpoint namespace before the first PCI byte.
     // Hold the lease through the closing observation, including when this is
     // a read-only recovery from a journal or durable attempt marker.
     let _lease = commissioning_lease::EndpointLease::acquire(&plan.host, plan.port)
         .map_err(|error| format!("commissioning lease: {error}"))?;
-    let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
+    let pci_client = connect_plan_pci(&plan, total_deadline).await?;
     // Local PCI IDENTIFY replies are bare CAL frames, so correlation needs the
     // validated plan address even though this hint does not establish physical
     // identity by itself. Apply installs the same hint before its observations.
@@ -1166,11 +1219,22 @@ async fn serial_verify_cmd(
     // Python coordinator: a checksum-off plan speaks bare MMI, IDENTIFY and
     // recall frames end to end instead of being rejected by a bare peer.
     pci_client.set_command_checksum(plan.command_checksum);
-    let evidence = verify_plan(&raw, &pci_client, verify_options(total_deadline))
-        .await
-        .map_err(|e| format!("verify: {e}"))?;
+    let evidence = verify_plan_bound(
+        &raw,
+        &pci_client,
+        verify_options(total_deadline),
+        route_binding.as_ref(),
+    )
+    .await
+    .map_err(|e| format!("verify: {e}"))?;
     let expected = evidence.outcome == VerifyOutcome::ObservedExpectedChange;
-    let mut value = verify_json(&plan, &evidence, &raw, total_deadline);
+    let mut value = verify_json(
+        &plan,
+        &evidence,
+        &raw,
+        total_deadline,
+        route_binding.as_ref(),
+    );
     if let Some(journal_path) = journal {
         value["journal"] = Value::from(journal_path.to_string_lossy().into_owned());
     }
@@ -1183,9 +1247,17 @@ async fn serial_apply_cmd(
     plan_path: &Path,
     journal_path: &Path,
     attempt_store: Option<&Path>,
+    route: &SerialRouteArgs,
     timeout: f64,
 ) -> Result<i32, String> {
     let (raw, plan, total_deadline) = load_plan_for_cli(plan_path, pci, timeout)?;
+    let route_binding = validate_route_binding(
+        &plan,
+        route.project.as_deref(),
+        route.source_network,
+        route.target_network,
+    )
+    .map_err(|error| format!("route binding: {error}"))?;
     // Exclusive journal creation is checked before connecting (the library's
     // `O_CREAT | O_EXCL` remains as defense-in-depth for races and restarts).
     if journal_path.exists() || journal_path.is_symlink() {
@@ -1226,7 +1298,7 @@ async fn serial_apply_cmd(
     // nonblocking host-local endpoint lease for the entire transaction.
     let _lease = commissioning_lease::EndpointLease::acquire(&plan.host, plan.port)
         .map_err(|error| format!("commissioning lease: {error}"))?;
-    let pci_client = connect_pci(plan.host.clone(), plan.port).await?;
+    let pci_client = connect_plan_pci(&plan, total_deadline).await?;
     // Bind the plan's local address hint for correlated receipt parsing. The
     // inventory still checks the pinned serial independently; this hint alone
     // does not establish physical identity.
@@ -1238,7 +1310,7 @@ async fn serial_apply_cmd(
     pci_client.set_command_checksum(plan.command_checksum);
     let once_ = ApplyOnce::new(&raw);
     match once_
-        .apply(
+        .apply_bound(
             &pci_client,
             journal_path,
             ApplyOptions {
@@ -1246,11 +1318,18 @@ async fn serial_apply_cmd(
                 durable_attempt_identity: true,
                 attempt_store,
             },
+            route_binding.as_ref(),
         )
         .await
     {
         Ok(success) => {
-            let mut evidence = verify_json(&plan, &success.verify, &raw, total_deadline);
+            let mut evidence = verify_json(
+                &plan,
+                &success.verify,
+                &raw,
+                total_deadline,
+                route_binding.as_ref(),
+            );
             evidence["format"] = Value::from("cbus-selected-serial-apply-v1");
             evidence["operation"] = Value::from("apply");
             evidence["serial"] = Value::from(success.serial);
@@ -1277,6 +1356,7 @@ async fn serial_apply_cmd(
                 Value::Array(Vec::new()),
                 None,
                 Value::Null,
+                route_binding.as_ref(),
             );
             evidence["attempt_identity"] = Value::Null;
             println!("{evidence}");
@@ -1332,6 +1412,7 @@ async fn serial_apply_cmd(
                 unexpected_changes,
                 Some(journal_path),
                 receipt_matched,
+                route_binding.as_ref(),
             );
             evidence["attempt_identity"] = Value::from(attempt_path.to_string_lossy().into_owned());
             println!("{evidence}");

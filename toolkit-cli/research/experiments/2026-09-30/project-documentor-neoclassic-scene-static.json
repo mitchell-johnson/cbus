@@ -1,0 +1,80 @@
+{
+  "format": "cbus-project-documentor-neoclassic-scene-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "checks": {
+    "selector_one_branch": true,
+    "jp14_scene24_branch": true,
+    "modify25_assignment": true,
+    "modify_scene_one_before_raw_stages": true,
+    "modify_pin_lock_then_unlock": true,
+    "modify_four_raw_stages": true,
+    "modify_class_subset_if_empty": true,
+    "modify_refresh_after_unlock": true,
+    "modify_final_indicator_only": true,
+    "refresh_reselects_template": true,
+    "modify_skips_template_microfunctions": true,
+    "scene_blocks_refresh_before_pin_check": true,
+    "scene_blocks_remove_all_then_linear": true,
+    "linear_block_forced_primary_unused": true,
+    "linear_reference_added": true
+  },
+  "methods": {
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "start": "0xcca51c",
+      "end": "0xccaef4",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromTemplate": {
+      "start": "0xd11c14",
+      "end": "0xd11c54",
+      "sha256": "d73920eaf21e1b0c24ab401116ce15a5ccbc9ad6057371b49df918f393b3531c"
+    },
+    "CIS_TInputKey.TInputKey.MacroFunctionRefresh": {
+      "start": "0xd11a18",
+      "end": "0xd11a48",
+      "sha256": "9359947b91ecd3e3ee96b08ae77933ed57c97044a50bb0477f71f537a09498ee"
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplate": {
+      "start": "0xd12668",
+      "end": "0xd12688",
+      "sha256": "ef0a34087c39fb0483e85b8a0781730d6e98733103105f8d7435d7ed8b55f8ff"
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplateScene": {
+      "start": "0xd12788",
+      "end": "0xd12a64",
+      "sha256": "55fc404a82307263ee2e27e498b7137e37ba4b3066120663ddda7bb459f11327"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "start": "0xd12adc",
+      "end": "0xd12c2c",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+    }
+  },
+  "contract": {
+    "scene24": "Reuse canonical Neo selector=1/JP14 semantics and linear unused primary unshared block guard; Classic body only.",
+    "scene_modify": "The later scene-modify receipt pins the special template25 refresh branch: key template25 remains, raw stages survive, Scene1/Instant remains, and the derived ramp template is assigned separately under its lock. Final indicator assignment does not set extension scene.",
+    "scene_modify_admission": "Canonical KEYC/CIR SceneModify is admitted by project-documentor-neoclassic-scene-modify-static.json; noncanonical/history graphs and original full-loader/page execution remain unassessed.",
+    "scene_data": "Require canonical SceneTable/SceneTablePointer when resolving extension scene or dependencies; pointer data is not needed solely to display Scene24 numeric/ramp controls.",
+    "trigger": "Native Scene24 loader binds ControlAppGroupAddress and LP/LR trigger; Classic body/action/Input consumers do not read that trigger binding. Other dependencies consume ControlAppGroupAddress independently.",
+    "supporting_receipt_checks": {
+      "project-documentor-neo-static.json": [
+        "scene_collection_padded_to_eight",
+        "scene24_default_commands_are_idle",
+        "scene24_requires_jp_14",
+        "scene24_number_is_indicator_assignment_plus_one"
+      ],
+      "project-documentor-neoclassic-static.json": [
+        "scene_commands_loaded_before_keys_even_when_disabled",
+        "classic_primary_subset_only_adds_scene_templates",
+        "secondary_macro_subset_equals_key"
+      ]
+    }
+  },
+  "limits": [
+    "Static source only; no original loader or generated-page acceptance.",
+    "Canonical block guard avoids native block relocation and shared-reference removal.",
+    "Inherited KEYC/CIR class/factory/subset evidence remains in the separate NeoClassic receipt."
+  ]
+}

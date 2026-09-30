@@ -243,10 +243,12 @@ dependencies = [
  "libc",
  "proptest",
  "ring",
+ "roxmltree",
  "serde_json",
  "tokio",
  "tokio-serial",
  "tracing",
+ "zip",
 ]
 
 [[package]]

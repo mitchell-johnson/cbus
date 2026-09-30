@@ -50,24 +50,24 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 593,
-    "modules_without_skip_sites": 312,
-    "modules_with_skip_sites": 281,
+    "test_modules": 602,
+    "modules_without_skip_sites": 314,
+    "modules_with_skip_sites": 288,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 9,
+      "host_tool": 10,
       "native_cgate_local": 78,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 97,
+      "original_toolkit": 102,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 9,
-      "unclassified": 22,
+      "unclassified": 24,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 139,
       "partial": 20,
-      "none": 122
+      "none": 129
     },
     "native_runnable_tests": 258,
     "native_selected_required_tests": 258,
@@ -6213,6 +6213,41 @@
         }
       ]
     },
+    "tests/test_iope_json_reader.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_iope_json_reader.py::IopeJsonReaderTest::test_all_fifo_input_roles_fail_in_bounded_subprocess_before_client",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo')",
+          "reason": "FIFO CLI tests require POSIX",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_iope_json_reader.py::IopeJsonReaderTest::test_regular_path_or_symlink_substituted_with_fifo_at_open",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo') and hasattr(os, 'O_NONBLOCK')",
+          "reason": "FIFO substitution requires POSIX",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_iope_logic_native.py": {
       "categories": [
         "native_cgate_local",
@@ -7682,6 +7717,118 @@
         }
       ]
     },
+    "tests/test_project_documentation_bytecraft.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_bytecraft.py::test_body_source_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE for the old Bytecraft body source comparison",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_body_source_receipt_reproduces_when_configured"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_bytecraft_loader.py": {
+      "categories": [
+        "original_toolkit",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_bytecraft_loader.py::test_static_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source or not specification",
+          "reason": "Set CBUS_TOOLKIT_EXE and CBUS_BYTECRAFT_SPEC for pinned static comparison",
+          "environment": [
+            "CBUS_BYTECRAFT_SPEC",
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit",
+            "unclassified"
+          ],
+          "tests": [
+            "test_static_receipt_reproduces_when_configured"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_bytecraft_usage.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_bytecraft_usage.py::test_static_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE for pinned Bytecraft static comparison",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_static_receipt_reproduces_when_configured"
+          ]
+        }
+      ]
+    },
     "tests/test_project_documentation_classic_key.py": {
       "categories": [
         "original_toolkit"
@@ -8044,6 +8191,78 @@
           ],
           "tests": [
             "test_body_source_receipt_reproduces_when_configured"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_neoclassic_modify.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_neoclassic_modify.py::test_scene_modify_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE for the SceneModify source comparison",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_scene_modify_receipt_reproduces_when_configured"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_neoclassic_scene_keys.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_neoclassic_scene_keys.py::test_scene_transition_source_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE for the encoded KEYC/CIR source comparison",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_scene_transition_source_receipt_reproduces_when_configured"
           ]
         }
       ]
@@ -8933,6 +9152,48 @@
             "RustInteropTests::test_typed_container_document_replaces_complete_subtree",
             "RustInteropTests::test_typed_unit_document_drops_unmodeled_markup_like_native_mapper",
             "RustInteropTests::test_typed_wrapper_cycle"
+          ]
+        }
+      ]
+    },
+    "tests/test_rust_serial_reconcile.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 8,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_rust_serial_reconcile.py::RustSerialReconcileTests",
+          "kind": "decorator.skipUnless",
+          "condition": "BIN",
+          "reason": "set CBUS_TOOLS_BIN to run actual Rust serial-apply interoperability",
+          "environment": [
+            "CBUS_TOOLS_BIN"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "RustSerialReconcileTests::test_actual_cli_symlink_parent_binds_canonical_marker_and_refuses_alias_abuse",
+            "RustSerialReconcileTests::test_actual_cli_xml_and_cbz_journals_reconcile_offline",
+            "RustSerialReconcileTests::test_attempt_marker_missing_or_changed_refused",
+            "RustSerialReconcileTests::test_legacy_rust_v1_and_missing_raw_proof_are_refused",
+            "RustSerialReconcileTests::test_restart_after_save_preserves_backup_and_does_not_repeat_write",
+            "RustSerialReconcileTests::test_strict_raw_capture_and_summary_mutations_refuse_before_writes",
+            "RustSerialReconcileTests::test_target_scope_and_project_pin_refused_before_writes",
+            "RustSerialReconcileTests::test_valid_checksums_cannot_hide_wrong_wire_identity_route_or_options"
           ]
         }
       ]

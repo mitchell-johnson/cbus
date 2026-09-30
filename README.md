@@ -19,7 +19,15 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
-The latest [IOPE and template batch](toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md)
+The latest [routed commissioning and documentor batch](toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md)
+adds Rust apply/verify through one to six bridges, independent Python journal
+validation and offline project reconciliation, plus old Bytecraft DIMPR12 and
+NeoClassic SceneModify reports. Its focused source and wheel runs each passed
+**1,159 test nodes and 1,304 subtests**, with separate validation of
+151 distinct Rust tests. It also corrects journal-parent aliases while retaining
+strict attempt-marker checks. Original routed commissioning and complete report
+GUI/physical acceptance remain open. These results are separate from the preceding
+[IOPE and template batch](toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md), which
 adds eight IOPE controller components, local eDLT template export/inspection/
 preview and guarded staging, plus firmware failure diagnostics. Its focused
 source and installed-wheel runs each passed 642 test nodes and 1,951 subtests,
@@ -812,6 +820,14 @@ rust/target/release/cbus-tools serial-apply \
 ```
 
 The selected-serial commands consume a strict plan produced by the Toolkit workflow. Each `--pci` invocation opens a direct TCP socket and requires exclusive ownership of the CNI; stop `cmqttd` or any other current owner before running it. Verify performs bounded read-only classification. Apply completes the exact bookended fresh-before inventory, immediately rechecks local option 66=`05`, durably records send intent in a new journal, sends once on that same PCI connection, and independently verifies afterward. Preserve one stable journal path and use `serial-verify --journal` after any interruption or uncertain result; recovery never authorizes replay. These guarantees are covered with scripted loopback peers and do not claim physical-unit compatibility or persistence.
+
+For a routed plan, both commands also require `--project FILE`,
+`--source-network N` and `--target-network N`. They re-derive its one-to-six-bridge
+route from the exact pinned XML/CBZ snapshot before I/O. A completed routed
+Rust apply-v2 journal can then be independently validated and reconciled into
+that offline project with `cbus-toolkit serial-address reconcile`; preserve its
+original path and attempt marker. See [routed execution](docs/rust-selected-serial-routed.md)
+and [project reconciliation](toolkit-cli/docs/physical-addressing.md).
 
 To exercise the Toolkit CLI against the Rust C-Gate model, start the server in one terminal:
 

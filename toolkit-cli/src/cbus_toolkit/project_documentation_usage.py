@@ -82,6 +82,9 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
     if kind not in {"input", "output", "other"}:
         raise ValueError("Group usage kind must be input, output or other")
     typ = unit.unit_type.upper()
+    if typ == "DIMPR12":
+        from .project_documentation_bytecraft_usage import bytecraft_group_usage
+        return bytecraft_group_usage(unit, application, group, kind)
     if typ == "SCNCTL5":
         from .project_documentation_scene_controller import scene_controller_group_usage
         return scene_controller_group_usage(unit, application, group, kind)
@@ -251,6 +254,9 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
         from .project_documentation_special_outputs import error_output_action_usage
         return error_output_action_usage(unit, application, group, address, value)
     typ = unit.unit_type.upper()
+    if action_documentor == "BytecraftDimmer" and typ == "DIMPR12":
+        from .project_documentation_bytecraft_usage import bytecraft_action_selector_usage
+        return bytecraft_action_selector_usage(unit, application, group, address, value)
     if action_documentor == "ClassicKeyInput":
         from .project_documentation_neoclassic import NEOCLASSIC_TYPES
         if typ in NEOCLASSIC_TYPES:

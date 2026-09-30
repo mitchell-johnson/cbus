@@ -106,9 +106,38 @@ For a far network through one to six bridges, pass `--project FILE
 --source-network N --target-network N` to `plan`, `apply` and `verify`: the
 plan observes the far network by routed MMI/IDENTIFY4, and apply/verify
 re-derive the route from that exact project before any I/O, refusing
-`route_binding`/`wrong_route`. Routed evidence is scripted-peer only; the Rust
-`serial-verify`/`serial-apply` still refuse routed plans, and `reconcile`
-refuses routed journals.
+`route_binding`/`wrong_route`. Rust `serial-verify`/`serial-apply` also execute
+bound routed plans; legacy unbound library entry points remain direct-only.
+Routed evidence remains synthetic scripted-peer evidence, without native routed
+UNRAVEL or hardware acceptance. Python reconciliation accepts completed Python
+routed journals only for the exact bound offline XML/CBZ project and recorded
+target network (`--network`, if supplied, must match). It reparses raw routed
+inventories and receipts, checks direct local PCI identity/options and the shared
+attempt marker, and binds route/project/source/target freshness. A missing or
+mismatched receipt does not prevent an exact independent after-inventory from
+proving the observed change. Type/firmware pins constrain database identity,
+not physical compatibility. First run requires the original raw project hash;
+restart requires the retained hash-bound backup, exact recomputed candidate and
+validated record/current digest. Keep exclusive project file ownership; freshness
+checks are not a cross-process filesystem lock. Pending source repeats require
+explicit apply; exact pending destination completes only the record, changed
+pending content conflicts, and completed records only report current matching.
+Completed Rust routed `cbus-selected-serial-apply-v2` journals also reconcile
+offline through the independent Python `rust_serial_reconcile` validator. Their
+versioned proof retains reader-original and separate parser frames for the
+before/after inventories, direct PCI identity/options and one-shot exchange.
+Parser changes are limited to trailing CR/LF normalization and outer-checksum
+addition for validated checksum-off frames. This is commissioning-frame proof,
+with `raw_connection_capture: false`, not authenticated connection history.
+Require a durable completed single send, exact raw inventories and request/
+receipt agreement, no ignored traffic, and the existing canonical-plan marker
+bound to the same plan, fingerprint, absolute journal path and scope. Missing,
+partial, inconsistent or uncertain proof refuses before database writes.
+Direct Rust v1 behavior is unchanged; legacy Rust v1, verify output and
+marker-only recovery cannot reconcile offline. Routed C-Gate is refused before
+connection. Direct journals still refuse bridge projects. See the reconciliation
+contract in `toolkit-cli/docs/physical-addressing.md` and the versioned evidence
+details in `docs/rust-selected-serial-routed.md`.
 After an `observed_expected_change` journal, `serial-address reconcile --journal J
 (--project FILE | --cgate HOST:PORT --project-name P)` plans the matching database
 unit move (dry run by default; `--apply` backs up, moves, saves and verifies a
@@ -618,3 +647,12 @@ transactions, live groups and physical programming remain excluded. Read
 `toolkit-cli/docs/iope-workflows.md` and each component document.
 
 For eDLT template format/export/preview and issued assignment/second-model/Reset/terminal stages, read `toolkit-cli/docs/edlt-template-integration-boundaries.md`. Apply remains an unconditional refusal before target access. Do not equate source CRC, local normalization or a synthetic database durability receipt with original template Apply/OK.
+
+Old DIMPR12 firmware 0–1.9.02 has bounded project-documentation bodies and
+independent group/action usage, with an explicit 33-record packed scene
+projection. NeoClassic KEYC/KEYCIR bodies and usage consume canonical
+SceneModify commands. Require complete consumed PP/model facts; unknown
+dependencies retain unresolved markers. DIMPR12A/L1, later firmware, original
+complete loaders, initialized GUI history and full-page byte/visual parity
+remain open. See [Bytecraft](../../../../toolkit-cli/docs/project-documentation-bytecraft.md)
+and [integration boundaries](../../../../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md).

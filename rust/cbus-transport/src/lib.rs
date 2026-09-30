@@ -4,6 +4,7 @@
 
 pub mod apply;
 pub mod cni_discovery;
+pub mod commissioning_route;
 pub mod conn;
 pub mod flow;
 pub mod framing;

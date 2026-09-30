@@ -16,7 +16,7 @@
   "implementation_sha256": {
     "src/cbus_toolkit/iope_scene_levels.py": "deae0560cf158bc0c7f8b52ce8e95fbf49dc566e6e595d9abe8342ec8bbcf6d8",
     "src/cbus_toolkit/iope_scene_selectors.py": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a",
-    "src/cbus_toolkit/iope_workflow_cli.py": "233492c1a3d72fa46efe9456663c51e763d574ea78fde122884fc1b4d9acb450",
+    "src/cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
     "src/cbus_toolkit/din_output_settings.py": "55025c2b874a855cf552a915e7c78ef2b6d7fe82a9c0b9af4bd361453d20fc4c",
     "tests/test_iope_scene_levels_native.py": "b0f6ac8c07107f7dbbccec22d23406d7c50ab02c8eebeab415a1cdd9fa7274f2",
     "tests/test_iope_join_groups_native.py": "17a3b1e58b1f01cda4e4c7a2434361e613f5c28c82c0053f79cec4d151435e64",
@@ -5687,5 +5687,25 @@
     "process_exit_confirmed": true,
     "work_removed": true,
     "reserved_sockets_closed": true
+  },
+  "fresh_acceptance_provenance": {
+    "phase": "pre-freeze-current-source-four-exact-native-matrices",
+    "actual_imported_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+    "actual_imported_iope_workflow_cli_sha256": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "raw_receipt_sha256": "1c26312931975201f13e42b7bb6b522a2f4b7812e26618511cfa17a8fc9a4e24",
+    "execution_binding_sha256": "97bef40ce09fd68c711c23ead8dd8e265e52d0dfae2e5eeca15444f7a18d122d",
+    "junit_sha256": "93fd9f3e836b519a4ae1c906b9c1f8ebfd931c13aba678658b43f46e8851ba26",
+    "selected_method_node": "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest::test_scene_levels_native_matrix",
+    "phase_normal_passed": 4,
+    "phase_subtests_passed": 27,
+    "phase_failed": 0,
+    "phase_skipped": 0,
+    "historical_fixture_sha256": "d036e8d512a93b7e05b6f4bed84a685bbb2fa2c143492438fe9bb47f74f89ea2",
+    "historical_fixture_unchanged": true,
+    "cni_admission": "Closed synthetic database network targets owned idle loopback listener; no external endpoint configured. Listener queue/count was not independently observed.",
+    "cni_connection_count_verified": false,
+    "original_runtime_executed": false,
+    "physical_hardware_executed": false,
+    "wheel_built_or_executed": false
   }
 }

@@ -245,12 +245,55 @@ cbus-toolkit serial-address verify --recovery routed-recovery.json \
   --project house.xml --source-network 254 --target-network 252
 ```
 
-`serial-address reconcile` refuses routed journals: the target-network
-database move is not implemented. Rust `apply_plan`/`verify_plan` and
-`cbus-tools serial-verify`/`serial-apply` validate routed plans (including their
-routed captures) but still refuse to execute them with
-`routed_execution_unsupported` before any lease, marker, journal, connection
-or PCI byte; they have no project-topology binding.
+Python `serial-address reconcile --journal routed-recovery.json --project house.xml`
+now plans the target-network database move; add `--apply` to back up, move,
+save and verify the offline XML/CBZ file. No new flags are required.
+`--network` is optional and must match the recorded target when supplied.
+It admits only a completed Python apply journal with the shared attempt marker,
+reparsed routed before/after/raw receipt evidence, direct local PCI checks and
+an exact fresh route binding. Explicit database type/firmware pins do not prove
+physical compatibility. It binds the first run to the original raw project
+SHA-256 and restart to the retained original backup and recomputed candidate;
+keep the backup and exclusively own the file. Routed C-Gate reconciliation is
+refused before connection. Completed Rust routed `cbus-selected-serial-apply-v2`
+journals also qualify through an independent Python frame validator, as described
+below. Legacy Rust v1 journals remain unsupported offline. Direct journals still
+refuse bridge projects. See [the reconciliation contract](physical-addressing.md#reconciling-a-selected-serial-move-with-the-database).
+
+Rust `cbus-tools serial-verify`/`serial-apply`
+now execute routed plans with the same explicit `--project`, `--source-network`
+and `--target-network` binding. They recompute the route from the exact saved
+project digest before acquiring the endpoint lease, and recheck freshness
+before durable intent and send. The library's `apply_plan_bound` and
+`verify_plan_bound` require an independently validated `RouteBinding`; legacy
+unbound `apply_plan`/`verify_plan` remain direct-only and refuse a routed plan
+before I/O. See [the Rust routed execution contract](../../docs/rust-selected-serial-routed.md)
+for its admission limits, deadlines and evidence boundary.
+
+Rust routed apply-v2 retains `cbus-rust-selected-serial-reconciliation-v1`
+evidence: complete before/after inventories, fresh direct PCI identity/options,
+and the one-shot exchange. Each `cbus-selected-serial-frame-capture-v1` retains
+the actual request/confirmation, ordered reader-original `raw_frames_hex` and
+separate `parser_frames_hex`, ignored traffic, completion and termination.
+Parser copies only normalize trailing CR/LF to CRLF or add an outer checksum
+to a validated checksum-off frame; they preserve payload and route bytes.
+`frame_capture_scope: commissioning_frames` and `raw_connection_capture: false`
+explicitly exclude a full connection capture.
+
+`cbus_toolkit.rust_serial_reconcile` independently reconstructs these observations
+with Python protocol parsers and checks the raw/parser relationship, requests,
+exact Reply Network, all 256 MMI states, every present-address serial probe,
+direct PCI identity and option 66 byte `05`. It requires the before map to equal
+the plan and the after map to equal `expected_after`, and reparses the exchange
+to verify its receipt summary. Only a completed, durable, single-send
+`after_observed` journal with `observed_expected_change` qualifies. Ignored
+traffic, missing/partial proof, uncertain attempts, unknown versions/fields or
+inconsistent summaries refuse. The existing canonical-plan marker must still
+bind the same plan, journal path, fingerprint and scope; the journal's absolute
+recorded location must match its current path. These are internal consistency
+and provenance checks, not authentication or physical acceptance. Direct Rust
+v1 behavior is unchanged, and `serial-verify` output or a marker alone cannot
+authorize offline reconciliation.
 
 **Evidence boundary.** `tests/test_pci_selected_serial_routed.py` drives the
 coordinator and CLI against independent scripted peers that build every
@@ -270,6 +313,15 @@ Toolkit/C-Gate routed-commissioning captures. The Rust simulator's routed
 fixture serves only WRITE/RECALL, so it is not used here. No native C-Gate
 routed selected-serial result, live bridge delivery, device persistence or
 physical acceptance exists for this workflow.
+
+**Native feasibility boundary.** The existing direct-only `UnravelBusFixture`
+rejects routed commands. The retained [native one-bridge probe](../research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json)
+reached outbound MMI but did not establish initialization or readback. Further work needs a research-only
+bridge identity/MMI initialization model and strict success assertions; a wrapper
+alone cannot establish native routed UNRAVEL acceptance. A pinned standalone JAR does not satisfy `LocalCGate`: an accepted Java 11/keytool
+pair and the original application support tree are also required. No LocalCGate
+process was launched for this reconciliation slice. These findings do not
+establish a successful native routed move or hardware effect.
 
 ## Recovery journal and outcomes
 
@@ -398,12 +450,17 @@ Both commands also bind the plan's local unit as the reply-correlation hint
 before any I/O, so sourceless local IDENTIFY replies correlate. A plan file
 written by either implementation therefore verifies and applies with the other.
 
-The plan and journal components do not authorize a bus mutation. The Rust
-verifier also does not enforce the plan's endpoint, local PCI serial or
-transport settings and emits no Python-equivalent raw-frame proof: the caller
-supplies and exclusively owns the connected client. It cannot prove movement
-cause, firmware persistence, physical compatibility or an atomic observation,
-and it does not replace apply/recovery.
+The plan and journal components do not authorize a bus mutation. Direct Rust
+library verification leaves endpoint/local-serial enforcement to the caller,
+who supplies and exclusively owns the connected client; the CLI checks its
+endpoint and enforces the plan's command-checksum mode. Bound routed
+verification independently checks the local PCI identity and collects the
+commissioning-frame inventory used by apply-v2. This proof does not authenticate
+history or prove movement cause, firmware persistence, physical compatibility
+or an atomic observation, and it does not replace apply/recovery.
+The retained Rust flags `raw_transport_evidence_verified: false` and library
+`endpoint_binding_verified: false` reflect these limits; the CLI's separate
+endpoint check does not turn frame evidence into authenticated history.
 
 Matching bookends are non-atomic: a concurrent identity swap, identical physical
 serials, delayed traffic and analogue bus collisions cannot be excluded. An
@@ -435,6 +492,15 @@ verifies and applies with bare and checksummed session frames; live against
 the fixture, a Python-generated plan verifies and applies through the Rust CLI
 in both checksum modes, and the Rust-reserved marker then refuses a Python
 apply of the same plan while resuming Python read-only verification.
+
+`tests/test_rust_serial_reconcile.py` uses actual Rust CLI journals from an
+independent literal fake PCI: one-bridge XML with all routed responses
+checksum-off and six-bridge CBZ with checksums on. It validates the original
+producer journal and genuine marker before any fixture path relocation, then
+tests offline preservation, dry-run/apply, restart without another save and
+strict frame, summary and marker refusals. Set `CBUS_TOOLS_BIN` to the built
+CLI to enable these tests. This is software interoperability evidence, not
+native routed commissioning or hardware acceptance.
 
 The generated focused report is
 [selected-serial-coordinator-acceptance.json](selected-serial-coordinator-acceptance.json).

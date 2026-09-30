@@ -1,0 +1,15 @@
+{
+  "format": "cbus-documentor-bytecraft-modify-software-smoke-v1",
+  "cli_exit": 0,
+  "synthetic_units": 7,
+  "recovered_bodies": 6,
+  "scene_modify_controls": 40,
+  "old_bytecraft_body": "recovered",
+  "l1_body": "partial",
+  "original_toolkit_executed": false,
+  "byte_parity": "unassessed",
+  "visual_parity": "unassessed",
+  "remaining_marker_count": 37,
+  "encoding": "UTF-8 BOM and CRLF",
+  "original_generated_page_comparison": "not_obtained"
+}

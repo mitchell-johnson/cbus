@@ -761,6 +761,15 @@ Verify performs fresh observations and never replays the command. Exit status
 Hardware compatibility and firmware persistence remain unverified. See
 [the workflow and recovery contract](docs/pci-selected-serial.md).
 
+Rust `serial-apply` and `serial-verify` now execute project-bound routed plans
+through one to six bridges. Python `serial-address reconcile` admits completed
+Python routed journals and Rust apply-v2 journals for their exact offline
+XML/CBZ project. It independently reparses inventories and wire proof, checks
+the route/project pins and durable attempt marker, and preserves unrelated
+project/archive content through guarded backup and restart. Routed live
+C-Gate reconciliation remains unsupported. See [routed evidence](../docs/rust-selected-serial-routed.md)
+and [reconciliation contract](docs/physical-addressing.md).
+
 To populate database serial metadata from a complete identity inventory:
 
 ```sh

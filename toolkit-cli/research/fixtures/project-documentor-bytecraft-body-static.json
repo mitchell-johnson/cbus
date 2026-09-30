@@ -1,0 +1,314 @@
+{
+  "format": "cbus-project-documentor-bytecraft-body-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "retained_span:CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.DocumentHTML": true,
+    "retained_span:CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.ActionSelectorUse": true,
+    "retained_span:CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.IsChannelUnused": true,
+    "retained_span:CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation": true,
+    "retained_span:CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.InternalCreate": true,
+    "retained_span:CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeInputGroupDependencyAdvanced": true,
+    "retained_span:CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOtherGroupDependencyAdvanced": true,
+    "retained_span:CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsUnused": true,
+    "retained_span:CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOnUnused": true,
+    "retained_span:CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOffUnused": true,
+    "body_base_first": true,
+    "body_bytecraft_class_guard": true,
+    "action_base_first": true,
+    "action_bytecraft_class_guard": true,
+    "summary_lock_label": true,
+    "summary_dmx_label": true,
+    "restore_enabled_text": true,
+    "restore_disabled_text": true,
+    "restore_ramp_label": true,
+    "restore_ramp_scene_zero": true,
+    "channel_table_open": true,
+    "channel_header": true,
+    "lock_header_gate": true,
+    "voltage_header": true,
+    "dmx_header_gate": true,
+    "restore_header_gate": true,
+    "header_closing_prefix": true,
+    "channel_unused_group_then_patch": true,
+    "channel_skip_unused": true,
+    "channel_one_based": true,
+    "old_logic_null": true,
+    "blank_resource": true,
+    "used_output_gate": true,
+    "voltage_255_line": true,
+    "voltage_zero_normalizes_line": true,
+    "unused_output_lock_before_four_blanks": true,
+    "dmx_cell_gate": true,
+    "dmx_zero_unused": true,
+    "dmx_update_take": true,
+    "fade_cell_order": true,
+    "restore_cell_scene_zero": true,
+    "channel_closing_prefix": true,
+    "channel_order": true,
+    "scenes_label": true,
+    "scene_table_missing_close_angle": true,
+    "scene_header": true,
+    "body_scene_start_one": true,
+    "body_scene_skip_unused": true,
+    "body_scene_number_no_increment": true,
+    "advanced_group_trigger": true,
+    "basic_level_trigger": true,
+    "on_subtable_gate": true,
+    "on_subtable_open": true,
+    "nested_header": true,
+    "on_entry_used_group_and_inclusion": true,
+    "on_row_normal_suffix": true,
+    "off_subtable_requires_advanced": true,
+    "off_entry_used_group_and_inclusion": true,
+    "off_row_normal_suffix": true,
+    "scene_unused_on_and_off": true,
+    "scene_on_use_only_inclusion": true,
+    "scene_off_use_only_inclusion": true,
+    "action_scene_start_zero": true,
+    "action_skip_unused": true,
+    "action_advanced_same_group": true,
+    "action_basic_same_level": true,
+    "action_advanced_text": true,
+    "action_basic_text": true,
+    "action_order_no_first_match_break": true,
+    "bytecraft_enum_descriptions": true,
+    "curve_enum_registration": true,
+    "fade_enum_registration": true,
+    "percent_add_two": true,
+    "loader_on_mask_setg": true,
+    "loader_off_mask_setg": true,
+    "loader_mode_is_exact_one": true,
+    "patch_even_high_odd_low": true,
+    "nibble_even_low_odd_high": true,
+    "bit_text_length_31": true,
+    "bit_half_rotation": true,
+    "bit_true_only_character_one": true,
+    "restore_bit_15": true,
+    "dmx_fade_field": true,
+    "cbus_fade_field": true,
+    "level_link_address_not_value": true,
+    "group_unused_name_escaped": true,
+    "group_used_name_raw": true,
+    "level_name_raw": true,
+    "html_numeric_angle_escaping": true,
+    "enum_invalid_raises_not_clamps": true,
+    "patch_setter_passes_integer": true,
+    "min_setter_passes_integer": true,
+    "max_setter_passes_integer": true,
+    "input_inherited_first": true,
+    "input_channel_identity": true,
+    "input_scene_start_zero": true,
+    "input_used_scene_and_on_or_off": true,
+    "input_recall_nonnull_used": true,
+    "input_label_resources": true,
+    "input_scene_number_one_based": true,
+    "input_channel_major_scene_minor": true,
+    "other_inherited_first": true,
+    "other_disable_and_switch_identity_order": true,
+    "other_resources": true,
+    "old_input_and_other_slots": true,
+    "goc_other_common_first": true,
+    "goc_other_area_identity": true,
+    "goc_other_area_label": true,
+    "area_pp_binding": true,
+    "area_primary_add_group": true,
+    "control_enable_helper_both_bindings": true,
+    "enable_group_application": true,
+    "enable_group_add_and_null_fallback255": true,
+    "pp_field:DMXPatchInfo": true,
+    "pp_field:CBusDisable": true,
+    "pp_field:ChannelMinLevel": true,
+    "pp_field:ChannelMaxLevel": true,
+    "pp_field:MaxChannelVoltage": true,
+    "pp_field:ChannelDimmerCurve": true,
+    "pp_field:DMXCbusSwitchOverActionAndRestoreMode": true,
+    "pp_field:DMXCbusSwitchOverFadeTime": true,
+    "pp_field:CbusDMXSwitchOverFadeTime": true
+  },
+  "methods": {
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.DocumentHTML": {
+      "sha256": "ac566126732adc7378c318c1f00f4e196c95628502ba18b7ce3f1d2412b65e96",
+      "bytes": 5924
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.ActionSelectorUse": {
+      "sha256": "21b6d6491bd811b64d4d0042773e361bc15afac596ed4c73bd43182bff60a0e4",
+      "bytes": 496
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.IsChannelUnused": {
+      "sha256": "e525010cd83116d1200accec1869187d903931e9f29561083035ef1ed6374600",
+      "bytes": 60
+    },
+    "CIS_TCBusBytecraftDimmerUnit.CIS_TCBusBytecraftDimmerUnit": {
+      "sha256": "aa41e513f1590bb4602cd211299171920613c9088d663a04d8d964716e4825d4",
+      "bytes": 804
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation": {
+      "sha256": "9b8e2794dd01a41c71bac18eff0e0175764d243fe68b00ddaca6861a2318c0bc",
+      "bytes": 3512
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.InternalCreate": {
+      "sha256": "822aac8f3e30556f5ea9578a661359555500b444ae48f3f82cb8f8988f1b2961",
+      "bytes": 2180
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.GetBitArrayElementValue": {
+      "sha256": "e83dd4275521a6ecc35b6df3b42a0f5cb7b9f4642a6ed795e7de4ec21abfc99a",
+      "bytes": 872
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsUnused": {
+      "sha256": "2aa33e68041eb09aff5539596e61b37b14fa8501cd6512c90343637e221b4c23",
+      "bytes": 52
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOnUnused": {
+      "sha256": "d71f54cc614169d49c821ae641f9600910b7f6dacbf6af5545d384940ed6e2c4",
+      "bytes": 92
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOffUnused": {
+      "sha256": "aa24e0f3c8a4155c003830ca1eae1a7359e9cc84ccc057d96fcdc481d5e519f2",
+      "bytes": 92
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.GetLogicGroups": {
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4",
+      "bytes": 24
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.SetMaxChannelVoltage": {
+      "sha256": "3ee8c20c082e638a162c73d23c64d6d9e8bf900b8375ec8bb4a565bf4ea9de23",
+      "bytes": 152
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.GetDMXCbusSwitchOverFadeTime": {
+      "sha256": "f157bd1ccf686d04bdc3b361a6029c56ed57d7b3dc496691f74266120f2f10dc",
+      "bytes": 36
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.GetCbusDMXSwitchOverFadeTime": {
+      "sha256": "e4c0a79843fdb1684d7d4763eb68d41236919559f78ede7d0417e0b7e206e808",
+      "bytes": 36
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLGroup": {
+      "sha256": "3b654652b21badb0e10e63152d4edd6353022923250e96575f34a604846b2644",
+      "bytes": 320
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLLevel": {
+      "sha256": "5334a86735beb390967d1a0374af746be64fe0856fe1584d7d8c8c1bf11ad301",
+      "bytes": 312
+    },
+    "CIS_CBus.LevelToPercent": {
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a",
+      "bytes": 36
+    },
+    "CIS_Maths.BytesToWord": {
+      "sha256": "f6c60b2790056140d17ecca5339384906cd1abeaf7acf67d5a7b213d44c5b29e",
+      "bytes": 40
+    },
+    "CIS_Maths.Int4BitArrayElementWithDefault": {
+      "sha256": "1d1af90de1484b0a722a6afaf5972455af7a3e98df8913e9314fb829278863c4",
+      "bytes": 372
+    },
+    "CIS_Maths.High4Bits": {
+      "sha256": "22fe8946763e2e1a436ff9bb784748917e00e03766daa1f87dc74e22e1c50d72",
+      "bytes": 32
+    },
+    "CIS_Maths.Low4Bits": {
+      "sha256": "30426e7a4f4f12cda96ebb4f42c931b633d99b8c61dce3cbc66a9f55d4688c92",
+      "bytes": 28
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.GetBitCBusDisable": {
+      "sha256": "88c4e6d3e82093d71aacf21f93f3392b67938155c8d9fa3ab3d425d1f74d732d",
+      "bytes": 44
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.GetBitDMXCbusSwitchOverAction": {
+      "sha256": "924ae57c1fe544ad7cc6d83c5a65428843bfbdcc7f90f985c27f5a5bb825c981",
+      "bytes": 44
+    },
+    "CIS_TDocumentorCommon.FormatHTMLString": {
+      "sha256": "3bc9716bb511237b27d129b00719580ffec0259b003dc7ca18aea6f7436b9b1c",
+      "bytes": 236
+    },
+    "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetAsInteger": {
+      "sha256": "3c06181be8d17788c283da6867792dd6620eeecbc809bb019b58de1b12d6a877",
+      "bytes": 176
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.SetDMXPatchInfo": {
+      "sha256": "65273d79f4652a2b88dd6e85db15f4c788f3705b43bfbe4f994ba54bf91f6575",
+      "bytes": 96
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.SetChannelMinLevel": {
+      "sha256": "fa420a4bcaa9333a341ce9a3bf77d8712da6370319f7a3b64b2e1060cb4c5ca9",
+      "bytes": 96
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftChannel.SetChannelMaxLevel": {
+      "sha256": "bde970bc5adb2aa5da74fedadcbe25d6567772eefec98b849ac31fa30883b07e",
+      "bytes": 96
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeInputGroupDependencyAdvanced": {
+      "sha256": "d4808578ce93bf29e0cd52da832eb49ca872c6a3be5ed14b136525cf460b8aa6",
+      "bytes": 556
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOtherGroupDependencyAdvanced": {
+      "sha256": "518403b0da2c390b4cea83e9a5ea424832d91241ec43b2df76494d204ab6b27c",
+      "bytes": 212
+    },
+    "CIS_TDIMPR12CGateAgent.FindEnableControlGroupBySimpleAddress": {
+      "sha256": "35b2877591af46f3fc9a8dd7ad9dfaa72cf7a1a7725920c8d12722752c4448f4",
+      "bytes": 460
+    },
+    "CIS_TCBusGOCUnit.TGOCUnit.DescribeOtherGroupDependencyAdvanced": {
+      "sha256": "2f081b29bd4ae84e9ca7d1fa01cac91903717813fb2b71a19245c1940aa23a74",
+      "bytes": 152
+    },
+    "CIS_TCommonCBus.TCBUSUnit.DescribeOtherGroupDependencyAdvanced": {
+      "sha256": "968228338e1e0d2b20018f18a9b735bedd74ef691fae8a3b922a7f90875046e1",
+      "bytes": 32
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetEnableControlApplication": {
+      "sha256": "b436ebe5252ce9f2a7050d3bfbc8a9b71eac08faa3353f9d5463702f1ff172b2",
+      "bytes": 32
+    }
+  },
+  "curve_descriptions": [
+    "Lite 1",
+    "Lite 2",
+    "Lite 3",
+    "Non Dim",
+    "Lin RMS",
+    "1:1"
+  ],
+  "fade_descriptions": [
+    "Instantaneous",
+    "4 s",
+    "8 s",
+    "12 s",
+    "20 s",
+    "30 s",
+    "40 s",
+    "1 min",
+    "1.5 min",
+    "2 min",
+    "3 min",
+    "5 min",
+    "7 min",
+    "10 min",
+    "15 min",
+    "17 min"
+  ],
+  "placeholder": "&nbsp;",
+  "dmx_unpatched_text": "&#60;Unused&#62;",
+  "pp_rules": {
+    "AreaGroupAddress": "one explicit address in primary application; inherited Other prints Area Group| first on exact identity, including255",
+    "CBusDisableGroupAddress": "one explicit address in Enable Control application203; lookup add=true, null fallback255",
+    "DMXCBusSwitchAddress": "one explicit address in Enable Control application203; same lookup policy",
+    "DMXPatchInfo": "24 bytes: even byte high, odd byte low for each channel",
+    "CBusDisable": "16 explicit bit tokens: effective bit c is raw token (c+8)%16",
+    "DMXCbusSwitchOverActionAndRestoreMode": "same half rotation; channel c uses effective bit c; RestoreMode uses effective bit15 (raw token7)",
+    "ChannelDimmerCurve": "6 bytes; channel c selects low nibble if even, high if odd",
+    "DMXCbusSwitchOverFadeTime": "6 packed bytes; low-even/high-odd; DMX Fade column",
+    "CbusDMXSwitchOverFadeTime": "6 packed bytes; low-even/high-odd; C-Bus Fade column",
+    "MaxChannelVoltage": "12 values; setter maps zero to255;255 renders LINE",
+    "ChannelMinLevel": "12 explicit values; percent=((value+2)*100)//255",
+    "ChannelMaxLevel": "12 explicit values; same percentage conversion"
+  },
+  "assessment_correction": "Retained assessment omitted SETG DL after both masked scene inclusion values. Channels8..11 preserve inclusion; mode is record0==1.",
+  "admission_limits": "Consumed curve ordinal0..5, fade ordinal0..15, level byte0..255. DMX patch pair can form word0..65535; any narrower adapter patch range is an explicit adapter restriction, not an original setter clamp. Arbitrary attribute callbacks/history and malformed bit strings remain outside this proof.",
+  "original_execution": "not_executed",
+  "original_generated_page_comparison": "not_obtained",
+  "boundary": "Static old DIMPR12 body/action consumer proof. No L1 admission, original loader execution, GUI history or whole-page claim."
+}

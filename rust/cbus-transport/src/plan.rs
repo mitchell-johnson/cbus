@@ -20,8 +20,8 @@
 //! network: every MMI and IDENTIFY4 request carries the route and every
 //! reply the exact Reply Network, while local identity and options stay
 //! direct. The Python coordinator executes such plans after re-deriving the
-//! route from the bound project; the Rust commands still refuse them with
-//! [`refuse_routed_execution`] before any I/O.
+//! route from the bound project. Rust bound apply/verify APIs require the same
+//! topology proof; legacy unbound APIs refuse them before any I/O.
 
 use cbus_protocol::cal::Cal;
 use cbus_protocol::pci_observation::{
@@ -63,8 +63,8 @@ pub struct ValidatedPlan {
     pub port: u16,
     /// Optional outgoing bridge path (1..=6 distinct bytes in 1..=254). `None` is a
     /// direct plan; `Some` is a topology-bound routed plan whose embedded
-    /// inventory was captured through this route (Rust execution still
-    /// refuses it; see [`refuse_routed_execution`]).
+    /// inventory was captured through this route. Execution requires an
+    /// independently re-derived project binding.
     pub route: Option<Vec<u8>>,
     /// Lowercase SHA-256 of the saved project file whose topology produced
     /// `route`. Present exactly when `route` is present.
@@ -1732,17 +1732,16 @@ fn validate_route(
     Ok((Some(bridges), Some(binding.to_string())))
 }
 
-/// Refuse Rust execution of a routed plan before I/O.
+/// Refuse unbound execution of a routed plan before I/O.
 ///
-/// A routed plan's inventory is validated here, but Rust apply/verify have
-/// no project-topology binding or routed observation path yet. The Python
-/// coordinator (`cbus-toolkit serial-address`) executes routed plans.
+/// Legacy direct-only APIs retain this fail-closed gate. Routed execution
+/// requires the explicit project-bound apply/verify entry points.
 pub fn refuse_routed_execution(plan: &ValidatedPlan) -> Result<(), PlanError> {
     if plan.is_routed() {
         return Err(PlanError::new(
             ROUTED_EXECUTION_UNSUPPORTED,
-            "Routed selected-serial execution is implemented only by the Python coordinator; \
-             refused before any I/O",
+            "Routed selected-serial execution requires a validated project binding; \
+             unbound execution refused before any I/O",
         ));
     }
     Ok(())

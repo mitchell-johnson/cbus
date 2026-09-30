@@ -1,0 +1,65 @@
+{
+  "format": "cbus-serial-reconcile-routed-software-evidence-v1",
+  "base_commit": "b7c8aa9be70bcd842f881c03c4cfc386b190ff16",
+  "scope": "Python offline XML/CBZ reconciliation of one completed Python routed selected-serial apply journal",
+  "execution": {
+    "python": "3.13.14",
+    "platform": "macOS arm64",
+    "cwd": "toolkit-cli",
+    "command": "PYTHONPATH=src:. PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_serial_reconcile.py tests/test_serial_reconcile_routed.py -k 'not NativeReconcileTests' -q -p no:cacheprovider",
+    "pytest": "9.1.1",
+    "exit_status": 0,
+    "tests_passed": 25,
+    "subtests_passed": 54,
+    "tests_failed": 0,
+    "tests_skipped": 0,
+    "tests_deselected": 1,
+    "deselected": "NativeReconcileTests: this slice authorizes isolated synthetic PCI and offline files only",
+    "log_sha256": "af49e999c8b686cc25e54e51c0064d0c8d9d42ce4ee2c0732d76f4a4cf38a1dc",
+    "temporary_files": "task-owned external volume directory; path intentionally omitted"
+  },
+  "source_sha256": {
+    "toolkit-cli/src/cbus_toolkit/serial_reconcile.py": "afc3a7ba4ad18760d52a827e71517edaa496f63690f1674bec4c45781725fc66",
+    "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "bddad8eba6144df48908e36cd94199a3a9b5a1263efd86808379ba173ff1ac17",
+    "toolkit-cli/src/cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+    "toolkit-cli/src/cbus_toolkit/pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+    "toolkit-cli/src/cbus_toolkit/commissioning_route.py": "2a632b78b2a3c16d924e5aaef4c6dc0de5131d751ed41142af245b851dfb8f3b",
+    "toolkit-cli/src/cbus_toolkit/project.py": "631140325f242dfb3b61a7cd2c6489af5025d4d891b6f774142ed22f0227fbe5",
+    "toolkit-cli/tests/test_serial_reconcile.py": "cd0df3d5fddefac51370570069e64fae6fe896bdd2544e0210e4cd2d0f005c50",
+    "toolkit-cli/tests/test_serial_reconcile_routed.py": "d62b08364f90bcf614fb354819a1fb8a9b83e9600fb6e28cf622bb790587ede6",
+    "toolkit-cli/tests/test_pci_selected_serial_routed.py": "0045adf01c9288e29152b34f2fa7fcbdaeaaf9b89122799982e3c2b7243a1da7",
+    "toolkit-cli/tests/test_commissioning_route.py": "ab23166458b668690c74fda162675184261a9d726d78ea1b3fafc3b019705de5"
+  },
+  "retained_native_inputs_read_only_sha256": {
+    "rust/testdata/fixtures/native_cgate_routed_unravel.json": "6544f191bf5de6760b4792058b32306c030726918ff382fe3a9ef264b853192b",
+    "toolkit-cli/research/experiments/2026-09-26/cgate-bridged-topology-native-acceptance.json": "e95d33f9e4608b7e31af34a4a6cbe4dbef2e56a7d5aa2f6f0084ed9def0baa72",
+    "toolkit-cli/research/unravel_bus_fixture.py": "a3435d62b5910eee904cda296e0dc5625a7d14fba566e449a4439b4e5ccd5de0",
+    "toolkit-cli/research/native_unravel_cases.py": "d90e2a7eccbb219166d8d4b7e81320168ce6e1b8ba6e475b24915ee4c2f1e7e2",
+    "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "executed_coverage": [
+    "one- and six-bridge XML and CBZ plan/apply/journal-to-database path using literal-wire loopback PCI peers",
+    "target-network serial match with duplicate serial elsewhere; exact two-field edit with OID/reference/opaque-member preservation",
+    "raw before/after/receipt evidence and route/source/target/project binding tampering refusals",
+    "lost/wrong-route receipt remains unmatched while fresh independent exact after inventory proves the scripted change",
+    "occupied destination, bridge/wireless target, invalid OID, PP-address mismatch, textual references and type/firmware pins refuse",
+    "initial raw project hash, final prewrite freshness and backup/directory durability refusal",
+    "before-save retry, after-save record-only completion, changed/missing backup and substituted record conflict",
+    "db_done remains read-only and reports later project mismatch",
+    "routed C-Gate refuses before client construction",
+    "existing direct reconciliation regressions"
+  ],
+  "evidence_limits": {
+    "native_routed_unravel_executed": false,
+    "native_cgate_process_launched": false,
+    "hardware_io_performed": false,
+    "physical_bridge_acceptance_verified": false,
+    "firmware_persistence_verified": false,
+    "rust_journal_reconciliation_supported": false,
+    "routed_cgate_database_reconciliation_supported": false,
+    "full_suite_run": false,
+    "workspace_build_run": false,
+    "cross_process_project_lock": false
+  },
+  "native_follow_up": "Existing direct-only UnravelBusFixture rejects routed commands. Exact native routed acceptance requires bridge identity/MMI initialization and strict native success/readback assertions; a route wrapper or counter is insufficient."
+}

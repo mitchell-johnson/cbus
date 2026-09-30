@@ -1,0 +1,2866 @@
+{
+  "format": "cbus-project-documentor-neoclassic-scene-modify-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_captured": false,
+  "checks": {
+    "scene_modify_is_key_template25": true,
+    "scene_key_predicate_includes25": true,
+    "raw_jp_also_sets_extension_ramp_function": true,
+    "macro_refresh_order": true,
+    "special_modify_branch_precedes_subset_filter": true,
+    "special_branch_locks_extension_ramp_reference": true,
+    "special_branch_assigns_resolved_ramp_template": true,
+    "special_branch_exits_past_normal_subset_and_key_template_assignment": true,
+    "ramp_reference_handler_is_bound": true,
+    "fresh_scene_ramp_constructor_uses_zero_default": true,
+    "modify_loader_does_not_set_scene_rate_or_trigger": true,
+    "ramp_handler_reverse_copy_is_disabled_while_extension_locked": true,
+    "raw_stage_assignment_adds_macro_lock_when_pin_locked": true,
+    "macro_lock_suppresses_each_raw_stage_refresh": true,
+    "scene_modify_skips_template_command_copy": true,
+    "template25_timer_default_gate_is_false": true,
+    "initial_modify_ramp_template_defaults_to_dimmer": true,
+    "global_refresh_changes_group_type_without_copying_stages": true,
+    "classic_body_label_comes_from_key_template": true,
+    "classic_microfunctions_only_for_template_custom": true,
+    "classic_scene_controls_use_scene_object_and_separate_ramp_rate": true,
+    "input_key_activity_uses_template_unused_gate": true,
+    "input_scene_usage_reads_scene_pointer_from_all_keys": true,
+    "indicator_final_assignment_stores_only_block_number": true,
+    "template25_description": true,
+    "template25_has_default_unused_group": true,
+    "KEYC1:canonical_block_and_indicator_callbacks_are_noops": true,
+    "KEYC2:canonical_block_and_indicator_callbacks_are_noops": true,
+    "KEYC4:canonical_block_and_indicator_callbacks_are_noops": true,
+    "KEYCIR1:canonical_block_and_indicator_callbacks_are_noops": true,
+    "KEYCIR4:canonical_block_and_indicator_callbacks_are_noops": true
+  },
+  "inherited_scene_loader_checks": {
+    "selector_one_branch": true,
+    "jp14_scene24_branch": true,
+    "modify25_assignment": true,
+    "modify_scene_one_before_raw_stages": true,
+    "modify_pin_lock_then_unlock": true,
+    "modify_four_raw_stages": true,
+    "modify_class_subset_if_empty": true,
+    "modify_refresh_after_unlock": true,
+    "modify_final_indicator_only": true,
+    "refresh_reselects_template": true,
+    "modify_skips_template_microfunctions": true,
+    "scene_blocks_refresh_before_pin_check": true,
+    "scene_blocks_remove_all_then_linear": true,
+    "linear_block_forced_primary_unused": true,
+    "linear_reference_added": true
+  },
+  "methods": {
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "start": "0xcca51c",
+      "end": "0xccaef4",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.DocumentHTML": {
+      "start": "0xca6610",
+      "end": "0xca79d0",
+      "sha256": "d43b2075facbf168f2d3a28acc89fcbaed4d923ad8b4e0b15077c6825f5982cb"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd075cc",
+      "end": "0xd079e0",
+      "sha256": "df1e6a8ecf2c7ed2fe15bf5a802f909ded412f4b797bc0e6bc498e1a67f1b892"
+    },
+    "CIS_TInputKey.TInputKey.InternalCreate": {
+      "start": "0xd10cb8",
+      "end": "0xd1103c",
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad"
+    },
+    "CIS_TInputKey.TInputKey.GetIsSceneKey": {
+      "start": "0xd115bc",
+      "end": "0xd11614",
+      "sha256": "9c401b20facab664a58af884324a05e2d44dbd46923db67e83d4f99761fc6b0e"
+    },
+    "CIS_TInputKey.TInputKey.GetIsSceneModifyKey": {
+      "start": "0xd1165c",
+      "end": "0xd11694",
+      "sha256": "e6466b6da57daa29602a51b259e220d39f88f8d8b3f5b2039d19e73990544c65"
+    },
+    "CIS_TInputKey.TInputKey.SetMicroFunction": {
+      "start": "0xd117b4",
+      "end": "0xd118a0",
+      "sha256": "57d7d31ca370bece954e05f89a9b729e6ae15082ddaf3dd8da4a9a4acd797226"
+    },
+    "CIS_TInputKey.TInputKey.SetMacroFunctionSubsetName": {
+      "start": "0xd11970",
+      "end": "0xd11990",
+      "sha256": "7ebccea741045c0c4d0a8a28599f38a3da70360e754a2ec1ae50ef07e90aa7f5"
+    },
+    "CIS_TInputKey.TInputKey.MacroFunctionRefresh": {
+      "start": "0xd11a18",
+      "end": "0xd11a48",
+      "sha256": "9359947b91ecd3e3ee96b08ae77933ed57c97044a50bb0477f71f537a09498ee"
+    },
+    "CIS_TInputKey.TInputKey.RefreshTemplateFromMacroFunction": {
+      "start": "0xd11a5c",
+      "end": "0xd11c14",
+      "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7"
+    },
+    "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromTemplate": {
+      "start": "0xd11c14",
+      "end": "0xd11c54",
+      "sha256": "d73920eaf21e1b0c24ab401116ce15a5ccbc9ad6057371b49df918f393b3531c"
+    },
+    "CIS_TInputKey.TInputKey.RefreshSceneRampMacroFunctionFromTemplate": {
+      "start": "0xd11c54",
+      "end": "0xd11ce8",
+      "sha256": "835247f0e38877ecbdc80dc0e75cabc1e92c589475f7776094b3277266a0b9db"
+    },
+    "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromSceneRampTemplate": {
+      "start": "0xd11d1c",
+      "end": "0xd11da4",
+      "sha256": "9d2dd465abafa20e2f24ea53bf629f95f9235707fea52cd8a70b145bc061f6a8"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "start": "0xd12adc",
+      "end": "0xd12c2c",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplateScene": {
+      "start": "0xd12788",
+      "end": "0xd12a64",
+      "sha256": "55fc404a82307263ee2e27e498b7137e37ba4b3066120663ddda7bb459f11327"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.InternalCreate": {
+      "start": "0xc999a0",
+      "end": "0xc99c28",
+      "sha256": "b15e815108c8353f4e10216994fc423444611c04ab1c9361d65da7a9c04ec172"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.SetSceneRampMacroFunctionTemplate": {
+      "start": "0xc99e94",
+      "end": "0xc99eb8",
+      "sha256": "df978373053da3e5932e30c24549f250d7df2dd40649c60cae4c24db87571d99"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.HandleSceneRampMacroFunctionTemplateAfterChangeEvent": {
+      "start": "0xc99eb8",
+      "end": "0xc99f68",
+      "sha256": "888dd556bd93fb7a5c8f0ebc4679845638f6b66d8e4258483f4b9eef35225534"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.SetMicroFunctionByStage": {
+      "start": "0xc97004",
+      "end": "0xc97048",
+      "sha256": "8209eddbffc7d4509a8754e5b7a10031683cc97d86c0edbcf8a544bb78df3ed7"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromMicroFunctions": {
+      "start": "0xc974ac",
+      "end": "0xc9771c",
+      "sha256": "b8eb7e1b0b43faf34b9554c9cd8fea8e67da54913c11360b9a076e9538ca90fb"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged": {
+      "start": "0xc9fcd8",
+      "end": "0xc9fce8",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction": {
+      "start": "0xc9fda4",
+      "end": "0xc9fdb4",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TInputKey.TInputIndicator.SetBlockNumber": {
+      "start": "0xd10a50",
+      "end": "0xd10a9c",
+      "sha256": "22623b5e362a4b98d002a2758e3667d0def00628720d8cd99b3ec8e87ab266c0"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetGroupType": {
+      "start": "0xc927b0",
+      "end": "0xc92814",
+      "sha256": "628dbba9e584c6bbd8b38149a731b8b83ecd5e8d0d96c1cfc96ad46b878cd86c"
+    }
+  },
+  "reused_macro_methods": {
+    "CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory": {
+      "start": "0xc95b84",
+      "sha256": "9a20b298d7aedb678c24327cd64dc933d7733d872a3d1025a8b3b8bbcd843432"
+    },
+    "CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory": {
+      "start": "0xc912c0",
+      "sha256": "da7e1a9ec728553d8f9eb8feb1644d8eb3f01c12aed2e4dd57d31471f3d0d128"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromMicroFunctions": {
+      "start": "0xc974ac",
+      "sha256": "b8eb7e1b0b43faf34b9554c9cd8fea8e67da54913c11360b9a076e9538ca90fb"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup": {
+      "start": "0xc97940",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb"
+    },
+    "CIS_TInputKey.TInputKey.MacroFunctionRefresh": {
+      "start": "0xd11a18",
+      "sha256": "9359947b91ecd3e3ee96b08ae77933ed57c97044a50bb0477f71f537a09498ee"
+    },
+    "CIS_TInputKey.TInputKey.IdenticalMacroFunctionRefresh": {
+      "start": "0xd10b20",
+      "sha256": "32a9b311c0e6a6597721855cb4b7dd25c125b54c0b56fe263f5eba6c83c5a997"
+    },
+    "CIS_TInputKey.TInputKey.RefreshTemplateFromMacroFunction": {
+      "start": "0xd11a5c",
+      "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7"
+    },
+    "CIS_TKeyMacrofunctionSubset.TKeyMacroFunctionSubsetFactory.CheckKeyMacroFunctionSubset": {
+      "start": "0xc950c8",
+      "sha256": "81a943cfa8812f6e6e04f9bd9b6c339e0b728088293112570be23e73dbe7a946"
+    },
+    "CIS_TKeyMacrofunctionSubset.TKeyMacroFunctionSubsetFactory.GetKeyMacroFunctionSubset": {
+      "start": "0xc94de4",
+      "sha256": "4665f2b1e58094a982a2e36ed77c25fd42ab270c941b75aa5cb3291c68f82cc0"
+    },
+    "CIS_TKeyInputCGateAgent.GetKeyValues": {
+      "start": "0x1215da4",
+      "sha256": "9aeea2bdf2e31a8b73828eb22238bca2d14fb4951216e1e6ffd6a402e234c61c"
+    }
+  },
+  "effective_callbacks": {
+    "KEYC1": {
+      "0x174": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "0x1d8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction"
+    },
+    "KEYC2": {
+      "0x174": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "0x1d8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction"
+    },
+    "KEYC4": {
+      "0x174": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "0x1d8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction"
+    },
+    "KEYCIR1": {
+      "0x174": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "0x1d8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction"
+    },
+    "KEYCIR4": {
+      "0x174": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "0x1d8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyIndicatorStateFromMacrofunction"
+    }
+  },
+  "source_table_transition_cases": [
+    {
+      "raw_commands": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 16,
+      "resolved_ramp_template_type": 16,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 16,
+      "resolved_ramp_template_type": 16,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 16,
+      "resolved_ramp_template_type": 16,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 0,
+      "resolved_ramp_template_type": 0,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 0,
+      "resolved_ramp_template_type": 0,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 0,
+      "resolved_ramp_template_type": 0,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 1,
+      "resolved_ramp_template_type": 1,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 1,
+      "resolved_ramp_template_type": 1,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 1,
+      "resolved_ramp_template_type": 1,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 2,
+      "resolved_ramp_template_type": 2,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 2,
+      "resolved_ramp_template_type": 2,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 2,
+      "resolved_ramp_template_type": 2,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 3,
+      "resolved_ramp_template_type": 3,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 4,
+      "resolved_ramp_template_type": 4,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 4,
+      "resolved_ramp_template_type": 4,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 4,
+      "resolved_ramp_template_type": 4,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 5,
+      "resolved_ramp_template_type": 5,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 5,
+      "resolved_ramp_template_type": 5,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 5,
+      "resolved_ramp_template_type": 5,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 6,
+      "resolved_ramp_template_type": 6,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 7,
+      "resolved_ramp_template_type": 7,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 7,
+      "resolved_ramp_template_type": 7,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 7,
+      "resolved_ramp_template_type": 7,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 8,
+      "resolved_ramp_template_type": 8,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 8,
+      "resolved_ramp_template_type": 8,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 8,
+      "resolved_ramp_template_type": 8,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 9,
+      "resolved_ramp_template_type": 9,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 9,
+      "resolved_ramp_template_type": 9,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 9,
+      "resolved_ramp_template_type": 9,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 10,
+      "resolved_ramp_template_type": 10,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 10,
+      "resolved_ramp_template_type": 10,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 10,
+      "resolved_ramp_template_type": 10,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 11,
+      "resolved_ramp_template_type": 11,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 11,
+      "resolved_ramp_template_type": 11,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 11,
+      "resolved_ramp_template_type": 11,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 12,
+      "resolved_ramp_template_type": 12,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 12,
+      "resolved_ramp_template_type": 12,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 12,
+      "resolved_ramp_template_type": 12,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 13,
+      "resolved_ramp_template_type": 13,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 13,
+      "resolved_ramp_template_type": 13,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 13,
+      "resolved_ramp_template_type": 13,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 14,
+      "resolved_ramp_template_type": 17,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 14,
+      "resolved_ramp_template_type": 14,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 14,
+      "resolved_ramp_template_type": 20,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 15,
+      "resolved_ramp_template_type": 19,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 15,
+      "resolved_ramp_template_type": 15,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 15,
+      "resolved_ramp_template_type": 22,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 21,
+      "resolved_ramp_template_type": 21,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 21,
+      "resolved_ramp_template_type": 21,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 21,
+      "resolved_ramp_template_type": 21,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 31,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 31,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 31,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 32,
+      "resolved_ramp_template_type": 32,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 32,
+      "resolved_ramp_template_type": 32,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 32,
+      "resolved_ramp_template_type": 32,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        7,
+        15
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 34,
+      "resolved_ramp_template_type": 34,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        7,
+        15
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 34,
+      "resolved_ramp_template_type": 34,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        15,
+        7,
+        15
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 34,
+      "resolved_ramp_template_type": 34,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        0,
+        7
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 33,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        0,
+        7
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 33,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        7,
+        0,
+        7
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 33,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 36,
+      "resolved_ramp_template_type": 36,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 36,
+      "resolved_ramp_template_type": 36,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 36,
+      "resolved_ramp_template_type": 36,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        13,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 37,
+      "resolved_ramp_template_type": 37,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        13,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 37,
+      "resolved_ramp_template_type": 37,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        13,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 37,
+      "resolved_ramp_template_type": 37,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        11,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 38,
+      "resolved_ramp_template_type": 38,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        11,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 38,
+      "resolved_ramp_template_type": 38,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        0,
+        11,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 38,
+      "resolved_ramp_template_type": 38,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        11,
+        7
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 39,
+      "resolved_ramp_template_type": 39,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        11,
+        7
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 39,
+      "resolved_ramp_template_type": 39,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        11,
+        7,
+        11,
+        7
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 39,
+      "resolved_ramp_template_type": 39,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        8,
+        13,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 41,
+      "resolved_ramp_template_type": 41,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        8,
+        13,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 41,
+      "resolved_ramp_template_type": 41,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        8,
+        13,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 41,
+      "resolved_ramp_template_type": 41,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        3,
+        0,
+        3,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 42,
+      "resolved_ramp_template_type": 42,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        3,
+        0,
+        3,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 42,
+      "resolved_ramp_template_type": 42,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        3,
+        0,
+        3,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 42,
+      "resolved_ramp_template_type": 42,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        9,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 43,
+      "resolved_ramp_template_type": 43,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        9,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 43,
+      "resolved_ramp_template_type": 43,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        9,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 43,
+      "resolved_ramp_template_type": 43,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 44,
+      "resolved_ramp_template_type": 44,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 44,
+      "resolved_ramp_template_type": 44,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        10,
+        0,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 44,
+      "resolved_ramp_template_type": 44,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        9,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 45,
+      "resolved_ramp_template_type": 45,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        9,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 45,
+      "resolved_ramp_template_type": 45,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        9,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 45,
+      "resolved_ramp_template_type": 45,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        5,
+        14,
+        0,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 46,
+      "resolved_ramp_template_type": 46,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        5,
+        14,
+        0,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 46,
+      "resolved_ramp_template_type": 46,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        5,
+        14,
+        0,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 46,
+      "resolved_ramp_template_type": 46,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        4,
+        14,
+        0,
+        14
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 47,
+      "resolved_ramp_template_type": 47,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        4,
+        14,
+        0,
+        14
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 47,
+      "resolved_ramp_template_type": 47,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        4,
+        14,
+        0,
+        14
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 47,
+      "resolved_ramp_template_type": 47,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        13,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        13,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        13,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        9,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        9,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        9,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        0,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        0,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        7,
+        9,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        7,
+        9,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        9,
+        7,
+        9,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        11,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        11,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        11,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        13,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        13,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        0,
+        7,
+        13,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        7,
+        15,
+        8
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        7,
+        15,
+        8
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        7,
+        15,
+        8
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 48,
+      "resolved_ramp_template_type": 48,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        13,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 49,
+      "resolved_ramp_template_type": 49,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        13,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 49,
+      "resolved_ramp_template_type": 49,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        13,
+        0,
+        13,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 49,
+      "resolved_ramp_template_type": 49,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        15,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 51,
+      "resolved_ramp_template_type": 51,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        15,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 51,
+      "resolved_ramp_template_type": 51,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        15,
+        0,
+        15,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 51,
+      "resolved_ramp_template_type": 51,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        12,
+        0
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 52,
+      "resolved_ramp_template_type": 52,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        12,
+        0
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 52,
+      "resolved_ramp_template_type": 52,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        12,
+        0,
+        12,
+        0
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 52,
+      "resolved_ramp_template_type": 52,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "application": 56,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 26,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "application": 202,
+      "primary_stored1": 249,
+      "primary_stored2": 2,
+      "global_match_type": 26,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    },
+    {
+      "raw_commands": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "application": 255,
+      "primary_stored1": 255,
+      "primary_stored2": 5,
+      "global_match_type": 26,
+      "resolved_ramp_template_type": 26,
+      "final_key_template_type": 25,
+      "consumer_commands_preserved": true,
+      "extension_scene_number": 1,
+      "extension_ramp_ordinal": 0
+    }
+  ],
+  "contract": {
+    "admission": "Fresh exact KEYC/CIR model; selector1/JP!=14; unshared linear primary group255 block.",
+    "final_key_template": "25, <Scene Modify>; subset filter is bypassed by the special branch.",
+    "scene": "Scene1, ramp ordinal0, nil trigger level; raw JP also remains extension SceneRampFunction.",
+    "microfunctions": "Four raw stages remain intact; global match and identical aliases affect only the derived macro/ramp-template reference.",
+    "block_timer": "Template25 misses timer default gate; final ramp assignment is locked against reverse-copy events.",
+    "indicator": "Final PP IndicatorBlockAssignment plus1 stores indicator block number only; consumers here do not read it.",
+    "correction": "The earlier scene-scope receipt inferred that final refresh could replace template25. Its ordinary branch checks are true but unreachable on the admitted SceneModify special branch."
+  },
+  "supporting_receipts": [
+    "project-documentor-classic-key-macro-source-comparison.json",
+    "project-documentor-neoclassic-static.json",
+    "project-documentor-neo-static.json",
+    "project-documentor-neoclassic-usage-static.json"
+  ],
+  "limits": [
+    "Static source plus synthetic consumer projection only; no original loader or generated-page acceptance.",
+    "Internal ramp-template ordinal is deliberately unconsumed by body/input/actions; no KEY-filtered ordinal is substituted.",
+    "Noncanonical block relocation, shared references, retained GUI history and scene-loader success with missing PP data remain outside admission."
+  ]
+}

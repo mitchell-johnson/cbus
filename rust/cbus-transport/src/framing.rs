@@ -21,6 +21,7 @@ pub struct FrameBuffer {
     from_pci: bool,
     checksum: bool,
     install_mmi: bool,
+    discarded_input: bool,
 }
 
 impl FrameBuffer {
@@ -31,6 +32,7 @@ impl FrameBuffer {
             from_pci: true,
             checksum: true,
             install_mmi: false,
+            discarded_input: false,
         }
     }
 
@@ -42,6 +44,7 @@ impl FrameBuffer {
             from_pci: false,
             checksum: false,
             install_mmi: false,
+            discarded_input: false,
         }
     }
 
@@ -61,6 +64,10 @@ impl FrameBuffer {
         self.buf.clear();
     }
 
+    pub(crate) fn selected_serial_complete(&self) -> bool {
+        self.buf.is_empty() && !self.discarded_input
+    }
+
     /// Feed rx bytes; return every decoded frame. The 256-byte bound applies
     /// to an incomplete frame, not to a read containing many complete frames.
     /// An overflowing incomplete frame drops the buffer and the rest of this
@@ -71,6 +78,7 @@ impl FrameBuffer {
             if !data.is_empty() {
                 let available = MAX_BUFFER_SIZE - self.buf.len();
                 if available == 0 {
+                    self.discarded_input = true;
                     tracing::error!(
                         "receive buffer would exceed {} bytes; dropping buffer",
                         MAX_BUFFER_SIZE

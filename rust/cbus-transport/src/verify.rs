@@ -5,8 +5,10 @@
 //! the plan's before/expected snapshots. IDENTIFY1/2 are never requested.
 //!
 //! This is not the Python coordinator's transport proof. The supplied client
-//! cannot be bound here to the plan's endpoint, local PCI serial, or transport
-//! settings. The caller establishes those facts and the client's lifetime.
+//! is not bound here to the plan's endpoint. The direct API also leaves local
+//! identity and transport settings to the caller. The routed bound API checks
+//! the pinned local serial and checksum mode independently, revalidates the
+//! saved topology, and retires the client on incomplete observation/cancellation.
 //! Caller options bound the entire observation, including lane acquisition and
 //! closing MMI; shared PCI correlation, checksums and quiet windows still apply.
 //! Cancelled queued requests are skipped before writing, but an already-started
@@ -26,14 +28,33 @@
 //! caller-controlled and must not be used for concurrent commissioning.
 //! No address-changing request
 //! or journal write is made. The whole operation is never replayed, but the
-//! underlying client may retry confirmed read packets. Matching state proves
-//! neither movement cause nor persistence, and no raw transport proof is emitted.
+//! legacy direct client may retry read packets; routed reads are exact-once.
+//! Matching state proves
+//! neither movement cause nor persistence. Complete routed observations retain
+//! bounded original/parser frame pairs for offline reconciliation; they do not
+//! emit a complete raw transport proof.
 
+use crate::commissioning_route::RouteBinding;
 use crate::inventory::{parse_serial_number, InventoryOptions};
 use crate::pci::PciClient;
-use crate::plan::{refuse_routed_execution, validate_plan_document_with_value, PlanError};
-use serde_json::Value;
+use crate::plan::{
+    refuse_routed_execution, validate_plan_document_with_value, PlanError, ValidatedPlan,
+};
+use serde_json::{json, Value};
 use std::collections::{HashMap, HashSet};
+
+struct RoutedObservationLifetime<'a> {
+    pci: &'a PciClient,
+    complete: bool,
+}
+
+impl Drop for RoutedObservationLifetime<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.pci.retire_selected_serial_observation();
+        }
+    }
+}
 
 /// Fresh-inventory classification, mirroring the oracle outcome strings.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -152,11 +173,14 @@ pub struct VerifyEvidence {
     pub plan_transport_settings_enforced: bool,
     /// Always false: the supplied client has no verified plan endpoint binding.
     pub endpoint_binding_verified: bool,
-    /// Always false: a plan serial does not establish the supplied PCI identity.
+    /// True only when routed verification independently read the pinned local PCI serial.
     pub local_serial_binding_verified: bool,
     /// Always false: no Python-equivalent raw transport receipt is produced.
     pub raw_transport_evidence_verified: bool,
-    /// Always true: the existing client may retry confirmed read packets.
+    /// Strict routed frame captures for independently reparsed offline
+    /// reconciliation. This is not a complete connection byte capture.
+    pub reconciliation_inventory: Option<Value>,
+    /// Legacy direct reads may retry; strict routed verification sends each read once.
     pub underlying_read_retries_possible: bool,
     /// Always zero: the entire verification observation is never replayed.
     pub whole_operation_replays: u32,
@@ -187,6 +211,7 @@ impl VerifyEvidence {
             endpoint_binding_verified: false,
             local_serial_binding_verified: false,
             raw_transport_evidence_verified: false,
+            reconciliation_inventory: None,
             underlying_read_retries_possible: true,
             whole_operation_replays: 0,
             non_commissioning_traffic_may_interleave: true,
@@ -415,8 +440,27 @@ pub async fn verify_plan(
     pci: &PciClient,
     options: VerifyOptions,
 ) -> Result<VerifyEvidence, VerifyInitError> {
+    verify_plan_bound(raw_plan, pci, options, None).await
+}
+
+/// Verify a direct plan or a routed plan with a freshly revalidated project binding.
+///
+/// A routed observation first identifies the local PCI on the direct network,
+/// then collects the remote inventory with exact Reply Network correlation.
+/// The endpoint remains the caller's responsibility. Recovery is read-only.
+pub async fn verify_plan_bound(
+    raw_plan: &[u8],
+    pci: &PciClient,
+    options: VerifyOptions,
+    binding: Option<&RouteBinding>,
+) -> Result<VerifyEvidence, VerifyInitError> {
     let (plan, document) = validate_plan_document_with_value(raw_plan)?;
-    refuse_routed_execution(&plan)?;
+    match binding {
+        Some(binding) => binding
+            .validate_plan(&plan)
+            .map_err(|error| VerifyInitError::Plan(error.to_string()))?,
+        None => refuse_routed_execution(&plan)?,
+    }
     let (before, expected) = extract_snapshots(&document)?;
     let bounds = options.inventory;
     if bounds.total_deadline.is_zero()
@@ -429,14 +473,15 @@ pub async fn verify_plan(
         ], false));
     }
     let deadline = tokio::time::Instant::now() + bounds.total_deadline;
-    let result = tokio::time::timeout_at(
-        deadline,
-        observe(pci, bounds, plan.local_unit, &before, &expected),
-    )
-    .await;
+    let mut lifetime = plan.is_routed().then(|| RoutedObservationLifetime {
+        pci,
+        complete: false,
+    });
+    let result =
+        tokio::time::timeout_at(deadline, observe(pci, bounds, &plan, &before, &expected)).await;
     // A ready I/O future may win the runtime's poll at the deadline. Do not
     // publish successful classification after the caller's absolute boundary.
-    Ok(if tokio::time::Instant::now() >= deadline {
+    let mut evidence = if tokio::time::Instant::now() >= deadline {
         VerifyEvidence::uncertain(
             vec!["after_collection: total observation deadline elapsed".into()],
             false,
@@ -448,72 +493,161 @@ pub async fn verify_plan(
                 false,
             )
         })
-    })
+    };
+    if let Some(binding) = binding {
+        if let Err(error) = binding.assert_fresh() {
+            return Ok(VerifyEvidence::uncertain(
+                vec![format!("route_binding: {error}")],
+                false,
+            ));
+        }
+    }
+    if plan.is_routed() && !pci.is_connected() {
+        return Ok(VerifyEvidence::uncertain(
+            vec!["after_collection: PCI generation retired before classification".into()],
+            false,
+        ));
+    }
+    if let Some(lifetime) = lifetime.as_mut() {
+        lifetime.complete = evidence.after_collection_complete;
+        evidence.underlying_read_retries_possible = false;
+    }
+    Ok(evidence)
 }
 
 async fn observe(
     pci: &PciClient,
     bounds: InventoryOptions,
-    local_unit: u8,
+    plan: &ValidatedPlan,
     before: &BusSnapshot,
     expected: &BusSnapshot,
 ) -> VerifyEvidence {
+    let local_unit = plan.local_unit;
+    let route = plan.route.as_deref().unwrap_or_default();
+    if !route.is_empty() {
+        // Binding a hint does not establish identity. The direct IDENTIFY4 below does.
+        if let Err(error) = pci.set_local_unit_hint(local_unit) {
+            return VerifyEvidence::uncertain(vec![format!("local_identity: {error}")], false);
+        }
+        pci.set_command_checksum(plan.command_checksum);
+    }
     let observation = match pci.commissioning_observation().await {
         Ok(guard) => guard,
         Err(error) => {
             return VerifyEvidence::uncertain(vec![format!("after_collection: {error}")], false)
         }
     };
-    let opening = match observation.install_mmi().await {
-        Ok(states) => states,
+    let mut local_identity_capture = None;
+    if !route.is_empty() {
+        let local = tokio::time::timeout(
+            bounds.per_address_timeout,
+            observation.selected_local_identity_captured(local_unit),
+        )
+        .await;
+        match local {
+            Ok(Ok((replies, capture)))
+                if replies.len() == 1
+                    && serials_at(local_unit, &replies).ok()
+                        == Some(vec![plan.expected_local_serial.clone()]) =>
+            {
+                local_identity_capture = Some(capture);
+            }
+            _ => {
+                return VerifyEvidence::uncertain(
+                    vec![
+                        "local_identity: pinned local PCI serial was not independently established"
+                            .into(),
+                    ],
+                    false,
+                )
+            }
+        }
+    }
+    let opening_result = if route.is_empty() {
+        observation
+            .install_mmi_for_selected_route(route, local_unit)
+            .await
+            .map(|states| (states, None))
+    } else {
+        observation
+            .install_mmi_for_selected_route_captured(route, local_unit)
+            .await
+            .map(|(states, capture)| (states, Some(capture)))
+    };
+    let (opening, initial_capture) = match opening_result {
+        Ok(result) => result,
         Err(error) => {
             return VerifyEvidence::uncertain(vec![format!("initial_mmi: {error}")], false)
         }
     };
     let local = usize::from(local_unit);
-    if opening.len() != 256 || opening[local] == 0 {
+    if opening.len() != 256 || (route.is_empty() && opening[local] == 0) {
         return VerifyEvidence::uncertain(
             vec!["initial_mmi: incomplete coverage or absent plan local address".into()],
             false,
         );
     }
     let mut identities = Vec::new();
+    let mut serial_captures = Vec::new();
     for (address, state) in opening.iter().enumerate() {
         if *state == 0 {
             continue;
         }
         let address = address as u8;
-        let replies = match tokio::time::timeout(
-            bounds.per_address_timeout,
-            observation.identify_serials(address),
-        )
-        .await
-        {
-            Ok(Ok(replies)) => replies,
-            Ok(Err(error)) => {
-                return VerifyEvidence::uncertain(
-                    vec![format!("address {address} IDENTIFY4: {error}")],
-                    false,
-                )
-            }
-            Err(_) => {
-                return VerifyEvidence::uncertain(
-                    vec![format!("address {address} IDENTIFY4 deadline elapsed")],
-                    false,
-                )
+        let identify = async {
+            if route.is_empty() {
+                observation
+                    .identify_serials_for_selected_route(route, local_unit, address)
+                    .await
+                    .map(|replies| (replies, None))
+            } else {
+                observation
+                    .identify_serials_for_selected_route_captured(route, local_unit, address)
+                    .await
+                    .map(|(replies, capture)| (replies, Some(capture)))
             }
         };
+        let (replies, capture) =
+            match tokio::time::timeout(bounds.per_address_timeout, identify).await {
+                Ok(Ok(result)) => result,
+                Ok(Err(error)) => {
+                    return VerifyEvidence::uncertain(
+                        vec![format!("address {address} IDENTIFY4: {error}")],
+                        false,
+                    )
+                }
+                Err(_) => {
+                    return VerifyEvidence::uncertain(
+                        vec![format!("address {address} IDENTIFY4 deadline elapsed")],
+                        false,
+                    )
+                }
+            };
         let serials = match serials_at(address, &replies) {
             Ok(serials) => serials,
             Err(error) => return VerifyEvidence::uncertain(vec![error], false),
         };
         identities.push((address, serials));
+        if let Some(capture) = capture {
+            serial_captures.push(json!({"address": address, "capture": capture}));
+        }
     }
-    let closing = match observation.install_mmi().await {
-        Ok(states) => states,
+    let closing_result = if route.is_empty() {
+        observation
+            .install_mmi_for_selected_route(route, local_unit)
+            .await
+            .map(|states| (states, None))
+    } else {
+        observation
+            .install_mmi_for_selected_route_captured(route, local_unit)
+            .await
+            .map(|(states, capture)| (states, Some(capture)))
+    };
+    let (closing, final_capture) = match closing_result {
+        Ok(result) => result,
         Err(error) => return VerifyEvidence::uncertain(vec![format!("after_mmi: {error}")], false),
     };
-    if closing.len() != 256 || closing[local] == 0 {
+    if closing.len() != 256 || (route.is_empty() && closing[local] == 0) {
         return VerifyEvidence::uncertain(
             vec!["after_mmi: incomplete coverage or absent plan local address".into()],
             false,
@@ -550,6 +684,18 @@ async fn observe(
         identities,
     };
     let mut evidence = VerifyEvidence::uncertain(Vec::new(), true);
+    evidence.local_serial_binding_verified = !route.is_empty();
+    if !route.is_empty() {
+        evidence.reconciliation_inventory = Some(json!({
+            "format": "cbus-selected-serial-inventory-frames-v1",
+            "route": route,
+            "local_unit": local_unit,
+            "local_identity": local_identity_capture,
+            "initial_mmi": initial_capture,
+            "serial_observations": serial_captures,
+            "final_mmi": final_capture,
+        }));
+    }
     evidence.outcome = if &observed == expected {
         evidence.expected_identity_change = true;
         VerifyOutcome::ObservedExpectedChange

@@ -99,6 +99,81 @@ fn plan_file_for_port_with_checksum(port: u16, tag: &str, command_checksum: bool
     path
 }
 
+/// Pin a committed routed capture to a disposable topology and loopback port.
+/// The source network is separate from every route byte, including the six-hop
+/// vector's final network 254. The far network's address 16 is a remote device,
+/// deliberately distinct from the local PCI serial at the same unit address.
+fn routed_plan_for_port(port: u16, tag: &str, vector_id: &str) -> (PathBuf, PathBuf, Vec<u8>) {
+    let mut doc = include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str::<Value>(line).unwrap())
+        .find(|row| row["id"] == vector_id)
+        .expect("committed routed plan vector")["document"]
+        .clone();
+    let route: Vec<u8> = doc["route"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|byte| byte.as_u64().unwrap() as u8)
+        .collect();
+    // Pin the scripted incoming frames to committed capture bytes, including
+    // the routed status CAL layout and outer checksum.
+    for block in doc["before"]["initial_mmi"]["blocks"].as_array().unwrap() {
+        let start = block["start"].as_u64().unwrap() as u8;
+        let count = block["states"].as_array().unwrap().len();
+        let line = routed_mmi_line(&route, start, count, &pre_move_states());
+        assert_eq!(hex::encode(&line[..line.len() - 2]), block["raw_hex"]);
+    }
+    for observation in doc["before"]["serial_observations"].as_array().unwrap() {
+        let unit = observation["address"].as_u64().unwrap() as u8;
+        for reply in observation["replies"].as_array().unwrap() {
+            let cal = cbus_protocol::cal::Cal::Reply {
+                parameter: 4,
+                data: hex::decode(reply["data_hex"].as_str().unwrap()).unwrap(),
+            }
+            .encode();
+            let line = routed_reply_line(&route, unit, &cal);
+            assert_eq!(hex::encode(&line[..line.len() - 2]), reply["raw_hex"]);
+        }
+    }
+    let mut xml = format!(
+        "<Installation><Project><TagName>ROUTED_TEST</TagName>\
+         <Network><TagName>Source</TagName><Address>250</Address>\
+         <Interface><InterfaceType>CNI</InterfaceType>\
+         <InterfaceAddress>127.0.0.1:{port}</InterfaceAddress></Interface>\
+         <Unit><Address>16</Address><UnitType>PC_CNI</UnitType></Unit>\
+         <Unit><Address>{}</Address><UnitType>BRIDGE2N</UnitType></Unit></Network>",
+        route[0]
+    );
+    let mut parent = 250;
+    for (index, network) in route.iter().enumerate() {
+        xml.push_str(&format!(
+            "<Network><TagName>Remote{index}</TagName><Address>{network}</Address>\
+             <Interface><InterfaceType>Bridge</InterfaceType>\
+             <InterfaceAddress>{parent}/p/{network}</InterfaceAddress></Interface>"
+        ));
+        if let Some(next) = route.get(index + 1) {
+            xml.push_str(&format!(
+                "<Unit><Address>{next}</Address><UnitType>BRIDGE2N</UnitType></Unit>"
+            ));
+        }
+        xml.push_str("</Network>");
+        parent = *network;
+    }
+    xml.push_str("</Project></Installation>");
+    let project = temp_path(&format!("{tag}-project.xml"));
+    std::fs::write(&project, &xml).unwrap();
+    doc["project_sha256"] = Value::from(hex::encode(
+        ring::digest::digest(&ring::digest::SHA256, xml.as_bytes()).as_ref(),
+    ));
+    let endpoint = serde_json::json!({"host": "127.0.0.1", "port": port});
+    doc["endpoint"] = endpoint.clone();
+    doc["before"]["endpoint"] = endpoint;
+    let plan = temp_path(&format!("{tag}-plan.json"));
+    std::fs::write(&plan, serde_json::to_vec(&doc).unwrap()).unwrap();
+    (plan, project, route)
+}
+
 // ------------------------------------------------------- scripted PCI peer
 
 fn serial_a() -> Vec<u8> {
@@ -440,6 +515,481 @@ fn spawn_peer_logged(script: PeerScript) -> (u16, std::sync::Arc<AtomicBool>, Re
 
 fn spawn_peer(script: PeerScript) -> u16 {
     spawn_peer_with_send_observer(script).0
+}
+
+fn routed_reply_line(bridges: &[u8], unit: u8, payload: &[u8]) -> Vec<u8> {
+    let mut bytes = vec![0x86, bridges[0], 16, bridges.len() as u8];
+    bytes.extend_from_slice(&bridges[1..]);
+    bytes.push(unit);
+    bytes.extend_from_slice(payload);
+    // Routed Reply Network captures retain their outer checksum even in a
+    // checksum-off command session; the committed routed plan vectors pin this.
+    checksum_line(bytes)
+}
+
+fn routed_mmi_line(bridges: &[u8], start: u8, count: usize, states: &[u8; 256]) -> Vec<u8> {
+    // Routed installation status is extended CAL, not the direct
+    // network's standard-status packet.
+    let mut cal = vec![0xe0 | (3 + count / 4) as u8, 0, 0xff, start];
+    for chunk in states[usize::from(start)..usize::from(start) + count].chunks_exact(4) {
+        cal.push(chunk[0] | chunk[1] << 2 | chunk[2] << 4 | chunk[3] << 6);
+    }
+    routed_reply_line(bridges, 1, &cal)
+}
+
+fn normalized_confirmed_request(line: &[u8]) -> Vec<u8> {
+    let mut normalized = line.to_vec();
+    let length = normalized.len();
+    if length >= 2 && matches!(normalized[length - 2], b'g'..=b'z') {
+        normalized[length - 2] = b'g';
+    } else if normalized.last() == Some(&b'\r') {
+        normalized.insert(length - 1, b'g');
+    }
+    normalized
+}
+
+/// Two sessions on one endpoint: an apply followed by independent recovery.
+/// Every request is matched to the complete route before producing a reply.
+enum RoutedPeerFault {
+    None,
+    DisconnectAfterMove,
+    SubstituteProject(std::sync::Arc<std::sync::Mutex<Option<PathBuf>>>),
+}
+
+fn spawn_routed_apply_recovery_peer(
+    bridges: Vec<u8>,
+    command_checksum: bool,
+    fault: RoutedPeerFault,
+) -> (u16, RequestLog, std::thread::JoinHandle<()>) {
+    use cbus_protocol::pci_observation::{
+        identify_request, recall_request, routed_identify_request, routed_installation_mmi_request,
+    };
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let log = RequestLog::default();
+    let request_log = log.clone();
+    let thread = std::thread::spawn(move || {
+        let mut sent = false;
+        let substitute_project = matches!(&fault, RoutedPeerFault::SubstituteProject(_));
+        let mut replaced = false;
+        for _ in 0..if substitute_project { 1 } else { 2 } {
+            let (mut writer, _) = listener.accept().unwrap();
+            writer
+                .set_read_timeout(Some(std::time::Duration::from_secs(45)))
+                .unwrap();
+            let mut reader = BufReader::new(writer.try_clone().unwrap());
+            loop {
+                let mut line = Vec::new();
+                if reader.read_until(b'\r', &mut line).unwrap() == 0 {
+                    break;
+                }
+                if line.first() != Some(&b'\\') {
+                    continue;
+                }
+                request_log.lock().unwrap().push(line.clone());
+                let command = normalized_confirmed_request(&line);
+                if matches!(line.get(line.len() - 2), Some(b'g'..=b'z')) {
+                    writer.write_all(&[line[line.len() - 2], b'.']).unwrap();
+                }
+                if command == identify_request(16, 4, command_checksum) {
+                    writer
+                        .write_all(&identify_line(16, &serial_c(), command_checksum))
+                        .unwrap();
+                } else if command == recall_request(16, 66, 1, command_checksum) {
+                    writer.write_all(&recall_line(5, command_checksum)).unwrap();
+                } else if command == routed_installation_mmi_request(&bridges, command_checksum) {
+                    if let RoutedPeerFault::SubstituteProject(path) = &fault {
+                        if !replaced {
+                            let path = path.lock().unwrap().clone().unwrap();
+                            std::fs::OpenOptions::new()
+                                .append(true)
+                                .open(path)
+                                .unwrap()
+                                .write_all(b"\n")
+                                .unwrap();
+                            replaced = true;
+                        }
+                    }
+                    let states = if sent {
+                        post_move_states()
+                    } else {
+                        pre_move_states()
+                    };
+                    for (start, count) in [(0u8, 88usize), (88, 88), (176, 80)] {
+                        writer
+                            .write_all(&routed_mmi_line(&bridges, start, count, &states))
+                            .unwrap();
+                    }
+                } else if command
+                    == cbus_protocol::serial_address::encode_serial_address_routed(
+                        "101136.1558",
+                        6,
+                        &bridges,
+                        command_checksum,
+                        b'g',
+                    )
+                    .unwrap()
+                {
+                    assert!(!sent, "the routed address command must never replay");
+                    sent = true;
+                    if matches!(&fault, RoutedPeerFault::DisconnectAfterMove) {
+                        // The peer accepted the command and changed its remote
+                        // state, but disconnects halfway through its receipt.
+                        let receipt = routed_reply_line(
+                            &bridges,
+                            6,
+                            &[0x87, 0x00, 0x18, 0xb1, 0x06, 0x16, 0xfa, 0xce],
+                        );
+                        writer.write_all(&receipt[..receipt.len() / 2]).unwrap();
+                        writer.flush().unwrap();
+                        break;
+                    }
+                    writer
+                        .write_all(&routed_reply_line(
+                            &bridges,
+                            6,
+                            &[0x87, 0x00, 0x18, 0xb1, 0x06, 0x16, 0xfa, 0xce],
+                        ))
+                        .unwrap();
+                } else {
+                    let unit = [6, 16, 255]
+                        .into_iter()
+                        .find(|unit| {
+                            command == routed_identify_request(&bridges, *unit, 4, command_checksum)
+                        })
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "unexpected routed CLI request {:?}",
+                                String::from_utf8_lossy(&line)
+                            )
+                        });
+                    let payloads = match unit {
+                        6 if sent => vec![serial_a()],
+                        16 => {
+                            let mut remote = serial_a();
+                            remote[8] = 0x18; // 101136.1560, not local PCI 100966.1187
+                            vec![remote]
+                        }
+                        255 if sent => vec![serial_b()],
+                        255 => vec![serial_a(), serial_b()],
+                        _ => panic!("unexpected empty-address probe"),
+                    };
+                    for payload in payloads {
+                        let cal = cbus_protocol::cal::Cal::Reply {
+                            parameter: 4,
+                            data: payload,
+                        }
+                        .encode();
+                        writer
+                            .write_all(&routed_reply_line(&bridges, unit, &cal))
+                            .unwrap();
+                    }
+                }
+                writer.flush().unwrap();
+            }
+        }
+        assert_eq!(sent, !substitute_project);
+    });
+    (port, log, thread)
+}
+
+fn routed_cli_apply_and_marker_recovery(vector_id: &str, route: &[u8], command_checksum: bool) {
+    let (port, log, peer) =
+        spawn_routed_apply_recovery_peer(route.to_vec(), command_checksum, RoutedPeerFault::None);
+    let (plan, project, observed_route) = routed_plan_for_port(port, vector_id, vector_id);
+    assert_eq!(observed_route, route);
+    let journal = temp_path(&format!("{vector_id}-journal.json"));
+    let addr = format!("127.0.0.1:{port}");
+    let target = route.last().unwrap().to_string();
+    let route_args = [
+        "--project",
+        project.to_str().unwrap(),
+        "--source-network",
+        "250",
+        "--target-network",
+        &target,
+    ];
+    let mut apply_args = vec![
+        "serial-apply",
+        "--pci",
+        &addr,
+        "--plan",
+        plan.to_str().unwrap(),
+        "--journal",
+        journal.to_str().unwrap(),
+        "--timeout",
+        "30",
+    ];
+    apply_args.extend(route_args);
+    let (status, out, err) = run(BIN, &apply_args);
+    assert!(status.success(), "routed apply {vector_id}: {out} {err}");
+    let applied: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(applied["outcome"], "observed_expected_change");
+    assert_eq!(applied["receipt_matched"], true);
+    assert_eq!(applied["local_serial_binding_verified"], true);
+    assert_eq!(applied["endpoint_binding_cli_verified"], true);
+    assert_eq!(applied["physical_compatibility_verified"], false);
+    assert_eq!(applied["firmware_persistence_verified"], false);
+    assert!(applied["route_binding"].is_object(), "{applied}");
+    let marker = PathBuf::from(applied["attempt_identity"].as_str().unwrap());
+    let journal_value: Value = serde_json::from_slice(&std::fs::read(&journal).unwrap()).unwrap();
+    assert_eq!(journal_value["receipt_matched"], true);
+    assert_eq!(journal_value["plan"]["route"], serde_json::json!(route));
+    // An interrupted process can leave only its durable marker. Recovery must
+    // rebind the exact project and observe state without sending another move.
+    std::fs::remove_file(&journal).unwrap();
+    let mut verify_args = vec![
+        "serial-verify",
+        "--pci",
+        &addr,
+        "--journal",
+        marker.to_str().unwrap(),
+        "--timeout",
+        "30",
+    ];
+    verify_args.extend(route_args);
+    let (status, out, err) = run(BIN, &verify_args);
+    assert!(status.success(), "routed recovery {vector_id}: {out} {err}");
+    let verified: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(verified["outcome"], "observed_expected_change");
+    assert_eq!(verified["local_serial_binding_verified"], true);
+    assert_eq!(verified["journal"], marker.to_str().unwrap());
+    assert_eq!(verified["route_binding"], applied["route_binding"]);
+    peer.join().unwrap();
+    let requests = log.lock().unwrap();
+    let move_request = cbus_protocol::serial_address::encode_serial_address_routed(
+        "101136.1558",
+        6,
+        route,
+        command_checksum,
+        b'g',
+    )
+    .unwrap();
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|request| normalized_confirmed_request(request) == move_request)
+            .count(),
+        1
+    );
+    let local_identity = cbus_protocol::pci_observation::identify_request(16, 4, command_checksum);
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|request| normalized_confirmed_request(request) == local_identity)
+            .count(),
+        4,
+        "before, pre-send, after and recovery must independently identify the local PCI"
+    );
+    for path in [plan, project, marker] {
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[test]
+fn serial_routed_one_bridge_apply_and_marker_recovery() {
+    routed_cli_apply_and_marker_recovery("plan-routed-one-bridge", &[1], false);
+}
+
+#[test]
+fn serial_routed_checksum_apply_and_marker_recovery() {
+    routed_cli_apply_and_marker_recovery("plan-routed-one-bridge-checksum", &[1], true);
+}
+
+#[test]
+fn serial_routed_two_bridges_apply_and_marker_recovery() {
+    routed_cli_apply_and_marker_recovery("plan-routed-local-address-later-hop", &[1, 16], false);
+}
+
+#[test]
+fn serial_routed_six_bridges_apply_and_marker_recovery() {
+    routed_cli_apply_and_marker_recovery("plan-routed-six-bridges", &[1, 2, 3, 4, 5, 254], false);
+}
+
+#[test]
+fn serial_routed_disconnect_preserves_uncertain_journal_and_read_only_recovery() {
+    let (port, log, peer) =
+        spawn_routed_apply_recovery_peer(vec![1], false, RoutedPeerFault::DisconnectAfterMove);
+    let (plan, project, _) =
+        routed_plan_for_port(port, "interrupted-route", "plan-routed-one-bridge");
+    let journal = temp_path("interrupted-route-journal.json");
+    let replay_journal = temp_path("interrupted-route-replay.json");
+    let marker =
+        cbus_transport::apply::attempt_identity_path(&std::fs::read(&plan).unwrap(), &journal)
+            .unwrap();
+    let addr = format!("127.0.0.1:{port}");
+    let route_args = [
+        "--project",
+        project.to_str().unwrap(),
+        "--source-network",
+        "250",
+        "--target-network",
+        "1",
+    ];
+    let mut args = vec![
+        "serial-apply",
+        "--pci",
+        &addr,
+        "--plan",
+        plan.to_str().unwrap(),
+        "--journal",
+        journal.to_str().unwrap(),
+        "--timeout",
+        "30",
+    ];
+    args.extend(route_args);
+    let (status, out, err) = run(BIN, &args);
+    assert_eq!(
+        status.code(),
+        Some(1),
+        "interrupted send must fail: {out} {err}"
+    );
+    assert!(
+        out.is_empty(),
+        "transport send failure keeps stdout empty: {out}"
+    );
+    assert!(err.contains("apply:"), "{err}");
+    let uncertain: Value = serde_json::from_slice(&std::fs::read(&journal).unwrap()).unwrap();
+    assert_eq!(uncertain["state"], "failed");
+    assert_eq!(uncertain["outcome"], "uncertain");
+    assert_eq!(uncertain["send_intent_recorded"], true);
+    assert_eq!(uncertain["send_attempted"], true);
+    assert_ne!(uncertain["receipt_matched"], true);
+    assert!(uncertain["after_collection_complete"].is_null());
+    assert_eq!(uncertain["plan"]["route"], serde_json::json!([1]));
+    assert!(marker.is_file());
+    let marker_value: Value = serde_json::from_slice(&std::fs::read(&marker).unwrap()).unwrap();
+    assert_eq!(marker_value["read_only_recovery_only"], true);
+
+    // A different journal name cannot turn the uncertain attempt into a
+    // replay. This command must not consume the peer's second connection.
+    let mut args = vec![
+        "serial-apply",
+        "--pci",
+        &addr,
+        "--plan",
+        plan.to_str().unwrap(),
+        "--journal",
+        replay_journal.to_str().unwrap(),
+    ];
+    args.extend(route_args);
+    let (status, out, err) = run(BIN, &args);
+    assert_eq!(status.code(), Some(1), "replay: {out} {err}");
+    assert!(err.contains("attempt identity already exists"), "{err}");
+    assert!(out.is_empty());
+    assert!(!replay_journal.exists());
+
+    let original_journal = std::fs::read(&journal).unwrap();
+    let mut args = vec![
+        "serial-verify",
+        "--pci",
+        &addr,
+        "--journal",
+        journal.to_str().unwrap(),
+        "--timeout",
+        "30",
+    ];
+    args.extend(route_args);
+    let (status, out, err) = run(BIN, &args);
+    assert!(status.success(), "independent recovery: {out} {err}");
+    let recovered: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(recovered["outcome"], "observed_expected_change");
+    assert_eq!(recovered["local_serial_binding_verified"], true);
+    assert_eq!(recovered["journal"], journal.to_str().unwrap());
+    assert_eq!(recovered["physical_compatibility_verified"], false);
+    assert_eq!(
+        std::fs::read(&journal).unwrap(),
+        original_journal,
+        "read-only recovery must preserve the uncertain historical journal"
+    );
+    peer.join().unwrap();
+    let move_request = cbus_protocol::serial_address::encode_serial_address_routed(
+        "101136.1558",
+        6,
+        &[1],
+        false,
+        b'g',
+    )
+    .unwrap();
+    assert_eq!(
+        log.lock()
+            .unwrap()
+            .iter()
+            .filter(|request| normalized_confirmed_request(request) == move_request)
+            .count(),
+        1
+    );
+    for path in [plan, project, journal, marker] {
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[test]
+fn serial_routed_project_substitution_during_before_refuses_send_intent() {
+    let project_path = std::sync::Arc::new(std::sync::Mutex::new(None));
+    let (port, log, peer) = spawn_routed_apply_recovery_peer(
+        vec![1],
+        false,
+        RoutedPeerFault::SubstituteProject(project_path.clone()),
+    );
+    let (plan, project, _) =
+        routed_plan_for_port(port, "changed-before-route", "plan-routed-one-bridge");
+    *project_path.lock().unwrap() = Some(project.clone());
+    let journal = temp_path("changed-before-route-journal.json");
+    let marker =
+        cbus_transport::apply::attempt_identity_path(&std::fs::read(&plan).unwrap(), &journal)
+            .unwrap();
+    let addr = format!("127.0.0.1:{port}");
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "serial-apply",
+            "--pci",
+            &addr,
+            "--plan",
+            plan.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+            "--project",
+            project.to_str().unwrap(),
+            "--source-network",
+            "250",
+            "--target-network",
+            "1",
+            "--timeout",
+            "30",
+        ],
+    );
+    assert_eq!(status.code(), Some(1), "substituted project: {out} {err}");
+    let refused: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(refused["outcome"], "preconditions_failed");
+    assert!(
+        refused["errors"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|error| error.as_str().unwrap().contains("route_binding")),
+        "{refused}"
+    );
+    assert!(!journal.exists());
+    assert!(!marker.exists());
+    peer.join().unwrap();
+    let move_request = cbus_protocol::serial_address::encode_serial_address_routed(
+        "101136.1558",
+        6,
+        &[1],
+        false,
+        b'g',
+    )
+    .unwrap();
+    assert!(!log
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|request| normalized_confirmed_request(request) == move_request));
+    for path in [plan, project] {
+        std::fs::remove_file(path).unwrap();
+    }
 }
 
 fn closed_port() -> u16 {
@@ -964,55 +1514,218 @@ fn serial_apply_refuses_existing_journal_before_connect() {
 }
 
 #[test]
-fn serial_commands_refuse_a_routed_plan_before_connect_or_journal() {
-    let dead = closed_port();
-    let plan = plan_file_for_port(dead, "routed-plan.json");
-    // The committed routed vector plan (a routed far-network capture),
-    // rebound to the dead port like the direct plan file.
-    let mut doc: Value = include_str!("../../testdata/vectors/selected_serial_plan.jsonl")
-        .lines()
-        .map(|line| serde_json::from_str::<Value>(line).unwrap())
-        .find(|row| row["id"] == "plan-routed-one-bridge")
-        .expect("vector file must have a routed plan row")["document"]
-        .clone();
-    let endpoint = serde_json::json!({"host": "127.0.0.1", "port": dead});
-    doc["endpoint"] = endpoint.clone();
-    doc["before"]["endpoint"] = endpoint;
-    std::fs::write(&plan, serde_json::to_vec(&doc).unwrap()).unwrap();
-    let journal = temp_path("routed-journal.json");
-    let addr = format!("127.0.0.1:{dead}");
-    for args in [
+fn serial_commands_refuse_unbound_routed_plans_before_lease_connect_or_journal() {
+    let port = closed_port();
+    let (plan, project, _) = routed_plan_for_port(port, "unbound-route", "plan-routed-one-bridge");
+    let journal = temp_path("unbound-route-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+    let missing_inputs = [
+        vec![],
+        vec!["--project", project.to_str().unwrap()],
+        vec!["--source-network", "250", "--target-network", "1"],
         vec![
+            "--project",
+            project.to_str().unwrap(),
+            "--source-network",
+            "250",
+        ],
+        vec![
+            "--project",
+            project.to_str().unwrap(),
+            "--target-network",
+            "1",
+        ],
+    ];
+    for extra in missing_inputs {
+        for command in ["serial-verify", "serial-apply"] {
+            let mut args = vec![command, "--pci", &addr, "--plan", plan.to_str().unwrap()];
+            if command == "serial-apply" {
+                args.extend(["--journal", journal.to_str().unwrap()]);
+            }
+            args.extend(extra.iter().copied());
+            let (status, out, err) = run(BIN, &args);
+            assert_eq!(status.code(), Some(1), "{args:?}: {out} {err}");
+            assert!(err.contains("route binding:"), "{err}");
+            assert!(!err.contains("commissioning lease:"), "{err}");
+            assert!(!err.contains("connect:"), "{err}");
+            assert!(out.is_empty(), "{out}");
+            assert!(!journal.exists());
+        }
+    }
+    drop(held);
+    std::fs::remove_file(plan).unwrap();
+    std::fs::remove_file(project).unwrap();
+}
+
+#[test]
+fn serial_commands_refuse_route_flags_on_direct_plans_before_lease() {
+    let port = closed_port();
+    let plan = plan_file_for_port(port, "direct-route-flags.json");
+    let journal = temp_path("direct-route-flags-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+    for extra in [
+        vec!["--project", "absent-project.xml"],
+        vec!["--source-network", "250"],
+        vec!["--target-network", "1"],
+    ] {
+        for command in ["serial-verify", "serial-apply"] {
+            let mut args = vec![command, "--pci", &addr, "--plan", plan.to_str().unwrap()];
+            if command == "serial-apply" {
+                args.extend(["--journal", journal.to_str().unwrap()]);
+            }
+            args.extend(extra.iter().copied());
+            let (status, out, err) = run(BIN, &args);
+            assert_eq!(status.code(), Some(1), "{args:?}: {out} {err}");
+            assert!(err.contains("route binding:"), "{err}");
+            assert!(!err.contains("commissioning lease:"), "{err}");
+            assert!(!err.contains("connect:"), "{err}");
+            assert!(out.is_empty(), "{out}");
+            assert!(!journal.exists());
+        }
+    }
+    drop(held);
+    std::fs::remove_file(plan).unwrap();
+}
+
+#[test]
+fn serial_commands_validate_route_before_lease_and_reject_project_substitution() {
+    let port = closed_port();
+    let (plan, project, _) = routed_plan_for_port(port, "bound-route", "plan-routed-one-bridge");
+    let journal = temp_path("bound-route-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+    for modified in [false, true] {
+        if modified {
+            // XML still parses and its topology is identical, but exact bytes
+            // no longer match the plan's reviewed project snapshot.
+            let mut xml = std::fs::read(&project).unwrap();
+            xml.push(b'\n');
+            std::fs::write(&project, xml).unwrap();
+        }
+        for command in ["serial-verify", "serial-apply"] {
+            let mut args = vec![
+                command,
+                "--pci",
+                &addr,
+                "--plan",
+                plan.to_str().unwrap(),
+                "--project",
+                project.to_str().unwrap(),
+                "--source-network",
+                "250",
+                "--target-network",
+                "1",
+            ];
+            if command == "serial-apply" {
+                args.extend(["--journal", journal.to_str().unwrap()]);
+            }
+            let (status, out, err) = run(BIN, &args);
+            assert_eq!(status.code(), Some(1), "{out} {err}");
+            if modified {
+                assert!(err.contains("route binding:"), "{err}");
+                assert!(!err.contains("commissioning lease:"), "{err}");
+            } else {
+                assert!(err.contains("commissioning lease:"), "{err}");
+            }
+            assert!(!err.contains("connect:"), "{err}");
+            assert!(out.is_empty(), "{out}");
+            assert!(!journal.exists());
+        }
+    }
+    drop(held);
+    std::fs::remove_file(plan).unwrap();
+    std::fs::remove_file(project).unwrap();
+}
+
+#[test]
+fn serial_commands_refuse_wrong_network_route_before_lease() {
+    let port = closed_port();
+    let (plan, project, _) =
+        routed_plan_for_port(port, "wrong-network-route", "plan-routed-one-bridge");
+    let journal = temp_path("wrong-network-route-journal.json");
+    let addr = format!("127.0.0.1:{port}");
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+    for (source, target, reason) in [
+        ("250", "250", "wrong_route"),
+        ("249", "1", "route_binding"),
+        ("1", "250", "route_binding"),
+    ] {
+        for command in ["serial-verify", "serial-apply"] {
+            let mut args = vec![
+                command,
+                "--pci",
+                &addr,
+                "--plan",
+                plan.to_str().unwrap(),
+                "--project",
+                project.to_str().unwrap(),
+                "--source-network",
+                source,
+                "--target-network",
+                target,
+            ];
+            if command == "serial-apply" {
+                args.extend(["--journal", journal.to_str().unwrap()]);
+            }
+            let (status, out, err) = run(BIN, &args);
+            assert_eq!(status.code(), Some(1), "{out} {err}");
+            assert!(err.contains(reason), "{err}");
+            assert!(!err.contains("commissioning lease:"), "{err}");
+            assert!(!err.contains("connect:"), "{err}");
+            assert!(out.is_empty(), "{out}");
+            assert!(!journal.exists());
+            let marker = cbus_transport::apply::attempt_identity_path(
+                &std::fs::read(&plan).unwrap(),
+                &journal,
+            )
+            .unwrap();
+            assert!(
+                !marker.exists(),
+                "route refusal cannot reserve a durable attempt"
+            );
+        }
+    }
+    drop(held);
+    std::fs::remove_file(plan).unwrap();
+    std::fs::remove_file(project).unwrap();
+}
+
+#[test]
+fn serial_verify_recovery_requires_fresh_explicit_route_binding() {
+    let port = closed_port();
+    let (plan, project, _) = routed_plan_for_port(port, "recovery-route", "plan-routed-one-bridge");
+    let plan_value: Value = serde_json::from_slice(&std::fs::read(&plan).unwrap()).unwrap();
+    let journal = temp_path("recovery-route-journal.json");
+    let raw = serde_json::to_vec(&serde_json::json!({
+        "format": "cbus-selected-serial-apply-v1", "operation": "apply",
+        "send_intent_recorded": true, "attempt_recorded": true, "send_attempted": true,
+        "plan": plan_value,
+    }))
+    .unwrap();
+    std::fs::write(&journal, &raw).unwrap();
+    let held = EndpointLease::acquire("127.0.0.1", port).unwrap();
+    let addr = format!("127.0.0.1:{port}");
+    let (status, out, err) = run(
+        BIN,
+        &[
             "serial-verify",
             "--pci",
             &addr,
-            "--plan",
-            plan.to_str().unwrap(),
-        ],
-        vec![
-            "serial-apply",
-            "--pci",
-            &addr,
-            "--plan",
-            plan.to_str().unwrap(),
             "--journal",
             journal.to_str().unwrap(),
         ],
-    ] {
-        let (status, out, err) = run(BIN, &args);
-        assert_eq!(status.code(), Some(1), "routed plan must fail: {err}");
-        assert!(err.contains("routed_execution_unsupported"), "{err}");
-        assert!(
-            !err.contains("connect"),
-            "must fail before connecting: {err}"
-        );
-        assert!(
-            out.trim().is_empty(),
-            "hard errors must keep stdout empty: {out:?}"
-        );
+    );
+    assert_eq!(status.code(), Some(1), "{out} {err}");
+    assert!(err.contains("route binding:"), "{err}");
+    assert!(!err.contains("commissioning lease:"), "{err}");
+    assert!(out.is_empty(), "{out}");
+    assert_eq!(std::fs::read(&journal).unwrap(), raw);
+    drop(held);
+    for path in [plan, project, journal] {
+        std::fs::remove_file(path).unwrap();
     }
-    std::fs::remove_file(&plan).ok();
-    assert!(!journal.exists(), "no journal may exist after a refusal");
 }
 
 #[test]

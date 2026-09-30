@@ -90,6 +90,13 @@ cbus-tools serial-verify --pci 192.0.2.10:10001 \
 
 Both commands open a direct TCP socket for `--pci` and require exclusive ownership of that CNI; stop `cmqttd` or any other current owner before running them. Apply requires a bookended fresh inventory equal to the plan's `before`, immediately recalls local option 66 and requires `05`, then durably reserves a hidden canonical-plan attempt marker and the main journal before sending the exact address command once on the same PCI connection. Use one existing protected `--attempt-store` directory across cooperating processes; it places the marker there even when journals are in different directories. Without that option, the marker remains beside the journal. Preserve both files after every outcome. The marker's path is reported as `attempt_identity` on success. If interruption left a marker without the main journal, find the hidden `.cbus-selected-serial-attempt-sha256-*.json` file in the selected store (or journal directory by default) and use `serial-verify --journal MARKER` for read-only recovery. A preexisting marker refuses another process before connection; a concurrent claim race is refused at exclusive creation before send. Different stores, removed markers, changed plans and independent controllers remain outside this cooperative guard. Recovery is read-only and never authorizes replay. Scripted acceptance does not prove device compatibility or persistence.
 
+For a routed selected-serial plan, add `--project PROJECT.xml` (or `.cbz`),
+`--source-network N`, and `--target-network N` to either Rust command, including
+read-only journal recovery. The saved project must re-derive exactly the plan's
+route and SHA-256 before any connection. Direct plans refuse these flags.
+[The routed execution contract](rust-selected-serial-routed.md) describes the
+strict reply checks and retained native/physical acceptance gaps.
+
 ## cbus-simulator
 
 The simulator accepts an optional bind address and port as positional arguments:

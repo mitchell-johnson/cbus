@@ -1,0 +1,111 @@
+{
+  "format": "cbus-bytecraft-documentor-recovery-assessment-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "spec_sha256": {
+    "DIMPR12.xml": "9df071d6675950777057330e712f3b9f2cf8317574a9cad44154887a5079037f",
+    "DIMPR12A.xml": "70a532fc7adbbe86e36458b4e191061ee4d2026a8636a46048a0fb3ab4bb2dff"
+  },
+  "original_executed": false,
+  "runtime_changed": false,
+  "methods": {
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.InternalCreate": {
+      "start": "0x12457a4",
+      "end": "0x1246028",
+      "sha256": "822aac8f3e30556f5ea9578a661359555500b444ae48f3f82cb8f8988f1b2961"
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1246564",
+      "end": "0x124731c",
+      "sha256": "9b8e2794dd01a41c71bac18eff0e0175764d243fe68b00ddaca6861a2318c0bc"
+    },
+    "CIS_TDIMPR12L1CGateAgent.TDIMPR12L1CGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1248ad4",
+      "end": "0x1248d20",
+      "sha256": "e30f9be40dd489f0ea6af462f3e3ccd2ae6df494ec16e9d1e66e95f63fb30496"
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.DocumentHTML": {
+      "start": "0x1012ab8",
+      "end": "0x10141dc",
+      "sha256": "ac566126732adc7378c318c1f00f4e196c95628502ba18b7ce3f1d2412b65e96"
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.ActionSelectorUse": {
+      "start": "0x1014218",
+      "end": "0x1014408",
+      "sha256": "21b6d6491bd811b64d4d0042773e361bc15afac596ed4c73bd43182bff60a0e4"
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.IsChannelUnused": {
+      "start": "0x10141dc",
+      "end": "0x1014218",
+      "sha256": "e525010cd83116d1200accec1869187d903931e9f29561083035ef1ed6374600"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsUnused": {
+      "start": "0xd3c7d0",
+      "end": "0xd3c804",
+      "sha256": "2aa33e68041eb09aff5539596e61b37b14fa8501cd6512c90343637e221b4c23"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd39ea0",
+      "end": "0xd3a0c0",
+      "sha256": "64ed1f048b3c3c07299dbcf4b386d5c3f6ddc111e80d4be7d1785cdd99acc1b2"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd39ba0",
+      "end": "0xd39dcc",
+      "sha256": "d4808578ce93bf29e0cd52da832eb49ca872c6a3be5ed14b136525cf460b8aa6"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd39dcc",
+      "end": "0xd39ea0",
+      "sha256": "518403b0da2c390b4cea83e9a5ea424832d91241ec43b2df76494d204ab6b27c"
+    },
+    "CIS_TDIMPR12CGateAgent.FindTriggerControlGroupLevelBySimpleAddress": {
+      "start": "0x12461dc",
+      "end": "0x1246398",
+      "sha256": "720884d22a2a2fe7ff014ffadec437835d7b2d247df066d7abe0216a2ccdf563"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOnUnused": {
+      "start": "0xd3c774",
+      "end": "0xd3c7d0",
+      "sha256": "d71f54cc614169d49c821ae641f9600910b7f6dacbf6af5545d384940ed6e2c4"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOffUnused": {
+      "start": "0xd3c718",
+      "end": "0xd3c774",
+      "sha256": "aa24e0f3c8a4155c003830ca1eae1a7359e9cc84ccc057d96fcdc481d5e519f2"
+    }
+  },
+  "recommended_first_slice": {
+    "unit_type": "DIMPR12",
+    "class": "TDIMPR12",
+    "agent": "TDIMPR12CGateAgent",
+    "firmware_min": "0",
+    "firmware_max": "1.9.02",
+    "consumer": "DescribeOutputGroupDependencyAdvanced",
+    "pp": [
+      "Application",
+      "GroupAddress"
+    ],
+    "rule": "Inherited base first; channel objects in order; exact group identity appends Channel index+1 and pipe. No IsUnused or DMX filter. Old class has no logic collection."
+  },
+  "findings": {
+    "channel_unused": "Group.IsUnused AND DMXPatchInfo == 0; not merely GroupAddress == 255",
+    "action": "Scene index is zero-based in text. Skip IsUnused. Advanced mode matches recall group to queried level group regardless of selector; basic mode matches exact recall level object. Append <li />Advanced Trigger Scene N or <li />Trigger Scene N.",
+    "scene_unused": "No included on channel AND no included off channel across collection; levels and output-group usage are not tested.",
+    "group_loader": "GroupAddress string attribute at +0x104; split on spaces; index channel directly; missing element default 255; FindGroupByAddress with add=true in primary application",
+    "other": "Inherited TGOC first, then exact CBusDisableGroupAddress identity appends C-Bus Disable Group|, then DMXCBusSwitchAddress identity appends DMX Switch|",
+    "input": "Channel-major then scene-major; queried group matches output channel; scene must be used and channel on/off included; recall group nonnull and nonunused yields Scene index+1| else Scene index+1 (Unused)|",
+    "l1": "Separate 1.9.03..9 class/agent adds LogicGroupAddress and packed LogicAttributes; no DIN loader reuse",
+    "body": "Base DocumentHTML directly then Bytecraft class guard. Optional lock/DMX/restore columns; scene zero used for restore ramp and channel levels. Scene table literal deliberately lacks closing > in <table border=\"1\".",
+    "preset_record": "32 byte space-separated values per PresetRecNN: mode index0, Trigger group index1, selector Address index2, link group index3, on mask (byte4<<8)+byte5, on levels byte6+channel, off mask (byte18<<8)+byte19, off levels byte20+channel. Mask bit channel supplies Boolean setter input. Ramp nibbles use Int4BitArrayElementWithDefault indices9 and37. Setter normalization still needs careful bounded admission.",
+    "selector_identity": "Loader helper calls FindLevelByAddress with add=true, not FindLevelByValue. Basic action exact object identity; advanced same group object only. All qualifying scenes append in ascending index order; no deduplication or first-match break.",
+    "boolean_normalization_hazard": "Loader passes EDX=(1<<channel)&mask directly, while SetPresetOnChannel and SetPresetOffChannel consume DL (one byte). Do not replace with Python bool(mask & bit) without recovering Variant Boolean normalization. Mode setter similarly consumes low byte."
+  },
+  "limits": [
+    "Assessment only. No runtime implementation or native page comparison.",
+    "Malformed, partial arrays and native auto-created group objects need explicit adapter policy; absent PP must not silently assert saved defaults.",
+    "Action and body slices require full PresetRec00..32 decoding and setter normalization; these prerequisites are not fully recovered here.",
+    "DIMPR12A specification is a different DIN-style schema, not evidence for Bytecraft DIMPR12 loader equivalence.",
+    "Full scene/action adapter remains blocked on exact byte Boolean/Variant normalization, constructor scene count and record default semantics. Output-only consumer does not consume scenes."
+  ]
+}

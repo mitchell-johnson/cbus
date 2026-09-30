@@ -38,6 +38,7 @@ use crate::framing::FrameBuffer;
 
 mod mmi;
 mod programming;
+mod selected_serial_observation;
 
 pub use programming::{
     DaliCommandResult, DaliExchange, DaliPollBudget, PatchApplyDisposition, PatchApplyReceipt,
@@ -59,6 +60,63 @@ impl CommissioningObservation<'_> {
 
     pub(crate) async fn identify_serials(&self, unit: u8) -> std::io::Result<Vec<Vec<u8>>> {
         self.client.identify_collect_inner(unit, 4, false).await
+    }
+
+    pub(crate) async fn selected_local_identity_captured(
+        &self,
+        local: u8,
+    ) -> std::io::Result<(Vec<Vec<u8>>, serde_json::Value)> {
+        self.client
+            .selected_serial_local_identity_captured(local)
+            .await
+    }
+
+    pub(crate) async fn install_mmi_for_selected_route_captured(
+        &self,
+        bridges: &[u8],
+        local: u8,
+    ) -> std::io::Result<(Vec<u8>, serde_json::Value)> {
+        self.client
+            .selected_serial_mmi_routed_captured(bridges, local)
+            .await
+    }
+
+    pub(crate) async fn identify_serials_for_selected_route_captured(
+        &self,
+        bridges: &[u8],
+        local: u8,
+        unit: u8,
+    ) -> std::io::Result<(Vec<Vec<u8>>, serde_json::Value)> {
+        self.client
+            .selected_serial_identify_routed_captured(bridges, local, unit)
+            .await
+    }
+
+    pub(crate) async fn install_mmi_for_selected_route(
+        &self,
+        bridges: &[u8],
+        local: u8,
+    ) -> std::io::Result<Vec<u8>> {
+        if bridges.is_empty() {
+            self.install_mmi().await
+        } else {
+            self.client.selected_serial_mmi_routed(bridges, local).await
+        }
+    }
+
+    pub(crate) async fn identify_serials_for_selected_route(
+        &self,
+        bridges: &[u8],
+        local: u8,
+        unit: u8,
+    ) -> std::io::Result<Vec<Vec<u8>>> {
+        if bridges.is_empty() {
+            self.identify_serials(unit).await
+        } else {
+            self.client
+                .selected_serial_identify_routed(bridges, local, unit)
+                .await
+        }
     }
 }
 
@@ -581,6 +639,12 @@ pub struct PciClient {
     send_lane: tokio::sync::Mutex<()>,
     /// Separate fanout for correlated CAL transactions; never consumes MQTT events.
     packets: broadcast::Sender<Option<Packet>>,
+    // Strict selected-serial correlation needs the original Reply Network's
+    // local destination, which the general Packet representation omits.
+    // Keeping packet and raw bytes together preserves confirmation order.
+    programming_frames: broadcast::Sender<Option<(Packet, Vec<u8>)>>,
+    selected_serial_framing_complete: std::sync::atomic::AtomicBool,
+    selected_serial_dispatch: Mutex<()>,
     programming_lane: tokio::sync::Mutex<()>,
     programming_fault: std::sync::atomic::AtomicBool,
     /// Attached PCI unit address, or 256 until the BASIC query succeeds.
@@ -601,6 +665,35 @@ pub struct PciClient {
 }
 
 impl PciClient {
+    pub(crate) fn retire_selected_serial_observation(&self) {
+        self.mmi_fault
+            .store(true, std::sync::atomic::Ordering::Release);
+        self.programming_fault
+            .store(true, std::sync::atomic::Ordering::Release);
+        self.request_shutdown();
+    }
+    fn selected_serial_framing_complete(&self) -> bool {
+        let _dispatch = self.selected_serial_dispatch.lock().unwrap();
+        self.selected_serial_framing_complete
+            .load(std::sync::atomic::Ordering::Acquire)
+    }
+
+    pub(crate) async fn selected_serial_local_identity_guarded_captured(
+        &self,
+        local: u8,
+    ) -> std::io::Result<(Vec<Vec<u8>>, serde_json::Value)> {
+        let _lane = self.programming_lane.lock().await;
+        self.selected_serial_local_identity_captured(local).await
+    }
+
+    pub(crate) async fn selected_serial_local_options_guarded_captured(
+        &self,
+        local: u8,
+    ) -> std::io::Result<(Vec<u8>, serde_json::Value)> {
+        let _lane = self.programming_lane.lock().await;
+        self.selected_serial_local_options_captured(local).await
+    }
+
     /// Report whether this client generation can safely start programming.
     ///
     /// The fault state never clears in place. An incomplete programming
@@ -660,6 +753,9 @@ impl PciClient {
             init_done: watch::Sender::new(false),
             send_lane: tokio::sync::Mutex::new(()),
             packets: broadcast::channel(512).0,
+            programming_frames: broadcast::channel(512).0,
+            selected_serial_framing_complete: std::sync::atomic::AtomicBool::new(true),
+            selected_serial_dispatch: Mutex::new(()),
             programming_lane: tokio::sync::Mutex::new(()),
             programming_fault: std::sync::atomic::AtomicBool::new(false),
             local_unit: std::sync::atomic::AtomicU16::new(256),
@@ -709,6 +805,7 @@ impl PciClient {
             .swap(true, std::sync::atomic::Ordering::AcqRel)
         {
             let _ = self.packets.send(None);
+            let _ = self.programming_frames.send(None);
             let _ = self.events.send(CBusEvent::ConnectionLost);
         }
     }
@@ -747,7 +844,7 @@ impl PciClient {
         confirmation: bool,
         basic_mode: bool,
     ) -> std::io::Result<Option<u8>> {
-        self.send_with_allocation(cmd, confirmation, basic_mode, true)
+        self.send_with_allocation(cmd, confirmation, basic_mode, true, None)
             .await
             .map(|(code, _)| code)
     }
@@ -758,6 +855,7 @@ impl PciClient {
         confirmation: bool,
         basic_mode: bool,
         retry: bool,
+        capture: Option<&mut Vec<u8>>,
     ) -> std::io::Result<(Option<u8>, Option<u64>)> {
         // SpecialClientPacket: always basic mode, never confirmed
         let special = matches!(cmd, Packet::Reset | Packet::SmartConnect);
@@ -790,6 +888,12 @@ impl PciClient {
             .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e.0))?;
         if !basic_mode {
             bytes.insert(0, b'\\');
+        }
+        if capture.is_some() && bytes.len() + usize::from(confirmation) + 1 > 4096 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "selected-serial request exceeds capture limit",
+            ));
         }
         let progress = Arc::new(flow::WriteProgress::default());
         let mut allocation = if confirmation {
@@ -825,6 +929,9 @@ impl PciClient {
             })??;
         }
 
+        if let Some(capture) = capture {
+            capture.clone_from(&bytes);
+        }
         if let Some(allocation) = allocation.as_mut() {
             if retry {
                 allocation.retain(bytes);
@@ -849,7 +956,9 @@ impl PciClient {
     }
 
     async fn send_guarded(&self, packet: &Packet) -> std::io::Result<SentConfirmation<'_>> {
-        let (code, allocation_id) = self.send_with_allocation(packet, true, false, true).await?;
+        let (code, allocation_id) = self
+            .send_with_allocation(packet, true, false, true, None)
+            .await?;
         let code = code.ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -868,7 +977,7 @@ impl PciClient {
     // cannot be attributed to a later command using the same code.
     async fn send_guarded_once(&self, packet: &Packet) -> std::io::Result<SentConfirmation<'_>> {
         let (code, allocation_id) = self
-            .send_with_allocation(packet, true, false, false)
+            .send_with_allocation(packet, true, false, false, None)
             .await?;
         let code = code.ok_or_else(|| {
             std::io::Error::new(
@@ -881,6 +990,30 @@ impl PciClient {
             code,
             allocation_id: allocation_id.expect("confirmed send has allocation generation"),
         })
+    }
+
+    async fn send_guarded_once_captured(
+        &self,
+        packet: &Packet,
+    ) -> std::io::Result<(SentConfirmation<'_>, Vec<u8>)> {
+        let mut request = Vec::new();
+        let (code, allocation_id) = self
+            .send_with_allocation(packet, true, false, false, Some(&mut request))
+            .await?;
+        let code = code.ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "command cannot be confirmed",
+            )
+        })?;
+        Ok((
+            SentConfirmation {
+                client: self,
+                code,
+                allocation_id: allocation_id.expect("confirmed send has allocation generation"),
+            },
+            request,
+        ))
     }
 
     // --------------------------------------------- confirmation allocator
@@ -1176,6 +1309,8 @@ impl PciClient {
                     };
                     // The bound applies to an incomplete frame, not a TCP
                     // read containing many complete programming replies.
+                    let _dispatch = client.selected_serial_dispatch.lock().unwrap();
+                    let mut frames = Vec::new();
                     for chunk in buf[..n].chunks(64) {
                         fb.set_install_mmi(
                             client
@@ -1183,10 +1318,19 @@ impl PciClient {
                                 .load(std::sync::atomic::Ordering::Acquire),
                         );
                         fb.set_checksum(client.command_checksum());
-                        for ev in fb.feed(chunk) {
-                            if let Some(p) = ev.packet {
-                                client.handle_cbus_packet(p);
-                            }
+                        frames.extend(fb.feed(chunk));
+                    }
+                    // Publish the final state for this entire OS read before
+                    // waking consumers: a trailing partial frame in a later
+                    // chunk must invalidate earlier complete-looking evidence.
+                    client.selected_serial_framing_complete.store(
+                        fb.selected_serial_complete(),
+                        std::sync::atomic::Ordering::Release,
+                    );
+                    for ev in frames {
+                        if let Some(p) = ev.packet {
+                            let _ = client.programming_frames.send(Some((p.clone(), ev.raw)));
+                            client.handle_cbus_packet(p);
                         }
                     }
                 }

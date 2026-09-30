@@ -1,0 +1,1916 @@
+{
+  "format": "cbus-iope-workflow-native-acceptance-v1",
+  "backend": "owned-local-native",
+  "scope": "Bounded output thresholds/restrike and corridor controls on closed synthetic database units",
+  "physical_hardware_verified": false,
+  "original_toolkit_form_executed": false,
+  "source_sha256": {
+    "cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+    "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+    "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+    "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "implementation_sha256": {
+    "src/cbus_toolkit/iope_environment.py": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375",
+    "src/cbus_toolkit/iope_output_settings.py": "cfab9a376a007618baa3024d11ce0058b5ab0f742aaea692f59a4df9011490c9",
+    "src/cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881"
+  },
+  "profiles": [
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "firmware": "1.0.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "firmware": "1.1.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "firmware": "1.2.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "firmware": "1.0.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "firmware": "1.1.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "firmware": "1.2.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "firmware": "1.0.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-crossing-minimum-then-maximum",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-maximum-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-zero-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "dimmer-restrike-is-relay-only",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 48,
+          "actual": 48
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 51,
+          "actual": 51
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 123,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 125,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "firmware": "1.1.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-crossing-minimum-then-maximum",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-maximum-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-zero-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "dimmer-restrike-is-relay-only",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 48,
+          "actual": 48
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 51,
+          "actual": 51
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 123,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 125,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "firmware": "1.2.00",
+      "workflows": [
+        "output",
+        "environment"
+      ],
+      "positive": [
+        {
+          "case": "output-relay-threshold-restrike-delay-max",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeChannel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "output-minimum-and-delay-lower-bound",
+          "changed_fields": [
+            "MinDimmingLevel",
+            "RestrikeDelay"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-crossing-minimum-then-maximum",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-maximum-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel",
+            "MinDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "dimmer-zero-endpoint-pair",
+          "changed_fields": [
+            "MaxDimmingLevel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "relay-restrike-disabled-preserves-logic",
+          "changed_fields": [
+            "RestrikeChannel"
+          ],
+          "unchanged_parameters_verified": 121
+        },
+        {
+          "case": "corridor-enable-hidden-block-relocation",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorLinkEnable",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 118
+        },
+        {
+          "case": "corridor-two-offices-master-group",
+          "changed_fields": [
+            "CorridorMasterGroup",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        },
+        {
+          "case": "corridor-explicit-independent-blocks",
+          "changed_fields": [
+            "CorridorGroupBlock",
+            "FirstCorridorOfficeGroupBlock",
+            "SecondCorridorOfficeGroupBlock"
+          ],
+          "unchanged_parameters_verified": 119
+        },
+        {
+          "case": "corridor-disable-clears-dependent-office-enable",
+          "changed_fields": [
+            "FirstCorridorLinkEnable",
+            "SecondCorridorLinkEnable"
+          ],
+          "unchanged_parameters_verified": 120
+        }
+      ],
+      "refused_without_changes": [
+        "output-minimum-below-domain",
+        "output-maximum-on-relay",
+        "output-delay-below-domain",
+        "output-delay-above-domain",
+        "output-channel-outside-profile",
+        "dimmer-restrike-is-relay-only",
+        "restrike-delay-requires-enabled-relay",
+        "corridor-block-below-domain",
+        "corridor-block-above-domain",
+        "corridor-master-below-domain",
+        "corridor-duplicate-office-block",
+        "corridor-unresolved-master-group"
+      ],
+      "raw_byte_assertions": [
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 127,
+          "actual": 127
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "address": 120,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 111,
+          "mask": 255,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 48,
+          "actual": 48
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 51,
+          "actual": 51
+        },
+        {
+          "address": 122,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 124,
+          "mask": 255,
+          "expected": 255,
+          "actual": 255
+        },
+        {
+          "address": 123,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 125,
+          "mask": 255,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "address": 112,
+          "mask": 207,
+          "expected": 143,
+          "actual": 143
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 228,
+          "actual": 228
+        },
+        {
+          "address": 96,
+          "mask": 255,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 147,
+          "actual": 147
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 236,
+          "actual": 236
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 190,
+          "actual": 190
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 237,
+          "actual": 237
+        },
+        {
+          "address": 107,
+          "mask": 191,
+          "expected": 62,
+          "actual": 62
+        },
+        {
+          "address": 108,
+          "mask": 255,
+          "expected": 229,
+          "actual": 229
+        }
+      ],
+      "save_reload_passed": true,
+      "project_close_load_passed": true,
+      "reloaded_parameter_count": 122
+    }
+  ],
+  "passed": true,
+  "profile_refusals": [
+    {
+      "unit_type": "IOPE1R1",
+      "firmware": "0.9.99",
+      "editors": [
+        "IopeOutputSettings",
+        "IopeEnvironment"
+      ],
+      "unchanged": true
+    }
+  ],
+  "cli": [
+    {
+      "family": "output",
+      "unit_type": "IOPE2C4",
+      "firmware": "1.2.00",
+      "offline_plan_matches_dry_run": true,
+      "dry_run_preserved_database": true,
+      "save_and_fresh_reload_passed": true,
+      "stale_plan_refused_without_changes": true,
+      "unrelated_parameters_preserved": 118,
+      "project_close_load_passed": true
+    },
+    {
+      "family": "environment",
+      "unit_type": "IOPE2C4",
+      "firmware": "1.2.00",
+      "offline_plan_matches_dry_run": true,
+      "dry_run_preserved_database": true,
+      "save_and_fresh_reload_passed": true,
+      "stale_plan_refused_without_changes": true,
+      "unrelated_parameters_preserved": 120,
+      "unsupported_native_group_cache_refused_without_changes": true,
+      "project_close_load_passed": true
+    }
+  ],
+  "native_service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "reserved_sockets_closed": true
+  },
+  "focused_acceptance_binding": {
+    "actual_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+    "actual_iope_cli_sha256": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "accepted_wheel_sha256": "9bb6255ececd7e38416026736f04a2efa76dab7cdec2d3dc0081b0e58ff85ca2",
+    "raw_receipt_sha256": "dd1c7bb1de938132adf24aded3332a73e625e32a1dc2970c0680d896392b67aa",
+    "context": "wheel",
+    "cni_connections_independently_counted": false,
+    "workflow_report_provenance": "Existing imported workflow method executes twice per context; shared report filename retains last successful write. Both outcomes remain in JUnit/call events."
+  }
+}

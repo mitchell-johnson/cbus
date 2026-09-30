@@ -1,0 +1,14 @@
+{
+  "format": "cbus-documentor-encoded-bytecraft-software-smoke-v1",
+  "cli_exit": 0,
+  "synthetic_units": 7,
+  "recovered_scene_bodies": 5,
+  "scene_controls": 40,
+  "old_bytecraft_output": "Channel 1<br/>Channel 3<br/>Channel 12",
+  "original_toolkit_executed": false,
+  "byte_parity": "unassessed",
+  "visual_parity": "unassessed",
+  "remaining_marker_count": 26,
+  "encoding": "UTF-8 BOM and CRLF",
+  "original_generated_page_comparison": "not_obtained"
+}

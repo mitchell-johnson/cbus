@@ -98,20 +98,21 @@ and its verified receipt.
 | `TDMXGatewayDocumentor` | `DMXDO12` | Recovered: groups and 512 DMX slots |
 | `TClassicKeyInputDocumentor` | `KEY1`, `KEY2`, `KEY4` | Recovered: timing, macro/micro functions, group controls, preset levels and timer expiry |
 | `TClassicKeyInputDocumentor` | `KEYIR1/4`, `KEYBC2/4`, `KEYAUX4`, `DINAUX4`, `BCNC4A/B` with an explicit registered firmware | Recovered inherited tables, native physical key counts and AUX macro override |
-| `TClassicKeyInputDocumentor` | `KEYC1/2/4`, `KEYCIR1/4` with an explicit registered firmware (`1.8.01–9`) | Recovered eight ordinary-key tables with physical/virtual/IR labels; scene dependencies are decoded independently |
+| `TClassicKeyInputDocumentor` | `KEYC1/2/4`, `KEYCIR1/4` with an explicit registered firmware (`1.8.01–9`) | Recovered eight-key tables with physical/virtual/IR labels and canonical Scene24/Scene Modify controls; scene dependencies are decoded independently |
+| `TBytecraftDimmerDocumentor` | exact old `DIMPR12` class/agent firmware `0–1.9.02` | Bounded channels, DMX/lock/restore and packed-scene tables plus independent group/action usage; complete explicit records and consumed body fields required |
 | `TClassicKeyInputDocumentor` | other classic key types | Partial: base block and a marker |
 | `TNeoInputDocumentor`, `TNeoProInputDocumentor` | `KEYA3`, `KEYB4`, `KEYM4`, `KEYM8` at `1.3.01–2.9.99`; `KEYE1` at `2.5.00` | Recovered ordinary controls and canonical scene bodies for complete admitted snapshots; other model states remain partial |
 | `TDLTDocumentor` | `KEYBL5`, `KEYML5`, `KEYDL4` at `3.0.00` | Recovered inherited NeoPro tables and label mode, with the same snapshot restrictions |
 | `TCustomSceneControllerDocumentor` | `SCNCTL5` with an explicit registered firmware | Recovered five-scene body, commands, trigger selectors and master-off fields for complete admitted snapshots |
 | `TPIRDocumentor`, `TST7PIRSensorDocumentor` | registered `SENPIRSS`, `SENPIROA`, `SENPIRIA`, `SENPIRIB` classes | Recovered four-key ordinary controls, enable-group appendix and bounded group/action usage; surface multisensor and encoded scene keys excluded |
 | `TSENTEMPDocumentor`, `TSENTEMPProDocumentor`, `TDigitalTemperatureSensorDocumentor` | registered `SENTEMP`, `SENTEMPB`, `SENTEMP4` classes | Recovered consumed control/broadcast fields and four-channel reports under explicit Celsius/period-decimal formatting |
-| every other documentor | other Neo key inputs, light-level sensors, multisensor, thermostat, WHAA, DALI, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
+| every other documentor | other Neo key inputs, light-level sensors, multisensor, thermostat, WHAA, DALI, architectural and Bytecraft L1 dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
 
 The [Neo body note](project-documentation-neo.md) records physical and virtual
 key labels, secondary applications, the native scene-ramp indexing quirk and
 the fresh-model limits. The original Timer template changes a zero primary
 block timer to 300 seconds during loading; the classic and Neo adapters both
-apply this default while retaining an explicit Idle expiry. Scene Modify,
+apply this default while retaining an explicit Idle expiry. Other Neo/DLT Scene Modify,
 configured joins, block relocation and noncanonical scene tables remain open.
 
 [DLT](project-documentation-dlt.md) adds the exact `Labels: Static` or
@@ -162,9 +163,11 @@ use the same report with their native physical key counts. AUX units replace
 Bell Press with Aux On/Off; BCNC units preserve stored commands because their
 forced defaults apply only before saving. [KEYC and KEYCIR](project-documentation-neoclassic.md)
 use eight keys and blocks, with the original physical/virtual/IR labels. Their
-Classic documentor does not append a Scenes table. Explicit ordinary selectors
-are required even though the model reports scenes disabled: the loader still
-consumes encoded scene selectors. Block order models
+Classic documentor does not append a Scenes table. It admits ordinary selectors
+and canonical JP14 Scene24 keys with unshared linear primary unused-group blocks;
+Canonical Scene Modify preserves template 25, raw stages and Scene 1 / Instant
+controls; it does not initialize a timer. The loader consumes encoded scene selectors even
+though the model reports scenes disabled. Block order models
 a freshly initialized native key collection loaded from ascending PP bits;
 association history in an existing GUI session is not present in a saved PP
 snapshot and is not reproduced.
@@ -187,7 +190,7 @@ group, resolve Master/Stand Alone/Slave roles and retain native speed ranges,
 including reversed ranges. Canonical `2.4.xx`, `2.5.xx` and `2.6.xx` share the
 same unconditional mapping; this is software projection coverage, not native
 or hardware firmware-continuum acceptance. Other firmware and non-BMP label
-copying remain partial. Architectural and Bytecraft bodies still need separate loaders.
+copying remain partial. Architectural and Bytecraft L1 bodies still need separate loaders.
 
 Bridge bodies use `Application[0..1]`, `ApplicationConnectEnabled`,
 `BridgeCount` and `BridgeAddress`. Their private application-255 names are
@@ -251,13 +254,23 @@ both matching error and clear actions and preserve the Enable group reference.
 Each method refuses missing consumed data independently of body recovery.
 
 KEYC/CIR input usage counts physical keys and separately scans loaded scene
-commands. Ordinary keys all reference Scene 1, so other retained scenes can be
-reported as unused. Missing or noncanonical scene data preserves known block
+commands. Ordinary keys reference Scene 1; encoded Scene24 keys reference their
+decoded indicator index. Any of the eight key objects can make a scene used.
+Missing or noncanonical scene data preserves known block
 uses with a partial marker. Their Classic action method scans all eight keys,
 including virtual/IR keys, only for the primary application. Unsupported join
 capabilities suppress join descriptions; the inherited corridor group reference
 is still reported when it matches. These distinctions are source-derived and do
 not establish original loader or generated-page acceptance.
+
+Old [Bytecraft DIMPR12 usage](project-documentation-bytecraft-usage.md)
+admits the exact original class/agent through firmware `1.9.02`. It reports
+matching channels in order, including repeated groups and address 255, without
+consuming packed scenes or DMX data in that output pass. The separate packed
+record model supplies ordered input/action consumers, while Other reads Area
+and application-203 control groups. Its [bounded body](project-documentation-bytecraft.md)
+adds exact lock/DMX/restore and scene tables. L1 firmware, incomplete snapshots,
+history and original whole-loader/page acceptance retain explicit gaps.
 
 ## Status interval and ordering
 

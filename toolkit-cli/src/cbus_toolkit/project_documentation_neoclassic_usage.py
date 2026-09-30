@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .device_scenes import _decode
-from .macros import STAGES
 from .project_documentation_devices import _required_array
 from .project_documentation_usage import Usage, _array
 
@@ -29,22 +28,6 @@ def _scenes(unit: Unit):
     return _decode(tuple(table), tuple(pointers))
 
 
-def _ordinary_blocks(unit: Unit):
-    """Only fields that determine report key/block identities and commands.
-
-    Ordinary commands are preserved by the native loader. Rendering timings,
-    timer durations and stored presets cannot change these dependency identities.
-    """
-    if any(_required_array(unit, "SceneKeySelector", 8, 1)):
-        raise ValueError("NeoProClassic encoded scene keys (ordinary keys required)")
-    apps = _required_array(unit, "Application", 2)
-    secondary = _required_array(unit, "SecondApplicationBlocks", 1)[0]
-    groups = _required_array(unit, "GroupAddress", 8)
-    masks = _required_array(unit, "BlockAllocation", 8)
-    commands = tuple(zip(*(_required_array(unit, name, 8, 15) for name in STAGES)))
-    return apps, tuple(apps[int(bool(secondary & (1 << block)))] for block in range(8)), groups, masks, commands
-
-
 def neoclassic_action_selector_usage(unit: Unit, application: int, group: int,
                                     address: int, value: int) -> Usage:
     from .project_documentation_neoclassic import neoclassic_profile
@@ -58,7 +41,8 @@ def neoclassic_action_selector_usage(unit: Unit, application: int, group: int,
     if application != apps[0]:
         return Usage()
     try:
-        _, block_apps, groups, masks, commands = _ordinary_blocks(unit)
+        from .project_documentation_neoclassic import neoclassic_programming
+        programming = neoclassic_programming(unit, include_scene_indexes=False)
         stored1 = _required_array(unit, "LightLevelStore1", 8)
         stored2 = _required_array(unit, "LightLevelStore2", 8)
         expiry = _required_array(unit, "TimerExpiryCommand", 8, 15)
@@ -67,9 +51,9 @@ def neoclassic_action_selector_usage(unit: Unit, application: int, group: int,
     descriptions = []
     # Only Classic's primary-app pass runs, across all eight key objects.
     # Its stored-1 Address gate encloses the stored-2 Value branch.
-    for key, (mask, microfunctions) in enumerate(zip(masks, commands), 1):
+    for key, (mask, microfunctions) in enumerate(zip(programming.masks, programming.commands), 1):
         for block in range(8):
-            if (not mask & (1 << block) or (block_apps[block], groups[block]) != (application, group)
+            if (not mask & (1 << block) or (programming.block_applications[block], programming.groups[block]) != (application, group)
                     or stored1[block] != address):
                 continue
             if 12 in microfunctions or (7 in microfunctions and expiry[block] == 12):
@@ -92,32 +76,40 @@ def neoclassic_group_usage(unit: Unit, application: int, group: int, kind: str) 
     if kind == "other":
         return _other_usage(unit, application, group)
     try:
-        apps, block_apps, groups, masks, commands = _ordinary_blocks(unit)
+        from .project_documentation_neoclassic import neoclassic_programming
+        programming = neoclassic_programming(unit, include_scene_indexes=False)
     except ValueError as error:
         return Usage(status="unrecovered", missing=(str(error),))
     missing = []
     scenes = ()
-    if application == apps[0]:
+    if application == programming.applications[0]:
         try:
             scenes = _scenes(unit)
+            if any(scenes):
+                programming = neoclassic_programming(unit)
         except ValueError as error:
             missing.append(str(error))
+            scenes = ()
     # Both native join capability methods are constant false, independently of
     # any saved Join* addresses. Only physical keys count in the input scan.
     descriptions = []
     for block in range(8):
-        if (block_apps[block], groups[block]) != (application, group):
+        if (programming.block_applications[block], programming.groups[block]) != (application, group):
             continue
-        # Under both admitted macro subsets, only the all-idle command vector
-        # resolves to Unused. Stored levels can change shutter labels, not this
-        # predicate. Physical keys alone participate in this native scan.
+        # Ordinary all-idle keys resolve to Unused. Scene24 remains an active
+        # template despite its normalized idle commands. Physical keys alone
+        # participate in this native scan.
         matches = [f"Key {key + 1}" for key in range(profile.physical_key_count)
-                   if masks[key] & (1 << block) and any(commands[key])]
+                   if programming.masks[key] & (1 << block)
+                   and (programming.scene_keys[key] or any(programming.commands[key]))]
         descriptions.extend(matches or ["Block (Unused)"])
     for index, scene in enumerate(scenes):
-        # All eight ordinary keys receive Scene 1 during fresh loading,
-        # including virtual keys on models with no physical keys.
-        descriptions.extend(f"Scene {index + 1}" + (" (Unused)" if index else "")
+        if not scene:
+            continue
+        # Every key's extension participates, including virtual keys. Ordinary
+        # keys reference Scene 1; Scene24 keys reference their decoded scene.
+        used = index in programming.scene_indexes
+        descriptions.extend(f"Scene {index + 1}" + ("" if used else " (Unused)")
                             for command in scene if command.group == group)
     return Usage("<br/>".join(descriptions), "partial" if missing else "recovered", tuple(missing))
 

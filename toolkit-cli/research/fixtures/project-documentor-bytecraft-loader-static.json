@@ -1,0 +1,193 @@
+{
+  "format": "cbus-project-documentor-bytecraft-loader-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "spec_sha256": "9df071d6675950777057330e712f3b9f2cf8317574a9cad44154887a5079037f",
+  "checks": {
+    "output_registration_checks": true,
+    "all_13_assessment_spans_reproduced": true,
+    "count_33": true,
+    "scene_count_vmt": true,
+    "scene_channel_count_vmt": true,
+    "record_count_33": true,
+    "mode_exact_one": true,
+    "mode_normalize_low_byte": true,
+    "recall_group_index_1": true,
+    "selector_address_index_2": true,
+    "link_group_index_3": true,
+    "on_mask_index_4": true,
+    "on_mask_index_5": true,
+    "off_mask_index_18": true,
+    "off_mask_index_19": true,
+    "on_bit_shift": true,
+    "on_mask": true,
+    "on_normalize_low_byte": true,
+    "off_bit_shift": true,
+    "off_mask": true,
+    "off_normalize_low_byte": true,
+    "on_mask_high_byte": true,
+    "on_mask_add_low": true,
+    "off_mask_high_byte": true,
+    "off_mask_add_low": true,
+    "on_level_offset_6": true,
+    "off_level_offset_20": true,
+    "ramp_on_nibble_9": true,
+    "ramp_off_nibble_37": true,
+    "mode_setter_low_byte": true,
+    "on_setter_low_byte": true,
+    "off_setter_low_byte": true,
+    "variant_boolean_type": true,
+    "variant_boolean_compare": true,
+    "variant_boolean_invert_carry": true,
+    "variant_boolean_zero_or_minus_one": true,
+    "variant_boolean_word": true,
+    "missing_array_returns_default": true,
+    "missing_nibble_returns_default": true,
+    "nibble_index_divided_by_2": true,
+    "odd_nibble_high": true,
+    "even_nibble_low": true,
+    "high_nibble_mask": true,
+    "high_nibble_shift": true,
+    "low_nibble_mask": true,
+    "group_add_true": true,
+    "level_find_address": true,
+    "level_add_true": true,
+    "nil_group_only_level_branch": true,
+    "group_creation_capacity": true,
+    "group_created_before_255_name_branch": true,
+    "group_255_name_branch": true,
+    "level_address_match": true,
+    "level_created_if_missing": true,
+    "new_level_address_set": true,
+    "new_level_value_set": true,
+    "dmx_switch_enable_group": true,
+    "disable_enable_group": true,
+    "enable_application_lookup": true,
+    "enable_application_203": true,
+    "enable_add_group": true,
+    "enable_fallback_255": true,
+    "scene_count_slot": true,
+    "record_name_format": true,
+    "all_bool_setters_use_variant_bool": true,
+    "all_12_packed_getters_default_zero": true,
+    "schema_all_33_records_32_zero_defaults": true
+  },
+  "methods": {
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1246564",
+      "end": "0x124731c",
+      "sha256": "9b8e2794dd01a41c71bac18eff0e0175764d243fe68b00ddaca6861a2318c0bc"
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.InternalCreate": {
+      "start": "0x12457a4",
+      "end": "0x1246028",
+      "sha256": "822aac8f3e30556f5ea9578a661359555500b444ae48f3f82cb8f8988f1b2961"
+    },
+    "CIS_TDIMPR12.TDIMPR12.GetMaxScenes": {
+      "start": "0x1014648",
+      "end": "0x1014660",
+      "sha256": "a3d045194aba0e61b7a6e9219d7861b4e3caccccc82c1d6abc93a6fcb4476eb5"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.CreateScenes": {
+      "start": "0xd399b4",
+      "end": "0xd39a10",
+      "sha256": "06eb17fe90cee60454b8664d4c711efbd2a4945a49ba99937da5109acbc5a07f"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.SetScenePresetMode": {
+      "start": "0xd3cab4",
+      "end": "0xd3cb10",
+      "sha256": "17278d32bca608e1fbe8165ca9487136b67ddb6e91d318f603235a899574f5a8"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftSceneOnOffChannel.SetPresetOnChannel": {
+      "start": "0xd3d664",
+      "end": "0xd3d6c0",
+      "sha256": "f62fcdb5f44fc4170b7ac0208aa6fd337d8f524e8ceae77823bb49c2372da1a4"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftSceneOnOffChannel.SetPresetOffChannel": {
+      "start": "0xd3d6e4",
+      "end": "0xd3d740",
+      "sha256": "bf5b237813b2fb0311e5e1ef40b14e8cbf3e1c7232ee21cb148274a9a34daf88"
+    },
+    "Variants.@VarFromBool": {
+      "start": "0x62f4b0",
+      "end": "0x62f4d8",
+      "sha256": "a67a1c2ab5e82086666296faf4d598274dfec4b5c91502b6643e70977398fcde"
+    },
+    "CIS_Maths.IntArrayElementWithDefault": {
+      "start": "0x7f0f30",
+      "end": "0x7f1078",
+      "sha256": "7453a5f695e7c71197288a8d846dc044641fa95e17a06894242510cab403abf1"
+    },
+    "CIS_Maths.Int4BitArrayElementWithDefault": {
+      "start": "0x7f10b4",
+      "end": "0x7f1228",
+      "sha256": "1d1af90de1484b0a722a6afaf5972455af7a3e98df8913e9314fb829278863c4"
+    },
+    "CIS_Maths.High4Bits": {
+      "start": "0x7f1078",
+      "end": "0x7f1098",
+      "sha256": "22fe8946763e2e1a436ff9bb784748917e00e03766daa1f87dc74e22e1c50d72"
+    },
+    "CIS_Maths.Low4Bits": {
+      "start": "0x7f1098",
+      "end": "0x7f10b4",
+      "sha256": "30426e7a4f4f12cda96ebb4f42c931b633d99b8c61dce3cbc66a9f55d4688c92"
+    },
+    "CIS_TDIMPR12CGateAgent.FindTriggerControlGroupBySimpleAddress": {
+      "start": "0x1246028",
+      "end": "0x12461dc",
+      "sha256": "aa855ea24dc5c75f56a420c2f41960559b5ff8471a509024f429642d70ec8c9b"
+    },
+    "CIS_TDIMPR12CGateAgent.FindTriggerControlGroupLevelBySimpleAddress": {
+      "start": "0x12461dc",
+      "end": "0x1246398",
+      "sha256": "720884d22a2a2fe7ff014ffadec437835d7b2d247df066d7abe0216a2ccdf563"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "start": "0xf28b68",
+      "end": "0xf28d10",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    "CIS_TCommonCBus.TLevelManager.FindLevelByAddress": {
+      "start": "0xf2742c",
+      "end": "0xf2767c",
+      "sha256": "682cac65b928f9e1b98dca786b5e53c2fc1d3070ae27722c840d937e5769769e"
+    },
+    "CIS_TDIMPR12CGateAgent.FindEnableControlGroupBySimpleAddress": {
+      "start": "0x1246398",
+      "end": "0x1246564",
+      "sha256": "35b2877591af46f3fc9a8dd7ad9dfaa72cf7a1a7725920c8d12722752c4448f4"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetEnableControlApplication": {
+      "start": "0xf2b134",
+      "end": "0xf2b154",
+      "sha256": "b436ebe5252ce9f2a7050d3bfbc8a9b71eac08faa3353f9d5463702f1ff172b2"
+    }
+  },
+  "assessment_spans_reproduced": [
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.InternalCreate",
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation",
+    "CIS_TDIMPR12L1CGateAgent.TDIMPR12L1CGateAgent.AfterLoadProgrammingInformation",
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.DocumentHTML",
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.ActionSelectorUse",
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.IsChannelUnused",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsUnused",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOutputGroupDependencyAdvanced",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeInputGroupDependencyAdvanced",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOtherGroupDependencyAdvanced",
+    "CIS_TDIMPR12CGateAgent.FindTriggerControlGroupLevelBySimpleAddress",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOnUnused",
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftScene.IsOffUnused"
+  ],
+  "scene_count": 33,
+  "channel_count": 12,
+  "record_size": 32,
+  "native_packed_array_default": 0,
+  "adapter_policy": "Complete explicit records only; no saved defaults synthesized.",
+  "assessment_correction": "The previous hazard omitted SETG DL after both mask ANDs. Inclusions normalize before the low-byte setter; channels 8..11 remain usable. Mode likewise uses SETE AL for exact value 1.",
+  "original_loader_execution": "not_executed",
+  "original_generated_page_comparison": "not_obtained",
+  "prior_scene_history": "not_modeled",
+  "recall_binding": "Group 255 is an unused group object, not a nil sentinel. Selector 255 is an Address lookup, not a nil sentinel. Missing groups can be created below manager capacity 256; missing levels are created with Address=Value. A nil group yields a nil level. No metadata creation is admitted.",
+  "summary_group_application": 203
+}

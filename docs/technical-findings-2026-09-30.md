@@ -145,6 +145,26 @@ remain open. See [IOPE integration](../toolkit-cli/docs/iope-integration-scope.m
 [templates](../toolkit-cli/docs/edlt-template-integration-boundaries.md) and
 [firmware diagnostics](../toolkit-cli/docs/firmware-cli-error-evidence.md).
 
+## Routed commissioning and documentor integration — 1 October
+
+The [next batch](../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md)
+consolidates Rust routed execution through `b7c8aa9b`, Python routed project
+reconciliation through `2abc4ab3`, independent Rust apply-v2 frame validation
+through `756a1eb1`, and Bytecraft/SceneModify documentors through `5fdf0b4f`
+and `28201602`. Source and installed-wheel acceptance must bind the combined
+revision; historical owner counts and hashes remain historical. The one
+private host-name field in the first routed receipt is a declared derivative,
+with its raw fingerprint and unchanged technical results retained.
+
+Rust apply/verify re-derive the exact one-to-six-bridge route from the pinned
+project, preserve endpoint ownership and durable attempt intent, send once and
+recover read-only. Python independently reparses the versioned raw/parser
+frame proof and exact inventories before offline XML/CBZ reconciliation.
+Uncertain/partial proof and routed live C-Gate reconciliation remain refused.
+Documentor additions require complete explicit old DIMPR12 and canonical
+SceneModify inputs; initialized loaders, original GUI/page comparison and
+physical acceptance remain separate.
+
 ## Queued local work at this snapshot
 
 These are inspected owner revisions, **not public commit links or permission
@@ -156,7 +176,6 @@ Uncommitted follow-on work is intentionally excluded from accepted results.
 | Area | Owner commit sequence after its published equivalent | Retained result, supplementary path and exact gap |
 | --- | --- | --- |
 | Firmware packages | `de74df7e` → `b058a43d` → `1b03e1da` integrated above | Immutable package execution admission, offline NCC transcripts and normalized payload interpretation now have focused source/wheel validation. Patchset analysis remains queued; CLI error-reporting is integrated in the next batch below; vendor authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |
-| Rust routed selected serial | `b7c8aa9b` | `docs/rust-selected-serial-routed.md` and its evidence JSON record 135 unique focused test functions, scoped Clippy/format checks and no full workspace build. One-shot apply/recovery is bound to exact topology and inventories; 1/2/6-bridge cases use scripted peers. Native routed mutation, actual bridge delivery, device persistence and routed database reconciliation remain unverified. Machine coordinates must be sanitized before the receipt is public. |
 
 ## Fresh source recovery: facts that must survive integration
 

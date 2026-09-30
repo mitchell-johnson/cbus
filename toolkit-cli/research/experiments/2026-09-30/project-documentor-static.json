@@ -142,7 +142,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "partial",
       "document_html": "BytecraftDimmer"
     },
     "CBusWirelessInput": {
@@ -768,7 +768,7 @@
       "start": "0xf05fcc"
     }
   },
-  "model_module_sha256": "f85738e4a942af4447e7f77dbb6382aafc0526572a9af6055c3776cfefb96d44",
+  "model_module_sha256": "48bd79ea1506fddf7ea2af2e8ec5fc9dab6bb244faaefbed2be7da991d6bc31a",
   "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
   "original_executed": false,
   "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
@@ -4198,20 +4198,24 @@
     "63389": "An Error occurred during the Project Document procedure.\r\nParts of the document may not be correct"
   },
   "supporting_module_sha256": {
+    "project_documentation_bytecraft": "b87a88a8031e70cb332e65d377882b1fa2d5e2be6e4785510c06506449279ac3",
+    "project_documentation_bytecraft_loader": "726b87211f8bd0e19b12163da03953a945dee419800dc61344e953b619dc9074",
+    "project_documentation_bytecraft_usage": "f604325f9bff7533620c7a11e11aff7e74c7873e310220fcfee635f907a595c0",
     "project_documentation_classic_profiles": "3411fe362256c68269b59aca2ac67bbf7dfe3aeee9849ee6e5c7ebe98f5b3c37",
     "project_documentation_devices": "b4a1749e75e58da39ac106cf970329b9b8e853fda71da0715540d0f4f456f07d",
     "project_documentation_dlt": "54f9db478cccc7071dc31b57d2190eacfbc38e11a1bfedf8c02752768130898a",
     "project_documentation_native": "c872b42f4641d4f0038138ba5c9c6f0991333174dea43c61958d98bbdd159827",
     "project_documentation_neo": "5c6cbe562dbb1e471595fce350463b2faa82e5d3c118800becfba36bf40e8443",
     "project_documentation_neo_usage": "5c2a9d8463579223ed8ac41731649bda89ea63783273396852bbd2d42d411b57",
-    "project_documentation_neoclassic": "6ca00420fa49be9aa1ff0919f16e158a25c6f0d215631a050e526fddb2d07b40",
-    "project_documentation_neoclassic_usage": "012589993a405bb21aba827ceb7c91dc6b418665f014130a50133bb8f859b327",
+    "project_documentation_neoclassic": "5f1da5fa69528526314bbab99182cd0a52562e88273ca8567b49b2d025381836",
+    "project_documentation_neoclassic_modify": "e43ffc14941a6233d4e427a2958e95a489013ff986becf4e203cc2ffb61aa720",
+    "project_documentation_neoclassic_usage": "3421d62d8610e629f9abad1f6058abb7326b75c4002bf210965b55fc7be066d3",
     "project_documentation_outputs": "39077da7a49e420e5de00ca90e41ff652de9c401f977e3b0f22fd318191c9fa0",
     "project_documentation_pir": "cfc30c10eea73fe1b5af6975265e2b30cf24ead5435cb2a278f3ae3403ac2eb3",
     "project_documentation_scene_controller": "0bee388297b82f475099127aedcae45576a2db9c3c4efbafd817e0014a396871",
     "project_documentation_special_outputs": "f1bc999eed6cf4bcdf28d90048718b90b6f11a55ac31b59e37edb45564b6da58",
     "project_documentation_status": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
     "project_documentation_temperature": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b",
-    "project_documentation_usage": "dbbf4be15cc2c608972af6042eb9793e18a5cd20b91afcc48e36e5859c313c5c"
+    "project_documentation_usage": "fa9835cf94d9464fadd6aff22720622e78467c0fd8314cf642573cced9ef28b0"
   }
 }

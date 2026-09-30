@@ -13,7 +13,7 @@
 //!
 //! 1. The raw plan document is validated with no I/O. A rejection is
 //!    [`ApplyError::Plan`]: no journal exists and no address command is sent.
-//! 2. Preconditions reuse [`verify_plan`] for a fresh observation held
+//! 2. Preconditions reuse [`crate::verify::verify_plan_bound`] for a fresh observation held
 //!    across both local commissioning lanes: opening MMI, one IDENTIFY4
 //!    window for every present address, and a closing MMI that must match the
 //!    opening state vector. Only `observed_unchanged` is accepted, proving the
@@ -37,7 +37,7 @@
 //!    connection at a time. The strict plan's checksum setting, fixed `g`
 //!    confirmation, and exact request bytes are revalidated before that
 //!    single no-retry submission. The bounded capture records whether a
-//!    positive confirmation plus exact direct receipt correlated, but a
+//!    positive confirmation plus exact direct or routed receipt correlated, but a
 //!    complete nonmatching capture still proceeds to independent inventory.
 //!    Malformed, lost, or incomplete shared-session I/O lands on the
 //!    journal-backed [`ApplyError::Send`] path.
@@ -49,17 +49,20 @@
 //!    fresh observation to equal the plan's `expected_after`.
 //!
 //! Trust gap (inherited from `verify.rs`): the plan endpoint (host/port),
-//! local unit, and expected local serial are never bound here to the
-//! supplied client. The caller must connect the client to the plan's endpoint,
-//! establish its local identity, and own all commissioning activity
+//! local unit, and expected local serial are not bound by the legacy direct
+//! API. The routed bound API independently checks local identity and project
+//! freshness. The caller must connect the client to the plan's endpoint
+//! and own all commissioning activity
 //! exclusively for the whole call. The same connection is used sequentially
 //! for preconditions, the address transaction, and verification. Caller
 //! options separately bound the fresh and after observations.
 //!
-//! Journal recovery is a Rust-local format (`cbus-selected-serial-apply-v1`)
-//! with no cross-implementation guarantee: Python coordinator journals
-//! (`cbus-selected-serial-result-v1`) are neither read nor written here, and
-//! these journals are not readable by the Python coordinator. The durable
+//! Direct journals retain the summary-only `cbus-selected-serial-apply-v1`
+//! format. Routed journals use `cbus-selected-serial-apply-v2`, adding bounded
+//! original/parser frame pairs that the Python offline reconciliation validator
+//! independently reparses. This does not establish complete connection capture
+//! or physical acceptance. Python coordinator journals
+//! (`cbus-selected-serial-result-v1`) are neither read nor written here. The durable
 //! attempt marker (`cbus-selected-serial-attempt-v1`) is shared instead: the
 //! Python coordinator reproduces the fingerprint bytes, filename, directory
 //! rule and envelope, so either implementation's marker refuses the other's
@@ -97,12 +100,13 @@
 //! revalidates the embedded sanitized plan, returning a bounded
 //! [`RecoveryRecord`] or an error on corrupt/ambiguous content.
 //!
+use crate::commissioning_route::RouteBinding;
 use crate::journal::RecoveryJournal;
 use crate::plan::{
     parse_strict_json_value, refuse_routed_execution, validate_plan_document_with_value,
     ValidatedPlan,
 };
-use crate::verify::{verify_plan, VerifyEvidence, VerifyOptions, VerifyOutcome};
+use crate::verify::{verify_plan_bound, VerifyEvidence, VerifyOptions, VerifyOutcome};
 use crate::PciClient;
 use ring::digest::{digest, SHA256};
 use serde_json::{json, Map, Value};
@@ -117,6 +121,7 @@ use std::sync::{
 
 /// Rust-local journal format written by [`apply_plan`].
 const JOURNAL_FORMAT: &str = "cbus-selected-serial-apply-v1";
+const ROUTED_JOURNAL_FORMAT: &str = "cbus-selected-serial-apply-v2";
 const ATTEMPT_FORMAT: &str = "cbus-selected-serial-attempt-v1";
 
 /// Tunables for [`apply_plan`].
@@ -215,6 +220,12 @@ impl std::error::Error for ApplyError {}
 /// Mutable journal evidence accumulated across the attempt.
 #[derive(Debug, Clone)]
 struct Evidence {
+    route_binding: Option<Value>,
+    before_frames: Option<Value>,
+    local_identity_frames: Option<Value>,
+    local_options_frames: Option<Value>,
+    exchange_frames: Option<Value>,
+    after_frames: Option<Value>,
     state: String,
     outcome: String,
     serial: String,
@@ -247,6 +258,12 @@ struct Evidence {
 impl Evidence {
     fn new(plan: &ValidatedPlan, plan_value: Value) -> Self {
         Self {
+            route_binding: None,
+            before_frames: None,
+            local_identity_frames: None,
+            local_options_frames: None,
+            exchange_frames: None,
+            after_frames: None,
             state: "validated".to_string(),
             outcome: "uncertain".to_string(),
             serial: plan.serial.clone(),
@@ -276,7 +293,7 @@ impl Evidence {
     }
 
     fn to_value(&self, journal_path: Option<&Path>) -> Value {
-        json!({
+        let mut value = json!({
             "format": JOURNAL_FORMAT,
             "operation": "apply",
             "state": self.state,
@@ -303,8 +320,24 @@ impl Evidence {
             "errors": self.errors,
             "attempt_identity": self.attempt_identity,
             "plan": self.plan,
+            "route_binding": self.route_binding,
             "journal": journal_path.map(|path| path.to_string_lossy().into_owned()),
-        })
+        });
+        if self.plan.get("route").is_some() {
+            value["format"] = Value::from(ROUTED_JOURNAL_FORMAT);
+            value["reconciliation_evidence"] = json!({
+                "format": "cbus-rust-selected-serial-reconciliation-v1",
+                "source": "cbus-transport-routed-selected-serial",
+                "frame_capture_scope": "commissioning_frames",
+                "raw_connection_capture": false,
+                "before": self.before_frames,
+                "local_identity": self.local_identity_frames,
+                "local_options": self.local_options_frames,
+                "exchange": self.exchange_frames,
+                "after": self.after_frames,
+            });
+        }
+        value
     }
 }
 
@@ -623,6 +656,18 @@ impl ApplyOnce {
         recovery_path: &Path,
         options: ApplyOptions<'_>,
     ) -> Result<ApplySuccess, ApplyError> {
+        self.apply_bound(pci, recovery_path, options, None).await
+    }
+
+    /// Apply once with a project binding for a routed selected-serial plan.
+    /// The binding is revalidated before I/O and again before durable intent/send.
+    pub async fn apply_bound(
+        &self,
+        pci: &PciClient,
+        recovery_path: &Path,
+        options: ApplyOptions<'_>,
+        binding: Option<&RouteBinding>,
+    ) -> Result<ApplySuccess, ApplyError> {
         if self
             .applied
             .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
@@ -632,7 +677,7 @@ impl ApplyOnce {
                 "apply: plan was already applied; replay refused without send".to_string(),
             ));
         }
-        apply_plan(&self.plan, pci, recovery_path, options).await
+        apply_plan_bound(&self.plan, pci, recovery_path, options, binding).await
     }
 }
 
@@ -644,7 +689,7 @@ impl ApplyOnce {
 pub struct RecoveryRecord {
     /// Strictly validated embedded plan.
     pub plan: ValidatedPlan,
-    /// Canonical sanitized plan bytes suitable for [`verify_plan`].
+    /// Canonical sanitized plan bytes suitable for [`crate::verify::verify_plan_bound`].
     pub plan_document: Vec<u8>,
     /// Complete bounded journal or attempt-marker document for diagnosis.
     pub evidence: Value,
@@ -679,7 +724,7 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
         ));
     }
     match document.get("format").and_then(Value::as_str) {
-        Some(JOURNAL_FORMAT) => {
+        Some(JOURNAL_FORMAT | ROUTED_JOURNAL_FORMAT) => {
             for field in ["send_intent_recorded", "attempt_recorded", "send_attempted"] {
                 if document.get(field) != Some(&Value::Bool(true)) {
                     return Err(ApplyError::Journal(format!(
@@ -708,7 +753,7 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
         }
         _ => {
             return Err(ApplyError::Journal(format!(
-                "recovery corrupt: expected {JOURNAL_FORMAT} or {ATTEMPT_FORMAT}"
+                "recovery corrupt: expected {JOURNAL_FORMAT}, {ROUTED_JOURNAL_FORMAT} or {ATTEMPT_FORMAT}"
             )));
         }
     }
@@ -744,7 +789,7 @@ pub fn load_recovery(journal_path: &Path) -> Result<RecoveryRecord, ApplyError> 
 /// Require a complete fresh bookended observation equal to the plan's
 /// embedded `before` snapshot.
 ///
-/// Reusing [`verify_plan`] keeps both local commissioning lanes held across the
+/// Reusing [`crate::verify::verify_plan_bound`] keeps both local commissioning lanes held across the
 /// opening MMI, all IDENTIFY4 windows, and the closing MMI. Only
 /// [`VerifyOutcome::ObservedUnchanged`] is a valid precondition result. Invalid
 /// caller bounds, collection errors, bookend drift, an already-applied plan,
@@ -754,12 +799,13 @@ async fn check_fresh_preconditions(
     raw_plan: &[u8],
     pci: &PciClient,
     options: VerifyOptions,
-) -> Result<(), ApplyError> {
-    let fresh = verify_plan(raw_plan, pci, options)
+    binding: Option<&RouteBinding>,
+) -> Result<VerifyEvidence, ApplyError> {
+    let fresh = verify_plan_bound(raw_plan, pci, options, binding)
         .await
         .map_err(|error| ApplyError::Preconditions(format!("fresh_before: {error}")))?;
     if fresh.after_collection_complete && fresh.outcome == VerifyOutcome::ObservedUnchanged {
-        return Ok(());
+        return Ok(fresh);
     }
     let errors = if fresh.errors.is_empty() {
         "none".to_string()
@@ -783,12 +829,30 @@ pub async fn apply_plan(
     recovery_path: &Path,
     options: ApplyOptions<'_>,
 ) -> Result<ApplySuccess, ApplyError> {
+    apply_plan_bound(raw_plan, pci, recovery_path, options, None).await
+}
+
+/// Execute one topology-bound routed attempt, preserving the one-shot journal contract.
+/// Missing or stale bindings refuse before any PCI byte, marker, or journal.
+/// An uncertain send is never retried; use [`crate::verify::verify_plan_bound`] for recovery.
+pub async fn apply_plan_bound(
+    raw_plan: &[u8],
+    pci: &PciClient,
+    recovery_path: &Path,
+    options: ApplyOptions<'_>,
+    binding: Option<&RouteBinding>,
+) -> Result<ApplySuccess, ApplyError> {
     // No I/O yet: a rejection here is Plan and implies no journal and no send.
     let (plan, plan_value) = validate_plan_document_with_value(raw_plan)
         .map_err(|error| ApplyError::Plan(error.to_string()))?;
-    // A routed plan is a schema-only intent: refuse before any marker,
-    // journal, fingerprint claim or PCI I/O.
-    refuse_routed_execution(&plan).map_err(|error| ApplyError::Plan(error.to_string()))?;
+    match binding {
+        Some(binding) => binding
+            .validate_plan(&plan)
+            .map_err(|error| ApplyError::Plan(error.to_string()))?,
+        None => {
+            refuse_routed_execution(&plan).map_err(|error| ApplyError::Plan(error.to_string()))?
+        }
+    }
     let fingerprint = canonical_plan_fingerprint(&plan_value);
     // The durable identity is scoped to the resolved journal directory or
     // explicit shared store. An existing path (including a symlink or corrupt
@@ -825,29 +889,76 @@ pub async fn apply_plan(
     // validated semantic field without reparsing raw numeric forms that the
     // strict scanner deliberately normalizes before serde decoding.
     let mut evidence = Evidence::new(&plan, plan_value.clone());
+    evidence.route_binding = binding.map(RouteBinding::evidence);
 
     // A complete MMI/IDENTIFY4/MMI observation must prove the live bus still
     // equals the plan's embedded `before`. The observation's deadline also
     // validates caller options before any address command can be sent.
-    check_fresh_preconditions(raw_plan, pci, options.verify).await?;
+    let before = check_fresh_preconditions(raw_plan, pci, options.verify, binding).await?;
+    evidence.before_frames = before.reconciliation_inventory;
 
     // Re-read the local option immediately after the potentially long
     // inventory walk and immediately before journal creation. Any failure
     // leaves no journal behind and sends no address command.
-    let observed = pci
-        .recall_parameter(plan.local_unit, 66, 1)
-        .await
-        .map_err(|error| {
-            ApplyError::Preconditions(format!(
-                "local_options: local PCI parameter 66 recall failed: {error}"
-            ))
-        })?;
+    let read_options = async {
+        let mut identity_capture = None;
+        if plan.is_routed() {
+            // The remote walk can be long. Re-pin the direct PCI identity
+            // immediately before the local option check and durable intent.
+            let (replies, capture) = pci
+                .selected_serial_local_identity_guarded_captured(plan.local_unit)
+                .await?;
+            if replies.len() != 1
+                || crate::inventory::parse_serial_number(&replies[0])
+                    .ok()
+                    .flatten()
+                    != Some(plan.expected_local_serial.clone())
+            {
+                return Err(std::io::Error::new(
+                    ErrorKind::InvalidData,
+                    "local PCI serial changed before selected-serial send",
+                ));
+            }
+            identity_capture = Some(capture);
+        }
+        if plan.is_routed() {
+            pci.selected_serial_local_options_guarded_captured(plan.local_unit)
+                .await
+                .map(|(options, capture)| (options, identity_capture, Some(capture)))
+        } else {
+            pci.recall_parameter(plan.local_unit, 66, 1)
+                .await
+                .map(|options| (options, None, None))
+        }
+    };
+    let (observed, identity_capture, options_capture) = if plan.is_routed() {
+        match tokio::time::timeout(options.verify.inventory.total_deadline, read_options).await {
+            Ok(result) => result,
+            Err(_) => {
+                pci.shutdown().await;
+                Err(std::io::Error::new(
+                    ErrorKind::TimedOut,
+                    "local pre-send identity/options deadline elapsed",
+                ))
+            }
+        }
+    } else {
+        read_options.await
+    }
+    .map_err(|error| ApplyError::Preconditions(format!("local_options: {error}")))?;
     if observed != [5] {
         return Err(ApplyError::Preconditions(format!(
             "local_options: local PCI parameter 66 must equal 05, observed {observed:02X?}"
         )));
     }
     evidence.options_verified = Some(observed);
+    evidence.local_identity_frames = identity_capture;
+    evidence.local_options_frames = options_capture;
+    if let Some(binding) = binding {
+        binding
+            .assert_fresh()
+            .map_err(|error| ApplyError::Preconditions(error.to_string()))?;
+    }
     // Reserve an independent recovery handle before journal creation and
     // before the one-shot address request. A crash after this point may leave
     // only the marker; it embeds the validated plan for read-only verify.
@@ -908,8 +1019,21 @@ pub async fn apply_plan(
     // durable intent. The method re-encodes the plan fields, requires exact
     // equality with request_bytes, atomically reserves the literal `g`, and
     // submits those supplied bytes exactly once outside the retry table.
-    let exchange = match pci
-        .send_selected_serial_plan_once(
+    if let Some(binding) = binding {
+        if let Err(error) = binding.assert_fresh() {
+            evidence.exchange_send_attempted = Some(false);
+            evidence.exchange_termination = Some("write_not_started".into());
+            return Err(fail_with_journal(
+                &mut journal,
+                &evidence,
+                format!("pre_send_route_binding: {error}"),
+                ApplyError::Send,
+            ));
+        }
+    }
+    let exchange = match if let Some(route) = plan.route.as_deref() {
+        pci.send_selected_serial_plan_once_routed(
+            route,
             &plan.serial,
             plan.destination,
             plan.command_checksum,
@@ -917,7 +1041,16 @@ pub async fn apply_plan(
             &plan.request_bytes,
         )
         .await
-    {
+    } else {
+        pci.send_selected_serial_plan_once(
+            &plan.serial,
+            plan.destination,
+            plan.command_checksum,
+            b'g',
+            &plan.request_bytes,
+        )
+        .await
+    } {
         Ok(exchange) => exchange,
         Err(error) => {
             evidence.exchange_send_attempted = Some(error.send_attempted);
@@ -954,6 +1087,7 @@ pub async fn apply_plan(
     evidence.send_completed = true;
     evidence.sends = 1;
     evidence.receipt_matched = Some(exchange.receipt_matched);
+    evidence.exchange_frames = exchange.frame_capture;
     evidence.exchange_termination = Some("response_window_elapsed".to_string());
     evidence.state = "receipt_collected".to_string();
     journal
@@ -962,7 +1096,7 @@ pub async fn apply_plan(
 
     // Post-send observation: any failure or divergence is a distinct variant
     // documenting that one exact send already completed.
-    let after = match verify_plan(raw_plan, pci, options.verify).await {
+    let after = match verify_plan_bound(raw_plan, pci, options.verify, binding).await {
         Ok(after) => after,
         Err(error) => {
             return Err(fail_with_journal(
@@ -989,6 +1123,7 @@ pub async fn apply_plan(
         })
         .collect();
     evidence.after_errors = after.errors.clone();
+    evidence.after_frames = after.reconciliation_inventory.clone();
     if after.outcome != VerifyOutcome::ObservedExpectedChange {
         return Err(fail_with_journal(
             &mut journal,

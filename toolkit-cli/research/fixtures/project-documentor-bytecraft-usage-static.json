@@ -1,0 +1,70 @@
+{
+  "format": "cbus-project-documentor-bytecraft-usage-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "exact_old_and_l1_registrations": true,
+    "exact_old_agent": true,
+    "output_vmt": true,
+    "count_vmt": true,
+    "twelve_channels": true,
+    "no_logic_vmt": true,
+    "no_logic_collection": true,
+    "empty_inherited_output": true,
+    "inherited_output_first": true,
+    "channel_identity_compare": true,
+    "one_based_channel": true,
+    "channel_order": true,
+    "pipe_separator": true,
+    "loader_group_attribute": true,
+    "loader_primary_application": true,
+    "loader_add_group": true,
+    "retained_output_span": true,
+    "retained_loader_span": true
+  },
+  "registrations": [
+    [
+      "DIMPR12",
+      "CIS_TDIMPR12..TDIMPR12",
+      "0",
+      "1.9.02"
+    ],
+    [
+      "DIMPR12",
+      "CIS_TDIMPR12L1..TDIMPR12L1",
+      "1.9.03",
+      "9"
+    ]
+  ],
+  "agent": "CIS_TDIMPR12CGateAgent..TDIMPR12CGateAgent",
+  "methods": {
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd39ea0",
+      "end": "0xd3a0c0",
+      "sha256": "64ed1f048b3c3c07299dbcf4b386d5c3f6ddc111e80d4be7d1785cdd99acc1b2"
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1246564",
+      "end": "0x124731c",
+      "sha256": "9b8e2794dd01a41c71bac18eff0e0175764d243fe68b00ddaca6861a2318c0bc"
+    },
+    "CIS_TDIMPR12.TDIMPR12.GetMaxChannels": {
+      "start": "0x1014630",
+      "end": "0x1014648",
+      "sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.GetLogicGroups": {
+      "start": "0xd39a58",
+      "end": "0xd39a70",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xf2ee9c",
+      "end": "0xf2eebc",
+      "sha256": "4bb9f9392c676118a15d3adaa5aca5404a4be680ddbecce3b2a1708011b2686a"
+    }
+  },
+  "original_loader_execution": "not_executed",
+  "original_generated_page_comparison": "not_obtained",
+  "boundary": "Old DIMPR12 output dependencies only. Static source proof; no vendor execution."
+}

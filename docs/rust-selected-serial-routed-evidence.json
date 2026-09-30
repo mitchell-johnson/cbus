@@ -1,0 +1,161 @@
+{
+  "format": "cbus-rust-selected-serial-routed-evidence-v1",
+  "issue": 28,
+  "base_revision": "9a792616d9fd09efc2b8c1c597fb8eccee26da31",
+  "revision_binding": "Source hashes below identify the implementation and tests in the commit containing this receipt; the integration handoff supplies its Git commit SHA.",
+  "execution_environment": {
+    "host": "<owned-local-test-host>",
+    "platform": "macOS arm64",
+    "rustc": "1.92.0 (ded5c06cf 2025-12-08)",
+    "cargo": "1.92.0 (344c4567c 2025-10-21)",
+    "endpoints": "Owned ephemeral loopback TCP and in-memory duplex peers only",
+    "build_storage": "New isolated external-volume target and temporary directories"
+  },
+  "actual_executed_scope": [
+    "Rust topology-bound selected-serial apply and read-only verify CLI",
+    "XML/CBZ hash and exact route pre-I/O refusal",
+    "Direct local identity and option66 correlation",
+    "Routed MMI/IDENTIFY source/local destination/route/CAL/serial correlation",
+    "One-shot address request and confirmation/receipt order/multiplicity matching",
+    "1/2/6 bridge scripted apply and marker recovery; both command checksum modes",
+    "Mid-receipt disconnect, uncertain journal, durable replay refusal and fresh read-only recovery",
+    "Stale topology during observation refuses before send intent",
+    "Queued/started cancellation, initialization/lane/capture deadlines, partial and overflow framing",
+    "Existing direct plan/apply/verify, framing and GOC2 reserved-parameter refusal regression"
+  ],
+  "test_runs": [
+    {
+      "command": "cargo test -p cbus-transport --lib commissioning_route::tests --offline",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "log": "tool execution transcript"
+    },
+    {
+      "command": "cargo test -p cbus-transport --lib selected_serial --offline",
+      "passed": 38,
+      "failed": 0,
+      "ignored": 0,
+      "log": "transport-selected-serial-final.log",
+      "log_sha256": "23d453623c1c1d1388aa6975c4586cf2228845871c73991ed125f6ea93cc2d2a"
+    },
+    {
+      "command": "cargo test -p cbus-transport --test selected_serial_plan --test selected_serial_apply --test selected_serial_verify --offline",
+      "passed": 48,
+      "breakdown": {
+        "selected_serial_plan": 2,
+        "selected_serial_apply": 23,
+        "selected_serial_verify": 23
+      },
+      "shared_plan_vectors": 40,
+      "failed": 0,
+      "ignored": 0,
+      "log": "transport-orchestration.log",
+      "log_sha256": "4bc4430894c53e12ddd09c9d8f85092dacf0a2343ca36c1eeb643736cd59fbf2"
+    },
+    {
+      "command": "cargo test -p cbus-tools --test serial_commissioning --offline",
+      "passed": 32,
+      "failed": 0,
+      "ignored": 0,
+      "log": "cli-serial-commissioning.log",
+      "log_sha256": "4c03bde1df5f26ac27f7aab99e3cb0b92173ef9c0912aeab32db4f6ac77c1d72"
+    },
+    {
+      "command": "cargo test -p cbus-tools --test serial_commissioning serial_routed_ --offline",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "subset_rerun_after_final_deadline_and_mid_receipt_fixture_refinement": true,
+      "log": "cli-routed-final.log",
+      "log_sha256": "8d1ad0061e24894e80e89fe1e86492b5830a1a16f489928018a4f83659de86df"
+    },
+    {
+      "command": "cargo test -p cbus-transport --lib framing::tests --offline",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "log": "framing-regression.log",
+      "log_sha256": "7ea683654fd660d39a0b18581417333f61d87f6df339c17acb28cc577a1c0b4e"
+    },
+    {
+      "command": "cargo test -p cbus-transport --lib goc2 --offline",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log": "goc2-regression.log",
+      "log_sha256": "3e0f92b7ea78dbe37ef06a54866e14356ccb5073949b8e75f5fca689d7d29782"
+    },
+    {
+      "command": "cargo clippy -p cbus-transport -p cbus-tools --all-targets --offline -- -D warnings",
+      "exit_code": 0,
+      "log": "clippy.log",
+      "log_sha256": "6c2a46c31d658e1916aec29b68358c3a0fd8244397357204bd636b36effa4ffb"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "unique_focused_test_functions_passed": 135,
+  "source_sha256": {
+    "rust/Cargo.lock": "a8c376c47fca636b668465b680785ea14b45aef3bd88b9d203733400bca8fd2a",
+    "rust/cbus-tools/src/main.rs": "74e54dbe28952f4d698bdf28d6bf1b523a38c2971fd1155583e3508f8677764c",
+    "rust/cbus-tools/tests/serial_commissioning.rs": "c4228c090e104bd4588672191fa38904c3a3d5fd6ef9eda5bd4664fc06f295bb",
+    "rust/cbus-transport/Cargo.toml": "8baaf563db7f58aeeeb96f6e25335d1c67b342ee472a96bb16c09e2b7de64f5f",
+    "rust/cbus-transport/src/apply.rs": "86a6fdd27ec0073e1a37d685477d9791b0575f40c6b8b9126b514c167906f4dc",
+    "rust/cbus-transport/src/commissioning_route.rs": "d7319b145f666b3fedb3c30a0db01bec6ed7b617986a46f9cd7a590d0bba6760",
+    "rust/cbus-transport/src/framing.rs": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d",
+    "rust/cbus-transport/src/lib.rs": "1aa6ba71e3a69d236136cf2e2c8271094aab477f32f6a2a9cc4ea3f29b7b1eca",
+    "rust/cbus-transport/src/pci.rs": "32a04d619690548007947b5c80fe8fc8080ac0d40a76486589afd6000ce0a730",
+    "rust/cbus-transport/src/pci/programming.rs": "48e9e55cedf8321d092d2052401c1889912e376fa6bd0fa96f488967ad72945e",
+    "rust/cbus-transport/src/pci/selected_serial_observation.rs": "7c118a011194b67240a2bdea965a86ddbd03e5f4f3e254c90d0f90a8475e8361",
+    "rust/cbus-transport/src/plan.rs": "25db5dd036c6690aade528945bbe41c7f41e5893c00e128ef6fb64d0ad878b93",
+    "rust/cbus-transport/src/verify.rs": "f9e2b30c261af17a8a4babd1629f0ac9b9180758eca1414d0f5f3064897d235b"
+  },
+  "retained_source_and_native_artifact_sha256": {
+    "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+    "rust/testdata/vectors/serial_address.jsonl": "636ca51e6be30144618151ebc89db808ad8387ace27bb45b5c5f731b49dfd355",
+    "rust/testdata/fixtures/native_cgate_routed_unravel.json": "6544f191bf5de6760b4792058b32306c030726918ff382fe3a9ef264b853192b",
+    "toolkit-cli/research/NativeRoutedWriteProbe.java": "8c90cb7d8e94505b5ca18581052e4edb8be2ff9a810b05de94c4d6b74cd0b454",
+    "toolkit-cli/research/fixtures/pci-routed-write-acceptance.json": "29aca67d9ddd3bc6d5646a74d7161e188f116a7d04abca57050b0bb9ce639a9d",
+    "toolkit-cli/research/fixtures/pci-routed-write-original-vectors.json": "a8d0a02c2c74085ced33bb0197b4411ac6db3f3cdd0ce077dc8d971a9539e483",
+    "toolkit-cli/docs/serial-address-codec-evidence.json": "f90f5dd2e45a906652fcc030fca82172daad4ef63d65b899dfd3accd102cea0b",
+    "toolkit-cli/src/cbus_toolkit/commissioning_route.py": "2a632b78b2a3c16d924e5aaef4c6dc0de5131d751ed41142af245b851dfb8f3b",
+    "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "bddad8eba6144df48908e36cd94199a3a9b5a1263efd86808379ba173ff1ac17"
+  },
+  "native_artifacts_rerun": false,
+  "native_evidence_scope": "Retained original direct selected-serial payload and PPM/Reply Network component receipts only. NativeRoutedWriteProbe executes original construction/cache matching without sender or network dispatch. The routed UNRAVEL receipt explicitly has no native routed selected-serial mutation capture.",
+  "scripted_peer_limit": "Peer inventories are scripted responses after an exact request, not an independently modeled or physical device movement.",
+  "native_routed_selected_serial_acceptance_verified": false,
+  "physical_bridge_acceptance_verified": false,
+  "physical_delivery_verified": false,
+  "device_persistence_verified": false,
+  "full_workspace_tests_or_build_run": false,
+  "remaining_gates": [
+    "Native end-to-end routed selected-serial capture",
+    "Authorized physical bridge/device acceptance and NVM persistence",
+    "Routed database reconciliation (#32)",
+    "Candidate-wide workspace/release verification is central-owned"
+  ],
+  "invalidation_rules": [
+    "Any change to bound source or input artifact hashes requires renewed applicable checks",
+    "Integration changes in PCI framing, route handling, journaling, connection ownership or CLI admission require rerunning affected direct and routed cases",
+    "A different project digest or derived route is refused before execution; stale topology never permits local-address fallback",
+    "This receipt never authorizes replay of an uncertain attempt or real hardware operations"
+  ],
+  "public_derivative_provenance": {
+    "original_sha256": "382a31a05277297b328c5ef28fd01be578f70a146114f7834831c66b380f0bc1",
+    "normalized_json_pointer_fields": {
+      "/execution_environment/host": "<owned-local-test-host>"
+    },
+    "historical_execution_unchanged": true,
+    "new_execution_performed": false,
+    "raw_original_retained_privately": true,
+    "scope": "Host-name role only; source/native hashes, commands, results and remaining gates preserved."
+  }
+}

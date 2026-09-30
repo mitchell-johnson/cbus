@@ -1,0 +1,62 @@
+{
+  "format": "cbus-iope-json-reader-acceptance-v1",
+  "base_commit": "3c25ea86bd686b2fd8a198edf5baabf177bd34a6",
+  "scope": "IOPE snapshot, edits and saved-plan JSON file admission only",
+  "pattern_source": "src/cbus_toolkit/edlt_templates_cli.py",
+  "pattern_sha256": "c01e60ba6d56f5e400ef6411f4403491a30611c30e68ceec7ed072edc1b7b0b7",
+  "checks": {
+    "regular_file_precheck": true,
+    "preopen_size_limit": true,
+    "nonblocking_open_on_posix": true,
+    "opened_descriptor_type_and_size_rechecked": true,
+    "actual_read_limit_plus_one": true,
+    "regular_symlinks_accepted": true,
+    "fifo_substitution_refused_before_read": true,
+    "descriptors_closed_on_refusal": true,
+    "existing_json_validation_preserved": true
+  },
+  "focused_tests": {
+    "passed": 20,
+    "subtests_passed": 73,
+    "skipped": 0,
+    "command": "python -B -m pytest -q -p no:cacheprovider tests/test_iope_json_reader.py tests/test_iope_workflow_cli.py"
+  },
+  "independent_review": {
+    "model": "gpt-6.1-sol",
+    "blocking_findings": 0,
+    "new_tests_passed": 10,
+    "skipped": 0
+  },
+  "bounded_subprocess_cases": {
+    "count": 6,
+    "timeout_seconds_per_case": 3,
+    "roles": [
+      "snapshot",
+      "edits",
+      "saved-plan"
+    ],
+    "path_kinds": [
+      "FIFO",
+      "symlink-to-FIFO"
+    ],
+    "cgate_client_constructed": false
+  },
+  "limits": {
+    "json_input_bytes": 1048576,
+    "immutable_regular_file_snapshot": false,
+    "regular_file_substitution_refused": false
+  },
+  "not_run": [
+    "baseline blocking FIFO probe",
+    "C-Gate/native persistence tests",
+    "hardware operations",
+    "full suite",
+    "Rust build"
+  ],
+  "native_receipts_refreshed": false,
+  "sha256": {
+    "src/cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "tests/test_iope_json_reader.py": "879b6825db7990d2a223878615722283b87515db009a8cb48d2985c981d945d3",
+    "docs/iope-json-inputs.md": "e8678559810edb487255535c0cbb83828aef34eaef79e450f23934a325a0a058"
+  }
+}

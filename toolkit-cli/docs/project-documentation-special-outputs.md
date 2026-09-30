@@ -79,8 +79,9 @@ EXE/MAP and decoded `RELDF1.xml` specification:
 
 Neither probe executes the original whole loader or captures a generated
 project page. Full-page byte and visual comparison remain unassessed.
-ArchitecturalDimmer and BytecraftDimmer bodies retain their unrecovered markers;
-their additional loaders and report fields are outside this bounded slice.
+ArchitecturalDimmer and Bytecraft L1 bodies retain their unrecovered markers;
+old DIMPR12 uses the separate [bounded Bytecraft body](project-documentation-bytecraft.md).
+Their additional loaders and report fields are outside this specialized-output slice.
 The original leaf probe needs permitted local JIT memory on macOS. It starts
 no Windows process or C-Gate connection and performs no hardware actions.
 It was not rerun for the firmware-range extension.

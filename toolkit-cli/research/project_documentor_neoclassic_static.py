@@ -195,14 +195,14 @@ def inspect(exe: Path, map_file: Path) -> dict:
             "subsets": {name: families[name] for name in ("KEY", "NEOPRO_CLASSIC", "NEOPRO_S")},
             "methods": {name: {"start": hex(row["start"]), "end": hex(row["end"]), "sha256": row["sha256"],
                                "literals": row["literals"]} for name, row in sorted(methods.items())},
-            "body_contract": {"key_count": 8, "block_count": 8, "scene_selector": "eight explicit zeros",
+            "body_contract": {"key_count": 8, "block_count": 8, "scene_selector": "Ordinary baseline: eight explicit zeros. Canonical selector=1/JP14 Scene24 extension is pinned separately by project-documentor-neoclassic-scene-static.json.",
                               "raw_commands": "preserved; ordinary macro resolution equals the existing classic matcher",
                               "application_identity": "shared Neo primary/secondary block and key identity model",
                               "joins": "Native raw join references still load; unsupported capabilities and fresh attribute construction make them unconsumed by this report projection.",
                               "output": "Classic timing and key tables only; no Neo Scenes appendix",
                               "scene_data": "SceneTable is loaded natively but unconsumed by zero-selector body; input dependencies inspect it separately"},
             "limits": ["Read-only source evidence only; no original loader or generated-page execution.",
-                       "Scene-encoded keys and retained in-memory model history remain outside the proposed ordinary-key profile.",
+                       "Scene24 and canonical SceneModify use their companion encoded-key receipts. Noncanonical allocation and retained in-memory model history remain outside this profile.",
                        "Input scene dependencies require their own explicit scene-table projection."]}
 
 

@@ -406,7 +406,9 @@ def test_committed_static_receipt_matches_the_model():
                      "project_documentation_scene_controller", "project_documentation_classic_profiles",
                      "project_documentation_special_outputs", "project_documentation_temperature",
                      "project_documentation_pir", "project_documentation_neoclassic",
-                     "project_documentation_neoclassic_usage")}
+                     "project_documentation_neoclassic_usage", "project_documentation_bytecraft_usage",
+                     "project_documentation_bytecraft_loader", "project_documentation_bytecraft",
+                     "project_documentation_neoclassic_modify")}
     statuses = {row["body_status"] for row in receipt["documentor_classes"].values()}
     assert statuses == {"recovered", "partial", "unrecovered"}
 

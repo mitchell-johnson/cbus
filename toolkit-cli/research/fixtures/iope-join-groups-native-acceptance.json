@@ -16,7 +16,7 @@
     "src/cbus_toolkit/iope_join_groups.py": "5fccafaadb52943e6fb3b38f6a31ff9ad81a099f5f9e4183713a5c3e0fb65a58",
     "src/cbus_toolkit/iope_scene_selectors.py": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a",
     "src/cbus_toolkit/iope_environment.py": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375",
-    "src/cbus_toolkit/iope_workflow_cli.py": "233492c1a3d72fa46efe9456663c51e763d574ea78fde122884fc1b4d9acb450",
+    "src/cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
     "tests/test_iope_join_groups_native.py": "17a3b1e58b1f01cda4e4c7a2434361e613f5c28c82c0053f79cec4d151435e64",
     "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881"
   },
@@ -10057,5 +10057,25 @@
     "process_exit_confirmed": true,
     "work_removed": true,
     "reserved_sockets_closed": true
+  },
+  "fresh_acceptance_provenance": {
+    "phase": "pre-freeze-current-source-four-exact-native-matrices",
+    "actual_imported_cli_sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a",
+    "actual_imported_iope_workflow_cli_sha256": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "raw_receipt_sha256": "81ffdb90f9759d05cc011f9a0d80cce23e42206b94baeff5e85c604787506fbb",
+    "execution_binding_sha256": "97bef40ce09fd68c711c23ead8dd8e265e52d0dfae2e5eeca15444f7a18d122d",
+    "junit_sha256": "93fd9f3e836b519a4ae1c906b9c1f8ebfd931c13aba678658b43f46e8851ba26",
+    "selected_method_node": "tests/test_iope_join_groups_native.py::IopeJoinGroupsNativeTest::test_join_groups_and_scene_selectors_profile_matrix",
+    "phase_normal_passed": 4,
+    "phase_subtests_passed": 27,
+    "phase_failed": 0,
+    "phase_skipped": 0,
+    "historical_fixture_sha256": "ec308c2ba5b4e70b98d9a35473107788f460f39016fe45a1998b1ce245d245c7",
+    "historical_fixture_unchanged": true,
+    "cni_admission": "Closed synthetic database network targets owned idle loopback listener; no external endpoint configured. Listener queue/count was not independently observed.",
+    "cni_connection_count_verified": false,
+    "original_runtime_executed": false,
+    "physical_hardware_executed": false,
+    "wheel_built_or_executed": false
   }
 }

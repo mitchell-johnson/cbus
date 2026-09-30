@@ -1,0 +1,125 @@
+{
+  "format": "cbus-routed-commissioning-root-validation-v1",
+  "status": "passed_with_explicit_scope_and_prior_failures",
+  "git_base": "3c25ea86bd686b2fd8a198edf5baabf177bd34a6",
+  "independent_python_context_audits": {
+    "source": {
+      "normal_node_ids_independently_verified": 1159,
+      "subtest_call_events_independently_verified": 1304,
+      "junit_testcase_elements": 1159,
+      "errors_failures_skips": 0,
+      "actual_module_origin_and_hash_bindings_verified": 192,
+      "raw_junit_sha256": "502f30651c052988462cf0734c509348785ce48fc993e77334cf7cf4ffcdc483",
+      "raw_report_sha256": "aeb408958daf4c42f5ee8d2929f52750d85959f2140d5aa8bf9bae2c8d6e97cd"
+    },
+    "wheel": {
+      "normal_node_ids_independently_verified": 1159,
+      "subtest_call_events_independently_verified": 1304,
+      "junit_testcase_elements": 1159,
+      "errors_failures_skips": 0,
+      "actual_module_origin_and_hash_bindings_verified": 192,
+      "raw_junit_sha256": "a9b9e0ec4f90619186b95d8508b082f7fb4fb3f7b1f5f7933c78dbf18fb94cb2",
+      "raw_report_sha256": "6790ddb3deccb6fcc40f41aec97934ed03ab368431a41d8cd3e14e938983a69a"
+    }
+  },
+  "package_file_count": 321,
+  "reference_input_count": 2753,
+  "reference_strategy": "Original references hashed in place; no copied reference snapshot. Four declared postexecution documentation/generated-census changes, product/tests stable.",
+  "source_wheel_installed_product_bytes_equal": true,
+  "accepted_wheel_sha256": "9bb6255ececd7e38416026736f04a2efa76dab7cdec2d3dc0081b0e58ff85ca2",
+  "rust_source_files_independently_verified_current": 410,
+  "rust_distinct_passed_identities_independently_parsed": 151,
+  "actual_rust_binary_sha256": "6727d465de788636daf683beaaa49d00ff0b003ec584fc6caaf43818d652fff4",
+  "rust_required_checks_passed": [
+    "cargo fmt --check",
+    "cargo clippy --workspace --all-targets --offline --locked -- -D warnings",
+    "cargo build --release --workspace --offline --locked"
+  ],
+  "full_workspace_tests_run": false,
+  "native_derivative_pairs_independently_reversed": 10,
+  "native_derivative_only_added_field": "focused_acceptance_binding",
+  "public_receipt_sha256": {
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/acceptance.json": "8d34c41411ee5dd03242eec89942f17ffd4d2b1bf9ce41c08d059cb47a593962",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/alias-fix-acceptance.json": "444b34b8b1cf6b6b7d318f16dca7e585e6cf4edd6a3b672bdc6603ecea1baded",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/rust-focused-acceptance.json": "9dd43a70274f05bd9af934257a69f9cb89bcdacfbf7caef7733909fc7c20a8cf",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-join-groups-source.json": "4bc860a48428c15ba5a92a41f0c95848b1341bb55986cd8e2b69e0a5b7f6527f",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-join-groups-wheel.json": "5d4071ea94a06ffd229ee995ebe35aa8d8dfc9ae7e8c0d09f93d4f1a27e35502",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-logic-source.json": "3f273efb2a2772d51d9d47cebee118002cd28aa27a3c51eb8d325fd04fbb00f6",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-logic-wheel.json": "b7f88f53473d5fb8f30d8b8baf42042b18753d2dc45eda6876e73376bd13092c",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-scene-levels-source.json": "8f97ba4a0568874c74225a674cb13c5fb751d528420d648f8341689cf61961df",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-scene-levels-wheel.json": "3c3e7496a183d16f760203c060b0040aef56d3555f8ee0ee51709eb135ef8ab2",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-settings-source.json": "272e635a0ced7451890eb56e9f71cbde38b95e39f93e13fe927a7539e952c942",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-settings-wheel.json": "dfc15054206ad2ca9c6b8b6ceffda04bb4a1b5f896a208c66593f3d2b630c3e8",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-workflow-source.json": "be4422c45d2281983006dd4373eaf7a2489a94ac1bc415d49b898c90b141b2f8",
+    "toolkit-cli/docs/acceptance/2026-10-01-routed-commissioning/sanitized-combined-fresh-iope-workflow-wheel.json": "2e0d3e145bcf1d15c8faac70f74e9fc7322f04cbd9404c579ab6a67739b54820"
+  },
+  "postexecution_reference_deltas": {
+    "docs/rust-selected-serial-routed.md": {
+      "execution_sha256": "e7530e922dd1968f3b21a5a7cf2aa6dfb802b28801ab3851179b656eca98d83b",
+      "publication_sha256": "cae216b83ccc38bbdae87d69a6b38844a5d86085104671adba0322950692110e"
+    },
+    "toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md": {
+      "execution_sha256": "b79186c9813ce68dd714fb01ad5738e70d9262a93e50c934b297d24d832cdc0b",
+      "publication_sha256": "5aff7a1d64584b45972eebab6a44b6110aa35b876611c1c39076a8c138b8a56e"
+    },
+    "toolkit-cli/docs/implementation-status.md": {
+      "execution_sha256": "d7e960bd390eabd37a025e69b70cd5f1ca54268fbd9a11ae6c263c3511c577ea",
+      "publication_sha256": "95be79d63c0a67b3012e258ef0ab3fea093acc44e6a314b2b904ada341bed0da"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "execution_sha256": "c072ecddac454c1e19006045abbbc7c461282d32530a1325cedb2cf8f3714d7a",
+      "publication_sha256": "1b205484b2d818fa242d8063a308821ab0c332a0df2b1cfa80ede4050fd1bb53"
+    }
+  },
+  "postexecution_root_readme_sha256": "211cf326896b70d414b12b2339c203ec1573d79d3765511649994b78643ebfe2",
+  "static_register_check": {
+    "status": "current",
+    "scope_items": 22103,
+    "obligations": 487,
+    "evidence_records": 3,
+    "census_complete": false
+  },
+  "static_census_check": {
+    "test_modules": 602,
+    "modules_with_skip_sites": 288,
+    "native_runnable_tests": 258,
+    "native_selected_required_tests": 258,
+    "native_selection_changed": false,
+    "only_module_delta": "test_rust_serial_reconcile gated definitions 7 to 8"
+  },
+  "prior_failed_attempts_preserved_and_independently_hashed": true,
+  "failed_phase_counters_not_distinct_test_counts": true,
+  "wheel_product_process_audit_records": 180,
+  "separate_counts_not_added": {
+    "rust_tests": 151,
+    "session_comparison_cases": 40,
+    "native_prephase_methods": 4,
+    "native_prephase_subtests": 27,
+    "alias_regression_tests": 8,
+    "alias_regression_subtests": 48
+  },
+  "current_capability_status_counts": {
+    "implemented": 18,
+    "in_progress": 22,
+    "pending": 2
+  },
+  "broad_implemented_row_ratio": {
+    "numerator": 18,
+    "denominator": 42,
+    "percent": 42.86,
+    "functionality_percentage": null
+  },
+  "qualifications": [
+    "No full Toolkit parity or completed functional denominator claim.",
+    "Source/wheel/narrow/prephase counts overlap and are not additive.",
+    "Four IOPE matrix definitions execute under five node IDs; both workflow call outcomes retained, shared report last-write disclosed.",
+    "CNI connection count was not independently measured; settings receipt lacks per-service lifecycle fields, final session teardown passed.",
+    "SESSION_ID current comparisons replay retained original captures; no fresh original instructions executed for that slice.",
+    "Static EXE/MAP/spec inspection and owned original C-Gate Java database checks are separate from original Toolkit GUI workflows.",
+    "No real endpoint, broker, USB or physical acceptance in this batch.",
+    "Public receipt payloads copied byte-identically; exact raw hashes and declared normalization remain.",
+    "External exports were rejected before execution; internal build/test alternative did not retry them.",
+    "Filesystem path checks are not an atomic filesystem lock or authenticated transport history.",
+    "Native original workflow, live bridge, persistence and report GUI/print gates remain open."
+  ]
+}

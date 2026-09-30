@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 import xml.etree.ElementTree as ET
 
@@ -34,7 +35,22 @@ def _pairs(pairs):
 
 
 def read_json(path):
-    with Path(path).open('rb') as stream:
+    path = Path(path)
+    info = path.stat()
+    if not stat.S_ISREG(info.st_mode):
+        raise ValueError('JSON inputs must be regular files')
+    if info.st_size > LIMIT:
+        raise ValueError('JSON input must be nonempty and at most 1 MiB')
+    # Match the local template reader: follow regular-file symlinks, but
+    # never wait for a substituted FIFO and check the actual opened target.
+    flags = os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0) | getattr(os, 'O_BINARY', 0)
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, 'rb') as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError('JSON inputs must be regular files')
+        if info.st_size > LIMIT:
+            raise ValueError('JSON input must be nonempty and at most 1 MiB')
         raw = stream.read(LIMIT + 1)
     if not raw or len(raw) > LIMIT:
         raise ValueError('JSON input must be nonempty and at most 1 MiB')
