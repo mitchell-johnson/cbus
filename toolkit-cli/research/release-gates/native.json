@@ -139,6 +139,7 @@
     "tests/test_native_global_factory.py",
     "tests/test_native_global_programming.py",
     "tests/test_native_network_oracle.py",
+    "tests/test_native_pp_method_transcripts.py",
     "tests/test_native_programmer_lifecycle.py",
     "tests/test_native_thermostat_schedule_integration.py",
     "tests/test_native_thermostat_scheduling_integration.py",

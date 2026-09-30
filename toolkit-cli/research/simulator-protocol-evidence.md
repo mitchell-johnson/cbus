@@ -141,7 +141,10 @@ The bounded checksum/protection investigation established:
   stores with parameter `FC`, tag `03`, values `00`/`01`, while DALI waits one
   second before its first store. GOC/GOCBYT/GOC2 select and store through
   parameter `FF`, prefix a two-byte big-endian physical address, and use native
-  store limits 10/10/11 and recall limits 6/6/255 respectively. Exact Rust
+  store limits 10/10/11 and recall limits 6/6/255 respectively. For the
+  `CBusGOC2Dimmer` class, `bo` expects the selector and STORE ACK to name the
+  low address byte rather than `FF`; owned native C-Gate confirmed this
+  against a synthetic DIMAR12 (`native_cgate_pp_method_transcripts.json`). Exact Rust
   transport tests and the fake-PCI cmqttd system test preserve these frames,
   source matching, readback verification, and GIU halt/resume ordering.
 * The native UnitName SAVE sends the field STORE and waits for its ACK; it

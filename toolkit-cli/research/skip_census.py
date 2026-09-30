@@ -134,6 +134,9 @@ UNKNOWN_RESOLUTIONS: dict[str, tuple[str, str]] = {
     "tests/test_rust_cgate_interop.py": _RUST_BINARIES,
     "tests/test_toolkit_database_csv_project_interop.py": _RUST_BINARIES,
     "tests/test_conversion_pairs_native.py::RustConversionPairTests": _RUST_BINARIES,
+    "tests/test_native_pp_method_transcripts.py::test_cmqttd_replay_matches_committed_transcript": (
+        "runs", "the native gate provisions the cmqttd binary as CBUS_CMQTTD_BIN; the replay also needs "
+                "the native catalogue and decoded unit specifications that gate provides"),
     "tests/test_native_cgate_project_interchange.py": (
         "runs", "the native gate provisions the cmqttd binary as CBUS_CMQTTD_BIN for this cross-server "
                 "PROJECT ARCHIVE/RESTORE interchange; other Rust interop stays with make check-interop"),

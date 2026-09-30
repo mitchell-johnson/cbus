@@ -1,0 +1,5165 @@
+{
+ "format": "cbus-native-pp-method-transcripts-v1",
+ "scope": "Owned loopback native C-Gate 3.4.0 build 2001 and cmqttd against a research-only synthetic method-memory fixture with one unit per programming-method family. Zero-filled memory, UNLOCK challenge 5A and NVM status 00 are fixture choices, not device firmware, persistence or hardware evidence.",
+ "captured_at": "2026-09-30T06:43:50+00:00",
+ "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+ "oracle": {
+  "vendor_jar_sha256": [
+   "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+  ],
+  "java_sha256": [
+   "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  ],
+  "listener_ownership_verified": [
+   "True"
+  ],
+  "cleanup_complete": [
+   "True"
+  ],
+  "process_exit_confirmed": [
+   "True"
+  ],
+  "work_removed": [
+   "True"
+  ],
+  "version": "3.4.0 build 2001",
+  "physical_endpoint": false,
+  "owned_processes": 13
+ },
+ "capture_script_sha256": "6ae162688203cf9d4d36ff0899f1ee29b0c04901a2dc60aa461b687011450122",
+ "units": {
+  "direct": {
+   "address": 4,
+   "type": "KEY4",
+   "firmware": "1.2.67"
+  },
+  "paged": {
+   "address": 6,
+   "type": "WRD4F1",
+   "firmware": "2.3.0"
+  },
+  "ncc": {
+   "address": 7,
+   "type": "RELDN4A",
+   "firmware": "1.0.0"
+  },
+  "edlt": {
+   "address": 8,
+   "type": "KEYGL5",
+   "firmware": "5.5.00"
+  },
+  "giu": {
+   "address": 9,
+   "type": "PC_GIM",
+   "firmware": "5.5.00"
+  },
+  "sgiu": {
+   "address": 10,
+   "type": "PC_TSA",
+   "firmware": "4.6.00"
+  },
+  "dali": {
+   "address": 11,
+   "type": "PC_DAL2B",
+   "firmware": "4.6.00"
+  },
+  "gocbyt": {
+   "address": 12,
+   "type": "DIMPR12",
+   "firmware": "1.10.0"
+  },
+  "goc2": {
+   "address": 13,
+   "type": "DIMAR12",
+   "firmware": "1.0.00"
+  }
+ },
+ "no_native_specification": {
+  "goc": "No C-Gate 3.4.0.2001 cbusunits.xml revision names a specification with a goc parameter."
+ },
+ "differences": {
+  "goc2_ack_parameter": {
+   "methods": [
+    "goc2"
+   ],
+   "decision": "fixed",
+   "native": "Accepts a GOC2 selector or STORE acknowledgement only when it names the low address byte (32 <addr&FF> <tag>); with 32 FF <tag> its address selection fails with 408 and it retransmits the STORE three times.",
+   "cmqttd": "Previously required parameter FF; now correlates the low address byte for goc2 and keeps FF for goc/gocbyt."
+  },
+  "lazy_over_reads": {
+   "methods": [
+    "direct",
+    "paged",
+    "ncc",
+    "edlt",
+    "giu",
+    "sgiu",
+    "dali",
+    "gocbyt",
+    "goc2"
+   ],
+   "decision": "deliberate",
+   "native": "PP LOAD reads nothing; each first GET reads the covering native group, up to the method's recall limit beyond the field (for example 1A 0D 0C for a four-byte tail).",
+   "cmqttd": "PP LOAD identifies the unit and reads every selected field's exact extent once."
+  },
+  "save_verification": {
+   "methods": [
+    "direct",
+    "paged",
+    "ncc",
+    "edlt",
+    "giu",
+    "sgiu",
+    "dali",
+    "gocbyt",
+    "goc2"
+   ],
+   "decision": "deliberate",
+   "native": "SAVE_TO_SOURCE sends only the STOREs (plus page, UNLOCK, GIU run flags and NVM commit), with no IDENTIFY, pre-read or readback.",
+   "cmqttd": "Re-identifies type and firmware, pre-reads each changed range and reads it back after its STOREs; the STORE bytes themselves match native."
+  },
+  "giu_halt_during_reads": {
+   "methods": [
+    "giu"
+   ],
+   "decision": "deliberate",
+   "native": "Brackets GET reads, as well as SAVE stores, with the FC 03 00 / FC 03 01 run flag.",
+   "cmqttd": "Reads never write; only the STOREs are bracketed by the run flag."
+  },
+  "store_tag_scope": {
+   "methods": [
+    "paged"
+   ],
+   "decision": "deliberate",
+   "native": "Numbers STORE tags by group across the whole SAVE (page-0 lock STORE tag 00, page-1 STORE tag 01).",
+   "cmqttd": "Numbers tags within each verified range, so both STOREs use tag 00; every exchange is serialized and correlated by parameter and tag, and each range is read back."
+  },
+  "edlt_adjacent_fields": {
+   "methods": [
+    "edlt"
+   ],
+   "decision": "deliberate",
+   "native": "Merges adjacent changed fields into one selector and one two-byte STORE.",
+   "cmqttd": "Stores and verifies each changed field range separately; final memory is identical."
+  },
+  "ncc_nvm_gating": {
+   "methods": [
+    "ncc"
+   ],
+   "decision": "deliberate",
+   "native": "Every SAVE_TO_SOURCE to a C-Bus 3 unit ends with E3 81 00 04, including a SAVE with no SET and one whose SET repeats the current value; a same-value SET is also stored.",
+   "cmqttd": "Stores only changed bytes and sends the Save-to-NVM EXECUTE only after a changed ncc range was verified, so an unchanged SAVE sends no mutation."
+  },
+  "local_checksums": {
+   "methods": [
+    "direct",
+    "paged",
+    "ncc",
+    "edlt",
+    "giu",
+    "sgiu",
+    "dali",
+    "gocbyt",
+    "goc2"
+   ],
+   "decision": "observation",
+   "native": "Sent every request without a C-Bus checksum on this simulated CNI, whose interface options native C-Gate did not reprogram; this is interface configuration, not a PP method rule.",
+   "cmqttd": "Checksums local STORE, RECALL, IDENTIFY and OEM frames and leaves 1B, 39, 11 and E3 unchecksummed, as documented."
+  }
+ },
+ "fixture": {
+  "memory": "zero-filled 64 KiB standard/paged, OEM and GOC images per unit",
+  "unlock_reply_hex": "82<parameter>5A",
+  "nvm_execute_reply_hex": "E483000400",
+  "goc2_store_ack": "32<low address byte><tag>",
+  "reply_fragment_bytes": 16
+ },
+ "cases": {
+  "direct_key4_array": {
+   "native": {
+    "method": "direct",
+    "unit_type": "KEY4",
+    "firmware": "1.2.67",
+    "unit": 4,
+    "sets": [
+     [
+      "LightLevel",
+      "$5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l9eff0a //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s9eff0a l9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s9eff0a //PPNAT/254/p/4",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9eff0a LightLevel",
+      "status": 315,
+      "reply": [
+       "120-read 12/24",
+       "120-read 24/24",
+       "315 LightLevel=0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9eff0a LightLevel $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s9eff0a",
+      "status": 200,
+      "reply": [
+       "120-saved 12/16",
+       "120-saved 16/16",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9eff0a LightLevel",
+      "status": 315,
+      "reply": [
+       "315 LightLevel=0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a 0x5a"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:1A010C",
+      "d:1A0D0C",
+      "d:1A0D0C"
+     ],
+     "set": [],
+     "save": [
+      "d:AE01005A5A5A5A5A5A5A5A5A5A5A5A",
+      "d:A60D015A5A5A5A"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 4,
+      "space": "cal",
+      "address": 1,
+      "before": "000000000000000000000000",
+      "after": "5A5A5A5A5A5A5A5A5A5A5A5A"
+     },
+     {
+      "phase": "save",
+      "unit": 4,
+      "space": "cal",
+      "address": 13,
+      "before": "00000000",
+      "after": "5A5A5A5A"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1A5005",
+     "d:2108",
+     "d:1AF201",
+     "d:2104"
+    ],
+    "base_rejections": [],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "direct",
+    "unit_type": "KEY4",
+    "firmware": "1.2.67",
+    "unit": 4,
+    "sets": [
+     [
+      "LightLevel",
+      "$5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l9eff0a //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s9eff0a l9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s9eff0a //PPNAT/254/p/4",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9eff0a LightLevel",
+      "status": 315,
+      "reply": [
+       "315 LightLevel=0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9eff0a LightLevel $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9eff0a LightLevel",
+      "status": 315,
+      "reply": [
+       "315 LightLevel=$5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A $5A"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l9eff0a",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A0001*",
+      "d:1A010C*",
+      "d:1A0D04*",
+      "d:1A1104*",
+      "d:1A1504*",
+      "d:1A1E01*",
+      "d:1A1F01*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1A3001*",
+      "d:1A3101*",
+      "d:1A3207*",
+      "d:1A3307*",
+      "d:1A3A04*",
+      "d:1A3E01*",
+      "d:1A3F01*",
+      "d:1A4002*",
+      "d:1A4201*",
+      "d:1A4301*",
+      "d:1A4404*",
+      "d:1A4804*",
+      "d:1A4C04*",
+      "d:1A5008*",
+      "d:1A6004*",
+      "d:1A7002*",
+      "d:1AF708*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A010C*",
+      "d:1A0D04*",
+      "d:AE01005A5A5A5A5A5A5A5A5A5A5A5A*",
+      "d:A60D015A5A5A5A*",
+      "d:1A010C*",
+      "d:1A0D04*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 4,
+      "space": "cal",
+      "address": 1,
+      "before": "000000000000000000000000",
+      "after": "5A5A5A5A5A5A5A5A5A5A5A5A"
+     },
+     {
+      "phase": "save",
+      "unit": 4,
+      "space": "cal",
+      "address": 13,
+      "before": "00000000",
+      "after": "5A5A5A5A"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "paged_wrd4f1_page1_and_lock": {
+   "native": {
+    "method": "paged",
+    "unit_type": "WRD4F1",
+    "firmware": "2.3.0",
+    "unit": 6,
+    "sets": [
+     [
+      "Remote6KeyMap",
+      "$01 $02 $03 $04 $05 $06 $07 $08"
+     ],
+     [
+      "MaxTransmitAttempts",
+      "$03"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l9662fb //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s9662fb l9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s9662fb //PPNAT/254/p/6",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9662fb Remote6KeyMap",
+      "status": 315,
+      "reply": [
+       "120-read 12/12",
+       "315 Remote6KeyMap=0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9662fb MaxTransmitAttempts",
+      "status": 315,
+      "reply": [
+       "120-read 12/12",
+       "315 MaxTransmitAttempts=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9662fb Remote6KeyMap $01 $02 $03 $04 $05 $06 $07 $08",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9662fb MaxTransmitAttempts $03",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s9662fb",
+      "status": 200,
+      "reply": [
+       "120-read 12/12",
+       "120-saved 1/9",
+       "120-saved 9/9",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9662fb Remote6KeyMap",
+      "status": 315,
+      "reply": [
+       "315 Remote6KeyMap=0x1 0x2 0x3 0x4 0x5 0x6 0x7 0x8"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9662fb MaxTransmitAttempts",
+      "status": 315,
+      "reply": [
+       "315 MaxTransmitAttempts=0x3"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:1B01000C",
+      "d:1B001A0C"
+     ],
+     "set": [],
+     "save": [
+      "d:1B00130C",
+      "d:3900",
+      "d:111A",
+      "d:A31A0003",
+      "d:3901",
+      "d:AA00010102030405060708"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 6,
+      "space": "cal",
+      "address": 26,
+      "before": "00",
+      "after": "03"
+     },
+     {
+      "phase": "save",
+      "unit": 6,
+      "space": "cal",
+      "address": 256,
+      "before": "0000000000000000",
+      "after": "0102030405060708"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1B002906",
+     "d:1B002306",
+     "d:21FE",
+     "d:2104",
+     "d:2150",
+     "d:2151",
+     "d:2152",
+     "d:2153"
+    ],
+    "base_rejections": [],
+    "native_attempts": 2
+   },
+   "cmqttd": {
+    "method": "paged",
+    "unit_type": "WRD4F1",
+    "firmware": "2.3.0",
+    "unit": 6,
+    "sets": [
+     [
+      "Remote6KeyMap",
+      "$01 $02 $03 $04 $05 $06 $07 $08"
+     ],
+     [
+      "MaxTransmitAttempts",
+      "$03"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l9662fb //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s9662fb l9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s9662fb //PPNAT/254/p/6",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9662fb Remote6KeyMap",
+      "status": 315,
+      "reply": [
+       "315 Remote6KeyMap=0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s9662fb MaxTransmitAttempts",
+      "status": 315,
+      "reply": [
+       "315 MaxTransmitAttempts=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9662fb Remote6KeyMap $01 $02 $03 $04 $05 $06 $07 $08",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s9662fb MaxTransmitAttempts $03",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9662fb Remote6KeyMap",
+      "status": 315,
+      "reply": [
+       "315 Remote6KeyMap=$01 $02 $03 $04 $05 $06 $07 $08"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s9662fb MaxTransmitAttempts",
+      "status": 315,
+      "reply": [
+       "315 MaxTransmitAttempts=$03"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l9662fb",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B00000C",
+      "d:1B000C05",
+      "d:1B001301",
+      "d:1B00150A",
+      "d:1B00200C",
+      "d:1B002C0C",
+      "d:1B00380C",
+      "d:1B00440C",
+      "d:1B00500C",
+      "d:1B005C0C",
+      "d:1B00680C",
+      "d:1B00740C",
+      "d:1B00800C",
+      "d:1B008C0C",
+      "d:1B00980C",
+      "d:1B00A40C",
+      "d:1B00B00C",
+      "d:1B00BC0C",
+      "d:1B00C80C",
+      "d:1B00D40C",
+      "d:1B00E00C",
+      "d:1B00EC0C",
+      "d:1B00F808",
+      "d:1B01000C",
+      "d:1B010C0C",
+      "d:1B011806"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B001A01",
+      "d:1B010008",
+      "d:3900",
+      "d:111A",
+      "d:A31A0003*",
+      "d:1B001A01",
+      "d:3901",
+      "d:AA00000102030405060708*",
+      "d:1B010008"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 6,
+      "space": "cal",
+      "address": 26,
+      "before": "00",
+      "after": "03"
+     },
+     {
+      "phase": "save",
+      "unit": 6,
+      "space": "cal",
+      "address": 256,
+      "before": "0000000000000000",
+      "after": "0102030405060708"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "ncc_reldn4a_edit": {
+   "native": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [
+     [
+      "Ch0GroupAddress",
+      "$21"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK lba7fa1 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START sba7fa1 lba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD sba7fa1 //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET sba7fa1 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "120-read 2/2",
+       "315 Ch0GroupAddress=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET sba7fa1 Ch0GroupAddress $21",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE sba7fa1",
+      "status": 200,
+      "reply": [
+       "120-saved 1/1",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET sba7fa1 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=0x21"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END sba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK lba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:1B010002"
+     ],
+     "set": [],
+     "save": [
+      "d:3901",
+      "d:A3000021",
+      "d:E3810004"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "cal",
+      "address": 256,
+      "before": "00",
+      "after": "21"
+     },
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "nvm",
+      "operation": "execute"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:2104",
+     "d:1B003004",
+     "d:1B002A06",
+     "d:1B002306",
+     "d:1B010001",
+     "d:1B012001",
+     "d:1B014001",
+     "d:1B016001",
+     "d:1B018001",
+     "d:1B01A001",
+     "d:1B01C001",
+     "d:1B01E001",
+     "d:1B020001",
+     "d:1B022001",
+     "d:1B024001",
+     "d:1B026001",
+     "d:1B028001",
+     "d:1B02A001",
+     "d:1B02C001",
+     "d:1B02E001",
+     "d:2110",
+     "d:1B00F201"
+    ],
+    "base_rejections": [
+     {
+      "request_hex": "5c303546463030464130303030720d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c303546463030464130303030730d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "40413334323030303541333330303031310d",
+      "reason": "Unsupported BASIC command"
+     },
+     {
+      "request_hex": "5c303546463030464130303030740d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c303546463030464130303030750d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c303546463030464130303030760d",
+      "reason": "Unsupported MMI application"
+     }
+    ],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [
+     [
+      "Ch0GroupAddress",
+      "$21"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK lba7fa1 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START sba7fa1 lba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD sba7fa1 //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET sba7fa1 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET sba7fa1 Ch0GroupAddress $21",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE sba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET sba7fa1 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=$21"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END sba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK lba7fa1",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B000018",
+      "d:1B002002",
+      "d:1B002306",
+      "d:1B002A2C",
+      "d:1B008017",
+      "d:1B009808",
+      "d:1B00E020",
+      "d:1B010007",
+      "d:1B010805",
+      "d:1B011017",
+      "d:1B012805",
+      "d:1B013017",
+      "d:1B014805",
+      "d:1B015017",
+      "d:1B016805",
+      "d:1B017010",
+      "d:1B030084"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B010001",
+      "d:3901",
+      "d:A3000021*",
+      "d:1B010001",
+      "d:E3810004"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "cal",
+      "address": 256,
+      "before": "00",
+      "after": "21"
+     },
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "nvm",
+      "operation": "execute"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "ncc_reldn4a_no_edit": {
+   "native": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l73715c //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s73715c l73715c",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s73715c //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s73715c",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s73715c",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l73715c",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:E3810004"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "nvm",
+      "operation": "execute"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1B003004"
+    ],
+    "base_rejections": [],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l73715c //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s73715c l73715c",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s73715c //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s73715c",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s73715c",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l73715c",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B000018",
+      "d:1B002002",
+      "d:1B002306",
+      "d:1B002A2C",
+      "d:1B008017",
+      "d:1B009808",
+      "d:1B00E020",
+      "d:1B010007",
+      "d:1B010805",
+      "d:1B011017",
+      "d:1B012805",
+      "d:1B013017",
+      "d:1B014805",
+      "d:1B015017",
+      "d:1B016805",
+      "d:1B017010",
+      "d:1B030084"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "ncc_reldn4a_same_value": {
+   "native": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [
+     [
+      "Ch0GroupAddress",
+      "$00"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l62f5c9 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s62f5c9 l62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s62f5c9 //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s62f5c9 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "120-read 2/2",
+       "315 Ch0GroupAddress=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s62f5c9 Ch0GroupAddress $00",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s62f5c9",
+      "status": 200,
+      "reply": [
+       "120-saved 1/1",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s62f5c9 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=0x0"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:1B010002"
+     ],
+     "set": [],
+     "save": [
+      "d:3901",
+      "d:A3000000",
+      "d:E3810004"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "cal",
+      "address": 256,
+      "before": "00",
+      "after": "00"
+     },
+     {
+      "phase": "save",
+      "unit": 7,
+      "space": "nvm",
+      "operation": "execute"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1B003004"
+    ],
+    "base_rejections": [],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "ncc",
+    "unit_type": "RELDN4A",
+    "firmware": "1.0.0",
+    "unit": 7,
+    "sets": [
+     [
+      "Ch0GroupAddress",
+      "$00"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l62f5c9 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s62f5c9 l62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s62f5c9 //PPNAT/254/p/7",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s62f5c9 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s62f5c9 Ch0GroupAddress $00",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s62f5c9 Ch0GroupAddress",
+      "status": 315,
+      "reply": [
+       "315 Ch0GroupAddress=$00"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l62f5c9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B000018",
+      "d:1B002002",
+      "d:1B002306",
+      "d:1B002A2C",
+      "d:1B008017",
+      "d:1B009808",
+      "d:1B00E020",
+      "d:1B010007",
+      "d:1B010805",
+      "d:1B011017",
+      "d:1B012805",
+      "d:1B013017",
+      "d:1B014805",
+      "d:1B015017",
+      "d:1B016805",
+      "d:1B017010",
+      "d:1B030084"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:1B010001"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "edlt_keygl5_adjacent": {
+   "native": {
+    "method": "edlt",
+    "unit_type": "KEYGL5",
+    "firmware": "5.5.00",
+    "unit": 8,
+    "sets": [
+     [
+      "ConfigVersionMinor",
+      "$07"
+     ],
+     [
+      "ConfigVersionMajor",
+      "$05"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l5112d9 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s5112d9 l5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s5112d9 //PPNAT/254/p/8",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s5112d9 ConfigVersionMinor",
+      "status": 315,
+      "reply": [
+       "120-read 2/2",
+       "315 ConfigVersionMinor=0x0"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s5112d9 ConfigVersionMajor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMajor=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s5112d9 ConfigVersionMinor $07",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s5112d9 ConfigVersionMajor $05",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s5112d9",
+      "status": 200,
+      "reply": [
+       "120-saved 2/2",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s5112d9 ConfigVersionMinor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMinor=0x7"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s5112d9 ConfigVersionMajor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMajor=0x5"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "o:A400410000",
+      "o:1A0102",
+      "o:1A0102"
+     ],
+     "set": [],
+     "save": [
+      "o:A400410000",
+      "o:A401420705"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 8,
+      "space": "oem",
+      "address": 0,
+      "before": "0000",
+      "after": "0705"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "o:A400411000",
+     "o:A400411000",
+     "o:1A0102",
+     "o:1A0102",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1AF201",
+     "o:A400411000",
+     "o:1A0102",
+     "d:2110",
+     "d:2104",
+     "o:A400411000",
+     "o:1A0102",
+     "o:1AFA2C!",
+     "o:1AFB09!"
+    ],
+    "base_rejections": [
+     {
+      "request_hex": "3141464132437a0d",
+      "reason": "Unsupported OEM recall"
+     },
+     {
+      "request_hex": "5c3436303830393030314146423039670d",
+      "reason": "Unsupported OEM recall"
+     }
+    ],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "edlt",
+    "unit_type": "KEYGL5",
+    "firmware": "5.5.00",
+    "unit": 8,
+    "sets": [
+     [
+      "ConfigVersionMinor",
+      "$07"
+     ],
+     [
+      "ConfigVersionMajor",
+      "$05"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l5112d9 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s5112d9 l5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s5112d9 //PPNAT/254/p/8",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s5112d9 ConfigVersionMinor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMinor=0x0"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s5112d9 ConfigVersionMajor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMajor=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s5112d9 ConfigVersionMinor $07",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s5112d9 ConfigVersionMajor $05",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s5112d9 ConfigVersionMinor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMinor=$07"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s5112d9 ConfigVersionMajor",
+      "status": 315,
+      "reply": [
+       "315 ConfigVersionMajor=$05"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l5112d9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1AF304*",
+      "o:A400410000*",
+      "o:1A010C*",
+      "o:A400411000*",
+      "o:1A0127*",
+      "o:A400418000*",
+      "o:1A0130*",
+      "o:A400410001*",
+      "o:1A0109*",
+      "o:A400412001*",
+      "o:1A0180*",
+      "o:A40041A001*",
+      "o:1A0180*",
+      "o:A400412002*",
+      "o:1A0180*",
+      "o:A40041A002*",
+      "o:1A0180*",
+      "o:A400412003*",
+      "o:1A0180*",
+      "o:A40041A003*",
+      "o:1A0120*",
+      "o:A400410010*",
+      "o:1A0180*",
+      "o:A400418010*",
+      "o:1A0180*",
+      "o:A400410011*",
+      "o:1A0180*",
+      "o:A400418011*",
+      "o:1A0180*",
+      "o:A400410012*",
+      "o:1A0180*",
+      "o:A400418012*",
+      "o:1A0180*",
+      "o:A400410013*",
+      "o:1A0180*",
+      "o:A400418013*",
+      "o:1A0180*",
+      "o:A400410014*",
+      "o:1A0180*",
+      "o:A400418014*",
+      "o:1A0180*",
+      "o:A400410015*",
+      "o:1A0180*",
+      "o:A400418015*",
+      "o:1A0180*",
+      "o:A400410016*",
+      "o:1A0180*",
+      "o:A400418016*",
+      "o:1A0180*",
+      "o:A400410017*",
+      "o:1A0180*",
+      "o:A400418017*",
+      "o:1A0180*",
+      "o:A400410018*",
+      "o:1A0180*",
+      "o:A400418018*",
+      "o:1A0180*",
+      "o:A400410019*",
+      "o:1A0180*",
+      "o:A400418019*",
+      "o:1A0180*",
+      "o:A40041001A*",
+      "o:1A0180*",
+      "o:A40041801A*",
+      "o:1A0180*",
+      "o:A40041001B*",
+      "o:1A0180*",
+      "o:A40041801B*",
+      "o:1A0180*",
+      "o:A40041001C*",
+      "o:1A0180*",
+      "o:A40041801C*",
+      "o:1A0180*",
+      "o:A40041001D*",
+      "o:1A0180*",
+      "o:A40041801D*",
+      "o:1A0180*",
+      "o:A40041001E*",
+      "o:1A0180*",
+      "o:A40041801E*",
+      "o:1A0180*",
+      "o:A40041001F*",
+      "o:1A0180*",
+      "o:A40041801F*",
+      "o:1A0180*",
+      "o:A400410020*",
+      "o:1A0101*",
+      "o:A400410220*",
+      "o:1A0180*",
+      "o:A400418220*",
+      "o:1A0178*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "o:A400410000*",
+      "o:1A0102*",
+      "o:A400410000*",
+      "o:A3014207*",
+      "o:A400410000*",
+      "o:1A0101*",
+      "o:A400410100*",
+      "o:A3014205*",
+      "o:A400410100*",
+      "o:1A0101*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 8,
+      "space": "oem",
+      "address": 0,
+      "before": "00",
+      "after": "07"
+     },
+     {
+      "phase": "save",
+      "unit": 8,
+      "space": "oem",
+      "address": 1,
+      "before": "00",
+      "after": "05"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "giu_pc_gim_array": {
+   "native": {
+    "method": "giu",
+    "unit_type": "PC_GIM",
+    "firmware": "5.5.00",
+    "unit": 9,
+    "sets": [
+     [
+      "Port0_ScaleFactorB",
+      "$11 $22 $33 $44"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l13c340 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s13c340 l13c340",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s13c340 //PPNAT/254/p/9",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s13c340 Port0_ScaleFactorB",
+      "status": 315,
+      "reply": [
+       "120-read 12/12",
+       "315 Port0_ScaleFactorB=0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s13c340 Port0_ScaleFactorB $11 $22 $33 $44",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s13c340",
+      "status": 200,
+      "reply": [
+       "120-saved 4/4",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s13c340 Port0_ScaleFactorB",
+      "status": 315,
+      "reply": [
+       "315 Port0_ScaleFactorB=0x11 0x22 0x33 0x44"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s13c340",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l13c340",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "o:A3FC0300",
+      "o:A400410400",
+      "o:A400410400",
+      "o:1A010C",
+      "o:1A010C",
+      "o:A3FC0301"
+     ],
+     "set": [],
+     "save": [
+      "o:A3FC0300",
+      "o:A400410400",
+      "o:A6014211223344",
+      "o:A3FC0301"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "get_before",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 0
+     },
+     {
+      "phase": "get_before",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 1
+     },
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 0
+     },
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "oem",
+      "address": 4,
+      "before": "00000000",
+      "after": "11223344"
+     },
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 1
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1A2306",
+     "d:1AF201",
+     "d:2110",
+     "d:2104",
+     "d:2101",
+     "d:2102",
+     "o:1AFD08!",
+     "o:1AFE04!",
+     "o:1AFE04!",
+     "o:1AFE04!"
+    ],
+    "base_rejections": [
+     {
+      "request_hex": "5c34363039303930303141464430387a0d",
+      "reason": "Unsupported OEM recall"
+     },
+     {
+      "request_hex": "5c3436303930393030314146453034670d",
+      "reason": "Unsupported OEM recall"
+     },
+     {
+      "request_hex": "5c3436303930393030314146453034680d",
+      "reason": "Unsupported OEM recall"
+     },
+     {
+      "request_hex": "5c3436303930393030314146453034690d",
+      "reason": "Unsupported OEM recall"
+     }
+    ],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "giu",
+    "unit_type": "PC_GIM",
+    "firmware": "5.5.00",
+    "unit": 9,
+    "sets": [
+     [
+      "Port0_ScaleFactorB",
+      "$11 $22 $33 $44"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l13c340 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s13c340 l13c340",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s13c340 //PPNAT/254/p/9",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s13c340 Port0_ScaleFactorB",
+      "status": 315,
+      "reply": [
+       "315 Port0_ScaleFactorB=0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s13c340 Port0_ScaleFactorB $11 $22 $33 $44",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s13c340",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s13c340 Port0_ScaleFactorB",
+      "status": 315,
+      "reply": [
+       "315 Port0_ScaleFactorB=$11 $22 $33 $44"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s13c340",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l13c340",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2A06*",
+      "d:1A3E01*",
+      "o:A400410000*",
+      "o:1A010C*",
+      "o:A400410C00*",
+      "o:1A010C*",
+      "o:A400411800*",
+      "o:1A010C*",
+      "o:A400412400*",
+      "o:1A010C*",
+      "o:A400413000*",
+      "o:1A010C*",
+      "o:A400413C00*",
+      "o:1A0106*",
+      "o:A400415000*",
+      "o:1A010C*",
+      "o:A400415C00*",
+      "o:1A010C*",
+      "o:A400416800*",
+      "o:1A010C*",
+      "o:A400417400*",
+      "o:1A010C*",
+      "o:A400418000*",
+      "o:1A010C*",
+      "o:A400418C00*",
+      "o:1A0106*",
+      "o:A40041A000*",
+      "o:1A010C*",
+      "o:A40041AC00*",
+      "o:1A010C*",
+      "o:A40041B800*",
+      "o:1A010C*",
+      "o:A40041C400*",
+      "o:1A010C*",
+      "o:A40041D000*",
+      "o:1A010C*",
+      "o:A40041DC00*",
+      "o:1A0106*",
+      "o:A40041F000*",
+      "o:1A010C*",
+      "o:A40041FC00*",
+      "o:1A010C*",
+      "o:A400410801*",
+      "o:1A010C*",
+      "o:A400411401*",
+      "o:1A010C*",
+      "o:A400412001*",
+      "o:1A010C*",
+      "o:A400412C01*",
+      "o:1A0106*",
+      "o:A400414001*",
+      "o:1A0105*",
+      "o:A400410002*",
+      "o:1A010C*",
+      "o:A400410C02*",
+      "o:1A010C*",
+      "o:A400411802*",
+      "o:1A010C*",
+      "o:A400412402*",
+      "o:1A010C*",
+      "o:A400413002*",
+      "o:1A010C*",
+      "o:A400413C02*",
+      "o:1A010C*",
+      "o:A400414802*",
+      "o:1A010C*",
+      "o:A400415402*",
+      "o:1A010C*",
+      "o:A400416002*",
+      "o:1A010C*",
+      "o:A400416C02*",
+      "o:1A010C*",
+      "o:A400417802*",
+      "o:1A010C*",
+      "o:A400418402*",
+      "o:1A010C*",
+      "o:A400419002*",
+      "o:1A010C*",
+      "o:A400419C02*",
+      "o:1A010C*",
+      "o:A40041A802*",
+      "o:1A010C*",
+      "o:A40041B402*",
+      "o:1A010C*",
+      "o:A40041C002*",
+      "o:1A010C*",
+      "o:A40041CC02*",
+      "o:1A010C*",
+      "o:A40041D802*",
+      "o:1A010C*",
+      "o:A40041E402*",
+      "o:1A010C*",
+      "o:A40041F002*",
+      "o:1A010C*",
+      "o:A40041FC02*",
+      "o:1A010C*",
+      "o:A400410803*",
+      "o:1A010C*",
+      "o:A400411403*",
+      "o:1A010C*",
+      "o:A400412003*",
+      "o:1A010C*",
+      "o:A400412C03*",
+      "o:1A010C*",
+      "o:A400413803*",
+      "o:1A010C*",
+      "o:A400414403*",
+      "o:1A010C*",
+      "o:A400415003*",
+      "o:1A010C*",
+      "o:A400415C03*",
+      "o:1A010C*",
+      "o:A400416803*",
+      "o:1A010C*",
+      "o:A400417403*",
+      "o:1A010C*",
+      "o:A400418003*",
+      "o:1A010C*",
+      "o:A400418C03*",
+      "o:1A010C*",
+      "o:A400419803*",
+      "o:1A010C*",
+      "o:A40041A403*",
+      "o:1A010C*",
+      "o:A40041B003*",
+      "o:1A010C*",
+      "o:A40041BC03*",
+      "o:1A010C*",
+      "o:A40041C803*",
+      "o:1A010C*",
+      "o:A40041D403*",
+      "o:1A010C*",
+      "o:A40041E003*",
+      "o:1A010C*",
+      "o:A40041EC03*",
+      "o:1A010C*",
+      "o:A40041F803*",
+      "o:1A010C*",
+      "o:A400410404*",
+      "o:1A010C*",
+      "o:A400411004*",
+      "o:1A010C*",
+      "o:A400411C04*",
+      "o:1A010C*",
+      "o:A400412804*",
+      "o:1A010C*",
+      "o:A400413404*",
+      "o:1A010C*",
+      "o:A400414004*",
+      "o:1A010C*",
+      "o:A400414C04*",
+      "o:1A010C*",
+      "o:A400415804*",
+      "o:1A010C*",
+      "o:A400416404*",
+      "o:1A010C*",
+      "o:A400417004*",
+      "o:1A010C*",
+      "o:A400417C04*",
+      "o:1A010C*",
+      "o:A400418804*",
+      "o:1A010C*",
+      "o:A400419404*",
+      "o:1A010C*",
+      "o:A40041A004*",
+      "o:1A010C*",
+      "o:A40041AC04*",
+      "o:1A010C*",
+      "o:A40041B804*",
+      "o:1A010C*",
+      "o:A40041C404*",
+      "o:1A010C*",
+      "o:A40041D004*",
+      "o:1A010C*",
+      "o:A40041DC04*",
+      "o:1A010C*",
+      "o:A40041E804*",
+      "o:1A010C*",
+      "o:A40041F404*",
+      "o:1A010C*",
+      "o:A400410005*",
+      "o:1A010C*",
+      "o:A400410C05*",
+      "o:1A010C*",
+      "o:A400411805*",
+      "o:1A010C*",
+      "o:A400412405*",
+      "o:1A010C*",
+      "o:A400413005*",
+      "o:1A010C*",
+      "o:A400413C05*",
+      "o:1A010C*",
+      "o:A400414805*",
+      "o:1A010C*",
+      "o:A400415405*",
+      "o:1A010C*",
+      "o:A400416005*",
+      "o:1A010C*",
+      "o:A400416C05*",
+      "o:1A010C*",
+      "o:A400417805*",
+      "o:1A010C*",
+      "o:A400418405*",
+      "o:1A010C*",
+      "o:A400419005*",
+      "o:1A010C*",
+      "o:A400419C05*",
+      "o:1A010C*",
+      "o:A40041A805*",
+      "o:1A010C*",
+      "o:A40041B405*",
+      "o:1A010C*",
+      "o:A40041C005*",
+      "o:1A010C*",
+      "o:A40041CC05*",
+      "o:1A010C*",
+      "o:A40041D805*",
+      "o:1A010C*",
+      "o:A40041E405*",
+      "o:1A010C*",
+      "o:A40041F005*",
+      "o:1A010C*",
+      "o:A40041FC05*",
+      "o:1A010C*",
+      "o:A400410806*",
+      "o:1A010C*",
+      "o:A400411406*",
+      "o:1A010C*",
+      "o:A400412006*",
+      "o:1A010C*",
+      "o:A400412C06*",
+      "o:1A010C*",
+      "o:A400413806*",
+      "o:1A0107*",
+      "o:A400414006*",
+      "o:1A010C*",
+      "o:A400414C06*",
+      "o:1A010C*",
+      "o:A400415806*",
+      "o:1A010C*",
+      "o:A400416406*",
+      "o:1A010C*",
+      "o:A400417006*",
+      "o:1A010C*",
+      "o:A400417C06*",
+      "o:1A0103*",
+      "o:A400418006*",
+      "o:1A010C*",
+      "o:A400418C06*",
+      "o:1A010C*",
+      "o:A400419806*",
+      "o:1A010C*",
+      "o:A40041A406*",
+      "o:1A010C*",
+      "o:A40041B006*",
+      "o:1A010C*",
+      "o:A40041BC06*",
+      "o:1A0103*",
+      "o:A40041C006*",
+      "o:1A010C*",
+      "o:A40041CC06*",
+      "o:1A010C*",
+      "o:A40041D806*",
+      "o:1A010C*",
+      "o:A40041E406*",
+      "o:1A010C*",
+      "o:A40041F006*",
+      "o:1A010C*",
+      "o:A40041FC06*",
+      "o:1A0103*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "o:A400410400*",
+      "o:1A0104*",
+      "o:A3FC0300*",
+      "o:A400410400*",
+      "o:A6014211223344*",
+      "o:A3FC0301*",
+      "o:A400410400*",
+      "o:1A0104*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 0
+     },
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "oem",
+      "address": 4,
+      "before": "00000000",
+      "after": "11223344"
+     },
+     {
+      "phase": "save",
+      "unit": 9,
+      "space": "run_flag",
+      "value": 1
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "sgiu_pc_tsa": {
+   "native": {
+    "method": "sgiu",
+    "unit_type": "PC_TSA",
+    "firmware": "4.6.00",
+    "unit": 10,
+    "sets": [
+     [
+      "ZoneGroup",
+      "$02"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK ld867b5 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START sd867b5 ld867b5",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD sd867b5 //PPNAT/254/p/10",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET sd867b5 ZoneGroup",
+      "status": 315,
+      "reply": [
+       "120-read 12/12",
+       "315 ZoneGroup=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET sd867b5 ZoneGroup $02",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE sd867b5",
+      "status": 200,
+      "reply": [
+       "120-saved 1/1",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET sd867b5 ZoneGroup",
+      "status": 315,
+      "reply": [
+       "315 ZoneGroup=0x2"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END sd867b5",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK ld867b5",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "o:A400410400",
+      "o:1A010C",
+      "o:1A010C"
+     ],
+     "set": [],
+     "save": [
+      "o:A400410400",
+      "o:A3014202"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 10,
+      "space": "oem",
+      "address": 4,
+      "before": "00",
+      "after": "02"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "o:A400410600",
+     "o:1A0101",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1AF201",
+     "o:A400410600",
+     "o:1A0101",
+     "d:2110",
+     "d:2104",
+     "o:A500410E0000",
+     "o:1A0103",
+     "o:A400410600",
+     "o:1A0101"
+    ],
+    "base_rejections": [
+     {
+      "request_hex": "5c303546463030464130303030670d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c303546463030464130303030680d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c303546463030464130303030690d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "40413334323030303541333330303031310d",
+      "reason": "Unsupported BASIC command"
+     },
+     {
+      "request_hex": "5c3035464630304641303030306a0d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c3035464630304641303030306b0d",
+      "reason": "Unsupported MMI application"
+     },
+     {
+      "request_hex": "5c3035464630304641303030306c0d",
+      "reason": "Unsupported MMI application"
+     }
+    ],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "sgiu",
+    "unit_type": "PC_TSA",
+    "firmware": "4.6.00",
+    "unit": 10,
+    "sets": [
+     [
+      "ZoneGroup",
+      "$02"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK ld867b5 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START sd867b5 ld867b5",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD sd867b5 //PPNAT/254/p/10",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET sd867b5 ZoneGroup",
+      "status": 315,
+      "reply": [
+       "315 ZoneGroup=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET sd867b5 ZoneGroup $02",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE sd867b5",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET sd867b5 ZoneGroup",
+      "status": 315,
+      "reply": [
+       "315 ZoneGroup=$02"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END sd867b5",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK ld867b5",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1A3E01*",
+      "d:1AF304*",
+      "o:A400410000*",
+      "o:1A010C*",
+      "o:A400410C00*",
+      "o:1A0105*",
+      "o:A400411200*",
+      "o:1A010C*",
+      "o:A400411E00*",
+      "o:1A010C*",
+      "o:A400412A00*",
+      "o:1A010C*",
+      "o:A400413600*",
+      "o:1A010C*",
+      "o:A400414200*",
+      "o:1A010C*",
+      "o:A400414E00*",
+      "o:1A010C*",
+      "o:A400415A00*",
+      "o:1A010C*",
+      "o:A400416600*",
+      "o:1A010C*",
+      "o:A400417200*",
+      "o:1A0104*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "o:A400410400*",
+      "o:1A0101*",
+      "o:A400410400*",
+      "o:A3014202*",
+      "o:A400410400*",
+      "o:1A0101*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 10,
+      "space": "oem",
+      "address": 4,
+      "before": "00",
+      "after": "02"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "dali_pc_dal2b": {
+   "native": {
+    "method": "dali",
+    "unit_type": "PC_DAL2B",
+    "firmware": "4.6.00",
+    "unit": 11,
+    "sets": [
+     [
+      "DaliARestoreLevel",
+      "$40"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l8ef517 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s8ef517 l8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s8ef517 //PPNAT/254/p/11",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s8ef517 DaliARestoreLevel",
+      "status": 315,
+      "reply": [
+       "120-read 12/12",
+       "315 DaliARestoreLevel=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s8ef517 DaliARestoreLevel $40",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s8ef517",
+      "status": 200,
+      "reply": [
+       "120-saved 1/1",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s8ef517 DaliARestoreLevel",
+      "status": 315,
+      "reply": [
+       "315 DaliARestoreLevel=0x40"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "o:A400412900",
+      "o:1A010C",
+      "o:1A010C"
+     ],
+     "set": [],
+     "save": [
+      "o:A400412900",
+      "o:A3014240"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 11,
+      "space": "oem",
+      "address": 41,
+      "before": "00",
+      "after": "40"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 1.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1AF201",
+     "d:2110",
+     "d:2104",
+     "o:A500410A0000",
+     "o:1A0102",
+     "o:A50041002100",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C",
+     "o:1A010C"
+    ],
+    "base_rejections": [],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "dali",
+    "unit_type": "PC_DAL2B",
+    "firmware": "4.6.00",
+    "unit": 11,
+    "sets": [
+     [
+      "DaliARestoreLevel",
+      "$40"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l8ef517 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s8ef517 l8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s8ef517 //PPNAT/254/p/11",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s8ef517 DaliARestoreLevel",
+      "status": 315,
+      "reply": [
+       "315 DaliARestoreLevel=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s8ef517 DaliARestoreLevel $40",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s8ef517 DaliARestoreLevel",
+      "status": 315,
+      "reply": [
+       "315 DaliARestoreLevel=$40"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l8ef517",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1A3001*",
+      "d:1A3C01*",
+      "d:1A3E01*",
+      "d:1A3F01*",
+      "d:1A4001*",
+      "d:1A4101*",
+      "d:1A4201*",
+      "d:1AF304*",
+      "d:1AF708*",
+      "o:A400412800*",
+      "o:1A0102*",
+      "o:A400414800*",
+      "o:1A0102*",
+      "o:A400415000*",
+      "o:1A0102*",
+      "o:A400416000*",
+      "o:1A0108*",
+      "o:A400417000*",
+      "o:1A0108*",
+      "o:A400410001*",
+      "o:1A010C*",
+      "o:A400410C01*",
+      "o:1A010C*",
+      "o:A400411801*",
+      "o:1A010C*",
+      "o:A400412401*",
+      "o:1A010C*",
+      "o:A400413001*",
+      "o:1A010C*",
+      "o:A400413C01*",
+      "o:1A010C*",
+      "o:A400414801*",
+      "o:1A010C*",
+      "o:A400415401*",
+      "o:1A010C*",
+      "o:A400416001*",
+      "o:1A010C*",
+      "o:A400416C01*",
+      "o:1A010C*",
+      "o:A400417801*",
+      "o:1A010C*",
+      "o:A400418401*",
+      "o:1A010C*",
+      "o:A400419001*",
+      "o:1A010C*",
+      "o:A400419C01*",
+      "o:1A010C*",
+      "o:A40041A801*",
+      "o:1A010C*",
+      "o:A40041B401*",
+      "o:1A010C*",
+      "o:A40041C001*",
+      "o:1A010C*",
+      "o:A40041CC01*",
+      "o:1A010C*",
+      "o:A40041D801*",
+      "o:1A010C*",
+      "o:A40041E401*",
+      "o:1A010C*",
+      "o:A40041F001*",
+      "o:1A010C*",
+      "o:A40041FC01*",
+      "o:1A010C*",
+      "o:A400410802*",
+      "o:1A010C*",
+      "o:A400411402*",
+      "o:1A010C*",
+      "o:A400412002*",
+      "o:1A010C*",
+      "o:A400412C02*",
+      "o:1A010C*",
+      "o:A400413802*",
+      "o:1A010C*",
+      "o:A400414402*",
+      "o:1A010C*",
+      "o:A400415002*",
+      "o:1A010C*",
+      "o:A400415C02*",
+      "o:1A010C*",
+      "o:A400416802*",
+      "o:1A010C*",
+      "o:A400417402*",
+      "o:1A010C*",
+      "o:A400418002*",
+      "o:1A010C*",
+      "o:A400418C02*",
+      "o:1A010C*",
+      "o:A400419802*",
+      "o:1A010C*",
+      "o:A40041A402*",
+      "o:1A010C*",
+      "o:A40041B002*",
+      "o:1A010C*",
+      "o:A40041BC02*",
+      "o:1A010C*",
+      "o:A40041C802*",
+      "o:1A010C*",
+      "o:A40041D402*",
+      "o:1A010C*",
+      "o:A40041E002*",
+      "o:1A010C*",
+      "o:A40041EC02*",
+      "o:1A010C*",
+      "o:A40041F802*",
+      "o:1A0108*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "o:A400412900*",
+      "o:1A0101*",
+      "o:A400412900*",
+      "o:A3014240*",
+      "o:A400412900*",
+      "o:1A0101*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 11,
+      "space": "oem",
+      "address": 41,
+      "before": "00",
+      "after": "40"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 1.0
+    }
+   }
+  },
+  "gocbyt_dimpr12_array": {
+   "native": {
+    "method": "gocbyt",
+    "unit_type": "DIMPR12",
+    "firmware": "1.10.0",
+    "unit": 12,
+    "sets": [
+     [
+      "CbusDMXSwitchOverFadeTime",
+      "$01 $02 $03 $04 $05 $06"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK lcd0032 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START scd0032 lcd0032",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD scd0032 //PPNAT/254/p/12",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET scd0032 CbusDMXSwitchOverFadeTime",
+      "status": 315,
+      "reply": [
+       "120-read 6/6",
+       "315 CbusDMXSwitchOverFadeTime=0x10 0x10 0x0 0x32 0xff 0x42"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET scd0032 CbusDMXSwitchOverFadeTime $01 $02 $03 $04 $05 $06",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE scd0032",
+      "status": 200,
+      "reply": [
+       "120-saved 6/6",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET scd0032 CbusDMXSwitchOverFadeTime",
+      "status": 315,
+      "reply": [
+       "315 CbusDMXSwitchOverFadeTime=0x1 0x2 0x3 0x4 0x5 0x6"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END scd0032",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK lcd0032",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:A4FF420020",
+      "d:1AFF06",
+      "d:A4FF420020",
+      "d:A4FF420020",
+      "d:1AFF06"
+     ],
+     "set": [],
+     "save": [
+      "d:AAFF000020010203040506"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 12,
+      "space": "goc",
+      "address": 32,
+      "before": "000000000000",
+      "after": "010203040506"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1A500C",
+     "d:1A5C04",
+     "d:2A1D0C",
+     "d:2A2904",
+     "d:210D",
+     "d:1A320C",
+     "d:210E",
+     "d:2112",
+     "d:2113",
+     "d:2114",
+     "d:2110",
+     "d:2105",
+     "d:1AF201"
+    ],
+    "base_rejections": [],
+    "native_attempts": 1
+   },
+   "cmqttd": {
+    "method": "gocbyt",
+    "unit_type": "DIMPR12",
+    "firmware": "1.10.0",
+    "unit": 12,
+    "sets": [
+     [
+      "CbusDMXSwitchOverFadeTime",
+      "$01 $02 $03 $04 $05 $06"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK lcd0032 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START scd0032 lcd0032",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD scd0032 //PPNAT/254/p/12",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET scd0032 CbusDMXSwitchOverFadeTime",
+      "status": 315,
+      "reply": [
+       "315 CbusDMXSwitchOverFadeTime=0x0 0x0 0x0 0x0 0x0 0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET scd0032 CbusDMXSwitchOverFadeTime $01 $02 $03 $04 $05 $06",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE scd0032",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET scd0032 CbusDMXSwitchOverFadeTime",
+      "status": 315,
+      "reply": [
+       "315 CbusDMXSwitchOverFadeTime=$01 $02 $03 $04 $05 $06"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END scd0032",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK lcd0032",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A000C*",
+      "d:1A1E01*",
+      "d:1A1F01*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1A320C*",
+      "d:1A3E01*",
+      "d:1A4301*",
+      "d:1A500C*",
+      "d:1A5C04*",
+      "d:1AF304*",
+      "d:1AF708*",
+      "d:A4FF420000*",
+      "d:1AFF06*",
+      "d:A4FF420006*",
+      "d:1AFF06*",
+      "d:A4FF42000C*",
+      "d:1AFF06*",
+      "d:A4FF420012*",
+      "d:1AFF06*",
+      "d:A4FF420018*",
+      "d:1AFF06*",
+      "d:A4FF42001E*",
+      "d:1AFF06*",
+      "d:A4FF420024*",
+      "d:1AFF06*",
+      "d:A4FF42002A*",
+      "d:1AFF06*",
+      "d:A4FF420030*",
+      "d:1AFF06*",
+      "d:A4FF420036*",
+      "d:1AFF06*",
+      "d:A4FF42003C*",
+      "d:1AFF06*",
+      "d:A4FF420042*",
+      "d:1AFF06*",
+      "d:A4FF420048*",
+      "d:1AFF06*",
+      "d:A4FF42004E*",
+      "d:1AFF06*",
+      "d:A4FF420054*",
+      "d:1AFF06*",
+      "d:A4FF42005A*",
+      "d:1AFF06*",
+      "d:A4FF420060*",
+      "d:1AFF06*",
+      "d:A4FF420066*",
+      "d:1AFF06*",
+      "d:A4FF42006C*",
+      "d:1AFF06*",
+      "d:A4FF420072*",
+      "d:1AFF02*",
+      "d:A4FF420100*",
+      "d:1AFF06*",
+      "d:A4FF420106*",
+      "d:1AFF06*",
+      "d:A4FF42010C*",
+      "d:1AFF06*",
+      "d:A4FF420112*",
+      "d:1AFF06*",
+      "d:A4FF420118*",
+      "d:1AFF06*",
+      "d:A4FF42011E*",
+      "d:1AFF06*",
+      "d:A4FF420124*",
+      "d:1AFF06*",
+      "d:A4FF42012A*",
+      "d:1AFF06*",
+      "d:A4FF420130*",
+      "d:1AFF06*",
+      "d:A4FF420136*",
+      "d:1AFF06*",
+      "d:A4FF42013C*",
+      "d:1AFF06*",
+      "d:A4FF420142*",
+      "d:1AFF06*",
+      "d:A4FF420148*",
+      "d:1AFF06*",
+      "d:A4FF42014E*",
+      "d:1AFF06*",
+      "d:A4FF420154*",
+      "d:1AFF06*",
+      "d:A4FF42015A*",
+      "d:1AFF06*",
+      "d:A4FF420160*",
+      "d:1AFF06*",
+      "d:A4FF420166*",
+      "d:1AFF06*",
+      "d:A4FF42016C*",
+      "d:1AFF06*",
+      "d:A4FF420172*",
+      "d:1AFF06*",
+      "d:A4FF420178*",
+      "d:1AFF06*",
+      "d:A4FF42017E*",
+      "d:1AFF06*",
+      "d:A4FF420184*",
+      "d:1AFF06*",
+      "d:A4FF42018A*",
+      "d:1AFF06*",
+      "d:A4FF420190*",
+      "d:1AFF06*",
+      "d:A4FF420196*",
+      "d:1AFF06*",
+      "d:A4FF42019C*",
+      "d:1AFF06*",
+      "d:A4FF4201A2*",
+      "d:1AFF06*",
+      "d:A4FF4201A8*",
+      "d:1AFF06*",
+      "d:A4FF4201AE*",
+      "d:1AFF06*",
+      "d:A4FF4201B4*",
+      "d:1AFF06*",
+      "d:A4FF4201BA*",
+      "d:1AFF06*",
+      "d:A4FF4201C0*",
+      "d:1AFF06*",
+      "d:A4FF4201C6*",
+      "d:1AFF06*",
+      "d:A4FF4201CC*",
+      "d:1AFF06*",
+      "d:A4FF4201D2*",
+      "d:1AFF06*",
+      "d:A4FF4201D8*",
+      "d:1AFF06*",
+      "d:A4FF4201DE*",
+      "d:1AFF06*",
+      "d:A4FF4201E4*",
+      "d:1AFF06*",
+      "d:A4FF4201EA*",
+      "d:1AFF06*",
+      "d:A4FF4201F0*",
+      "d:1AFF06*",
+      "d:A4FF4201F6*",
+      "d:1AFF06*",
+      "d:A4FF4201FC*",
+      "d:1AFF06*",
+      "d:A4FF420202*",
+      "d:1AFF06*",
+      "d:A4FF420208*",
+      "d:1AFF06*",
+      "d:A4FF42020E*",
+      "d:1AFF06*",
+      "d:A4FF420214*",
+      "d:1AFF06*",
+      "d:A4FF42021A*",
+      "d:1AFF06*",
+      "d:A4FF420220*",
+      "d:1AFF06*",
+      "d:A4FF420226*",
+      "d:1AFF06*",
+      "d:A4FF42022C*",
+      "d:1AFF06*",
+      "d:A4FF420232*",
+      "d:1AFF06*",
+      "d:A4FF420238*",
+      "d:1AFF06*",
+      "d:A4FF42023E*",
+      "d:1AFF06*",
+      "d:A4FF420244*",
+      "d:1AFF06*",
+      "d:A4FF42024A*",
+      "d:1AFF06*",
+      "d:A4FF420250*",
+      "d:1AFF06*",
+      "d:A4FF420256*",
+      "d:1AFF06*",
+      "d:A4FF42025C*",
+      "d:1AFF06*",
+      "d:A4FF420262*",
+      "d:1AFF06*",
+      "d:A4FF420268*",
+      "d:1AFF06*",
+      "d:A4FF42026E*",
+      "d:1AFF06*",
+      "d:A4FF420274*",
+      "d:1AFF06*",
+      "d:A4FF42027A*",
+      "d:1AFF06*",
+      "d:A4FF420280*",
+      "d:1AFF06*",
+      "d:A4FF420286*",
+      "d:1AFF06*",
+      "d:A4FF42028C*",
+      "d:1AFF06*",
+      "d:A4FF420292*",
+      "d:1AFF06*",
+      "d:A4FF420298*",
+      "d:1AFF06*",
+      "d:A4FF42029E*",
+      "d:1AFF06*",
+      "d:A4FF4202A4*",
+      "d:1AFF06*",
+      "d:A4FF4202AA*",
+      "d:1AFF06*",
+      "d:A4FF4202B0*",
+      "d:1AFF06*",
+      "d:A4FF4202B6*",
+      "d:1AFF06*",
+      "d:A4FF4202BC*",
+      "d:1AFF06*",
+      "d:A4FF4202C2*",
+      "d:1AFF06*",
+      "d:A4FF4202C8*",
+      "d:1AFF06*",
+      "d:A4FF4202CE*",
+      "d:1AFF06*",
+      "d:A4FF4202D4*",
+      "d:1AFF06*",
+      "d:A4FF4202DA*",
+      "d:1AFF06*",
+      "d:A4FF4202E0*",
+      "d:1AFF06*",
+      "d:A4FF4202E6*",
+      "d:1AFF06*",
+      "d:A4FF4202EC*",
+      "d:1AFF06*",
+      "d:A4FF4202F2*",
+      "d:1AFF06*",
+      "d:A4FF4202F8*",
+      "d:1AFF06*",
+      "d:A4FF4202FE*",
+      "d:1AFF06*",
+      "d:A4FF420304*",
+      "d:1AFF06*",
+      "d:A4FF42030A*",
+      "d:1AFF06*",
+      "d:A4FF420310*",
+      "d:1AFF06*",
+      "d:A4FF420316*",
+      "d:1AFF06*",
+      "d:A4FF42031C*",
+      "d:1AFF06*",
+      "d:A4FF420322*",
+      "d:1AFF06*",
+      "d:A4FF420328*",
+      "d:1AFF06*",
+      "d:A4FF42032E*",
+      "d:1AFF06*",
+      "d:A4FF420334*",
+      "d:1AFF06*",
+      "d:A4FF42033A*",
+      "d:1AFF06*",
+      "d:A4FF420340*",
+      "d:1AFF06*",
+      "d:A4FF420346*",
+      "d:1AFF06*",
+      "d:A4FF42034C*",
+      "d:1AFF06*",
+      "d:A4FF420352*",
+      "d:1AFF06*",
+      "d:A4FF420358*",
+      "d:1AFF06*",
+      "d:A4FF42035E*",
+      "d:1AFF06*",
+      "d:A4FF420364*",
+      "d:1AFF06*",
+      "d:A4FF42036A*",
+      "d:1AFF06*",
+      "d:A4FF420370*",
+      "d:1AFF06*",
+      "d:A4FF420376*",
+      "d:1AFF06*",
+      "d:A4FF42037C*",
+      "d:1AFF06*",
+      "d:A4FF420382*",
+      "d:1AFF06*",
+      "d:A4FF420388*",
+      "d:1AFF06*",
+      "d:A4FF42038E*",
+      "d:1AFF06*",
+      "d:A4FF420394*",
+      "d:1AFF06*",
+      "d:A4FF42039A*",
+      "d:1AFF06*",
+      "d:A4FF4203A0*",
+      "d:1AFF06*",
+      "d:A4FF4203A6*",
+      "d:1AFF06*",
+      "d:A4FF4203AC*",
+      "d:1AFF06*",
+      "d:A4FF4203B2*",
+      "d:1AFF06*",
+      "d:A4FF4203B8*",
+      "d:1AFF06*",
+      "d:A4FF4203BE*",
+      "d:1AFF06*",
+      "d:A4FF4203C4*",
+      "d:1AFF06*",
+      "d:A4FF4203CA*",
+      "d:1AFF06*",
+      "d:A4FF4203D0*",
+      "d:1AFF06*",
+      "d:A4FF4203D6*",
+      "d:1AFF06*",
+      "d:A4FF4203DC*",
+      "d:1AFF06*",
+      "d:A4FF4203E2*",
+      "d:1AFF06*",
+      "d:A4FF4203E8*",
+      "d:1AFF06*",
+      "d:A4FF4203EE*",
+      "d:1AFF06*",
+      "d:A4FF4203F4*",
+      "d:1AFF06*",
+      "d:A4FF4203FA*",
+      "d:1AFF06*",
+      "d:A4FF420400*",
+      "d:1AFF06*",
+      "d:A4FF420406*",
+      "d:1AFF06*",
+      "d:A4FF42040C*",
+      "d:1AFF06*",
+      "d:A4FF420412*",
+      "d:1AFF06*",
+      "d:A4FF420418*",
+      "d:1AFF06*",
+      "d:A4FF42041E*",
+      "d:1AFF06*",
+      "d:A4FF420424*",
+      "d:1AFF06*",
+      "d:A4FF42042A*",
+      "d:1AFF06*",
+      "d:A4FF420430*",
+      "d:1AFF06*",
+      "d:A4FF420436*",
+      "d:1AFF06*",
+      "d:A4FF42043C*",
+      "d:1AFF06*",
+      "d:A4FF420442*",
+      "d:1AFF06*",
+      "d:A4FF420448*",
+      "d:1AFF06*",
+      "d:A4FF42044E*",
+      "d:1AFF06*",
+      "d:A4FF420454*",
+      "d:1AFF06*",
+      "d:A4FF42045A*",
+      "d:1AFF06*",
+      "d:A4FF420460*",
+      "d:1AFF06*",
+      "d:A4FF420466*",
+      "d:1AFF06*",
+      "d:A4FF42046C*",
+      "d:1AFF06*",
+      "d:A4FF420472*",
+      "d:1AFF06*",
+      "d:A4FF420478*",
+      "d:1AFF06*",
+      "d:A4FF42047E*",
+      "d:1AFF06*",
+      "d:A4FF420484*",
+      "d:1AFF06*",
+      "d:A4FF42048A*",
+      "d:1AFF06*",
+      "d:A4FF420490*",
+      "d:1AFF06*",
+      "d:A4FF420496*",
+      "d:1AFF06*",
+      "d:A4FF42049C*",
+      "d:1AFF06*",
+      "d:A4FF4204A2*",
+      "d:1AFF06*",
+      "d:A4FF4204A8*",
+      "d:1AFF06*",
+      "d:A4FF4204AE*",
+      "d:1AFF06*",
+      "d:A4FF4204B4*",
+      "d:1AFF06*",
+      "d:A4FF4204BA*",
+      "d:1AFF06*",
+      "d:A4FF4204C0*",
+      "d:1AFF06*",
+      "d:A4FF4204C6*",
+      "d:1AFF06*",
+      "d:A4FF4204CC*",
+      "d:1AFF06*",
+      "d:A4FF4204D2*",
+      "d:1AFF06*",
+      "d:A4FF4204D8*",
+      "d:1AFF06*",
+      "d:A4FF4204DE*",
+      "d:1AFF06*",
+      "d:A4FF4204E4*",
+      "d:1AFF06*",
+      "d:A4FF4204EA*",
+      "d:1AFF06*",
+      "d:A4FF4204F0*",
+      "d:1AFF06*",
+      "d:A4FF4204F6*",
+      "d:1AFF06*",
+      "d:A4FF4204FC*",
+      "d:1AFF06*",
+      "d:A4FF420502*",
+      "d:1AFF06*",
+      "d:A4FF420508*",
+      "d:1AFF06*",
+      "d:A4FF42050E*",
+      "d:1AFF06*",
+      "d:A4FF420514*",
+      "d:1AFF06*",
+      "d:A4FF42051A*",
+      "d:1AFF06*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:A4FF420020*",
+      "d:1AFF06*",
+      "d:AAFF000020010203040506*",
+      "d:A4FF420020*",
+      "d:1AFF06*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 12,
+      "space": "goc",
+      "address": 32,
+      "before": "000000000000",
+      "after": "010203040506"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  },
+  "goc2_dimar12_word": {
+   "native": {
+    "method": "goc2",
+    "unit_type": "DIMAR12",
+    "firmware": "1.0.00",
+    "unit": 13,
+    "sets": [
+     [
+      "KeyDebouncePeriod",
+      "$0105"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l4f3081 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s4f3081 l4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s4f3081 //PPNAT/254/p/13",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s4f3081 KeyDebouncePeriod",
+      "status": 315,
+      "reply": [
+       "120-read 2/2",
+       "315 KeyDebouncePeriod=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s4f3081 KeyDebouncePeriod $0105",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s4f3081",
+      "status": 200,
+      "reply": [
+       "120-saved 2/2",
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s4f3081 KeyDebouncePeriod",
+      "status": 315,
+      "reply": [
+       "315 KeyDebouncePeriod=0x105"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     }
+    ],
+    "requests": {
+     "load": [],
+     "get_before": [
+      "d:A4FF420102",
+      "d:1AFF02",
+      "d:A4FF420102",
+      "d:1AFF02"
+     ],
+     "set": [],
+     "save": [
+      "d:A6FF0001020501"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 13,
+      "space": "goc",
+      "address": 258,
+      "before": "0000",
+      "after": "0501"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.0
+    },
+    "discovery_requests": [
+     "d:2104",
+     "d:2101",
+     "d:2101",
+     "d:2102",
+     "d:1A2102",
+     "d:2102",
+     "d:1A2102",
+     "d:2104",
+     "d:2104",
+     "d:1A2A06",
+     "d:1A2A06",
+     "d:1A2306",
+     "d:1A2306",
+     "d:1A500C",
+     "d:1A5C04",
+     "d:2A1D0C",
+     "d:2A2904",
+     "d:210D",
+     "d:1A320C",
+     "d:210E",
+     "d:2112",
+     "d:2113",
+     "d:2114",
+     "d:2110",
+     "d:2105",
+     "d:1AF201"
+    ],
+    "base_rejections": [],
+    "native_attempts": 2
+   },
+   "cmqttd": {
+    "method": "goc2",
+    "unit_type": "DIMAR12",
+    "firmware": "1.0.00",
+    "unit": 13,
+    "sets": [
+     [
+      "KeyDebouncePeriod",
+      "$0105"
+     ]
+    ],
+    "commands": [
+     {
+      "phase": "other",
+      "command": "PROJECT USE PPNAT",
+      "status": 200,
+      "reply": [
+       "200 OK."
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP LOCK l4f3081 //PPNAT/254",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP START s4f3081 l4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "load",
+      "command": "PP LOAD s4f3081 //PPNAT/254/p/13",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_before",
+      "command": "PP GET s4f3081 KeyDebouncePeriod",
+      "status": 315,
+      "reply": [
+       "315 KeyDebouncePeriod=0x0"
+      ]
+     },
+     {
+      "phase": "set",
+      "command": "PP SET s4f3081 KeyDebouncePeriod $0105",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "save",
+      "command": "PP SAVE_TO_SOURCE s4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "get_after",
+      "command": "PP GET s4f3081 KeyDebouncePeriod",
+      "status": 315,
+      "reply": [
+       "315 KeyDebouncePeriod=$0105"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP END s4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     },
+     {
+      "phase": "other",
+      "command": "PP UNLOCK l4f3081",
+      "status": 200,
+      "reply": [
+       "200 OK"
+      ]
+     }
+    ],
+    "requests": {
+     "load": [
+      "d:2101*",
+      "d:2102*",
+      "d:1A000C*",
+      "d:1A0C04*",
+      "d:1A1401*",
+      "d:1A1501*",
+      "d:1A1601*",
+      "d:1A1701*",
+      "d:1A1801*",
+      "d:1A1901*",
+      "d:1A1D01*",
+      "d:1A2001*",
+      "d:1A2102*",
+      "d:1A2306*",
+      "d:1A2901*",
+      "d:1A2A06*",
+      "d:1A3001*",
+      "d:1A320C*",
+      "d:1A3E01*",
+      "d:1A4002*",
+      "d:1A4101*",
+      "d:1A4301*",
+      "d:1A440C*",
+      "d:1A500C*",
+      "d:1A5C04*",
+      "d:1A600C*",
+      "d:A4FF420000*",
+      "d:1AFF04*",
+      "d:A4FF420008*",
+      "d:1AFF07*",
+      "d:A4FF420100*",
+      "d:1AFF0A*",
+      "d:A4FF420110*",
+      "d:1AFF3C*",
+      "d:A4FF420160*",
+      "d:1AFF01*",
+      "d:A4FF420162*",
+      "d:1AFF1C*",
+      "d:A4FF420180*",
+      "d:1AFFFF*",
+      "d:A4FF42027F*",
+      "d:1AFFFF*",
+      "d:A4FF42037E*",
+      "d:1AFFC0*",
+      "d:A4FF420440*",
+      "d:1AFF50*",
+      "d:A4FF42050C*",
+      "d:1AFF67*",
+      "d:A4FF420580*",
+      "d:1AFF01*",
+      "d:A4FF420582*",
+      "d:1AFF18*",
+      "d:A4FF4205FE*",
+      "d:1AFF82*",
+      "d:A4FF420800*",
+      "d:1AFFFF*",
+      "d:A4FF4208FF*",
+      "d:1AFFFF*",
+      "d:A4FF4209FE*",
+      "d:1AFFFF*",
+      "d:A4FF420AFD*",
+      "d:1AFFFF*",
+      "d:A4FF420BFC*",
+      "d:1AFFFF*",
+      "d:A4FF420CFB*",
+      "d:1AFFFF*",
+      "d:A4FF420DFA*",
+      "d:1AFFFF*",
+      "d:A4FF420EF9*",
+      "d:1AFFFF*",
+      "d:A4FF420FF8*",
+      "d:1AFFFF*",
+      "d:A4FF4210F7*",
+      "d:1AFFFF*",
+      "d:A4FF4211F6*",
+      "d:1AFFFF*",
+      "d:A4FF4212F5*",
+      "d:1AFFFF*",
+      "d:A4FF4213F4*",
+      "d:1AFFFF*",
+      "d:A4FF4214F3*",
+      "d:1AFFFF*",
+      "d:A4FF4215F2*",
+      "d:1AFFFF*",
+      "d:A4FF4216F1*",
+      "d:1AFFFF*",
+      "d:A4FF4217F0*",
+      "d:1AFFFF*",
+      "d:A4FF4218EF*",
+      "d:1AFFFF*",
+      "d:A4FF4219EE*",
+      "d:1AFFFF*",
+      "d:A4FF421AED*",
+      "d:1AFFFF*",
+      "d:A4FF421BEC*",
+      "d:1AFFFF*",
+      "d:A4FF421CEB*",
+      "d:1AFFFF*",
+      "d:A4FF421DEA*",
+      "d:1AFFFF*",
+      "d:A4FF421EE9*",
+      "d:1AFFFF*",
+      "d:A4FF421FE8*",
+      "d:1AFFFF*",
+      "d:A4FF4220E7*",
+      "d:1AFFFF*",
+      "d:A4FF4221E6*",
+      "d:1AFFFF*",
+      "d:A4FF4222E5*",
+      "d:1AFFFF*",
+      "d:A4FF4223E4*",
+      "d:1AFFFF*",
+      "d:A4FF4224E3*",
+      "d:1AFFFF*",
+      "d:A4FF4225E2*",
+      "d:1AFFFF*",
+      "d:A4FF4226E1*",
+      "d:1AFFFF*",
+      "d:A4FF4227E0*",
+      "d:1AFFFF*",
+      "d:A4FF4228DF*",
+      "d:1AFFFF*",
+      "d:A4FF4229DE*",
+      "d:1AFFFF*",
+      "d:A4FF422ADD*",
+      "d:1AFFFF*",
+      "d:A4FF422BDC*",
+      "d:1AFFFF*",
+      "d:A4FF422CDB*",
+      "d:1AFFFF*",
+      "d:A4FF422DDA*",
+      "d:1AFFFF*",
+      "d:A4FF422ED9*",
+      "d:1AFFFF*",
+      "d:A4FF422FD8*",
+      "d:1AFFFF*",
+      "d:A4FF4230D7*",
+      "d:1AFFFF*",
+      "d:A4FF4231D6*",
+      "d:1AFFFF*",
+      "d:A4FF4232D5*",
+      "d:1AFFFF*",
+      "d:A4FF4233D4*",
+      "d:1AFFFF*",
+      "d:A4FF4234D3*",
+      "d:1AFF2D*",
+      "d:A4FF428000*",
+      "d:1AFF50*"
+     ],
+     "get_before": [],
+     "set": [],
+     "save": [
+      "d:2101*",
+      "d:2102*",
+      "d:A4FF420102*",
+      "d:1AFF02*",
+      "d:A6FF0001020501*",
+      "d:A4FF420102*",
+      "d:1AFF02*"
+     ],
+     "get_after": [],
+     "other": []
+    },
+    "stray_requests": [],
+    "writes": [
+     {
+      "phase": "save",
+      "unit": 13,
+      "space": "goc",
+      "address": 258,
+      "before": "0000",
+      "after": "0501"
+     }
+    ],
+    "save_timing": {
+     "max_gap_before_save_request_s": 0.1
+    }
+   }
+  }
+ },
+ "comparison": {
+  "direct_key4_array": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 31,
+    "native_reads": 2,
+    "cmqttd_reads": 29,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 8,
+    "native_reads": 0,
+    "cmqttd_reads": 4,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A6",
+     "AE"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "AE01005A5A5A5A5A5A5A5A5A5A5A5A",
+     "A60D015A5A5A5A"
+    ],
+    "cmqttd": [
+     "AE01005A5A5A5A5A5A5A5A5A5A5A5A",
+     "A60D015A5A5A5A"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "paged_wrd4f1_page1_and_lock": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 28,
+    "native_reads": 2,
+    "cmqttd_reads": 26,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 6,
+    "cmqttd_requests": 11,
+    "native_reads": 1,
+    "cmqttd_reads": 4,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21",
+     "A3",
+     "AA"
+    ]
+   },
+   "save_mutations": {
+    "identical": false,
+    "native": [
+     "3900",
+     "111A",
+     "A31A0003",
+     "3901",
+     "AA00010102030405060708"
+    ],
+    "cmqttd": [
+     "3900",
+     "111A",
+     "A31A0003",
+     "3901",
+     "AA00000102030405060708"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "ncc_reldn4a_edit": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 1,
+    "cmqttd_requests": 19,
+    "native_reads": 1,
+    "cmqttd_reads": 17,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 3,
+    "cmqttd_requests": 7,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21",
+     "A3"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "3901",
+     "A3000021",
+     "E3810004"
+    ],
+    "cmqttd": [
+     "3901",
+     "A3000021",
+     "E3810004"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "ncc_reldn4a_no_edit": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 0,
+    "cmqttd_requests": 19,
+    "native_reads": 0,
+    "cmqttd_reads": 17,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 1,
+    "cmqttd_requests": 2,
+    "native_reads": 0,
+    "cmqttd_reads": 0,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save_mutations": {
+    "identical": false,
+    "native": [
+     "E3810004"
+    ],
+    "cmqttd": []
+   },
+   "memory_after_save_identical": false,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "ncc_reldn4a_same_value": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 1,
+    "cmqttd_requests": 19,
+    "native_reads": 1,
+    "cmqttd_reads": 17,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 3,
+    "cmqttd_requests": 3,
+    "native_reads": 0,
+    "cmqttd_reads": 1,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "21"
+    ]
+   },
+   "save_mutations": {
+    "identical": false,
+    "native": [
+     "3901",
+     "A3000000",
+     "E3810004"
+    ],
+    "cmqttd": []
+   },
+   "memory_after_save_identical": false,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "edlt_keygl5_adjacent": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 98,
+    "native_reads": 1,
+    "cmqttd_reads": 51,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 12,
+    "native_reads": 0,
+    "cmqttd_reads": 3,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A3",
+     "A4"
+    ]
+   },
+   "save_mutations": {
+    "identical": false,
+    "native": [
+     "A401420705"
+    ],
+    "cmqttd": [
+     "A3014207",
+     "A3014205"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "giu_pc_gim_array": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 4,
+    "cmqttd_requests": 275,
+    "native_reads": 1,
+    "cmqttd_reads": 139,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 4,
+    "cmqttd_requests": 10,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A3",
+     "A4",
+     "A6"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "A3FC0300",
+     "A6014211223344",
+     "A3FC0301"
+    ],
+    "cmqttd": [
+     "A3FC0300",
+     "A6014211223344",
+     "A3FC0301"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "sgiu_pc_tsa": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 31,
+    "native_reads": 1,
+    "cmqttd_reads": 18,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 8,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A3",
+     "A4"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "A3014202"
+    ],
+    "cmqttd": [
+     "A3014202"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "dali_pc_dal2b": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 112,
+    "native_reads": 1,
+    "cmqttd_reads": 62,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 2,
+    "cmqttd_requests": 8,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A3",
+     "A4"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "A3014240"
+    ],
+    "cmqttd": [
+     "A3014240"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "gocbyt_dimpr12_array": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 4,
+    "cmqttd_requests": 409,
+    "native_reads": 2,
+    "cmqttd_reads": 211,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 1,
+    "cmqttd_requests": 7,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4",
+     "AA"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "AAFF000020010203040506"
+    ],
+    "cmqttd": [
+     "AAFF000020010203040506"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  },
+  "goc2_dimar12_word": {
+   "before_save": {
+    "identical": false,
+    "native_requests": 4,
+    "cmqttd_requests": 148,
+    "native_reads": 2,
+    "cmqttd_reads": 85,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4"
+    ]
+   },
+   "save": {
+    "identical": false,
+    "native_requests": 1,
+    "cmqttd_requests": 7,
+    "native_reads": 0,
+    "cmqttd_reads": 2,
+    "native_identify": 0,
+    "cmqttd_identify": 2,
+    "native_checksummed_opcodes": [],
+    "cmqttd_checksummed_opcodes": [
+     "1A",
+     "21",
+     "A4",
+     "A6"
+    ]
+   },
+   "save_mutations": {
+    "identical": true,
+    "native": [
+     "A6FF0001020501"
+    ],
+    "cmqttd": [
+     "A6FF0001020501"
+    ]
+   },
+   "memory_after_save_identical": true,
+   "save_status": {
+    "native": 200,
+    "cmqttd": 200
+   }
+  }
+ },
+ "goc2_parameter_ff_ack_probe": {
+  "fixture_store_ack": "32FF<tag>",
+  "cleanup_complete": true,
+  "get_status": 408,
+  "get_reply": [
+   "408 Operation failed: Address set failed"
+  ],
+  "get_requests": [
+   "d:A4FF420102",
+   "d:A4FF420102"
+  ],
+  "save_status": 200,
+  "save_requests": [
+   "d:A4FF420102",
+   "d:A6FF0001020501",
+   "d:A6FF0001020501",
+   "d:A6FF0001020501"
+  ],
+  "finding": "Native address selection fails without a low-address-byte acknowledgement; its GOC STORE path checks only for a negative acknowledgement, retransmits the uncorrelated STORE and still reports SAVE success."
+ }
+}
