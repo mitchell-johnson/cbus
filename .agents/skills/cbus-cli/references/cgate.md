@@ -873,7 +873,9 @@ Across a resolved route through one to six bridges, PP LOAD and
 PP SAVE/SAVE_TO_SOURCE support `direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`,
 `dali`, `goc`, `gocbyt`, and `goc2` schema methods. Routed identity, page or
 memory selectors, pre-read, tagged STORE acknowledgement and readback require
-the exact Reply Network, remote unit, parameter, tag and count. A
+the exact Reply Network, remote unit, parameter, tag and count; a `goc2`
+selector or STORE acknowledgement names the low address byte instead of
+`0xFF`, as owned native C-Gate requires. A
 lock-protected `direct`, `paged`, or `ncc` range first requires the exact
 one-byte routed Unlock challenge and its allocated PCI confirmation. The
 unlock and each STORE are sent once, the owned session commits only on the

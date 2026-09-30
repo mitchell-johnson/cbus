@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 473,
+    "test_modules": 474,
     "modules_without_skip_sites": 252,
-    "modules_with_skip_sites": 221,
+    "modules_with_skip_sites": 222,
     "modules_by_category": {
       "cgate_test_host": 124,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 7,
-      "native_cgate_local": 55,
+      "native_cgate_local": 56,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 66,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
-      "rust_binaries": 8,
+      "rust_binaries": 9,
       "unclassified": 5,
-      "unit_specs": 116,
+      "unit_specs": 117,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 117,
+      "all": 118,
       "partial": 20,
       "none": 84
     },
-    "native_runnable_tests": 225,
-    "native_selected_required_tests": 225,
+    "native_runnable_tests": 227,
+    "native_selected_required_tests": 227,
     "native_excluded": 0,
-    "native_selection_selectors": 140
+    "native_selection_selectors": 141
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -5562,6 +5562,66 @@
           "kind": "decorator.skipUnless",
           "condition": "os.environ.get('CBUS_CGATE_JAVA') and os.environ.get('CBUS_LOCAL_CGATE_VENDOR')",
           "reason": "Set Java and original vendor directory for owned local network acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR"
+          ],
+          "categories": [
+            "native_cgate_local"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_native_pp_method_transcripts.py": {
+      "categories": [
+        "native_cgate_local",
+        "rust_binaries",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 8,
+      "sites": [
+        {
+          "scope": "tests/test_native_pp_method_transcripts.py::test_cmqttd_replay_matches_committed_transcript",
+          "kind": "decorator.skipif",
+          "condition": "not CMQTTD.is_file() or not os.access(CMQTTD, os.X_OK)",
+          "reason": "cmqttd binary is not built",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "runs",
+          "native_resolution": "the native gate provisions the cmqttd binary as CBUS_CMQTTD_BIN; the replay also needs the native catalogue and decoded unit specifications that gate provides"
+        },
+        {
+          "scope": "tests/test_native_pp_method_transcripts.py::test_cmqttd_replay_matches_committed_transcript",
+          "kind": "decorator.skipif",
+          "condition": "not NATIVE or not SPECS",
+          "reason": "owned native catalogue and decoded unit specifications are not configured",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_native_pp_method_transcripts.py::test_owned_native_recapture_matches_committed_transcript",
+          "kind": "decorator.skipif",
+          "condition": "not NATIVE",
+          "reason": "owned native C-Gate is not configured",
           "environment": [
             "CBUS_CGATE_JAVA",
             "CBUS_LOCAL_CGATE_VENDOR"

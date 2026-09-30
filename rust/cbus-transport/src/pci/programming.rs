@@ -2735,7 +2735,7 @@ impl PciClient {
                     parameter: u8::MAX,
                     data: vec![0x42, (offset >> 8) as u8, offset as u8],
                 },
-                u8::MAX,
+                dialect.ack_parameter(offset),
                 0,
                 Some(0x42),
                 route,
@@ -4694,7 +4694,7 @@ impl PciClient {
                     parameter: u8::MAX,
                     data: tagged,
                 },
-                u8::MAX,
+                dialect.ack_parameter(offset),
                 0,
                 Some(tag),
                 route,
@@ -8468,13 +8468,51 @@ mod tests {
                 .await
         });
         assert_eq!(line(&mut remote).await, b"\\460500A7FF001234AABBCC98\r");
-        reply(&mut remote, 4, &[0x32, 0xff, 0]).await;
+        // Native C-Gate's GOC2 `bo` correlates the low address byte, not FF.
+        reply(&mut remote, 4, &[0x32, 0x34, 0]).await;
         reply(&mut remote, 5, &[0x32, 0xff, 0]).await;
+        reply(&mut remote, 5, &[0x32, 0x34, 0]).await;
         assert_eq!(line(&mut remote).await, b"\\460500A4FF4212348A\r");
         reply(&mut remote, 5, &[0x32, 0xff, 0x42]).await;
+        reply(&mut remote, 5, &[0x32, 0x34, 0x42]).await;
         assert_eq!(line(&mut remote).await, b"\\4605001AFF0399\r");
         reply(&mut remote, 5, &[0x84, 0xff, 0xaa, 0xbb, 0xcc]).await;
         write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn gocbyt_store_acknowledges_parameter_ff_not_the_address_byte() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .write_goc_memory_verified(5, 0x0020, &[1, 2], GocProgramming::GocByt)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\460500A6FF0000200102ED\r");
+        reply(&mut remote, 5, &[0x32, 0x20, 0]).await;
+        reply(&mut remote, 5, &[0x32, 0xff, 0]).await;
+        assert_eq!(line(&mut remote).await, b"\\460500A4FF420020B0\r");
+        reply(&mut remote, 5, &[0x32, 0x20, 0x42]).await;
+        reply(&mut remote, 5, &[0x32, 0xff, 0x42]).await;
+        assert_eq!(line(&mut remote).await, b"\\4605001AFF029A\r");
+        reply(&mut remote, 5, &[0x83, 0xff, 1, 2]).await;
+        write.await.unwrap().unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn goc2_parameter_ff_acknowledgement_never_completes_a_store() {
+        let (pci, mut remote, _) = setup().await;
+        let worker = pci.clone();
+        let write = tokio::spawn(async move {
+            worker
+                .write_goc_memory_verified(5, 0x0102, &[5, 1], GocProgramming::Goc2)
+                .await
+        });
+        assert_eq!(line(&mut remote).await, b"\\460500A6FF000102050107\r");
+        reply(&mut remote, 5, &[0x32, 0xff, 0]).await;
+        let error = write.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut, "{error}");
     }
 
     #[tokio::test(start_paused = true)]
@@ -8550,20 +8588,21 @@ mod tests {
             line(&mut remote).await,
             b"\\46FA36FBFCFDFEF906A6FF001234AABB49\r"
         );
-        direct_reply(&mut remote, 6, &[0x32, 0xff, 0]).await;
+        direct_reply(&mut remote, 6, &[0x32, 0x34, 0]).await;
         routed_reply(
             &mut remote,
             &[0xf9, 0xfb, 0xfc, 0xfd, 0xfe, 0xf9],
             6,
-            &[0x32, 0xff, 0],
+            &[0x32, 0x34, 0],
         )
         .await;
         routed_reply(&mut remote, &bridges, 6, &[0x32, 0xff, 0]).await;
+        routed_reply(&mut remote, &bridges, 6, &[0x32, 0x34, 0]).await;
         assert_eq!(
             line(&mut remote).await,
             b"\\46FA36FBFCFDFEF906A4FF4212346E\r"
         );
-        routed_reply(&mut remote, &bridges, 6, &[0x32, 0xff, 0x42]).await;
+        routed_reply(&mut remote, &bridges, 6, &[0x32, 0x34, 0x42]).await;
         assert_eq!(line(&mut remote).await, b"\\46FA36FBFCFDFEF9061AFF027E\r");
         routed_reply(&mut remote, &bridges, 6, &[0x83, 0xff, 0xaa, 0xbb]).await;
         write.await.unwrap().unwrap();

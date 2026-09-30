@@ -193,7 +193,10 @@ and `paged`/`ncc` groups also end at a 256-byte page. Page-aware methods
 select the page (`39`) before the first group on each page. OEM methods
 reselect the `41` pointer before each `42` data group. GIU writes its run
 flag halt (`FC 03 00`) before its STOREs and resume (`FC 03 01`) after them.
-DALI waits one second before its first STORE. Reads use the native single
+DALI waits one second before its first STORE. GOC selectors and STOREs are
+acknowledged as `32 FF <tag>` for `goc`/`gocbyt`, but a `goc2` unit names the
+low byte of the selected or stored address (`32 <addr & FF> <tag>`), as native
+`bo` requires for the `CBusGOC2Dimmer` class. Reads use the native single
 request limits: twelve bytes for `direct`, `paged`, `giu`, `sgiu` and `dali`,
 six for `goc`/`gocbyt`, and up to 255 for `goc2` and `ncc`; `edlt` keeps the
 captured 128-byte block. A paged or NCC reply fragment must name the
@@ -232,11 +235,18 @@ cmqttd keeps several documented differences from the native codec:
 - It never halts a GIU during LOAD, so reads remain write-free.
 - It selects the page again at the start of each paged STORE range.
 - After every STORE range, it reads the complete range back.
-- It writes a whole parameter when any byte changed. Native C-Gate writes
-  only changed bytes, except for `gocbyt`/`goc2`.
+- It writes a whole parameter when any byte changed, and skips a parameter
+  whose staged bytes equal the loaded bytes. Native C-Gate writes the bytes
+  a `PP SET` marked, even when the value is unchanged.
 - It stores each changed parameter separately, numbering STORE tags from
   zero. Native C-Gate merges adjacent fields with the same method and
   protection, and numbers groups across the whole save.
+- It sends the C-Bus 3 Save-to-NVM EXECUTE only after a changed range was
+  verified. Native C-Gate ends every `SAVE_TO_SOURCE` to a C-Bus 3 unit with
+  EXECUTE, including a save with no `PP SET`.
+- It identifies the unit and pre-reads each changed range before SAVE. Native
+  SAVE sends only the STOREs and their page, UNLOCK, run-flag and NVM
+  requests.
 
 When one parameter changes in every byte, its STORE groups, tags and UNLOCK
 order match the native group plan. The extra writes and readbacks repeat
@@ -311,6 +321,43 @@ native UnitName LOAD, SAVE_TO_SOURCE, restore and disk reload. Native LOAD
 recalled twelve bytes (`1A2A0C`) for the six-byte field. SAVE sent one
 six-byte tagged STORE (`A82A00...`). The run still reports `incomplete`
 because it does not establish device checksum behavior.
+
+`research/native_pp_method_transcripts.py` drives owned native C-Gate
+3.4.0.2001 and cmqttd through the same `PP LOAD`, `GET`, `SET`,
+`SAVE_TO_SOURCE` and `GET` session. The target is a research-only synthetic
+unit that answers one method's memory protocol from zero-filled memory. One real
+catalogue type represents each method family with a native specification:
+KEY4 `direct`, WRD4F1 `paged` (page-1 field plus a page-0 `lock` field),
+RELDN4A `ncc`, KEYGL5 `edlt`, PC_GIM `giu`, PC_TSA `sgiu`, PC_DAL2B `dali`,
+DIMPR12 `gocbyt` and DIMAR12 `goc2`. No Toolkit 1.18 specification uses
+`goc`. Each native case runs in a fresh owned daemon. A case whose synthetic
+discovery stalls a PP command is repeated from the start and never resumed.
+[`native_cgate_pp_method_transcripts.json`](../../rust/testdata/fixtures/native_cgate_pp_method_transcripts.json)
+retains the sanitized commands, replies, per-phase requests and fixture
+writes from both endpoints, plus a reviewed difference catalogue. The
+captures establish these facts:
+
+- Both endpoints leave identical memory, and their STORE, page, UNLOCK, GIU
+  run-flag and NVM requests are byte-identical for `direct`, `ncc` edits,
+  `giu`, `sgiu`, `dali`, `gocbyt` and `goc2`.
+- Native `paged` numbers its second STORE tag `01`, while cmqttd uses `00` in
+  each verified range. Native `edlt` merges two adjacent one-byte fields into
+  one STORE. Both are recorded as deliberate cmqttd differences.
+- Native Save-to-NVM gating (#34): RELDN4A sends `E3 81 00 04` after an NCC
+  edit, after a SAVE with no SET, and after a SET that repeats the current
+  value (which it also stores). cmqttd commits only the changed edit.
+- Native GIU brackets GET reads, as well as SAVE, with the run flag, and
+  DALI waits one second before its first SAVE request on both endpoints.
+- Native accepted a `goc2` selector or STORE acknowledgement only in its
+  low-address-byte form. With `32 FF <tag>` its address selection failed with
+  408, and it retransmitted the STORE three times but still reported SAVE
+  success. cmqttd previously required `FF` for `goc2` and failed its LOAD.
+  It now correlates the native form and keeps `FF` for `goc`/`gocbyt`.
+
+`tests/test_native_pp_method_transcripts.py` checks the committed record
+offline. Under the native gate, it recaptures native C-Gate and replays cmqttd
+against the committed requests and memory. The unit is a synthetic fixture.
+It does not establish device firmware, checksum or persistence behavior.
 
 The machine-readable method roster and lower Rust scripted boundary are in
 `rust/testdata/fixtures/native_cgate_routed_pp_methods.json`; protection is in
