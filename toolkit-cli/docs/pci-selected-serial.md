@@ -168,7 +168,7 @@ missing, wrong or forged receipt can still be followed by independent inventory.
 Transport/close errors, malformed frames, trailing partial input, byte saturation,
 deadline failure or interruption stop further network I/O in that call.
 
-## Routed plan schema (offline only)
+## Routed plans through one to six bridges
 
 A `cbus-selected-serial-plan-v1` document may carry two optional fields. Both
 are absent from a direct plan, so direct canonical bytes, attempt IDs and marker
@@ -183,22 +183,93 @@ file names are unchanged. Python `SelectedSerialPlan.from_dict` and Rust
 | Any other field is still rejected. | `plan_fields` |
 
 When a route is present, the canonical fingerprint and attempt marker cover
-both fields. `SelectedSerialCoordinator.plan(..., route=..., project_sha256=...)` validates
-them before I/O and embeds them in a plan built from the usual direct
-observations.
+both fields.
 
-Every embedded v1 observation is a direct capture from the local interface.
-Serial replies must use route `00`. Evidence of this kind proves only the local
-PCI, its options and the local network. It never observes the far network, bridge
-acceptance or a routed target. A validated routed plan is therefore an intent
-document only. Python apply/verify, Rust `apply_plan`/`verify_plan` and
-`cbus-tools serial-verify`/`serial-apply` refuse it with
-`routed_execution_unsupported` before any lease, attempt marker, journal,
-connection or PCI byte. The shared vectors in
-`rust/testdata/vectors/selected_serial_plan.jsonl` pin accepted one-bridge and
-six-bridge plans, including their attempt IDs, and every rejection above. No
-routed commissioning execution, simulator routing, native C-Gate result or
-physical bridge evidence exists for this schema.
+**Evidence.** A routed plan's `before` inventory is a capture of the *far*
+network, and every capture in it is bound to the route:
+
+| Exchange | Routed wire (bridges `FD`, `FC`; PCI `10`) |
+| --- | --- |
+| Installation MMI | `\\03FD12FCFFFAFF00g\r` (point-to-point-to-multipoint, native `NET PINGU` form) |
+| MMI block | `86 FD 10 02 FC <unit> E0+len 00 FF <start> <states>` + checksum |
+| IDENTIFY4 at unit `FF` | `\\46FD12FCFF2104g\r` |
+| Serial reply | `86 FD 10 02 FC FF 8D 04 <12 bytes>` + checksum |
+| Selected-serial `co` for `101136.1558` to `06` | `\\03FD12FCFF0F0018B106160615g\r`: `03`, nearest bridge, 9 x count, later bridges, `FF 0F`, then the direct CAL body |
+| Receipt from new address `06` | `86 FD 10 02 FC 06 87 00 <serial> <tail>` + checksum |
+
+A reply counts only on the exact Reply Network: outer source the nearest
+bridge, destination the local PCI, count equal to the bridge count, and entries
+repeating the later bridges then the queried (or new) unit. MMI blocks record
+their replying unit but do not require one. Direct blocks, other routes, bare
+replies and other destinations are unrelated traffic, so an observation that
+contains them cannot be plan or classification evidence. Each routed inventory,
+MMI and serial observation records `route`; a direct capture under a routed
+plan, or a routed capture under a direct plan, is rejected. The local PCI is
+not on the far network, so routed MMI has no local-presence anchor, the far
+network may reuse the local unit number, and the destination may equal it.
+`local_identity` and `local_options` remain direct captures of the attached PCI.
+
+**Binding.** `route_from_project(project, source_network=, target_network=)`
+derives the route and hash with the same bounded snapshot read and topology
+planner as typed routed WRITE/RECALL/IDENTIFY. `apply` and `verify` of a
+routed plan require `project`, `source_network` and `target_network`; before
+any lease, attempt marker, journal, connection or PCI byte they re-read the
+project, require its SHA-256 to equal `project_sha256` and require the
+re-derived route to equal `route`. A missing binding, changed or unparsable
+project, or a network absent from the topology refuses with `route_binding`;
+a different derived route refuses with `wrong_route`. A direct plan refuses
+any binding. Apply rechecks the project hash immediately before reserving the
+attempt marker; a replaced project stops with `preconditions_failed` before
+any marker or send. Evidence records `route_binding` (path, hash, networks,
+route, `topology_fresh_at_handoff`, `physical_bridge_acceptance_verified:
+false`).
+
+**Execution.** Apply keeps every direct guard: the lease, a fresh routed
+inventory equal to the plan's, fresh direct local identity/options, the
+shared attempt marker, the durable journal before the one routed `co`, and a
+fresh routed after-inventory that alone decides the outcome. A lost,
+duplicate, reordered or wrong-route receipt leaves `receipt_matches_request:
+false` and cannot set the outcome. A disconnect or incomplete capture during
+the exchange is `uncertain`, stops network I/O and is recovered only by
+read-only `verify`; the marker refuses a repeat. Lost, duplicate or
+reordered MMI blocks, missing serial replies and foreign Reply Network
+traffic in the after-inventory also leave the outcome `uncertain`.
+
+```sh
+cbus-toolkit serial-address plan 101136.1558 6 --host 127.0.0.1 --port 10001 \
+  --local-unit 16 --expected-local-serial 100966.1187 --output routed-plan.json \
+  --project house.xml --source-network 254 --target-network 252
+cbus-toolkit serial-address apply routed-plan.json --recovery routed-recovery.json \
+  --project house.xml --source-network 254 --target-network 252
+cbus-toolkit serial-address verify --recovery routed-recovery.json \
+  --project house.xml --source-network 254 --target-network 252
+```
+
+`serial-address reconcile` refuses routed journals: the target-network
+database move is not implemented. Rust `apply_plan`/`verify_plan` and
+`cbus-tools serial-verify`/`serial-apply` validate routed plans (including their
+routed captures) but still refuse to execute them with
+`routed_execution_unsupported` before any lease, marker, journal, connection
+or PCI byte; they have no project-topology binding.
+
+**Evidence boundary.** `tests/test_pci_selected_serial_routed.py` drives the
+coordinator and CLI against independent scripted peers that build every
+Reply Network frame from literal bytes: one-, two- and six-bridge plan, apply,
+journal recovery and verify; binding, wrong-route and stale-project refusals
+with no I/O; lost, entirely lost, duplicate, reordered, wrong-route and direct
+receipts; a reconnect mid-receipt followed by read-only verification and a
+marker-refused repeat; and lost, duplicate and reordered MMI blocks, a missing
+serial reply and a foreign-route serial reply in the after-inventory. The
+shared vectors in `rust/testdata/vectors/selected_serial_plan.jsonl` pin
+accepted one-bridge (bare and checksummed), six-bridge and reused-local-number
+routed plans with attempt IDs, routed/direct evidence swaps and foreign MMI
+and serial Reply Networks, and are checked by both implementations. The
+routed wire forms mirror cmqttd's routed MMI/IDENTIFY/selected-serial
+transport and the `sa-enc-routed-*` encoder vectors; they are not original
+Toolkit/C-Gate routed-commissioning captures. The Rust simulator's routed
+fixture serves only WRITE/RECALL, so it is not used here. No native C-Gate
+routed selected-serial result, live bridge delivery, device persistence or
+physical acceptance exists for this workflow.
 
 ## Recovery journal and outcomes
 

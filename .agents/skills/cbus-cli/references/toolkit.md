@@ -86,6 +86,13 @@ exclusive commissioning ownership against cmqttd, C-Gate, other hosts and other
 controllers. After an uncertain attempt, use `serial-address verify --recovery`
 for read-only recovery; never replay from the lease or journal alone. See
 `toolkit-cli/docs/pci-selected-serial.md` for the exact fixture and limits.
+For a far network through one to six bridges, pass `--project FILE
+--source-network N --target-network N` to `plan`, `apply` and `verify`: the
+plan observes the far network by routed MMI/IDENTIFY4, and apply/verify
+re-derive the route from that exact project before any I/O, refusing
+`route_binding`/`wrong_route`. Routed evidence is scripted-peer only; the Rust
+`serial-verify`/`serial-apply` still refuse routed plans, and `reconcile`
+refuses routed journals.
 After an `observed_expected_change` journal, `serial-address reconcile --journal J
 (--project FILE | --cgate HOST:PORT --project-name P)` plans the matching database
 unit move (dry run by default; `--apply` backs up, moves, saves and verifies a
