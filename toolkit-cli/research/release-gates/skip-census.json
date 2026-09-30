@@ -50,16 +50,16 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 455,
+    "test_modules": 457,
     "modules_without_skip_sites": 246,
-    "modules_with_skip_sites": 209,
+    "modules_with_skip_sites": 211,
     "modules_by_category": {
       "cgate_test_host": 120,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 48,
+      "native_cgate_local": 50,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 65,
@@ -68,19 +68,19 @@
       "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 2,
-      "unit_specs": 108,
+      "unit_specs": 110,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 111,
+      "all": 113,
       "partial": 18,
       "none": 80
     },
-    "native_runnable_tests": 212,
-    "native_selected_required_tests": 212,
+    "native_runnable_tests": 216,
+    "native_selected_required_tests": 216,
     "native_excluded": 0,
-    "native_selection_selectors": 132
+    "native_selection_selectors": 134
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -6887,6 +6887,35 @@
         }
       ]
     },
+    "tests/test_toolkit_conversion_tweakers.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_conversion_tweakers.py::NativeToolkitTweakerTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_JAVA') and SPECS and VENDOR",
+          "reason": "set CBUS_CGATE_JAVA, CBUS_LOCAL_CGATE_VENDOR and CBUS_UNITSPEC_DIR for native tweaker acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_toolkit_database_csv_area_native.py": {
       "categories": [
         "native_cgate_local"
@@ -7549,6 +7578,49 @@
             "UnitTemplateSourceTest::test_original_constructor_template_flags_order_and_duplicate_header_writes",
             "UnitTemplateSourceTest::test_original_executable_checksum_and_template_reader"
           ]
+        }
+      ]
+    },
+    "tests/test_unit_templates_neo.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 3,
+      "native_runnable_tests": 3,
+      "native_selected_tests": 8,
+      "sites": [
+        {
+          "scope": "tests/test_unit_templates_neo.py::NeoTemplateNativeTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_JAVA') and SPECS and VENDOR",
+          "reason": "set CBUS_CGATE_JAVA, CBUS_LOCAL_CGATE_VENDOR and CBUS_UNITSPEC_DIR for native Neo templates",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_unit_templates_neo.py::NeoTemplateSpecTests",
+          "kind": "decorator.skipUnless",
+          "condition": "SPECS",
+          "reason": "set CBUS_UNITSPEC_DIR for NeoPro specification checks",
+          "environment": [
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
         }
       ]
     },
