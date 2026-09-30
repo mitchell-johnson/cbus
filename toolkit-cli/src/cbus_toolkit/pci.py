@@ -381,26 +381,50 @@ class PCIClient:
         self.stream = FrameStream()
         self.unsolicited: deque[Frame | Confirmation | Notification] = deque()
         self._confirmation_index = 0
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
     def connect(self) -> PCIClient:
-        if self.socket is not None:
-            raise RuntimeError("PCI client is already connected")
-        self.socket = socket.create_connection((self.host, self.port), self.timeout)
-        self.stream = FrameStream()
-        self.local_unit = self._configured_local_unit
-        return self
+        with self._lock:
+            if self.socket is not None:
+                raise RuntimeError("PCI client is already connected")
+            try:
+                self.socket = socket.create_connection((self.host, self.port), self.timeout)
+                self.stream = FrameStream()
+                self.local_unit = self._configured_local_unit
+                return self
+            except BaseException as error:
+                self._close_preserving(error)
+                raise
 
     def close(self) -> None:
-        if self.socket is not None:
-            self.socket.close()
-            self.socket = None
+        with self._lock:
+            sock, self.socket = self.socket, None
+            self.stream.buffer.clear()
+            if sock is not None:
+                sock.close()
+
+    def _close_preserving(self, error: BaseException) -> None:
+        """Retire an uncertain exchange without hiding its original failure."""
+        try:
+            self.close()
+        except BaseException as cleanup:
+            failures = tuple(getattr(error, "pci_cleanup_errors", ()))
+            error.pci_cleanup_errors = failures + (cleanup,)
 
     def __enter__(self) -> PCIClient:
         return self.connect()
 
-    def __exit__(self, *_):
-        self.close()
+    def __exit__(self, _type, error, _traceback):
+        if error is None:
+            self.close()
+        else:
+            self._close_preserving(error)
+
+    def _remaining(self, deadline: float) -> float:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("Timed out waiting for PCI confirmation and matching CAL response")
+        return remaining
 
     def identify(self, unit: int | None, attribute: int) -> bytes:
         reply = self._request(unit, IdentifyCAL(attribute), ReplyCAL, attribute)
@@ -429,14 +453,13 @@ class PCIClient:
         if self.socket is None:
             raise RuntimeError("PCI client is not connected")
         sock = self.socket
+        sock.settimeout(self._remaining(deadline))
         sock.sendall(b"@1A2001\r")
         result = None
         while result is None:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise TimeoutError("Timed out discovering the attached PCI address")
-            sock.settimeout(remaining)
+            sock.settimeout(self._remaining(deadline))
             chunk = sock.recv(4096)
+            self._remaining(deadline)
             if not chunk:
                 self.stream.finish()
                 raise ConnectionError("PCI disconnected before its local address was discovered")
@@ -476,14 +499,15 @@ class PCIClient:
                 code = bytes((ord("g") + self._confirmation_index % 20,))
                 wire = encode_command(target, cal, addressing=addressing,
                                       confirmation=code, checksum=self.command_checksum)
+                # BASIC discovery shares this deadline. Never issue a write
+                # after discovery has exhausted the admitted I/O window.
+                sock.settimeout(self._remaining(deadline))
                 self._confirmation_index += 1
                 sock.sendall(wire)
                 while not (confirmed and response is not None):
-                    remaining = deadline - time.monotonic()
-                    if remaining <= 0:
-                        raise TimeoutError("Timed out waiting for PCI confirmation and matching CAL response")
-                    sock.settimeout(remaining)
+                    sock.settimeout(self._remaining(deadline))
                     chunk = sock.recv(4096)
+                    self._remaining(deadline)
                     if not chunk:
                         self.stream.finish()
                         if reply_count is not None and reply_data and len(reply_data) != reply_count:
@@ -526,11 +550,13 @@ class PCIClient:
                         else:
                             self.unsolicited.append(event)
                 return response
-            except socket.timeout as error:
-                self.close()
-                raise TimeoutError("Timed out waiting for PCI confirmation and matching CAL response") from error
-            except (OSError, ProtocolError):
-                # Reuse after timeout could associate a late reply with another
-                # request to the same parameter. Reconnect before further work.
-                self.close()
+            except socket.timeout as cause:
+                error = TimeoutError("Timed out waiting for PCI confirmation and matching CAL response")
+                self._close_preserving(error)
+                raise error from cause
+            except BaseException as error:
+                # Cancellation is uncertain too: a send may have reached the
+                # bus. Never let a late reply satisfy another request, even if
+                # closing the failed connection is itself interrupted.
+                self._close_preserving(error)
                 raise

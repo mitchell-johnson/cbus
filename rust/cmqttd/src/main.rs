@@ -11,18 +11,25 @@ use cbus_transport::pci::{CBusEvent, PciClient};
 use clap::Parser;
 use cli::Options;
 use gateway::Gateway;
-use rumqttc::{AsyncClient, Event, Packet as MqttPacket};
+use rumqttc::{AsyncClient, Event, Packet as MqttPacket, QoS};
 use setup::ConnSpec;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
-/// Queue a clean MQTT DISCONNECT behind any preceding publish, then give the
+/// Queue retained OFF followed by a clean MQTT DISCONNECT, then give the
 /// still-running event loop a bounded opportunity to write both to the broker.
+/// A clean DISCONNECT suppresses the last will, so OFF must be explicit.
 async fn flush_mqtt_before_exit(client: &AsyncClient) {
     // rumqttc only drains its request channel while a broker connection is up;
     // if the channel is full, disconnect() can block forever, so bound the wait.
-    match tokio::time::timeout(Duration::from_secs(2), client.disconnect()).await {
+    let shutdown = async {
+        client
+            .publish(gateway::BRIDGE_STATE_TOPIC, QoS::AtLeastOnce, true, "OFF")
+            .await?;
+        client.disconnect().await
+    };
+    match tokio::time::timeout(Duration::from_secs(2), shutdown).await {
         Ok(Ok(())) => tokio::time::sleep(Duration::from_millis(250)).await,
         _ => tracing::warn!("MQTT disconnect not flushed; exiting anyway"),
     }
@@ -166,6 +173,16 @@ async fn main() {
     setup::init_logging(&opts);
 
     let labels = setup::load_labels(&opts);
+    // Validate local MQTT/TLS inputs before opening or resetting a PCI. A
+    // missing credential or CA file must not disturb a physical interface.
+    let mqtt_opts = setup::mqtt_options(&opts).unwrap_or_else(|e| {
+        eprintln!("{e}");
+        std::process::exit(1);
+    });
+    let cgate_security = setup::cgate_security(&opts).unwrap_or_else(|e| {
+        eprintln!("cannot start C-Gate service: {e}");
+        std::process::exit(1);
+    });
     let spec = setup::conn_spec(&opts);
 
     // C-Bus connection + PCI client
@@ -186,11 +203,11 @@ async fn main() {
                 opts.project_file.as_ref().expect("clap requires project"),
             ))
             .map_err(std::io::Error::other)?;
-            // TLS config loads FIRST inside prepare_cgate_service, before
-            // Service::new creates the state file: a bad cert exits before
-            // listener bind and before state-file creation.
-            let (service, tls) = setup::prepare_cgate_service(&opts, &xml, pci.clone())
-                .map_err(std::io::Error::other)?;
+            // Use the security material validated before opening the PCI;
+            // credentials are never read a second time during preparation.
+            let (service, tls) =
+                setup::prepare_cgate_service(&opts, &xml, pci.clone(), cgate_security)
+                    .map_err(std::io::Error::other)?;
             if service.global_event_listener_invalid() {
                 tracing::error!(
                     "C-Gate listener disabled: saved CONFIG global-event-level is not a valid integer"
@@ -267,10 +284,6 @@ async fn main() {
     };
 
     // MQTT client + gateway
-    let mqtt_opts = setup::mqtt_options(&opts).unwrap_or_else(|e| {
-        eprintln!("{e}");
-        std::process::exit(1);
-    });
     let (client, mut eventloop) = AsyncClient::new(mqtt_opts, 100);
     spawn_shutdown_handler(client.clone());
     if let Some(service) = &cgate {

@@ -4,7 +4,8 @@
 //! Supports exactly what cmqttd needs: CONNECT/CONNACK (protocol level 4
 //! enforced), PUBLISH QoS 0/1/2 (with PUBACK / PUBREC+PUBREL+PUBCOMP),
 //! SUBSCRIBE/SUBACK, UNSUBSCRIBE/UNSUBACK, PINGREQ/PINGRESP and
-//! DISCONNECT. Records every inbound PUBLISH and subscription, and can
+//! DISCONNECT and connection-loss Last Will publication. Records every inbound
+//! PUBLISH and subscription, and can
 //! inject a PUBLISH to subscribed clients (wildcard matching), which is
 //! how tests play the part of Home Assistant.
 
@@ -273,6 +274,34 @@ async fn read_packet(
     Ok((hdr, body))
 }
 
+/// Extract the optional MQTT 3.1.1 will from the CONNECT payload. The client
+/// identifier precedes the two length-prefixed will fields.
+fn connect_will(body: &[u8], protocol_name_len: usize) -> Option<PublishRecord> {
+    fn field<'a>(body: &'a [u8], offset: &mut usize) -> Option<&'a [u8]> {
+        let length = body.get(*offset..*offset + 2)?;
+        let length = u16::from_be_bytes([length[0], length[1]]) as usize;
+        *offset += 2;
+        let value = body.get(*offset..*offset + length)?;
+        *offset += length;
+        Some(value)
+    }
+    let flags = *body.get(protocol_name_len + 3)?;
+    if flags & 0x04 == 0 {
+        return None;
+    }
+    let mut offset = protocol_name_len + 6;
+    field(body, &mut offset)?; // client ID
+    let topic = String::from_utf8(field(body, &mut offset)?.to_vec()).ok()?;
+    let payload = field(body, &mut offset)?.to_vec();
+    Some(PublishRecord {
+        topic,
+        payload,
+        qos: (flags >> 3) & 3,
+        retain: flags & 0x20 != 0,
+        ts: Instant::now(),
+    })
+}
+
 async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) {
     let (mut rd, mut wr) = stream.into_split();
     let (tx, mut rx) = mpsc::unbounded_channel::<Vec<u8>>();
@@ -300,6 +329,7 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
         }
     });
 
+    let mut will = None;
     loop {
         let packet = tokio::select! {
             packet = read_packet(&mut rd) => packet,
@@ -327,6 +357,7 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
                     let _ = tx.send(vec![0x20, 0x02, 0x00, 0x01]);
                     break;
                 }
+                will = connect_will(&body, nlen);
                 let _ = tx.send(vec![0x20, 0x02, 0x00, 0x00]);
             }
             3 => {
@@ -406,7 +437,8 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
                 let _ = tx.send(vec![0xd0, 0x00]);
             }
             14 => {
-                // DISCONNECT
+                // A clean DISCONNECT suppresses the client's last will.
+                will = None;
                 state.lock().unwrap().clean_disconnects += 1;
                 break;
             }
@@ -422,5 +454,28 @@ async fn handle_client(stream: tokio::net::TcpStream, state: Arc<Mutex<State>>) 
     }
     // Release the broker-side sender so the writer task ends and the socket
     // closes, whether the client left or the test dropped it.
-    state.lock().unwrap().clients[client_index].tx = None;
+    let mut st = state.lock().unwrap();
+    // A test-forced broker outage cannot publish a will: that broker is down.
+    // Only an unexpected peer disconnect while this connection is live does.
+    if st.clients[client_index].tx.take().is_some() {
+        if let Some(mut will) = will {
+            will.ts = Instant::now();
+            if will.retain {
+                st.retained.insert(will.topic.clone(), will.payload.clone());
+            }
+            let packet = publish_packet(&will.topic, &will.payload, 0, false);
+            for client in &st.clients {
+                if let Some(tx) = &client.tx {
+                    if client
+                        .subscriptions
+                        .iter()
+                        .any(|filter| topic_matches(filter, &will.topic))
+                    {
+                        let _ = tx.send(packet.clone());
+                    }
+                }
+            }
+            st.publishes.push(will);
+        }
+    }
 }

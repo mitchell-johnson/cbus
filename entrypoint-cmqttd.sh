@@ -35,19 +35,21 @@ LOG_LEVEL="${CMQTTD_VERBOSITY:-INFO}"
 echo "Setting log level to ${LOG_LEVEL}"
 
 # Arguments that are always required.
-CMQTTD_ARGS="--broker-address ${MQTT_SERVER:?unset} --timesync ${CBUS_TIMESYNC:-300} --status-resync ${CBUS_STATUS_RESYNC:-300} --verbosity ${LOG_LEVEL}"
+# Keep every environment value as one argument. Building a command string and
+# expanding it later would split whitespace, expand globs and admit extra flags.
+set -- --broker-address "${MQTT_SERVER:?unset}" --timesync "${CBUS_TIMESYNC:-300}" --status-resync "${CBUS_STATUS_RESYNC:-300}" --verbosity "${LOG_LEVEL}"
 
 # Simple arguments
 if [ -n "${MQTT_PORT}" ]; then
-    CMQTTD_ARGS="${CMQTTD_ARGS} --broker-port ${MQTT_PORT}"
+    set -- "$@" --broker-port "${MQTT_PORT}"
 fi
 
 if [ -n "${SERIAL_PORT}" ]; then
     echo "Using serial PCI at ${SERIAL_PORT}"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --serial ${SERIAL_PORT}"
+    set -- "$@" --serial "${SERIAL_PORT}"
 elif [ -n "${CNI_ADDR}" ]; then
     echo "Using TCP CNI at ${CNI_ADDR}"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --tcp ${CNI_ADDR}"
+    set -- "$@" --tcp "${CNI_ADDR}"
 else
     echo "Either SERIAL_PORT or CNI_ADDR must be specified!"
     exit 1
@@ -55,16 +57,16 @@ fi
 
 if [ "${CBUS_CLOCK:-1}" != "1" ]; then
     echo "Not responding to clock requests."
-    CMQTTD_ARGS="${CMQTTD_ARGS} --no-clock"
+    set -- "$@" --no-clock
 fi
 
-if [ "${MQTT_USE_TLS:-1}" == "1" ]; then
+if [ "${MQTT_USE_TLS:-1}" = "1" ]; then
     echo "Using TLS to connect to MQTT broker."
 
     # Using TLS, check for certificates directory
     if [ -d "${CMQTTD_CA_CERT_PATH}" ]; then
         echo "Using custom certificates in ${CMQTTD_CA_CERT_PATH}"
-        CMQTTD_ARGS="${CMQTTD_ARGS} --broker-ca ${CMQTTD_CA_CERT_PATH}"
+        set -- "$@" --broker-ca "${CMQTTD_CA_CERT_PATH}"
     else
         echo "${CMQTTD_CA_CERT_PATH} not found, using the system trust store."
     fi
@@ -73,33 +75,33 @@ if [ "${MQTT_USE_TLS:-1}" == "1" ]; then
     if [ -e "${CMQTTD_CLIENT_CERT_PATH}" ] && [ -e "${CMQTTD_CLIENT_KEY_PATH}" ]; then
         echo "Using client cert: ${CMQTTD_CLIENT_CERT_PATH}"
         echo "Using client key: ${CMQTTD_CLIENT_KEY_PATH}"
-        CMQTTD_ARGS="${CMQTTD_ARGS} --broker-client-cert ${CMQTTD_CLIENT_CERT_PATH} --broker-client-key ${CMQTTD_CLIENT_KEY_PATH}"
+        set -- "$@" --broker-client-cert "${CMQTTD_CLIENT_CERT_PATH}" --broker-client-key "${CMQTTD_CLIENT_KEY_PATH}"
     else
         echo -n "${CMQTTD_CLIENT_CERT_PATH} and/or ${CMQTTD_CLIENT_KEY_PATH} not found, not using "
         echo "client certificates for authentication."
     fi
 else
     echo "Disabling TLS support. This is insecure!"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --broker-disable-tls"
+    set -- "$@" --broker-disable-tls
 fi
 
 if [ -e "${CMQTTD_AUTH_FILE}" ]; then
     echo "Using MQTT login details in ${CMQTTD_AUTH_FILE}"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --broker-auth ${CMQTTD_AUTH_FILE}"
+    set -- "$@" --broker-auth "${CMQTTD_AUTH_FILE}"
 else
     echo "${CMQTTD_AUTH_FILE} not found; skipping MQTT authentication."
 fi
 
 if [ -e "${CMQTTD_PROJECT_FILE}" ]; then
     echo "Using C-Bus project backup file ${CMQTTD_PROJECT_FILE}"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --project-file ${CMQTTD_PROJECT_FILE}"
+    set -- "$@" --project-file "${CMQTTD_PROJECT_FILE}"
 else
     echo "${CMQTTD_PROJECT_FILE} not found; using generated labels."
 fi
 
 if [ -n "${CMQTTD_CBUS_NETWORK}" ]; then
     echo "Loading C-Bus network ${CMQTTD_CBUS_NETWORK}"
-    CMQTTD_ARGS="${CMQTTD_ARGS} --cbus-network  ${CMQTTD_CBUS_NETWORK}"
+    set -- "$@" "--cbus-network=${CMQTTD_CBUS_NETWORK}"
 fi
 
 echo ""
@@ -109,8 +111,6 @@ echo "Local time zone: ${TZ:-UTC}"
 echo -n "Current time: "
 date -R
 
-echo "Running with flags: ${CMQTTD_ARGS}"
-set -- $CMQTTD_ARGS
 if [ -n "${CMQTTD_CGATE_BIND}" ] && [ "${CMQTTD_CGATE_BIND}" != "off" ] && [ -e "${CMQTTD_PROJECT_FILE}" ]; then
     set -- "$@" --cgate-bind "${CMQTTD_CGATE_BIND}" --cgate-state "${CMQTTD_CGATE_STATE:-/var/lib/cmqttd/cgate.json}"
     if [ -d "${CMQTTD_UNITSPEC_PATH}" ]; then
@@ -136,4 +136,7 @@ if [ -n "${CMQTTD_CGATE_BIND}" ] && [ "${CMQTTD_CGATE_BIND}" != "off" ] && [ -e 
         set -- "$@" --cgate-auth-file "${CMQTTD_CGATE_AUTH_PATH}"
     fi
 fi
+printf 'Running with flags:'
+printf ' <%s>' "$@"
+printf '\n'
 exec cmqttd "$@"

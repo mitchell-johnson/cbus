@@ -726,7 +726,7 @@ def running_daemon(tmp_path, pci, project, specs, *, log_name="programming-metho
         broker.bind(("127.0.0.1", 0))
         broker.listen(1)
         log_path = tmp_path / log_name
-        with log_path.open("w+") as log:
+        with log_path.open("w") as log:
             process = subprocess.Popen([
                 str(BIN), "--tcp", f"{pci[0]}:{pci[1]}",
                 "--broker-address", "127.0.0.1",
@@ -741,8 +741,9 @@ def running_daemon(tmp_path, pci, project, specs, *, log_name="programming-metho
                 port = None
                 output = ""
                 while time.monotonic() < deadline:
-                    log.seek(0)
-                    output = log.read()
+                    # A separate reader must not seek the child's stderr file
+                    # description and reposition subsequent daemon writes.
+                    output = log_path.read_text(encoding="utf-8")
                     match = re.search(r"C-Gate service listening on 127\.0\.0\.1:(\d+)", output)
                     if match:
                         port = match[1]

@@ -367,6 +367,13 @@ async fn sigint_sends_clean_mqtt_disconnect_and_exits_zero() {
         sys.broker.clean_disconnects() >= 1
     })
     .await;
+    assert_eq!(
+        sys.broker
+            .retained("homeassistant/binary_sensor/cbus_cmqttd/state")
+            .as_deref(),
+        Some(b"OFF".as_slice()),
+        "a clean disconnect suppresses the will, so shutdown must publish OFF"
+    );
 }
 
 #[tokio::test]
@@ -384,6 +391,13 @@ async fn sigterm_sends_clean_mqtt_disconnect_and_exits_zero() {
         sys.broker.clean_disconnects() >= 1
     })
     .await;
+    assert_eq!(
+        sys.broker
+            .retained("homeassistant/binary_sensor/cbus_cmqttd/state")
+            .as_deref(),
+        Some(b"OFF".as_slice()),
+        "a clean disconnect suppresses the will, so shutdown must publish OFF"
+    );
 }
 
 // -------------------------------------------------- startup failure paths
@@ -1038,4 +1052,173 @@ async fn two_client_mqtt_fanout_under_event_burst() {
             "subscriber {index} diverged from the daemon's publish order"
         );
     }
+}
+
+#[tokio::test]
+async fn invalid_mqtt_credentials_fail_before_opening_the_pci() {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let addr = listener.local_addr().unwrap().to_string();
+    for security_args in [
+        vec!["-c", "/nonexistent/cmqttd-ca.pem"],
+        vec!["--broker-disable-tls", "-A", "/nonexistent/cmqttd-auth"],
+    ] {
+        let mut args = vec!["-b", "127.0.0.1", "-t", &addr, "-T", "0"];
+        args.extend(security_args);
+        let mut daemon = Daemon::spawn(BIN, &args);
+        let status = daemon
+            .wait_exit(Duration::from_secs(10))
+            .await
+            .expect("bad MQTT configuration must fail promptly");
+        assert!(!status.success());
+        assert!(
+            daemon.stderr().contains("cannot read"),
+            "{}",
+            daemon.stderr()
+        );
+        assert!(
+            matches!(listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
+            "invalid configuration must not open or reset the PCI"
+        );
+    }
+}
+
+/// Exercise the actual CONNECT will and shutdown PUBLISH against a separate
+/// MQTT observer. This catches both missing wills and clean-disconnect paths
+/// that suppress the will without first clearing retained availability.
+#[tokio::test]
+async fn mqtt_observer_sees_retained_off_after_graceful_exit_and_crash() {
+    use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
+    const TOPIC: &str = "homeassistant/binary_sensor/cbus_cmqttd/state";
+
+    for signal in ["TERM", "KILL"] {
+        let mut sys = start_default().await;
+        wait_started(&sys).await;
+        require(STARTUP, "initial connected availability", || {
+            sys.broker.retained(TOPIC).as_deref() == Some(b"ON")
+        })
+        .await;
+        let options = MqttOptions::new(
+            format!("availability-observer-{signal}"),
+            "127.0.0.1",
+            sys.broker.port(),
+        );
+        let (observer, mut events) = AsyncClient::new(options, 10);
+        observer.subscribe(TOPIC, QoS::AtLeastOnce).await.unwrap();
+        let (states, mut received) = tokio::sync::mpsc::unbounded_channel();
+        let poller = tokio::spawn(async move {
+            while let Ok(event) = events.poll().await {
+                if let Event::Incoming(Packet::Publish(publish)) = event {
+                    if publish.topic == TOPIC {
+                        let _ = states.send(publish.payload);
+                    }
+                }
+            }
+        });
+        require(STARTUP, "availability observer subscription", || {
+            sys.broker.has_subscription(TOPIC)
+        })
+        .await;
+        sys.daemon.signal(signal);
+        let status = sys
+            .daemon
+            .wait_exit(Duration::from_secs(10))
+            .await
+            .expect("daemon exit");
+        assert_eq!(status.success(), signal == "TERM");
+        let observed = tokio::time::timeout(Duration::from_secs(5), received.recv())
+            .await
+            .expect("observer must receive OFF")
+            .expect("observer channel remains open");
+        assert_eq!(observed.as_ref(), b"OFF", "signal {signal}");
+        assert_eq!(
+            sys.broker.retained(TOPIC).as_deref(),
+            Some(b"OFF".as_slice())
+        );
+        assert_eq!(
+            sys.broker.clean_disconnects(),
+            usize::from(signal == "TERM")
+        );
+        poller.abort();
+    }
+}
+
+#[tokio::test]
+async fn invalid_cgate_security_fails_before_opening_the_pci_or_creating_state() {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let addr = listener.local_addr().unwrap().to_string();
+    let project = project_file();
+    let certificate = testdata_dir().join("fixtures/cgate-tls-test-cert.pem");
+    let key = testdata_dir().join("fixtures/cgate-tls-test-key.pem");
+    let missing = temp_path("missing-cgate-security");
+    let invalid = temp_path("invalid-cgate-security");
+    std::fs::write(&invalid, b"invalid security material\n").unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&invalid, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
+    let state = temp_path("invalid-cgate-security-state.json");
+    for security_args in [
+        vec!["--cgate-auth-file", missing.to_str().unwrap()],
+        vec!["--cgate-auth-file", invalid.to_str().unwrap()],
+        vec![
+            "--cgate-tls-cert",
+            certificate.to_str().unwrap(),
+            "--cgate-tls-key",
+            missing.to_str().unwrap(),
+        ],
+        vec![
+            "--cgate-tls-cert",
+            certificate.to_str().unwrap(),
+            "--cgate-tls-key",
+            invalid.to_str().unwrap(),
+        ],
+        vec![
+            "--cgate-tls-cert",
+            certificate.to_str().unwrap(),
+            "--cgate-tls-key",
+            key.to_str().unwrap(),
+            "--cgate-tls-client-ca",
+            missing.to_str().unwrap(),
+        ],
+    ] {
+        let mut args = vec![
+            "-b",
+            "127.0.0.1",
+            "--broker-disable-tls",
+            "-t",
+            &addr,
+            "-T",
+            "0",
+            "-P",
+            &project,
+            "--cgate-bind",
+            "127.0.0.1:0",
+            "--cgate-state",
+            state.to_str().unwrap(),
+        ];
+        args.extend(security_args);
+        let mut daemon = Daemon::spawn(BIN, &args);
+        let status = daemon
+            .wait_exit(Duration::from_secs(10))
+            .await
+            .expect("invalid C-Gate security must fail promptly");
+        assert!(!status.success());
+        assert!(
+            daemon.stderr().contains("cannot start C-Gate service"),
+            "{}",
+            daemon.stderr()
+        );
+        assert!(
+            matches!(listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
+            "invalid C-Gate security must not open or reset the PCI"
+        );
+        assert!(
+            !state.exists(),
+            "invalid security must not create C-Gate state"
+        );
+    }
+    std::fs::remove_file(invalid).unwrap();
 }

@@ -359,6 +359,10 @@ cbus-toolkit project validate test.xml
 
 The editor retains unknown XML, comments, namespaces, archive attachments,
 and opaque programming fields. Unchanged files roundtrip byte-for-byte.
+CBZ members must use stored or deflate compression. BZIP2, LZMA and other ZIP
+codecs are refused before decoding because they cannot enforce this editor's
+bounded decompression contract. Input files must be regular files; file reads
+and expanded archive contents are limited to 128 MiB.
 Mutations use validation and atomic replacement. `--output` writes edits to
 a separate file. Explicit OID references protect against dangling references;
 device-specific implicit references are not yet modeled. Native C-Gate 3

@@ -268,3 +268,30 @@ fn normalise_strips_all_trailing_s() {
     assert_eq!(normalise("Addresss"), "addre");
     assert_eq!(normalise("ss"), "");
 }
+
+#[test]
+fn out_of_range_groups_cannot_alias_real_addresses() {
+    for address in [-257, -1, 256, 257, 65537, i64::MAX] {
+        let xml = MINIMAL.replace(
+            "Group Address=\"1\"",
+            &format!("Group Address=\"{address}\""),
+        );
+        let error = labels_of(&xml).unwrap_err();
+        assert!(
+            error.to_string().contains("group address out of range"),
+            "{error}"
+        );
+    }
+}
+
+#[test]
+fn group_address_boundaries_include_the_project_pseudo_group() {
+    for address in [0, 255] {
+        let xml = MINIMAL.replace(
+            "Group Address=\"1\"",
+            &format!("Group Address=\"{address}\""),
+        );
+        let labels = labels_of(&xml).unwrap();
+        assert_eq!(labels[&56].1[&address], "Kitchen");
+    }
+}

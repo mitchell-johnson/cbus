@@ -154,6 +154,11 @@ fn upload(model: &mut Server, tag: &str, body: &str, document: Option<&str>) -> 
         }
         Err(_) => return operation_failed(tag, "Invalid character in Base64 data."),
     };
+    if model.file_store.contains_key(&path.key)
+        && directory_exists(model, &dir_key(&format!("{}.0", path.key)))
+    {
+        return operation_failed(tag, "Backup destination is a directory");
+    }
     let now = Utc::now().timestamp();
     if let Some(previous) = model.file_store.remove(&path.key) {
         let backup = format!("{}.0", path.key);
@@ -603,6 +608,11 @@ pub(crate) fn write_bytes(
     if !directory_exists(model, &parent) {
         return Err("No such file or directory".to_string());
     }
+    if model.file_store.contains_key(&path.key)
+        && directory_exists(model, &dir_key(&format!("{}.0", path.key)))
+    {
+        return Err("Backup destination is a directory".to_string());
+    }
     let now = Utc::now().timestamp();
     if let Some(previous) = model.file_store.remove(&path.key) {
         let backup = format!("{}.0", path.key);
@@ -649,6 +659,36 @@ mod tests {
         );
         assert_eq!(server.file_store["a/b/x.0"], b"abc");
         assert_eq!(server.file_store["a/b/x"], b"d");
+    }
+
+    #[test]
+    fn replacement_preserves_files_when_backup_name_is_a_directory() {
+        let mut server = Server::new(AccessLevel::Program);
+        write_bytes(&mut server, "data", b"original".to_vec()).unwrap();
+        assert_eq!(
+            command(&mut server, "mkdir", "FILE MKDIR data.0", None).status,
+            200
+        );
+        let files = server.file_store.clone();
+        let modified = server.file_modified.clone();
+
+        assert_eq!(
+            command(&mut server, "upload", "FILE UPLOAD data", Some("bmV3")).status,
+            408
+        );
+        assert_eq!(server.file_store, files);
+        assert_eq!(server.file_modified, modified);
+        assert!(write_bytes(&mut server, "data", b"new".to_vec()).is_err());
+        assert_eq!(server.file_store, files);
+        assert_eq!(server.file_modified, modified);
+
+        assert_eq!(
+            command(&mut server, "delete", "FILE DELETE data.0", None).status,
+            200
+        );
+        write_bytes(&mut server, "data", b"new".to_vec()).unwrap();
+        assert_eq!(read_bytes(&server, "data").unwrap(), b"new");
+        assert_eq!(read_bytes(&server, "data.0").unwrap(), b"original");
     }
 
     #[test]

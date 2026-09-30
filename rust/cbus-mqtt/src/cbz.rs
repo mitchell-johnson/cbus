@@ -106,8 +106,11 @@ pub fn read_cbz_labels(path: &Path, network: Option<&str>) -> Result<AppLabels, 
                 &get_field(group, "address")
                     .ok_or_else(|| CbzError::Cbz("group missing address".into()))?,
             )?;
+            let gaddr = u8::try_from(gaddr).map_err(|_| {
+                CbzError::Cbz(format!("group address out of range (0..255), got {gaddr}"))
+            })?;
             let gname = get_field(group, "tag_name").unwrap_or_default();
-            groups.insert(gaddr as u8, gname);
+            groups.insert(gaddr, gname);
         }
         labels.insert(addr, (name, groups));
     }

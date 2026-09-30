@@ -12,13 +12,16 @@
 //! `all`; cmqttd intentionally recovers on `all` rather than reproducing
 //! that native failure state.
 
-use std::{net::IpAddr, time::Duration};
+use std::{
+    net::{IpAddr, Ipv4Addr, Ipv6Addr},
+    time::Duration,
+};
 use tokio::{io, net::TcpStream};
 
 fn matches_address(allowed: IpAddr, peer: IpAddr) -> bool {
-    allowed == peer
-        || matches!((allowed, peer), (IpAddr::V6(allowed), IpAddr::V4(peer))
-            if allowed.to_ipv4_mapped() == Some(peer))
+    // Dual-stack listeners report IPv4 clients as mapped IPv6 peers.
+    // Normalize either side, so a numeric IPv4 allowlist works there too.
+    allowed.to_canonical() == peer.to_canonical()
 }
 
 pub(super) async fn accepts(value: &str, peer: IpAddr) -> bool {
@@ -27,8 +30,15 @@ pub(super) async fn accepts(value: &str, peer: IpAddr) -> bool {
     // explicit numeric address or native case-insensitive `all` from working.
     if parts.iter().any(|part| part.eq_ignore_ascii_case("all"))
         || parts.iter().any(|part| {
-            part.parse::<IpAddr>()
-                .is_ok_and(|allowed| matches_address(allowed, peer))
+            // localhost is a special-use loopback name, including its
+            // absolute spelling. Do not depend on external DNS or whether
+            // /etc/hosts happens to list the trailing-dot alias.
+            ((part.eq_ignore_ascii_case("localhost") || part.eq_ignore_ascii_case("localhost."))
+                && (matches_address(IpAddr::V4(Ipv4Addr::LOCALHOST), peer)
+                    || matches_address(IpAddr::V6(Ipv6Addr::LOCALHOST), peer)))
+                || part
+                    .parse::<IpAddr>()
+                    .is_ok_and(|allowed| matches_address(allowed, peer))
         })
     {
         return true;
@@ -39,7 +49,10 @@ pub(super) async fn accepts(value: &str, peer: IpAddr) -> bool {
     // only names here, never host:port syntax; the address is the peer IP.
     tokio::time::timeout(Duration::from_secs(2), async {
         for part in parts {
-            if part.parse::<IpAddr>().is_ok() {
+            if part.parse::<IpAddr>().is_ok()
+                || part.eq_ignore_ascii_case("localhost")
+                || part.eq_ignore_ascii_case("localhost.")
+            {
                 continue;
             }
             if let Ok(mut addresses) = tokio::net::lookup_host((part, 0)).await {
@@ -92,7 +105,13 @@ mod tests {
         assert!(accepts("localhost", loopback).await);
         assert!(accepts("LOCALHOST", loopback).await);
         assert!(accepts("localhost.", loopback).await);
+        assert!(accepts("LOCALHOST.", "::1".parse().unwrap()).await);
+        assert!(!accepts("localhost.", "192.0.2.55".parse().unwrap()).await);
         assert!(accepts("::ffff:127.0.0.1", loopback).await);
+        let mapped = "::ffff:127.0.0.1".parse().unwrap();
+        assert!(accepts("127.0.0.1", mapped).await);
+        assert!(accepts("localhost.", mapped).await);
+        assert!(!accepts("192.0.2.55", mapped).await);
         assert!(!accepts("::1", loopback).await);
         assert!(!accepts("unresolved.invalid", loopback).await);
         assert!(!accepts("127.0.0.1/8", loopback).await);

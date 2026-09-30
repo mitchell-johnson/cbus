@@ -6,7 +6,7 @@ use proptest::prelude::*;
 
 proptest! {
     /// Arbitrary garbage, arbitrarily chunked: never panics, and single
-    /// oversized feeds are dropped rather than buffered.
+    /// oversized incomplete frames are dropped rather than buffered.
     #[test]
     fn garbage_never_panics(
         chunks in proptest::collection::vec(
@@ -31,9 +31,9 @@ proptest! {
                 Just(b"05013800790148\r\n".to_vec()),
                 Just(b"8221104D\r\n".to_vec()),
             ],
-            1..6,
+            1..60,
         ),
-        split in 1usize..7,
+        split in 1usize..300,
     ) {
         let stream: Vec<u8> = frames.concat();
 

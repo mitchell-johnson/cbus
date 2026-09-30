@@ -23,7 +23,8 @@ from typing import Any, Iterator, Mapping
 from uuid import uuid4
 from xml.dom import Node, minidom
 from xml.parsers import expat
-from zipfile import BadZipFile, ZIP_DEFLATED, ZipFile, ZipInfo, is_zipfile
+from zipfile import BadZipFile, ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo, is_zipfile
+import zlib
 
 
 MAX_DOCUMENT_BYTES = 128 * 1024 * 1024
@@ -158,9 +159,23 @@ class ProjectDocument:
     @classmethod
     def load(cls, path: str | os.PathLike[str], *, xml_member: str | None = None) -> ProjectDocument:
         source = Path(path)
-        if source.stat().st_size > MAX_DOCUMENT_BYTES:
+        before = source.stat()
+        if not stat.S_ISREG(before.st_mode):
+            raise ProjectError("Project file must be a regular file")
+        if before.st_size > MAX_DOCUMENT_BYTES:
             raise ProjectError("Project file exceeds the configured size limit")
-        data = source.read_bytes()
+        # The path may change or the file may grow after stat(). Check the
+        # opened descriptor and bound the actual read before parsing bytes.
+        # Nonblocking open keeps a substituted FIFO from hanging the CLI.
+        flags = (os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
+                 | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
+        with os.fdopen(os.open(source, flags), "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            if not stat.S_ISREG(opened.st_mode):
+                raise ProjectError("Project file must be a regular file")
+            if opened.st_size > MAX_DOCUMENT_BYTES:
+                raise ProjectError("Project file exceeds the configured size limit")
+            data = stream.read(MAX_DOCUMENT_BYTES + 1)
         return cls.from_snapshot(data, source=source, xml_member=xml_member)
 
     @classmethod
@@ -195,7 +210,24 @@ class ProjectDocument:
                     raise ProjectError("Expanded archive exceeds the configured size limit")
                 if any(i.flag_bits & 1 for i in infos):
                     raise UnsupportedProjectFormat("Encrypted CBZ archives are unsupported")
-                members = [(copy(info), archive.read(info)) for info in infos]
+                if any(i.compress_type not in (ZIP_STORED, ZIP_DEFLATED) for i in infos):
+                    # zipfile's BZIP2/LZMA decoders can expand an entire block
+                    # even for a bounded read. Admit only native CBZ codecs.
+                    raise UnsupportedProjectFormat(
+                        "CBZ members must use stored or deflate compression; "
+                        "BZIP2, LZMA and other ZIP codecs are unsupported"
+                    )
+                members = []
+                for info in infos:
+                    # ZipExtFile.read() without a size lets the decompressor
+                    # expand a whole block before clipping to the ZIP header's
+                    # claimed size. A forged small size can otherwise bypass
+                    # the expanded-archive bound above during allocation.
+                    with archive.open(info) as member:
+                        payload = member.read(info.file_size + 1)
+                    if len(payload) != info.file_size:
+                        raise ProjectError("Archive member size differs from its declared size")
+                    members.append((copy(info), payload))
                 candidates: list[tuple[str, minidom.Document]] = []
                 for info, payload in members:
                     if xml_member is not None and info.filename != xml_member:
@@ -213,7 +245,7 @@ class ProjectDocument:
                     raise ProjectError("Archive contains multiple project XML members; select one with xml_member")
                 member, document = candidates[0]
                 return cls(document, data, source=source, archive_members=members, xml_member=member, archive_comment=archive.comment)
-        except (BadZipFile, RuntimeError, NotImplementedError) as exc:
+        except (BadZipFile, RuntimeError, NotImplementedError, EOFError, zlib.error) as exc:
             raise UnsupportedProjectFormat("Unable to read this CBZ archive") from exc
 
     @classmethod

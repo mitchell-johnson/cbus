@@ -68,6 +68,6 @@ def test_python_client_and_pipelined_xml_roundtrip(product, variable, binary_nam
                 assert document_row.startswith(b"[900] 347-<Unit>")
                 assert document_row.endswith(b"</Unit>\r\n")
                 assert stream.readline() == b"[900] 344 End XML snippet\r\n"
-                assert stream.readline() == b"[901] 200 OK\r\n"
+                assert stream.readline() == b"[901] 200 OK.\r\n"
             finally:
                 stream.close()

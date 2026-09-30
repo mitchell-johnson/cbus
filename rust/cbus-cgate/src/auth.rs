@@ -18,7 +18,7 @@
 //! follow-up work for any password-oriented use.
 //!
 //! Single-token rule: the token must be a single whitespace-free token.
-//! LOGIN splits the command line on ASCII whitespace, so a token containing
+//! LOGIN splits the command line on Unicode whitespace, so a token containing
 //! whitespace could never be presented; the loader rejects such files
 //! fail-closed instead of arming a gate the operator can never open.
 //!
@@ -178,14 +178,17 @@ pub fn load_token_hash(path: &Path) -> io::Result<[u8; 32]> {
             "C-Gate auth file holds no token on its first line",
         ));
     }
-    // LOGIN splits the command line on ASCII whitespace, so a token
+    // LOGIN splits the command line on Unicode whitespace, so a token
     // containing whitespace could never be presented (arity would never be
     // 2). Reject it at load: otherwise the operator provisions a token that
     // permanently cannot open the gate.
-    if token.as_bytes().iter().any(u8::is_ascii_whitespace) {
+    if token
+        .chars()
+        .any(|character| character.is_whitespace() || character.is_control())
+    {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            "C-Gate auth token must be a single whitespace-free token (LOGIN takes one token)",
+            "C-Gate auth token must be a single token without whitespace or control characters",
         ));
     }
     if token.len() < MIN_TOKEN_LEN {
@@ -330,12 +333,26 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn loader_rejects_whitespace_token_it_could_never_present() {
-        // LOGIN splits on ASCII whitespace, so this token could never open
+        // LOGIN splits on Unicode whitespace, so this token could never open
         // the gate: fail closed at load instead of locking out the operator.
         let spaced = token_file("throwaway token with spaces 0123456789\n", 0o400);
         let err = load_token_hash(&spaced).expect_err("whitespace token must fail closed");
         assert_eq!(err.kind(), io::ErrorKind::InvalidData);
         std::fs::remove_file(spaced).ok();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn loader_rejects_unicode_separators_and_command_controls() {
+        // These can pass the byte-length floor but cannot survive LOGIN's
+        // Unicode tokenization or parse_command's single-line validation.
+        for separator in ["\u{00a0}", "\u{2003}", "\u{2028}", "\0", "\u{001b}"] {
+            let value = format!("throwaway-test-token-{separator}0123456789abcdef\n");
+            let path = token_file(&value, 0o400);
+            let result = load_token_hash(&path);
+            std::fs::remove_file(path).unwrap();
+            assert_eq!(result.unwrap_err().kind(), io::ErrorKind::InvalidData);
+        }
     }
 
     #[test]

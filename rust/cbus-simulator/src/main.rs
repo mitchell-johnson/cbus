@@ -187,22 +187,37 @@ async fn handle_conn(stream: tokio::net::TcpStream, cal_fixture: Option<Arc<CalF
             Ok(0) | Err(_) => break,
             Ok(n) => n,
         };
-        fb.set_checksum(st.checksum);
-        for ev in fb.feed(&buf[..n]) {
-            // local echo in basic mode (before handling, like handle_data)
-            if st.basic_mode && wr.write_all(&ev.raw).await.is_err() {
-                return;
-            }
-            if let Some(p) = ev.packet {
-                let reply = handle_packet(&mut st, &p, cal_fixture.as_deref());
-                fb.set_checksum(st.checksum);
-                if !reply.is_empty() && wr.write_all(&reply).await.is_err() {
-                    return;
-                }
-            }
+        let reply = handle_data(&mut st, &mut fb, &buf[..n], cal_fixture.as_deref());
+        if !reply.is_empty() && wr.write_all(&reply).await.is_err() {
+            return;
         }
     }
     tracing::info!("client disconnected");
+}
+
+fn handle_data(
+    st: &mut SimState,
+    fb: &mut FrameBuffer,
+    data: &[u8],
+    cal_fixture: Option<&CalFixture>,
+) -> Vec<u8> {
+    let mut out = Vec::new();
+    // A mode-changing command and the next command can arrive in one TCP
+    // read. Decode incrementally so each frame sees its predecessor's SRCHK
+    // setting rather than the setting at the beginning of the whole read.
+    for byte in data {
+        fb.set_checksum(st.checksum);
+        for event in fb.feed(std::slice::from_ref(byte)) {
+            // Echo uses the mode in force before executing this command.
+            if st.basic_mode {
+                out.extend_from_slice(&event.raw);
+            }
+            if let Some(packet) = event.packet {
+                out.extend(handle_packet(st, &packet, cal_fixture));
+            }
+        }
+    }
+    out
 }
 
 fn handle_packet(st: &mut SimState, p: &Packet, cal_fixture: Option<&CalFixture>) -> Vec<u8> {
@@ -491,5 +506,32 @@ mod tests {
         let mut st = SimState::default();
         let out = handle_packet(&mut st, &dm(0x99, 0x01, Some(b'h')), None);
         assert!(out.is_empty());
+    }
+
+    #[test]
+    fn checksum_change_applies_to_the_next_frame_in_the_same_read() {
+        let mut st = SimState::default();
+        let mut fb = FrameBuffer::new_server();
+        let reply = handle_data(
+            &mut st,
+            &mut fb,
+            b"A3300019l\r\\05380079FF00m\r\\053800790149n\r",
+            None,
+        );
+        assert_eq!(reply, b"A3300019l\rl.n.");
+    }
+
+    #[test]
+    fn checksum_change_is_independent_of_transport_chunking() {
+        let wire = b"A3300019l\r\\05380079FF00m\r\\053800790149n\r";
+        for width in 1..=wire.len() {
+            let mut st = SimState::default();
+            let mut fb = FrameBuffer::new_server();
+            let reply = wire
+                .chunks(width)
+                .flat_map(|chunk| handle_data(&mut st, &mut fb, chunk, None))
+                .collect::<Vec<_>>();
+            assert_eq!(reply, b"A3300019l\rl.n.", "chunk width {width}");
+        }
     }
 }

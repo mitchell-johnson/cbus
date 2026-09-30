@@ -6,7 +6,7 @@ use crate::cli::Options;
 use cbus_mqtt::cbz::read_cbz_labels;
 use cbus_mqtt::discovery::AppLabels;
 use cbus_transport::conn::Endpoint;
-use rumqttc::{MqttOptions, Transport};
+use rumqttc::{LastWill, MqttOptions, QoS, Transport};
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -286,15 +286,28 @@ pub fn cgate_auth_token(opts: &Options) -> Result<Option<[u8; 32]>, String> {
     }
 }
 
-/// Prepare the embedded C-Gate service with fail-closed TLS ordering.
-///
-/// Loads [`cgate_tls_config`] FIRST, before [`Service::new`] creates the
-/// state file. A bad cert therefore exits before listener bind and before
-/// state-file creation. `xml` is the already-loaded project XML.
+/// Validated listener security, loaded once before any PCI connection. Keep
+/// the fields private so service preparation cannot bypass that preflight.
+pub struct CgateSecurity {
+    tls: Option<Arc<rustls::ServerConfig>>,
+    auth: Option<[u8; 32]>,
+}
+
+pub fn cgate_security(opts: &Options) -> Result<CgateSecurity, String> {
+    Ok(CgateSecurity {
+        tls: cgate_tls_config(opts)?,
+        auth: cgate_auth_token(opts)?,
+    })
+}
+
+/// Prepare the embedded C-Gate service using prevalidated security. This
+/// consumes the prepared TLS configuration and token digest without reopening
+/// credential files after PCI connection. `xml` is already-loaded project XML.
 pub fn prepare_cgate_service(
     opts: &Options,
     xml: &str,
     pci: Arc<cbus_transport::pci::PciClient>,
+    security: CgateSecurity,
 ) -> Result<
     (
         Arc<cbus_cgate::service::Service>,
@@ -302,12 +315,7 @@ pub fn prepare_cgate_service(
     ),
     String,
 > {
-    // Fail closed before bind and state-file creation: unreadable/invalid
-    // TLS files must never create the state file nor leave a listener behind.
-    let tls = cgate_tls_config(opts)?;
-    // Same ordering for the auth gate: a bad auth file exits before
-    // Service::new creates the state file and before any listener binds.
-    let auth = cgate_auth_token(opts)?;
+    let CgateSecurity { tls, auth } = security;
     let network_name = opts.cbus_network.join(" ");
     let service = cbus_cgate::service::Service::new(
         xml,
@@ -336,6 +344,14 @@ pub fn mqtt_options(opts: &Options) -> Result<MqttOptions, String> {
     let client_id = format!("cmqttd-{}", std::process::id());
     let mut mo = MqttOptions::new(client_id, opts.broker_address.clone(), port);
     mo.set_keep_alive(Duration::from_secs(opts.broker_keepalive.max(5) as u64));
+    // The broker must clear retained availability when this process or its
+    // connection disappears without a clean MQTT DISCONNECT.
+    mo.set_last_will(LastWill::new(
+        crate::gateway::BRIDGE_STATE_TOPIC,
+        "OFF",
+        QoS::AtLeastOnce,
+        true,
+    ));
     if !opts.broker_disable_tls {
         mo.set_transport(Transport::Tls(tls_configuration(opts)?));
     }
@@ -353,6 +369,16 @@ pub fn mqtt_options(opts: &Options) -> Result<MqttOptions, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn mqtt_will_clears_retained_bridge_availability() {
+        let options = mqtt_options(&tls_opts(None, None)).unwrap();
+        let will = options.last_will().expect("availability last will");
+        assert_eq!(will.topic, crate::gateway::BRIDGE_STATE_TOPIC);
+        assert_eq!(will.message.as_ref(), b"OFF");
+        assert_eq!(will.qos, QoS::AtLeastOnce);
+        assert!(will.retain);
+    }
 
     #[test]
     fn system_trust_store_loads() {
@@ -616,7 +642,9 @@ mod tests {
         let mut opts = auth_opts(Some(std::path::PathBuf::from("/nonexistent/cgate.token")));
         opts.cgate_state = state.clone();
         let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
-        let err = match prepare_cgate_service(&opts, &xml, dummy_pci()) {
+        let err = match cgate_security(&opts)
+            .and_then(|security| prepare_cgate_service(&opts, &xml, dummy_pci(), security))
+        {
             Ok(_) => panic!("bad auth file must fail"),
             Err(e) => e,
         };
@@ -637,7 +665,12 @@ mod tests {
         let mut opts = auth_opts(Some(token_path.clone()));
         opts.cgate_state = state.clone();
         let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
-        let (service, _) = prepare_cgate_service(&opts, &xml, dummy_pci()).expect("valid auth");
+        let security = cgate_security(&opts).expect("valid security preflight");
+        // Preparation must use the already-validated digest, not reopen the
+        // token after the transport has been connected.
+        std::fs::remove_file(&token_path).unwrap();
+        let (service, _) =
+            prepare_cgate_service(&opts, &xml, dummy_pci(), security).expect("valid auth");
         let mut client = ClientState::default();
         // Wrong secret is denied; the gate is armed end-to-end.
         assert_eq!(
@@ -691,7 +724,9 @@ mod tests {
         );
         opts.cgate_state = state.clone();
         let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
-        let err = match prepare_cgate_service(&opts, &xml, dummy_pci()) {
+        let err = match cgate_security(&opts)
+            .and_then(|security| prepare_cgate_service(&opts, &xml, dummy_pci(), security))
+        {
             Ok(_) => panic!("bad cert must fail"),
             Err(e) => e,
         };
@@ -712,8 +747,9 @@ mod tests {
         );
         opts.cgate_state = state.clone();
         let xml = std::fs::read_to_string(tls_fixture("project.xml")).expect("project fixture");
-        let (service, tls) =
-            prepare_cgate_service(&opts, &xml, dummy_pci()).expect("valid TLS startup");
+        let (service, tls) = cgate_security(&opts)
+            .and_then(|security| prepare_cgate_service(&opts, &xml, dummy_pci(), security))
+            .expect("valid TLS startup");
         assert!(tls.is_some());
         drop(service);
         assert!(state.exists(), "valid startup creates the state file");

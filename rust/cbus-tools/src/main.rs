@@ -121,6 +121,10 @@ enum Command {
         pretty: Option<usize>,
     },
     /// Read device attributes from C-Bus units via a CNI/PCI
+    ///
+    /// Replies require a valid checksum and matching unit/parameter. The
+    /// read-only local-address query binds bare replies to the attached PCI;
+    /// without that result, only explicitly addressed replies are accepted.
     Interrogate {
         /// CNI address as HOST:PORT
         #[arg(long)]
@@ -134,7 +138,7 @@ enum Command {
         /// Highest address to scan with --discover
         #[arg(long, default_value_t = 37)]
         max_address: u8,
-        /// Reply timeout in seconds
+        /// Reply timeout in seconds, in (0, 3600]
         #[arg(long, default_value_t = 5.0)]
         timeout: f64,
     },
@@ -547,10 +551,13 @@ fn dump_labels(
             for pp in children(unit, "pp") {
                 if get_field(pp, "name").as_deref() == Some("GroupAddress") {
                     if let Some(value) = get_field(pp, "value") {
-                        for c in value.split(' ') {
-                            if c.len() > 2 {
-                                if let Ok(v) = i64::from_str_radix(&c[2..], 16) {
-                                    channels.push(v);
+                        for token in value.split_whitespace() {
+                            if let Some(digits) = token
+                                .strip_prefix("0x")
+                                .or_else(|| token.strip_prefix("0X"))
+                            {
+                                if let Ok(value) = u8::from_str_radix(digits, 16) {
+                                    channels.push(i64::from(value));
                                 }
                             }
                         }
@@ -625,11 +632,11 @@ struct Interrogator {
     stream: tokio::net::TcpStream,
     conf_idx: usize,
     timeout: std::time::Duration,
+    local_unit: Option<u8>,
 }
 
 impl Interrogator {
-    async fn connect(host: &str, port: u16, timeout: f64) -> std::io::Result<Interrogator> {
-        let timeout = std::time::Duration::from_secs_f64(timeout);
+    async fn connect(host: &str, port: u16, timeout: Duration) -> std::io::Result<Interrogator> {
         let stream = tokio::time::timeout(timeout, tokio::net::TcpStream::connect((host, port)))
             .await
             .map_err(|_| std::io::Error::new(std::io::ErrorKind::TimedOut, "connect timeout"))??;
@@ -637,6 +644,7 @@ impl Interrogator {
             stream,
             conf_idx: 0,
             timeout,
+            local_unit: None,
         };
         // `||` smart+connect, then drain any pending output
         me.send_raw(b"||").await?;
@@ -647,6 +655,18 @@ impl Interrogator {
             tokio::io::AsyncReadExt::read(&mut me.stream, &mut buf),
         )
         .await;
+        // Bare CAL replies carry no source. Bind them to the attached PCI's
+        // own address using the established read-only BASIC recall, rather
+        // than attributing any unaddressed reply to whichever unit is queried.
+        me.send_raw(b"@1A2001").await?;
+        me.local_unit = me
+            .read_reply(None, 0x20)
+            .await?
+            .filter(|data| data.len() == 1)
+            .map(|data| data[0]);
+        if me.local_unit.is_none() {
+            eprintln!("warning: local PCI address unavailable; ignoring unaddressed replies");
+        }
         Ok(me)
     }
 
@@ -672,7 +692,7 @@ impl Interrogator {
         frame.extend(hex::encode_upper(&cmd).into_bytes());
         frame.push(conf);
         self.send_raw(&frame).await?;
-        self.read_reply().await
+        self.read_reply(Some(unit), cal[1]).await
     }
 
     async fn identify(&mut self, unit: u8, attr: u8) -> std::io::Result<Option<Vec<u8>>> {
@@ -683,11 +703,17 @@ impl Interrogator {
         self.pp_command(unit, &[0x1a, attr, count]).await
     }
 
-    /// Read response lines until a reply CAL arrives or timeout.
-    async fn read_reply(&mut self) -> std::io::Result<Option<Vec<u8>>> {
+    /// Read strict bounded frames until an exact-source/parameter CAL reply.
+    /// `None` selects only the bare response to the local-address query.
+    async fn read_reply(
+        &mut self,
+        unit: Option<u8>,
+        parameter: u8,
+    ) -> std::io::Result<Option<Vec<u8>>> {
+        use cbus_transport::framing::FrameBuffer;
         use tokio::io::AsyncReadExt;
         let deadline = tokio::time::Instant::now() + self.timeout;
-        let mut buf: Vec<u8> = Vec::new();
+        let mut frames = FrameBuffer::new_client();
         let mut chunk = [0u8; 4096];
         loop {
             let now = tokio::time::Instant::now();
@@ -700,19 +726,48 @@ impl Interrogator {
                 Ok(Ok(n)) => n,
                 Ok(Err(e)) => return Err(e),
             };
-            buf.extend_from_slice(&chunk[..n]);
-
-            while let Some(pos) = buf.windows(2).position(|w| w == b"\r\n") {
-                let mut line = buf[..pos].to_vec();
-                buf.drain(..pos + 2);
-                if line.len() == 2 && line[1] == b'.' {
-                    continue; // confirmation
+            for event in frames.feed(&chunk[..n]) {
+                let Some(Packet::PointToPoint {
+                    meta,
+                    unit_address,
+                    bridged: false,
+                    hops,
+                    cals,
+                }) = event.packet
+                else {
+                    continue;
+                };
+                if !hops.is_empty() {
+                    continue;
                 }
-                line.extend_from_slice(b"\r\n");
-                let (pkt, _) = decode_packet(&line, true, false, true);
-                if let Some(Packet::PointToPoint { cals, .. }) = pkt {
-                    for cal in cals {
-                        if let Cal::Reply { data, .. } = cal {
+                // The public packet model maps source address zero to None.
+                // Preserve the distinction between an addressed unit-zero
+                // reply and a bare CAL by inspecting its validated header.
+                let addressed = event
+                    .raw
+                    .get(..2)
+                    .and_then(|bytes| std::str::from_utf8(bytes).ok())
+                    .and_then(|digits| u8::from_str_radix(digits, 16).ok())
+                    .is_some_and(|flags| flags & 0x07 == 0x06);
+                let source = addressed.then(|| meta.source_address.unwrap_or(0));
+                let source_matches = match unit {
+                    Some(unit) => {
+                        source == Some(unit) || (source.is_none() && self.local_unit == Some(unit))
+                    }
+                    None => source.is_none(),
+                };
+                if !source_matches
+                    || (addressed && self.local_unit.is_some_and(|local| unit_address != local))
+                {
+                    continue;
+                }
+                for cal in cals {
+                    if let Cal::Reply {
+                        parameter: reply_parameter,
+                        data,
+                    } = cal
+                    {
+                        if reply_parameter == parameter {
                             return Ok(Some(data));
                         }
                     }
@@ -729,10 +784,21 @@ async fn interrogate_cmd(
     max_address: u8,
     timeout: f64,
 ) -> Result<(), String> {
-    let (host, port) = tcp
-        .split_once(':')
-        .map(|(h, p)| (h.to_string(), p.parse::<u16>().unwrap_or(10001)))
-        .unwrap_or((tcp.to_string(), 10001));
+    let timeout = check_timeout(timeout)?;
+    if !discover && unit.is_none() {
+        return Err("pass --unit N or --discover".to_string());
+    }
+    let (host, port) = match tcp.split_once(':') {
+        Some((host, port)) => (
+            host.to_string(),
+            port.parse::<u16>()
+                .map_err(|_| format!("invalid TCP port {port:?}"))?,
+        ),
+        None => (tcp.to_string(), 10001),
+    };
+    if host.is_empty() {
+        return Err("TCP host must not be empty".to_string());
+    }
     let mut it = Interrogator::connect(&host, port, timeout)
         .await
         .map_err(|e| e.to_string())?;

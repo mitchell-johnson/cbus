@@ -20,12 +20,11 @@ fn exactly_256_bytes_is_accepted() {
 }
 
 #[test]
-fn single_oversized_feed_drops_pending_buffer() {
+fn oversized_incomplete_frame_drops_pending_buffer() {
     let mut fb = FrameBuffer::new_client();
-    assert!(fb.feed(b"h").is_empty()); // half a confirmation pending
+    assert!(fb.feed(b"05").is_empty()); // a partial addressed frame
     assert!(fb.feed(&[b'0'; 257]).is_empty()); // oversized: clears all
-                                               // the pending 'h' is gone: a lone '.' decodes as nothing... the
-                                               // buffer waits (`.` is not a valid frame start, len < 2)
+                                               // The pending frame is gone: a lone '.' waits for more bytes.
     assert!(fb.feed(b".").is_empty());
     // and a fresh full confirmation still works ('.' + 'i' make a bogus
     // pair, so clear first)
@@ -156,4 +155,58 @@ fn toolkit_null_junk_is_swallowed() {
     let evs = fb.feed(b"null~\r");
     let packets: Vec<Packet> = evs.into_iter().filter_map(|e| e.packet).collect();
     assert_eq!(packets, vec![Packet::Reset]);
+}
+
+#[test]
+fn large_read_preserves_every_complete_frame() {
+    let mut fb = FrameBuffer::new_client();
+    let stream = b"05013800790148\r\nh.i#".repeat(30);
+    let events = fb.feed(&stream);
+    assert_eq!(events.len(), 90);
+    assert_eq!(
+        events
+            .iter()
+            .flat_map(|event| event.raw.iter().copied())
+            .collect::<Vec<_>>(),
+        stream
+    );
+    assert!(events
+        .iter()
+        .all(|event| !matches!(event.packet, Some(Packet::Invalid))));
+}
+
+#[test]
+fn pending_frame_near_capacity_survives_coalesced_following_frames() {
+    let mut raw = vec![0x05, 0x01, 0x38, 0x00];
+    for group in 0..60 {
+        raw.extend_from_slice(&[0x79, group]);
+    }
+    let mut wire = hex::encode_upper(cbus_protocol::common::add_cbus_checksum(&raw)).into_bytes();
+    wire.extend_from_slice(b"\r\n");
+    assert_eq!(wire.len(), 252);
+    let mut fb = FrameBuffer::new_client();
+    assert!(fb.feed(&wire[..250]).is_empty());
+    let mut remaining = wire[250..].to_vec();
+    remaining.extend_from_slice(&b"h.".repeat(10));
+    let events = fb.feed(&remaining);
+    assert_eq!(events.len(), 11);
+    assert_eq!(events[0].raw, wire);
+    assert!(
+        matches!(&events[0].packet, Some(Packet::PointToMultipoint { sals, .. }) if sals.len() == 60)
+    );
+}
+
+#[test]
+fn bare_cal_accounting_does_not_consume_the_next_frame() {
+    let mut fb = FrameBuffer::new_server();
+    let events = fb.feed(b"002102\r~\rA32100FFh\r");
+    let packets = events
+        .iter()
+        .filter_map(|event| event.packet.clone())
+        .collect::<Vec<_>>();
+    assert_eq!(packets.len(), 3);
+    assert_eq!(packets[0], Packet::BareCal(Cal::Identify { attribute: 2 }));
+    assert_eq!(packets[1], Packet::Reset);
+    assert_eq!(events[0].raw, b"002102\r");
+    assert!(matches!(packets[2], Packet::DeviceManagement { .. }));
 }

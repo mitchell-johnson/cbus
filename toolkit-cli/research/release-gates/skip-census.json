@@ -50,22 +50,22 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 471,
-    "modules_without_skip_sites": 251,
-    "modules_with_skip_sites": 220,
+    "test_modules": 473,
+    "modules_without_skip_sites": 252,
+    "modules_with_skip_sites": 221,
     "modules_by_category": {
       "cgate_test_host": 124,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 6,
+      "host_tool": 7,
       "native_cgate_local": 55,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 66,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
-      "runtime_capability": 5,
+      "runtime_capability": 6,
       "rust_binaries": 8,
       "unclassified": 5,
       "unit_specs": 116,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 117,
       "partial": 20,
-      "none": 83
+      "none": 84
     },
     "native_runnable_tests": 225,
     "native_selected_required_tests": 225,
@@ -6286,6 +6286,54 @@
           "tests": [
             "test_vendor_inputs_reproduce_the_committed_receipt"
           ]
+        }
+      ]
+    },
+    "tests/test_project_input_safety.py": {
+      "categories": [
+        "host_tool",
+        "runtime_capability"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_input_safety.py::ProjectInputSafetyTests::test_fifo_is_refused_without_opening",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo')",
+          "reason": "POSIX FIFO guard",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_project_input_safety.py::ProjectInputSafetyTests::test_fifo_substituted_after_stat_is_refused_without_reading",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo')",
+          "reason": "POSIX FIFO substitution guard",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_project_input_safety.py::ProjectInputSafetyTests::test_regular_file_symlink_remains_readable",
+          "kind": "body.runtime",
+          "condition": null,
+          "reason": "Symlink creation unavailable",
+          "environment": [],
+          "categories": [
+            "runtime_capability"
+          ],
+          "offline": "runtime",
+          "native": "runtime"
         }
       ]
     },

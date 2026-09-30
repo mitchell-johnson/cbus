@@ -34,7 +34,7 @@ enum LightUpdate {
 
 /// State topic advertised by [`meta_discovery`]. `ON` means the current
 /// C-Bus transport is connected; `OFF` means its live caches were invalidated.
-const BRIDGE_STATE_TOPIC: &str = "homeassistant/binary_sensor/cbus_cmqttd/state";
+pub(crate) const BRIDGE_STATE_TOPIC: &str = "homeassistant/binary_sensor/cbus_cmqttd/state";
 
 /// Non-retained operational receipts for MQTT lighting commands. The regular
 /// light state topic remains the Home Assistant compatibility contract.

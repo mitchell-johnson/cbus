@@ -61,21 +61,27 @@ impl FrameBuffer {
         self.buf.clear();
     }
 
-    /// Feed rx bytes; return every decoded frame. Overflow (>256 bytes)
-    /// drops the whole buffer (log, don't crash) like
-    /// the framing contract.
-    pub fn feed(&mut self, data: &[u8]) -> Vec<FrameEvent> {
+    /// Feed rx bytes; return every decoded frame. The 256-byte bound applies
+    /// to an incomplete frame, not to a read containing many complete frames.
+    /// An overflowing incomplete frame drops the buffer and the rest of this
+    /// read, preserving the existing overflow recovery boundary.
+    pub fn feed(&mut self, mut data: &[u8]) -> Vec<FrameEvent> {
         let mut out = Vec::new();
-        if data.len() > MAX_BUFFER_SIZE || self.buf.len() + data.len() > MAX_BUFFER_SIZE {
-            tracing::error!(
-                "receive buffer would exceed {} bytes; dropping buffer",
-                MAX_BUFFER_SIZE
-            );
-            self.buf.clear();
-            return out;
-        }
-        self.buf.extend_from_slice(data);
         loop {
+            if !data.is_empty() {
+                let available = MAX_BUFFER_SIZE - self.buf.len();
+                if available == 0 {
+                    tracing::error!(
+                        "receive buffer would exceed {} bytes; dropping buffer",
+                        MAX_BUFFER_SIZE
+                    );
+                    self.buf.clear();
+                    break;
+                }
+                let take = available.min(data.len());
+                self.buf.extend_from_slice(&data[..take]);
+                data = &data[take..];
+            }
             if self.buf.is_empty() {
                 break;
             }
@@ -104,10 +110,18 @@ impl FrameBuffer {
                 }
             }
             if consumed > 0 {
+                // The public decoder retains legacy bare-CAL accounting that
+                // adds the CAL length to the already consumed line. Never let
+                // that compatibility quirk eat bytes from the next frame.
+                if !self.from_pci && matches!(packet, Some(Packet::BareCal(_))) {
+                    if let Some(end) = self.buf.iter().position(|&byte| byte == b'\r') {
+                        consumed = consumed.min(end + 1);
+                    }
+                }
                 let raw = self.buf[..consumed.min(self.buf.len())].to_vec();
                 self.buf.drain(..consumed.min(self.buf.len()));
                 out.push(FrameEvent { packet, raw });
-            } else {
+            } else if data.is_empty() {
                 // consumed == 0: wait for more data
                 break;
             }

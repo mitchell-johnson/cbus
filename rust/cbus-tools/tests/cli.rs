@@ -361,10 +361,13 @@ fn scripted_unit(name: &'static [u8]) -> (std::thread::JoinHandle<()>, u16) {
             while let Some(pos) = buf.iter().position(|&b| b == b'\r') {
                 let frame: Vec<u8> = buf.drain(..pos + 1).collect();
                 let text = String::from_utf8_lossy(&frame).into_owned();
+                if frame == b"@1A2001\r" {
+                    let _ = stream.write_all(&interrogation_reply(None, 0x20, &[0]));
+                }
                 // \46 <unit> 00 <cal...><conf>: reply only for unit 0
                 if text.starts_with("\\460000") {
-                    // reply CAL: header 0x80|(1+len), param 0x01, data
-                    let mut cal = vec![0x80 | (1 + name.len() as u8), 0x01];
+                    let parameter = u8::from_str_radix(&text[9..11], 16).unwrap();
+                    let mut cal = vec![0x80 | (1 + name.len() as u8), parameter];
                     cal.extend_from_slice(name);
                     let sum: u32 = cal.iter().map(|&b| b as u32).sum();
                     cal.push((sum.wrapping_neg() & 0xff) as u8);
@@ -456,4 +459,241 @@ fn interrogate_unavailable_endpoint_exits_nonzero() {
     );
     assert_eq!(status.code(), Some(1));
     assert!(!err.is_empty());
+}
+
+#[test]
+fn dump_labels_group_addresses_handle_utf8_and_whitespace_without_panicking() {
+    let path = temp_path("unicode-group-addresses.xml");
+    std::fs::write(
+        &path,
+        "<Installation><Project><Network><Address>254</Address><Unit><Address>1</Address><PP><Name>GroupAddress</Name><Value>0x38\t0XFF 0x01 ☃ xx10 0x100</Value></PP></Unit></Network></Project></Installation>",
+    ).unwrap();
+    let (status, out, err) = run(BIN, &["dump-labels", path.to_str().unwrap()]);
+    std::fs::remove_file(&path).unwrap();
+    assert!(status.success(), "{err}");
+    let value: Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(
+        value["254"]["units"]["1"]["groups"],
+        serde_json::json!([56, 255, 1])
+    );
+}
+
+#[test]
+fn interrogate_rejects_invalid_timeout_without_panicking() {
+    for timeout in ["NaN", "inf", "-1", "0", "1e100"] {
+        let argument = format!("--timeout={timeout}");
+        let (status, _, err) = run(
+            BIN,
+            &[
+                "interrogate",
+                "--tcp",
+                "127.0.0.1:0",
+                "--unit",
+                "0",
+                &argument,
+            ],
+        );
+        assert_eq!(status.code(), Some(1), "{timeout}: {err}");
+        assert!(err.contains("timeout"), "{timeout}: {err}");
+        assert!(!err.contains("panicked"), "{timeout}: {err}");
+    }
+}
+
+#[test]
+fn interrogate_rejects_invalid_port_before_connecting() {
+    for endpoint in [
+        "127.0.0.1:garbage",
+        "127.0.0.1:65536",
+        "127.0.0.1:",
+        ":10001",
+    ] {
+        let (status, _, err) = run(BIN, &["interrogate", "--tcp", endpoint, "--unit", "0"]);
+        assert_eq!(status.code(), Some(1), "{endpoint}: {err}");
+        assert!(err.contains("TCP"), "{endpoint}: {err}");
+    }
+}
+
+#[test]
+fn interrogate_missing_operation_is_rejected_before_connecting() {
+    let (status, _, err) = run(BIN, &["interrogate", "--tcp", "127.0.0.1:0"]);
+    assert_eq!(status.code(), Some(1));
+    assert!(err.contains("pass --unit N or --discover"), "{err}");
+}
+
+fn interrogation_reply(source: Option<u8>, parameter: u8, data: &[u8]) -> Vec<u8> {
+    let mut raw = match source {
+        Some(source) => vec![0x86, source, 16, 0],
+        None => vec![],
+    };
+    raw.extend(
+        cbus_protocol::cal::Cal::Reply {
+            parameter,
+            data: data.to_vec(),
+        }
+        .encode(),
+    );
+    let mut wire = hex::encode_upper(cbus_protocol::common::add_cbus_checksum(&raw)).into_bytes();
+    wire.extend_from_slice(b"\r\n");
+    wire
+}
+
+fn scripted_interrogation_replies(replies: Vec<u8>) -> (std::thread::JoinHandle<()>, u16) {
+    scripted_interrogation_replies_with_local(replies, Some(16))
+}
+
+fn scripted_interrogation_replies_with_local(
+    replies: Vec<u8>,
+    local_unit: Option<u8>,
+) -> (std::thread::JoinHandle<()>, u16) {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let thread = std::thread::spawn(move || {
+        let (mut stream, _) = listener.accept().unwrap();
+        stream
+            .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+            .unwrap();
+        let mut pending = Vec::new();
+        let mut chunk = [0u8; 1024];
+        loop {
+            let count = match stream.read(&mut chunk) {
+                Ok(0) | Err(_) => return,
+                Ok(count) => count,
+            };
+            pending.extend_from_slice(&chunk[..count]);
+            while let Some(end) = pending.iter().position(|byte| *byte == b'\r') {
+                let frame = pending.drain(..=end).collect::<Vec<_>>();
+                if frame == b"@1A2001\r" {
+                    if let Some(local) = local_unit {
+                        stream
+                            .write_all(&interrogation_reply(None, 0x20, &[local]))
+                            .unwrap();
+                    }
+                } else if frame.starts_with(b"\\46") {
+                    stream.write_all(&replies).unwrap();
+                }
+            }
+        }
+    });
+    (thread, port)
+}
+
+#[test]
+fn interrogate_discovery_ignores_unrelated_or_corrupt_replies() {
+    let mut corrupt = interrogation_reply(Some(0), 1, b"CORRUPT!");
+    let checksum = corrupt.len() - 4;
+    corrupt[checksum] = if corrupt[checksum] == b'0' {
+        b'1'
+    } else {
+        b'0'
+    };
+    for (case, replies) in [
+        (
+            "foreign source",
+            interrogation_reply(Some(99), 1, b"FOREIGN!"),
+        ),
+        (
+            "foreign parameter",
+            interrogation_reply(Some(0), 2, b"WRONGPAR"),
+        ),
+        (
+            "unbound bare reply",
+            interrogation_reply(None, 1, b"UNBOUND!"),
+        ),
+        ("corrupt checksum", corrupt),
+    ] {
+        let (thread, port) = scripted_interrogation_replies(replies);
+        let (status, out, err) = run(
+            BIN,
+            &[
+                "interrogate",
+                "--tcp",
+                &format!("127.0.0.1:{port}"),
+                "--discover",
+                "--max-address",
+                "0",
+                "--timeout",
+                "0.1",
+            ],
+        );
+        thread.join().unwrap();
+        assert!(status.success(), "{case}: {err}");
+        assert!(!out.contains("Unit 0"), "{case}: {out}");
+    }
+}
+
+#[test]
+fn interrogate_discovery_handles_confirmation_before_exact_reply() {
+    let mut replies = b"h.".to_vec();
+    replies.extend(interrogation_reply(Some(0), 1, b"EXACTONE"));
+    let (thread, port) = scripted_interrogation_replies(replies);
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "interrogate",
+            "--tcp",
+            &format!("127.0.0.1:{port}"),
+            "--discover",
+            "--max-address",
+            "0",
+            "--timeout",
+            "0.1",
+        ],
+    );
+    thread.join().unwrap();
+    assert!(status.success(), "{err}");
+    assert!(out.contains("Unit 0 (0x00): EXACTONE"), "{out}");
+}
+
+#[test]
+fn interrogate_without_local_address_requires_addressed_replies() {
+    for source in [None, Some(0)] {
+        let replies = interrogation_reply(source, 1, b"EXACTONE");
+        let (thread, port) = scripted_interrogation_replies_with_local(replies, None);
+        let (status, out, err) = run(
+            BIN,
+            &[
+                "interrogate",
+                "--tcp",
+                &format!("127.0.0.1:{port}"),
+                "--discover",
+                "--max-address",
+                "0",
+                "--timeout",
+                "0.1",
+            ],
+        );
+        thread.join().unwrap();
+        assert!(status.success(), "{err}");
+        assert!(err.contains("local PCI address unavailable"), "{err}");
+        assert_eq!(
+            out.contains("Unit 0 (0x00): EXACTONE"),
+            source.is_some(),
+            "{out}"
+        );
+    }
+}
+
+#[test]
+fn interrogate_skips_noise_and_returns_only_exact_reply() {
+    let mut replies = interrogation_reply(Some(99), 1, b"FOREIGN!");
+    replies.extend(interrogation_reply(Some(0), 2, b"WRONGPAR"));
+    replies.extend_from_slice(b"h.");
+    replies.extend(interrogation_reply(Some(0), 1, b"EXACTONE"));
+    let (thread, port) = scripted_interrogation_replies(replies);
+    let (status, out, err) = run(
+        BIN,
+        &[
+            "interrogate",
+            "--tcp",
+            &format!("127.0.0.1:{port}"),
+            "--discover",
+            "--max-address",
+            "0",
+            "--timeout",
+            "0.1",
+        ],
+    );
+    thread.join().unwrap();
+    assert!(status.success(), "{err}");
+    assert_eq!(out.trim(), "Unit 0 (0x00): EXACTONE");
 }
