@@ -1,0 +1,174 @@
+{
+  "format": "cbus-dali-scene-level-focused-acceptance-v1",
+  "generated_utc": "2026-09-30T08:28:42.020516+00:00",
+  "result": "passed",
+  "scope": "Standalone Python typed DALI scene-level admission safety patch; accepted member levels0..254, native255 NOT_A_MEMBER sentinel refused for leaf and whole scene object before connection.",
+  "source_revision_basis": "9a792616d9fd09efc2b8c1c597fb8eccee26da31",
+  "source_revision_note": "Published9a792616 baseline plus exactly the source/test hashes below; this receipt precedes the queued feature batch.",
+  "native_source_evidence": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "classes": [
+      {
+        "class_entry": "com/clipsal/cgate/cbus/dali/model/line/model/DaliEcgScene.class",
+        "class_sha256": "cda9592e031295fbbf2d381dd492f53cc73787209a92c1f6c20d09cc85efeeb7",
+        "source_relative_path": "com/clipsal/cgate/cbus/dali/model/line/model/DaliEcgScene.java",
+        "decompiled_source_sha256": "85acadd05e1e7a1dc816239f3d89924d3ad8dc3a9955be4aab7ca3991138f08c"
+      },
+      {
+        "class_entry": "com/clipsal/cgate/cbus/dali/model/line/DaliEcg.class",
+        "class_sha256": "50dd3d30d0794fe00bc0004ea26f125b50f7547b7cdff53a625692a4bbe00f13",
+        "source_relative_path": "com/clipsal/cgate/cbus/dali/model/line/DaliEcg.java",
+        "decompiled_source_sha256": "8a6d10f44e95284986f51e617bb974ccb307fb134c6bf9e6a56ea66a6d5be7fe"
+      }
+    ],
+    "method_evidence": {
+      "DaliEcgScene.setLevel(int)": "NOT_A_MEMBER=255; n<0 or n>=255 assigns255,0..254 retained.",
+      "DaliEcg.a(boolean)": "Initializes8scene bytes to0xff; only emits non-null scene level when selected scene membershiplookup istrue.",
+      "DaliEcg.b() membership rebuild": "Marks membership only for non-null scene withlevel!=255."
+    },
+    "unit_validation": {
+      "tests_passed": 37,
+      "subtests_passed": 312,
+      "skips": 0,
+      "junit": "/private/tmp/cbus-dali-scene-sentinel-20260930.xml"
+    },
+    "evidence_capture": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-native-evidence-20260930.json",
+      "sha256": "d12ea58e4ef363b20ca5ab52d025099cf2a7a0fe0836d50df18bd3d250bba8b4"
+    },
+    "fresh_original_runtime_executed": false,
+    "vendor_source_committed": false
+  },
+  "source_unit_acceptance": {
+    "normal_tests": {
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 312,
+      "failed": 0,
+      "skipped": 0
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-20260930.xml",
+      "sha256": "e53625e26b669f8f8be22a2e78cf0b3506e87c89473149240fa78ed8fddaf678"
+    },
+    "junit_testcase_count_includes_subtests": 349,
+    "scope": "tests/test_dali_commissioning.py, owner source run"
+  },
+  "installed_wheel_acceptance": {
+    "normal_tests": {
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 312,
+      "failed": 0,
+      "skipped": 0
+    },
+    "collected_tests": 37,
+    "deselected_tests": [],
+    "pytest_exit_code": 0,
+    "report": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/wheel-scene-corrected.json",
+      "sha256": "b500c2caae222c178f29887ffd34415c5fe4091e71c2efe41996334bceb51f58"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/wheel-scene-corrected.xml",
+      "sha256": "21e90d9a8cd3a8950da295305c049905831838923ef082912faf7150d2273064"
+    },
+    "wheel": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "471f25e3dae4f6e7578ef01e6083e0f273dcefa9c998236534eb2b53b11f85b4"
+    },
+    "module_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/venv/lib/python3.13/site-packages/cbus_toolkit/dali_commissioning.py",
+    "package_imports_under_isolated_venv": true,
+    "python_version": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+    "installed_extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "build_and_install_offline": true,
+    "source_import_allowed": false
+  },
+  "staging_red_history": {
+    "normal_tests": {
+      "passed": 36,
+      "failed": 1,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 312,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pytest_exit_code": 1,
+    "reason": "Minimal disk-constrained harness omitted the committed native_cgate_dali_commissioning.json fixture. Added exact fixture without changing any wheel/package/test bytes, then reran only this37-case unit module.",
+    "report": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/wheel-scene.json",
+      "sha256": "504499f68c83df3d99c7f22440800d9dd1843fff045ff0f0ded60dc3b8e58402"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/wheel-scene.xml",
+      "sha256": "ba910c655f0bbe99ab9ceb518a4aee148730e353d4d871ddce72ebccf74a8d07"
+    },
+    "original_snapshot_manifest": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/snapshot-inputs-before-staging-correction.json",
+      "sha256": "f0cdaf0fe912a5df956c8d74a2705be464550845f74dd50d18d47742239f06f3"
+    }
+  },
+  "regressions": [
+    {
+      "id": "DaliCommissioningTests::test_cli_scene_sentinel_refuses_before_connect_with_existing_membership",
+      "accepted": "Both /scene/0/level=255 and /scene/0={level:255} refuse without client construction, commands or attempt journal creation."
+    },
+    {
+      "id": "DaliCommissioningTests::test_cli_scene_maximum_level_254_retains_existing_membership",
+      "accepted": "Both direct leaf and whole scene-object level254 retain membership in the mocked reviewed deployment."
+    }
+  ],
+  "source_bindings": {
+    "toolkit-cli/src/cbus_toolkit/dali_commissioning.py": "ba025c212ac399f67becd7a9891b3d7737949f328b49686e6e2010c37d1e99e4",
+    "toolkit-cli/tests/test_dali_commissioning.py": "ad2ebb01365ab4c312f2301dda01be63d538107838ea3d65e16ad5cf93cea7e8",
+    "rust/testdata/fixtures/native_cgate_dali_commissioning.json": "8ef7c99129833e86b15e75e3f115bc120e0a7f89f098c309ae979ad27d386edf"
+  },
+  "package_binding": {
+    "snapshot_manifest": {
+      "retained_path": "/private/tmp/cbus-dali-scene-sentinel-wheel-4jjnrmmm/snapshot-inputs.json",
+      "sha256": "c69d953df394f96e9738c1fc54c75973ba9dd7bd6e066106299bdffc9cfc9d4f"
+    },
+    "canonical_package_hash_map_sha256": "71940f7ed3b80b4ec45d1f2675dce062d8db9ebd0e74067382e86cce60f92f90",
+    "package_files": 267,
+    "changed_package_files": [
+      "dali_commissioning.py"
+    ],
+    "previous_dali_commissioning_sha256": "d67be9c3d7471d48d0c8ea8ebf29cbcd682cce553804ba1ba0b23a2afd589e95",
+    "other266_package_files_identical_to_previous_validated_wheel": true,
+    "rust_dali_sources_unchanged": true,
+    "previous_snapshot_manifest": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/snapshot-inputs.json",
+      "sha256": "aba8dcba65eb780fc40d1ddb719e1f26e149ec558f01f8e5cf7f1c4b340849dd"
+    }
+  },
+  "prior_broad_acceptance": {
+    "path": "toolkit-cli/docs/dali-senll-merged-acceptance-summary.json",
+    "sha256": "c7aaa387ebafe8dcbe470adc90328138e5a12f41c9497ef1aec91e871629fc4e",
+    "status": "Unmodified historical acceptance, not relabelled as fresh broad verification of this safety patch.",
+    "prior_wheel_sha256": "d6510a39c3f9af050b6384982eb7d2b9a4093f34e59f5f15fdd4c14f8cce89ec"
+  },
+  "claims": {
+    "full_suite_run": false,
+    "daemon_executed": false,
+    "network_endpoint_used": false,
+    "hardware_executed": false,
+    "fresh_original_toolkit_or_cgate_runtime_executed": false,
+    "physical_effect_verified": false,
+    "physical_persistence_verified": false,
+    "full_toolkit_parity_verified": false,
+    "full_dali_interop_scope_rerun": false
+  }
+}

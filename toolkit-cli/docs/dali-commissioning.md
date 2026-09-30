@@ -214,3 +214,10 @@ PYTHONPATH=src:tests CBUS_CMQTTD_BIN=/absolute/path/to/cmqttd \
 The full local suite was not run for this slice, following the requested
 focused-test policy. CI retains the broader source and installed-wheel gates;
 their results must be checked separately for the integrated revision.
+
+A subsequent [scene-level admission correction](dali-scene-level-acceptance-summary.json)
+adds preconnection regressions for both a direct scene level and a complete
+scene object when membership is already enabled. Explicit level 255 is refused
+because the original protocol uses it for removal; level 254 remains valid.
+That correction has separate focused source and installed-wheel evidence and
+does not relabel the preceding broad acceptance run.

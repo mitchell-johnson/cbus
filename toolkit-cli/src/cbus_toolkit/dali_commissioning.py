@@ -193,6 +193,9 @@ def deployment_edit_dispositions(edits, line, addresses, *, dry_run):
             limit = 65535 if field.endswith("Bitmask16") else 255
             step = "SET_SCENE_VALUES_ECG" if field == "sceneMembershipBitmask16" else "SET_COMMON_PARAMS_ECG"
         elif scene is not None and int(scene[1]) <= 15:
+            # Original DaliEcgScene.NOT_A_MEMBER is 255; its setter maps
+            # every value outside 0..254 to removal rather than a level.
+            limit = 254
             step = "SET_SCENE_VALUES_ECG"
         elif suffix == "ledParams207/dimmCurve":
             device_type, step = "LED", "SET_LED_PARAMS_ECG"

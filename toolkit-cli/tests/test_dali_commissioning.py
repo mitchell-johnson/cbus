@@ -597,6 +597,44 @@ class DaliInputAndCLITests(unittest.TestCase):
                     self.assertEqual(preconnect(args), value)
                     self.assertFalse(journal.exists())
 
+    def test_cli_scene_sentinel_refuses_before_connect_with_existing_membership(self):
+        scene = PROPERTY.split("/commonParams102")[0] + "/scene/0"
+        with tempfile.TemporaryDirectory() as folder:
+            edits = Path(folder) / "edits.json"
+            for path, value in ((scene + "/level", 255), (scene, {"level": 255})):
+                service = ScriptedService()  # Existing scene 0 has membership bit 0 set.
+                journal = Path(folder) / ("object.json" if isinstance(value, dict) else "level.json")
+                edits.write_text(json.dumps([{"path": path, "value": value}]))
+                stream = io.StringIO()
+                with self.subTest(path=path):
+                    with patch("cbus_toolkit.cgate.CGateClient", return_value=service) as factory, redirect_stderr(stream):
+                        self.assertEqual(main(["cgate", "dali", "deploy", TARGET,
+                                               "--edits", str(edits), "--journal", str(journal)]), 1)
+                    factory.assert_not_called()
+                    self.assertEqual(service.commands, [])
+                    self.assertIn("0..254", json.loads(stream.getvalue())["error"])
+                    self.assertFalse(journal.exists())
+
+    def test_cli_scene_maximum_level_254_retains_existing_membership(self):
+        scene = PROPERTY.split("/commonParams102")[0] + "/scene/0"
+        with tempfile.TemporaryDirectory() as folder:
+            edits = Path(folder) / "edits.json"
+            for path, value in ((scene + "/level", 254), (scene, {"level": 254})):
+                service = ScriptedService()
+                journal = Path(folder) / ("object.json" if isinstance(value, dict) else "level.json")
+                edits.write_text(json.dumps([{"path": path, "value": value}]))
+                stream = io.StringIO()
+                with self.subTest(path=path):
+                    with patch("cbus_toolkit.cgate.CGateClient", return_value=service), redirect_stdout(stream):
+                        self.assertEqual(main(["cgate", "dali", "deploy", TARGET,
+                                               "--edits", str(edits), "--journal", str(journal)]), 0)
+                    result = json.loads(stream.getvalue())
+                    self.assertTrue(result["complete"])
+                    self.assertEqual(result["staged_edits"][0]["value"], value)
+                    ecg = result["model"]["cdg"]["daliLines"][0]["daliEcgs"][3]
+                    self.assertEqual(ecg["scene"][0]["level"], 254)
+                    self.assertEqual(ecg["commonParams102"]["sceneMembershipBitmask16"], 1)
+
     def test_cli_ext_only_proxy_deploy_and_preconnection_refusals(self):
         path = dali_extended_proxy.PREFIX + "deviceID/id"
         with tempfile.TemporaryDirectory() as folder:
