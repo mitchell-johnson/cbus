@@ -333,88 +333,232 @@ async fn specialized_dali_memory_sessions_and_mqtt_share_the_real_daemon() {
     .await;
     assert!(known_model.iter().any(|line| line == "120-false"));
 
-    for selector in ["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"] {
-        let mut preflight = Vec::new();
-        if selector == "RESCAN_FAULT" {
-            preflight.push(("061400E381DA0E", 14, Vec::new()));
-        }
-        preflight.push(("061400E382DA04", 4, vec![0x08, 0, 0, 0, 0, 0, 0, 0]));
-        preflight.push(("061400E381DA0B", 11, vec![0; 8]));
-        let before = preflight
-            .iter()
-            .map(|(wire, _, _)| sys.pci.count_payload(wire))
-            .collect::<Vec<_>>();
-        let address_unknown_before = sys.pci.count_payload("061400E381DA02");
-        let extract = format!("DALI SESSION EXTRACT readonly !dali-gateway-20 A {selector}");
-        let request = command(&mut reader, &mut writer, "mutating", &extract);
-        let peer = async {
-            for ((wire, operation, data), count) in preflight.iter().zip(before.iter()) {
-                require(COMMAND_DRAIN, "DALI mutation preflight step", || {
-                    sys.pci.count_payload(wire) == count + 1
-                })
+    // COND_QUICK on line A: ADDRESS_UNKNOWN is sent exactly once while MQTT
+    // stays live, and its mask is merged into the session.
+    let status_reply = |operation: u8, status: u8, data: &[u8]| {
+        let mut reply = vec![
+            0x86,
+            20,
+            0x10,
+            0,
+            0xe4 + u8::try_from(data.len()).unwrap(),
+            0x83,
+            0xda,
+            operation,
+            status,
+        ];
+        reply.extend_from_slice(data);
+        pci_wire(&reply)
+    };
+    let known = [0x08, 0, 0, 0, 0, 0, 0, 0];
+    let address_unknown = "061400E381DA02";
+    let lighting = "0538000101C1";
+    let cond_steps: Vec<(&str, u8, Vec<u8>)> = vec![
+        ("061400E382DA04", 4, known.to_vec()),
+        ("061400E381DA0B", 11, vec![0; 8]),
+        (address_unknown, 2, known.to_vec()),
+        ("061400E381DA0A", 10, vec![0; 8]),
+        ("061400E381DA09", 9, vec![0; 8]),
+        (
+            "061400E481DA1003",
+            16,
+            vec![3, 0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+        ),
+    ];
+    let cond_before = cond_steps
+        .iter()
+        .map(|(wire, _, _)| sys.pci.count_payload(wire))
+        .collect::<Vec<_>>();
+    let address_unknown_before = sys.pci.count_payload(address_unknown);
+    let lighting_before = sys.pci.count_payload(lighting);
+    let request = command(
+        &mut reader,
+        &mut writer,
+        "cond-quick",
+        "DALI SESSION EXTRACT readonly !dali-gateway-20 A COND_QUICK",
+    );
+    let peer = async {
+        for ((wire, operation, data), before) in cond_steps.iter().zip(cond_before.iter()) {
+            require(COMMAND_DRAIN, "COND_QUICK native plan step", || {
+                sys.pci.count_payload(wire) == before + 1
+            })
+            .await;
+            if *wire == address_unknown {
+                sys.broker
+                    .inject("homeassistant/light/cbus_1/set", br#"{"state":"OFF"}"#);
+                require(
+                    COMMAND_DRAIN,
+                    "MQTT remains live during ADDRESS_UNKNOWN",
+                    || sys.pci.count_payload(lighting) == lighting_before + 1,
+                )
                 .await;
+            }
+            sys.pci.inject(&status_reply(*operation, 0, data));
+        }
+        // READ_GATEWAY_EXT_COND_QUICK for line A.
+        for (start, length) in [(256u32, 2usize), (512, 4), (7040, 64), (8800, 8)] {
+            let request = format!("4614001B{:02X}{:02X}{length:02X}", start >> 8, start & 0xff);
+            require(COMMAND_DRAIN, "partial extended recall", || {
+                sys.pci.count_payload(&request) >= 1
+            })
+            .await;
+            for offset in (0..length).step_by(16) {
+                let fragment = (length - offset).min(16);
                 let mut reply = vec![
                     0x86,
                     20,
                     0x10,
                     0,
-                    0xe4 + u8::try_from(data.len()).unwrap(),
-                    0x83,
-                    0xda,
-                    *operation,
-                    0,
+                    0x80 | u8::try_from(fragment + 1).unwrap(),
+                    ((start as usize + offset) & 0xff) as u8,
                 ];
-                reply.extend_from_slice(data);
+                reply.extend(std::iter::repeat_n(0x5a, fragment));
                 sys.pci.inject(&pci_wire(&reply));
             }
-        };
-        let (refused, ()) = tokio::join!(request, peer);
-        assert!(
-            refused
-                .last()
-                .unwrap()
-                .contains("no device-to-address receipt"),
-            "{selector}: {refused:?}"
-        );
-        assert_eq!(
-            sys.pci.count_payload("061400E381DA02"),
-            address_unknown_before,
-            "{selector} reached ADDRESS_UNKNOWN"
-        );
-        let unchanged_model = command(
-            &mut reader,
-            &mut writer,
-            "unchanged-model",
-            "DALI SESSION GET readonly /cdg/daliLines/0/daliEcgs/3/isKnown",
-        )
-        .await;
-        assert!(
-            unchanged_model.iter().any(|line| line == "120-false"),
-            "{selector}: {unchanged_model:?}"
-        );
-    }
+        }
+    };
+    let (cond, ()) = tokio::join!(request, peer);
+    assert_eq!(cond.last().unwrap(), "200 OK.", "{cond:?}");
+    assert!(cond
+        .iter()
+        .any(|line| line == "120-progress: 3/13, plan: ADDRESS_UNKNOWN"));
+    assert!(
+        cond.iter()
+            .any(|line| line == "125-[COND] discovery1: false"),
+        "{cond:?}"
+    );
+    assert_eq!(
+        sys.pci.count_payload(address_unknown),
+        address_unknown_before + 1,
+        "ADDRESS_UNKNOWN must be sent exactly once"
+    );
+    let address_known = command(
+        &mut reader,
+        &mut writer,
+        "address-known",
+        "DALI SESSION GET readonly /cdg/daliLines/0/daliEcgs/3/isAddressKnown",
+    )
+    .await;
+    assert!(
+        address_known.iter().any(|line| line == "120-true"),
+        "{address_known:?}"
+    );
 
-    for selector in ["DALI_ONLY", "FULL"] {
-        let frame_count = sys.pci.frames().len();
-        let unsupported = command(
-            &mut reader,
-            &mut writer,
-            "typed-deploy",
-            &format!("DALI SESSION DEPLOY commissioning !dali-gateway-20 BOTH {selector}"),
-        )
-        .await;
-        assert!(
-            unsupported
-                .last()
-                .unwrap()
-                .contains("per-field readback receipts"),
-            "{selector}: {unsupported:?}"
-        );
-        assert_eq!(sys.pci.frames().len(), frame_count, "{selector}");
-    }
+    // Typed DALI_ONLY deployment of the extracted LAMP ECG.
+    // SESSION SET replaces existing properties only, so replace the ECG.
+    let set_ecg = command(
+        &mut reader,
+        &mut writer,
+        "ecg",
+        r#"DALI SESSION SET readonly /cdg/daliLines/0/daliEcgs/3 {\"shortAddress\":3,\"isKnown\":true,\"deviceTypes\":{\"deviceTypes\":[\"LAMP\"]},\"commonParams102\":{\"groupMembershipBitmask16\":513,\"sceneMembershipBitmask16\":1,\"minimumLevel\":1,\"maximumLevel\":254,\"recoveryLevel\":253,\"failureLevel\":200},\"scene\":[{\"level\":10}]}"#,
+    )
+    .await;
+    assert_eq!(set_ecg.last().unwrap(), "200 OK.", "{set_ecg:?}");
+    let deploy_steps: [(&str, u8); 3] = [
+        ("061400EA81DA2003010201FEFDC8", 32),
+        ("061400EC81DA22030AFFFFFFFFFFFFFF", 34),
+        ("061400EC81DA2303FFFFFFFFFFFFFFFF", 35),
+    ];
+    let deploy_before = deploy_steps
+        .iter()
+        .map(|(wire, _)| sys.pci.count_payload(wire))
+        .collect::<Vec<_>>();
+    let lighting_before = sys.pci.count_payload(lighting);
+    let request = command(
+        &mut reader,
+        &mut writer,
+        "deploy",
+        "DALI SESSION DEPLOY readonly !dali-gateway-20 A DALI_ONLY 3",
+    );
+    let peer = async {
+        for ((wire, operation), before) in deploy_steps.iter().zip(deploy_before.iter()) {
+            require(COMMAND_DRAIN, "DALI_ONLY deploy write", || {
+                sys.pci.count_payload(wire) == before + 1
+            })
+            .await;
+            if *operation == 34 {
+                sys.broker
+                    .inject("homeassistant/light/cbus_1/set", br#"{"state":"OFF"}"#);
+                require(COMMAND_DRAIN, "MQTT remains live during deploy", || {
+                    sys.pci.count_payload(lighting) == lighting_before + 1
+                })
+                .await;
+            }
+            sys.pci.inject(&status_reply(*operation, 0, &[]));
+        }
+    };
+    let (deployed, ()) = tokio::join!(request, peer);
+    assert_eq!(deployed.last().unwrap(), "200 OK.", "{deployed:?}");
+    assert_eq!(
+        deployed
+            .iter()
+            .filter(|line| *line == "300-[WARN] no commands sent - no known ecgs")
+            .count(),
+        2,
+        "{deployed:?}"
+    );
+
+    // A rejected scene write stops the plan: nothing later is sent and
+    // nothing earlier is repeated or rolled back.
+    let deploy_before = deploy_steps
+        .iter()
+        .map(|(wire, _)| sys.pci.count_payload(wire))
+        .collect::<Vec<_>>();
+    let request = command(
+        &mut reader,
+        &mut writer,
+        "deploy-fault",
+        "DALI SESSION DEPLOY readonly !dali-gateway-20 A DALI_ONLY 3",
+    );
+    let peer = async {
+        for ((wire, operation), before) in deploy_steps.iter().zip(deploy_before.iter()).take(2) {
+            require(COMMAND_DRAIN, "DALI_ONLY deploy write", || {
+                sys.pci.count_payload(wire) == before + 1
+            })
+            .await;
+            let status = if *operation == 34 { 4 } else { 0 };
+            sys.pci.inject(&status_reply(*operation, status, &[]));
+        }
+    };
+    let (faulted, ()) = tokio::join!(request, peer);
+    let last = faulted.last().unwrap();
+    assert!(
+        last.starts_with("502 reply status error: error response: FAIL_INVALID_PARAMETER"),
+        "{faulted:?}"
+    );
+    assert!(
+        last.contains("1 of 3 planned device writes confirmed"),
+        "{last}"
+    );
+    assert!(
+        last.contains("nothing was rolled back or replayed"),
+        "{last}"
+    );
+    // Only DALI extended-CAL frames matter; MQTT sweeps may continue.
+    let dali_frames = || {
+        sys.pci
+            .payloads()
+            .iter()
+            .filter(|payload| payload.starts_with("061400"))
+            .count()
+    };
+    let frames = dali_frames();
+    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    assert_eq!(dali_frames(), frames, "deploy continued after its fault");
+    assert_eq!(
+        sys.pci.count_payload(deploy_steps[0].0),
+        deploy_before[0] + 1
+    );
+    assert_eq!(sys.pci.count_payload(deploy_steps[2].0), deploy_before[2]);
     assert!(sys.daemon.is_running());
 
     drop(sys);
+    let journal = {
+        let mut name = state.file_name().unwrap().to_os_string();
+        name.push(".dali-journal");
+        state.with_file_name(name)
+    };
+    let _ = std::fs::remove_dir_all(journal);
     for path in [state, token, project] {
         std::fs::remove_file(path).unwrap();
     }

@@ -6,8 +6,8 @@
 //! PCI generation is revalidated, so a reconnect can never make an old read
 //! look current or replay an uncertain write.
 
-use super::*;
 use super::dali_journal::{self, ActiveDaliJournal, DaliJournalPlan, DaliJournalWrite};
+use super::*;
 use cbus_protocol::dali::{parse_mask, DaliCalMode, DaliLine};
 use cbus_transport::pci::DaliPollBudget;
 use serde_json::{json, Map, Value};
@@ -2163,12 +2163,13 @@ impl Service {
             Err(warning) => {
                 return Response {
                     tag: tag.to_string(),
-                    lines: vec![format!("501-{warning}")],
+                    // The formatter adds the native `501-` envelope.
+                    lines: vec![warning.clone()],
                     final_text: format!(
                         "501 gateway model mismatch: {warning}; no bus command was sent"
                     ),
                     status: 501,
-                }
+                };
             }
         };
         let mut planned = steps
@@ -2332,13 +2333,9 @@ impl Service {
                     }
                 }
                 let mut state = self.dali_state.lock().await;
-                let Some(session) = state
-                    .sessions
-                    .get_mut(session_name)
-                    .filter(|session| {
-                        session.instance_id == instance && session.ext_epoch == ext_epoch
-                    })
-                else {
+                let Some(session) = state.sessions.get_mut(session_name).filter(|session| {
+                    session.instance_id == instance && session.ext_epoch == ext_epoch
+                }) else {
                     drop(state);
                     let failure = err(tag, 501, "501 session changed during deploy");
                     return stop(&mut journal, response_lines, failure, false);
@@ -2356,8 +2353,7 @@ impl Service {
         if let Some(session) = state.sessions.get_mut(session_name) {
             // The deployed snapshot now matches the gateway's typed state;
             // a concurrent edit or a catalogue change keeps the model dirty.
-            if session.instance_id == instance && session.model == model && !session.catalog_dirty
-            {
+            if session.instance_id == instance && session.model == model && !session.catalog_dirty {
                 session.model_dirty = false;
             }
         }
@@ -2443,7 +2439,8 @@ impl Service {
                     // because every device-changing exchange was answered.
                     if let Some(journal) = run.journal.as_mut() {
                         let _ = journal.complete();
-                        failure.final_text = format!("{} ({})", failure.final_text, journal.summary());
+                        failure.final_text =
+                            format!("{} ({})", failure.final_text, journal.summary());
                     }
                     return failure;
                 }
@@ -2558,7 +2555,11 @@ impl Service {
                     for (_, line) in selected_dali_lines(context.lines) {
                         let exchange = self
                             .dali_session_budgeted_exchange(
-                                context, line, RESCAN_BUDGET, 14, step_name,
+                                context,
+                                line,
+                                RESCAN_BUDGET,
+                                14,
+                                step_name,
                             )
                             .await?;
                         if exchange.nak || exchange.status != 0 {
@@ -2631,10 +2632,7 @@ impl Service {
                         let journal = ActiveDaliJournal::create(
                             &dali_journal::journal_directory(&self.state_path),
                             DaliJournalPlan {
-                                command: format!(
-                                    "DALI SESSION EXTRACT {}",
-                                    context.extract_type
-                                ),
+                                command: format!("DALI SESSION EXTRACT {}", context.extract_type),
                                 session: context.session_name,
                                 project: context.project,
                                 gateway_unit: context.unit,
@@ -3919,14 +3917,13 @@ impl Service {
             }
             None => pci.dali_command(unit, mode, 0xda, operation, payload).await,
         };
-        let result = result
-            .map_err(|error| {
-                err(
-                    tag,
-                    503,
-                    &format!("503 network error during {step}: {error}"),
-                )
-            })?;
+        let result = result.map_err(|error| {
+            err(
+                tag,
+                503,
+                &format!("503 network error during {step}: {error}"),
+            )
+        })?;
         let exchange = result.exchanges.last().cloned().ok_or_else(|| {
             err(
                 tag,
@@ -4000,17 +3997,19 @@ fn clear_ecg_status_flags(
 /// `ka.m()`: some ECG on a selected line is address-known but has
 /// `isFullyKnown` exactly false. The address filter does not apply.
 fn conditional_discovery_needed(model: &Value, lines: (bool, bool)) -> bool {
-    selected_dali_lines(lines).into_iter().any(|(line_index, _)| {
-        model
-            .pointer(&format!("/cdg/daliLines/{line_index}/daliEcgs"))
-            .and_then(Value::as_array)
-            .is_some_and(|ecgs| {
-                ecgs.iter().any(|ecg| {
-                    ecg.get("isFullyKnown") == Some(&Value::Bool(false))
-                        && ecg.get("isAddressKnown") == Some(&Value::Bool(true))
+    selected_dali_lines(lines)
+        .into_iter()
+        .any(|(line_index, _)| {
+            model
+                .pointer(&format!("/cdg/daliLines/{line_index}/daliEcgs"))
+                .and_then(Value::as_array)
+                .is_some_and(|ecgs| {
+                    ecgs.iter().any(|ecg| {
+                        ecg.get("isFullyKnown") == Some(&Value::Bool(false))
+                            && ecg.get("isAddressKnown") == Some(&Value::Bool(true))
+                    })
                 })
-            })
-    })
+        })
 }
 
 fn target_flag(model: &Value, target: &TypedSessionTarget, flag: &str) -> bool {
@@ -4073,11 +4072,8 @@ fn typed_deploy_plan(
             eligible.push((line, address, ecg));
         }
     }
-    let present = |ecg: &Map<String, Value>, field: &str| {
-        ecg.get(field)
-            .and_then(Value::as_object)
-            .cloned()
-    };
+    let present =
+        |ecg: &Map<String, Value>, field: &str| ecg.get(field).and_then(Value::as_object).cloned();
     let write = |step, operation, line, address, payload: Vec<u8>| TypedDeployWrite {
         step,
         operation,
@@ -4095,8 +4091,13 @@ fn typed_deploy_plan(
             .get("groupMembershipBitmask16")
             .and_then(Value::as_u64)
             .and_then(|value| u16::try_from(value).ok());
-        let levels = ["minimumLevel", "maximumLevel", "recoveryLevel", "failureLevel"]
-            .map(|field| json_u8(&params, field));
+        let levels = [
+            "minimumLevel",
+            "maximumLevel",
+            "recoveryLevel",
+            "failureLevel",
+        ]
+        .map(|field| json_u8(&params, field));
         let (Some(groups), [Some(min), Some(max), Some(recovery), Some(failure)]) =
             (groups, levels)
         else {
@@ -5477,16 +5478,13 @@ mod tests {
             ConditionalExtractStep::GetCommonParamsEcg
         );
         assert_eq!(RESCAN_FAULT_EXTRACT_PLAN[0], ConditionalExtractStep::Rescan);
-        assert_eq!(
-            RESCAN_FAULT_EXTRACT_PLAN[1..],
-            COND_QUICK_EXTRACT_PLAN[..]
-        );
+        assert_eq!(RESCAN_FAULT_EXTRACT_PLAN[1..], COND_QUICK_EXTRACT_PLAN[..]);
         let recovered: Value = serde_json::from_str(include_str!(
             "../../../testdata/fixtures/native_cgate_dali_specialized.json"
         ))
         .unwrap();
-        let overrides =
-            &recovered["safety_boundary"]["recovered_native_source"]["cal_sequence"]["step_overrides"];
+        let overrides = &recovered["safety_boundary"]["recovered_native_source"]["cal_sequence"]
+            ["step_overrides"];
         for (step, budget) in [
             ("POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", POLL_FINISH_BUDGET),
             ("COND_DISCOVER_KNOWN_FULL_INFO", DISCOVER_FULL_BUDGET),
@@ -6683,7 +6681,9 @@ mod tests {
         };
         let mut records = entries
             .flatten()
-            .map(|entry| serde_json::from_slice::<Value>(&std::fs::read(entry.path()).unwrap()).unwrap())
+            .map(|entry| {
+                serde_json::from_slice::<Value>(&std::fs::read(entry.path()).unwrap()).unwrap()
+            })
             .collect::<Vec<_>>();
         records.sort_by_key(|record| record["created_unix_ms"].as_i64());
         records
@@ -6744,11 +6744,7 @@ mod tests {
     fn spawn_command(service: &Arc<Service>, command: &str) -> tokio::task::JoinHandle<Response> {
         let service = service.clone();
         let command = command.to_string();
-        tokio::spawn(async move {
-            service
-                .handle(&mut ClientState::default(), &command)
-                .await
-        })
+        tokio::spawn(async move { service.handle(&mut ClientState::default(), &command).await })
     }
 
     #[tokio::test(start_paused = true)]
@@ -6767,7 +6763,11 @@ mod tests {
         dali_success(&mut remote, 11, &[0; 8]).await;
         // ADDRESS_UNKNOWN: no payload, EXECUTE then POLL while running.
         assert_eq!(line(&mut remote).await, b"\\061400E381DA02\r");
-        assert_eq!(journals(&path).len(), 1, "journal must exist before operation 2");
+        assert_eq!(
+            journals(&path).len(),
+            1,
+            "journal must exist before operation 2"
+        );
         assert_eq!(journals(&path)[0]["state"], "send_pending");
         reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 2, 1]).await;
         assert_eq!(line(&mut remote).await, b"\\061400E382DA02\r");
@@ -6782,9 +6782,19 @@ mod tests {
         assert_eq!(line(&mut remote).await, b"\\061400E381DA09\r");
         dali_success(&mut remote, 9, &[0; 8]).await;
         assert_eq!(line(&mut remote).await, b"\\061400E481DA1003\r");
-        dali_success(&mut remote, 16, &[3, 1, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).await;
+        dali_success(
+            &mut remote,
+            16,
+            &[3, 1, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+        )
+        .await;
         assert_eq!(line(&mut remote).await, b"\\061400E481DA1005\r");
-        dali_success(&mut remote, 16, &[5, 0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).await;
+        dali_success(
+            &mut remote,
+            16,
+            &[5, 0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+        )
+        .await;
         // Read-only and emergency parameters only for the EMERGENCY ECG.
         assert_eq!(line(&mut remote).await, b"\\061400E481DA1203\r");
         dali_success(&mut remote, 18, &[3, 1, 5, 0xa0]).await;
@@ -6806,7 +6816,10 @@ mod tests {
             "125-[COND] discovery2: true",
             "120-progress: 13/13, plan: READ_GATEWAY_EXT_COND_QUICK",
         ] {
-            assert!(response.lines.iter().any(|line| line == expected), "{expected}: {response:?}");
+            assert!(
+                response.lines.iter().any(|line| line == expected),
+                "{expected}: {response:?}"
+            );
         }
         // Neither ECG is broken: both COND_BROKEN steps warn and send nothing.
         assert_eq!(
@@ -6825,8 +6838,14 @@ mod tests {
         assert_eq!(line_a["daliEcgs"][5]["isFullyKnown"], true);
         assert_eq!(line_a["daliEcgs"][5]["isKnown"], true);
         assert_eq!(line_a["daliEcgs"][4]["isAddressKnown"], false);
-        assert_eq!(line_a["daliEcgs"][3]["commonReadOnlyParams102"]["physicalMinimumLevel"], 5);
-        assert_eq!(line_a["daliEcgs"][3]["emergencyParams202"]["emergencyLevel"], 200);
+        assert_eq!(
+            line_a["daliEcgs"][3]["commonReadOnlyParams102"]["physicalMinimumLevel"],
+            5
+        );
+        assert_eq!(
+            line_a["daliEcgs"][3]["emergencyParams202"]["emergencyLevel"],
+            200
+        );
         let ext = session.ext.as_json();
         assert_eq!(ext["values"]["256"], 0x5a);
         assert_eq!(ext["values"]["8807"], 0x5a);
@@ -6877,10 +6896,17 @@ mod tests {
             "125-[COND] discovery1: false",
             "125-[COND] discovery2: false",
         ] {
-            assert!(response.lines.iter().any(|line| line == expected), "{expected}");
+            assert!(
+                response.lines.iter().any(|line| line == expected),
+                "{expected}"
+            );
         }
         let state = service.dali_state.lock().await;
-        let line_a = state.sessions["work"].model.pointer("/cdg/daliLines/0").unwrap().clone();
+        let line_a = state.sessions["work"]
+            .model
+            .pointer("/cdg/daliLines/0")
+            .unwrap()
+            .clone();
         drop(state);
         assert!(line_a.get("containsUnaddressed").is_none());
         assert!(line_a["daliEcgs"][5].get("isAddressKnown").is_none());
@@ -6888,7 +6914,11 @@ mod tests {
         let journal = &journals(&path)[0];
         assert_eq!(journal["state"], "outcome_uncertain");
         assert_eq!(journal["confirmed_notes"][0], "IN_PROGRESS");
-        no_more_frames(&mut remote, "ADDRESS_UNKNOWN was polled past 67 or replayed").await;
+        no_more_frames(
+            &mut remote,
+            "ADDRESS_UNKNOWN was polled past 67 or replayed",
+        )
+        .await;
         cleanup(path);
     }
 
@@ -6896,7 +6926,9 @@ mod tests {
     async fn address_unknown_reconnect_is_uncertain_and_never_replayed() {
         let (service, mut remote, path) = setup().await;
         new_session(&service).await;
-        let before = service.dali_state.lock().await.sessions["work"].model.clone();
+        let before = service.dali_state.lock().await.sessions["work"]
+            .model
+            .clone();
         let request = spawn_command(
             &service,
             "[x] DALI SESSION EXTRACT work !dali-gateway-20 A COND_QUICK",
@@ -6907,11 +6939,20 @@ mod tests {
         dali_success(&mut remote, 2, &[0x08, 0, 0, 0, 0, 0, 0, 0]).await;
         let response = request.await.unwrap();
         assert_eq!(response.status, 503, "{response:?}");
-        assert!(response.final_text.contains("PCI connection changed during ADDRESS_UNKNOWN"));
+        assert!(response
+            .final_text
+            .contains("PCI connection changed during ADDRESS_UNKNOWN"));
         assert!(response.final_text.contains("session was not updated"));
-        assert!(response.final_text.contains("0 of 1 planned device writes confirmed"));
-        assert!(response.final_text.contains("nothing was rolled back or replayed"));
-        assert_eq!(service.dali_state.lock().await.sessions["work"].model, before);
+        assert!(response
+            .final_text
+            .contains("0 of 1 planned device writes confirmed"));
+        assert!(response
+            .final_text
+            .contains("nothing was rolled back or replayed"));
+        assert_eq!(
+            service.dali_state.lock().await.sessions["work"].model,
+            before
+        );
         assert_eq!(journals(&path)[0]["state"], "outcome_uncertain");
         no_more_frames(&mut remote, "uncertain ADDRESS_UNKNOWN was replayed").await;
         cleanup(path);
@@ -6933,16 +6974,27 @@ mod tests {
         reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 10, 4]).await;
         let response = request.await.unwrap();
         assert_eq!(response.status, 502, "{response:?}");
-        assert!(response.final_text.contains("committed because ADDRESS_UNKNOWN was sent"));
-        assert!(response.final_text.contains("1 of 1 planned device writes confirmed"));
-        assert!(response.lines.iter().any(|line| line == "120-progress: 6/14, plan: BROKEN"));
+        assert!(response
+            .final_text
+            .contains("committed because ADDRESS_UNKNOWN was sent"));
+        assert!(response
+            .final_text
+            .contains("1 of 1 planned device writes confirmed"));
+        assert!(response
+            .lines
+            .iter()
+            .any(|line| line == "120-progress: 6/14, plan: BROKEN"));
         let session = service.dali_state.lock().await.sessions["work"].clone();
         let line_a = session.model.pointer("/cdg/daliLines/0").unwrap();
         assert_eq!(line_a["containsUnaddressed"], false);
         assert_eq!(line_a["daliEcgs"][3]["isAddressKnown"], true);
         assert_eq!(session.source_cdg.as_deref(), Some("!dali-gateway-20"));
         assert_eq!(journals(&path)[0]["state"], "complete");
-        no_more_frames(&mut remote, "COND_EXTENDED continued or replayed after a fault").await;
+        no_more_frames(
+            &mut remote,
+            "COND_EXTENDED continued or replayed after a fault",
+        )
+        .await;
         cleanup(path);
     }
 
@@ -7040,7 +7092,10 @@ mod tests {
                     ]
                 ),
                 ("SET_LED_PARAMS_ECG", vec![vec!["A40:0501".to_string()]]),
-                ("SET_EMERGENCY_PARAMS_ECG", vec![vec!["A38:03B40407".to_string()]]),
+                (
+                    "SET_EMERGENCY_PARAMS_ECG",
+                    vec![vec!["A38:03B40407".to_string()]]
+                ),
             ]
         );
         // The optional address set filters every step.
@@ -7049,15 +7104,38 @@ mod tests {
         assert_eq!(ranged[2].phases[0].len(), 1);
 
         for (pointer, value, warning) in [
-            ("/cdg/daliLines/0/daliEcgs/5/commonParams102", Value::Null, "common parameters not set for ecg: 5"),
-            ("/cdg/daliLines/0/daliEcgs/5/ledParams207", Value::Null, "led parameters not set for ecg: 5"),
-            ("/cdg/daliLines/0/daliEcgs/5/ledParams207/dimmCurve", json!("SQUARE"), "led parameters invalid for ecg: 5"),
-            ("/cdg/daliLines/0/daliEcgs/3/commonReadOnlyParams102", Value::Null, "emergency parameters not set for ecg: 3"),
-            ("/cdg/daliLines/0/daliEcgs/3/commonParams102/minimumLevel", json!(256), "common parameters invalid for ecg: 3"),
+            (
+                "/cdg/daliLines/0/daliEcgs/5/commonParams102",
+                Value::Null,
+                "common parameters not set for ecg: 5",
+            ),
+            (
+                "/cdg/daliLines/0/daliEcgs/5/ledParams207",
+                Value::Null,
+                "led parameters not set for ecg: 5",
+            ),
+            (
+                "/cdg/daliLines/0/daliEcgs/5/ledParams207/dimmCurve",
+                json!("SQUARE"),
+                "led parameters invalid for ecg: 5",
+            ),
+            (
+                "/cdg/daliLines/0/daliEcgs/3/commonReadOnlyParams102",
+                Value::Null,
+                "emergency parameters not set for ecg: 3",
+            ),
+            (
+                "/cdg/daliLines/0/daliEcgs/3/commonParams102/minimumLevel",
+                json!(256),
+                "common parameters invalid for ecg: 3",
+            ),
         ] {
             let mut broken = model.clone();
             *broken.pointer_mut(pointer).unwrap() = value;
-            assert_eq!(typed_deploy_plan(&broken, (true, true), None).unwrap_err(), warning);
+            assert_eq!(
+                typed_deploy_plan(&broken, (true, true), None).unwrap_err(),
+                warning
+            );
         }
     }
 
@@ -7071,7 +7149,10 @@ mod tests {
     async fn install_deploy_model(service: &Arc<Service>) {
         let mut state = service.dali_state.lock().await;
         let session = state.sessions.get_mut("work").unwrap();
-        *session.model.pointer_mut("/cdg/daliLines/0/daliEcgs").unwrap() = deploy_model();
+        *session
+            .model
+            .pointer_mut("/cdg/daliLines/0/daliEcgs")
+            .unwrap() = deploy_model();
         session.model_dirty = true;
     }
 
@@ -7175,24 +7256,40 @@ mod tests {
             }
             let response = request.await.unwrap();
             let expected_status = if kind == 2 { 503 } else { 502 };
-            assert_eq!(response.status, expected_status, "fault {fault}: {response:?}");
+            assert_eq!(
+                response.status, expected_status,
+                "fault {fault}: {response:?}"
+            );
             assert!(
                 response
                     .final_text
                     .contains(&format!("{fault} of 8 planned device writes confirmed")),
                 "fault {fault}: {response:?}"
             );
-            assert!(response.final_text.contains("nothing was rolled back or replayed"));
+            assert!(response
+                .final_text
+                .contains("nothing was rolled back or replayed"));
             let journal = &journals(&path)[0];
             assert_eq!(journal["confirmed_writes"], fault);
             assert_eq!(
                 journal["state"],
-                if kind == 0 { "failed" } else { "outcome_uncertain" },
+                if kind == 0 {
+                    "failed"
+                } else {
+                    "outcome_uncertain"
+                },
                 "fault {fault}"
             );
             let session = service.dali_state.lock().await.sessions["work"].clone();
-            assert!(session.model_dirty, "a partial deploy must keep the model dirty");
-            no_more_frames(&mut remote, "typed deploy continued, rolled back or replayed").await;
+            assert!(
+                session.model_dirty,
+                "a partial deploy must keep the model dirty"
+            );
+            no_more_frames(
+                &mut remote,
+                "typed deploy continued, rolled back or replayed",
+            )
+            .await;
             cleanup(path);
         }
     }
@@ -7215,13 +7312,16 @@ mod tests {
             )
             .await;
         assert_eq!(response.status, 501, "{response:?}");
-        assert_eq!(response.lines, ["501-common parameters not set for ecg: 5"]);
+        assert_eq!(response.lines, ["common parameters not set for ecg: 5"]);
         assert!(response.final_text.contains("no bus command was sent"));
 
         {
             let mut state = service.dali_state.lock().await;
             let session = state.sessions.get_mut("work").unwrap();
-            *session.model.pointer_mut("/cdg/daliLines/0/daliEcgs").unwrap() =
+            *session
+                .model
+                .pointer_mut("/cdg/daliLines/0/daliEcgs")
+                .unwrap() =
                 json!([{"shortAddress": 3, "isKnown": true}, {"shortAddress": 3, "isKnown": true}]);
         }
         let duplicate = service
@@ -7249,7 +7349,9 @@ mod tests {
             )
             .await;
         assert_eq!(catalogue.status, 501, "{catalogue:?}");
-        assert!(catalogue.final_text.contains("extended-proxy serialization"));
+        assert!(catalogue
+            .final_text
+            .contains("extended-proxy serialization"));
         assert!(journals(&path).is_empty());
         no_more_frames(&mut remote, "a refused typed deploy emitted PCI bytes").await;
         cleanup(path);
@@ -7262,10 +7364,10 @@ mod tests {
         {
             let mut state = service.dali_state.lock().await;
             let session = state.sessions.get_mut("work").unwrap();
-            *session.model.pointer_mut("/cdg/daliLines/0/daliEcgs").unwrap() = json!([
-                null, null, null, null, null,
-                deploy_model()[5].clone()
-            ]);
+            *session
+                .model
+                .pointer_mut("/cdg/daliLines/0/daliEcgs")
+                .unwrap() = json!([null, null, null, null, null, deploy_model()[5].clone()]);
             session.stage_ext(256, &[0xaa]).unwrap();
         }
         let request = spawn_command(

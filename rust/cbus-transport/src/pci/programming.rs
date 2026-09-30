@@ -8151,11 +8151,10 @@ mod tests {
             max_polls: 2,
             interval: Duration::from_millis(3000),
         };
-        let running = tokio::spawn(async move {
-            worker
-                .dali_auto_command(20, budget, 0xda, 0x84, &[])
-                .await
-        });
+        let running =
+            tokio::spawn(
+                async move { worker.dali_auto_command(20, budget, 0xda, 0x84, &[]).await },
+            );
         // POLL-first resumes a running operation; no EXECUTE is sent.
         assert_eq!(line(&mut remote).await, b"\\061400E382DA84\r");
         direct_reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 0x84, 1]).await;

@@ -123,7 +123,7 @@ async fn dali_core_and_emergency_are_correlated_authenticated_and_keep_mqtt_live
     assert_eq!(capability_json["dali_full_compatibility"], false);
     assert_eq!(
         capability_json["dali_session_typed_device_plans"],
-        "complete-read-only-extract"
+        "complete-extract-and-typed-deploy"
     );
     assert_eq!(
         capability_json["dali_session_typed_extract_plans"],
@@ -131,45 +131,35 @@ async fn dali_core_and_emergency_are_correlated_authenticated_and_keep_mqtt_live
             "DALI_ONLY",
             "FULL",
             "REFRESH_STATUS_INFO",
-            "RETRIEVE_RECONCILE"
+            "RETRIEVE_RECONCILE",
+            "COND_QUICK",
+            "COND_EXTENDED",
+            "RESCAN_FAULT"
         ])
     );
     assert_eq!(
         capability_json["dali_session_typed_extract_plans_remaining"],
-        serde_json::json!(["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"])
+        serde_json::json!([])
     );
     assert_eq!(
-        capability_json["dali_session_typed_extract_refusal_step"],
-        "ADDRESS_UNKNOWN"
+        capability_json["dali_session_address_unknown_budget"],
+        serde_json::json!({"max_polls": 67, "poll_interval_ms": 3000})
     );
     assert_eq!(
-        capability_json["dali_session_typed_extract_safe_prefix_plans"],
-        serde_json::json!({
-            "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-            "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-            "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
-        })
-    );
-    assert_eq!(
-        capability_json["dali_session_typed_extract_refusal_receipt"],
-        "mask-only-no-explicit-device-allocation"
+        capability_json["dali_session_typed_deploy_plans"],
+        serde_json::json!(["EXT_ONLY", "DALI_ONLY", "FULL"])
     );
     assert_eq!(
         capability_json["dali_session_typed_deploy_plans_remaining"],
-        serde_json::json!(["DALI_ONLY", "FULL"])
+        serde_json::json!([])
     );
     assert_eq!(
-        capability_json["dali_session_typed_deploy_preflight"],
-        "local-session-target-validation-before-io"
+        capability_json["dali_session_typed_deploy_failure"],
+        "stop-at-first-fault-no-rollback-no-replay"
     );
     assert_eq!(
-        capability_json["dali_session_typed_deploy_refusal_missing"],
-        serde_json::json!([
-            "native-step-order",
-            "model-to-payload-ownership",
-            "per-field-readback-receipts",
-            "full-typed-ext-atomic-boundary"
-        ])
+        capability_json["dali_commissioning_journal"],
+        "cmqttd-dali-commissioning-journal-v1"
     );
     assert_eq!(capability_json["dali_auto_poll_limit"], 10);
     assert_eq!(

@@ -3861,9 +3861,8 @@ impl Service {
             capabilities["dali_session_typed_deploy_plans_remaining"] = serde_json::json!([]);
             capabilities["dali_session_typed_deploy_model_validation"] =
                 serde_json::Value::String("complete-plan-before-io".to_string());
-            capabilities["dali_session_typed_deploy_failure"] = serde_json::Value::String(
-                "stop-at-first-fault-no-rollback-no-replay".to_string(),
-            );
+            capabilities["dali_session_typed_deploy_failure"] =
+                serde_json::Value::String("stop-at-first-fault-no-rollback-no-replay".to_string());
             capabilities["dali_session_typed_deploy_readback"] =
                 serde_json::Value::String("none-native".to_string());
             capabilities["dali_commissioning_journal"] =
