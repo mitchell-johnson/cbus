@@ -1,0 +1,120 @@
+{
+  "base_revision": "02f4b0e96cb080ba36c9da474b0e5666c631ac89",
+  "contexts": {
+    "source": {
+      "actual_main_product_origins": 19,
+      "excluded": 0,
+      "failures": 0,
+      "junit_suite_tests_attribute": 81,
+      "junit_testcase_elements": 57,
+      "minimum_free_bytes": 3031883776,
+      "normal_tests": 57,
+      "phase_events": 195,
+      "skips": 0,
+      "subtests": 24
+    },
+    "wheel": {
+      "actual_main_product_origins": 19,
+      "excluded": 0,
+      "failures": 0,
+      "junit_suite_tests_attribute": 81,
+      "junit_testcase_elements": 57,
+      "minimum_free_bytes": 3023429632,
+      "normal_tests": 57,
+      "phase_events": 195,
+      "skips": 0,
+      "subtests": 24
+    }
+  },
+  "focused_acceptance_sha256": "7a8a1a311c0e751d8578363bace4e68225fbb5e5aca55258849ebed5b33cf7c6",
+  "format": "cbus-unit-mapper-independent-root-audit-v1",
+  "historical_failed_ci_logs": {
+    "source": {
+      "bytes": 159510,
+      "historical_revision_prefix": "4f1b604b",
+      "sha256": "dd8ca1a0cd029e7833a64cbff7001dab5ead02ba104c96c039b91a0f2432b82a"
+    },
+    "wheel": {
+      "bytes": 139226,
+      "historical_revision_prefix": "4f1b604b",
+      "sha256": "814b41bb78b8262cb6aef4c6b072216cb38474c4fbfe6e11b1f6c050a4c9ad72"
+    }
+  },
+  "package_files": 321,
+  "package_unchanged_from_base": true,
+  "qualifications": [
+    "57 distinct normal nodes and 24 subtests overlap other acceptance layers; no additive functionality count.",
+    "Raw wheel runner retained inherited deselection prose and boolean. No original producer was selected; actual collection/calls show zero exclusions. Those inherited fields are not acceptance evidence.",
+    "19 main imports, 20 finder resolutions and two 150-module subprocess import audits bind installed bytes; no whole-product execution claim.",
+    "References were hashed in place; the explicit prior reference roster is conservative, not a heuristic claim of complete discovery.",
+    "Historical original captures remain immutable; current Rust replay and loopback interop do not establish fresh original-runtime, physical or full CI acceptance.",
+    "The initial listener-refusal attempt and subsequent successful replay logs are separately retained. Logs do not independently authenticate permission metadata.",
+    "The executed closure excludes the newly added follow-up documentation; the declared documentation-only delta does not alter product, helper, test or original-wire bytes."
+  ],
+  "reference_deltas_after_execution": {
+    "toolkit-cli/docs/implementation-status.md": {
+      "current_sha256": "b1762ea44569dc41a326d5f5416ef7cd2be1f9a6fa96a3935311904e49122658",
+      "frozen_sha256": "22ffef1f8eb417a5ee8cc0e00262d95b28e9e200c8fa5485c214c1285012df32"
+    }
+  },
+  "reference_files": 2753,
+  "replay_logs": {
+    "approved-replay.log": "0073ea77e19250a95894d5ca67738546fae6ed03702817db3890ca59397bc181",
+    "replay.log": "10909816fac4728005f6e89091178b4a5290fdae410f8fb315c1fdbce8514077"
+  },
+  "replays": {
+    "cmqttd": {
+      "added_paths": [
+        "rust/cbus-transport/src/commissioning_route.rs",
+        "rust/cbus-transport/src/pci/selected_serial_observation.rs"
+      ],
+      "binary_sha256": "55afd4b56ece20e0b16a48433d8ad190ee308ecba1327de0e85a51a7f8accf79",
+      "changed_paths": [
+        "rust/Cargo.lock",
+        "rust/cbus-transport/Cargo.toml",
+        "rust/cbus-transport/src/apply.rs",
+        "rust/cbus-transport/src/framing.rs",
+        "rust/cbus-transport/src/lib.rs",
+        "rust/cbus-transport/src/pci/programming.rs",
+        "rust/cbus-transport/src/pci.rs",
+        "rust/cbus-transport/src/plan.rs",
+        "rust/cbus-transport/src/verify.rs"
+      ],
+      "combined_wire_equal": 2,
+      "previous_sha256": "57e16747539e62c16b65b8263e147591864fc8d324f8a3d4b12a31a62b47fca0",
+      "public_sha256": "4768158d6cfe6115c640d26fd628b73238aca7e5a957bd538b4d427f69a4b6f0",
+      "raw_sha256": "76ebbaad316a4aac5401c04121b35fb1b4a5dd9793c0358481d82022d4ea4a1a",
+      "removed_paths": [],
+      "source_files": 186,
+      "unit_wire_equal": 12
+    },
+    "mock": {
+      "added_paths": [
+        "rust/cbus-transport/src/commissioning_route.rs",
+        "rust/cbus-transport/src/pci/selected_serial_observation.rs"
+      ],
+      "binary_sha256": "7cc2cc297778a4cf401faf929188f9a9c68b9ca2cb6aedfda6b1f4dfdc30f207",
+      "changed_paths": [
+        "rust/Cargo.lock",
+        "rust/cbus-transport/Cargo.toml",
+        "rust/cbus-transport/src/apply.rs",
+        "rust/cbus-transport/src/framing.rs",
+        "rust/cbus-transport/src/lib.rs",
+        "rust/cbus-transport/src/pci/programming.rs",
+        "rust/cbus-transport/src/pci.rs",
+        "rust/cbus-transport/src/plan.rs",
+        "rust/cbus-transport/src/verify.rs"
+      ],
+      "combined_wire_equal": 2,
+      "previous_sha256": "758b00325b819d1fad2db4b455760fa83272f26d0b407e0d744ec182c2ca9421",
+      "public_sha256": "21bf2d82392602e81bfc7fa4d749cfdc3706de1354b0db7dd7b3c895c665149a",
+      "raw_sha256": "bca583e1af11ffb640c85db6c0a194d126f82b4fc3f70758c7e62a147e2757a8",
+      "removed_paths": [],
+      "source_files": 167,
+      "unit_wire_equal": 12
+    }
+  },
+  "result": "passed",
+  "source_wheel_installed_package_equal": true,
+  "wheel_sha256": "6421060c04f1a9318a8aa0815b03b9620ccf40d4222a942d188bf6a9e21662a7"
+}

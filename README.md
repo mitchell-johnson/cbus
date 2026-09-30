@@ -26,7 +26,11 @@ NeoClassic SceneModify reports. Its focused source and wheel runs each passed
 **1,159 test nodes and 1,304 subtests**, with separate validation of
 151 distinct Rust tests. It also corrects journal-parent aliases while retaining
 strict attempt-marker checks. Original routed commissioning and complete report
-GUI/physical acceptance remain open. These results are separate from the preceding
+GUI/physical acceptance remain open. A subsequent
+[XML mapper receipt refresh](toolkit-cli/docs/feature-batch-2026-10-01-unit-mapper-receipts.md)
+replays the retained original Unit and combined Network cases against both
+current Rust servers, preserving strict source and exact-wire checks.
+These results are separate from the preceding
 [IOPE and template batch](toolkit-cli/docs/feature-batch-2026-10-01-iope-templates-recovery.md), which
 adds eight IOPE controller components, local eDLT template export/inspection/
 preview and guarded staging, plus firmware failure diagnostics. Its focused
@@ -779,7 +783,7 @@ its identity into ACCESS rows, and the exact
 native per-handler access-level matrix is unfinished. Device-family coverage,
 unusual bridges and adapters, electrical/timing behavior, power-loss recovery,
 and hardware acceptance beyond the evidenced profiles still require validation.
-The Toolkit CLI's separate 18/19/2 workflow ledger remains incomplete.
+The Toolkit CLI's separate 18/22/2 workflow ledger remains incomplete.
 See the [supported operations and remaining work](docs/cmqttd-cgate.md).
 
 The NET runtime catalogue is separate from the imported tag database, matching

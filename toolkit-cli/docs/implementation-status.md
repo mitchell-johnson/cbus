@@ -48,6 +48,16 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [XML mapper receipt refresh](feature-batch-2026-10-01-unit-mapper-receipts.md)
+reaccepts twelve retained original Unit cases and two combined Network checks
+against each current Rust server, with exact wire equality. It corrects stale
+transitive source bindings exposed by CI after the routed transport changes;
+the original captures and strict validator are unchanged. This is fresh Rust
+execution against retained originals, not new original-runtime or hardware
+acceptance. Focused source and installed-wheel checks each passed **57 distinct
+normal tests and 24 subtests**, with zero failures, skips or exclusions. These
+results do not replace a full CI result or change the broad ledger.
+
 The [routed commissioning and documentor batch](feature-batch-2026-10-01-routed-commissioning-documentors.md)
 adds project-bound Rust execution, independent Python apply-v2 journal
 validation and offline XML/CBZ reconciliation, plus bounded old DIMPR12 and
