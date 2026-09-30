@@ -1914,6 +1914,14 @@ Native conversion creates a project backup by default. `conversion move`
 transfers programming into an existing replacement unit and removes the source.
 See [conversion behavior and native limitations](docs/conversion.md).
 
+For the bounded RELDN4 → RELDN4A existing-unit workflow, `conversion plan-move`
+writes a private reviewed plan and `apply-move` verifies a backup, converts
+once, saves the project, reopens it and checks the complete project and fresh
+PP. Both require private specifications and exclusive closed-project ownership.
+Keep the durable attempt journal; `conversion recover --journal FILE` reads
+the current project and backup without replaying an uncertain conversion or
+save. See the [integrated workflow](docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).
+
 The [Rust database conversion batch](docs/feature-batch-2026-10-01-conversion-pp.md)
 compares 30 original catalogue/move results with both cgate-mock and cmqttd,
 including ordered PP, independent scalar metadata, channel metadata and

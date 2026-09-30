@@ -5479,8 +5479,8 @@ async fn pp_reset_to_defaults_is_spec_backed_staged_and_persisted_only_by_save()
     std::fs::write(
         spec_dir.join("KEYGL5.xml"),
         r#"<UnitSpecification><Parameters>
-        <Param><Name>StaticTextString0</Name><Type>string</Type><Address>$20</Address><DefaultValue>Factory text</DefaultValue></Param>
-        <Param><Name>UnitName</Name><Type>string</Type><Address>$21</Address><DefaultValue>Factory name</DefaultValue></Param>
+        <Param><Name>StaticTextString0</Name><Type>string</Type><ArraySize>16</ArraySize><Address>$20</Address><DefaultValue>Factory text</DefaultValue></Param>
+        <Param><Name>UnitName</Name><Type>string</Type><ArraySize>16</ArraySize><Address>$21</Address><DefaultValue>Factory name</DefaultValue></Param>
         <Param><Name>WithoutDefault</Name><Type>int</Type><Address>$22</Address></Param>
         </Parameters></UnitSpecification>"#,
     )
@@ -5567,7 +5567,12 @@ async fn pp_reset_to_defaults_is_spec_backed_staged_and_persisted_only_by_save()
     let model = restarted.model.lock().await;
     let fields = &model.projects["HARNESS"].networks[&254].units[&5].fields;
     assert_eq!(fields["StaticTextString0"], "Factory text");
-    assert_eq!(fields["UnitName"], "Factory name");
+    assert!(!fields.contains_key("UnitName"));
+    let unit = &model.projects["HARNESS"].networks[&254].units[&5];
+    assert_eq!(
+        model.stored_unit_pp_values("HARNESS", unit)["UnitName"],
+        "Factory name"
+    );
     assert!(!fields.contains_key("AdHoc"));
     assert!(model.sessions.is_empty());
     drop(model);
@@ -5617,7 +5622,7 @@ async fn pp_reset_to_defaults_with_invalid_spec_fails_unchanged_and_without_pci(
     std::fs::write(
         spec_dir.join("KEYGL5.xml"),
         r#"<UnitSpecification><Parameters>
-        <Param><Name>StaticTextString0</Name><Type>string</Type></Param>
+        <Param><Name>StaticTextString0</Name><Type>string</Type><ArraySize>16</ArraySize></Param>
         </Parameters></UnitSpecification>"#,
     )
     .unwrap();

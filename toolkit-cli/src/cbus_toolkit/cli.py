@@ -2002,6 +2002,20 @@ def build_parser():
 
     convert = cgops.add_parser("conversion", help="Native database conversion; moves replace the destination and remove the source")
     convops = convert.add_subparsers(dest="remote_action", required=True)
+    p = convops.add_parser("plan-move", help="Review one backed-up RELDN4 to RELDN4A database move")
+    p.add_argument("source")
+    p.add_argument("destination")
+    p.add_argument("--backup-project", required=True)
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--exclusive-project", action="store_true", help="Assert exclusive ownership of the closed project")
+    p.add_argument("--output", type=Path, required=True, help="New private reviewed plan file; never overwritten")
+    p = convops.add_parser("apply-move", help="Convert once, save/reopen and verify the reviewed move")
+    p.add_argument("--plan", type=Path, required=True)
+    p.add_argument("--journal", type=Path, required=True, help="New durable attempt journal; never reused")
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--exclusive-project", action="store_true", help="Assert exclusive ownership of the closed project")
+    p = convops.add_parser("recover", help="Read-only inspection after an interrupted conversion; never replay")
+    p.add_argument("--journal", type=Path, required=True)
     p = convops.add_parser("align", help="Copy evidenced classic settings while retaining destination identity")
     p.add_argument("source")
     p.add_argument("destination")
@@ -2774,6 +2788,9 @@ def _cgate(args):
         commands = []
     database_xml_document = None
     database_xml_sha256 = None
+    if args.action == "conversion" and args.remote_action in ("plan-move", "apply-move", "recover"):
+        from .conversion_workflow_cli import prepare
+        prepare(args)
     if args.action == "database" and args.remote_action == "set-xml":
         database_xml_document, database_xml_sha256 = _read_cgate_xml_file(args.file)
     if (args.action == "database" and args.remote_action == "get-xml"
@@ -2790,6 +2807,7 @@ def _cgate(args):
     # large 347 row after the short XML declaration. Leave room for the 4 MiB
     # document bound plus its status envelope.
     large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml"))
+                 or args.action == "conversion"
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
     connection_limits.update(wireless_limits)
@@ -3034,6 +3052,9 @@ def _cgate(args):
                     return {"type": "event-summary", "received": received, "events_lost": True}, 1
             return {"type": "event-summary", "received": received, "events_lost": client.events_lost}, int(client.events_lost)
         if args.action == "conversion":
+            if args.remote_action in ("plan-move", "apply-move", "recover"):
+                from .conversion_workflow_cli import execute
+                return execute(args, client)
             from .conversion import NativeConversions
             converter = NativeConversions(client)
             if args.remote_action == "replace":
@@ -4369,7 +4390,8 @@ def main(argv=None):
             print(json.dumps({"error": "Interrupted", **scheduling}, default=_json_default), file=sys.stderr)
             return 130
         evidence = getattr(exc, "physical_address_evidence", None)
-        result = {"error": "Interrupted", **(evidence if isinstance(evidence, dict) else {})}
+        result = {"error": "Interrupted", **getattr(exc, "details", {}),
+                  **(evidence if isinstance(evidence, dict) else {})}
         result.update(_selected_serial_error_payload(exc))
         result.update(_programming_cleanup_payload(exc))
         result.update(_cgate_cleanup_payload(exc))

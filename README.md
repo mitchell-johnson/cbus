@@ -19,7 +19,14 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
-The latest [database conversion and PP persistence batch](toolkit-cli/docs/feature-batch-2026-10-01-conversion-pp.md)
+The latest [reviewed conversion workflow](toolkit-cli/docs/feature-batch-2026-10-01-conversion-workflow.md)
+adds a backed-up RELDN4 → RELDN4A move through project save, reopen, full PP
+verification and read-only recovery. Source and installed-wheel checks each
+passed 180 focused tests and four public workflow cases, including uncertain
+replies and stale group refusal. Its scope is a closed indexed database graph;
+original Toolkit and physical acceptance remain open.
+
+The preceding [database conversion and PP persistence batch](toolkit-cli/docs/feature-batch-2026-10-01-conversion-pp.md)
 matches 30 original C-Gate conversion results in each Rust server, preserves
 independent unit metadata and programming parameters across saves and daemon
 restart, and fixes successful LOAD warning handling in the Python CLI.
@@ -64,6 +71,7 @@ retains its separate source-bound acceptance record.
 | Extract or deploy supported DALI device and gateway settings | `cbus-toolkit cgate dali` through cmqttd, including its 133 advertised global gateway fields ([workflow](toolkit-cli/docs/dali-commissioning.md)) |
 | Preview or save database thermostat settings, explicit Celsius/Fahrenheit form normalization and supported templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [template allocation](toolkit-cli/docs/thermostat-templates.md)) |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
+| Review a supported database unit move, retain a backup, save/reopen and inspect an interrupted attempt | `cbus-toolkit cgate conversion plan-move`, `apply-move`, `recover` ([workflow and bounds](toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery)) |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
 | Query a CNI directly or inspect routed PCI messages | `cbus-toolkit pci` and `pci-route` |

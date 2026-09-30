@@ -4,7 +4,10 @@
 The command grammar comes from the supplied `pu` and `pv` classes; the
 conversion rules and destination handling come from `dg` and
 `ConvertUnitRulesUtility`. The vendor help only lists the command names.
-These commands do not program a physical device or save the project to disk.
+The low-level `catalog` and `move` commands change the database model; they do
+not program a physical device or save the converted project snapshot. The
+integrated `plan-move` / `apply-move` workflow below performs the project save
+and reopen explicitly.
 
 ```sh
 cbus-toolkit cgate conversion check-catalog //TEST/254/p/20 DIMDU4 L5504D2U
@@ -68,9 +71,10 @@ Native behaviors that users must expect:
   target arrays have equal length. The PP is then omitted and reads back as
   the target default. For example, DIMDN4 to DIMDU4 loses nine configured
   channel settings.
-- DIMDN4 to DIMDN8 copies four-element arrays into eight-element parameters.
-  Some rules also produce a bare hex digit such as `b` or a one-token `0`.
-  C-Gate stores those strings, but a later PP LOAD of the unit fails with `408`.
+- Some conversions retain short arrays or produce numeric strings that cannot
+  be read completely. A fresh original run found one failed PP LOAD and six
+  further conversions with successful LOAD but individual GET failures.
+  Inspect every declared parameter; successful LOAD alone is insufficient.
 - `CHECK` admits an unchanged identity, while `CONVERT` refuses it. The same
   refusal applies to a mode-2 move between units with the same type and
   firmware.
@@ -80,8 +84,10 @@ Owned native C-Gate 3.4.0.2001 acceptance
 (`tests/test_conversion_pairs_native.py`) ran all 15 pairs in both modes. It
 used generated non-default source values and, for moves, non-default
 destination values. The model matched every stored PP list, including order,
-and every rebuilt identity and output-channel set. PP GET readback matched,
-including the seven predicted PP LOAD failures. Values survived project save,
+and every rebuilt identity and output-channel set. The historical receipt's
+seven-LOAD-failure interpretation was superseded by the fresh, phase-separated
+capture: one LOAD failed and six successful LOADs had individual GET failures.
+Stored database values survived project save,
 close and load. Fifteen refusal cases were checked for exact codes and no
 mutation: incompatible and reverse pairs, a missing source or destination, an
 incompatible destination, an unknown catalogue number, an unchanged identity
@@ -93,12 +99,16 @@ cmqttd and `cgate-mock` implement the same admission, rules, identity and
 move-deletion semantics. They need the mapping table in the directory given
 to `--cgate-unitspec` or `--unitspec`. Without it, `CONVERT` refuses with
 `301` instead of guessing. The same harness (`research/convertunit_pairs.py`)
-matched native PP lists for all non-C-Bus-3 targets. Three differences remain:
-
-- The Rust database field map cannot store the C-Bus 3 `UnitType` device
-  parameter beside the unit type, so that PP is not stored.
-- Rust does not regenerate C-Bus 3 output channels.
-- Rust PP LOAD accepts stored values that native C-Gate rejects.
+now matches the ordered native PP lists, selected identity and channel metadata
+for all 30 admitted pair/mode cases in both Rust servers. Scalar identity and
+colliding PP names occupy separate namespaces; declared target channel
+skeletons are regenerated. Spec-backed database LOAD validates stored strings
+before replacing a session and preserves successful range-reset advisories.
+See the [published component comparison](feature-batch-2026-10-01-conversion-pp.md)
+for the current input bindings and qualifications. Native memory normalization,
+masking, missing-byte GET and SAVE semantics remain unfinished. That component
+comparison did not execute the complete public CLI workflow or establish
+original Toolkit form or hardware acceptance.
 
 The original DIMDN4-to-DIMDU4 acceptance in `tests/test_conversion.py` uses
 the actual supplied C-Gate jar
@@ -117,3 +127,62 @@ Native mode 1 resets the serial number; mode 2 retains the destination's name
 and serial number while transferring source programming. C-Gate can omit other
 metadata when rebuilding the unit, which is why the CLI defaults to a project
 backup. No automatic retry or restore is attempted after an uncertain failure.
+
+## Reviewed move with save, reopen and recovery
+
+`plan-move` and `apply-move` compose a bounded RELDN4 → RELDN4A existing-unit
+move. They require private decoded specifications, the catalogue and
+`ConvertUnitMappingTable.xml`, and explicit exclusive ownership of the closed
+project. The plan binds the endpoint, complete project snapshot, source and
+destination identities, every consumed input hash, ordered expected PP and
+expected project tree. It rejects unsupported metadata, malformed mapped values
+and incomplete or noncanonical PP readback before conversion.
+
+Preservation covers the indexed database tree returned by `DBGETXML`, rather
+than a Schneider repository archive. The accepted fixture imports complete
+Network/Unit/Application/Group documents. Current cmqttd shallow Application
+and Group records created only by `DBADDSAFE` are omitted from that XML view;
+their complete lifecycle and fully qualified XML selector behavior remain
+backend gaps. They are outside this workflow's whole-tree acceptance. Verify
+that the authoritative snapshot contains the objects and references you need
+to preserve before reviewing a plan.
+
+For a provisioned, owned `WFCONV` project with source 20, replacement 21 and
+absent backup `WFCONVB1`:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port "$WF_CGATE_PORT" conversion plan-move \
+  //WFCONV/254/p/20 //WFCONV/254/p/21 --backup-project WFCONVB1 \
+  --spec-dir "$WF_SPECS" --exclusive-project --output move-plan.json
+# Review move-plan.json and the reported destination changes.
+cbus-toolkit cgate --host 127.0.0.1 --port "$WF_CGATE_PORT" conversion apply-move \
+  --plan move-plan.json --journal move-attempt.json \
+  --spec-dir "$WF_SPECS" --exclusive-project
+cbus-toolkit cgate --host 127.0.0.1 --port "$WF_CGATE_PORT" conversion recover \
+  --journal move-attempt.json
+```
+
+Both local files are created exclusively with private permissions and synced
+to disk. Apply rechecks the reviewed project and PP before creating a verified
+backup, sends one CONVERT, compares the result against the independent mapping,
+saves the project once, closes/reopens it and checks the full tree and fresh PP
+again. Newly allocated destination/channel OIDs are checked for shape and
+preservation across reopen; unrelated objects and references remain exact.
+An existing attempt or an unresolved journal in the journal directory blocks
+another apply. Keep the attempt journals together and retain exclusive project
+ownership; this is not a server-wide transaction or a cross-host lock.
+
+The journal records a possible-send phase **before** COPY, CONVERT and SAVE.
+Connection loss, interruption or failed verification retains the backup and
+exact phase. Recovery observes the current project and backup using reads; it
+never repeats conversion, saves, reopens or restores. An observed converted
+loaded tree after a lost SAVE reply leaves `project_saved: null` and
+`persistence_verified: false`. A conflict or unavailable read exits nonzero.
+Restoration requires a separately reviewed explicit operator action.
+
+Successful integrated apply reports `complete: true`, `project_saved: true`
+and `fresh_database_verified: true`. Database PP `UnitAddress` can still retain
+the source address, which the result reports independently. These are software
+database results: `hardware_programmed` remains false. Native byte-memory
+normalization, the original Toolkit frontend lifecycle and physical/power-cycle
+acceptance retain their separate outstanding work.

@@ -2160,3 +2160,16 @@ retains a successful native PP LOAD462 reset-to-default advisory in its reply;
 other errors remain fatal. No hardware or full Toolkit conversion acceptance
 follows from those database comparisons. See
 [batch evidence and remaining work](../../../../toolkit-cli/docs/feature-batch-2026-10-01-conversion-pp.md).
+
+For a reviewed RELDN4 → RELDN4A database move, use `conversion plan-move`
+with private specs, a distinct absent backup, `--exclusive-project` and a new
+`--output` file. Review the complete binding, then use `apply-move --plan FILE
+--journal NEW_FILE`; it verifies the backup, converts once, saves, reopens and
+checks the full project and fresh PP. Every project network must be closed and
+idle. Keep journals together under exclusive project ownership. After any
+uncertain failure use `conversion recover --journal FILE` on the same endpoint.
+Recovery reads the current model and backup without conversion, save, reopen
+or restore; a converted loaded model alone cannot prove an uncertain project
+save. Require the complete apply result before claiming database persistence.
+This bounded workflow is separate from Toolkit client-side tweakers and
+physical programming. See the [operator guide](../../../../toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).

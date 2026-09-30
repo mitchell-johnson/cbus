@@ -13066,6 +13066,11 @@ mod tests {
                 .status,
             200
         );
+        assert_eq!(
+            s.handle("[5b] DBSETSAFE //TEST/254/p/20/UnitName Lounge")
+                .status,
+            200
+        );
         // Lock/start/session verbs.
         assert_eq!(s.handle("[6] PP LOCK L1 //TEST/254").status, 200);
         assert_eq!(s.handle("[7] PP LOCK L1 //TEST/254").status, 409);
@@ -13099,7 +13104,13 @@ mod tests {
         assert_eq!(s.handle("[15] PP SAVE S1 /db//TEST/254/p/20").status, 200);
         assert!(s.sessions["S1"].dirty.is_empty());
         let back = s.handle("[16] DBGET //TEST/254/p/20/UnitName");
-        assert!(back.lines.iter().any(|l| l.ends_with("UnitName=LOUNGE")));
+        // A colliding PP name does not replace scalar database identity.
+        assert!(back.lines.iter().any(|l| l.ends_with("UnitName=Lounge")));
+        let xml = s.handle("[16b] DBGETXML //TEST/254/p/20");
+        assert!(xml
+            .lines
+            .iter()
+            .any(|line| line.contains("<PP Name=\"UnitName\" Value=\"LOUNGE\"/>")));
         // LOAD seeds parameters but not identity rows; the struct
         // carries identity (see export_parameters).
         assert_eq!(s.handle("[17] PP START S2 L1").status, 200);

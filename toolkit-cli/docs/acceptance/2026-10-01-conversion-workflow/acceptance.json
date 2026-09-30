@@ -1,0 +1,153 @@
+{
+  "format": "cbus-reviewed-conversion-workflow-acceptance-v1",
+  "outcome": "passed",
+  "base_revision": "76b3c251508b3362c21ae9b9971578a3b961424d",
+  "scope": "One closed indexed RELDN4/2.7.00/L5504RVF16 to existing RELDN4A/1.0.0/5504RVF database move; software acceptance only",
+  "harness_sha256": "945ce7fabf8f2a1138d9d3b7e1cdc9ea636f5aad8b62dbfb81111becd86ce796",
+  "package_files": 323,
+  "package_roster_sha256": "43f7e9ffb9eb0af643cadc28c071b534011fa33c8d9d6a0fe95e682981a6559b",
+  "wheel_sha256": "e3a17f1e1ad5e2b6e55ca99dbdee3eabe16cf0f92556f533d52c8135574d3ee1",
+  "cmqttd_sha256": "676b7c6028f095dbcaab55e6718a15b76316d613feb867d3cf0d5a2d5cfd9f20",
+  "python_tests": {
+    "source": 180,
+    "installed_wheel": 180,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "unselected_native_optins": [
+      "tests/test_conversion.py::NativeConversionTests::test_catalog_conversion_backup_parameter_retention_and_persistence",
+      "tests/test_conversion.py::NativeConversionTests::test_move_preserves_destination_metadata_removes_source_and_exposes_address_mismatch",
+      "tests/test_conversion.py::NativeConversionTests::test_unsupported_conversion_and_unchanged_identity_have_no_mutation",
+      "tests/test_classic_replacement.py::LearnedSourceTests::test_original_branch_sequence",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_all_nine_pairs_metadata_parameters_backup_and_reopen",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_automatic_backup_and_blank_serial_and_default_learned_policy",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_stale_plan_invalid_catalog_and_forged_plan_fail_before_backup",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_unmodeled_pp_and_oid_references_are_rejected_without_replacement",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_failed_staging_keeps_original_and_removes_stage",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_metadata_loss_is_detected_before_source_promotion",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_unrecoverable_rollback_reports_backup_and_retains_recovery_details",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_uncertain_promotion_rolls_back_exact_original_oid_xml_and_parameters",
+      "tests/test_classic_replacement.py::NativeReplacementTests::test_failure_after_project_save_restores_and_persists_original",
+      "tests/test_programming.py::NativeProgrammingTest::test_offline_defaults_edit_copy_export_import_and_cleanup",
+      "tests/test_programming.py::NativeProgrammingTest::test_spaced_checksum_actual_byte_change_reset_and_import"
+    ],
+    "private_receipt_sha256": "aff9c30279d54882f4ed961453d17efd8762cb74fba345baa399eb594c1b332b"
+  },
+  "public_workflows": [
+    {
+      "installation": "source",
+      "scenario": "success",
+      "outcome": "passed",
+      "receipt_sha256": "8cb93b7b675a8115140c6d3d3e04d1196090fd98f5c4b71abcc584456c42a01e",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "source",
+      "scenario": "lost-convert",
+      "outcome": "passed",
+      "receipt_sha256": "6940236fcd7b85264d6981c9595afc711a5e77d2bd0c4b2404e64045174af228",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "source",
+      "scenario": "lost-save",
+      "outcome": "passed",
+      "receipt_sha256": "a85352ef3913c46e1d5800afb48a606349978b548268e8c60eae463007a95c41",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "source",
+      "scenario": "stale-group",
+      "outcome": "passed",
+      "receipt_sha256": "51cf2e426858c4552e325de3acf7bc26bf940b37ed19be3f6fbfd3902d241973",
+      "command_count": 7,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "wheel",
+      "scenario": "success",
+      "outcome": "passed",
+      "receipt_sha256": "8ccb881d757f2841e6ae56e190ee18da1376ada299abb2d0dd67aff8d4d744f9",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "wheel",
+      "scenario": "lost-convert",
+      "outcome": "passed",
+      "receipt_sha256": "1ce26cc469794cdf5507c2ae4af73dbc71c14905949ce70504f5c38545804c0a",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "wheel",
+      "scenario": "lost-save",
+      "outcome": "passed",
+      "receipt_sha256": "c65f9dbbc9c83e7245773fe4b25a426207c67e1a18d3bfc003f6af55a27a42f5",
+      "command_count": 10,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    },
+    {
+      "installation": "wheel",
+      "scenario": "stale-group",
+      "outcome": "passed",
+      "receipt_sha256": "df701156e3e1229fe0215ec6b3de6242215ab94b7d68468a626d5869c8d6b6e3",
+      "command_count": 7,
+      "bindings": 537,
+      "closed_inventory_verified": true,
+      "package_and_actual_imports_verified": true,
+      "cleanup_verified": true
+    }
+  ],
+  "independent_checks": {
+    "ordered_pp": 179,
+    "fresh_get_values": 179,
+    "native_unchanged_dependency_fields": 165,
+    "native_original_model_matches": true,
+    "fresh_native_clean_profile": false,
+    "physical_io_or_gui_acceptance": false,
+    "full_local_suite_run": false
+  },
+  "rust_checks": {
+    "format": "passed",
+    "workspace_clippy": "passed",
+    "release_workspace_build": "passed",
+    "reset_tests": 3,
+    "pp_lifecycle_tests": 1,
+    "session_exchanges": 40,
+    "unit_xml_comparisons": 28,
+    "scope": "Focused tests and genuine current-binary retained-original replays; no full local suite"
+  },
+  "known_backend_gap": "DBADDSAFE shallow Application/Group metadata is omitted from project/network XML; complete indexed document fixture used instead. Fully qualified application XML selector also remains open.",
+  "historical_failures_retained": true,
+  "register": {
+    "census_complete": false,
+    "fully_accepted_obligations": 0,
+    "broad_implemented_rows": 18,
+    "broad_total_rows": 42
+  }
+}
