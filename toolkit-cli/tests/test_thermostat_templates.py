@@ -132,7 +132,7 @@ class ThermostatTemplateTests(unittest.TestCase):
         result = json.loads(stdout.getvalue())
         self.assertEqual([row['number'] for row in result['templates'] if row['offered_by_original']],
                          [1, 4, 5, 6, 8, 9])
-        self.assertIn('not replayed', result['scope'])
+        self.assertIn('post-load', result['scope'])
         stdout, stderr = io.StringIO(), io.StringIO()
         with redirect_stdout(stdout), redirect_stderr(stderr):
             code = cli.main(['thermostat', 'template', 'preview', '//P/254/p/4', '--template', '2',

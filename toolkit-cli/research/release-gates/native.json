@@ -176,6 +176,8 @@
     "tests/test_serials.py::NativeSerialTests",
     "tests/test_simulator_duplicate_addressing.py",
     "tests/test_simulator_duplicates.py",
+    "tests/test_thermostat_post_load_native.py",
+    "tests/test_thermostat_settings_native.py",
     "tests/test_thermostat_templates_native.py",
     "tests/test_toolkit_database_csv_area_native.py",
     "tests/test_toolkit_database_csv_native_batch.py::NativeBatchColdLoadTests",

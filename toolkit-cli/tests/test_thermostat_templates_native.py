@@ -153,7 +153,7 @@ class NativeThermostatTemplateTests(unittest.TestCase):
                 before = session.values()
             before_node = unit_node(self.database, path)
             manager = NativeThermostatTemplates(self.client, self.catalog)
-            plan = manager.plan(path, number, exclusive_project=True)
+            plan = manager.plan(path, number, exclusive_project=True, post_load=False)
             self.assertEqual(len(plan.overlay.changes), len(expected))
             backup = 'B' + uuid4().hex[:7].upper()
             result = manager.apply(plan, backup_project=backup)
@@ -177,7 +177,7 @@ class NativeThermostatTemplateTests(unittest.TestCase):
                                            'backup': backup, 'result_state': result['state']})
         # A second plan for the last unit is a read-only no-op.
         manager = NativeThermostatTemplates(self.client, self.catalog)
-        plan = manager.plan(paths[-1][0], paths[-1][2], exclusive_project=True)
+        plan = manager.plan(paths[-1][0], paths[-1][2], exclusive_project=True, post_load=False)
         self.assertEqual(manager.apply(plan)['state'], 'already_applied')
 
     def test_refuses_unoffered_and_non_thermostat_pairs_without_writes(self):
@@ -190,7 +190,7 @@ class NativeThermostatTemplateTests(unittest.TestCase):
         for path, number in ((basic, 2), (basic, 3), (basic, 7), (self.network + '/p/31', 1)):
             manager = NativeThermostatTemplates(self.client, self.catalog)
             with self.assertRaises(Exception) as caught:
-                manager.plan(path, number, exclusive_project=True)
+                manager.plan(path, number, exclusive_project=True, post_load=False)
             self.assertIsInstance(caught.exception.cause, ThermostatTemplateError)
             refusals.append({'path': path, 'template': number, 'error': str(caught.exception.cause)})
         self.assertEqual(xml_text(self.database.get('//' + self.project, xml=True)), before)
@@ -206,7 +206,7 @@ class NativeThermostatTemplateTests(unittest.TestCase):
 
         def invoke(action, *extra, code=0):
             process = subprocess.run(base + [action, path, '--template', '2', '--host', '127.0.0.1',
-                                             '--port', str(self.service.port), *extra],
+                                             '--port', str(self.service.port), '--overlay-only', *extra],
                                      capture_output=True, text=True, timeout=120, env=environment,
                                      stdin=subprocess.DEVNULL)
             self.assertEqual(process.returncode, code, process.stderr)

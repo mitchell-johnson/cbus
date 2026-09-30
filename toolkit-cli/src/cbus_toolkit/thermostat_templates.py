@@ -8,9 +8,12 @@ caller-supplied decoded specifications (``CBUS_UNITSPEC_DIR``), refuses the
 pairs the original never offers, and applies the overlay to one closed
 database unit with a backup, one PP save and reload verification.
 
-The original dialog's later Toolkit object-model adjustments are **not**
-replayed; see ``ORIGINAL_POST_LOAD_ADJUSTMENTS`` and
-docs/thermostat-templates.md.  No physical thermostat is programmed.
+By default the original dialog's later Toolkit object-model adjustments are
+replayed for the fields they touch (``thermostat_post_load``): output and
+relay group reassignment with output-application group creation/renaming,
+fan settings, damper modulation encoding and the programmable Evap flags.
+The replay fails closed outside its recovered precondition; ``post_load=False``
+keeps the pure native overlay.  No physical thermostat is programmed.
 """
 from __future__ import annotations
 
@@ -27,6 +30,7 @@ from .addressing import NetworkAddressing, _container
 from .classic_replacement import _document, _path
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, xml_text
+from .thermostat_post_load import PostLoadReplay, ThermostatPostLoadError, replay_post_load
 from .unitspec import UnitSpecError, UnitSpecStore, _integer, version_matches
 
 
@@ -49,14 +53,19 @@ FAMILIES = {
 }
 PROGRAMMABLE_ONLY = (2, 3, 7)
 # Steps TcdThermostatTemplates.HandleBtnLoadClick performs on the Toolkit
-# object model around the PP load.  They change in-memory attributes that the
-# form would write back on a later save; this CLI does not replay them.
+# object model around the PP load; the form writes the model on a later save.
 ORIGINAL_POST_LOAD_ADJUSTMENTS = (
     'ClearOriginalDamperGroups: clears four retained plant-control damper group references before loading',
-    'ZoneManagerMasterSlave: a master/slave value of 1 is set to 0 before loading',
-    'AfterLoadProgrammingInformation: the normal agent model load runs after PP GET *',
-    'UpdateParametersForPlantType: reassigns output/relay groups by internal plant type and may create groups',
-    'UpdateEvapProgramParameters (programmable only): EvapProgramEnabled=0; NonEvapProgramEnabled=0 for internal plant enum 0 or 2',
+    'ZoneManagerMasterSlave: a master/slave value of 1 is set to 0 before loading; AfterLoad then derives it '
+    'from ControlledZones (0 when ControlledZones > 0, else 1), so the pre-load value does not persist',
+    'AfterLoadProgrammingInformation: the normal agent model load runs after PP GET *, resolving output '
+    'groups per virtual plant type and creating/renaming [CGnn] groups',
+    'UpdateParametersForPlantType: reassigns output/relay groups by virtual plant type and installation',
+    'UpdateFanSpeedsForPlantType: sets the eight heating/cooling fan settings by plant type',
+    'UpdateEvapProgramParameters (programmable only): EvapProgramEnabled=0; NonEvapProgramEnabled=0 for '
+    'virtual plant type 0 or 2',
+    'Form save (BeforeSaveProgrammingInformation): writes the model back, including the fan interlock, '
+    'damper modulation encoding and InstallationCode',
 )
 
 
@@ -231,25 +240,52 @@ class TemplateOverlay:
     firmware: str
     before: tuple[tuple[str, str], ...]
     changes: tuple[tuple[str, int, int], ...]
+    post_load: PostLoadReplay | None = None
+    groups: tuple[tuple[int, str], ...] = ()
+    application: int | None = None
+
+    @property
+    def overlay(self) -> dict[str, int]:
+        return dict(self.template.values)
 
     @property
     def expected(self) -> dict[str, int]:
-        return dict(self.template.values)
+        result = dict(self.template.values)
+        if self.post_load is not None:
+            result.update(self.post_load.expected)
+        return result
+
+    @property
+    def post_load_changes(self) -> dict[str, int]:
+        overlay = {**{n: _safe_int(v) for n, v in self.before}, **self.overlay}
+        if self.post_load is None:
+            return {}
+        return {n: v for n, v in self.post_load.expected.items() if overlay.get(n) != v}
 
     def as_dict(self):
-        template_names = {name for name, _ in self.template.values}
-        return {'template': self.template.as_dict(), 'unit_type': self.unit_type, 'firmware': self.firmware,
-                'changed_parameters': [{'name': n, 'before': a, 'after': b} for n, a, b in self.changes],
-                'unchanged_template_parameters': sorted(template_names - {n for n, _a, _b in self.changes}),
-                'preserved_parameter_count': len([n for n, _ in self.before if n not in template_names]),
-                'reset_before_load': False,
-                'original_post_load_adjustments_replayed': False,
-                'original_post_load_adjustments': list(ORIGINAL_POST_LOAD_ADJUSTMENTS)}
+        template_names = set(self.expected)
+        result = {'template': self.template.as_dict(), 'unit_type': self.unit_type, 'firmware': self.firmware,
+                  'changed_parameters': [{'name': n, 'before': a, 'after': b} for n, a, b in self.changes],
+                  'unchanged_template_parameters': sorted(template_names - {n for n, _a, _b in self.changes}),
+                  'preserved_parameter_count': len([n for n, _ in self.before if n not in template_names]),
+                  'reset_before_load': False,
+                  'original_post_load_adjustments_replayed': self.post_load is not None,
+                  'original_post_load_adjustments': list(ORIGINAL_POST_LOAD_ADJUSTMENTS)}
+        if self.post_load is not None:
+            result['post_load'] = {**self.post_load.as_dict(), 'output_application': self.application,
+                                   'parameters_changed_after_overlay': self.post_load_changes,
+                                   'untouched_field_normalization_replayed': False}
+        return result
 
 
 def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
-                 snapshot: Mapping[str, str]) -> TemplateOverlay:
-    """Plan the byte overlay of one template onto a complete PP snapshot."""
+                 snapshot: Mapping[str, str], *, groups: Mapping[int, str] | None = None,
+                 application: int | None = None) -> TemplateOverlay:
+    """Plan the byte overlay of one template onto a complete PP snapshot.
+
+    With ``groups`` (the output application's address -> tag inventory) the
+    original post-load pipeline and form save are replayed as well.
+    """
     if family_for_unit_type(unit_type) != template.family:
         raise ThermostatTemplateError(template.filename + ' is not compatible with unit type ' + unit_type)
     if type(firmware) is not str or not firmware.strip():
@@ -263,19 +299,38 @@ def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
     if not isinstance(snapshot, Mapping) or any(type(k) is not str or type(v) is not str
                                                  for k, v in snapshot.items()):
         raise ThermostatTemplateError('Snapshot must map parameter names to native value text')
-    changes = []
-    for name, value in template.values:
+    for name, _value in template.values:
         if name not in snapshot:
             raise ThermostatTemplateError('Unit snapshot lacks template parameter: ' + name)
+    replay = None
+    if groups is not None:
+        loaded = {n: _safe_int(v) for n, v in snapshot.items()}
+        loaded.update(template.values)
+        try:
+            replay = replay_post_load({n: v for n, v in loaded.items() if v is not None},
+                                      template.family, template.number, groups)
+        except (ThermostatPostLoadError, KeyError) as error:
+            raise ThermostatTemplateError('Original post-load replay is outside its precondition: '
+                                          + str(error)) from error
+    expected = dict(template.values)
+    if replay is not None:
+        expected.update(replay.expected)
+    changes = []
+    for name, value in sorted(expected.items()):
+        if name not in snapshot:
+            raise ThermostatTemplateError('Unit snapshot lacks replayed parameter: ' + name)
         current = _native_integer(snapshot[name], name)
         if current != value:
             changes.append((name, current, value))
-    return TemplateOverlay(template, unit_type, firmware, tuple(sorted(snapshot.items())), tuple(changes))
+    return TemplateOverlay(template, unit_type, firmware, tuple(sorted(snapshot.items())), tuple(changes),
+                           replay, tuple(sorted((groups or {}).items())), application)
 
 
-def compare_overlay(overlay: TemplateOverlay, actual: Mapping[str, str]) -> dict[str, list[str]]:
+def compare_overlay(overlay: TemplateOverlay, actual: Mapping[str, str], *,
+                    overlay_only: bool = False) -> dict[str, list[str]]:
     """Return template mismatches and non-template changes in an observed snapshot."""
-    expected, before = overlay.expected, dict(overlay.before)
+    expected = overlay.overlay if overlay_only else overlay.expected
+    before = dict(overlay.before)
     mismatched = sorted(name for name, value in expected.items()
                         if name not in actual or _safe_int(actual[name]) != value)
     changed = sorted(name for name in set(before) | set(actual)
@@ -384,6 +439,7 @@ class NativeThermostatTemplates:
             'unrelated_parameters_preserved': False, 'unit_record_preserved': False,
             'automatic_retries': 0, 'rollback_performed': False,
             'original_post_load_adjustments_replayed': False, 'physical_device_programmed': False,
+            'group_operations_confirmed': [],
             'caller_exclusive_project_required': True, 'server_edit_lock_acquired': False}
 
     def _fail(self, error):
@@ -443,7 +499,26 @@ class NativeThermostatTemplates:
             raise ThermostatTemplateError('Read-only PP session changed database XML; save/reload it and plan again')
         return text, identity, values
 
-    def plan(self, path, number, *, exclusive_project=False):
+    def _output_groups(self, network, values):
+        tokens = values.get('Application', '').split()
+        application = _safe_int(tokens[0]) if tokens else None
+        if application is None or application == 255:
+            raise ThermostatTemplateError('Post-load replay needs the unit Application byte to name its '
+                                          'output application; use post_load=False for the pure overlay')
+        text = self._xml(network)
+        root = _container(text, 'Network').documentElement
+        matches = [node for node in _children(root, 'Application') if _field(node, 'Address') == str(application)]
+        if len(matches) != 1:
+            raise ThermostatTemplateError('Output application ' + str(application) + ' is absent from the network')
+        groups = {}
+        for node in _children(matches[0], 'Group'):
+            address = int(_field(node, 'Address'))
+            if address in groups:
+                raise ThermostatTemplateError('Duplicate output group address')
+            groups[address] = _field(node, 'TagName')
+        return application, groups
+
+    def plan(self, path, number, *, exclusive_project=False, post_load=True):
         self._start('plan')
         try:
             path, project, network_address, address = _path(path)
@@ -458,7 +533,11 @@ class NativeThermostatTemplates:
                 raise ThermostatTemplateError('Unit network is absent from the closed project inventory')
             text, identity, values = self._read(path, network, address)
             template = self.catalog.load(family_for_unit_type(identity['UnitType']), _number(number))
-            overlay = plan_overlay(template, identity['UnitType'], identity['FirmwareVersion'], values)
+            groups = application = None
+            if post_load:
+                application, groups = self._output_groups(network, values)
+            overlay = plan_overlay(template, identity['UnitType'], identity['FirmwareVersion'], values,
+                                   groups=groups, application=application)
             plan = NativeTemplatePlan(path, project, network, overlay, text,
                                       tuple(sorted(identity.items())), networks)
             self._plans[id(plan)] = repr(plan)
@@ -474,6 +553,10 @@ class NativeThermostatTemplates:
         text, _identity, values = self._read(plan.path, plan.network, address)
         if text != plan.unit_xml or tuple(sorted(values.items())) != plan.overlay.before:
             raise ThermostatTemplateError('Unit record or PP parameters changed since planning')
+        if plan.overlay.post_load is not None:
+            _application, groups = self._output_groups(plan.network, values)
+            if tuple(sorted(groups.items())) != plan.overlay.groups:
+                raise ThermostatTemplateError('Output application groups changed since planning')
 
     def apply(self, plan, *, backup_project=None):
         self._start('apply')
@@ -487,6 +570,7 @@ class NativeThermostatTemplates:
                 raise ThermostatTemplateError('Backup project must differ from the edited project')
             self._consumed.add(id(plan))
             overlay = plan.overlay
+            self.last_evidence.update(original_post_load_adjustments_replayed=overlay.post_load is not None)
             self.last_evidence.update(path=plan.path, template=overlay.template.filename,
                                       template_sha256=overlay.template.sha256, backup_project=backup,
                                       changed_parameters=[n for n, _a, _b in overlay.changes])
@@ -508,10 +592,20 @@ class NativeThermostatTemplates:
                 reply = session.load_from_file(overlay.template.filename, overlay=True)
                 if getattr(reply, 'code', None) != 200:
                     raise RuntimeError('PP LOAD_FROM_FILE did not complete')
-                staged = compare_overlay(overlay, session.values())
+                staged = compare_overlay(overlay, session.values(), overlay_only=True)
                 self.last_evidence['staged_comparison'] = staged
                 if staged['template_mismatches'] or staged['unrelated_changes']:
                     raise ThermostatTemplateError('Staged native overlay differs from the independent plan; not saved')
+                if overlay.post_load is not None:
+                    for name, value in sorted(overlay.post_load_changes.items()):
+                        reply = session.set(name, str(value))
+                        if getattr(reply, 'code', None) != 200:
+                            raise RuntimeError('PP SET for the post-load replay did not complete')
+                    staged = compare_overlay(overlay, session.values())
+                    self.last_evidence['staged_post_load_comparison'] = staged
+                    if staged['template_mismatches'] or staged['unrelated_changes']:
+                        raise ThermostatTemplateError('Staged post-load replay differs from the plan; not saved')
+                    self._group_operations(plan)
                 self.last_evidence.update(staged_verified=True, state='saving', pp_save_attempted=True)
                 reply = session.save_to_source()
                 if getattr(reply, 'code', None) != 200:
@@ -530,6 +624,18 @@ class NativeThermostatTemplates:
         except BaseException as error:
             self._fail(error)
 
+    def _group_operations(self, plan):
+        base = plan.network + '/' + str(plan.overlay.application)
+        done = self.last_evidence.setdefault('group_operations_confirmed', [])
+        for operation in plan.overlay.post_load.group_operations:
+            self.last_evidence['group_operation_attempted'] = operation.as_dict()
+            if operation.action == 'create':
+                self.database.add(base, 'group', operation.address, operation.tag)
+            else:
+                self.database.set(base + '/' + str(operation.address) + '/TagName', operation.tag)
+            done.append(operation.as_dict())
+        self.last_evidence.pop('group_operation_attempted', None)
+
     def _verify(self, plan):
         if self._networks(plan.project) != plan.networks:
             raise ThermostatTemplateError('Project networks changed after save/reload')
@@ -537,7 +643,7 @@ class NativeThermostatTemplates:
         text, identity, values = self._read(plan.path, plan.network, address)
         before_identity, before_shape, before_stored = _unit_record(plan.unit_xml, address)
         _identity, after_shape, after_stored = _unit_record(text, address)
-        names = {name for name, _ in plan.overlay.template.values}
+        names = set(plan.overlay.expected)
         record_preserved = (identity == before_identity and after_shape == before_shape
                             and {k: v for k, v in after_stored.items() if k not in names}
                             == {k: v for k, v in before_stored.items() if k not in names})
@@ -546,6 +652,14 @@ class NativeThermostatTemplates:
                                   unrelated_parameters_preserved=not comparison['unrelated_changes'])
         if comparison['template_mismatches'] or comparison['unrelated_changes'] or not record_preserved:
             raise ThermostatTemplateError('Saved/reloaded unit differs from the planned overlay')
+        if plan.overlay.post_load is not None:
+            expected = dict(plan.overlay.groups)
+            for operation in plan.overlay.post_load.group_operations:
+                expected[operation.address] = operation.tag
+            _application, groups = self._output_groups(plan.network, values)
+            self.last_evidence['output_groups_verified'] = groups == expected
+            if groups != expected:
+                raise ThermostatTemplateError('Saved/reloaded output application groups differ from the replay')
 
 
 def default_spec_dir():

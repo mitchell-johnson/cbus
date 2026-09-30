@@ -1,0 +1,112 @@
+{
+  "format": "native-thermostat-settings-integration-v1",
+  "service": {
+    "backend": "local",
+    "cleanup_complete": true,
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "work_removed": true
+  },
+  "cases": [
+    {
+      "unit_type": "PC_TSA",
+      "edits": {
+        "InstalledZones": 31,
+        "ControlledZones": 7,
+        "HeatingPlantInstalledZones": 3,
+        "CoolingPlantInstalledZones": 0,
+        "MeasuredZones": 1,
+        "UIAllocatedZones": 5,
+        "HeatingPlantType": 1,
+        "CoolingPlantType": 9,
+        "HeatingPlantStages": 2,
+        "CoolingPlantStages": 3,
+        "PlantCycleTime": 20,
+        "CoolingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "BacklightDimTime": 0,
+        "HeatCoolIntegralFactor": 150,
+        "TemperatureOffset": 254,
+        "TimeUnits": 1,
+        "SendInterval": 6,
+        "EvapProgramEnabled": 1,
+        "NonEvapProgramEnabled": 1,
+        "ScheduleControlledZones": 3
+      },
+      "dependent": [],
+      "state": "verified_saved"
+    },
+    {
+      "unit_type": "PC_TSB",
+      "edits": {
+        "InstalledZones": 31,
+        "ControlledZones": 7,
+        "HeatingPlantInstalledZones": 3,
+        "CoolingPlantInstalledZones": 0,
+        "MeasuredZones": 1,
+        "UIAllocatedZones": 5,
+        "HeatingPlantType": 1,
+        "CoolingPlantType": 9,
+        "HeatingPlantStages": 2,
+        "CoolingPlantStages": 3,
+        "PlantCycleTime": 20,
+        "CoolingPlantFanOnDelay": 12,
+        "KeyBacklightIdleBrightness": 255,
+        "BacklightDimTime": 0,
+        "HeatCoolIntegralFactor": 150,
+        "TemperatureOffset": 254,
+        "TimerEnable": 0
+      },
+      "dependent": [],
+      "state": "verified_saved"
+    }
+  ],
+  "physical_devices_accessed": false,
+  "refusals": [
+    {
+      "path": "//T169619D/254/p/30",
+      "edits": {
+        "InstalledZones": "32"
+      },
+      "error": "InstalledZones: Value 0 must be between 0 and 31"
+    },
+    {
+      "path": "//T169619D/254/p/30",
+      "edits": {
+        "TimerEnable": "1"
+      },
+      "error": "Setting is not admitted for PC_TSA: TimerEnable"
+    },
+    {
+      "path": "//T169619D/254/p/31",
+      "edits": {
+        "SendInterval": "1"
+      },
+      "error": "Setting is not admitted for PC_TSB: SendInterval"
+    },
+    {
+      "path": "//T169619D/254/p/30",
+      "edits": {
+        "HeatingPlantFanOnDelay": "13"
+      },
+      "error": "The original form save would rewrite HeatingPlantFanOnDelay=12; choose values that survive it"
+    },
+    {
+      "path": "//T169619D/254/p/30",
+      "edits": {
+        "EvapProgramEnabled": "2"
+      },
+      "error": "EvapProgramEnabled must be 0 or 1; the original load normalises other values"
+    },
+    {
+      "path": "//T169619D/254/p/31",
+      "edits": {
+        "CoolStage1Output": "4"
+      },
+      "error": "Setting is not admitted for PC_TSB: CoolStage1Output"
+    }
+  ],
+  "cni_connections": []
+}

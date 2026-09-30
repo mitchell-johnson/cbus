@@ -1,0 +1,278 @@
+{
+  "format": "native-thermostat-post-load-integration-v1",
+  "service": {
+    "backend": "local",
+    "cleanup_complete": true,
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "process_exit_confirmed": true,
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "work_removed": true
+  },
+  "cases": [
+    {
+      "path": "//T9C06AE4/254/p/10",
+      "family": "programmable",
+      "template": 1,
+      "hand_checked": true,
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "EvapProgramEnabled": 0,
+        "InternalRelay2GroupNumber": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y (heat/cool)",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)",
+        "2": "[CG01] B (cool activation)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/11",
+      "family": "programmable",
+      "template": 2,
+      "hand_checked": false,
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "EvapProgramEnabled": 0,
+        "InternalRelay2GroupNumber": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y (heat/cool)",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "2": "[CG01] B (cool activation)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/12",
+      "family": "programmable",
+      "template": 3,
+      "hand_checked": false,
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y1 (cool/heat)",
+        "2": "[CG01] Y2 (cool/heat)",
+        "3": "[CG01] G (fan)",
+        "5": "[CG01] Heat/cool fan speed",
+        "4": "[CG01] B (heat activation)",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "22": "[CG01] Damper Zone 3",
+        "23": "[CG01] Damper Zone 4"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/13",
+      "family": "programmable",
+      "template": 4,
+      "hand_checked": false,
+      "post_load_changes": {
+        "CoolingPlantFanEnable": 0,
+        "EvapProgramEnabled": 0
+      },
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] W (heat)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/14",
+      "family": "programmable",
+      "template": 5,
+      "hand_checked": true,
+      "post_load_changes": {
+        "EvapProgramEnabled": 0,
+        "HeatActivationOutput": 255,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] pump",
+        "2": "[CG01] fill",
+        "3": "[CG01] cool fan speed 1",
+        "4": "[CG01] cool fan speed 2"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/15",
+      "family": "programmable",
+      "template": 6,
+      "hand_checked": true,
+      "post_load_changes": {
+        "EvapProgramEnabled": 0,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y (cool)",
+        "2": "[CG01] Open",
+        "5": "[CG01] Close",
+        "3": "[CG01] G1 (fan speed 1)",
+        "4": "[CG01] G2 (fan speed 2)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/16",
+      "family": "programmable",
+      "template": 7,
+      "hand_checked": false,
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "groups": {
+        "255": "<Unused>",
+        "10": "[CG01] pump",
+        "11": "[CG01] dump",
+        "12": "[CG01] cool fan speed 1",
+        "13": "[CG01] cool fan speed 2",
+        "14": "[CG01] cool fan speed 3",
+        "5": "[CG01] W (heat)",
+        "3": "[CG01] G1 (heat fan speed 1)",
+        "4": "[CG01] G2 (heat fan speed 2)",
+        "20": "[CG01] Damper Zone 1",
+        "21": "[CG01] Damper Zone 2",
+        "22": "[CG01] Damper Zone 3"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/17",
+      "family": "programmable",
+      "template": 8,
+      "hand_checked": false,
+      "post_load_changes": {
+        "EvapProgramEnabled": 0
+      },
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] Y (cool)",
+        "3": "[CG01] G (fan)",
+        "6": "[CG01] W (heat)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/18",
+      "family": "basic",
+      "template": 1,
+      "hand_checked": false,
+      "post_load_changes": {
+        "CoolActivationOutput": 2,
+        "InternalRelay2GroupNumber": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y (heat/cool)",
+        "3": "[CG01] G (fan)",
+        "4": "[CG01] B (heat activation)",
+        "2": "[CG01] B (cool activation)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/19",
+      "family": "basic",
+      "template": 4,
+      "hand_checked": false,
+      "post_load_changes": {
+        "CoolingPlantFanEnable": 0
+      },
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] W (heat)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/20",
+      "family": "basic",
+      "template": 5,
+      "hand_checked": false,
+      "post_load_changes": {
+        "HeatActivationOutput": 255,
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] pump",
+        "2": "[CG01] fill",
+        "3": "[CG01] cool fan speed 1",
+        "4": "[CG01] cool fan speed 2"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/21",
+      "family": "basic",
+      "template": 6,
+      "hand_checked": false,
+      "post_load_changes": {
+        "HeatingPlantFanEnable": 0,
+        "HeatingPlantFanSpeedControlEnable": 1,
+        "HeatingPlantFanSpeeds": 2
+      },
+      "groups": {
+        "255": "<Unused>",
+        "1": "[CG01] Y (cool)",
+        "2": "[CG01] Open",
+        "5": "[CG01] Close",
+        "3": "[CG01] G1 (fan speed 1)",
+        "4": "[CG01] G2 (fan speed 2)"
+      },
+      "state": "verified_saved"
+    },
+    {
+      "path": "//T9C06AE4/254/p/22",
+      "family": "basic",
+      "template": 8,
+      "hand_checked": true,
+      "post_load_changes": {},
+      "groups": {
+        "255": "<Unused>",
+        "5": "[CG01] Y (cool)",
+        "3": "[CG01] G (fan)",
+        "6": "[CG01] W (heat)"
+      },
+      "state": "verified_saved"
+    }
+  ],
+  "physical_devices_accessed": false,
+  "refusals": [
+    {
+      "path": "//T5D31623/254/p/40",
+      "template": 9,
+      "error": "Original post-load replay is outside its precondition: Relay group 2 would be created with an unrecovered application default tag"
+    },
+    {
+      "path": "//T5D31623/254/p/41",
+      "template": 1,
+      "error": "Post-load replay needs the unit Application byte to name its output application; use post_load=False for the pure overlay"
+    },
+    {
+      "path": "//T5D31623/254/p/42",
+      "template": 1,
+      "error": "Original post-load replay is outside its precondition: The output application already has [CG01] groups; original renaming then depends on unrecovered state"
+    }
+  ],
+  "cni_connections": []
+}
