@@ -20,6 +20,42 @@ This is a bounded template workflow. It does not establish template support
 for other profiles, cross-model conversion, physical device transfer or full
 GUI parity. The existing JSON PP snapshots have a separate format and scope.
 
+## NeoPro key-input profiles
+
+The Python API also covers the 30 NeoPro-agent key-input types admitted by
+`research/fixtures/key-preset-family-equivalence.json`, at **firmware
+2.5.00**. They are KEYA1/3/6/8, KEYAV2/4, KEYB2/4/6, KEYC1/2/4, KEYCIR4,
+KEYDV1–4, KEYH1–4, KEYM2/4/8, KEYP2/4/6 and KEYV1–3. `NEO_PROFILES` gives
+each type's default catalogue number. `NEO_CATALOGS` lists every catalogue
+number that selects the specification at that firmware, and
+`UnitTemplates(spec, catalog_number=...)` accepts any of them. KEYE1 has a
+different agent and remains unsupported.
+
+The attribute list is the `TCBusNeoProInputCGateAgent` constructor order,
+restricted to template-flagged attributes, with 58 names in
+`NEO_ATTRIBUTE_ORDER`. It follows the shared key-input order, except that
+the Neo agent renames `InfraRedBank` to `IRBank` and `GAVBroadcastFlag` is
+absent. It then adds the Neo, NeoPro and corridor/join attributes, ending
+with `NightlightColour`. The same five classic names are excluded: Project,
+SerialNo, State, UnitAddress and LearnedFlag. `PatchEnable` is
+template-flagged and is therefore copied. All 56 non-identity names are
+native PP parameters, so the list has no virtual attributes. The checksum
+normalizes the NeoPro integer and boolean attribute classes, as it does for
+classic templates.
+
+Owned native C-Gate 3.4.0.2001 acceptance
+(`tests/test_unit_templates_neo.py`) ran all 30 profiles. Each source
+database unit received non-default values for all 56 parameters. The test
+exported and parsed the XML, applied it to a second unit, saved it with PP
+SAVE_TO_SOURCE, re-exported and checked identity preservation. All 30
+targets were identical after project save, close and load. The template CLI
+commands and the database copy/default-reset transaction remain classic-only;
+`NativeTemplateTransaction` refuses NeoPro templates because it preserves
+PatchEnable. Toolkit's `SaveTemplate` first runs the agent's
+`BeforeSaveProgrammingInformation`. This export assumes that step leaves
+loaded PP values unchanged, and it does not model any normalization that
+step may perform.
+
 ## Usage
 
 ```sh
@@ -154,9 +190,11 @@ uppercase sixbit UnitName text and no ambiguous `?` character. Quotes,
 ampersands and angle brackets in UnitName are tested through original
 encoding/decoding and native PP save/reload. Numeric XML character references,
 declarations, processing instructions, comments, unknown elements and nested elements are rejected.
-Non-ASCII file I/O is unverified. Description is optional CLI metadata,
-excluded from the checksum and never programmed; original SaveTemplate writes
-an empty Description. The CLI can preserve a nonempty single-line Description.
+Description is optional file metadata, excluded from the checksum and never
+programmed. Original SaveTemplate writes an empty Description. The CLI can
+preserve a nonempty single-line Description, which may contain any Unicode
+XML character and round-trips through the UTF-8 file. Attribute values stay
+ASCII-only, and Toolkit's handling of non-ASCII descriptions is unverified.
 
 `PP LOAD_FROM_FILE` is not an XML-template import command. The native command
 handler `lD.java` expects a **unit specification file**. Toolkit reads template

@@ -1,10 +1,11 @@
-"""Toolkit UnitTemplate XML for verified KEY1/KEY2/KEY4 1.2.67 profiles.
+"""Toolkit UnitTemplate XML for verified classic and NeoPro key-input profiles.
 
-Template inclusion/order and checksum behavior follow the original EXE. This
+Classic KEY1/KEY2/KEY4 1.2.67 and the 30 NeoPro key-input types at 2.5.00 use
+their original agents' template attribute selection/order and checksum. This
 is distinct from the CLI's complete JSON PP snapshots. No automatic save or
 cross-model conversion is performed. See docs/unit-templates.md.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 import re
 import xml.etree.ElementTree as ET
@@ -49,8 +50,96 @@ _INTEGER_ATTRIBUTES = frozenset(('DebounceTime', 'IndicatorBrightness', 'LongPre
                                  'InfraRedBank', 'GAVBroadcastFlag', 'StatusReportInterval'))
 _BOOLEAN_ATTRIBUTES = frozenset(('LearnAnyApp', 'LearnMode', 'EEPROMLevelStore'))
 PARAMETERS = tuple(name for name in ATTRIBUTE_ORDER if name not in _METADATA | _VIRTUAL)
+
+# TCBusNeoProInputCGateAgent constructor order restricted to template-flagged
+# attributes. TCoreNeoInputCGateAgent renames the key-input InfraRedBank
+# attribute to IRBank; PatchEnable is template-flagged and therefore copied.
+# The excluded attributes are the classic five (Project, SerialNo, State,
+# UnitAddress, LearnedFlag). Every selected name is a native PP parameter.
+NEO_ATTRIBUTE_ORDER = (
+    'Application', 'FirmwareVersion', 'UnitName', 'UnitType', 'LearnAnyApp', 'LearnMode', 'AreaGroupAddress',
+    'StatusReportInterval', 'GroupAddress', 'DebounceTime', 'IndicatorBrightness', 'LongPressTime',
+    'EEPROMLevelStore', 'LightIndex', 'LightLevel', 'LightLevelStore1', 'LightLevelStore2', 'RampRate', 'IRBank',
+    'JPCommand', 'SRCommand', 'LPCommand', 'LRCommand', 'BlockAllocation', 'IndicatorBlockAssignment',
+    'IndicatorFunction', 'TimerHighByte', 'TimerLowByte', 'TimerExpiryCommand', 'ControlAppGroupAddress',
+    'EnableNightlight', 'EnableNightlightControl', 'DisableTimerFlash', 'FirstKeyThrowAway',
+    'IndicatorPressedLevel', 'TimerDuration', 'PatchEnable', 'SceneKeySelector', 'SceneTable',
+    'SceneTablePointer', 'DisableIR', 'IDBacklightIllumination', 'EnableNightlightOnPCx', 'EnableNightlightOnPA6',
+    'PrimaryColour', 'DisableIRNEC', 'KeyDisableGroup', 'KeyDisableGroupInvert', 'CorridorLinkEnable',
+    'CorridorMasterGroup', 'CorridorGroupBlock', 'CorridorOfficeGroupBlock', 'JoinPrimaryApplication',
+    'JoinSecondaryApplication', 'DualJoinPrimaryApplication', 'DualJoinSecondaryApplication',
+    'SecondApplicationBlocks', 'NightlightColour',
+)
+# TIntegerCGateAttribute and TBooleanCGateAttribute members of the NeoPro list.
+_NEO_INTEGER_ATTRIBUTES = frozenset((
+    'StatusReportInterval', 'DebounceTime', 'IndicatorBrightness', 'LongPressTime', 'LightIndex', 'IRBank',
+    'IndicatorPressedLevel', 'TimerDuration', 'KeyDisableGroup', 'CorridorMasterGroup', 'CorridorGroupBlock',
+    'CorridorOfficeGroupBlock', 'JoinPrimaryApplication', 'JoinSecondaryApplication', 'DualJoinPrimaryApplication',
+    'DualJoinSecondaryApplication', 'SecondApplicationBlocks'))
+_NEO_BOOLEAN_ATTRIBUTES = frozenset((
+    'LearnAnyApp', 'LearnMode', 'EEPROMLevelStore', 'EnableNightlight', 'EnableNightlightControl',
+    'DisableTimerFlash', 'FirstKeyThrowAway', 'DisableIR', 'IDBacklightIllumination', 'EnableNightlightOnPCx',
+    'EnableNightlightOnPA6', 'DisableIRNEC', 'KeyDisableGroupInvert', 'CorridorLinkEnable', 'NightlightColour'))
+
+
+@dataclass(frozen=True)
+class TemplateFamily:
+    name: str
+    order: tuple
+    integers: frozenset
+    booleans: frozenset
+    virtual: frozenset
+    firmware: str
+    parameters: tuple = field(init=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, 'parameters',
+                           tuple(name for name in self.order if name not in _METADATA | self.virtual))
+
+
+CLASSIC_FAMILY = TemplateFamily('classic', ATTRIBUTE_ORDER, _INTEGER_ATTRIBUTES, _BOOLEAN_ATTRIBUTES, _VIRTUAL, '1.2.67')
+NEO_FAMILY = TemplateFamily('neopro', NEO_ATTRIBUTE_ORDER, _NEO_INTEGER_ATTRIBUTES, _NEO_BOOLEAN_ATTRIBUTES,
+                            frozenset(), '2.5.00')
+# NeoPro-agent key-input types admitted by research/fixtures/key-preset-family-equivalence.json,
+# with every catalogue number that selects the specification at firmware 2.5.00.
+NEO_CATALOGS = MappingProxyType({
+    'KEYA1': ('R5061NL',), 'KEYA3': ('R5063NL',), 'KEYA6': ('R5066NL',), 'KEYA8': ('R5068NL',),
+    'KEYAV2': ('R5062VNL',), 'KEYAV4': ('R5064VNL',), 'KEYB2': ('5082NL', 'E5082NL', 'SLC5082NL'),
+    'KEYB4': ('5084NL', 'E5084NL', 'SLC5084NL'), 'KEYB6': ('5086NL', 'E5086NL'), 'KEYC1': ('5031NL', 'E5031NL'),
+    'KEYC2': ('5032NL', 'E5032NL'), 'KEYC4': ('5034NL', 'E5034NL'), 'KEYCIR4': ('5034NIRL', 'E5034NIRL'),
+    'KEYDV1': ('SLC5051NLM', 'SLC5081NLM'), 'KEYDV2': ('SLC5052NLM', 'SLC5082NLM'),
+    'KEYDV3': ('SLC5053NLM', 'SLC5083NLM'), 'KEYDV4': ('SLC5054NLM', 'SLC5084NLM'),
+    'KEYH1': ('ER5041NL', 'R5041NL'), 'KEYH2': ('ER5042NL', 'R5042NL'), 'KEYH3': ('ER5043NL', 'R5043NL'),
+    'KEYH4': ('ER5044NL', 'R5044NL'), 'KEYM2': ('5052NL', 'E5052NL', 'SLC5052NL'),
+    'KEYM4': ('5054NL', 'E5054NL', 'SLC5054NL'), 'KEYM8': ('5058NL', 'E5058NL', 'SLC5058NL'),
+    'KEYP2': ('LHC882',), 'KEYP4': ('LHC884',), 'KEYP6': ('LHC886',), 'KEYV1': ('5091NL',), 'KEYV2': ('5092NL',),
+    'KEYV3': ('5093NL',),
+})
+NEO_PROFILES = MappingProxyType({unit_type: (unit_type, '2.5.00', catalogs[0], unit_type + '.xml')
+                                 for unit_type, catalogs in NEO_CATALOGS.items()})
 _MAX_BYTES = 1024 * 1024
 _XML_ESCAPES = {'"': '&quot;'}
+
+
+ALL_PROFILES = MappingProxyType({**PROFILES, **NEO_PROFILES})
+_FAMILIES = (CLASSIC_FAMILY, NEO_FAMILY)
+_ALL_FIELDS = frozenset(ATTRIBUTE_ORDER) | frozenset(NEO_ATTRIBUTE_ORDER)
+
+
+def family_for(unit_type):
+    if unit_type in PROFILES:
+        return CLASSIC_FAMILY
+    if unit_type in NEO_PROFILES:
+        return NEO_FAMILY
+    raise UnitTemplateError('Unsupported template unit type: ' + str(unit_type))
+
+
+def _family_of(names):
+    names = set(names)
+    for family in _FAMILIES:
+        if names == set(family.order):
+            return family
+    raise UnitTemplateError('Template attributes differ from every supported key-input format')
 
 
 def _text(value, name):
@@ -63,7 +152,18 @@ def _text(value, name):
     return value
 
 
-def _normalized(name, value):
+def _description(value):
+    """Description is file metadata only: never checksummed or programmed."""
+    if not isinstance(value, str):
+        raise UnitTemplateError('Template description must be text')
+    if ('\n' in value or '\r' in value or len(value) > 4096
+            or any(ord(c) < 32 and c != '\t' or 0xD800 <= ord(c) <= 0xDFFF or ord(c) in (0xFFFE, 0xFFFF)
+                   for c in value)):
+        raise UnitTemplateError('Template description must be one line of at most 4096 XML characters')
+    return value
+
+
+def _normalized(name, value, family=CLASSIC_FAMILY):
     value = _text(value, name).strip()
     if name in ('UnitType', 'FirmwareVersion', 'UnitName'):
         if name == 'UnitName' and (value != value.upper() or '?' in value or len(value) > 8
@@ -81,17 +181,19 @@ def _normalized(name, value):
 
 def template_crc(attributes):
     """Native 0xFEED/0x1021 LSB-data CRC, including its final-byte omission."""
-    if set(attributes) != set(ATTRIBUTE_ORDER):
-        raise UnitTemplateError('Template checksum requires the exact classic key-input attribute set')
+    try:
+        family = _family_of(attributes)
+    except UnitTemplateError as error:
+        raise UnitTemplateError('Template checksum requires an exact supported key-input attribute set') from error
     pieces = []
-    for name in ATTRIBUTE_ORDER:
+    for name in family.order:
         value = _text(attributes[name], name).strip()
         # Scalar attributes have already parsed integers/booleans when the
         # original loader reaches its checksum. String arrays preserve
         # interior decimal whitespace; only a leading literal 0x invokes
         # HexStrArrayToDecStrArray in CalcTemplateCRC.
-        if name in _INTEGER_ATTRIBUTES | _BOOLEAN_ATTRIBUTES or value.startswith('0x'):
-            value = _normalized(name, value)
+        if name in family.integers | family.booleans or value.startswith('0x'):
+            value = _normalized(name, value, family)
         pieces.append(value)
     data = ''.join(pieces).encode('ascii')
     if len(data) > 65536:
@@ -115,21 +217,27 @@ class UnitTemplate:
     description: str = ''
 
     def __post_init__(self):
-        if set(self.attributes) != set(ATTRIBUTE_ORDER):
-            raise UnitTemplateError('Template attributes differ from the supported classic key-input format')
-        values = {name: _normalized(name, self.attributes[name]) for name in ATTRIBUTE_ORDER}
-        if values['UnitType'] not in PROFILES or values['FirmwareVersion'] != '1.2.67':
-            raise UnitTemplateError('Supported template identities are KEY1/KEY2/KEY4 firmware 1.2.67')
-        if any(values[name] != '0' for name in _VIRTUAL):
+        family = _family_of(self.attributes)
+        values = {name: _normalized(name, self.attributes[name], family) for name in family.order}
+        try:
+            expected_family = family_for(values['UnitType'])
+        except UnitTemplateError:
+            expected_family = None
+        if expected_family is not family or values['FirmwareVersion'] != family.firmware:
+            raise UnitTemplateError('Supported template identities are KEY1/KEY2/KEY4 firmware 1.2.67 '
+                                    'and NeoPro key-input types firmware 2.5.00')
+        if any(values[name] != '0' for name in family.virtual):
             raise UnitTemplateError('Nondefault InfraRedBank/GAVBroadcastFlag is outside this classic key-input workflow')
         object.__setattr__(self, 'attributes', MappingProxyType(values))
-        _text(self.description, 'Description')
-        if '\n' in self.description or '\r' in self.description or len(self.description) > 4096:
-            raise UnitTemplateError('Template description must be one line of at most 4096 characters')
+        _description(self.description)
+
+    @property
+    def family(self):
+        return family_for(self.attributes['UnitType'])
 
     @property
     def profile(self):
-        return PROFILES[self.attributes['UnitType']]
+        return ALL_PROFILES[self.attributes['UnitType']]
 
     @property
     def crc(self):
@@ -144,7 +252,7 @@ class UnitTemplate:
         for name in ('UnitType', 'FirmwareVersion'):
             rows.append(f'    <{name}>{escape(self.attributes[name])}</{name}>')
         rows.append(f'    <CRC>{self.crc}</CRC>')
-        rows.extend(f'    <{name}>{escape(self.attributes[name], _XML_ESCAPES)}</{name}>' for name in ATTRIBUTE_ORDER)
+        rows.extend(f'    <{name}>{escape(self.attributes[name], _XML_ESCAPES)}</{name}>' for name in self.family.order)
         rows.append('</UnitTemplate>')
         return '\r\n'.join(rows) + '\r\n'
 
@@ -157,9 +265,9 @@ class UnitTemplate:
                 document = document.decode('utf-8-sig')
             except UnicodeDecodeError as error:
                 raise UnitTemplateError('Template must be UTF-8') from error
-        if not isinstance(document, str) or len(document.encode('utf-8')) > _MAX_BYTES:
+        if not isinstance(document, str) or len(document.encode('utf-8', 'surrogatepass')) > _MAX_BYTES:
             raise UnitTemplateError('Template must be XML text of at most 1 MiB')
-        remainder = re.sub(r'\A\ufeff?\s*<\?xml\s[^?]*\?>', '', document, count=1)
+        remainder = re.sub(r'\A﻿?\s*<\?xml\s[^?]*\?>', '', document, count=1)
         if '<!' in document or '&#' in document or '<?' in remainder:
             raise UnitTemplateError('Template declarations, processing instructions and numeric character references are unsupported')
         try:
@@ -170,7 +278,7 @@ class UnitTemplate:
             raise UnitTemplateError('Expected a plain UnitTemplate root')
         fields = {}
         for element in root:
-            if (element.tag not in set(ATTRIBUTE_ORDER) | {'Description', 'CRC'} or element.attrib or len(element)
+            if (element.tag not in _ALL_FIELDS | {'Description', 'CRC'} or element.attrib or len(element)
                     or (element.tail or '').strip()):
                 raise UnitTemplateError('Unexpected template field or nested content')
             value = element.text or ''
@@ -180,8 +288,9 @@ class UnitTemplate:
                 if sum(child.tag == element.tag for child in root) > 2:
                     raise UnitTemplateError('Excess duplicate template identity fields')
             fields[element.tag] = value
-        if set(fields) != set(ATTRIBUTE_ORDER) | {'Description', 'CRC'}:
-            raise UnitTemplateError('Incomplete classic key-input template')
+        if not {'Description', 'CRC'} <= set(fields) or not any(
+                set(fields) == set(family.order) | {'Description', 'CRC'} for family in _FAMILIES):
+            raise UnitTemplateError('Incomplete key-input template')
         crc_text = fields.pop('CRC')
         if not re.fullmatch(r'[0-9]{1,5}', crc_text) or int(crc_text) > 65535:
             raise UnitTemplateError('Invalid template CRC')
@@ -199,25 +308,30 @@ class UnitTemplate:
 
 
 class UnitTemplates:
-    def __init__(self, spec, *, firmware='1.2.67', catalog_number=None):
-        profile = PROFILES.get(spec.unit_type)
-        if (profile is None or spec.filename != profile[3] or firmware != profile[1]
-                or (catalog_number is not None and catalog_number != profile[2])):
-            raise UnitTemplateError('Use an exact KEY1/5031N, KEY2/5032N or KEY4/5034N profile, firmware 1.2.67')
-        self.profile = profile
+    def __init__(self, spec, *, firmware=None, catalog_number=None):
+        profile = ALL_PROFILES.get(spec.unit_type)
+        family = family_for(spec.unit_type) if profile else None
+        catalogs = NEO_CATALOGS.get(spec.unit_type, (profile[2],)) if profile else ()
+        if (profile is None or spec.filename != profile[3] or (firmware or profile[1]) != profile[1]
+                or (catalog_number is not None and catalog_number not in catalogs)):
+            raise UnitTemplateError('Use an exact KEY1/5031N, KEY2/5032N or KEY4/5034N profile at firmware 1.2.67, '
+                                    'or an admitted NeoPro key-input type and catalogue at firmware 2.5.00')
+        self.family = family
+        self.profile = profile if catalog_number is None else profile[:2] + (catalog_number,) + profile[3:]
+        self.parameters = family.parameters
         self.spec = spec
-        for name in PARAMETERS:
+        for name in self.parameters:
             spec.get(name)
 
     def _validate_values(self, values):
         result = {}
-        for name in PARAMETERS:
+        for name in self.parameters:
             if name not in values:
                 raise UnitTemplateError('Missing template parameter: ' + name)
             value = values[name]
             if not isinstance(value, str):
                 value = ' '.join(map(str, value)) if isinstance(value, (tuple, list)) else str(value)
-            normalized = _normalized(name, value)
+            normalized = _normalized(name, value, self.family)
             parameter = self.spec.get(name)
             check_value = normalized if name == 'UnitName' else list(_numbers(normalized))
             if not parameter.validate_value(check_value)['valid']:
@@ -227,7 +341,8 @@ class UnitTemplates:
 
     def from_values(self, values, *, description=''):
         attributes = self._validate_values(values)
-        attributes.update(UnitType=self.profile[0], FirmwareVersion=self.profile[1], InfraRedBank='0', GAVBroadcastFlag='0')
+        attributes.update(UnitType=self.profile[0], FirmwareVersion=self.profile[1])
+        attributes.update({name: '0' for name in self.family.virtual})
         return UnitTemplate(attributes, description)
 
     def _verify_profile(self, session):
@@ -249,13 +364,13 @@ class UnitTemplates:
             if row.get('Name') in fields:
                 raise UnitTemplateError('Duplicate native parameter schema')
             fields[row.get('Name')] = row
-        for name in PARAMETERS:
+        for name in self.parameters:
             native, local = fields.get(name, {}), self.spec.get(name).fields
             if native.get('Type', '').lower() != local.get('Type', '').lower():
                 raise UnitTemplateError('Native parameter type mismatch: ' + name)
-            for field, default in (('Address', None), ('ArraySize', '1'), ('BitSize', '1' if local.get('Type') == 'bit' else '8'), ('BitAddress', '0'), ('ArraySkip', '0')):
-                if _numbers(native.get(field, default)) != _numbers(local.get(field, default)):
-                    raise UnitTemplateError(f'Native parameter layout mismatch: {name}/{field}')
+            for field_name, default in (('Address', None), ('ArraySize', '1'), ('BitSize', '1' if local.get('Type') == 'bit' else '8'), ('BitAddress', '0'), ('ArraySkip', '0')):
+                if _numbers(native.get(field_name, default)) != _numbers(local.get(field_name, default)):
+                    raise UnitTemplateError(f'Native parameter layout mismatch: {name}/{field_name}')
 
     def export(self, session, *, description=''):
         self._verify_session(session)
@@ -264,12 +379,12 @@ class UnitTemplates:
     def apply(self, session, template):
         if not isinstance(template, UnitTemplate):
             raise UnitTemplateError('Parse a UnitTemplate before applying it')
-        if template.profile != self.profile:
+        if template.profile[:2] != self.profile[:2]:
             raise UnitTemplateError('Template identity differs from the selected profile; cross-type conversion is unsupported')
         desired = self._validate_values(template.attributes)
         self._verify_session(session)
         current = self._validate_values(session.values())
-        changes = {name: desired[name] for name in PARAMETERS if desired[name] != current[name]}
+        changes = {name: desired[name] for name in self.parameters if desired[name] != current[name]}
         attempted = []
         try:
             for name, value in changes.items():

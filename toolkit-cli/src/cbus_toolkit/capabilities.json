@@ -286,9 +286,12 @@
         "docs/native-template-transaction-acceptance.json",
         "tests/test_conversion_mapping.py",
         "tests/test_conversion_pairs_native.py",
-        "research/fixtures/convertunit-pairs-native-receipt.json"
+        "research/fixtures/convertunit-pairs-native-receipt.json",
+        "tests/test_toolkit_conversion_tweakers.py",
+        "docs/toolkit-conversion-tweakers.md",
+        "research/fixtures/toolkit-conversion-tweaker-registry.json"
       ],
-      "limits": "Native CONVERTUNIT covers all 15 C-Gate-admitted DIN dimmer/relay pairs in catalogue and move modes: an independent mapping-table model predicted every stored PP list, rebuilt identity, output channels, PP readback (including seven native-unloadable results) and save/reload, with 15 refusal cases and a PP-less source; cmqttd/cgate-mock apply the same rules but do not store the C-Bus 3 UnitType PP, regenerate channels or refuse unloadable PP values. Existing-unit alignment and all nine classic KEY1/KEY2/KEY4 replacement pairs tested with native backups, persistence, metadata and rollback. A bounded KEY1/KEY2/KEY4 template-default transaction resets the original 26 template fields, performs one PP SAVE and verifies a fresh database reload while preserving stable excluded destination values. Other keypad/sensor conversions, broad RESET_TO_DEFAULTS/factory behavior, project-file persistence and physical reset remain incomplete."
+      "limits": "Native CONVERTUNIT covers all 15 C-Gate-admitted DIN dimmer/relay pairs in catalogue and move modes: an independent mapping-table model predicted every stored PP list, rebuilt identity, output channels, PP readback (including seven native-unloadable results) and save/reload, with 15 refusal cases and a PP-less source; cmqttd/cgate-mock apply the same rules but do not store the C-Bus 3 UnitType PP, regenerate channels or refuse unloadable PP values. Existing-unit alignment and all nine classic KEY1/KEY2/KEY4 replacement pairs tested with native backups, persistence, metadata and rollback. A bounded KEY1/KEY2/KEY4 template-default transaction resets the original 26 template fields, performs one PP SAVE and verifies a fresh database reload while preserving stable excluded destination values. Toolkit client-side conversion: a sanitized receipt lists all 292 RegisterTweaker registrations (13 classes) with recovered rules; the eight DIMDN8/DIMDN8F/DIMDN4/DIMDN4F<->DIMDU4 tweaker pairs are implemented Toolkit-style and passed owned native C-Gate PP acceptance with save/reload, and every other pair is refused with its recorded reason (key-input, DLT and sensor agent conversion hooks and RELDNx rules unrecovered; PC_DAL2 not natively accepted). Other keypad/sensor conversions, broad RESET_TO_DEFAULTS/factory behavior, project-file persistence and physical reset remain incomplete."
     },
     {
       "id": "classic-key-presets",
@@ -926,9 +929,10 @@
         "tests/test_template_transaction_native.py",
         "docs/unit-templates.md",
         "docs/unit-template-acceptance-summary.json",
-        "docs/native-template-transaction-acceptance.json"
+        "docs/native-template-transaction-acceptance.json",
+        "tests/test_unit_templates_neo.py"
       ],
-      "limits": "KEY1/KEY2/KEY4 1.2.67 with matching 5031N/5032N/5034N XML template attribute selection/order, checksum and escaping compared with original EXE. Offline/native export and import plus direct database copy and template-default reset stage all 26 fields, preserve stable excluded destination values, issue one PP SAVE and verify a fresh reload. Cross-type imports are rejected; other device profiles, non-ASCII exchange, project-file persistence and physical template transfer remain incomplete."
+      "limits": "KEY1/KEY2/KEY4 1.2.67 with matching 5031N/5032N/5034N XML template attribute selection/order, checksum and escaping compared with original EXE. Offline/native export and import plus direct database copy and template-default reset stage all 26 fields, preserve stable excluded destination values, issue one PP SAVE and verify a fresh reload. The Python API also covers the 30 NeoPro key-input types at 2.5.00 with the recovered 58-attribute NeoPro list (IRBank rename, PatchEnable included), with owned native C-Gate export/apply/save/reload and project-reload acceptance for all 30; NeoPro CLI commands and database transactions are not provided. Unicode Description round-trips as file metadata only. Cross-type imports are rejected; KEYE1 and other device profiles, non-ASCII attribute exchange, project-file persistence and physical template transfer remain incomplete."
     },
     {
       "id": "serial-directed-commissioning",

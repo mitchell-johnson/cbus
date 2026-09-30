@@ -65,6 +65,9 @@ class NativeTemplateTransaction:
     def __init__(self, programmer: Any, templates: UnitTemplates, lock_address: str):
         if not isinstance(templates, UnitTemplates):
             raise TypeError("templates must be UnitTemplates")
+        if templates.family.name != "classic":
+            # NeoPro templates include PatchEnable, which this transaction preserves.
+            raise ValueError("Template transactions support the classic KEY1/KEY2/KEY4 profiles only")
         self.programmer = programmer
         self.templates = templates
         self.lock_address = lock_address

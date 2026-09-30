@@ -177,8 +177,10 @@
     "tests/test_thermostat_templates_native.py",
     "tests/test_toolkit_database_csv_area_native.py",
     "tests/test_toolkit_database_csv_native_batch.py::NativeBatchColdLoadTests",
+    "tests/test_toolkit_conversion_tweakers.py::NativeToolkitTweakerTests",
     "tests/test_unit_diagnostics.py::NativeDiagnosticsTests::test_native_capture_reproduces_the_committed_fixture",
     "tests/test_unit_templates.py::UnitTemplateNativeTest",
+    "tests/test_unit_templates_neo.py",
     "tests/test_wireless_gateway.py::WirelessGatewayNativeTest",
     "tests/test_wireless_unit_globals.py::WirelessGlobalsNativeTest"
   ]

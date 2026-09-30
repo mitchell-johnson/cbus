@@ -110,7 +110,7 @@ class UnitTemplateTest(unittest.TestCase):
                         text.replace('<UnitType>KEY4</UnitType>','<UnitType>KEY2</UnitType>',1),
                         '<!DOCTYPE UnitTemplate []>'+text,'x'*(1024*1024+1)):
             with self.subTest(changed=changed[:30]),self.assertRaises(UnitTemplateError):UnitTemplate.from_xml(changed)
-        for description in ('é','multi\nline','x'*4097):
+        for description in ('\x01','multi\nline','x'*4097,'\ud800'):
             with self.assertRaises(UnitTemplateError):self.templates.from_values(self.current,description=description)
 
     def session(self):
