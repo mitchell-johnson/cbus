@@ -1184,9 +1184,11 @@
         "../rust/testdata/vectors/dali.jsonl",
         "../rust/cbus-cgate/src/service/dali_specialized.rs",
         "../rust/cmqttd/tests/system_cgate_dali.rs",
-        "../rust/cmqttd/tests/system_cgate_dali_specialized.rs"
+        "../rust/cmqttd/tests/system_cgate_dali_specialized.rs",
+        "../rust/testdata/fixtures/native_cgate_dali_commissioning.json",
+        "research/native_dali_commissioning.py"
       ],
-      "limits": "cmqttd dispatches all 128 maintained C-Gate 3.4.0.2001 DALI paths. Core, emergency, gateway, paged-memory, error-reporting and measurement commands, EXT_ONLY session extraction/deployment and the read-only DALI_ONLY, FULL, REFRESH_STATUS_INFO and RETRIEVE_RECONCILE extraction plans are tested only against scripted fake PCI peers. COND_QUICK, COND_EXTENDED and RESCAN_FAULT run their non-remediating prefix and return 502 before ADDRESS_UNKNOWN. Typed DALI_ONLY/FULL deployment refuses before I/O. Their native plans are source-recovered from a hash-bound case-sensitive decompilation but not implemented. The Python Toolkit CLI has no typed DALI workflow. Gateway and downstream DALI device state, persistence and hardware acceptance remain unverified."
+      "limits": "cmqttd dispatches all 128 maintained C-Gate 3.4.0.2001 DALI paths. Core, emergency, gateway, paged-memory, error-reporting and measurement commands, EXT_ONLY session extraction/deployment, all seven typed extraction plans and typed DALI_ONLY/FULL deployment are tested only against scripted fake PCI peers. COND_QUICK, COND_EXTENDED and RESCAN_FAULT send a journaled, never-replayed ADDRESS_UNKNOWN with the native 67-poll budget. Typed deployment validates every payload before I/O, writes in native order and stops at the first fault without rollback, replay or readback. Owned native C-Gate transcripts against a research-only scripted SYS_DAL2 gateway confirm the deploy and conditional wire order and payloads; they are not gateway evidence. FULL refuses after catalogue edits because cmqttd cannot re-serialize the native typed extended proxy. The Python Toolkit CLI has no typed DALI workflow. Gateway and downstream DALI device state, persistence and hardware acceptance remain unverified."
     }
   ]
 }

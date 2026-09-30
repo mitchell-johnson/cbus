@@ -547,14 +547,13 @@ source-pinned read-only typed extraction plans are implemented:
 decode line discovery masks, device types, common parameters, all 16 scenes,
 status, emergency, LED, GTIN, serial, and (for `FULL`) the complete extended
 map, then commit one atomic snapshot only after the complete plan succeeds on
-one PCI generation. `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` run only
-their retained non-remediating prefix, discard the staged masks, and stop
-before `ADDRESS_UNKNOWN` short-address assignment because its no-payload
-request and mask-only reply cannot prove a device-to-address allocation. Typed
-`DALI_ONLY`/`FULL` deployment validates the local session, selection, range,
-and gateway, then remains fail-closed before I/O. Its native order and
-payload ownership are source-recovered, but the typed writes are not
-implemented. Therefore
+one PCI generation. `COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` run the
+recovered conditional plans, including a journaled, never-replayed
+`ADDRESS_UNKNOWN` short-address assignment. Typed `DALI_ONLY`/`FULL`
+deployment validates every payload before I/O, writes in native order, and
+stops at the first fault without rollback or replay. Owned native C-Gate
+transcripts against a scripted gateway confirm both. Downstream DALI device
+state and hardware acceptance remain unverified, so
 `dali_full_compatibility` remains false. There is no invented DALI MQTT state
 contract. See the
 [DALI command guide](docs/cgate-dali.md).

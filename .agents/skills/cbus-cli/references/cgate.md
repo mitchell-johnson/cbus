@@ -794,24 +794,17 @@ retained help locally. Inspect the boundary programmatically with
   "dali_specialized_commands_fail_closed": 0,
   "dali_full_compatibility": false,
   "dali_session_ext_only": true,
-  "dali_session_typed_device_plans": "complete-read-only-extract",
-  "dali_session_typed_extract_plans": ["DALI_ONLY", "FULL", "REFRESH_STATUS_INFO", "RETRIEVE_RECONCILE"],
-  "dali_session_typed_extract_plans_remaining": ["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"],
-  "dali_session_typed_extract_safe_prefix_plans": {
-    "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-    "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-    "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
-  },
-  "dali_session_typed_extract_refusal_step": "ADDRESS_UNKNOWN",
-  "dali_session_typed_extract_refusal_receipt": "mask-only-no-explicit-device-allocation",
-  "dali_session_typed_deploy_plans_remaining": ["DALI_ONLY", "FULL"],
-  "dali_session_typed_deploy_preflight": "local-session-target-validation-before-io",
-  "dali_session_typed_deploy_refusal_missing": [
-    "native-step-order",
-    "model-to-payload-ownership",
-    "per-field-readback-receipts",
-    "full-typed-ext-atomic-boundary"
-  ],
+  "dali_session_typed_device_plans": "complete-extract-and-typed-deploy",
+  "dali_session_typed_extract_plans": ["DALI_ONLY", "FULL", "REFRESH_STATUS_INFO", "RETRIEVE_RECONCILE", "COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"],
+  "dali_session_typed_extract_plans_remaining": [],
+  "dali_session_conditional_extract_commit": "atomic-before-address-unknown-step-by-step-after",
+  "dali_session_address_unknown_budget": {"max_polls": 67, "poll_interval_ms": 3000},
+  "dali_session_typed_deploy_plans": ["EXT_ONLY", "DALI_ONLY", "FULL"],
+  "dali_session_typed_deploy_plans_remaining": [],
+  "dali_session_typed_deploy_model_validation": "complete-plan-before-io",
+  "dali_session_typed_deploy_failure": "stop-at-first-fault-no-rollback-no-replay",
+  "dali_session_typed_deploy_readback": "none-native",
+  "dali_commissioning_journal": "cmqttd-dali-commissioning-journal-v1",
   "dali_delivery_semantics": "source-correlated-exactly-once-no-replay"
 }
 ```
@@ -825,18 +818,18 @@ plans over known selected ECGs. The executor stages decoded masks, types,
 common parameters, scenes, status, emergency, LED, GTIN, serial, and extended
 bytes and commits only after the whole plan completes on the captured PCI
 generation. Broken discovery retains the previous broken value and full
-discovery applies its mask to both known and full-known. Do not invoke
-`COND_QUICK`, `COND_EXTENDED`, or `RESCAN_FAULT` as completed read-only
-operations. They run only the retained non-remediating prefix with
-source-correlated exact-once exchanges, discard every staged mask, and return
-502 before operation 2, `ADDRESS_UNKNOWN`. That operation has no target/range
-payload bytes and returns only an eight-byte short-address mask with no
-device-to-address allocation receipt. Typed `DALI_ONLY` and `FULL` deployment
-validate the session, known-address selection, range, and gateway locally,
-then fail before I/O. The native plans (operations 32, 34 then 35, 40 and
-38, then the extended write for `FULL`) and their payload ownership are
-source-recovered in `docs/cgate-dali.md`; native performs no per-field
-readback and does not roll back. cmqttd has not implemented those writes.
+discovery applies its mask to both known and full-known. `COND_QUICK`,
+`COND_EXTENDED`, and `RESCAN_FAULT` are mutation-bearing: they send operation
+2, `ADDRESS_UNKNOWN`, once per selected line (up to 67 polls 3 s apart) after
+a durable DALI journal record, merge its mask into `isAddressKnown`, and run
+the conditional discovery and partial extended reads. After operation 2 a
+later failure commits the model learned so far; an uncertain operation 2 is
+never resent. Typed `DALI_ONLY` and `FULL` deployment validate every payload
+from one snapshot before I/O, then send operations 32, 34 (all ECGs) then 35,
+40 and 38, and for `FULL` the extended writer. They stop at the first fault
+without rollback, replay or readback, as native does, and journal every
+confirmed write. Owned native transcripts against a scripted gateway pin the
+wire order; see `docs/cgate-dali.md`.
 
 There is no MQTT DALI state contract. Ground syntax/help in
 `rust/testdata/fixtures/native_cgate_dali_help.json`, specialized class hashes,

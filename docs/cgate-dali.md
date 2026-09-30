@@ -8,13 +8,14 @@ path falls through to the generic unimplemented-command response.
 
 This is command-path coverage, not a claim that every commissioning selector
 has full native parity. `DALI SESSION EXTRACT` implements `EXT_ONLY` and all
-four source-pinned read-only typed plans: `DALI_ONLY`, `FULL`,
-`REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`. `DALI SESSION DEPLOY`
-implements `EXT_ONLY`. The three extraction selectors that reach the native
-`ADDRESS_UNKNOWN` short-address assignment execute only their evidenced
-non-remediating prefix and then stop before that operation. The two typed
-deployment selectors listed under [Known boundary](#known-boundary) refuse
-before PCI I/O.
+seven source-pinned typed plans: the read-only `DALI_ONLY`, `FULL`,
+`REFRESH_STATUS_INFO`, and `RETRIEVE_RECONCILE`, and the conditional
+`COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT`, which send the native
+`ADDRESS_UNKNOWN` short-address assignment. `DALI SESSION DEPLOY` implements
+`EXT_ONLY` and the typed `DALI_ONLY` and `FULL` plans. Owned native C-Gate
+transcripts against a scripted gateway confirm their wire order and payloads
+(see [Native transcripts](#native-transcripts)); downstream DALI device state
+remains unverified.
 `CMQTT CAPABILITIES` therefore keeps `dali_full_compatibility` false.
 
 ## Core and emergency commands
@@ -203,51 +204,113 @@ operations share the daemon transport without blocking its MQTT event loop;
 the real-daemon tests send an MQTT lighting command while a DALI gateway
 operation is pending and verify that it reaches the fake PCI.
 
-## Known boundary
+## Conditional extraction
 
-The build-2001 classes show that typed session extraction/deployment is a
-multi-step model workflow rather than an extended-memory alias. cmqttd
-implements every read-only typed extraction plan. For the three
-mutation-bearing extraction selectors it executes only the retained read-only
-prefix, stages the returned masks, and discards them when the plan reaches
-operation 2, `ADDRESS_UNKNOWN`:
+`COND_QUICK`, `COND_EXTENDED`, and `RESCAN_FAULT` run the recovered plans
+listed under [Conditional extraction plans](#conditional-extraction-plans)
+with the native per-step AUTO budgets. `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO`
+starts with POLL and allows 57 polls 3 seconds apart, `DISCOVER_KNOWN_TYPE_INFO`
+allows 17 polls 1 second apart, `RESCAN` allows 60 polls 5 seconds apart, and
+`ADDRESS_UNKNOWN` allows 67 polls 3 seconds apart, so one line can take more
+than three minutes. The read-only `DALI_ONLY` and `FULL` plans use the same
+overrides for operations 3 and 4.
 
-- `COND_QUICK`: `ADDRESS_UNKNOWN` is step 3
-- `COND_EXTENDED`: `ADDRESS_UNKNOWN` is step 3
-- `RESCAN_FAULT`: `ADDRESS_UNKNOWN` is step 4, after `RESCAN`
+`ADDRESS_UNKNOWN` (operation 2, `E381DA02` or `E381DA82`) is sent exactly once
+per selected line. Its request has no payload, and its successful reply is
+only an eight-byte address mask. As in native build 2001, cmqttd sets the
+line's `containsUnaddressed` to false and each selected ECG's
+`isAddressKnown` to its mask bit. A non-success status, including
+`IN_PROGRESS` after the 67th poll, is only the warning
+`300-[WARN] address unknown incomplete`, and the plan continues.
+`RESCAN` failure is likewise the warning `300-[WARN] rescan replyStatus
+ignored`. The two conditional discovery steps print
+`125-[COND] discovery1:` and `discovery2:` with the native predicate result
+and run only when it is true.
 
-`COND_QUICK` and `COND_EXTENDED` issue one source-correlated operation-4 poll
-followed by non-destructive `MISSING` operation 11. `RESCAN_FAULT` first runs
-the documented non-remediating `RESCAN` operation 14. Every exchange is sent
-exactly once on the captured PCI generation. Failure, reconnect, or the final
-502 commits no session fields and never replays an exchange.
+Before the first `ADDRESS_UNKNOWN`, cmqttd creates and fsyncs a record in the
+[DALI commissioning journal](#dali-commissioning-journal). Nothing that can
+change a device is sent before that point, so a failure there keeps the
+atomic read-only rule: nothing is committed. Once operation 2 has been sent,
+the bus may have changed. Native updates its session model step by step, so
+cmqttd then commits the model staged so far, on the captured PCI generation,
+when a later step fails. It reports that in the final line. A reconnect or
+lost reply during operation 2 leaves the outcome uncertain; cmqttd never
+resends it.
 
-The retained operation-2 request is fully known at the CAL boundary: line A is
-`E381DA02`, line B is `E381DA82`, and neither carries payload bytes. The
-request cannot name a free short address, selected range, or one physical
-device. Its successful data is only an eight-byte assigned/discovered address
-mask; it has no device identity, serial-to-address mapping, or newly-assigned
-marker. Native build 2001 merges only that mask into the model, as described
-under
-[Source-recovered native plans](#source-recovered-native-plans). cmqttd does
-not yet send operation 2 from these selectors.
+## Typed deployment
 
-Typed `DALI_ONLY` and `FULL` deployment also refuse before I/O. Both still
-perform the safe local preflight: they require an existing session, validate
-the selected known ECG addresses and optional range, and resolve one
-configured `SYS_DAL2` gateway. The native step order, payload ownership and
-failure boundary are now source-recovered, but cmqttd has not implemented the
-typed setters. The 502 refusal text predates that recovery: it still says the
-order, ownership and readback receipts are missing. Treat it as "not
-implemented", not as a statement about native evidence.
+`DALI_ONLY` and `FULL` deployment run the recovered plans listed under
+[Typed deployment plans](#typed-deployment-plans). cmqttd builds and validates
+every payload from one session snapshot before it sends anything. That is a
+deliberate deviation: native evaluates each ECG as it reaches it, so a model
+fault after the first ECG would stop native with earlier ECGs already
+written. cmqttd refuses the whole plan instead, with the native progress
+lines, the native `501-` warning, and a final
+`501 gateway model mismatch: <warning>; no bus command was sent`. Native's
+final text is `501 gateway model mismatch: null`.
 
-This selector boundary is narrower than a command-path gap: both SESSION paths
-are implemented, five extraction selectors and `EXT_ONLY` deployment are
-physical, and mutation-bearing selectors have a bounded physical preflight but
-return 502 before address assignment. The two typed deployment selectors
-return 502 without touching the bus.
-Live gateway and downstream DALI hardware acceptance also remains separate
-from loopback protocol acceptance.
+Each setter uses the default AUTO budget: EXECUTE, then at most 10 polls
+1.5 seconds apart. The plan stops at the first fault:
+
+- A non-success status returns
+  `502 reply status error: error response: <status>`, as native does, with
+  the step and ECG appended. A gateway still reporting `IN_PROGRESS` or
+  `FAIL_BUSY` after the budget is recorded as outcome uncertain.
+- A lost reply or reconnect returns 503 and is recorded as outcome
+  uncertain.
+- Earlier writes are neither rolled back nor resumed, and no write is ever
+  replayed. The final line names how many planned writes were confirmed,
+  the last confirmed write and the write where the plan stopped.
+
+`FULL` then runs the verified `EXT_ONLY` writer on the dirty extended bytes.
+With none, it prints native's `126-no dirty bytes detected`. Native
+re-serializes its typed extended proxy first. cmqttd has no such serializer,
+so `FULL` refuses before I/O while the session has unsaved catalogue edits
+(`DALI SESSION CATALOG ADD/REMOVE` or a `SET` below `/catalog`). As in native,
+the command's gateway becomes the session target once the plan starts. A
+completed plan clears `modelDirty` when the session was not edited during the
+deploy; a failed plan leaves it set. Neither native nor cmqttd reads the
+written fields back.
+
+## DALI commissioning journal
+
+Typed deployment and conditional extraction change devices one exchange at a
+time. Before the first such exchange cmqttd exclusively creates and fsyncs a
+`cmqttd-dali-commissioning-journal-v1` record in
+`<cgate-state>.dali-journal/`. The record lists every planned write in order:
+step, operation, line, ECG or extended address and payload. It is replaced
+atomically after each confirmed reply and at the end. After a crash,
+`planned[confirmed_writes]` is the only write whose outcome is unknown, and
+no later entry was sent. The terminal `state` is `complete`, `failed` (a
+definite gateway reply or a journal fault stopped the plan) or
+`outcome_uncertain`. `rolled_back` is always false. If the record cannot be
+created, the command returns 503 without sending anything. The journal is
+operator evidence only: it does not block later commissioning, and cmqttd
+never resumes a plan from it. The newest 32 complete records are kept.
+
+## Native transcripts
+
+`toolkit-cli/research/native_dali_commissioning.py` runs owned loopback
+C-Gate 3.4.0.2001 against a research-only scripted `SYS_DAL2` gateway at
+unit 20 with two synthetic ECGs (3 is `EMERGENCY` and 5 is `LED`). It records
+eight cases in `rust/testdata/fixtures/native_cgate_dali_commissioning.json`:
+deployment of an empty session, `DALI_ONLY`, `DALI_ONLY` with a rejected
+scene write, `FULL`, `FULL` with a missing common structure, `COND_QUICK`,
+`COND_EXTENDED` with the conditional discovery branch, and `RESCAN_FAULT`
+with a rejected `ADDRESS_UNKNOWN`. A cmqttd unit test replays the same
+synthetic gateway and requires identical gateway exchanges and replies in the
+same order, the same status, the same progress, warning and `[COND]` lines,
+and native's final line as a prefix. The 501 model refusal is the documented
+exception. The capture also showed that the gateway status byte names are
+`3` `FAIL_INVALID_DEVICE_TYPE`, `4` `FAIL_INVALID_COMMAND`, `5`
+`FAIL_INVALID_PARAMETER` and `6` `FAIL_INCORRECT_LENGTH`; cmqttd's DALI
+replies now use those names.
+
+cmqttd omits native's per-exchange debug rows (`120-DaliCommand=`,
+`100-SendCommand=`, `300-Response=`, `320-ResponseStatus=`), its `125-`
+decode rows other than `[COND]`, and the `124-`/`126-progress` rows of
+extended-memory reads. The replies are fixture choices, not gateway or
+ballast behavior.
 
 ## Source-recovered native plans
 
@@ -299,7 +362,7 @@ steps override that budget:
 `POLL_KNOWN` sends a single POLL. Native extraction changes the live session
 model after each step; it has no staged or atomic commit.
 
-### Conditional extraction
+### Conditional extraction plans
 
 The three conditional plans are:
 
@@ -352,7 +415,7 @@ effects:
 Apart from `RESCAN` and `ADDRESS_UNKNOWN`, a non-success status aborts the
 command with `502 reply status error`.
 
-### Typed deployment
+### Typed deployment plans
 
 `go` maps the three deployment types to these plans:
 
@@ -411,56 +474,15 @@ the state of a device after a partial plan.
 
 ## Outstanding
 
-The following work remains for the three conditional selectors and typed
-deployment. No step below is implemented.
-
-Conditional extraction plan:
-
-1. Add per-step poll budgets and a POLL-first AUTO sequence to the DALI
-   transport in `cbus-transport`. It currently uses a fixed EXECUTE and 10
-   polls at 1.5 seconds. The existing read-only plans use that fixed budget
-   for operations 3 and 4, and the prefix sends one POLL for
-   `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO`. Both differ from native.
-2. Match the native prefix. `RESCAN` accepts a non-success status as a
-   warning; cmqttd currently rejects it. `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO`
-   must clear the seven flags before it applies the mask.
-3. Send `ADDRESS_UNKNOWN` exactly once per selected line with the 67-poll
-   budget. That can take more than three minutes. Never replay it after an
-   uncertain outcome or reconnect, because it can change DALI addresses.
-4. Evaluate the conditional discovery predicate over the staged model for all
-   ECGs on the selected lines, then run the remaining steps with the existing
-   decoders and the partial extended-map ranges.
-5. Decide the commit rule. Native commits step by step. cmqttd's atomic
-   snapshot would discard the address-known state after a later failure even
-   though the bus may have changed. Document the chosen rule as a deliberate
-   deviation, or commit through `ADDRESS_UNKNOWN` explicitly.
-6. Add operation-2 vectors and scripted-peer system tests for success,
-   non-success, `IN_PROGRESS` polling, both conditional branches, reconnect
-   during operation 2, and `RESCAN` failure. Physical acceptance requires a
-   real gateway with an unaddressed ballast.
-
-Typed deployment plan:
-
-1. Replace the 502 refusal with the native step lists above. Keep the local
-   preflight and resolve one PCI generation before the first write.
-2. Build payloads from the session JSON. `groupMembershipBitmask16` becomes
-   two little-endian bytes, and the scene byte uses `scene` levels with
-   `sceneMembershipBitmask16`. `dimmCurve` maps to 0 or 1. The emergency
-   fields need both the emergency and read-only structures.
-3. Apply the eligibility filter and device-type gates, and send operation 34
-   to all ECGs before operation 35.
-4. Use the default AUTO sequence. Return 502 on the first non-success status
-   and 501 on a missing field, with a completed-write count. Never roll back,
-   resume, or replay.
-5. For `FULL`, run the existing verified `EXT_ONLY` writer after the typed
-   steps. Confirm that cmqttd's staged extended bytes match native's
-   serialization of the typed extended proxy.
-6. Native performs no readback. Any cmqttd readback through operations
-   17/19/20/23/25 would be a deliberate extension with its own acceptance
-   rule, and it should be documented as one.
-7. Add exact-wire vectors and scripted-peer system tests for ordering,
-   filters, missing fields, a mid-plan failure, and reconnect. Downstream DALI
-   device state and persistence still need hardware evidence.
+- Physical acceptance needs a real gateway with an unaddressed ballast for
+  `ADDRESS_UNKNOWN`, and live ECGs for typed deployment. No downstream DALI
+  device state, persistence, or behavior after a partial deploy is evidenced.
+- `FULL` refuses after catalogue edits until cmqttd can re-serialize the
+  native typed extended proxy.
+- The recovered colour steps (operations 99 and 100) are in no native plan
+  and are not implemented.
+- cmqttd does not emit native's per-exchange debug rows during session plans.
+- The Python Toolkit CLI has no typed DALI workflow.
 
 ## Evidence and tests
 
@@ -480,15 +502,21 @@ Typed deployment plan:
   bytes.
 - `rust/cbus-cgate/src/service/dali_specialized.rs` contains fixture, dispatch,
   exact-wire, local-session, catalogue, persistence, and pre-I/O refusal tests.
+- `rust/testdata/fixtures/native_cgate_dali_commissioning.json` holds the
+  owned native transcripts described under
+  [Native transcripts](#native-transcripts), bound to the SHA-256 of its
+  capture script.
 - `rust/cmqttd/tests/system_cgate_dali.rs` and
   `rust/cmqttd/tests/system_cgate_dali_specialized.rs` launch the real daemon
   against a scripted fake PCI and in-process MQTT broker. The specialized
-  system transcript exercises the three-step status plan and the 15-step
-  `DALI_ONLY` executor, and reads typed values back through
-  `DALI SESSION GET`. For each mutation-bearing extraction selector, it
-  answers the prefix exchanges, then proves that no operation-2 frame is sent
-  and the session is unchanged. Typed `DALI_ONLY` and `FULL` deployment refuse
-  without a PCI frame.
+  system transcript exercises the three-step status plan, the 15-step
+  `DALI_ONLY` executor, `COND_QUICK` with an MQTT lighting command delivered
+  while `ADDRESS_UNKNOWN` is pending, a typed `DALI_ONLY` deployment with an
+  MQTT command delivered mid-plan, and a rejected scene write that stops the
+  plan without repeating or continuing it.
+- Unit tests in `dali_specialized.rs` cover the 67-poll budget, a reconnect
+  during `ADDRESS_UNKNOWN`, the commit after a later failure, payload
+  construction and model refusal, a fault at every deploy write, and `FULL`.
 
 Research and tests use loopback fixtures only. They do not contact a real
 C-Bus network.
