@@ -531,7 +531,10 @@ fn routed_mmi_line(bridges: &[u8], start: u8, count: usize, states: &[u8; 256]) 
     // Routed installation status is extended CAL, not the direct
     // network's standard-status packet.
     let mut cal = vec![0xe0 | (3 + count / 4) as u8, 0, 0xff, start];
-    for chunk in states[usize::from(start)..usize::from(start) + count].chunks_exact(4) {
+    for chunk in states[usize::from(start)..usize::from(start) + count]
+        .as_chunks::<4>()
+        .0
+    {
         cal.push(chunk[0] | chunk[1] << 2 | chunk[2] << 4 | chunk[3] << 6);
     }
     routed_reply_line(bridges, 1, &cal)
