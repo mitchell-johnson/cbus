@@ -835,8 +835,10 @@ See [network diagnostics](docs/network-diagnostics.md).
 ## Sensor occupancy settings
 
 The tested ST7 profile is SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL.
-Layout-identical PIR and light-level sensors stay refused because the Toolkit
-handles them with other classes. Preview and apply its movement event, group,
+Layout-identical PIR and light-level sensors are refused here because the
+Toolkit handles them with other classes; `sensor-pir` (SENPIROA/SENPIRIA/
+SENPIRIB) and `sensor-light-level` (SENLL 2.x) model those dialogs, with
+offline `sensors pir-plan` and `sensors light-level-plan`. Preview and apply its movement event, group,
 timer, light threshold and occupancy enable settings:
 
 ```sh

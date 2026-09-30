@@ -7,7 +7,10 @@ Native application and offline snapshots reject other unit types, revisions
 and catalog numbers before any write. This is one Toolkit sensor class, not
 full sensor-dialog or hardware parity. See [Profile admission](#profile-admission).
 The ST7 PIR types SENPIROA, SENPIRIA and SENPIRIB use a separate workflow; see
-[ST7 PIR sensor dialog](#st7-pir-sensor-dialog).
+[ST7 PIR sensor dialog](#st7-pir-sensor-dialog). The ST7 light-level sensor
+SENLL has its own workflow; see
+[ST7 SENLL light-level dialog](#st7-senll-light-level-dialog). All three have
+[CLI commands](#cli-commands).
 
 The helper combines the Occupancy tab's event selection, the standard sensor
 macro, virtual-key/block assignment, timer settings, occupancy enable group,
@@ -136,9 +139,9 @@ its type, address, array/bit geometry, protection and min/max bounds.
 |---|---|---|---|---|
 | SENPILL | 2.0.01..2.3.9 (5753PEIRL, SLC5753PEIRL) | identical | `TST7SENPILL` / `TCBusST7MultisensorCGateAgent` | admitted |
 | SENPILL | 2.3.10..2.3.99 | identical | none registered | refused |
-| SENPIROA, SENPIRIA | 2.0.01..2.4.99 (`_ST7`, `_ST7_2`) | identical | `TST7SENPIROA` / `TST7SENPIRSS`, ST7 PIR agent | refused |
-| SENPIRIB | 2.0.01..2.3.9 (`SENPIRIB_ST7`) | identical | `TST7SENPIRSS`, ST7 PIR agent | refused |
-| SENLL | 2.0.01..2.4.99 (`SENLL_ST7`) | identical | `TST7SENLL`, light-level agent | refused |
+| SENPIROA, SENPIRIA | 2.0.01..2.4.99 (`_ST7`, `_ST7_2`) | identical | `TST7SENPIROA` / `TST7SENPIRSS`, ST7 PIR agent | refused (own workflow) |
+| SENPIRIB | 2.0.01..2.3.9 (`SENPIRIB_ST7`) | identical | `TST7SENPIRSS`, ST7 PIR agent | refused (own workflow) |
+| SENLL | 2.0.01..2.4.99 (`SENLL_ST7`) | identical | `TST7SENLL`, light-level agent | refused (own workflow) |
 | SENPILL 2.4, SENPILLA, SENPIRIC, SENPIRIB 2.4 | `SENPILLA` / `SENPIRIC` | 11 parameters added | `TSENPILLA` / `TSENPIRIC` | refused |
 | SENPILL | 1.6.00..2.0.00 (`SENPILL_1/2/3`) | 6 removed, 8 changed | `TSENPILL` | refused |
 | SENPIR, SENPIRSS, SENSOR | 1.x (`SENPIR`, `SENPIRSS`) | different | `TSENPIR` / `TSENPIRSS` | refused |
@@ -161,7 +164,8 @@ maintenance and scene-selector fields. The PIR unit also limits blocks to four.
 Editing their event masks with this workflow would produce a state that the
 Toolkit overwrites on its next save. The workflow therefore refuses them, and
 `PIRSensor` below models that class instead. `SENLL` is a light-level sensor
-class with no occupancy workflow; modelling its dialog is still open.
+class with no occupancy workflow, whose save forces every occupancy mask to 0;
+`LightLevelSensor` below models it.
 
 ## ST7 PIR sensor dialog
 
@@ -265,7 +269,8 @@ equivalent. The plan is idempotent: planning again after apply changes nothing.
 Unmodelled: the base Neo/NeoPro key, block, timer and scale serialization is
 assumed to round-trip loaded values, and the Toolkit's
 `ApplyMicroFunctionDefaults` reset path (key 4 defaults to On/Off/Idle/Off
-below 2.4.00) is not a dialog edit here. There is no CLI command yet.
+below 2.4.00) is not a dialog edit here. `sensors pir-plan` and
+`unit sensor-pir` expose the workflow; see [CLI commands](#cli-commands).
 
 ### PIR evidence
 
@@ -301,6 +306,151 @@ CBUS_PIR_SENSOR_REPORT=research/runtime/pir-sensor-acceptance.json \
 This is static-source plus native C-Gate evidence. The original Toolkit
 dialog was not executed, and no physical PIR, lux or power-fail behavior was
 observed.
+
+## ST7 SENLL light-level dialog
+
+`cbus_toolkit.light_level_sensors.LightLevelSensor` models the Toolkit dialog
+`TddST7LightLevelSensor` for class `TST7SENLL` with agent
+`TCBusST7LightLevelSensorCGateAgent`, followed by that agent's complete save.
+The Toolkit registers `TST7SENLL` for SENLL 2.0.01 and later; the admitted
+profile is its intersection with C-Gate's catalogue:
+
+| Unit type | Firmware | Catalogue | Specification |
+|---|---|---|---|
+| SENLL | 2.0.01..2.0.99, 2.1.00..2.1.99, 2.2.00..2.2.99, 2.3.00..2.3.99, 2.4.00..2.4.99 | 5031PE, 5031PEWP, SLC5031PE, SLC5031PEWP,GY | `SENLL_ST7.xml` |
+
+`SENLL_ST7.xml` declares the SENPILL type and the SENPILL_ST7 layout; the
+workflow is selected by the SENLL identity. SENLL 1.x (`TSENLL`, `SENLL.xml`),
+SENLL between or above the bands, SENLLA (`TSENLLA`) and other catalogue
+numbers are refused.
+
+```python
+from cbus_toolkit.light_level_sensors import LightLevelSensor
+
+sensor = LightLevelSensor(UnitSpecStore(spec_directory).load("SENLL_ST7.xml"))
+plan = sensor.plan(session.values(), level_group=40, on_off_group=41,
+                   broadcast_group=42, enable_group=43, indicator="on_off",
+                   target_lux=500, margin_percent=59)
+sensor.apply(session, plan)   # profile, schema, stale and readback checks
+session.save_to_source()      # separate, explicit persistence operation
+```
+
+`plan(current)` with no options is the Toolkit's save of an unchanged dialog.
+The dialog hides the Occupancy, Blocks, Indicators, Key Functions, Light
+Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
+
+* `level_group`, `on_off_group` and `broadcast_group` are the group combos
+  bound to blocks 2, 3 and 5 (`Blocks[1..4].Group`); `enable_group` is the
+  maintenance enable group (`PECEnablerGroup`). Each is 0..254, or 255 for none.
+  A combo omits a group other than 255 that another block or the enable group
+  already uses, except its own current group, and the enable combo omits
+  groups used by any block. Groups are compared per application. Such a
+  selection is refused.
+* `on_off_application` switches block 3 between the primary and secondary
+  application. When the unit has no application 2 (address 255), the dialog
+  clears block 3's secondary application on load and the switch is disabled.
+* `indicator` is the LED radio: `light_level`, `on_off` or `enable`.
+  `IndicatorBlockAssignment[0]` loads 5 as `enable`, 2 as `on_off` and any
+  other value as `light_level`.
+* `target_lux` is 0..2000 lux, stored as `Ceil(lux / 10)`
+  (`CIS_CBus.Lux2550ToByte`). On load a stored target above 200 (2000 lux) is
+  clamped to 200. `margin_percent` is 0..100; without it the loaded
+  percentage is kept, and a plan whose margin would exceed 255 is refused.
+
+### SENLL Toolkit save model
+
+The save runs the multisensor save, then the light-level
+`PrepareForcedParameters`, then two conditional writes:
+
+* The margin round trip of [Margin arithmetic](#margin-arithmetic), using the
+  dialog's target and percentage. `PotentiometerBBankSwitchEnable`=0.
+* Forced: `PIRLightMovement`, `PIRDarkMovement` and `PIRDark`=0, `DisableIR`=1,
+  `IRBankKeyOffset`=0, corridor office/link blocks 0, `CorridorLinkActive`=0,
+  `CorridorLinkEnablerGroup`=255, `BroadcastBlock`=4, `PIREnablerGroup`=255,
+  both join enabler and control groups 255, `PECFunctionActive`=1,
+  `PECFunctionBlock`=1, the PEC and PIR infrared key/active fields 0,
+  `PIRLevelStore`=0, `PECEnablerGroupLogic` and `PIREnablerGroupLogic`=0, both
+  potentiometer functions and timer blocks 0, `RampRate`=`7 7` and
+  `LightLevel[8]`=0.
+* `JPCommand`, `SRCommand`, `LPCommand`, `LRCommand`, `BlockAllocation`,
+  `IndicatorFunction`, `SceneKeySelector` and `PrimaryColour` are marked
+  non-programmable, so the Toolkit never sends them. Their stored values are
+  preserved.
+* `BroadcastActive` becomes 1 when block 5 has a group, otherwise 0.
+* `IndicatorBlockAssignment` becomes `1 0 0 0 0 0 0 0`, `2 0 …` or `5 0 …` for
+  the level, on/off and enable LEDs.
+
+Other fields, including `IRBank`, `IndicatorControl`, `PECScaleFactor`,
+`ControlAppGroupAddress`, `PECLevelStore`, block timers and bank switching,
+are preserved. The plan is idempotent.
+
+Unmodelled: the base block, timer, bank and scale serialization is assumed to
+round-trip loaded values. The broadcast interval (a block 5 timer dialog with
+a 10-second minimum), the Global and Power Fail tabs and the live ambient
+light reading are not dialog edits here.
+
+### SENLL evidence
+
+`research/light_level_sensor_review.py` disassembles the pinned Toolkit EXE
+with its MAP. Its sanitized receipt,
+[`light-level-sensor-review.json`](light-level-sensor-review.json), holds
+method digests, parameter names, constants, control names and flash binding
+expressions only. `tests/test_light_level_sensors.py` holds independent
+literal vectors for the forced save, load normalizations, dialog controls,
+combo exclusions and refusals. It checks every catalogue decision against the
+profile gate and the receipt against the model, and regenerates the receipt
+from the private EXE.
+
+Native acceptance on owned loopback C-Gate 3.4.0 build 2001 covers one
+profile per catalogue band and all four catalogue numbers: 2.0.01/5031PE,
+2.1.00/SLC5031PE, 2.2.99/5031PEWP, 2.3.00/SLC5031PEWP,GY and 2.4.99/5031PE.
+Each starts from a non-default value in every forced field and a stored
+target above 200. It checks 27 raw-byte assertions, eight dialog cases
+(unchanged save, all three indicators, groups with target/margin, the x87
+500 lux/59% margin, and both on/off applications), idempotence, 43 unrelated
+parameters and the non-programmable fields unchanged, and an explicit database
+save/reload. Six identities are refused with values unchanged: SENLL 1.2.68 and
+1.9.99, SENLL with catalogue 5754PE, SENLLA, SENPILL and SENPIRIA. C-Gate
+cannot create SENLL 2.0.00 or 2.5.00 units, so those gaps are refused offline
+only. `light-level-sensor-acceptance-summary.json` records the source hashes.
+
+```sh
+CBUS_NATIVE_SERVICE_BACKEND=local CBUS_LOCAL_CGATE_VENDOR="$VENDOR/cgate/app" \
+CBUS_CGATE_JAVA=/path/to/jdk-11/bin/java CBUS_UNITSPEC_DIR="$VENDOR/unitspec-plain" \
+CBUS_TOOLKIT_EXE="$VENDOR/toolkit/app/CBusToolkit.exe" \
+CBUS_LIGHT_LEVEL_SENSOR_REPORT=research/runtime/light-level-sensor-acceptance.json \
+  .venv/bin/python -m pytest tests/test_light_level_sensors.py tests/test_cli_sensors.py -v
+```
+
+This is static-source plus native C-Gate evidence. The original Toolkit
+dialog was not executed, and no physical light-level, broadcast or indicator
+behavior was observed.
+
+## CLI commands
+
+Offline plans read a PP export snapshot (`cgate … unit … export`) or a bare
+parameter mapping and never contact C-Gate:
+
+```sh
+cbus-toolkit sensors pir-plan snapshot.json \
+  --key 1:block=1,group=41,timer_seconds=300,expiry=ramp_off --key 4:group=44 \
+  --restore-functions --separate-darkness --enable-group 23 --enabled-when off --power-up enabled
+cbus-toolkit sensors light-level-plan snapshot.json --level-group 40 --on-off-group 41 \
+  --broadcast-group 42 --enable-group 43 --indicator on-off --target-lux 500 --margin-percent 59
+```
+
+A bare mapping for `pir-plan` needs `--spec` (for example
+`SENPIRIA_ST7.xml`); a snapshot selects the catalogue specification from its
+firmware. Online, `cgate … unit --lock-address NETWORK --source PATH` accepts
+`sensor-pir` and `sensor-light-level` with the same options. `--dry-run`
+previews the verified PP changes and parameters without saving;
+otherwise the edited session is saved to `--source` or `--destination`.
+`--key KEY:FIELD=VALUE[,…]` repeats per key; its fields are `block`, `group`,
+`timer_seconds` and `expiry`. `--restore-functions`/`--keep-functions` answer
+the template prompt and `--darkness-same-as-light`/`--separate-darkness` set
+the link. Groups accept `none` for 255. With no edit options, each command
+applies the Toolkit save of an unchanged dialog. The identity gate runs
+before a specification is loaded.
 
 ## Evidence
 
@@ -376,6 +526,6 @@ CBUS_SENSOR_REPORT=research/runtime/sensor-acceptance.json \
 The following remain outside this acceptance scope: physical movement
 detection, lux calibration, sensitivity, occupancy power-up state, infrared
 controls, corridor linking, join mode, bank-switch editing and light
-maintenance/broadcast programming. Custom macros, light-level/SENPILLA
-dialogs and complete GUI before/after parity are also outside it. The PIR
-dialog has its own evidence above.
+maintenance/broadcast programming. Custom macros, SENLLA/SENPILLA
+dialogs and complete GUI before/after parity are also outside it. The PIR and
+SENLL dialogs have their own evidence above.
