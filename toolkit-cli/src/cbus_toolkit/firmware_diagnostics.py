@@ -3,8 +3,9 @@
 Wire/parser evidence is the original FirmwareUpdater 1.16.3 assembly. This
 module never extracts firmware, enters update mode, restarts or writes flash.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
+import io
 import math
 import ntpath
 import os
@@ -281,16 +282,26 @@ class SerialDiagnostics:
 MAX_PACKAGE_METADATA_SIZE = 512 * 1024 * 1024
 
 
-def _metadata_digest(source):
-    source.seek(0)
-    digest, total = hashlib.sha256(), 0
-    for block in iter(lambda: source.read(1024 * 1024), b''):
-        total += len(block)
-        if total > MAX_PACKAGE_METADATA_SIZE:
+@dataclass(frozen=True)
+class PackageSnapshot:
+    """One immutable archive: metadata and selected bytes share this identity."""
+    name: str
+    data: bytes = field(repr=False)
+    sha256: str = field(init=False)
+
+    def __post_init__(self):
+        if not isinstance(self.name, str) or not self.name or len(self.name) > 4096 or '\0' in self.name:
+            raise ValueError('Firmware package filename must be bounded text')
+        if not isinstance(self.data, bytes) or len(self.data) > MAX_PACKAGE_METADATA_SIZE:
             raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
-        digest.update(block)
-    source.seek(0)
-    return digest.hexdigest()
+        object.__setattr__(self, 'sha256', hashlib.sha256(self.data).hexdigest())
+
+
+def _read_package_bytes(source, max_bytes):
+    data = source.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
+    return data
 
 
 def _metadata_stat_signature(value):
@@ -298,9 +309,26 @@ def _metadata_stat_signature(value):
             value.st_mtime_ns, value.st_ctime_ns)
 
 
-def inspect_package(path):
-    """Read bounded ZIP metadata from one regular descriptor; never decrypt."""
-    path = Path(path)
+def open_package_snapshot(package, *, expected_sha256=None, max_bytes=None):
+    """Read one bounded regular file once and hash only the captured bytes.
+
+    A supplied snapshot is reused without path I/O. Digest verification always
+    precedes any archive parser or decryption reader initialization.
+    """
+    if expected_sha256 is not None and (not isinstance(expected_sha256, str) or
+            len(expected_sha256) != 64 or any(c not in '0123456789abcdef' for c in expected_sha256)):
+        raise ValueError('Expected package digest must be lowercase SHA-256')
+    max_bytes = MAX_PACKAGE_METADATA_SIZE if max_bytes is None else max_bytes
+    if type(max_bytes) is not int or not 0 < max_bytes <= MAX_PACKAGE_METADATA_SIZE:
+        raise ValueError('Firmware package snapshot bound is invalid')
+    if isinstance(package, PackageSnapshot):
+        snapshot = package
+        if len(snapshot.data) > max_bytes:
+            raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
+        if expected_sha256 is not None and snapshot.sha256 != expected_sha256:
+            raise ValueError('Firmware package digest differs from the reviewed plan')
+        return snapshot
+    path = Path(package)
     flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NONBLOCK', 0)
     flags |= getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0)
     try:
@@ -309,21 +337,28 @@ def inspect_package(path):
             before = os.fstat(source.fileno())
             if not stat.S_ISREG(before.st_mode):
                 raise ValueError('Firmware package must be a regular file')
-            if before.st_size > MAX_PACKAGE_METADATA_SIZE:
+            if before.st_size > max_bytes:
                 raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
-            digest = _metadata_digest(source)
-            with zipfile.ZipFile(source) as archive:
-                info = archive.infolist()
-            # Rehash the same descriptor and reject timestamps changing even
-            # when a concurrent writer has restored the original bytes.
-            after_digest = _metadata_digest(source)
+            data = _read_package_bytes(source, max_bytes)
             after = os.fstat(source.fileno())
-            if digest != after_digest or _metadata_stat_signature(before) != _metadata_stat_signature(after):
-                raise ValueError('Firmware package changed during metadata inspection')
-    except zipfile.BadZipFile as error:
-        raise ValueError('Firmware package is not a valid ZIP archive') from error
+            if len(data) != before.st_size or _metadata_stat_signature(before) != _metadata_stat_signature(after):
+                raise ValueError('Firmware package changed during snapshot read')
     except OSError as error:
         raise ValueError('Firmware package could not be opened as a regular file') from error
+    snapshot = PackageSnapshot(path.name, data)
+    if expected_sha256 is not None and snapshot.sha256 != expected_sha256:
+        raise ValueError('Firmware package digest differs from the reviewed plan')
+    return snapshot
+
+
+def inspect_package(package):
+    """Read directory metadata from one bounded immutable archive snapshot."""
+    snapshot = open_package_snapshot(package)
+    try:
+        with zipfile.ZipFile(io.BytesIO(snapshot.data)) as archive:
+            info = archive.infolist()
+    except zipfile.BadZipFile as error:
+        raise ValueError('Firmware package is not a valid ZIP archive') from error
     selections = {variant: [] for variant in VARIANTS[1:]}
     fonts, entries, unknown, invalid = [], [], [], []
     if len(info) > 1024:
@@ -349,8 +384,8 @@ def inspect_package(path):
             fonts.append(name)
         else:
             unknown.append(name)
-    return {'format': 'cbus-edlt-package-metadata-v1', 'name': path.name, 'version': package_version(path.name),
-            'sha256': digest, 'entries': entries, 'image_candidates': selections,
+    return {'format': 'cbus-edlt-package-metadata-v1', 'name': snapshot.name, 'version': package_version(snapshot.name),
+            'sha256': snapshot.sha256, 'entries': entries, 'image_candidates': selections,
             'font_candidates': fonts, 'unknown_entries': unknown, 'native_invalid_entries': invalid, 'read_only': True,
             'image_contents_verified': False, 'archive_extracted': False}
 

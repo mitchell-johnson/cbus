@@ -1295,7 +1295,8 @@ def _firmware(args):
             return {"format": runner.RESULT_FORMAT, "operation": args.action.removeprefix("update-"),
                     "complete": False, "refused": True, "refusal_kind": "plan", "plan": plan,
                     "physical_device_verified": False}, 1
-        images = updater.load_selected_images(args.file, plan, password)
+        snapshot = updater.open_package_snapshot(args.file, expected_sha256=plan["package"]["sha256"])
+        images = updater.load_selected_images(snapshot, plan, password)
         opener = runner.USBDeviceOpener(bus=args.bus, address=args.address, expected_serial=serial,
                                         descriptor=descriptor, release_policy=args.release_policy,
                                         inspection_timeout=args.inspection_timeout)

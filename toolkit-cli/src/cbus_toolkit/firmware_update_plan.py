@@ -18,15 +18,14 @@ switch, target reset, bootloader auto-erase, re-enumeration or NCC serial path.
 from __future__ import annotations
 
 import hashlib
+import io
 import os
-from pathlib import Path
-import stat
 import struct
 import zipfile
 import zlib
 
 from .dfu import MAX_IMAGE_SIZE, inspect_image
-from .firmware_diagnostics import classify_hardware, inspect_package
+from .firmware_diagnostics import classify_hardware, inspect_package, open_package_snapshot
 from .firmware_payload import resolve_download_payload
 
 PASSWORD_FILE_ENV = 'CBUS_EDLT_PACKAGE_PASSWORD_FILE'
@@ -205,23 +204,6 @@ def _encryption(info):
     return 'zipcrypto' if info.flag_bits & 1 else 'none'
 
 
-def _package_digest(source):
-    source.seek(0)
-    digest, total = hashlib.sha256(), 0
-    for block in iter(lambda: source.read(1024 * 1024), b''):
-        total += len(block)
-        if total > MAX_PACKAGE_SIZE:
-            raise FirmwarePackageError('Firmware package exceeds 512 MiB input limit')
-        digest.update(block)
-    source.seek(0)
-    return digest.hexdigest()
-
-
-def _package_stamp(source):
-    info = os.fstat(source.fileno())
-    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
-
-
 def read_package_entries(package, password, *, names=None, expected_sha256=None):
     """Return {entry name: bytes} decrypted in memory; never writes plaintext."""
     if not isinstance(password, bytes) or not password:
@@ -233,27 +215,17 @@ def read_package_entries(package, password, *, names=None, expected_sha256=None)
             len(expected_sha256) != 64 or any(c not in '0123456789abcdef' for c in expected_sha256)):
         raise FirmwarePackageError('Expected package digest must be lowercase SHA-256')
     try:
+        snapshot = open_package_snapshot(package, expected_sha256=expected_sha256, max_bytes=MAX_PACKAGE_SIZE)
+    except ValueError as error:
+        raise FirmwarePackageError(str(error).replace('metadata inspection limit', 'input limit')) from None
+    try:
         import pyzipper
     except ImportError:
         pyzipper = None
     opener = pyzipper.AESZipFile if pyzipper is not None else zipfile.ZipFile
     result = {}
     try:
-        # Nonblocking/no-follow admission prevents a special file from turning
-        # an offline package read into an unbounded stream. Hash and decrypt
-        # the same descriptor, then recheck it before releasing any plaintext.
-        flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NONBLOCK', 0)
-        flags |= getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0)
-        descriptor = os.open(package, flags)
-        with os.fdopen(descriptor, 'rb') as source:
-            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
-                raise FirmwarePackageError('Firmware package must be a regular file')
-            stamp = _package_stamp(source)
-            if stamp[2] > MAX_PACKAGE_SIZE:
-                raise FirmwarePackageError('Firmware package exceeds 512 MiB input limit')
-            digest = _package_digest(source)
-            if expected_sha256 is not None and digest != expected_sha256:
-                raise FirmwarePackageError('Firmware package digest differs from the reviewed plan')
+        with io.BytesIO(snapshot.data) as source:
             with opener(source) as archive:
                 infos = archive.infolist()
                 if len(infos) > 1024:
@@ -277,8 +249,6 @@ def read_package_entries(package, password, *, names=None, expected_sha256=None)
                     if len(data) != info.file_size:
                         raise FirmwarePackageError('Package entry size differs from its directory record')
                     result[info.filename] = data
-            if _package_digest(source) != digest or _package_stamp(source) != stamp:
-                raise FirmwarePackageError('Firmware package changed during inspection')
     except FirmwarePackageError:
         raise
     except RuntimeError as error:
@@ -310,7 +280,8 @@ def _vector_table(data, address):
 
 def inspect_package_images(package, password, *, password_source='file'):
     """Hash every entry and run the DFU container inspector over the plaintext."""
-    metadata = inspect_package(package)
+    snapshot = open_package_snapshot(package, max_bytes=MAX_PACKAGE_SIZE)
+    metadata = inspect_package(snapshot)
     role = {}
     for variant, names in metadata['image_candidates'].items():
         for name in names:
@@ -318,10 +289,10 @@ def inspect_package_images(package, password, *, password_source='file'):
     for name in metadata['font_candidates']:
         role[name] = 'Font'
     methods = {}
-    with zipfile.ZipFile(package) as archive:
+    with zipfile.ZipFile(io.BytesIO(snapshot.data)) as archive:
         for info in archive.infolist():
             methods[info.filename] = _encryption(info)
-    data = read_package_entries(package, password, expected_sha256=metadata['sha256'])
+    data = read_package_entries(snapshot, password, expected_sha256=metadata['sha256'])
     rows = []
     for entry in metadata['entries']:
         name = entry['name']
@@ -473,15 +444,19 @@ def load_selected_images(package, plan, password, *, allow_containers=False):
     # Reproduce all native selection/argv fields from the current package,
     # including its filename-derived version, before decrypting anything.
     try:
-        fresh = update_plan(package, variant=plan['variant'], force_font=plan['font_install']['forced'])
+        snapshot = open_package_snapshot(package, expected_sha256=plan['package']['sha256'],
+                                         max_bytes=MAX_PACKAGE_SIZE)
+        fresh = update_plan(snapshot, variant=plan['variant'], force_font=plan['font_install']['forced'])
         keys = ('package', 'variant', 'selected_main_entry', 'selected_font_entry',
                 'main_address', 'font_install', 'font_erase', 'dfuprog_steps', 'post_check')
         if not fresh['supported'] or any(plan.get(key) != fresh[key] for key in keys):
             raise FirmwarePackageError('Firmware package or steps differ from the reviewed plan')
     except (KeyError, TypeError) as error:
         raise FirmwarePackageError('Firmware plan is incomplete') from error
+    except ValueError as error:
+        raise FirmwarePackageError(str(error)) from None
     needed = sorted({step['entry'] for step in plan['dfuprog_steps'] if 'entry' in step})
-    images = read_package_entries(Path(package), password, names=set(needed),
+    images = read_package_entries(snapshot, password, names=set(needed),
                                   expected_sha256=plan['package']['sha256'])
     if not allow_containers:
         for step in plan['dfuprog_steps']:

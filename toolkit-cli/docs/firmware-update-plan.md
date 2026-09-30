@@ -112,8 +112,15 @@ unmodeled, and no physical device or vendor payload has been installed.
 
 `load_selected_images` reproduces the selected package metadata, version,
 variant, font policy and original argv before decryption. It hashes the same
-open file descriptor before and after entry reads and checks it against the
-reviewed package digest. If a decrypted inspection is attached, selected entry
+immutable archive bytes that supply the directory records and decrypted
+entries. `open_package_snapshot` reads a bounded regular file once through a
+nonblocking/no-follow descriptor, checks its identity/size/timestamps around
+the read, then retains only immutable bytes. The CLI captures a fresh snapshot
+after planning and checks its SHA-256 against the reviewed plan before any
+directory parser, decryption reader or USB opener is initialized. Full plan
+comparison includes the entry sizes and CRC records. There is no package
+path reopen after that check; later replacement cannot change selected bytes.
+If a decrypted inspection is attached, selected entry
 sizes and SHA-256 values must match it. Duplicate ZIP names, missing selected
 entries, nonregular inputs, more than 1024 directory entries, inputs over
 512 MiB, entries over 64 MiB and selected plaintext totaling over 64 MiB are

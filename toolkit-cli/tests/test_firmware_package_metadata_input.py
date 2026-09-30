@@ -31,29 +31,32 @@ class FirmwarePackageMetadataInputTests(unittest.TestCase):
         self.assertEqual(result['version'], '1.7.0')
         self.assertFalse(result['archive_extracted'])
 
-    def test_hashes_and_zip_directory_use_one_descriptor(self):
+    def test_hash_and_zip_directory_share_one_immutable_snapshot(self):
         observed = []
-        digest, archive = api._metadata_digest, zipfile.ZipFile
+        read, archive = api._read_package_bytes, zipfile.ZipFile
+        original = self.path.read_bytes()
 
-        def tracked_digest(source):
-            observed.append(('hash', source.fileno()))
-            return digest(source)
+        def tracked_read(source, bound):
+            observed.append('read')
+            return read(source, bound)
 
         def tracked_archive(source):
-            observed.append(('directory', source.fileno()))
+            observed.append('directory')
+            self.assertIsInstance(source, io.BytesIO)
+            self.assertEqual(source.getvalue(), original)
             return archive(source)
 
-        with patch.object(api, '_metadata_digest', side_effect=tracked_digest), \
+        with patch.object(api, '_read_package_bytes', side_effect=tracked_read), \
                 patch.object(api.zipfile, 'ZipFile', side_effect=tracked_archive):
-            api.inspect_package(self.path)
-        self.assertEqual([kind for kind, _ in observed], ['hash', 'directory', 'hash'])
-        self.assertEqual(len({descriptor for _, descriptor in observed}), 1)
+            result = api.inspect_package(self.path)
+        self.assertEqual(observed, ['read', 'directory'])
+        self.assertEqual(result['sha256'], hashlib.sha256(original).hexdigest())
 
     @unittest.skipUnless(hasattr(os, 'mkfifo') and hasattr(os, 'O_NONBLOCK'), 'requires nonblocking FIFO support')
     def test_fifo_is_refused_before_any_blocking_read(self):
         fifo = self.path.with_name('fifo')
         os.mkfifo(fifo)
-        with patch.object(api, '_metadata_digest', side_effect=AssertionError('read special file')):
+        with patch.object(api, '_read_package_bytes', side_effect=AssertionError('read special file')):
             with self.assertRaisesRegex(ValueError, 'regular file'):
                 api.inspect_package(fifo)
 
@@ -61,7 +64,7 @@ class FirmwarePackageMetadataInputTests(unittest.TestCase):
     def test_symlink_is_refused_before_hashing(self):
         link = self.path.with_name('symlink.zip')
         link.symlink_to(self.path)
-        with patch.object(api, '_metadata_digest', side_effect=AssertionError('read symlink')):
+        with patch.object(api, '_read_package_bytes', side_effect=AssertionError('read symlink')):
             with self.assertRaisesRegex(ValueError, 'regular file'):
                 api.inspect_package(link)
 
@@ -70,13 +73,35 @@ class FirmwarePackageMetadataInputTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'inspection limit'):
                 api.inspect_package(self.path)
             with self.assertRaisesRegex(ValueError, 'inspection limit'):
-                api._metadata_digest(io.BytesIO(b'A' * 9))
-            self.assertEqual(api._metadata_digest(io.BytesIO(b'A' * 8)), hashlib.sha256(b'A' * 8).hexdigest())
+                api._read_package_bytes(io.BytesIO(b'A' * 9), 8)
+            self.assertEqual(api._read_package_bytes(io.BytesIO(b'A' * 8), 8), b'A' * 8)
 
-    def test_substituted_second_hash_is_refused(self):
-        with patch.object(api, '_metadata_digest', side_effect=['1' * 64, '2' * 64]):
+    def test_concurrent_write_during_capture_refuses_before_archive_parsing(self):
+        read = api._read_package_bytes
+
+        def mutate(source, bound):
+            result = read(source, bound)
+            self.path.write_bytes(b'X' * len(result))
+            return result
+
+        with patch.object(api, '_read_package_bytes', side_effect=mutate), \
+                patch.object(api.zipfile, 'ZipFile', side_effect=AssertionError('archive parsed')):
             with self.assertRaisesRegex(ValueError, 'changed during'):
                 api.inspect_package(self.path)
+
+    def test_replacement_after_capture_cannot_change_metadata_or_its_hash(self):
+        original, archive = self.path.read_bytes(), zipfile.ZipFile
+
+        def replace_then_parse(source):
+            with archive(self.path, 'w') as replacement:
+                replacement.writestr('font.bin', b'changed')
+            return archive(source)
+
+        with patch.object(api.zipfile, 'ZipFile', side_effect=replace_then_parse):
+            result = api.inspect_package(self.path)
+        self.assertEqual(result['sha256'], hashlib.sha256(original).hexdigest())
+        self.assertEqual(len(result['entries']), 5)
+        self.assertNotEqual(self.path.read_bytes(), original)
 
     def test_restored_bytes_with_changed_timestamp_are_refused(self):
         original = os.fstat

@@ -12,6 +12,7 @@ import zipfile
 import zlib
 
 from cbus_toolkit import firmware_update_plan as api
+from cbus_toolkit import firmware_diagnostics as diagnostics
 
 
 def package(path, entries=None):
@@ -54,34 +55,59 @@ class PackageBindingTests(unittest.TestCase):
         with self.assertRaisesRegex(api.FirmwarePackageError, 'differ'):
             api.load_selected_images(renamed, plan, b'unused')
 
+    def test_planned_crc_substitution_is_rejected_before_decryption(self):
+        plan = api.update_plan(self.path, variant='TivaPCI')
+        plan['package']['entries'][0]['crc32'] = '00000000'
+        with patch.object(api, 'read_package_entries') as reader:
+            with self.assertRaisesRegex(api.FirmwarePackageError, 'differ'):
+                api.load_selected_images(self.path, plan, b'unused')
+        reader.assert_not_called()
+
+    def test_image_inspection_metadata_and_plaintext_share_snapshot_after_replacement(self):
+        snapshot = diagnostics.open_package_snapshot(self.path)
+        expected = api.read_package_entries(snapshot, b'unused')
+        real_inspect = api.inspect_package
+
+        def metadata_then_replace(source):
+            self.assertIsInstance(source, diagnostics.PackageSnapshot)
+            metadata = real_inspect(source)
+            package(self.path, [('main_hwv2.bin', b'\x77' * 32), ('font.bin', b'\x33' * 32)])
+            return metadata
+
+        with patch.object(api, 'inspect_package', side_effect=metadata_then_replace):
+            inspection = api.inspect_package_images(self.path, b'unused')
+        self.assertEqual(inspection['sha256'], snapshot.sha256)
+        self.assertEqual({row['name']: row['sha256'] for row in inspection['images']},
+                         {name: hashlib.sha256(data).hexdigest() for name, data in expected.items()})
+
     def test_digest_is_checked_on_the_descriptor_before_entry_reads(self):
         with patch.object(zipfile.ZipFile, 'open', side_effect=AssertionError('decrypted')):
             with self.assertRaisesRegex(api.FirmwarePackageError, 'digest differs'):
                 api.read_package_entries(self.path, b'unused', expected_sha256='0' * 64)
 
-    def test_descriptor_digest_is_rechecked_after_entry_reads(self):
-        real = api._package_digest
-        calls = []
+    def test_selected_reader_uses_captured_bytes_after_path_replacement(self):
+        snapshot = diagnostics.open_package_snapshot(self.path)
+        expected = api.read_package_entries(snapshot, b'unused')
+        real = api.open_package_snapshot
 
-        def digest(stream):
-            calls.append(stream.fileno())
-            result = real(stream)
-            return result if len(calls) == 1 else '0' * 64
+        def capture_then_replace(*args, **kwargs):
+            captured = real(*args, **kwargs)
+            package(self.path, [('main_hwv2.bin', b'\x77' * 32), ('font.bin', b'\x33' * 32)])
+            return captured
 
-        with patch.object(api, '_package_digest', side_effect=digest):
-            with self.assertRaisesRegex(api.FirmwarePackageError, 'changed during'):
-                api.read_package_entries(self.path, b'unused')
-        self.assertEqual(len(calls), 2)
-        self.assertEqual(calls[0], calls[1])
+        with patch.object(api, 'open_package_snapshot', side_effect=capture_then_replace):
+            images = api.read_package_entries(self.path, b'unused', expected_sha256=snapshot.sha256)
+        self.assertEqual(images, expected)
+        self.assertNotEqual(hashlib.sha256(self.path.read_bytes()).hexdigest(), snapshot.sha256)
 
     def test_mutate_then_restore_is_refused_even_with_unchanged_hash(self):
-        original_digest = api._package_digest
+        original_read = diagnostics._read_package_bytes
         content = self.path.read_bytes()
         digest = hashlib.sha256(content).hexdigest()
         initial = self.path.stat()
 
-        def hash_and_restore(source):
-            actual_digest = original_digest(source)
+        def read_and_restore(source, bound):
+            captured = original_read(source, bound)
             with self.path.open('r+b') as output:
                 output.seek(-1, 2)
                 output.write(bytes([content[-1] ^ 1]))
@@ -89,9 +115,9 @@ class PackageBindingTests(unittest.TestCase):
                 output.seek(-1, 2)
                 output.write(content[-1:])
             os.utime(self.path, ns=(initial.st_atime_ns, initial.st_mtime_ns))
-            return actual_digest
+            return captured
 
-        with patch.object(api, '_package_digest', new=hash_and_restore):
+        with patch.object(diagnostics, '_read_package_bytes', new=read_and_restore):
             with self.assertRaisesRegex(api.FirmwarePackageError, 'changed during'):
                 api.read_package_entries(self.path, b'unused', expected_sha256=digest)
         self.assertEqual(hashlib.sha256(self.path.read_bytes()).hexdigest(), digest)
