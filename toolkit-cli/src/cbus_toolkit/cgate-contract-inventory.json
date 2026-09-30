@@ -5,16 +5,16 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7"
+      "sha256": "2c8b97093e2b01ebed2f174db0bc6d6e488f7ef7fb5ebce4b050da461f2a6dff"
     },
     "manual": {
       "sha256": "149e04c014518a956437917286b8c806012591954b879fa7bea7cf50a6b53218"
     },
     "service": {
-      "sha256": "cf90331f1066b31326bb22e0114e280e54678e6e6f529882a9e4c368e1f61c7e"
+      "sha256": "ddccf331c1052324c6de91ad486f1f0625da6f282a812ff4c610c0cf6a423f77"
     },
     "event_mode": {
-      "sha256": "a3a08d88b0aaffaba5858bd7ff1bc345df782d090eea0e79b858b99e3a03a3ca"
+      "sha256": "f9d75dc1014ced4d1aa89ebdb4cee170cf0283f6f544b6096eb2414f97fc5ae2"
     },
     "authorization_policy": {
       "sha256": "f108a1b4bbdab7f123c4460feffc511a6fb7ba5c82d6547cff422505a766295e"
@@ -37515,7 +37515,7 @@
       "id": "cgate-contract:55924015b1d57c6c",
       "path": "DALI SESSION DEPLOY",
       "inventory": "primary",
-      "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY/FULL validate the session, selected known-target addresses, range, and SYS_DAL2 target locally, then refuse before I/O: retained evidence does not define their native step order, model-to-payload ownership or per-field readback receipts, and FULL does not establish an atomic typed-write/EXT_ONLY boundary.",
+      "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY and FULL run the source-recovered gq/go plans: SET_COMMON_PARAMS_ECG (32), SET_SCENE_VALUES_ECG (34 for every ECG, then 35), SET_LED_PARAMS_ECG (40, LED ECGs) and SET_EMERGENCY_PARAMS_ECG (38, EMERGENCY ECGs) over known, non-missing, non-conflicting ECGs, with FULL then running the EXT_ONLY writer. Payloads are built and validated from one session snapshot before I/O; each setter uses the native default AUTO budget, the plan stops at the first fault without rollback or replay, and a durable DALI journal records the planned and confirmed writes. No per-field readback is performed, as in native.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -37689,7 +37689,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY/FULL validate the session, selected known-target addresses, range, and SYS_DAL2 target locally, then refuse before I/O: retained evidence does not define their native step order, model-to-payload ownership or per-field readback receipts, and FULL does not establish an atomic typed-write/EXT_ONLY boundary."
+                "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY and FULL run the source-recovered gq/go plans: SET_COMMON_PARAMS_ECG (32), SET_SCENE_VALUES_ECG (34 for every ECG, then 35), SET_LED_PARAMS_ECG (40, LED ECGs) and SET_EMERGENCY_PARAMS_ECG (38, EMERGENCY ECGs) over known, non-missing, non-conflicting ECGs, with FULL then running the EXT_ONLY writer. Payloads are built and validated from one session snapshot before I/O; each setter uses the native default AUTO budget, the plan stops at the first fault without rollback or replay, and a durable DALI journal records the planned and confirmed writes. No per-field readback is performed, as in native."
               }
             }
           }
@@ -37721,8 +37721,8 @@
           }
         }
       },
-      "axes_sha256": "f05abd87665d6302868fbf5724633a6e289ca6f17ecce525ec78ffb60e9ab2a8",
-      "contract_sha256": "62b98550ed458899538d2871fe840aa23d5f8dea424e9f410c9ea10ad370c134"
+      "axes_sha256": "935cfce5fa63899a4238b68c3f97176c410db3cd90f00845e0c780782418efc4",
+      "contract_sha256": "9a8e2313dfd1016cbe50b09a1bf76fcc3a2e6bdf5486ce86d3956395cdbd5713"
     },
     {
       "id": "cgate-contract:c1ba8a83284fa682",
@@ -37941,7 +37941,7 @@
       "id": "cgate-contract:03fdec57d0885bbb",
       "path": "DALI SESSION EXTRACT",
       "inventory": "primary",
-      "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned read-only typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, and RETRIEVE_RECONCILE. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences, decode line masks, device types, common/read-only parameters, all 16 scene levels, LED/emergency/GTIN/serial data, and (for FULL) the complete extended map. Each plan stages one snapshot and commits only on the captured active PCI generation with no replay. COND_QUICK and COND_EXTENDED execute only the retained POLL_FINISH_DISCOVER_KNOWN_FULL_INFO/MISSING read-only prefix; RESCAN_FAULT first executes retained non-remediating RESCAN. All three discard staged masks and stop before ADDRESS_UNKNOWN because operation 2 carries no allocation target/range and returns only a mask with no device-to-address receipt.",
+      "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, RETRIEVE_RECONCILE, COND_QUICK, COND_EXTENDED and RESCAN_FAULT. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences and decode line masks, device types, common/read-only parameters, scene levels, LED/emergency/GTIN/serial data and (for FULL) the complete extended map. The conditional plans run the recovered ka sequence with native per-step poll budgets, send ADDRESS_UNKNOWN (operation 2, up to 67 polls 3 s apart) exactly once per selected line after a durable DALI journal record, treat its non-success as a warning, merge its mask into isAddressKnown, and run the conditional discovery and partial extended reads. Read-only plans commit one snapshot atomically on the captured PCI generation; after ADDRESS_UNKNOWN a later failure commits the model learned so far. Nothing is replayed.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -38115,7 +38115,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned read-only typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, and RETRIEVE_RECONCILE. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences, decode line masks, device types, common/read-only parameters, all 16 scene levels, LED/emergency/GTIN/serial data, and (for FULL) the complete extended map. Each plan stages one snapshot and commits only on the captured active PCI generation with no replay. COND_QUICK and COND_EXTENDED execute only the retained POLL_FINISH_DISCOVER_KNOWN_FULL_INFO/MISSING read-only prefix; RESCAN_FAULT first executes retained non-remediating RESCAN. All three discard staged masks and stop before ADDRESS_UNKNOWN because operation 2 carries no allocation target/range and returns only a mask with no device-to-address receipt."
+                "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, RETRIEVE_RECONCILE, COND_QUICK, COND_EXTENDED and RESCAN_FAULT. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences and decode line masks, device types, common/read-only parameters, scene levels, LED/emergency/GTIN/serial data and (for FULL) the complete extended map. The conditional plans run the recovered ka sequence with native per-step poll budgets, send ADDRESS_UNKNOWN (operation 2, up to 67 polls 3 s apart) exactly once per selected line after a durable DALI journal record, treat its non-success as a warning, merge its mask into isAddressKnown, and run the conditional discovery and partial extended reads. Read-only plans commit one snapshot atomically on the captured PCI generation; after ADDRESS_UNKNOWN a later failure commits the model learned so far. Nothing is replayed."
               }
             }
           }
@@ -38147,8 +38147,8 @@
           }
         }
       },
-      "axes_sha256": "9394c893602629f2c4b517a19d34aad5eb84e6036968fd726e8a70077ff2b811",
-      "contract_sha256": "232011a53dc33bc30778baa797cc59eea414e708ffd3026a944ecf62892b86c9"
+      "axes_sha256": "9cc1d95b6916d60c0a76cf57303aac1c89ce714ee3943d6f4f5cb1e6c56ac699",
+      "contract_sha256": "17914d7b031217071fe4a5f6581024171d93d254848ba79b9600997ff066a792"
     },
     {
       "id": "cgate-contract:cb46f828a284bc0a",

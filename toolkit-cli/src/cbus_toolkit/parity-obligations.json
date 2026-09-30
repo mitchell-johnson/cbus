@@ -11,22 +11,22 @@
     "toolkit_dialog_map": "57c366c34b729faa7d74081de7a7779d00cfc3910d7376f7d7143bda3b68e432",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "de91d3eb6c7587f635d6a39bb01ae69d6a5c1c9892314f8ef5c073000c0e7a83",
-    "cgate_capability_matrix": "c37f364d311393672e15f18294724a10496812d3b3d037c1aab5587bdc9fdad7",
-    "cgate_contract_inventory": "81a944e2a799a8dab9811fb59fc172e4c5389113486135bad456f5a8d75dfdcf",
+    "feature_ledger": "16551589160a75d6e1aaa35299b51f8f173cca781cca5398c973e18be876c640",
+    "cgate_capability_matrix": "2c8b97093e2b01ebed2f174db0bc6d6e488f7ef7fb5ebce4b050da461f2a6dff",
+    "cgate_contract_inventory": "b07eec5d28865d1d16dedae3860249b72ca32815b95b687e9fabe4917bfb1085",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "8ecba15cae0d93786fe9a007dad928c5841231bc7b4ee5b3a29621fbcde99f75",
-    "cgate_tagged_session_differential_cmqttd": "0832695b7a36cd387d7b65363dc70aa6874c65eaa4fb149abb4299f445e6db9f",
-    "cgate_session_physical_applicability": "a7de46820b38d367b052e3317f47b611077ec96c2fb847cfcc1c6c4d5bfc108e",
+    "cgate_session_differential_cmqttd": "9cd7623f10edd3cb44f8fa07c00bd241df529bcb5e849f51285de14e0436826b",
+    "cgate_tagged_session_differential_cmqttd": "496d2b2bc1b7f4606da64007a2dc5965244c64f2095a333c3de15561bd8d7743",
+    "cgate_session_physical_applicability": "c62f760786cf25684aede002f8be0a526073d116b3bf10fa6b6aabce97bb0117",
     "roadmap": "efd26399c5ecd889a57f106bb7311250bdb956a66bbe4f7d5afce5313ae8c33f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
     "parity_denominator_history": "abd8114e7ad40a54cac94dbe2f767f13519129400074de032a5eeec9635ce92c",
     "closure_receipts": "76e03b044a74d43f37fb7b57d9a701652b208b068ea13dd7b6b96891ebe00cf2"
   },
-  "evidence_bundle_sha256": "823a380e75ab473f5ed55a60ae1fec338481cf195bbdd1e28d78e55fce16366e",
+  "evidence_bundle_sha256": "62f211c36e601cff7b10b0daed4508a5d3f292b428de032d3d25065f334c4b98",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -136418,8 +136418,8 @@
       "source_id": "DALI SESSION DEPLOY",
       "routing_class": "Physical",
       "contract_id": "cgate-contract:55924015b1d57c6c",
-      "contract_sha256": "62b98550ed458899538d2871fe840aa23d5f8dea424e9f410c9ea10ad370c134",
-      "contract_axes_sha256": "f05abd87665d6302868fbf5724633a6e289ca6f17ecce525ec78ffb60e9ab2a8",
+      "contract_sha256": "9a8e2313dfd1016cbe50b09a1bf76fcc3a2e6bdf5486ce86d3956395cdbd5713",
+      "contract_axes_sha256": "935cfce5fa63899a4238b68c3f97176c410db3cd90f00845e0c780782418efc4",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -136593,7 +136593,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY/FULL validate the session, selected known-target addresses, range, and SYS_DAL2 target locally, then refuse before I/O: retained evidence does not define their native step order, model-to-payload ownership or per-field readback receipts, and FULL does not establish an atomic typed-write/EXT_ONLY boundary."
+                "routing_evidence": "Service::dali_specialized implements the native EXT_ONLY paged-memory commissioning plan through the shared PCI lane with verified writes, reconnect-generation guarding, and no replay. DALI_ONLY and FULL run the source-recovered gq/go plans: SET_COMMON_PARAMS_ECG (32), SET_SCENE_VALUES_ECG (34 for every ECG, then 35), SET_LED_PARAMS_ECG (40, LED ECGs) and SET_EMERGENCY_PARAMS_ECG (38, EMERGENCY ECGs) over known, non-missing, non-conflicting ECGs, with FULL then running the EXT_ONLY writer. Payloads are built and validated from one session snapshot before I/O; each setter uses the native default AUTO budget, the plan stops at the first fault without rollback or replay, and a durable DALI journal records the planned and confirmed writes. No per-field readback is performed, as in native."
               }
             }
           }
@@ -136856,8 +136856,8 @@
       "source_id": "DALI SESSION EXTRACT",
       "routing_class": "Physical",
       "contract_id": "cgate-contract:03fdec57d0885bbb",
-      "contract_sha256": "232011a53dc33bc30778baa797cc59eea414e708ffd3026a944ecf62892b86c9",
-      "contract_axes_sha256": "9394c893602629f2c4b517a19d34aad5eb84e6036968fd726e8a70077ff2b811",
+      "contract_sha256": "17914d7b031217071fe4a5f6581024171d93d254848ba79b9600997ff066a792",
+      "contract_axes_sha256": "9cc1d95b6916d60c0a76cf57303aac1c89ce714ee3943d6f4f5cb1e6c56ac699",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -137031,7 +137031,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned read-only typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, and RETRIEVE_RECONCILE. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences, decode line masks, device types, common/read-only parameters, all 16 scene levels, LED/emergency/GTIN/serial data, and (for FULL) the complete extended map. Each plan stages one snapshot and commits only on the captured active PCI generation with no replay. COND_QUICK and COND_EXTENDED execute only the retained POLL_FINISH_DISCOVER_KNOWN_FULL_INFO/MISSING read-only prefix; RESCAN_FAULT first executes retained non-remediating RESCAN. All three discard staged masks and stop before ADDRESS_UNKNOWN because operation 2 carries no allocation target/range and returns only a mask with no device-to-address receipt."
+                "routing_evidence": "Service::dali_specialized implements EXT_ONLY plus every source-pinned typed extraction plan: DALI_ONLY, FULL, REFRESH_STATUS_INFO, RETRIEVE_RECONCILE, COND_QUICK, COND_EXTENDED and RESCAN_FAULT. DALI_ONLY and FULL execute their exact 15-step and 18-step native sequences and decode line masks, device types, common/read-only parameters, scene levels, LED/emergency/GTIN/serial data and (for FULL) the complete extended map. The conditional plans run the recovered ka sequence with native per-step poll budgets, send ADDRESS_UNKNOWN (operation 2, up to 67 polls 3 s apart) exactly once per selected line after a durable DALI journal record, treat its non-success as a warning, merge its mask into isAddressKnown, and run the conditional discovery and partial extended reads. Read-only plans commit one snapshot atomically on the captured PCI generation; after ADDRESS_UNKNOWN a later failure commits the model learned so far. Nothing is replayed."
               }
             }
           }
@@ -336342,7 +336342,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:55924015b1d57c6c",
       "source_id": "DALI SESSION DEPLOY",
       "contract_id": "cgate-contract:55924015b1d57c6c",
-      "contract_sha256": "62b98550ed458899538d2871fe840aa23d5f8dea424e9f410c9ea10ad370c134",
+      "contract_sha256": "9a8e2313dfd1016cbe50b09a1bf76fcc3a2e6bdf5486ce86d3956395cdbd5713",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -336464,7 +336464,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:03fdec57d0885bbb",
       "source_id": "DALI SESSION EXTRACT",
       "contract_id": "cgate-contract:03fdec57d0885bbb",
-      "contract_sha256": "232011a53dc33bc30778baa797cc59eea414e708ffd3026a944ecf62892b86c9",
+      "contract_sha256": "17914d7b031217071fe4a5f6581024171d93d254848ba79b9600997ff066a792",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
