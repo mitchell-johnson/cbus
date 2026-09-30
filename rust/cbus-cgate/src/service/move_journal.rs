@@ -154,7 +154,7 @@ pub(super) struct ActiveMoveJournal {
     record: MoveJournalRecord,
 }
 
-fn now_unix_ms() -> i64 {
+pub(super) fn now_unix_ms() -> i64 {
     chrono::Utc::now().timestamp_millis()
 }
 
@@ -170,7 +170,7 @@ fn sync_directory(directory: &Path) -> io::Result<()> {
     }
 }
 
-fn ensure_directory(directory: &Path) -> io::Result<()> {
+pub(super) fn ensure_directory(directory: &Path) -> io::Result<()> {
     match std::fs::symlink_metadata(directory) {
         Ok(metadata) if metadata.is_dir() => return Ok(()),
         Ok(_) => {

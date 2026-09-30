@@ -6,6 +6,7 @@ pub(crate) mod calculator;
 pub(crate) mod cgl;
 mod connection_admission;
 mod dali;
+mod dali_journal;
 mod dali_specialized;
 pub(crate) mod family_help;
 mod move_journal;
@@ -3839,34 +3840,34 @@ impl Service {
             capabilities["dali_native_help_paths"] = serde_json::Value::from(128);
             capabilities["dali_session_ext_only"] = serde_json::Value::Bool(true);
             capabilities["dali_session_typed_device_plans"] =
-                serde_json::Value::String("complete-read-only-extract".to_string());
+                serde_json::Value::String("complete-extract-and-typed-deploy".to_string());
             capabilities["dali_session_typed_extract_plans"] = serde_json::json!([
                 "DALI_ONLY",
                 "FULL",
                 "REFRESH_STATUS_INFO",
-                "RETRIEVE_RECONCILE"
+                "RETRIEVE_RECONCILE",
+                "COND_QUICK",
+                "COND_EXTENDED",
+                "RESCAN_FAULT"
             ]);
-            capabilities["dali_session_typed_extract_plans_remaining"] =
-                serde_json::json!(["COND_QUICK", "COND_EXTENDED", "RESCAN_FAULT"]);
-            capabilities["dali_session_typed_extract_safe_prefix_plans"] = serde_json::json!({
-                "COND_QUICK": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-                "COND_EXTENDED": ["POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"],
-                "RESCAN_FAULT": ["RESCAN", "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO", "MISSING"]
-            });
-            capabilities["dali_session_typed_extract_refusal_step"] =
-                serde_json::Value::String("ADDRESS_UNKNOWN".to_string());
-            capabilities["dali_session_typed_extract_refusal_receipt"] =
-                serde_json::Value::String("mask-only-no-explicit-device-allocation".to_string());
-            capabilities["dali_session_typed_deploy_plans_remaining"] =
-                serde_json::json!(["DALI_ONLY", "FULL"]);
-            capabilities["dali_session_typed_deploy_preflight"] =
-                serde_json::Value::String("local-session-target-validation-before-io".to_string());
-            capabilities["dali_session_typed_deploy_refusal_missing"] = serde_json::json!([
-                "native-step-order",
-                "model-to-payload-ownership",
-                "per-field-readback-receipts",
-                "full-typed-ext-atomic-boundary"
-            ]);
+            capabilities["dali_session_typed_extract_plans_remaining"] = serde_json::json!([]);
+            capabilities["dali_session_conditional_extract_commit"] = serde_json::Value::String(
+                "atomic-before-address-unknown-step-by-step-after".to_string(),
+            );
+            capabilities["dali_session_address_unknown_budget"] =
+                serde_json::json!({"max_polls": 67, "poll_interval_ms": 3000});
+            capabilities["dali_session_typed_deploy_plans"] =
+                serde_json::json!(["EXT_ONLY", "DALI_ONLY", "FULL"]);
+            capabilities["dali_session_typed_deploy_plans_remaining"] = serde_json::json!([]);
+            capabilities["dali_session_typed_deploy_model_validation"] =
+                serde_json::Value::String("complete-plan-before-io".to_string());
+            capabilities["dali_session_typed_deploy_failure"] = serde_json::Value::String(
+                "stop-at-first-fault-no-rollback-no-replay".to_string(),
+            );
+            capabilities["dali_session_typed_deploy_readback"] =
+                serde_json::Value::String("none-native".to_string());
+            capabilities["dali_commissioning_journal"] =
+                serde_json::Value::String("cmqttd-dali-commissioning-journal-v1".to_string());
             self.move_journal_capabilities(&mut capabilities);
             return ok(tag, vec![capabilities.to_string()], "200 OK");
         }

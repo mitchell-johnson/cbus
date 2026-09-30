@@ -470,14 +470,14 @@
     "SESSION DEPLOY": {
       "class": 120,
       "class_sha256": "22e21c0bdd5b9f0779e8919e1870f94b7760b436d7744848ea61b11171e46d87",
-      "evidenced_selector": "EXT_ONLY",
       "obfuscated_class": "fs",
-      "other_selectors": "local-session-target-validation-then-fail-before-io",
-      "preflight_selectors": [
+      "wire": "commissioning",
+      "evidenced_selectors": [
+        "EXT_ONLY",
         "DALI_ONLY",
         "FULL"
       ],
-      "wire": "commissioning"
+      "remaining_selectors": []
     },
     "SESSION EXTRACT": {
       "class": 118,
@@ -487,24 +487,18 @@
         "DALI_ONLY",
         "FULL",
         "REFRESH_STATUS_INFO",
-        "RETRIEVE_RECONCILE"
-      ],
-      "safe_prefix_selectors": [
+        "RETRIEVE_RECONCILE",
         "COND_QUICK",
         "COND_EXTENDED",
         "RESCAN_FAULT"
       ],
       "obfuscated_class": "fu",
-      "remaining_selectors": [
-        "COND_QUICK",
-        "COND_EXTENDED",
-        "RESCAN_FAULT"
-      ],
+      "remaining_selectors": [],
       "wire": "commissioning"
     }
   },
   "safety_boundary": {
-    "behavior": "read-only extraction plans run the exact source-pinned steps, stage typed model and extended bytes, commit one active-generation snapshot atomically, and never replay; mutation-bearing plans run only their retained non-remediating prefix, discard its staged masks, and stop before ADDRESS_UNKNOWN without assigning an address or committing a partial session snapshot",
+    "behavior": "read-only extraction plans run the exact source-pinned steps, stage typed model and extended bytes, commit one active-generation snapshot atomically, and never replay; the conditional plans run the recovered sequence and, once ADDRESS_UNKNOWN has been sent under a durable DALI journal record, keep the model learned before a later failure; typed deployment builds every payload from one snapshot before I/O, writes in native order and stops at the first fault without rollback or replay",
     "implemented_read_only_typed_session_plans": {
       "DALI_ONLY": [
         "CHECK_FOR_UNKNOWN",
@@ -586,58 +580,6 @@
       "COND_UNREAD_GET_GTIN_ECG": 21,
       "COND_UNREAD_GET_SERIAL_ECG": 22
     },
-    "implemented_mutation_preflight": {
-      "COND_QUICK": [
-        {
-          "mode": "POLL",
-          "operation": 4,
-          "reply": "status zero plus 8-byte mask",
-          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
-        },
-        {
-          "mode": "AUTO",
-          "operation": 11,
-          "reply": "status zero plus 8-byte mask",
-          "step": "MISSING"
-        }
-      ],
-      "COND_EXTENDED": [
-        {
-          "mode": "POLL",
-          "operation": 4,
-          "reply": "status zero plus 8-byte mask",
-          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
-        },
-        {
-          "mode": "AUTO",
-          "operation": 11,
-          "reply": "status zero plus 8-byte mask",
-          "step": "MISSING"
-        }
-      ],
-      "RESCAN_FAULT": [
-        {
-          "mode": "AUTO",
-          "operation": 14,
-          "reply": "status zero; operation payload is not interpreted",
-          "step": "RESCAN"
-        },
-        {
-          "mode": "POLL",
-          "operation": 4,
-          "reply": "status zero plus 8-byte mask",
-          "step": "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO"
-        },
-        {
-          "mode": "AUTO",
-          "operation": 11,
-          "reply": "status zero plus 8-byte mask",
-          "step": "MISSING"
-        }
-      ],
-      "commit": "never; ADDRESS_UNKNOWN remains unevidenced and the incomplete selector returns 502",
-      "delivery": "source-correlated exact-once exchanges on one captured PCI generation; no replay"
-    },
     "native_plan_evidence": {
       "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
       "extract_plan_class": "jY",
@@ -715,7 +657,7 @@
         "the reply does not distinguish newly assigned bits from previously occupied bits",
         "the native allocator runs inside the gateway; neither the request nor the reply exposes its choice or ordering"
       ],
-      "decision": "do not send ADDRESS_UNKNOWN from SESSION EXTRACT until the recovered conditional plan is implemented with a documented physical acceptance rule; stop after the non-remediating prefix",
+      "decision": "send ADDRESS_UNKNOWN once per selected line from the recovered conditional plans after a durable DALI journal record; merge only its mask as native does; physical acceptance with a real gateway and unaddressed ballast remains open",
       "recovered_native_merge": "on SUCCESS native sets line containsUnaddressed false and each selected ECG isAddressKnown from the mask; a non-success status is only a warning. Later COND discovery runs when some ECG is address-known but not fully known"
     },
     "typed_deploy_evidence_audit": {
@@ -761,7 +703,7 @@
           "write_chunk": 12
         }
       },
-      "decision": "perform local session, selection, range, and gateway validation; refuse before PCI I/O until the recovered plan is implemented",
+      "decision": "implement the recovered DALI_ONLY/FULL plans: validate the complete payload plan from one session snapshot before I/O, write in native order with the default AUTO budget, stop at the first fault without rollback or replay, and journal planned/confirmed writes durably",
       "readback_note": "readback operations are cmqttd's candidate verification getters; the recovered native deploy performs no readback",
       "resolved_by_recovered_source": [
         "DALI_ONLY and FULL step lists",
@@ -771,99 +713,14 @@
         "failure boundary: abort on the first fault without rollback or resume",
         "FULL order: typed steps, then the extended write, with no atomic boundary"
       ],
-      "remaining_before_implementation": [
-        "cmqttd does not implement the typed setters or the recovered per-ECG AUTO loop",
-        "the cmqttd session JSON must supply the native eligibility flags, emergency sub-type and scene membership used to build payloads",
-        "native accepts SUCCESS status without readback; any cmqttd readback is an extension that needs its own acceptance rule",
-        "no downstream DALI device, persistence or live gateway evidence"
+      "remaining_after_implementation": [
+        "no native transcript of a typed deploy against a gateway has been captured",
+        "no downstream DALI device, persistence or live gateway evidence",
+        "cmqttd has no typed extended-proxy serializer, so FULL refuses before I/O after catalogue edits"
       ]
     },
-    "remaining_typed_session_plans": [
-      "COND_QUICK",
-      "COND_EXTENDED",
-      "RESCAN_FAULT"
-    ],
-    "remaining_typed_deploy_plans": [
-      "DALI_ONLY",
-      "FULL"
-    ],
-    "refused_mutation_bearing_session_plans": {
-      "COND_QUICK": {
-        "native_steps_before_refusal": [
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING"
-        ],
-        "first_mutating_step": "ADDRESS_UNKNOWN",
-        "first_mutating_step_index": 3,
-        "operation": 2,
-        "native_plan": [
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING",
-          "ADDRESS_UNKNOWN",
-          "COND_DISCOVER_KNOWN_TYPE_INFO",
-          "COND_DISCOVER_KNOWN_FULL_INFO",
-          "BROKEN",
-          "CONFLICTING",
-          "GET_KNOWN_TYPE_INFO_ECG",
-          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "GET_EMERGENCY_PARAMS_ECG",
-          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
-          "READ_GATEWAY_EXT_COND_QUICK"
-        ]
-      },
-      "COND_EXTENDED": {
-        "native_steps_before_refusal": [
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING"
-        ],
-        "first_mutating_step": "ADDRESS_UNKNOWN",
-        "first_mutating_step_index": 3,
-        "operation": 2,
-        "native_plan": [
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING",
-          "ADDRESS_UNKNOWN",
-          "COND_DISCOVER_KNOWN_TYPE_INFO",
-          "COND_DISCOVER_KNOWN_FULL_INFO",
-          "BROKEN",
-          "CONFLICTING",
-          "GET_KNOWN_TYPE_INFO_ECG",
-          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "GET_EMERGENCY_PARAMS_ECG",
-          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
-          "READ_GATEWAY_EXT_COND_QUICK",
-          "GET_COMMON_PARAMS_ECG"
-        ]
-      },
-      "RESCAN_FAULT": {
-        "native_steps_before_refusal": [
-          "RESCAN",
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING"
-        ],
-        "first_mutating_step": "ADDRESS_UNKNOWN",
-        "first_mutating_step_index": 4,
-        "operation": 2,
-        "native_plan": [
-          "RESCAN",
-          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
-          "MISSING",
-          "ADDRESS_UNKNOWN",
-          "COND_DISCOVER_KNOWN_TYPE_INFO",
-          "COND_DISCOVER_KNOWN_FULL_INFO",
-          "BROKEN",
-          "CONFLICTING",
-          "GET_KNOWN_TYPE_INFO_ECG",
-          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "GET_EMERGENCY_PARAMS_ECG",
-          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
-          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
-          "READ_GATEWAY_EXT_COND_QUICK"
-        ]
-      }
-    },
+    "remaining_typed_session_plans": [],
+    "remaining_typed_deploy_plans": [],
     "recovered_native_source": {
       "decompilation": {
         "decompiler": "CFR 0.152",
@@ -1380,6 +1237,72 @@
         },
         "full_boundary": "no atomic boundary: FULL runs the four typed steps, then WRITE_GATEWAY_EXT_FULL; a typed failure prevents the extended write"
       }
+    },
+    "implemented_conditional_session_plans": {
+      "COND_QUICK": {
+        "native_plan": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 3,
+        "operation": 2
+      },
+      "COND_EXTENDED": {
+        "native_plan": [
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK",
+          "GET_COMMON_PARAMS_ECG"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 3,
+        "operation": 2
+      },
+      "RESCAN_FAULT": {
+        "native_plan": [
+          "RESCAN",
+          "POLL_FINISH_DISCOVER_KNOWN_FULL_INFO",
+          "MISSING",
+          "ADDRESS_UNKNOWN",
+          "COND_DISCOVER_KNOWN_TYPE_INFO",
+          "COND_DISCOVER_KNOWN_FULL_INFO",
+          "BROKEN",
+          "CONFLICTING",
+          "GET_KNOWN_TYPE_INFO_ECG",
+          "COND_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "GET_EMERGENCY_PARAMS_ECG",
+          "COND_BROKEN_GET_COMMON_READ_ONLY_PARAMS_ECG",
+          "COND_BROKEN_GET_EMERGENCY_STATUS_ECG",
+          "READ_GATEWAY_EXT_COND_QUICK"
+        ],
+        "first_mutating_step": "ADDRESS_UNKNOWN",
+        "first_mutating_step_index": 4,
+        "operation": 2
+      },
+      "commit": "atomic until the first ADDRESS_UNKNOWN is sent; afterwards a later failure commits the model staged so far on the captured PCI generation (native mutates step by step)",
+      "delivery": "source-correlated exactly-once exchanges on one captured PCI generation with the native per-step AUTO budgets; ADDRESS_UNKNOWN is journaled before it is sent and never replayed"
     }
   }
 }
