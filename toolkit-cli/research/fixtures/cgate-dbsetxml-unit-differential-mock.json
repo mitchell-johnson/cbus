@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Users/mitchell/source/cbus-integrator-target/debug/cgate-mock",
-    "sha256": "eb32b8111c6a4c85c21bbad516909fa8e7f5a157c0cee6f4d3948aeff1c199bd"
+    "sha256": "f07b6d3361983b366d59648031c7f1114c7457d39abc9d5a24a0c42b8cb728e8"
   },
-  "source_revision": "1ead4c20af288afecc36f0a20019d101efcb22a1",
+  "source_revision": "080165e30134ee4f5f9ac9298633a635f3907bca",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "19aaac0a6222cf77bdf5fca96c1d636877546bae8be1e14f044a313f36d11464",
     "docs/cmqttd-cgate.md": "544bc71bcef55475ca7ebf56f814920b3bdcf8f7e546158b38d574cfa1fbca98",

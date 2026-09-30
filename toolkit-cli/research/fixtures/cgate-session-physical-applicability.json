@@ -1,7 +1,7 @@
 {
   "format": "cbus-parity-test-report-v1",
   "result": "passed",
-  "source_revision": "1ead4c20af288afecc36f0a20019d101efcb22a1",
+  "source_revision": "080165e30134ee4f5f9ac9298633a635f3907bca",
   "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
   "exit_code": 0,
   "source_inputs": {
