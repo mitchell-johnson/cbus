@@ -48,7 +48,7 @@ class PageControlCLITests(unittest.TestCase):
                     cli.build_parser().parse_args(['edlt', 'page-control-plan', str(path), '--group', value])
                 self.assertEqual(caught.exception.code, 2)
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'page-control-plan', path), status=1)['error'])
 
     def test_interrupt_retains_first_attempt_and_does_not_save(self):

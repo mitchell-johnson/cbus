@@ -138,14 +138,14 @@ class NavigationTests(unittest.TestCase):
     def test_invalid_options_schema_profile_forged_plan_and_stale_identity(self):
         for options in ({'page_mode':True},{'variant':'unknown'},{'temperature_source':'temperature'},{'dynamic_group':True}):
             with self.assertRaises(EdltError):self.editor.plan(self.session.values(),**options)
-        with self.assertRaises(EdltError):EdltNavigation(self.spec,firmware='5.4.00')
+        with self.assertRaises(EdltError):EdltNavigation(self.spec,firmware='5.6.00')
         params=dict(self.spec.parameters);field=params['TemperatureApplication'];params[field.name]=replace(field,fields={**field.fields,'BitAddress':'6'})
         with self.assertRaises(EdltError):EdltNavigation(replace(self.spec,parameters=params))
         plan=self.editor.plan(self.session.values(),page_mode='multiple',variant='date')
         for forged in (replace(plan,variant_raw=True),replace(plan,temperature_raw=False),replace(plan,dynamic_group=False),replace(plan,changes={**plan.changes,'UnrelatedGlobal':(0,)})):
             with self.assertRaises(EdltError):self.editor.apply(self.session,forged)
         self.assertFalse(self.session.calls)
-        self.session.identity['FirmwareVersion']='5.4.00'
+        self.session.identity['FirmwareVersion']='5.6.00'
         with self.assertRaises(EdltError):self.editor.configure(self.session,page_mode='multiple')
         self.session.identity['FirmwareVersion']='5.5.00';self.session.current['UnrelatedGlobal']=(0,)
         with self.assertRaises(EdltError):self.editor.apply(self.session,plan)

@@ -56,7 +56,7 @@ class QuickStatusCLITests(unittest.TestCase):
             self.assertEqual((result['low_threshold'], result['high_threshold']), (170, 85))
             self.assertFalse(result['thresholds_strictly_ordered'])
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'quick-status-plan', path), status=1)['error'])
 
     def test_interrupt_retains_attempt_without_save_or_recovery(self):

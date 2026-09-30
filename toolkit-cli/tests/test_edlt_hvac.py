@@ -154,7 +154,7 @@ class HVACTemperatureTests(unittest.TestCase):
         for widget, kind in ((1, 2), (5, 11), (6, 11)):
             current = dict(original); current[_field(widget)] = (kind,)
             with self.assertRaises(EdltError): self.plan(current)
-        with self.assertRaises(EdltError): EdltHVACTemperatureWidget(self.spec, firmware='5.4.00')
+        with self.assertRaises(EdltError): EdltHVACTemperatureWidget(self.spec, firmware='5.6.00')
         parameters = dict(self.spec.parameters); param = parameters['UseBigIcon']
         parameters['UseBigIcon'] = replace(param, fields={**param.fields, 'BitAddress': '3'})
         with self.assertRaisesRegex(EdltError, 'layout'): EdltHVACTemperatureWidget(replace(self.spec, parameters=parameters))

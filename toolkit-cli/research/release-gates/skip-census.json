@@ -50,16 +50,16 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 466,
+    "test_modules": 467,
     "modules_without_skip_sites": 249,
-    "modules_with_skip_sites": 217,
+    "modules_with_skip_sites": 218,
     "modules_by_category": {
-      "cgate_test_host": 122,
+      "cgate_test_host": 123,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 53,
+      "native_cgate_local": 54,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 65,
@@ -67,20 +67,20 @@
       "private_vendor_tree": 8,
       "runtime_capability": 5,
       "rust_binaries": 7,
-      "unclassified": 4,
-      "unit_specs": 114,
+      "unclassified": 5,
+      "unit_specs": 115,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
       "all": 117,
-      "partial": 18,
+      "partial": 19,
       "none": 82
     },
-    "native_runnable_tests": 222,
-    "native_selected_required_tests": 222,
+    "native_runnable_tests": 223,
+    "native_selected_required_tests": 223,
     "native_excluded": 0,
-    "native_selection_selectors": 138
+    "native_selection_selectors": 139
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -4113,6 +4113,65 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_edlt_revisions.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unclassified",
+        "unit_specs"
+      ],
+      "native": "partial",
+      "gated_tests": 4,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_revisions.py::NativeRevisionTests",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_edlt_revisions.py::OriginalEditorReviewTests",
+          "kind": "decorator.skipUnless",
+          "condition": "VENDOR",
+          "reason": "Set CBUS_DLT_VENDOR_ROOT to the owned Toolkit/C-Gate research vendor directory",
+          "environment": [
+            "CBUS_DLT_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "OriginalEditorReviewTests::test_cgate_edlt_class_has_no_version_branch",
+            "OriginalEditorReviewTests::test_decoded_specification_has_one_unconditional_layout",
+            "OriginalEditorReviewTests::test_editor_firmware_reads_are_the_reviewed_non_layout_uses"
+          ]
         }
       ]
     },

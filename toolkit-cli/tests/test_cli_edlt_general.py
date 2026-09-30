@@ -46,7 +46,7 @@ class EdltGeneralCLITests(unittest.TestCase):
             self.assertEqual(result['changes']['EnableLevelStore'], [1]); self.assertFalse(result['power_cycle_verified'])
             self.assertEqual(json.loads(path.read_text()), values)
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'general-plan', path), status=1)['error'])
 
     def test_actual_main_retains_partial_interrupt_without_save_or_recovery(self):

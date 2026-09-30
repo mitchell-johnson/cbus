@@ -21755,6 +21755,87 @@ async fn matchdb_unravel_refuses_ambiguous_occupied_database_target() {
     cleanup(&service, &path);
 }
 
+/// The guarded physical eDLT controls admit exactly the Python
+/// `edlt-label-clear` profiles and refuse every other identity with the
+/// registry's reason before any PCI byte is written.
+#[tokio::test(start_paused = true)]
+async fn edlt_controls_share_the_python_profile_refusals_without_pci_io() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState::default();
+    for (firmware_or_type, expected) in [
+        (
+            "FirmwareVersion 5.4.00",
+            "KEYGL5 firmware 5.4.00 (catalogue revision 5.4.00..5.4.99) shares KEYGL5.xml, but \
+             edlt-label-clear evidence is retained only for 5.5.00 and it is not extrapolated",
+        ),
+        (
+            "FirmwareVersion 5.6.00",
+            "KEYGL5 firmware 5.6.00 is in catalogue revision 5.6.00..9, which C-Gate marks IsInternal",
+        ),
+        (
+            "FirmwareVersion 05.05.00",
+            "KEYGL5 firmware '05.05.00' is not the canonical catalogue spelling M.m.pp",
+        ),
+        (
+            "UnitType KEYBL5",
+            "KEYBL5 is a classic Saturn 5-key DLT (KEYL5.xml / I_DLT.xml) without eDLT widgets or \
+             unit-resident static label text",
+        ),
+        (
+            "UnitType keygl5",
+            "'keygl5' is not a DLT or eDLT unit type in the retained catalogue",
+        ),
+    ] {
+        let (field, value) = firmware_or_type.split_once(' ').unwrap();
+        let (unit_type, firmware) = if field == "UnitType" {
+            (value, "5.5.00")
+        } else {
+            ("KEYGL5", value)
+        };
+        for (name, text) in [("UnitType", unit_type), ("FirmwareVersion", firmware)] {
+            let set = service
+                .handle(
+                    &mut client,
+                    &format!("[set] DBSETSAFE //HARNESS/254/p/5/{name} {text}"),
+                )
+                .await;
+            assert_eq!(set.status, 200, "{set:?}");
+        }
+        assert_eq!(
+            crate::dlt_profiles::refusal("edlt-label-clear", unit_type, Some(firmware), None)
+                .unwrap()
+                .as_deref(),
+            Some(expected)
+        );
+        for command in [
+            "[c] LABEL CLEAREDLT //HARNESS/254/p/5",
+            "[r] DO //HARNESS/254/p/5 FactoryDefault",
+        ] {
+            let response = service.handle(&mut client, command).await;
+            assert_eq!(response.status, 402, "{command}: {response:?}");
+            // A non-CBusEdlt object has no FactoryDefault method natively.
+            let text = if command.contains("FactoryDefault")
+                && !crate::dlt_profiles::is_edlt_class(unit_type)
+            {
+                "402 Method not supported by object".to_string()
+            } else {
+                format!("402 Target is not a supported eDLT: {expected}")
+            };
+            assert_eq!(response.final_text, text, "{command}");
+        }
+    }
+    let mut byte = [0u8; 1];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(200), remote.read(&mut byte))
+            .await
+            .is_err(),
+        "a refused eDLT control must not write to the PCI"
+    );
+    std::fs::remove_file(path).ok();
+}
+
 mod secondary_authorization;
 
 mod object_authorization;

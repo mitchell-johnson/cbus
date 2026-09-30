@@ -254,6 +254,22 @@ def _din_editor(args, unit_type):
     return DinOutputEditor(UnitSpecStore(args.spec_dir).load(PROFILES[unit_type].spec_filename), unit_type)
 
 
+def _edlt_database_profile(unit_type, firmware, catalog_number):
+    from .dlt_profiles import refusal
+    reason = refusal("edlt-database-widgets", unit_type, firmware, catalog_number)
+    if reason is not None:
+        raise ValueError("Snapshot format or unit identity differs from the selected profile: " + reason)
+
+
+def _edlt_identity(result, identity):
+    """Report the export's or database unit's admitted identity, not the editor default."""
+    if isinstance(result, dict) and isinstance(identity, (tuple, list)) and len(identity) == 3:
+        for key, value in zip(("unit_type", "firmware", "catalog_number"), identity):
+            if key in result:
+                result = {**result, key: value}
+    return result
+
+
 def _parameter_snapshot(path, profile, *, identity=None):
     """Read a snapshot or mapping; `profile` is an exact identity or a checker."""
     with path.open("rb") as handle:
@@ -3726,6 +3742,7 @@ def _programming(args, client):
         else:
             session.import_parameters(snapshot)
             values = session.values()
+        result = _edlt_identity(result, getattr(session, "verified_edlt_identity", None))
         saved = None
         if not args.dry_run:
             try:
@@ -4053,23 +4070,24 @@ def run(args):
         if args.action == "global-plan":
             from .edlt_global_cli import offline
             return offline(args)
-        values = _parameter_snapshot(args.file, ("KEYGL5", "5.5.00", "5055EDL"))
+        identity = []
+        values = _parameter_snapshot(args.file, _edlt_database_profile, identity=identity)
         if args.action == "enable-plan":
-            return _edlt_enable(args).plan(values, **_edlt_enable_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_enable(args).plan(values, **_edlt_enable_settings(args)).as_dict(), identity), 0
         if args.action == "shutter-plan":
-            return _edlt_shutter(args).plan(values, **_edlt_shutter_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_shutter(args).plan(values, **_edlt_shutter_settings(args)).as_dict(), identity), 0
         if args.action == "timer-plan":
-            return _edlt_timer(args).plan(values, **_edlt_timer_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_timer(args).plan(values, **_edlt_timer_settings(args)).as_dict(), identity), 0
         if args.action == "fan-plan":
-            return _edlt_fan(args).plan(values, **_edlt_fan_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_fan(args).plan(values, **_edlt_fan_settings(args)).as_dict(), identity), 0
         if args.action == "multilevel-plan":
-            return _edlt_multilevel(args).plan(values, **_edlt_multilevel_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_multilevel(args).plan(values, **_edlt_multilevel_settings(args)).as_dict(), identity), 0
         if args.action == "room-courtesy-plan":
-            return _edlt_room_courtesy(args).plan(values, **_edlt_room_courtesy_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_room_courtesy(args).plan(values, **_edlt_room_courtesy_settings(args)).as_dict(), identity), 0
         if args.action == "measurement-plan":
-            return _edlt_measurement(args).plan(values, **_edlt_measurement_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_measurement(args).plan(values, **_edlt_measurement_settings(args)).as_dict(), identity), 0
         if args.action == "parent-form-plan":
-            return _edlt_parent_form(args).plan(values, **_edlt_parent_form_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_parent_form(args).plan(values, **_edlt_parent_form_settings(args)).as_dict(), identity), 0
         if args.action == "parent-transaction-plan":
             editor = _edlt_parent_transaction(args)
             if args.project_xml is not None:
@@ -4086,49 +4104,49 @@ def run(args):
                 raise ValueError("--unit requires --project-xml")
             from .edlt_parent_transaction_cli import presentation
             presentation(args)
-            return editor.plan(
-                values, **_edlt_parent_transaction_settings(args)).as_dict(), 0
+            return _edlt_identity(editor.plan(
+                values, **_edlt_parent_transaction_settings(args)).as_dict(), identity), 0
         if args.action == "time-date-plan":
-            return _edlt_time_date(args).plan(values, **_edlt_time_date_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_time_date(args).plan(values, **_edlt_time_date_settings(args)).as_dict(), identity), 0
         if args.action == "hvac-plan":
-            return _edlt_hvac(args).plan(values, **_edlt_hvac_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_hvac(args).plan(values, **_edlt_hvac_settings(args)).as_dict(), identity), 0
         if args.action == "display-plan":
-            return _edlt_display(args).plan(values, **_edlt_display_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_display(args).plan(values, **_edlt_display_settings(args)).as_dict(), identity), 0
         if args.action == "mra-plan":
-            return _edlt_mra(args).plan(values, **_edlt_mra_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_mra(args).plan(values, **_edlt_mra_settings(args)).as_dict(), identity), 0
         if args.action == "mra-globals-plan":
-            return _edlt_mra(args).plan_globals(values, multiplexer=args.multiplexer, zone=args.zone).as_dict(), 0
+            return _edlt_identity(_edlt_mra(args).plan_globals(values, multiplexer=args.multiplexer, zone=args.zone).as_dict(), identity), 0
         if args.action == "general-plan":
-            return _edlt_general(args).plan(values, **_edlt_general_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_general(args).plan(values, **_edlt_general_settings(args)).as_dict(), identity), 0
         if args.action == "standby-plan":
-            return _edlt_standby(args).plan(values, **_edlt_standby_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_standby(args).plan(values, **_edlt_standby_settings(args)).as_dict(), identity), 0
         if args.action == "colours-plan":
-            return _edlt_colours(args).plan(values, **_edlt_colours_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_colours(args).plan(values, **_edlt_colours_settings(args)).as_dict(), identity), 0
         if args.action == "quick-status-plan":
-            return _edlt_quick_status(args).plan(values, **_edlt_quick_status_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_quick_status(args).plan(values, **_edlt_quick_status_settings(args)).as_dict(), identity), 0
         if args.action == "activation-plan":
-            return _edlt_activation(args).plan(values, **_edlt_activation_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_activation(args).plan(values, **_edlt_activation_settings(args)).as_dict(), identity), 0
         if args.action == "page-control-plan":
-            return _edlt_page_control(args).plan(values, group=args.group).as_dict(), 0
+            return _edlt_identity(_edlt_page_control(args).plan(values, group=args.group).as_dict(), identity), 0
         if args.action == "lifecycle-requirements":
-            return _edlt_lifecycle(args).requirements(values).as_dict(), 0
+            return _edlt_identity(_edlt_lifecycle(args).requirements(values).as_dict(), identity), 0
         if args.action == "lifecycle-plan":
-            return _edlt_lifecycle(args).plan(values, metadata=_edlt_lifecycle_metadata(args.metadata)).as_dict(), 0
+            return _edlt_identity(_edlt_lifecycle(args).plan(values, metadata=_edlt_lifecycle_metadata(args.metadata)).as_dict(), identity), 0
         if args.action == "restore-levels-plan":
-            return _edlt_restore_levels(args).plan(values, **_edlt_restore_levels_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_restore_levels(args).plan(values, **_edlt_restore_levels_settings(args)).as_dict(), identity), 0
         if args.action == "applications-plan":
-            return _edlt_applications(args).plan(values, **_edlt_ordered_settings(args, "applications")).as_dict(), 0
+            return _edlt_identity(_edlt_applications(args).plan(values, **_edlt_ordered_settings(args, "applications")).as_dict(), identity), 0
         if args.action == "corridor-plan":
-            return _edlt_corridor(args).plan(values, **_edlt_ordered_settings(args, "corridor")).as_dict(), 0
+            return _edlt_identity(_edlt_corridor(args).plan(values, **_edlt_ordered_settings(args, "corridor")).as_dict(), identity), 0
         if args.action == "navigation-plan":
-            return _edlt_navigation(args).plan(values, **_edlt_navigation_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_navigation(args).plan(values, **_edlt_navigation_settings(args)).as_dict(), identity), 0
         if args.action == "scene-plan":
-            return _edlt_scene(args).plan(values, **_edlt_scene_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_scene(args).plan(values, **_edlt_scene_settings(args)).as_dict(), identity), 0
         if args.action == "scenes-inspect":
             return [scene.as_dict() for scene in _edlt_scene_table(args).read(values)], 0
         if args.action == "scenes-plan":
-            return _edlt_scene_table(args).plan(values, scenes=_edlt_scene_definitions(args.scenes)).as_dict(), 0
-        return _edlt(args).plan(values, **_edlt_settings(args)).as_dict(), 0
+            return _edlt_identity(_edlt_scene_table(args).plan(values, scenes=_edlt_scene_definitions(args.scenes)).as_dict(), identity), 0
+        return _edlt_identity(_edlt(args).plan(values, **_edlt_settings(args)).as_dict(), identity), 0
     if args.area == "unit-templates":
         if args.action == "inspect":
             return _read_unit_template(args.file).as_dict(), 0

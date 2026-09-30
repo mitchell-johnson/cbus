@@ -218,6 +218,20 @@ const EVENT_CHANNELS: &[(&str, &str)] = &[
     ),
 ];
 
+/// Why a database unit is outside the guarded physical eDLT controls
+/// (`LABEL CLEAREDLT`, `DO ... FactoryDefault`). The identity is admitted by
+/// the shared `edlt-label-clear` profile workflow exactly as the Python
+/// label-clear and factory-default guards admit it.
+fn edlt_control_refusal(unit_type: &str, firmware: &str) -> Option<String> {
+    crate::dlt_profiles::refusal(
+        crate::dlt_profiles::EDLT_LABEL_CLEAR,
+        unit_type,
+        Some(firmware),
+        None,
+    )
+    .expect("shared table defines the eDLT control workflow")
+}
+
 /// Return the fixed channel for a native deploy-queue `#event` envelope.
 /// These notifications are controlled by EVENT_CHANNEL subscriptions and
 /// intentionally bypass the unrelated EVENT/EVENTS category modes.
@@ -6343,7 +6357,7 @@ impl Service {
             let configured_keygl5 = project.networks[&target]
                 .units
                 .values()
-                .filter(|unit| unit.unit_type.eq_ignore_ascii_case("KEYGL5"))
+                .filter(|unit| crate::dlt_profiles::is_edlt_class(&unit.unit_type))
                 .map(|unit| unit.address)
                 .collect::<HashSet<_>>();
             (interface_units, configured_keygl5)
@@ -6554,7 +6568,7 @@ impl Service {
         // exposed as one device's metadata.
         let mut metadata_warnings = Vec::new();
         'metadata: for identity in &mut identities {
-            if identity.unit_type.eq_ignore_ascii_case("KEYGL5")
+            if crate::dlt_profiles::is_edlt_class(&identity.unit_type)
                 && configured_keygl5.contains(&identity.address)
                 && mmi_state_is_present_non_error(identity.mmi_state)
                 && identity.has_exactly_one_known_serial_reply
@@ -10257,7 +10271,7 @@ impl Service {
         else {
             return err(tag, 404, "404 eDLT is not in this project");
         };
-        let unit_type = self
+        let identity = self
             .model
             .lock()
             .await
@@ -10265,13 +10279,16 @@ impl Service {
             .get(&project)
             .and_then(|project| project.networks.get(&network))
             .and_then(|network| network.units.get(&unit))
-            .map(|record| record.unit_type.clone());
-        match unit_type {
-            None => return err(tag, 401, "401 Unit not found"),
-            Some(unit_type) if !unit_type.eq_ignore_ascii_case("KEYGL5") => {
-                return err(tag, 402, "402 Target is not a supported eDLT")
-            }
-            Some(_) => {}
+            .map(|record| (record.unit_type.clone(), record.field("FirmwareVersion")));
+        let Some((unit_type, firmware)) = identity else {
+            return err(tag, 401, "401 Unit not found");
+        };
+        if let Some(reason) = edlt_control_refusal(&unit_type, &firmware) {
+            return err(
+                tag,
+                402,
+                &format!("402 Target is not a supported eDLT: {reason}"),
+            );
         }
 
         let route = if network == self.network {
@@ -13730,7 +13747,7 @@ impl Service {
         else {
             return err(tag, 404, "404 eDLT is not in this project");
         };
-        let unit_type = self
+        let identity = self
             .model
             .lock()
             .await
@@ -13738,13 +13755,16 @@ impl Service {
             .get(&project)
             .and_then(|project| project.networks.get(&network))
             .and_then(|network| network.units.get(&unit))
-            .map(|record| record.unit_type.clone());
-        match unit_type {
-            None => return err(tag, 401, "401 Unit not found"),
-            Some(unit_type) if !unit_type.eq_ignore_ascii_case("KEYGL5") => {
-                return err(tag, 402, "402 Target is not a supported eDLT")
-            }
-            Some(_) => {}
+            .map(|record| (record.unit_type.clone(), record.field("FirmwareVersion")));
+        let Some((unit_type, firmware)) = identity else {
+            return err(tag, 401, "401 Unit not found");
+        };
+        if let Some(reason) = edlt_control_refusal(&unit_type, &firmware) {
+            return err(
+                tag,
+                402,
+                &format!("402 Target is not a supported eDLT: {reason}"),
+            );
         }
 
         let route = if network == self.network {

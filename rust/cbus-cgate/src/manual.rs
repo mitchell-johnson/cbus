@@ -2114,7 +2114,7 @@ impl Server {
             else {
                 return err(tag, status::ABSENT, "401 Unit not found");
             };
-            if !record.unit_type.eq_ignore_ascii_case("KEYGL5") {
+            if !crate::dlt_profiles::is_edlt_class(&record.unit_type) {
                 return err(tag, 402, "402 Method not supported by object");
             }
             // Deterministic mock acceptance only. The hardware-backed service

@@ -109,7 +109,7 @@ class ActivationTests(unittest.TestCase):
         with self.assertRaisesRegex(EdltError,'layout'):EdltActivation(replace(self.spec,parameters=parameters))
         parameters=dict(self.spec.parameters);del parameters['ActivityDuration']
         with self.assertRaisesRegex(EdltError,'layout'):EdltActivation(replace(self.spec,parameters=parameters))
-        for options in (dict(firmware='5.4.00'),dict(catalog_number='OTHER')):
+        for options in (dict(firmware='5.6.00'),dict(catalog_number='OTHER')):
             with self.assertRaises(EdltError):EdltActivation(self.spec,**options)
         plan=self.plan(wake_mode='primary-event',group=42,level=173)
         for forged in (None,replace(plan,mode=True),replace(plan,event_value=False),replace(plan,page=True),

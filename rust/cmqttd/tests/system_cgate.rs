@@ -1382,6 +1382,24 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
     )
     .await
     .contains("200 OK"));
+    // The shared profile table admits only the evidenced KEYGL5 5.5.00.
+    let refused = command(
+        &mut reader,
+        &mut writer,
+        "LABEL CLEAREDLT //HARNESS/254/p/5",
+    )
+    .await;
+    assert!(
+        refused.contains("402 Target is not a supported eDLT: KEYGL5 firmware '' is not a recognised version string"),
+        "{refused:?}"
+    );
+    assert!(command(
+        &mut reader,
+        &mut writer,
+        "DBSETSAFE //HARNESS/254/p/5/FirmwareVersion 5.5.00"
+    )
+    .await
+    .contains("200 OK"));
     let clear = command(
         &mut reader,
         &mut writer,

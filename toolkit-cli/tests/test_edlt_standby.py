@@ -88,7 +88,7 @@ class StandbyTests(unittest.TestCase):
         self.assertFalse(plan.mra_propagation.as_dict()['multiplexer_ui_canonical'])
 
     def test_schema_profile_canonical_stale_and_database_guards(self):
-        with self.assertRaises(EdltError): EdltStandby(self.spec, firmware='5.4.00')
+        with self.assertRaises(EdltError): EdltStandby(self.spec, firmware='5.6.00')
         params = dict(self.spec.parameters); attr = params['TimeoutPage']
         params['TimeoutPage'] = replace(attr, fields={**attr.fields, 'BitAddress': '4'})
         with self.assertRaises(EdltError): EdltStandby(replace(self.spec, parameters=params))
@@ -111,7 +111,7 @@ class StandbyTests(unittest.TestCase):
 
     def test_identity_apply_and_verified_rollback(self):
         before = self.editor.snapshot(self.session.values())
-        self.session.identity['FirmwareVersion'] = '5.4.00'
+        self.session.identity['FirmwareVersion'] = '5.6.00'
         with self.assertRaises(EdltError): self.editor.configure(self.session, after_seconds=5)
         self.assertFalse(self.session.calls); self.session.identity['FirmwareVersion'] = '5.5.00'
         self.session.failure = 'ActivityDuration'

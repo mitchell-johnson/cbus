@@ -107,7 +107,7 @@ class QuickStatusTests(unittest.TestCase):
             with self.subTest(options=options),self.assertRaises(EdltError): self.editor.plan(self.session.values(),**options)
         params=dict(self.spec.parameters); p=params['QuickStatusMode']; params[p.name]=replace(p,fields={**p.fields,'BitAddress':'2'})
         with self.assertRaises(EdltError): EdltQuickStatus(replace(self.spec,parameters=params))
-        with self.assertRaises(EdltError): EdltQuickStatus(self.spec,firmware='5.4.00')
+        with self.assertRaises(EdltError): EdltQuickStatus(self.spec,firmware='5.6.00')
         plan=self.editor.plan(self.session.values(),mode='text')
         for forged in (replace(plan,values={**plan.values,'mode':True}),replace(plan,primary_application=True),
                        replace(plan,changes={**plan.changes,'OpaqueQuickBits':(0,)})):

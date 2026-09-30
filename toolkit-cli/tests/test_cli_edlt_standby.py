@@ -56,7 +56,7 @@ class EdltStandbyCLITests(unittest.TestCase):
             self.assertEqual(result['nightlight_colour'], 'quick-status-colour')
             self.assertFalse(self.invoke(('edlt', 'standby-plan', path, '--no-enabled'))['enabled'])
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'standby-plan', path), status=1)['error'])
 
     def test_main_retains_partial_interrupt_without_save_or_recovery(self):

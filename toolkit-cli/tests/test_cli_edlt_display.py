@@ -57,7 +57,7 @@ class EdltDisplayCLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'wrong.json'
             path.write_text(json.dumps({'format':'cbus-cli-parameters-v1','unit_type':'KEYGL5',
-                'firmware':'5.4.00','catalog_number':'5055EDL','parameters':{}}))
+                'firmware':'5.6.00','catalog_number':'5055EDL','parameters':{}}))
             with patch.object(cli,'_edlt_display',side_effect=AssertionError('Wrong profile must fail first')):
                 result=self.invoke(('edlt','display-plan',path),status=1)
             self.assertIn('identity differs',result['error'])

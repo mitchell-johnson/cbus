@@ -117,15 +117,20 @@ class AdmissionTests(unittest.TestCase):
         self.assertIsNone(physical_firmware(None))
 
     def test_database_firmware_and_catalogue_are_exact(self):
-        for firmware in ('5.5.0', '05.05.00', '5.5.01', '5.4.00', '1.7.00', '5.6.00'):
+        for firmware in ('5.5.0', '05.05.00', '5.5.1', '5.6.00', '1.5.99', '5.3.99', '2.0.00'):
             self.assertIsNotNone(refusal('edlt-database-widgets', 'KEYGL5', firmware, '5055EDL'), firmware)
+        for firmware in ('5.5.0', '05.05.00', '5.5.01', '5.4.00', '1.7.00', '5.6.00'):
             self.assertIsNotNone(refusal('edlt-label-clear', 'KEYGL5', firmware), firmware)
+            for workflow in ('edlt-parent-metadata', 'edlt-global-source'):
+                self.assertIsNotNone(refusal(workflow, 'KEYGL5', firmware, '5055EDL'), (workflow, firmware))
         for catalog in ('5085EDL', '5085EDLB', 'R5045EDL', 'R5045EDLW', '5505ED', '5085ED', 'R5045ED', None, 'X'):
             self.assertIsNotNone(refusal('edlt-database-widgets', 'KEYGL5', '5.5.00', catalog), catalog)
 
     def test_explicit_refusal_reasons(self):
         cases = (
-            (('edlt-database-widgets', 'KEYGL5', '5.4.00', '5055EDL'), 'not extrapolated'),
+            (('edlt-parent-metadata', 'KEYGL5', '5.4.00', '5055EDL'), 'not extrapolated'),
+            (('edlt-database-widgets', 'KEYGL5', '5.6.00', '5055EDL'), 'IsInternal'),
+            (('edlt-database-widgets', 'KEYGL5', '5.5.1', '5055EDL'), 'canonical catalogue spelling'),
             (('edlt-physical-labels', 'KEYGL5', '1.7.03'), '1.7.00..1.7.99'),
             (('edlt-database-widgets', 'KEYGL5', '10.0.00', '5055EDL'), 'outside every C-Gate catalogue'),
             (('edlt-database-widgets', 'KEYGL5', '5.5.00', '5085EDL'), 'only 5055EDL evidence'),
@@ -199,8 +204,8 @@ class RoutedGateTests(unittest.TestCase):
         spec = UnitSpec('KEYGL5.xml', {'Type': 'KEYGL5'}, (), {})
         with self.assertRaisesRegex(EdltError, 'only 5055EDL evidence'):
             EdltLighting(spec, catalog_number='R5045EDL')
-        with self.assertRaisesRegex(EdltError, 'not extrapolated'):
-            EdltLighting(spec, firmware='5.4.00')
+        with self.assertRaisesRegex(EdltError, 'IsInternal'):
+            EdltLighting(spec, firmware='5.6.00')
         with self.assertRaisesRegex(EdltError, 'not KEYGL5.xml'):
             EdltLighting(UnitSpec('OTHER.xml', {'Type': 'KEYGL5'}, (), {}))
         import tempfile

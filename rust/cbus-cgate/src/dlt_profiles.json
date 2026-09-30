@@ -1,0 +1,364 @@
+{
+  "format": "cbus-dlt-profile-admission-v1",
+  "generated_from": "toolkit-cli/src/cbus_toolkit/dlt_profiles.py",
+  "i_dlt_min_version": "2.0",
+  "profiles": [
+    {
+      "unit_type": "KEYBL5",
+      "family": "classic-dlt",
+      "style": "Saturn 5-key DLT",
+      "spec_filename": "KEYL5.xml",
+      "catalog_numbers": [
+        "5085DL"
+      ],
+      "revisions": [
+        {
+          "min": "1.1",
+          "max": "1.1",
+          "internal": true
+        },
+        {
+          "min": "1.4.00",
+          "max": "1.4.00",
+          "internal": false
+        },
+        {
+          "min": "1.4.01",
+          "max": "1.4.16",
+          "internal": true
+        },
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": false
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYML5",
+      "family": "classic-dlt",
+      "style": "Neo 5-key DLT",
+      "spec_filename": "KEYL5.xml",
+      "catalog_numbers": [
+        "5055DL"
+      ],
+      "revisions": [
+        {
+          "min": "1.1",
+          "max": "1.1",
+          "internal": true
+        },
+        {
+          "min": "1.4.00",
+          "max": "1.4.00",
+          "internal": false
+        },
+        {
+          "min": "1.4.01",
+          "max": "1.4.16",
+          "internal": true
+        },
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": false
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYDL4",
+      "family": "classic-dlt",
+      "style": "Decorator 4-key DLT",
+      "spec_filename": "KEYL4.xml",
+      "catalog_numbers": [
+        "E5054DL",
+        "E5084DL"
+      ],
+      "revisions": [
+        {
+          "min": "2.0.00",
+          "max": "2.0.00",
+          "internal": true
+        },
+        {
+          "min": "2.0.01",
+          "max": "2.0.99",
+          "internal": true
+        },
+        {
+          "min": "2.1.00",
+          "max": "2.1.00",
+          "internal": false
+        },
+        {
+          "min": "2.1.01",
+          "max": "2.9.99",
+          "internal": true
+        },
+        {
+          "min": "3.0.00",
+          "max": "3.0.99",
+          "internal": false
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYGL5",
+      "family": "edlt",
+      "style": "eDLT 5-key",
+      "spec_filename": "KEYGL5.xml",
+      "catalog_numbers": [
+        "5055EDL",
+        "5085EDL",
+        "5085EDLB",
+        "R5045EDL",
+        "R5045EDLW"
+      ],
+      "revisions": [
+        {
+          "min": "1.5.01",
+          "max": "1.5.99",
+          "internal": true
+        },
+        {
+          "min": "1.6.00",
+          "max": "1.6.99",
+          "internal": false
+        },
+        {
+          "min": "1.7.00",
+          "max": "1.7.99",
+          "internal": false
+        },
+        {
+          "min": "5.4.00",
+          "max": "5.4.99",
+          "internal": false
+        },
+        {
+          "min": "5.5.00",
+          "max": "5.5.99",
+          "internal": false
+        },
+        {
+          "min": "5.6.00",
+          "max": "9",
+          "internal": true
+        }
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "name": "edlt-database-widgets",
+      "identity": [
+        "unit_type",
+        "firmware",
+        "catalog_number"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYGL5",
+          "1.6.00..1.6.99",
+          "5055EDL"
+        ],
+        [
+          "KEYGL5",
+          "1.7.00..1.7.99",
+          "5055EDL"
+        ],
+        [
+          "KEYGL5",
+          "5.4.00..5.4.99",
+          "5055EDL"
+        ],
+        [
+          "KEYGL5",
+          "5.5.00..5.5.99",
+          "5055EDL"
+        ]
+      ]
+    },
+    {
+      "name": "edlt-parent-metadata",
+      "identity": [
+        "unit_type",
+        "firmware",
+        "catalog_number"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYGL5",
+          "5.5.00",
+          "5055EDL"
+        ]
+      ]
+    },
+    {
+      "name": "edlt-global-source",
+      "identity": [
+        "unit_type",
+        "firmware",
+        "catalog_number"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYGL5",
+          "5.5.00",
+          "5055EDL"
+        ]
+      ]
+    },
+    {
+      "name": "edlt-label-clear",
+      "identity": [
+        "unit_type",
+        "firmware"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYGL5",
+          "5.5.00",
+          null
+        ]
+      ]
+    },
+    {
+      "name": "edlt-physical-labels",
+      "identity": [
+        "unit_type",
+        "firmware"
+      ],
+      "firmware_form": "physical",
+      "admitted": [
+        [
+          "KEYGL5",
+          "5.5.00",
+          null
+        ]
+      ]
+    },
+    {
+      "name": "serial-population",
+      "identity": [
+        "unit_type"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYGL5",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "name": "classic-dlt-label-variants",
+      "identity": [
+        "unit_type",
+        "firmware",
+        "catalog_number"
+      ],
+      "firmware_form": "database",
+      "admitted": [
+        [
+          "KEYBL5",
+          "2.0.00",
+          "*"
+        ],
+        [
+          "KEYBL5",
+          "2.1.00",
+          "*"
+        ],
+        [
+          "KEYBL5",
+          "3.0.00..3.0.99",
+          "*"
+        ],
+        [
+          "KEYML5",
+          "2.0.00",
+          "*"
+        ],
+        [
+          "KEYML5",
+          "2.1.00",
+          "*"
+        ],
+        [
+          "KEYML5",
+          "3.0.00..3.0.99",
+          "*"
+        ],
+        [
+          "KEYDL4",
+          "2.1.00",
+          "*"
+        ],
+        [
+          "KEYDL4",
+          "3.0.00..3.0.99",
+          "*"
+        ]
+      ]
+    }
+  ],
+  "help_only_catalog_names": {
+    "5505ED": "KEYGL5",
+    "5085ED": "KEYGL5",
+    "R5045ED": "KEYGL5",
+    "5084DL": "KEYDL4",
+    "SLC5055DL": "KEYML5"
+  },
+  "undefined_help_types": {
+    "KEYH5": "Toolkit help topic 20074 names KEYH5 for R5045EDL, but neither the C-Gate catalogue nor any decoded unit specification defines KEYH5; the catalogue maps R5045EDL to KEYGL5"
+  },
+  "spec_only_types": {
+    "KEYL5": "KEYL5 is the Type inside KEYL5.xml; the catalogue reports KEYBL5 (Saturn) or KEYML5 (Neo)"
+  }
+}

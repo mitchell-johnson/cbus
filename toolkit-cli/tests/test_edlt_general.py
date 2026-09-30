@@ -77,7 +77,7 @@ class GeneralSettingsTests(unittest.TestCase):
                        {'debounce_ms': 26}, {'debounce_ms': -25}, {'status_report_seconds': 2},
                        {'status_report_seconds': 256}, {'tools_page_locked': 1}, {'power_restore': 'off'}):
             with self.subTest(option=option), self.assertRaises(EdltError): self.editor.plan(self.session.values(), **option)
-        with self.assertRaises(EdltError): EdltGeneralSettings(self.spec, firmware='5.4.00')
+        with self.assertRaises(EdltError): EdltGeneralSettings(self.spec, firmware='5.6.00')
         params = dict(self.spec.parameters); field = params['ToolsPageLocked']
         params['ToolsPageLocked'] = replace(field, fields={**field.fields, 'BitAddress': '3'})
         with self.assertRaises(EdltError): EdltGeneralSettings(replace(self.spec, parameters=params))
@@ -85,7 +85,7 @@ class GeneralSettingsTests(unittest.TestCase):
         for forged in (replace(plan, tools_page_locked=1), replace(plan, long_press_ms=True),
                        replace(plan, changes={**plan.changes, 'OpaqueGeneralBits': (0,)})):
             with self.assertRaises(EdltError): self.editor.apply(self.session, forged)
-        self.session.identity['FirmwareVersion'] = '5.4.00'
+        self.session.identity['FirmwareVersion'] = '5.6.00'
         with self.assertRaises(EdltError): self.editor.apply(self.session, plan)
         self.session.identity['FirmwareVersion'] = '5.5.00'; self.session.current['LongPressTime'] = (30,)
         with self.assertRaises(EdltError): self.editor.apply(self.session, plan)

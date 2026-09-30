@@ -117,6 +117,7 @@
     "tests/test_edlt_parent_transaction.py",
     "tests/test_edlt_reset_vectors.py",
     "tests/test_edlt_restore_levels_vectors.py",
+    "tests/test_edlt_revisions.py::NativeRevisionTests",
     "tests/test_edlt_scene_live.py::NativeSceneLiveTests",
     "tests/test_edlt_scene_manager.py::NativeSceneManagerTests",
     "tests/test_enable.py",

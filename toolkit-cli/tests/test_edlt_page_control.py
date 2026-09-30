@@ -60,7 +60,7 @@ class PageControlTests(unittest.TestCase):
     def test_input_profile_layout_stale_and_forged_plan_guards(self):
         for value in (-1,256,True,1.0,'42',[],{}):
             with self.assertRaises(EdltError):self.plan(group=value)
-        for options in (dict(firmware='5.4.00'),dict(catalog_number='OTHER')):
+        for options in (dict(firmware='5.6.00'),dict(catalog_number='OTHER')):
             with self.assertRaises(EdltError):EdltPageControl(self.spec,**options)
         for fields in ({'Address':'0x132'},{'BitAddress':'1'},{'ArraySize':'2'},{'BitSize':'7'}):
             parameters=dict(self.spec.parameters);p=parameters['KeySetsEnableGroup'];parameters['KeySetsEnableGroup']=replace(p,fields={**p.fields,**fields})

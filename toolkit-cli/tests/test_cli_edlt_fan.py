@@ -20,7 +20,7 @@ class EdltFanCLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'wrong.json'
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'catalog_number': '5055EDL', 'firmware': '5.4.00', 'parameters': {}}))
+                'catalog_number': '5055EDL', 'firmware': '5.6.00', 'parameters': {}}))
             result = self.cli('edlt', 'fan-plan', path, '--page', 1, '--position', 1, '--group', 42, status=1)
             self.assertIn('identity differs', result['error'])
             process = subprocess.run([sys.executable, '-m', 'cbus_toolkit', 'edlt', 'fan-plan', str(path),

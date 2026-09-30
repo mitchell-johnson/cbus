@@ -49,7 +49,7 @@ class LifecycleCLITests(unittest.TestCase):
             self.assertEqual(error['type'], 'LifecycleMetadataError'); self.assertTrue(error['required_fact'])
             self.assertIn('original_stage', error); self.assertFalse(error['saved'])
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'lifecycle-requirements', path), status=1)['error'])
 
     def test_metadata_schema_duplicate_keys_and_size_rejected_before_pp_context(self):

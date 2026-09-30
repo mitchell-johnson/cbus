@@ -29,6 +29,7 @@ pub mod auth;
 pub mod capability_matrix;
 mod config;
 mod convertunit;
+pub mod dlt_profiles;
 mod etherlite;
 mod file;
 pub mod manual;
@@ -11252,7 +11253,7 @@ impl Server {
                         unit.created_by_new && !network.physical.contains_key(&addr);
                     let identity_names: &[&str] = if new_database_object {
                         &[]
-                    } else if unit.unit_type.eq_ignore_ascii_case("KEYGL5") {
+                    } else if crate::dlt_profiles::is_edlt_class(&unit.unit_type) {
                         // KEYGL5 FirmwareVersion is the optional native 0xFB
                         // property. Version remains IDENTIFY2 even when that
                         // optional recall failed, so do not manufacture a
@@ -11293,7 +11294,7 @@ impl Server {
                     };
                 }
                 if attribute == "FirmwareVersion"
-                    && unit.unit_type.eq_ignore_ascii_case("KEYGL5")
+                    && crate::dlt_profiles::is_edlt_class(&unit.unit_type)
                     && !unit.fields.contains_key(attribute)
                 {
                     return err(tag, status::NOT_FOUND, "404 Parameter not found");

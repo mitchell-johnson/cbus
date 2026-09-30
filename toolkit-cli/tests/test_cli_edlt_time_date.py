@@ -23,7 +23,7 @@ class EdltTimeDateCLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'wrong.json'
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             result = self.cli('edlt', 'time-date-plan', path, '--page', 0, '--position', 1, status=1)
             self.assertIn('identity differs', result['error'])
 

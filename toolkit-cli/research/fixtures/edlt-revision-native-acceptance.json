@@ -1,0 +1,194 @@
+{
+  "format": "cbus-edlt-revision-native-acceptance-v1",
+  "scope": "KEYGL5 / 5055EDL database Lighting widget with static label text and Page Control through owned native C-Gate 3.4.0.2001 on synthetic database units at each public catalogue revision boundary; no physical unit, display, label transfer or network save",
+  "spec_sha256": "812d2f92ccf3176d9f3d4c0f35fc196ac9ba45bc419639421e4e5ff082d2af21",
+  "admitted": [
+    {
+      "firmware": "1.6.00",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "1.6.99",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "1.7.00",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "1.7.99",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "5.4.00",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "5.4.99",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "5.5.00",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    },
+    {
+      "firmware": "5.5.99",
+      "catalog_number": "5055EDL",
+      "identity_reported": true,
+      "schema_sha256": "f699d5d0175a2535009760add7ee641de4f9fcf14fe77d15363b160ef1837fc4",
+      "defaults_sha256": "7653f13f46bc23667a200f87cbe40d307902fea33a9491d2117bbadaadb5b778",
+      "preview_matches_offline_plan": true,
+      "lighting_changes_sha256": "ef765c1fb1d3fd5d14c47397184c742ea02208384ba3b0f656021ee92eecaf60",
+      "label_bytes_verified": true,
+      "page_control_groups": [
+        0,
+        42,
+        254,
+        255
+      ],
+      "page_control_changes_sha256": "0c200aa0c7636fb11f4eb8e877eb64dbefeba81add03a541fa4223ee645e06ee",
+      "final_parameters_sha256": "03bcc9115994d243c6eda417a3347df44f504ecab8e4bb2f171184381d66cb58",
+      "saved_reloaded": true
+    }
+  ],
+  "refused": [
+    {
+      "firmware": "1.5.01",
+      "catalog_number": "5055EDL",
+      "reason_matched": "IsInternal",
+      "values_unchanged": true
+    },
+    {
+      "firmware": "1.5.99",
+      "catalog_number": "5055EDL",
+      "reason_matched": "IsInternal",
+      "values_unchanged": true
+    },
+    {
+      "firmware": "5.6.00",
+      "catalog_number": "5055EDL",
+      "reason_matched": "IsInternal",
+      "values_unchanged": true
+    },
+    {
+      "firmware": "5.4.00",
+      "catalog_number": "5085EDL",
+      "reason_matched": "only 5055EDL evidence",
+      "values_unchanged": true
+    },
+    {
+      "firmware": "5.5.1",
+      "catalog_number": "5055EDL",
+      "reason_matched": "canonical catalogue spelling",
+      "values_unchanged": true
+    }
+  ],
+  "passed": true,
+  "physical_hardware_verified": false,
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0"
+}

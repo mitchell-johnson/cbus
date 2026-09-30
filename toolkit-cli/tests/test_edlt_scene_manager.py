@@ -263,7 +263,7 @@ class SceneManagerTests(unittest.TestCase):
     def test_apply_guards_rollback_interrupt_and_disconnection(self):
         plan = self.editor.prepare_save(self.editor.edit(self.state, operations=[op('set-level', item_id=1, level=77)]).state)
         with self.assertRaises(EdltError): self.editor.apply(self.session, replace(plan, changes={}))
-        self.session.identity['FirmwareVersion'] = '5.4.00'
+        self.session.identity['FirmwareVersion'] = '5.6.00'
         with self.assertRaises(EdltError): self.editor.apply(self.session, plan)
         self.session.identity['FirmwareVersion'] = '5.5.00'; self.session.current['PrimaryApplication'] = (57,)
         with self.assertRaises(EdltError): self.editor.apply(self.session, plan)

@@ -8,7 +8,10 @@ and research/dlt_profile_facts.py). Capabilities describe the vendor
 profile; admission describes what this CLI has retained evidence for. A
 refused identity always has an explicit reason, and evidence for KEYGL5
 5.5.00 is never extrapolated to another type, firmware or catalogue number.
-See docs/dlt-profiles.md.
+Database eDLT editors also admit the other public KEYGL5 catalogue revisions
+because their layout and original editor handling are proven identical and
+owned native C-Gate accepted them. ``admission_table`` exports these facts
+for the Rust cmqttd gates. See docs/dlt-profiles.md.
 """
 from __future__ import annotations
 
@@ -131,6 +134,16 @@ UNUSED_FRAGMENTS = MappingProxyType({
     'I_DLTF.xml': 'Internal fragment included by no unit specification; C-Gate cannot open it as a PP session'})
 
 EDLT_EVIDENCE = ('KEYGL5', '5.5.00', '5055EDL')
+# Every public (non-IsInternal) KEYGL5 catalogue revision. All six catalogue
+# rows name the same KEYGL5.xml (no includes or version conditionals, Min 0,
+# Max 9) and C-Gate class CBusEdlt, which never branches on firmware. The
+# original eDLT editor reads firmware only for the network-unit display,
+# the network-unit ConfigVersion derivation, the "Critical Update" prompt and
+# template export; a database unit reports "n/a" and none of these runs. The
+# receipt research/fixtures/edlt-revision-native-acceptance.json proves
+# identical native schemas, defaults and Page Control results at each range's
+# boundaries. Internal revisions (1.5.x, 5.6.00..9) are not admitted.
+EDLT_DATABASE_REVISIONS = ('1.6.00..1.6.99', '1.7.00..1.7.99', '5.4.00..5.4.99', '5.5.00..5.5.99')
 _PHYSICAL_FIRMWARE = re.compile(r'([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})')
 _VERSION = re.compile(r'[0-9]{1,4}(\.[0-9]{1,4}){1,3}')
 
@@ -165,6 +178,7 @@ class Workflow:
 
 
 _EDLT_FULL = (EDLT_EVIDENCE,)
+_EDLT_DATABASE = tuple(('KEYGL5', rule, '5055EDL') for rule in EDLT_DATABASE_REVISIONS)
 _EDLT_FIRMWARE = (('KEYGL5', '5.5.00', None),)
 # Classic label variants: public (non-internal) catalogue revisions at or
 # above I_DLT.xml's MinVersion. '*' admits any catalogue number of the type.
@@ -173,7 +187,7 @@ _CLASSIC = tuple((unit_type, firmware, '*') for unit_type in ('KEYBL5', 'KEYML5'
                  if not (unit_type == 'KEYDL4' and firmware == '2.0.00'))
 WORKFLOWS = MappingProxyType({row.name: row for row in (
     Workflow('edlt-database-widgets', 'Database PP eDLT widget, global and lifecycle editors',
-             ('unit_type', 'firmware', 'catalog_number'), _EDLT_FULL),
+             ('unit_type', 'firmware', 'catalog_number'), _EDLT_DATABASE),
     Workflow('edlt-parent-metadata', 'Native XML parent transaction and SceneManager metadata',
              ('unit_type', 'firmware', 'catalog_number'), _EDLT_FULL),
     Workflow('edlt-global-source', 'Global Programming / factory preparation source PP export',
@@ -189,12 +203,19 @@ WORKFLOWS = MappingProxyType({row.name: row for row in (
 )})
 
 
+def rows_for_type(workflow, unit_type):
+    return [row for row in workflow.admitted if row[0] == unit_type]
+
+
 def _firmware_matches(rule, firmware):
     if rule is None:
         return True
     if '..' in rule:
+        # Ranges admit only the canonical catalogue spelling M.m.pp, so a
+        # database identity is still one exact string per revision.
         low, high = rule.split('..')
-        return compare_versions(firmware, low) >= 0 and compare_versions(firmware, high) <= 0
+        return (physical_firmware(firmware) == firmware and compare_versions(firmware, low) >= 0
+                and compare_versions(firmware, high) <= 0)
     return firmware == rule
 
 
@@ -242,8 +263,15 @@ def refusal(workflow, unit_type, firmware=None, catalog_number=None):
     rows = [row for row in rows if _firmware_matches(row[1], canonical)]
     if not rows:
         if profile.family == 'edlt':
+            if revision.internal:
+                return (f'{unit_type} firmware {canonical} is in catalogue revision {revision.minimum}..'
+                        f'{revision.maximum}, which C-Gate marks IsInternal')
+            if physical_firmware(canonical) != canonical:
+                return f'{unit_type} firmware {canonical!r} is not the canonical catalogue spelling M.m.pp'
+            evidence = ', '.join(row[1] for row in rows_for_type(rule, unit_type))
             return (f'KEYGL5 firmware {canonical} (catalogue revision {revision.minimum}..{revision.maximum}) '
-                    'shares KEYGL5.xml, but only 5.5.00 evidence is retained and it is not extrapolated')
+                    f'shares KEYGL5.xml, but {workflow} evidence is retained only for {evidence} and it is '
+                    'not extrapolated')
         if compare_versions(canonical, I_DLT_MIN_VERSION) < 0:
             return (f'{unit_type} firmware {canonical} is below I_DLT.xml MinVersion {I_DLT_MIN_VERSION}, '
                     'the specification that declares the label variant fields')
@@ -319,3 +347,28 @@ def registry():
                          'undefined_help_types': dict(UNDEFINED_HELP_TYPES),
                          'spec_only_types': dict(SPEC_ONLY_TYPES),
                          'unused_fragments': {**UNUSED_FRAGMENTS, 'I_DLTF.xml sha256': I_DLTF_SHA256}}}
+
+
+ADMISSION_FORMAT = 'cbus-dlt-profile-admission-v1'
+
+
+def admission_table():
+    """Everything ``refusal`` reads, as JSON for the Rust cmqttd gates.
+
+    ``rust/cbus-cgate/src/dlt_profiles.json`` is this document; a Python test
+    keeps the two identical and ``research/export_dlt_admission.py`` rewrites
+    it together with the Rust reason vectors.
+    """
+    return {'format': ADMISSION_FORMAT,
+            'generated_from': 'toolkit-cli/src/cbus_toolkit/dlt_profiles.py',
+            'i_dlt_min_version': I_DLT_MIN_VERSION,
+            'profiles': [{'unit_type': row.unit_type, 'family': row.family, 'style': row.style,
+                          'spec_filename': row.spec_filename, 'catalog_numbers': list(row.catalog_numbers),
+                          'revisions': [{'min': rev.minimum, 'max': rev.maximum, 'internal': rev.internal}
+                                        for rev in row.revisions]}
+                         for row in PROFILES.values()],
+            'workflows': [{'name': row.name, 'identity': list(row.identity), 'firmware_form': row.firmware_form,
+                           'admitted': [list(item) for item in row.admitted]} for row in WORKFLOWS.values()],
+            'help_only_catalog_names': dict(HELP_ONLY_CATALOG_NAMES),
+            'undefined_help_types': dict(UNDEFINED_HELP_TYPES),
+            'spec_only_types': dict(SPEC_ONLY_TYPES)}

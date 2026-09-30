@@ -151,7 +151,7 @@ class EdltLighting:
         if reason is None and spec.filename != PROFILES[spec.unit_type].spec_filename:
             reason = "the unit specification is not " + PROFILES[spec.unit_type].spec_filename
         if reason is not None:
-            raise EdltError("Lighting widgets currently support KEYGL5.xml, 5055EDL firmware5.5.00 only: " + reason)
+            raise EdltError("Lighting widgets support only admitted KEYGL5.xml / 5055EDL database revisions: " + reason)
         self.spec, self.codec = spec, MemoryCodec(spec)
         required = {"Application": (0x21, 2), "ConfigVersionMinor": (0x100, 1),
                     "ConfigVersionMajor": (0x101, 1), "OverallCRC": (0x102, 2),
@@ -486,6 +486,12 @@ class EdltLighting:
         reason = refusal("edlt-database-widgets", *identity)
         if reason is not None:
             raise EdltError("Database device identity differs: " + reason)
+        # Plans default to the 5.5.00 evidence identity; the CLI reports the
+        # admitted database identity instead.
+        try:
+            session.verified_edlt_identity = tuple(identity)
+        except AttributeError:
+            pass
 
     def _verify_session(self, session):
         self._verify_identity(session)

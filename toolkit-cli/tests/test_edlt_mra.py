@@ -146,7 +146,7 @@ class MRAWidgetTests(unittest.TestCase):
             with self.assertRaises(EdltError):self.plan(label_index=bad)
 
     def test_profile_and_required_global_layout_are_exact(self):
-        for settings in ({'catalog_number':'5085EDL'},{'firmware':'5.4.00'}):
+        for settings in ({'catalog_number':'5085EDL'},{'firmware':'5.6.00'}):
             with self.assertRaises(EdltError):EdltMRAWidget(self.editor.spec,**settings)
         parameters=dict(self.editor.spec.parameters);parameter=parameters['UseBigIcon']
         parameters['UseBigIcon']=replace(parameter,fields={**parameter.fields,'BitAddress':'3'})
@@ -210,7 +210,7 @@ class MRAWidgetTests(unittest.TestCase):
         with self.assertRaises(EdltApplyError) as caught:self.editor.apply(self.session,plan)
         self.assertTrue(caught.exception.details['rollback_verified'])
         self.assertEqual(self.editor.snapshot(self.session.values()),dict(plan.expected))
-        self.session.identity['FirmwareVersion']='5.4.00'
+        self.session.identity['FirmwareVersion']='5.6.00'
         with self.assertRaises(EdltError):self.editor.apply(self.session,plan)
         self.session.identity['FirmwareVersion']='5.5.00'
         self.session.current['Widget6RestoreLevel']='1'

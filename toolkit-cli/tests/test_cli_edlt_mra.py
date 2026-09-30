@@ -57,7 +57,7 @@ class EdltMRACLITests(unittest.TestCase):
             self.assertEqual(result['globals']['changes'], {'Widget6WidgetByteValue1': [0xb8]})
             self.assertFalse(result['audio_control_sent']); self.assertFalse(result['physical_device_verified'])
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             for action, options in (('mra-plan', ('--page', 1, '--position', 1, '--kind', 'zone-control')),
                                     ('mra-globals-plan', ())):
                 self.assertIn('identity differs', self.invoke(('edlt', action, path, *options), status=1)['error'])

@@ -2015,7 +2015,7 @@ impl Server {
         // addressable by name from the volatile observation snapshot, which
         // is how Toolkit reads the optional OEM values after a sync. Missing
         // recalls stay 402 rather than being manufactured from defaults.
-        if unit.unit_type.eq_ignore_ascii_case("KEYGL5")
+        if crate::dlt_profiles::is_edlt_class(&unit.unit_type)
             && matches!(
                 attribute.to_ascii_lowercase().as_str(),
                 "widgetgroups" | "firmwareversion"

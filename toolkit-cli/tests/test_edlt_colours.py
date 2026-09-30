@@ -101,7 +101,7 @@ class ColourTests(unittest.TestCase):
         with self.assertRaisesRegex(EdltError,'layout'):EdltColours(replace(self.spec,parameters=params))
         params=dict(self.spec.parameters);del params['ActivityDuration']
         with self.assertRaisesRegex(EdltError,'layout'):EdltColours(replace(self.spec,parameters=params))
-        for options in (dict(firmware='5.4.00'),dict(catalog_number='OTHER')):
+        for options in (dict(firmware='5.6.00'),dict(catalog_number='OTHER')):
             with self.assertRaises(EdltError):EdltColours(self.spec,**options)
         plan=self.plan(text_colour='yellow')
         for forged in (None,replace(plan,values={}),replace(plan,editable={}),replace(plan,primary_application=True),

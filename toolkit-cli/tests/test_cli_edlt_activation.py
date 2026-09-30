@@ -59,7 +59,7 @@ class ActivationCLITests(unittest.TestCase):
             self.assertFalse(self.invoke(('edlt', 'activation-plan', path))['activation_controls_enabled'])
             self.assertIn('Standby', self.invoke(('edlt', 'activation-plan', path, '--wake-mode', 'wake-unit'), status=1)['error'])
             path.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'KEYGL5',
-                'firmware': '5.4.00', 'catalog_number': '5055EDL', 'parameters': {}}))
+                'firmware': '5.6.00', 'catalog_number': '5055EDL', 'parameters': {}}))
             self.assertIn('identity differs', self.invoke(('edlt', 'activation-plan', path), status=1)['error'])
 
     def test_interrupt_retains_attempt_without_save_or_recovery(self):

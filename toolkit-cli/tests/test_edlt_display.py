@@ -93,7 +93,7 @@ class DisplaySettingsTests(unittest.TestCase):
     def test_invalid_settings_schema_profile_and_forged_or_stale_plan(self):
         for options in ({'large_text': 'small'}, {'large_text': True}, {'big_icons': 1}, {'timer_flash': 'false'}, {'fan_level_wrap': 0}):
             with self.subTest(options=options), self.assertRaises(EdltError): self.editor.plan(self.session.values(), **options)
-        with self.assertRaises(EdltError): EdltDisplaySettings(self.spec, firmware='5.4.00')
+        with self.assertRaises(EdltError): EdltDisplaySettings(self.spec, firmware='5.6.00')
         params = dict(self.spec.parameters); field = params['FontStyle']
         params['FontStyle'] = replace(field, fields={**field.fields, 'BitAddress': '1'})
         with self.assertRaises(EdltError): EdltDisplaySettings(replace(self.spec, parameters=params))
@@ -107,7 +107,7 @@ class DisplaySettingsTests(unittest.TestCase):
 
     def test_native_identity_guard_apply_and_verified_rollback(self):
         source = self.editor.snapshot(self.session.values())
-        self.session.identity['FirmwareVersion'] = '5.4.00'
+        self.session.identity['FirmwareVersion'] = '5.6.00'
         with self.assertRaises(EdltError): self.editor.configure(self.session, big_icons=False)
         self.assertFalse(self.session.calls)
         self.session.identity['FirmwareVersion'] = '5.5.00'
