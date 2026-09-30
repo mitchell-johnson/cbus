@@ -468,6 +468,6 @@ bindings are now counted. C-Gate paths have a deterministic per-axis contract
 inventory and a one-to-one obligation mapping, while the unresolved subaxes
 above, functional deduplication,
 undocumented Toolkit branches and catalogue firmware profiles remain open.
-The legacy ledger still reports 18 implemented, 21 in
-progress and 3 pending rows, or 42.86% of category labels. That value is
+The legacy ledger still reports 18 implemented, 22 in
+progress and 2 pending rows, or 42.86% of category labels. That value is
 explicitly marked as not being a functionality estimate.

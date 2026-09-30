@@ -42,7 +42,8 @@ requires exact native/Rust `343/347/344` XML wires, including the LF-only
 declaration row. It also runs the production Python client and pipelined XML
 read smoke on both servers, then `test_rust_cgate_interop.py` in one
 invocation and `test_cmqtt_interop.py` plus
-`test_cmqtt_programming_methods_interop.py` in a second invocation. The focused
+`test_cmqtt_programming_methods_interop.py` and
+`test_cmqtt_dali_commissioning_interop.py` in a second invocation. The focused
 `check-cgate-interop` and `check-cmqtt-interop` targets deliberately do not
 build a missing binary: they fail before collection. CI builds the two servers
 and requires all six differential executions before the offline and two interop

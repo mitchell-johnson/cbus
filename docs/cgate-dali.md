@@ -18,6 +18,19 @@ transcripts against a scripted gateway confirm their wire order and payloads
 remains unverified.
 `CMQTT CAPABILITIES` therefore keeps `dali_full_compatibility` false.
 
+## Python commissioning workflow
+
+`cbus-toolkit cgate dali extract`, `deploy`, and `recover` expose the supported
+session plans through the production tagged client. Each workflow owns its
+temporary session, verifies the server capabilities, and emits a JSON receipt.
+Conditional extraction requires explicit address-assignment intent and a new
+client journal. Deployment accepts ordered model-path or extended-byte edits,
+supports a staging-only dry run, and records an exclusive durable attempt
+before submitting the mutation. Recovery reads fresh gateway data and compares
+the edited fields without resuming or repeating the prior plan. See the
+[typed CLI guide](../toolkit-cli/docs/dali-commissioning.md) for commands,
+receipt boundaries, and failure handling.
+
 ## Core and emergency commands
 
 The 48 core commands and 14 commands below `DALI EMERGENCY` use priority-zero
@@ -482,7 +495,6 @@ the state of a device after a partial plan.
 - The recovered colour steps (operations 99 and 100) are in no native plan
   and are not implemented.
 - cmqttd does not emit native's per-exchange debug rows during session plans.
-- The Python Toolkit CLI has no typed DALI workflow.
 
 ## Evidence and tests
 
@@ -517,6 +529,10 @@ the state of a device after a partial plan.
 - Unit tests in `dali_specialized.rs` cover the 67-poll budget, a reconnect
   during `ADDRESS_UNKNOWN`, the commit after a later failure, payload
   construction and model refusal, a fault at every deploy write, and `FULL`.
+- `toolkit-cli/tests/test_dali_commissioning.py` covers the typed Python API
+  and CLI contracts. `test_cmqtt_dali_commissioning_interop.py` drives the
+  production client through the real daemon against independent scripted
+  gateway replies, including deployment failure and read-only recovery.
 
 Research and tests use loopback fixtures only. They do not contact a real
 C-Bus network.

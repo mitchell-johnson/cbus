@@ -959,13 +959,26 @@ fn parse_db_xml_interface(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlIn
     })
 }
 
-/// Parse one complete Unit embedded in a DBSETXML document.
-///
+/// Supported native Unit scalar schema; programming parameters use PP rows.
+const DB_XML_UNIT_SCALARS: &[&str] = &[
+    "OID",
+    "TagName",
+    "Address",
+    "Description",
+    "UnitType",
+    "UnitName",
+    "SerialNumber",
+    "FirmwareVersion",
+    "CatalogNumber",
+    "DeviceName",
+    "GroupNumber",
+];
+
 /// A Unit keeps its own XML template because its schema contains the open
 /// ended PP catalogue. Original build 2001 discards comments, processing
-/// instructions and unknown namespaced markup, even inside a direct Unit
-/// replacement. Rebuild a plain Unit template from the mapper's scalar/PP
-/// children so later scalar writes keep the original schema order.
+/// instructions, unknown namespaced markup and unknown plain scalar children.
+/// Rebuild a plain Unit template from the mapper's scalar/PP children so later
+/// scalar writes keep the original schema order.
 fn db_xml_unit_template(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
     let mut output = "<Unit>".to_string();
     for child in node
@@ -980,7 +993,7 @@ fn db_xml_unit_template(node: roxmltree::Node<'_, '_>) -> Result<String, String>
                 xml_escape(name),
                 xml_escape(value)
             ));
-        } else {
+        } else if DB_XML_UNIT_SCALARS.contains(&child.tag_name().name()) {
             let name = child.tag_name().name();
             let value = child
                 .children()
@@ -1039,6 +1052,14 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
             pp_values.insert(parameter.to_string(), value.to_string());
             continue;
         }
+        // The native Unit mapper admits its schema scalars and the open PP
+        // catalogue independently. The owned replacement-edges capture's
+        // tags 127/128 accepts an unknown plain Foo child but omits it from
+        // readback. Preserve DeviceName/GroupNumber, which original reload
+        // adds, while keeping arbitrary parameter names in PP elements.
+        if !DB_XML_UNIT_SCALARS.contains(&name) {
+            continue;
+        }
         if matches!(name, "UnitName" | "Description") {
             // Native C-Gate's mapper accepts nested decoration on these
             // fields, but stores only their direct text. A nested-only
@@ -1055,8 +1076,7 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
             }
             continue;
         }
-        // Unknown nested elements are retained in the template. Native
-        // scalar fields are direct text-only elements.
+        // Other admitted scalar fields keep their existing bounded grammar.
         if child.children().any(|child| child.is_element()) {
             continue;
         }
@@ -2730,7 +2750,7 @@ impl Server {
             return response;
         }
         match upper.as_str() {
-            _ if eq_verb(&upper, "NOOP") => ok(&cmd.tag, vec![], "200 OK"),
+            _ if eq_verb(&upper, "NOOP") => ok(&cmd.tag, vec![], "200 OK."),
             _ if eq_verb(&upper, "GET CGATE VERSION") => ok(
                 &cmd.tag,
                 vec!["C-Gate 3.4.0 (rust cbus-cgate 0.1.0)".to_string()],

@@ -211,7 +211,7 @@ async fn config_admission_changes_new_sessions_and_preserves_mqtt_pci() {
     denied_connection_stays_silent(&first).await;
     assert_eq!(
         command(&mut reader, &mut writer, "existing", "NOOP").await,
-        ["200 OK"]
+        ["200 OK."]
     );
     assert_eq!(
         command(&mut reader, &mut writer, "save", "CONFIG SAVE global").await,

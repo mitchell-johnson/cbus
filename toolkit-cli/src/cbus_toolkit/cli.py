@@ -1844,6 +1844,10 @@ def build_parser():
     )
     physical_programming_options(physical_pp)
 
+    from .dali_commissioning_cli import options as dali_commissioning_options
+    dali = cgops.add_parser("dali", help="Typed cmqttd DALI extraction and single-attempt deployment")
+    dali_commissioning_options(dali)
+
     p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL occupancy profile")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _sensor_options(p)
@@ -2641,9 +2645,11 @@ def _project(args):
 
 
 def _cgate_timeout(args):
-    """Use a longer default only for scans that synchronize a whole network."""
+    """Use operation-specific waits for scans and long DALI commissioning plans."""
     if getattr(args, "cgate_timeout_explicit", False):
         return args.timeout
+    if args.action == "dali":
+        return 14400.0
     if args.action == "edlt-label-audit" or (
             args.action == "edlt-labels" and args.network is not None) or (
             args.action == "serials" and (
@@ -2696,6 +2702,10 @@ def _cgate(args):
     import ssl
     from .cgate import CGateClient
     timeout = _cgate_timeout(args)
+    dali_edits = None
+    if args.action == "dali":
+        from .dali_commissioning_cli import preconnect as dali_preconnect
+        dali_edits = dali_preconnect(args)
     context = None
     if args.tls:
         if args.key and not args.cert:
@@ -2735,7 +2745,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "physical-pp", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
+    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2902,6 +2912,9 @@ def _cgate(args):
         if args.action == "physical-pp":
             from .physical_programming_cli import run as physical_programming_run
             return physical_programming_run(args, client)
+        if args.action == "dali":
+            from .dali_commissioning_cli import run as dali_commissioning_run
+            return dali_commissioning_run(args, client, dali_edits)
         if args.action == "address":
             if args.remote_action in ("physical-readdress", "serial-commission"):
                 from .physical_addressing import PhysicalAddressing
@@ -4288,6 +4301,7 @@ def main(argv=None):
     from .project_legacy_transform_cli import error_payload as project_legacy_transform_error_payload
     from .thermostat_schedule_cli import error_payload as schedule_error_payload
     from .physical_programming import physical_programming_error_payload
+    from .dali_commissioning import error_payload as dali_error_payload
     try:
         result, status = run(args)
         stream = args.area == "cgate" and args.action == "events"
@@ -4296,6 +4310,8 @@ def main(argv=None):
         try:
             print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
         except BaseException as output_error:
+            if args.area == "cgate" and args.action == "dali":
+                output_error.dali_commissioning_evidence = result
             if args.area == "cgate" and args.action in ("thermostat-schedule-levels", "thermostat-schedule-compose"):
                 from .thermostat_schedule_cli import record_output_error
                 record_output_error(args, output_error)
@@ -4315,7 +4331,7 @@ def main(argv=None):
                              default=_json_default), file=sys.stderr)
             return 1
         print(json.dumps({"error": str(exc), "type": type(exc).__name__, **getattr(exc, "details", {}),
-                          **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc),
+                          **_selected_serial_error_payload(exc), **_programming_cleanup_payload(exc), **dali_error_payload(exc),
                           **_cgate_cleanup_payload(exc), **_edlt_label_clear_payload(exc), **_edlt_factory_default_payload(exc), **_edlt_parent_transaction_payload(exc), **_edlt_ordered_payload(exc, args), **global_error_payload(exc, args), **live_error_payload(exc, args), **preference_error_payload(exc, args), **update_error_payload(exc, args), **metadata_error_payload(exc, args), **revocation_error_payload(exc, args), **condition_error_payload(exc, args), **live_condition_error_payload(exc, args), **database_csv_error_payload(exc, args), **routed_recall_error_payload(exc, args), **routed_identify_error_payload(exc, args), **routed_write_error_payload(exc, args), **project_repair_error_payload(exc, args), **project_legacy_transform_error_payload(exc, args)},
                          default=_json_default), file=sys.stderr)
         return 1
@@ -4347,6 +4363,7 @@ def main(argv=None):
         result.update(project_repair_error_payload(exc, args))
         result.update(project_legacy_transform_error_payload(exc, args))
         result.update(physical_programming_error_payload(exc))
+        result.update(dali_error_payload(exc))
         for name in ("pci_mmi_observation", "pci_serial_observation", "pci_inventory_observation", "usb_dfu_evidence", "unit_template_transaction_evidence", "edlt_display_evidence", "edlt_mra_evidence", "edlt_general_evidence", "edlt_standby_evidence", "edlt_colours_evidence", "edlt_navigation_evidence", "edlt_quick_status_evidence", "edlt_activation_evidence", "edlt_page_control_evidence", "edlt_lifecycle_evidence", "edlt_parent_form_evidence", "edlt_parent_transaction_evidence", "edlt_parent_metadata_evidence", "edlt_restore_levels_evidence", "edlt_applications_evidence", "edlt_corridor_evidence", "edlt_blank_evidence", "edlt_reset_evidence", "edlt_scene_manager_evidence", "edlt_scene_metadata_evidence", "edlt_scene_live_evidence"):
             evidence = getattr(exc, name, None)
             if isinstance(evidence, dict):

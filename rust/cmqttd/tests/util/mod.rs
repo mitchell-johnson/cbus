@@ -28,7 +28,7 @@ pub const STARTUP: Duration = Duration::from_secs(20);
 pub const COMMAND_DRAIN: Duration = Duration::from_secs(60);
 
 /// The CONFIG restart effects add native 761/766/767 command trace events,
-/// and command sessions add 803/804 lifecycle rows, to an enabled EVENT
+/// and command sessions add 803/804 lifecycle and 899/999 admission rows, to an enabled EVENT
 /// stream. Application tests read past those independently covered rows so
 /// their next assertion still targets the injected SAL.
 /// A C-Gate event line with its native timestamp replaced by `<timestamp>`
@@ -60,6 +60,12 @@ pub async fn read_cgate_nontrace_into<R: AsyncBufRead + Unpin>(
 }
 
 fn is_cgate_command_trace(line: &str) -> bool {
+    if line.starts_with("#e# ")
+        && (line.contains(" 999 sys Socket accepted.")
+            || line.contains(" 899 sys Debug: New Command Context: cc"))
+    {
+        return true;
+    }
     let mut words = line.split_whitespace();
     words.next() == Some("#e#")
         && words.next().is_some()

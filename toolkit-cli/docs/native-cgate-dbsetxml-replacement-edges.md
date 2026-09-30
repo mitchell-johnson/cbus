@@ -42,13 +42,15 @@ observations: an unknown plain `<Foo>` child disappeared, direct text on both
 sides of a namespaced `Description` child became `AB`, and a nested-only
 `CatalogNumber` became an empty scalar.
 
-The [seven exact-readback vectors](../../rust/testdata/vectors/cgate_dbsetxml_replacement_edges.jsonl)
+The [eight exact-readback vectors](../../rust/testdata/vectors/cgate_dbsetxml_replacement_edges.jsonl)
 are replayed by `dbsetxml_replacement_mapper_matches_owned_native_edge_vectors`
 against the Rust server with only generated Network and Interface OIDs
 substituted. They cover the plain combined graph, comments, processing
 instructions, namespaces, direct Unit decoration, omitted optional fields,
-and empty nested `CatalogNumber`. The unknown plain `<Foo>` observation is
-retained as evidence but remains outside that exact Rust differential.
+empty nested `CatalogNumber`, and omission of the unknown plain `<Foo>` child.
+The Unit mapper keeps the supported native scalar fields and arbitrary PP
+parameters; a durable service regression also checks those retained fields
+and unknown-child omission across restart without PCI traffic.
 
 Tags 131–136 first established a duplicate-OID conflict boundary. The original
 accepted an Application and Unit sharing an OID, then accepted two Units at

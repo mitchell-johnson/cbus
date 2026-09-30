@@ -1907,7 +1907,10 @@ class ParityRegisterTests(unittest.TestCase):
             )
 
     def test_installed_wheel_refuses_to_recompute_fingerprints(self):
-        self.assertEqual(parity.source_checkout_root(ROOT), (ROOT.parent, None))
+        self.assertEqual(
+            parity.source_checkout_root(ROOT, package_dir=ROOT / "src/cbus_toolkit"),
+            (ROOT.parent, None),
+        )
         root, reason = parity.source_checkout_root(
             ROOT, package_dir=Path("/opt/site-packages/cbus_toolkit")
         )
@@ -1935,8 +1938,18 @@ class ParityRegisterTests(unittest.TestCase):
         self.assertEqual(unverified["closed"], [])
         self.assertEqual(unverified["status"], {"P9.01": "receipt_unverified"})
         verified = parity.evaluate_packaged(ledger, artifact_root=ROOT)
-        self.assertTrue(verified["evidence_fingerprints_verified"])
-        self.assertEqual(verified["work_items"]["closed"], ["P9.01"])
+        trusted_root, refusal = parity.source_checkout_root(ROOT)
+        self.assertTrue(verified["evidence_artifacts_verified"])
+        self.assertEqual(verified["evidence_fingerprints_verified"], trusted_root is not None)
+        self.assertEqual(verified["evidence_fingerprint_refusal"], refusal)
+        self.assertEqual(
+            verified["work_items"]["closed"],
+            ["P9.01"] if trusted_root is not None else [],
+        )
+        if trusted_root is None:
+            self.assertEqual(
+                verified["work_items"]["status"], {"P9.01": "receipt_unverified"}
+            )
         self.assertEqual(verified["work_items"]["total"], 59)
 
         register, *_ = packaged_documents()

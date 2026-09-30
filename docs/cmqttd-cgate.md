@@ -81,10 +81,11 @@ startup global levels. At level 9, the command greeting also generates a 766
 response event. An unknown top-level command returns native `400 Syntax Error.`
 and generates its 766 error response without a 761 command entry; a known
 family with bad syntax retains both.
-The event classifier recognizes source-captured startup diagnostics: 938
-configuration warnings at level 8, and 899 debug plus 999 socket-accept rows
-at level 9. cmqttd does not yet generate those startup diagnostics or claim a
-complete event catalogue. See
+The event classifier recognizes source-captured 938 configuration warnings at
+level 8, and 899 debug plus 999 socket-accept rows at level 9. Newly admitted
+command connections generate the captured 999, 803, 899, 766 sequence; `NOOP`
+returns the captured `200 OK.` reply. cmqttd does not yet generate startup
+938 warnings or 899 diagnostics, or claim a complete event catalogue. See
 [`native_cgate_config_event_transport.json`](../rust/testdata/fixtures/native_cgate_config_event_transport.json)
 and [`native_cgate_event_catalogue.json`](../rust/testdata/fixtures/native_cgate_event_catalogue.json),
 with the real-daemon event-transport test, which also verifies cmqttd reconnect
@@ -1018,6 +1019,20 @@ CFR 0.152 decompilation; no decompiled code is committed.
 | `CMQTT ...` and `UNIT IDENTIFY` | Not native commands | cmqttd-only extensions | [Live label reads](#live-label-reads) |
 
 ## Outstanding replacement work
+
+The hostname/TLS admission matrix remains a historical native capture from
+2026-09-28. A fresh owned recapture on 2026-09-30 failed after
+`accept-connections-from=ip6-localhost` was restored to `all`: the listener
+reset one connection, then refused 53 connections across a three-second
+read-only readiness check. All eight owned children exited and their temporary
+directories were removed; no command was replayed or historical fixture replaced.
+The [failed diagnostic](../toolkit-cli/research/fixtures/native-cgate-hostname-tls-failed-recapture.json)
+retains its source and cleanup evidence. The
+[helper applicability proof](../toolkit-cli/research/fixtures/native-cgate-hostname-tls-helper-applicability.json)
+compares the exact captured imports, globals and PKI helper source with current
+source; the later change to the uncalled `verify()` function does not change
+those helpers. This proves source applicability only. Fresh hostname/TLS
+acceptance, native listener recovery and current DNS behavior remain unresolved.
 
 The existing mock dispatches 431 command paths. The embedded service now has a
 primary route for every one of the 429 non-obsolete paths, but that is **not**

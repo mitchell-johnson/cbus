@@ -1,0 +1,26 @@
+{
+  "format": "cbus-native-cgate-hostname-tls-helper-applicability-v1",
+  "historical_capture": {
+    "path": "rust/testdata/fixtures/native_cgate_config_hostname_tls_admission.json",
+    "sha256": "9ac6a39bb332a3c0a2aac2e66f3d9a0f67a266a763034061a9fc1509b81086c1",
+    "captured_utc": "2026-09-28T11:09:29.309779+00:00"
+  },
+  "captured_helper_source": {
+    "path": "toolkit-cli/research/fixtures/native-cgate-hostname-tls-verify-tls-capture-source.txt",
+    "original_repository_path": "toolkit-cli/research/verify_tls.py",
+    "source_revision": "3538e61ff734b9882a08f524fe061971d661c329",
+    "sha256": "80c6993f18d98bb09a65a53da21b19a33ddbe587d8d066ade7a89532e7dde4bd"
+  },
+  "current_source_applicability": {
+    "repository_path": "toolkit-cli/research/verify_tls.py",
+    "imported_helpers": [
+      "STORE_PASSWORD",
+      "run",
+      "generate_pki"
+    ],
+    "exact_prefix_bytes": 5443,
+    "exact_prefix_sha256": "5e409b5d881ce82e34bf992269e336c6b5b46869bb7a22f6f5841179a2eaea17",
+    "scope": "Only exact unchanged imports, globals, and imported PKI helpers before verify(); verify() and its CLI are not called by the hostname probe. This does not establish successful fresh native hostname/TLS acceptance or current host DNS outcomes."
+  },
+  "fresh_native_acceptance": false
+}

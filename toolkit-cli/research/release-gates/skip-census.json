@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 469,
-    "modules_without_skip_sites": 250,
-    "modules_with_skip_sites": 219,
+    "test_modules": 471,
+    "modules_without_skip_sites": 251,
+    "modules_with_skip_sites": 220,
     "modules_by_category": {
       "cgate_test_host": 124,
       "external_cgate_project": 1,
@@ -66,7 +66,7 @@
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 5,
-      "rust_binaries": 7,
+      "rust_binaries": 8,
       "unclassified": 5,
       "unit_specs": 116,
       "vendor_firmware": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 117,
       "partial": 20,
-      "none": 82
+      "none": 83
     },
     "native_runnable_tests": 225,
     "native_selected_required_tests": 225,
@@ -1777,6 +1777,50 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cmqtt_dali_commissioning_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 9,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cmqtt_dali_commissioning_interop.py",
+          "kind": "decorator.skipif",
+          "condition": "BIN is None",
+          "reason": "Build cmqttd before cross-language DALI interop",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "skips",
+          "native_resolution": "Rust binaries are provisioned by make check-interop, not by the native gate"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_conditional_extract_requires_address_assignment_consent_before_gateway_io",
+            "test_lost_reply_recovery_freshly_reads_confirmed_common_edit_without_replaying",
+            "test_typed_api_conditional_extract_assigns_addresses_once_and_journals_it",
+            "test_typed_api_deploy_matches_native_setter_order_and_retains_both_journals",
+            "test_typed_api_ext_only_deploy_stores_changed_bytes_once_and_verifies_readback",
+            "test_typed_cli_dry_run_reads_and_stages_but_never_deploys",
+            "test_typed_cli_ext_only_extraction_reads_complete_gateway_memory_without_writes",
+            "test_typed_cli_extracts_native_model_without_dali_configuration_writes",
+            "test_typed_deploy_stops_after_first_fault_without_replay_or_later_writes"
+          ]
         }
       ]
     },

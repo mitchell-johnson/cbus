@@ -93,6 +93,16 @@ async fn level_nine_event_server_omits_unknown_command_entry_but_keeps_response(
         .iter()
         .find(|row| row["tag"] == "unknown")
         .unwrap();
+    let native_accepted = native["cases"]["9"]["accepted_event_rows"]
+        .as_array()
+        .unwrap();
+    assert_eq!(
+        native_accepted
+            .iter()
+            .map(|row| row.as_str().unwrap().split_whitespace().nth(1).unwrap())
+            .collect::<Vec<_>>(),
+        ["999", "803", "899", "766"]
+    );
     assert_eq!(known["reply"][0], "[known] 400 Syntax Error.");
     assert_eq!(unknown["reply"][0], "[unknown] 400 Syntax Error.");
     assert!(known["events"]
@@ -142,12 +152,43 @@ async fn level_nine_event_server_omits_unknown_command_entry_but_keeps_response(
     let (event_reader, event_writer) = event.into_split();
     let mut event_reader = BufReader::new(event_reader);
     let (mut reader, mut writer) = command_session(&second).await;
-    assert!(next_event(&mut event_reader)
-        .await
-        .contains(" 803 cmd3 - Host:/127.0.0.1 opened command interface from port: "));
-    assert!(next_event(&mut event_reader)
-        .await
-        .ends_with(" 766 cmd3 - Response: 201 cmqttd C-Gate service ready\r\n"));
+    for expected in native_accepted {
+        let expected = expected.as_str().unwrap().split_once(' ').unwrap().1;
+        let observed = next_event(&mut event_reader).await;
+        let observed = observed.trim_end().split_once(' ').unwrap().1;
+        if expected.starts_with("803 ") {
+            // Only the allocated client port is volatile on this loopback case.
+            let (expected, _) = expected.rsplit_once(" from port: ").unwrap();
+            let (observed, port) = observed.rsplit_once(" from port: ").unwrap();
+            assert_eq!(observed, expected);
+            port.parse::<u16>().unwrap();
+        } else if expected.starts_with("766 ") {
+            // Keep cmqttd's product identity while pinning the native envelope.
+            assert_eq!(
+                observed,
+                expected.replace(
+                    native["cases"]["9"]["greeting"].as_str().unwrap(),
+                    "201 cmqttd C-Gate service ready"
+                )
+            );
+        } else {
+            assert_eq!(observed, expected);
+        }
+    }
+    let noop = exchanges
+        .iter()
+        .find(|row| row["command"] == "NOOP")
+        .unwrap();
+    assert_eq!(
+        command(&mut reader, &mut writer, "noop", "NOOP").await,
+        format!("{}\r\n", noop["reply"][0].as_str().unwrap())
+    );
+    for expected in noop["events"].as_array().unwrap() {
+        let native_payload = expected.as_str().unwrap().split_once(' ').unwrap().1;
+        assert!(next_event(&mut event_reader)
+            .await
+            .ends_with(&format!(" {native_payload}\r\n")));
+    }
 
     assert_eq!(
         command(&mut reader, &mut writer, "known", "CONFIG BOGUS").await,

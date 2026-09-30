@@ -1091,7 +1091,7 @@ async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<
             .await
             .expect("command event timed out")
             .expect("command event channel closed");
-        // Command-session lifecycle and the greeting's 766 row are checked
+        // Command-session lifecycle, admission diagnostics and greeting are checked
         // by the event-transport system test; this helper reads command
         // 761/766/767 traces only.
         let code = event
@@ -1100,7 +1100,9 @@ async fn next_command_trace_event(events: &mut tokio::sync::broadcast::Receiver<
         let greeting_response = event
             .split_once(" - Response: ")
             .is_some_and(|(_, text)| text == "201 cmqttd C-Gate service ready");
-        if !matches!(code, Some("803" | "804")) && !greeting_response {
+        let admission_diagnostic = event.contains(" 999 sys Socket accepted.")
+            || event.contains(" 899 sys Debug: New Command Context: cc");
+        if !matches!(code, Some("803" | "804")) && !greeting_response && !admission_diagnostic {
             return event;
         }
     }
@@ -14452,7 +14454,7 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
     );
     assert_eq!(
         command_lines(&mut connect_reader, &mut connect_writer, "noop", "NOOP").await,
-        ["[noop] 200 OK"]
+        ["[noop] 200 OK."]
     );
     assert_eq!(
         command_lines(&mut connect_reader, &mut connect_writer, "event", "EVENT").await,
@@ -16337,6 +16339,78 @@ async fn repository_list_is_one_exact_read_only_cmqttd_descriptor() {
 }
 
 #[tokio::test]
+async fn native_unit_plain_child_omission_survives_service_restart_without_pci_io() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../testdata/fixtures/native_cgate_dbsetxml_replacement_edges.json"
+    ))
+    .unwrap();
+    let case = |tag| {
+        native["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["tag"] == tag)
+            .unwrap()
+    };
+    let request = case(127)["request"].as_str().unwrap();
+    let document = request
+        .split_once(" << END127\r\n")
+        .unwrap()
+        .1
+        .strip_suffix("\r\nEND127\r\n")
+        .unwrap();
+    let expected = case(128)["response_lines"][2]
+        .as_str()
+        .unwrap()
+        .strip_prefix("[128] ")
+        .unwrap()
+        .trim_end_matches("\r\n");
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    assert_eq!(
+        service
+            .handle(
+                &mut client,
+                "[seed] NEW UNIT //HARNESS/254/p/20 KEYE1 1.2.67"
+            )
+            .await
+            .status,
+        200
+    );
+    let accepted = service
+        .handle_document(&mut client, "[127] DBSETXML //HARNESS/254/p/20", document)
+        .await;
+    assert_eq!(accepted.status, 301, "{accepted:?}");
+    assert_eq!(
+        format!("[127] {}\r\n", accepted.final_text),
+        case(127)["response_lines"][0].as_str().unwrap()
+    );
+    let observed = service
+        .handle(&mut client, "[128] DBGETXML //HARNESS/254/p/20")
+        .await;
+    assert_eq!(observed.lines, [expected]);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "local Unit mapper reached PCI"
+    );
+    drop(service);
+    let (pci_client, _remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let observed = restarted
+        .handle(
+            &mut ClientState::default(),
+            "[128] DBGETXML //HARNESS/254/p/20",
+        )
+        .await;
+    assert_eq!(observed.lines, [expected]);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn document_semantics_validate_before_mutation_and_remain_authenticated() {
     let path = state_path();
     let (pci_client, mut remote) = pci();
@@ -18169,7 +18243,7 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
     assert_eq!(xml_rows[3], b"[xml] 344 End XML snippet\r\n");
     assert_eq!(
         command_lines(&mut reader, &mut writer, "afterxml", "NOOP").await,
-        ["[afterxml] 200 OK"]
+        ["[afterxml] 200 OK."]
     );
     assert_eq!(
         command_lines(
@@ -18192,7 +18266,7 @@ async fn tcp_here_documents_preserve_tags_drain_limits_and_close_on_truncation()
     assert_eq!(reply, "[large] 400 document exceeded configured limit\r\n");
     reply.clear();
     reader.read_line(&mut reply).await.unwrap();
-    assert_eq!(reply, "[after] 200 OK\r\n");
+    assert_eq!(reply, "[after] 200 OK.\r\n");
 
     let (mut truncated_reader, mut truncated_writer) = connect_command_session(address).await;
     truncated_writer
@@ -18821,7 +18895,7 @@ async fn config_event_millis_formats_767_without_fraction_after_restart() {
     let (mut reader, mut writer) = connect_command_session(address).await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "timed", "NOOP").await,
-        ["[timed] 200 OK"]
+        ["[timed] 200 OK."]
     );
     for expected in native.as_array().unwrap() {
         let line = next_command_trace_event(&mut events).await;
@@ -18838,7 +18912,7 @@ async fn config_event_millis_formats_767_without_fraction_after_restart() {
         assert!(session.starts_with("cmd"), "{line}");
         match code {
             "761" => assert_eq!(message, "Command: [timed] NOOP"),
-            "766" => assert_eq!(message, "Response: [timed] 200 OK"),
+            "766" => assert_eq!(message, "Response: [timed] 200 OK."),
             "767" => {
                 let duration = message.strip_prefix("commandId=timed time=").unwrap();
                 duration.parse::<u128>().unwrap();
@@ -18867,9 +18941,9 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
 
     assert_eq!(
         command_lines(&mut reader, &mut writer, "before", "NOOP").await,
-        ["[before] 200 OK"]
+        ["[before] 200 OK."]
     );
-    assert_native_command_trace(&mut events, 3, "[before] NOOP", &["[before] 200 OK"], None).await;
+    assert_native_command_trace(&mut events, 3, "[before] NOOP", &["[before] 200 OK."], None).await;
     assert_eq!(
         command_lines(
             &mut reader,
@@ -18908,13 +18982,13 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
     .await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "still-off", "NOOP").await,
-        ["[still-off] 200 OK"]
+        ["[still-off] 200 OK."]
     );
     assert_native_command_trace(
         &mut events,
         3,
         "[still-off] NOOP",
-        &["[still-off] 200 OK"],
+        &["[still-off] 200 OK."],
         None,
     )
     .await;
@@ -18937,9 +19011,9 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
     let (mut reader, mut writer) = connect_command_session(address).await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "on", "NOOP").await,
-        ["[on] 200 OK"]
+        ["[on] 200 OK."]
     );
-    assert_native_command_trace(&mut events, 3, "[on] NOOP", &["[on] 200 OK"], Some("on")).await;
+    assert_native_command_trace(&mut events, 3, "[on] NOOP", &["[on] 200 OK."], Some("on")).await;
 
     assert_eq!(
         command_lines(
@@ -18979,13 +19053,13 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
     .await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "still-on", "NOOP").await,
-        ["[still-on] 200 OK"]
+        ["[still-on] 200 OK."]
     );
     assert_native_command_trace(
         &mut events,
         3,
         "[still-on] NOOP",
-        &["[still-on] 200 OK"],
+        &["[still-on] 200 OK."],
         Some("still-on"),
     )
     .await;
@@ -19003,9 +19077,9 @@ async fn config_command_show_time_activates_only_after_restart_and_preserves_run
     let (mut reader, mut writer) = connect_command_session(address).await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "off", "NOOP").await,
-        ["[off] 200 OK"]
+        ["[off] 200 OK."]
     );
-    assert_native_command_trace(&mut events, 3, "[off] NOOP", &["[off] 200 OK"], None).await;
+    assert_native_command_trace(&mut events, 3, "[off] NOOP", &["[off] 200 OK."], None).await;
     drop(reader);
     drop(writer);
     server.abort();
@@ -19072,13 +19146,13 @@ async fn config_command_show_responses_uses_native_multiline_events_and_restart_
     .await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "still-on", "NOOP").await,
-        ["[still-on] 200 OK"]
+        ["[still-on] 200 OK."]
     );
     assert_native_command_trace(
         &mut events,
         3,
         "[still-on] NOOP",
-        &["[still-on] 200 OK"],
+        &["[still-on] 200 OK."],
         None,
     )
     .await;
@@ -19101,7 +19175,7 @@ async fn config_command_show_responses_uses_native_multiline_events_and_restart_
     let (mut reader, mut writer) = connect_command_session(address).await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "off", "NOOP").await,
-        ["[off] 200 OK"]
+        ["[off] 200 OK."]
     );
     assert_native_command_trace(&mut events, 3, "[off] NOOP", &[], None).await;
     assert_eq!(
@@ -19172,13 +19246,13 @@ async fn config_command_show_responses_uses_native_multiline_events_and_restart_
     let (mut reader, mut writer) = connect_command_session(address).await;
     assert_eq!(
         command_lines(&mut reader, &mut writer, "restarted", "NOOP").await,
-        ["[restarted] 200 OK"]
+        ["[restarted] 200 OK."]
     );
     assert_native_command_trace(
         &mut events,
         3,
         "[restarted] NOOP",
-        &["[restarted] 200 OK"],
+        &["[restarted] 200 OK."],
         None,
     )
     .await;
@@ -19211,10 +19285,10 @@ async fn config_command_trace_delivers_once_to_its_own_event_subscriber() {
     assert!(line.contains(" 761 cmd3 - Command: [self] NOOP"));
     line.clear();
     reader.read_line(&mut line).await.unwrap();
-    assert_eq!(line, "[self] 200 OK\r\n");
+    assert_eq!(line, "[self] 200 OK.\r\n");
     line.clear();
     reader.read_line(&mut line).await.unwrap();
-    assert!(line.contains(" 766 cmd3 - Response: [self] 200 OK"));
+    assert!(line.contains(" 766 cmd3 - Response: [self] 200 OK."));
     assert!(
         tokio::time::timeout(Duration::from_millis(30), reader.read_line(&mut line))
             .await
@@ -20751,10 +20825,8 @@ async fn config_event_display_oids_drops_oid_column_only_after_restart() {
         ] {
             replies.extend(command_lines(&mut reader, &mut writer, tag, &body).await);
         }
-        // NOOP's `200 OK` punctuation is a separately tracked native
-        // difference; compare the NOOP-free replies and event rows here.
         let expected_replies = case["replies"].as_array().unwrap();
-        assert_eq!(replies[1..], expected_replies[1..], "startup {startup}");
+        assert_eq!(replies, *expected_replies, "startup {startup}");
         let mut observed = std::collections::BTreeSet::new();
         loop {
             let mut line = String::new();
@@ -20770,15 +20842,13 @@ async fn config_event_display_oids_drops_oid_column_only_after_restart() {
                 _ => break,
             }
         }
-        // cmqttd's greeting text differs from native and it does not emit
-        // native 899/999 socket rows on this path; compare the 703/761/766
-        // families that the setting reshapes.
+        // cmqttd retains its product greeting; compare the source-captured
+        // application/command rows and accepted socket/context diagnostics.
         let reshaped = |row: &&str| {
-            [" 703 ", " 761 ", " 766 "]
+            [" 703 ", " 761 ", " 766 ", " 899 ", " 999 "]
                 .iter()
                 .any(|code| row.contains(code))
                 && !row.contains("201 Service ready")
-                && !row.contains("[noop]")
         };
         let expected = case["monitor_events"]
             .as_array()

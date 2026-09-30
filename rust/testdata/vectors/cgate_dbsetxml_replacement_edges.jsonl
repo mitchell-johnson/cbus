@@ -4,4 +4,5 @@
 {"name":"direct Unit comments and processing instructions omitted","set_tag":114,"read_tags":[115]}
 {"name":"direct nested namespaced Description content omitted","set_tag":116,"read_tags":[117]}
 {"name":"combined omitted optional Unit fields and PP cleared","set_tag":118,"read_tags":[119]}
+{"name":"direct unknown plain Unit child omitted and Description direct text retained","set_tag":127,"read_tags":[128]}
 {"name":"direct nested CatalogNumber markup becomes empty scalar","set_tag":129,"read_tags":[130]}

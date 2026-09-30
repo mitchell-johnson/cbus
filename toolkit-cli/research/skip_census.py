@@ -130,6 +130,7 @@ UNKNOWN_RESOLUTIONS: dict[str, tuple[str, str]] = {
     "tests/test_cgate_dbgetxml_framing_interop.py": _RUST_BINARIES,
     "tests/test_cmqtt_interop.py": _RUST_BINARIES,
     "tests/test_cmqtt_programming_methods_interop.py": _RUST_BINARIES,
+    "tests/test_cmqtt_dali_commissioning_interop.py": _RUST_BINARIES,
     "tests/test_rust_cgate_interop.py": _RUST_BINARIES,
     "tests/test_toolkit_database_csv_project_interop.py": _RUST_BINARIES,
     "tests/test_conversion_pairs_native.py::RustConversionPairTests": _RUST_BINARIES,

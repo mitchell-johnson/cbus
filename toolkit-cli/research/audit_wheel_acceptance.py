@@ -114,7 +114,8 @@ def audit(snapshot, report_paths, *, python_versions=('3.13',)):
     if 'tests/test_rust_cgate_interop.py' in expected_tests:
         required_test_binaries.add('CBUS_CGATE_MOCK_BIN')
     if {'tests/test_cmqtt_interop.py',
-        'tests/test_cmqtt_programming_methods_interop.py'} & set(expected_tests):
+        'tests/test_cmqtt_programming_methods_interop.py',
+        'tests/test_cmqtt_dali_commissioning_interop.py'} & set(expected_tests):
         required_test_binaries.add('CBUS_CMQTTD_BIN')
     gates.update(required_test_binaries)
     firmware_backend = 'research/firmware_oracle.py' in inputs

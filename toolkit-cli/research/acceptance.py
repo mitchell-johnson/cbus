@@ -303,6 +303,7 @@ TEST_BINARY_SELECTIONS = {
     "CBUS_CMQTTD_BIN": {
         "test_cmqtt_interop.py",
         "test_cmqtt_programming_methods_interop.py",
+        "test_cmqtt_dali_commissioning_interop.py",
     },
 }
 

@@ -213,7 +213,11 @@ also admits `761/766/767` command traces. Explicit `EVENT e0`–`e9`
 subscriptions use their own level independently of the startup global value.
 An owned level-7/8/9 event-port receipt adds 938 startup config warnings at
 level 8, and 899 debug plus 999 socket-accept diagnostics at level 9. cmqttd
-classifies those exact native rows but does not yet generate them. It emits a
+classifies those exact native rows and emits the captured 999/803/899/766
+sequence for admitted command connections. Startup 938 warnings and 899 debug
+rows remain incomplete; `config_command_accept_diagnostics=true` and
+`config_event_catalogue_complete=false` describe that boundary. NOOP returns
+the native `200 OK.` reply. It emits a
 766 command-greeting event at level 9, returns 400 and omits 761 for unknown
 top-level verbs while retaining their 766 error response, and retains 761/766 for known
 families with bad syntax. See
@@ -735,6 +739,25 @@ that an incoming Telephony event cannot satisfy a pending send confirmation,
 and a service regression rejects a confirmation from a retired PCI generation.
 
 ### DALI commands
+
+Prefer the typed Python `cgate dali extract`, `deploy`, and `recover`
+workflows for commissioning. They own a unique session, validate the selected
+server capabilities and input edits, and emit `cbus-dali-commissioning-v1`
+receipts. Use A/B/BOTH and repeat `--ecg` for selected short addresses.
+Conditional extraction requires `--allow-address-assignment` and a new
+`--journal`; deployment requires a new journal unless `--dry-run`. Dry runs
+still read physical baseline data and stage local edits. The default per-command
+DALI wait is 14,400 seconds; an explicit `cgate --timeout` overrides it.
+Keep exclusive commissioning ownership: a unique session name does not
+prevent another C-Gate client from changing the staged model, and the
+review-to-write boundary is not atomic. The CLI rechecks PCI generation
+before deployment and conditional address assignment.
+After failure, preserve the client attempt and daemon DALI journals and use
+`recover --journal PATH` for fresh read-only expected/unchanged/mixed/unreadable
+comparison. Recovery never deploys, assigns addresses, resumes, or authorizes
+replay. Server confirmation and gateway readback do not prove downstream
+ballast state or power-cycle persistence. See
+[typed DALI commissioning](../../../../toolkit-cli/docs/dali-commissioning.md).
 
 cmqttd routes all 128 maintained DALI paths: 103 physical leaves and 25
 local/help paths. Physical coverage includes all 48 retained core commands, all
@@ -1457,8 +1480,11 @@ root receipt, plain Unit readback, and a missing-`UnitName` `446` without
 mutation (`rust/testdata/fixtures/native_cgate_dbsetxml_combined.json`). The
 [later owned original capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-replacement-edges.md)
 pins discarded comments, processing instructions, namespaced additions,
-omitted optional Unit fields and PP, save/reload identity, and the duplicate-OID
-cases. The [owned duplicate-OID capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md)
+omitted optional Unit fields and PP, the loss of an unknown plain Unit child,
+save/reload identity, and the duplicate-OID cases. The Unit mapper retains its
+supported native scalar fields and arbitrary PP parameters, including reload
+defaults DeviceName and GroupNumber; a durable no-PCI regression checks this
+unknown-child omission. The [owned duplicate-OID capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-oids.md)
 pins separate Unit identity, OID lookup precedence and durable direct mutation.
 The [leaf Application pair capture](../../../../toolkit-cli/docs/native-cgate-dbsetxml-duplicate-applications.md)
 pins both persisted paths, later-Application OID selection and the two captured

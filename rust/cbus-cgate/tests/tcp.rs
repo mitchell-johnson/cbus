@@ -770,7 +770,7 @@ fn tcp_dbgetxml_uses_native_mixed_delimiters_and_closing_status() {
         .map(|row| row.as_str().unwrap())
         .collect::<String>();
     assert_eq!(wire, expected.as_bytes());
-    assert_eq!(session.command("NOOP").lines, ["200 OK"]);
+    assert_eq!(session.command("NOOP").lines, ["200 OK."]);
 }
 
 #[test]

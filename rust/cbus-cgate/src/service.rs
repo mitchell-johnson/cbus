@@ -3344,6 +3344,7 @@ impl Service {
             capabilities["config_event_transport_socket"] = serde_json::Value::Bool(true);
             capabilities["config_event_server_command_admission"] = serde_json::Value::Bool(true);
             capabilities["config_event_server_tls_loopback"] = serde_json::Value::Bool(true);
+            capabilities["config_command_accept_diagnostics"] = serde_json::Value::Bool(true);
             capabilities["config_event_catalogue_complete"] = serde_json::Value::Bool(false);
             {
                 use crate::config::disposition::{
@@ -14535,8 +14536,21 @@ impl Service {
         }
         let command_session = self.command_sessions.lock().await.register(origin);
         client.command_session = Some(command_session);
+        // Owned build-2001 event-port capture: accepted command connections
+        // publish 999, 803, 899, then the greeting's 766. The internal Console
+        // occupies cmd1/context cc001, and external contexts begin at cc002.
+        let _ = self.events.send(format!(
+            "#e# {} 999 sys Socket accepted.",
+            self.event_timestamp()
+        ));
         let _ = self.events.send(format!(
             "#e# {} 803 cmd{command_session} - Host:/{remote_address} opened command interface from port: {remote_port}",
+            self.event_timestamp()
+        ));
+        let access_session = command_session.saturating_add(1);
+        let context = access_session / 2;
+        let _ = self.events.send(format!(
+            "#e# {} 899 sys Debug: New Command Context: cc{context:03} = AccessContext Session /{remote_address}#{access_session}",
             self.event_timestamp()
         ));
         let mut pending_line = Vec::new();

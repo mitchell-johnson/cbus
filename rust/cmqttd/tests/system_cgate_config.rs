@@ -747,7 +747,7 @@ async fn config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_liv
     );
     assert_eq!(
         command(&mut reader, &mut writer, "timed", "NOOP").await,
-        ["200 OK"]
+        ["200 OK."]
     );
     let (timed, trace) = tokio::time::timeout(std::time::Duration::from_secs(2), async {
         let mut trace = Vec::new();

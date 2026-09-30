@@ -13,6 +13,8 @@ import subprocess
 import sys
 import unittest
 
+from cbus_toolkit import parity
+
 
 class CoverageRequireCompleteTests(unittest.TestCase):
     def test_evidence_root_verifies_artifacts_without_claiming_full_parity(self):
@@ -25,11 +27,23 @@ class CoverageRequireCompleteTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 1, proc.stderr)
         payload = json.loads(proc.stdout)
         self.assertTrue(payload["progress"]["evidence_artifacts_verified"])
-        self.assertTrue(payload["progress"]["evidence_fingerprints_verified"])
-        self.assertIsNone(payload["progress"]["evidence_fingerprint_refusal"])
+        trusted_root, refusal = parity.source_checkout_root(root)
+        self.assertEqual(
+            payload["progress"]["evidence_fingerprints_verified"],
+            trusted_root is not None,
+        )
+        self.assertEqual(payload["progress"]["evidence_fingerprint_refusal"], refusal)
         self.assertFalse(payload["progress"]["complete"])
         # Only a hash-verified, fresh closure receipt shows an item as closed.
-        self.assertEqual(payload["progress"]["work_items"]["closed"], ["P9.01"])
+        self.assertEqual(
+            payload["progress"]["work_items"]["closed"],
+            ["P9.01"] if trusted_root is not None else [],
+        )
+        if trusted_root is None:
+            self.assertEqual(
+                payload["progress"]["work_items"]["status"],
+                {"P9.01": "receipt_unverified"},
+            )
 
         missing = subprocess.run(
             [sys.executable, "-m", "cbus_toolkit", "coverage",

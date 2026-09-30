@@ -8,7 +8,7 @@
 # CSV admission).
 #
 #   make check          full source-tree suite (provision-gated tests report skips)
-#   make check-offline  source-tree suite without the two Rust interop modules
+#   make check-offline  source-tree suite without Rust interop modules
 #   make check-native   strict owned-process C-Gate + original-instruction gate
 #                       (fails on a stale skip census, missing provision or
 #                       any skipped test)
@@ -61,6 +61,7 @@ check-offline: compile check-parity-register
 		--ignore=tests/test_rust_cgate_interop.py \
 		--ignore=tests/test_cmqtt_interop.py \
 		--ignore=tests/test_cmqtt_programming_methods_interop.py \
+		--ignore=tests/test_cmqtt_dali_commissioning_interop.py \
 		$(PYTEST_EXTRA)
 
 check-parity-register:
@@ -98,6 +99,7 @@ check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
+		tests/test_cmqtt_dali_commissioning_interop.py \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

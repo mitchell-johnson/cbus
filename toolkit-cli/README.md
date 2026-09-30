@@ -2,7 +2,7 @@
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
-current ledger has **42 areas: 18 implemented, 21 in progress and 3 pending**.
+current ledger has **42 areas: 18 implemented, 22 in progress and 2 pending**.
 The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate
 of Toolkit functionality. The new [functional parity register](docs/parity-register.md)
 accounts for 22,156 committed source-surface records. That inventory now
@@ -552,6 +552,26 @@ that contains an NCC parameter additionally requires cmqttd's separate routed
 Save-to-NVM capability, even when the selected edit uses another method. See
 [guarded physical programming](docs/physical-programming.md) for failure
 evidence, exact scope, and tests.
+
+For DALI gateway commissioning through cmqttd, use the typed `dali` family:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 dali extract //TEST/254/p/20 \
+  --line A --extract-type DALI_ONLY --ecg 3
+cbus-toolkit cgate --host 127.0.0.1 dali deploy //TEST/254/p/20 \
+  --line A --ecg 3 --edits dali-edits.json --dry-run
+cbus-toolkit cgate --host 127.0.0.1 dali deploy //TEST/254/p/20 \
+  --line A --ecg 3 --edits dali-edits.json --journal /operator/dali-attempt.json
+cbus-toolkit cgate --host 127.0.0.1 dali recover --journal /operator/dali-attempt.json
+```
+
+Extraction covers the supported read-only and conditional session plans.
+Conditional plans require `--allow-address-assignment` and a new attempt
+journal because they can allocate DALI short addresses. Deployment stages
+ordered JSON-model or extended-memory edits in an owned session, then submits
+one native plan. Recovery performs fresh read-only comparison and never
+resumes the prior mutation. See [DALI commissioning](docs/dali-commissioning.md)
+for selectors, journal handling and the physical acceptance boundary.
 
 `database unit-new` initializes a unit through the native database-loading path.
 This supports large-memory devices that fail C-Gate's `PP NEW` operation. Native

@@ -1,0 +1,161 @@
+{
+  "format": "cbus-native-cgate-hostname-tls-failed-recapture-v1",
+  "captured_utc": "2026-09-30T06:02:01.086423+00:00",
+  "scope": "Owned IPv4 loopback diagnostic; read-only connection retries for up to3seconds, no command replay, site project, or physical endpoint. This is not successful fresh native hostname/TLS acceptance.",
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "source_hashes": {
+      "rust/cbus-cgate/research/native_config_hostname_tls_admission_probe.py": "1b94b4c44c9dd293133e868daaab5ae49b70f84b8448467d9f18aaa45de8692e",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "21681980197b22ed1337f3535c3c2f42dafc5066f58bd37de44fb7cb2bacadf1"
+    },
+    "source_hashes_after": {
+      "rust/cbus-cgate/research/native_config_hostname_tls_admission_probe.py": "1b94b4c44c9dd293133e868daaab5ae49b70f84b8448467d9f18aaa45de8692e",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "toolkit-cli/research/verify_tls.py": "21681980197b22ed1337f3535c3c2f42dafc5066f58bd37de44fb7cb2bacadf1"
+    }
+  },
+  "diagnostic_source": "\"\"\"Retain a failed owned native diagnostic without replacing historical evidence.\"\"\"\nfrom datetime import datetime, timezone\nimport hashlib\nimport importlib.util\nimport json\nimport os\nfrom pathlib import Path\nimport time\n\nROOT = Path.cwd()\nprobe_path = ROOT / \"rust/cbus-cgate/research/native_config_hostname_tls_admission_probe.py\"\ninputs = [probe_path, ROOT / \"toolkit-cli/research/local_cgate.py\",\n          ROOT / \"toolkit-cli/research/verify_tls.py\"]\ndef hashes():\n    return {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()\n            for path in inputs}\nbefore = hashes()\nspec = importlib.util.spec_from_file_location(\"owned_hostname_diagnostic\", probe_path)\nprobe = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(probe)\noriginal_plain = probe.plain_outcome\noriginal_command = probe.command\noriginal_local = probe.LocalCGate\ncontexts, observations, owned = [], [], []\ndef local(*args, **kwargs):\n    server = original_local(*args, **kwargs)\n    owned.append(server)\n    return server\ndef command(stream, tag, body):\n    contexts.append({\"tag\": tag, \"body\": body})\n    return original_command(stream, tag, body)\ndef plain(port):\n    start, errors = time.monotonic(), []\n    while True:\n        try:\n            result = original_plain(port)\n            if errors:\n                observations.append({\"last_command\": contexts[-1], \"errors\": errors,\n                                     \"elapsed_seconds\": round(time.monotonic() - start, 3),\n                                     \"outcome\": result})\n            return result\n        except (ConnectionRefusedError, ConnectionResetError) as error:\n            errors.append(type(error).__name__)\n            if time.monotonic() - start >= 3:\n                observations.append({\"last_command\": contexts[-1], \"errors\": errors,\n                                     \"elapsed_seconds\": round(time.monotonic() - start, 3),\n                                     \"outcome\": \"unavailable\"})\n                raise\n            time.sleep(.05)\nprobe.LocalCGate = local\nprobe.command = command\nprobe.plain_outcome = plain\nvendor = Path(os.environ[\"CBUS_LOCAL_CGATE_VENDOR\"])\njava = Path(os.environ[\"CBUS_CGATE_JAVA\"])\noutcome = {\"result\": \"failed\"}\ntry:\n    report = probe.capture(vendor, java)\n    outcome = {\"result\": \"passed\", \"case_count\": len(report[\"cases\"]),\n               \"tls_case_count\": len(report[\"tls_cases\"])}\nexcept BaseException as error:\n    outcome[\"error_type\"] = type(error).__name__\nfinally:\n    # The capture owns each process and removes it on context exit. Do not\n    # adopt or terminate any process outside those directly created here.\n    cleanup = [{key: server.report[key] for key in (\n        \"listener_ownership_verified\", \"process_exit_confirmed\", \"cleanup_complete\", \"work_removed\")}\n        for server in owned]\nafter = hashes()\nassert before == after\nassert cleanup and all(all(row.values()) for row in cleanup)\nsource = Path(__file__).read_text()\nevidence = {\n    \"format\": \"cbus-native-cgate-hostname-tls-failed-recapture-v1\",\n    \"captured_utc\": datetime.now(timezone.utc).isoformat(),\n    \"scope\": \"Owned IPv4 loopback diagnostic; read-only connection retries for up to3seconds, no command replay, site project, or physical endpoint. This is not successful fresh native hostname/TLS acceptance.\",\n    \"oracle\": {\"jar_sha256\": hashlib.sha256((vendor / \"cgate.jar\").read_bytes()).hexdigest(),\n               \"java_sha256\": hashlib.sha256(java.read_bytes()).hexdigest(),\n               \"source_hashes\": before, \"source_hashes_after\": after},\n    \"diagnostic_source\": source,\n    \"diagnostic_source_sha256\": hashlib.sha256(source.encode()).hexdigest(),\n    \"outcome\": outcome,\n    \"last_commands\": contexts[-4:],\n    \"readiness_observations\": observations,\n    \"owned_cleanup\": cleanup,\n    \"historical_fixture_overwritten\": False,\n    \"physical_endpoint\": False,\n}\noutput = ROOT / \"toolkit-cli/research/fixtures/native-cgate-hostname-tls-failed-recapture.json\"\noutput.write_text(json.dumps(evidence, indent=2) + \"\\n\")\nprint(json.dumps({\"result\": outcome[\"result\"], \"error_type\": outcome.get(\"error_type\"),\n                  \"owned_children\": len(cleanup), \"cleanup_complete\": True,\n                  \"failed_allowlist\": next((row[\"body\"] for row in contexts[-4:]\n                                             if row[\"tag\"] == \"set\"), None),\n                  \"historical_fixture_overwritten\": False}))\n",
+  "diagnostic_source_sha256": "d7cbbc8ee5a3fc80adba7a9a2b0b39161d334840aa9d79f0602ded0d2bd076ac",
+  "outcome": {
+    "result": "failed",
+    "error_type": "ConnectionRefusedError"
+  },
+  "last_commands": [
+    {
+      "tag": "set",
+      "body": "CONFIG SET accept-connections-from ip6-localhost"
+    },
+    {
+      "tag": "get",
+      "body": "CONFIG GET accept-connections-from"
+    },
+    {
+      "tag": "old",
+      "body": "NOOP"
+    },
+    {
+      "tag": "restore",
+      "body": "CONFIG SET accept-connections-from all"
+    }
+  ],
+  "readiness_observations": [
+    {
+      "last_command": {
+        "tag": "restore",
+        "body": "CONFIG SET accept-connections-from all"
+      },
+      "errors": [
+        "ConnectionResetError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError",
+        "ConnectionRefusedError"
+      ],
+      "elapsed_seconds": 3.014,
+      "outcome": "unavailable"
+    }
+  ],
+  "owned_cleanup": [
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    },
+    {
+      "listener_ownership_verified": true,
+      "process_exit_confirmed": true,
+      "cleanup_complete": true,
+      "work_removed": true
+    }
+  ],
+  "historical_fixture_overwritten": false,
+  "physical_endpoint": false
+}

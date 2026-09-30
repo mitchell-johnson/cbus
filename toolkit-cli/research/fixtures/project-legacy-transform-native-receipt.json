@@ -16,7 +16,7 @@
     "portable_module_sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
     "cli_module_sha256": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e",
     "native_module_sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
-    "cli_dispatch_sha256": "46c14394c5202c700f1f4e12b2071c436a9d9535b5520dcc3e18048627c07ad5",
+    "cli_dispatch_sha256": "4557eeba0294b373d13d3ecab27470192084ed664e2fddfcd4cdb295ed495f67",
     "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
   },
   "help": [

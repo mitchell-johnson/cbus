@@ -44,7 +44,20 @@ fn greeting_and_noop() {
     let r = s.handle("[7] NOOP");
     assert_eq!(r.status, 200);
     let wire = format_response(&r);
-    assert!(wire.contains("[7] 200 OK"));
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_event_catalogue.json"
+    ))
+    .unwrap();
+    let noop = native["cases"]["9"]["exchanges"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["command"] == "NOOP")
+        .unwrap();
+    assert_eq!(
+        wire.replace("[7]", "[noop]"),
+        format!("{}\n", noop["reply"][0].as_str().unwrap())
+    );
 }
 
 #[test]
@@ -3043,7 +3056,7 @@ fn dbsetxml_replacement_mapper_matches_owned_native_edge_vectors() {
         .lines()
         .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
         .collect::<Vec<_>>();
-    assert_eq!(vectors.len(), 7);
+    assert_eq!(vectors.len(), 8);
     for vector in vectors {
         let name = vector["name"].as_str().unwrap();
         let set_tag = vector["set_tag"].as_u64().unwrap();
@@ -3080,6 +3093,38 @@ fn dbsetxml_replacement_mapper_matches_owned_native_edge_vectors() {
             assert_eq!(observed.lines[0], substitute(native_xml), "{name}");
         }
     }
+}
+
+#[test]
+fn dbsetxml_unit_mapper_keeps_known_optional_scalars_and_open_pp_catalogue() {
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[project] PROJECT NEW OPTIONAL").status, 200);
+    assert_eq!(
+        server
+            .handle("[network] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    assert_eq!(
+        server
+            .handle("[unit] NEW UNIT //OPTIONAL/254/p/20 KEYE1 1.2.67")
+            .status,
+        200
+    );
+    let xml = concat!(
+        "<Unit><OID>11111111-1111-4111-8111-111111111111</OID>",
+        "<TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType>",
+        "<UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion>",
+        "<DeviceName>Retained</DeviceName><GroupNumber>3</GroupNumber>",
+        "<Foo>discard</Foo><PP Name=\"Foo\" Value=\"parameter\"/></Unit>"
+    );
+    let replaced = server.handle_document("[set] DBSETXML //OPTIONAL/254/p/20", xml);
+    assert_eq!(replaced.status, 301, "{replaced:?}");
+    let readback = server.handle("[read] DBGETXML //OPTIONAL/254/p/20");
+    assert!(readback.lines[0].contains("<DeviceName>Retained</DeviceName>"));
+    assert!(readback.lines[0].contains("<GroupNumber>3</GroupNumber>"));
+    assert!(readback.lines[0].contains("<PP Name=\"Foo\" Value=\"parameter\"/>"));
+    assert!(!readback.lines[0].contains("<Foo>"));
 }
 
 #[test]

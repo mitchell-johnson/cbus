@@ -1,10 +1,12 @@
 # Development checkpoint
 
-Updated **27 September 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Product summary refreshed **30 September 2026**. The verification results below
+record the **27 September 2026** checkpoint. Target:
+**C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 ## Current product state
 
-The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **42 areas: 18 implemented, 21 in progress and 3 pending**. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
+The Python CLI is an active product with local project tools, typed C-Gate and PCI workflows, unit programming helpers, eDLT editors and diagnostics. It has not reached full Toolkit parity. The packaged ledger currently contains **42 areas: 18 implemented, 22 in progress and 2 pending**. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. `census_complete` is `false`, so `cbus-toolkit coverage --require-complete` exits nonzero by design.
 
 `cbus-toolkit cgate exec` sends one raw command and `cbus-toolkit cgate run` sends a batch in one session. Together they can reach the command surface exposed by the selected native C-Gate, `cgate-mock` or embedded `cmqttd` service. That transport reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect. Each typed workflow keeps its own validation and acceptance boundary.
 
