@@ -1811,6 +1811,8 @@ def build_parser():
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     p.add_argument("--spec", required=True, help="Admitted Neo-core specification, such as KEYM4.xml or KEYDV2.xml")
     _key_options(p, extended=True)
+    from .key_options_cli import native_options as key_native_options
+    key_native_options(unops)
 
     from .physical_programming_cli import options as physical_programming_options
     physical_pp = cgops.add_parser(
@@ -2234,6 +2236,8 @@ def build_parser():
     p.add_argument("spec")
     p.add_argument("file", type=Path, help="PP export snapshot or JSON parameter mapping")
     _key_options(p, extended=True)
+    from .key_options_cli import offline_options as key_offline_options
+    key_offline_options(keyops)
     sensors = commands.add_parser("sensors", help="Plan the tested ST7 occupancy settings without C-Gate")
     sensors.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     sops = sensors.add_subparsers(dest="action", required=True)
@@ -3353,6 +3357,8 @@ def _programming(args, client):
     from .programming import Programmer
     programmer = Programmer(client)
     mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "din-settings", "dlt-labels", "wireless-gateway", "wireless-globals", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
+    from .key_options_cli import NATIVE_ACTIONS as key_option_actions
+    mutable = mutable or args.remote_action in key_option_actions
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -3555,6 +3561,10 @@ def _programming(args, client):
             values = session.values()
         elif args.remote_action in ("key-macro", "neo-key-macro"):
             result = keys.configure(session, **_key_settings(args))
+            values = session.values()
+        elif args.remote_action in key_option_actions:
+            from .key_options_cli import native as key_options_native
+            result = key_options_native(args, session)
             values = session.values()
         elif args.remote_action == "dlt-labels":
             from .dlt_cli import native as dlt_native
@@ -3938,6 +3948,9 @@ def run(args):
         from .macros import PRESETS
         if args.action == "presets":
             return [preset.as_dict() for preset in PRESETS.values()], 0
+        from .key_options_cli import OFFLINE_ACTIONS, offline as key_options_offline
+        if args.action in OFFLINE_ACTIONS:
+            return key_options_offline(args)
         keys = _classic_keys(args, extended=args.action == "neo-plan")
         values = json.loads(args.file.read_text(encoding="utf-8"))
         if not isinstance(values, dict):

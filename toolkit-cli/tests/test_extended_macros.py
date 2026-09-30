@@ -52,6 +52,18 @@ class ExtendedMacroTest(unittest.TestCase):
                 self.assertEqual(packed.read(108,2),bytes((vector[0]<<4|vector[1],vector[2]<<4|vector[3])))
                 self.assertEqual(packed.read(106,2),b'\x00\x00')
 
+    def test_custom_micro_functions_refuse_scene_keys_and_keep_other_stages(self):
+        current = self.spec.defaults()
+        plan = self.keys.plan_micro_functions(current, key=4, stages={'sr': 'store1', 'lp': 7})
+        self.assertEqual(set(plan.changes), {'SRCommand', 'LPCommand'})
+        self.assertEqual(plan.changes['SRCommand'][3], 1)
+        self.assertEqual(plan.as_dict()['preset']['codes'], {'JPCommand': 0, 'SRCommand': 1, 'LPCommand': 7, 'LRCommand': 0})
+        scene = dict(current, SceneKeySelector='0 0 0 1 0 0 0 0')
+        with self.assertRaisesRegex(MacroError, 'scene keys read-only'):
+            self.keys.plan_micro_functions(scene, key=4, stages={'jp': 1})
+        with self.assertRaises(MacroError):
+            self.keys.plan_micro_functions(current, key=5, stages={'jp': 1})
+
     def test_trigger_presets_follow_the_key_block_application(self):
         current = self.spec.defaults()
         current['Application'] = '56 202'

@@ -58,6 +58,41 @@ When a block option is needed, an existing single assignment selects that block.
 
 Timer intervals are integer seconds, 0–65535. The high and low bytes are separate parameters. **An explicit zero disables the timer.** Selecting the timer preset with an already disabled timer requires an explicit interval; an omitted interval preserves an existing enabled timer. Expiry selection applies when an interval is supplied. Recall levels are raw 0–255 values.
 
+## Custom micro-functions
+
+`ClassicKeys.plan_micro_functions(values, key=..., stages=...)` edits one key's JP, SR, LP and LR cells, as Toolkit's micro-function grid does (`TfrmKeyMicroFunctions`, hosted by `TddKey4` for every admitted classic type). `stages` maps `jp`/`sr`/`lp`/`lr` (or the parameter names) to a micro-function name from the table below or its code. `configure_micro_functions(session, ...)` plans and applies with the same type, schema, stale-snapshot, readback and rollback checks as presets. Only the named stages change; block, timer, recall and application settings are untouched.
+
+```sh
+cbus-toolkit keys micro-functions
+cbus-toolkit keys --spec-dir "$CBUS_UNITSPEC_DIR" custom-plan KEY4.xml values.json --key 2 --jp on --lr 15
+cbus-toolkit cgate unit --lock-address //PROJ/254 --source /db//PROJ/254/p/20 \
+  key-micro-functions --spec KEY4.xml --key 2 --jp on --lr off
+```
+
+Value domain and behavior recovered from the executable (VAs are for the pinned build):
+
+- The grid always has four rows, `GetRowCount` (0x00F62644), for Short Press, Short Release, Long Press and Long Release. The row index is the stage.
+- `IsAllowedMicroFunction` (0x00F63DAC) admits a micro-function only when `GetCBusValue <= 15`. Stage, family, subset and application are not tested, so every cell offers codes 0–15 and nothing else. Ramp On, the POT timers and scene functions are excluded. `MICRO_FUNCTION_LABELS` keeps the combo order and text.
+- `TInputKey.SetMicroFunction` (0x00D117B4) changes only the edited stage and then rematches the template with exact group vectors. The plan reports `matched_preset` when the result equals a preset, and `custom` otherwise. No timer or block dependency is checked for Retrigger Timer or Start.
+- Classic keys show `MaximumKeyCount` columns, with no join or virtual columns, so keys are limited to the counts in the table above.
+- `TInputKey.GetMicroFunctionAsHexString` (0x00D114D0) saves each stage's FunctionType. For codes 0–15 it equals the classic nibble.
+
+KEYAUX4 and DINAUX4 accept any 0–15 vector. Toolkit relabels a Bell Press vector on those keys as Aux On/Off without changing the bytes.
+
+## Power-up broadcast
+
+`input_power_up.py` covers two "Broadcast Values on Power Up" editors:
+
+- **KEYBC2, KEYBC4 and DINAUX4**: `KeyPowerUpBroadcast(spec).plan(values, broadcast=True|False)` writes `GAVBroadcastFlag` 0 or $FF. This matches `TCBusKeyInputCGateAgent`'s save. `GroupAddressBroadcastPropertyEnabled` enables the checkbox only for these types (and the refused BCNC), so other classic types have no power-up setting.
+- **BCN2B, BCN4B and KEYV1SP bus couplers**: `CouplerPowerUp(spec).plan(values, enable=[...], disable=[...])` edits `GroupAssertOnPowerup`, where bit 0 is block 1. `TcdBCProLightLevelRestore` enables a block only when a bistable key references it (`TCoreBusCouplerInputUnit.IsKeyBlockBistable`, 0x00CE69B8). The key's `BistableSwitchBlock` bit and its `BlockAllocation` mask decide that. Enabling any other block is refused. Toolkit unticks non-bistable blocks, and its agent rebuilds the whole byte (0x0121F221), so the plan clears stale bits and reports them in `cleared_non_bistable`. It does not change `BistableSwitchBlock`; Toolkit auto-ticks a key's blocks when that key becomes bistable, which this editor leaves to an explicit `enable`.
+
+```sh
+cbus-toolkit keys --spec-dir "$CBUS_UNITSPEC_DIR" power-up-plan BCN4B.xml values.json --enable-block 1
+cbus-toolkit cgate unit ... power-up --spec KEYBC4.xml --broadcast
+```
+
+IOPE occupancy controllers use another rule (bistable auxiliary inputs and non-zero block groups) and are refused. KEY1/2/4, KEYIR and KEYAUX4 have no power-up broadcast setting.
+
 ## Source-defined vectors
 
 The event order is **short press, short release, long press, long release**, corresponding to `JPCommand`, `SRCommand`, `LPCommand` and `LRCommand`. Classic keys have four stages; a double-press stage is not inferred.
@@ -175,6 +210,17 @@ CBUS_UNIT_CATALOG=research/vendor/cgate/app/unitspec/cbusunits.xml \
 PYTHONPATH=src:tests python3 -m pytest tests/test_macros.py tests/test_key_preset_families.py -v
 ```
 
-Native tests create a unique project with a closed network whose CNI address is an owned idle loopback listener. They compare all stage vectors and packed bytes, then save/reload a database unit. The family test creates KEYIR1, KEYIR4, KEYAUX4, DINAUX4, KEYBC2 and KEYBC4 database units from their catalogue numbers. It sets each differing parameter that exists on the type to a non-default value and applies every preset to the highest key: 106 applications and two AUX Bell Press refusals without writes. After each preset it compares the stage bytes and every parameter outside the preset workflow. It then saves each unit, closes and reloads the project, and requires identical PP values. Another native test rejects a KEY4 plan on a KEYIR4 session before writing. [classic-key-family-acceptance-summary.json](classic-key-family-acceptance-summary.json) records the counts and source hashes. No physical network is opened. Failed local application attempts restore attempted parameters and verify the original snapshot. A transport failure can also prevent rollback; `MacroApplyError.rollback_errors` records that uncertainty rather than claiming success.
+Native tests create a unique project with a closed network whose CNI address is an owned idle loopback listener. They compare all stage vectors and packed bytes, then save/reload a database unit. The family test creates KEYIR1, KEYIR4, KEYAUX4, DINAUX4, KEYBC2 and KEYBC4 database units from their catalogue numbers. It sets each differing parameter that exists on the type to a non-default value and applies every preset to the highest key: 106 applications and two AUX Bell Press refusals without writes. Each trigger preset is first refused on the Lighting application without writes, then applied after the primary application is set to 202. After each preset it compares the stage bytes and every parameter outside the preset workflow. It then saves each unit, closes and reloads the project, and requires identical PP values. Another native test rejects a KEY4 plan on a KEYIR4 session before writing. [classic-key-family-acceptance-summary.json](classic-key-family-acceptance-summary.json) records the counts and source hashes. No physical network is opened. Failed local application attempts restore attempted parameters and verify the original snapshot. A transport failure can also prevent rollback; `MacroApplyError.rollback_errors` records that uncertainty rather than claiming success.
 
-This module does not implement arbitrary custom micro-function editing, sensor/wireless/scene macros, secondary-application assignment, join mode, multi-block configuration, LED reassignment, infrared bank or broadcast settings, or newer input-unit variants. Existing indicators, ramp rates, recall levels and timers are preserved unless their corresponding supported option is supplied. Those retained settings can affect the resulting physical behavior and need device-level acceptance separately.
+Native acceptance for custom micro-functions and power-up broadcast (`tests/test_input_options.py`) covers the following:
+
+- All 16 codes on every stage of KEY4 and KEYAUX4, with packed bytes and unrelated-parameter preservation checked.
+- Single-stage edits.
+- The couplers BCN2B, BCN4B and KEYV1SP, including bistable refusal, stale-bit clearing and raw `$1D`.
+- `GAVBroadcastFlag` on KEYBC2, KEYBC4 and DINAUX4.
+- Save and project close/reload for each unit.
+- The CLI dry-run and persist paths.
+
+Physical key, broadcast and power-cycle behavior is not established.
+
+This module does not implement sensor/wireless/scene macros, secondary-application assignment, join mode, multi-block configuration, LED reassignment, infrared bank settings, IOPE power-up options, or newer input-unit variants. Existing indicators, ramp rates, recall levels and timers are preserved unless their corresponding supported option is supplied. Those retained settings can affect the resulting physical behavior and need device-level acceptance separately.

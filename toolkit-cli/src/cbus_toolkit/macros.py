@@ -39,6 +39,51 @@ MICRO_FUNCTIONS = MappingProxyType({
 })
 
 
+# TfrmKeyMicroFunctions combo: every micro-function whose CBusValue is 0..15, in
+# TKeyMicroFunctionManager registration order, for every stage and key family
+# (IsAllowedMicroFunction tests only GetCBusValue <= 15).
+MICRO_FUNCTION_LABELS = MappingProxyType({
+    0: "Idle", 1: "Store 1", 2: "Downcycle", 4: "Down Key", 5: "Up Key", 6: "Recall 2",
+    12: "Recall 1", 9: "Ramp Off", 10: "Ramp Recall 1", 11: "Toggle", 3: "Mem Toggle 2",
+    13: "On Key", 15: "Off Key", 14: "End Ramp", 7: "Retrigger Timer", 8: "Start",
+})
+STAGE_ALIASES = MappingProxyType({"jp": "JPCommand", "sr": "SRCommand", "lp": "LPCommand", "lr": "LRCommand"})
+CUSTOM = "custom"
+
+
+def custom_stages(stages) -> dict[str, int]:
+    """Validate a custom JP/SR/LP/LR edit; values are names or codes 0..15."""
+    if not isinstance(stages, Mapping) or not stages:
+        raise MacroError("Supply at least one JP/SR/LP/LR micro-function")
+    result = {}
+    for stage, value in stages.items():
+        name = STAGE_ALIASES.get(str(stage).lower(), stage)
+        if name not in STAGES or name in result:
+            raise MacroError("Stages are JP, SR, LP and LR, each at most once")
+        if isinstance(value, str):
+            if value not in MICRO_FUNCTIONS:
+                raise MacroError("Unknown micro-function: " + value)
+            value = MICRO_FUNCTIONS[value]
+        value = _int(value, "Micro-function")
+        if value not in MICRO_FUNCTION_LABELS:
+            raise MacroError("Toolkit offers micro-functions 0..15 only")
+        result[name] = value
+    return result
+
+
+def matching_preset(codes) -> str | None:
+    """Name of the preset whose group equals the stages, as Toolkit rematches it."""
+    return next((name for name, preset in PRESETS.items() if preset.codes == tuple(codes)), None)
+
+
+def preset_dict(name, codes):
+    if name == CUSTOM:
+        return {"name": CUSTOM, "codes": dict(zip(STAGES, codes)),
+                "labels": dict(zip(STAGES, (MICRO_FUNCTION_LABELS[c] for c in codes))),
+                "matched_preset": matching_preset(codes)}
+    return PRESETS[name].as_dict()
+
+
 @dataclass(frozen=True)
 class Preset:
     name: str
@@ -147,8 +192,10 @@ class KeyPlan:
         object.__setattr__(self, "changes", MappingProxyType({k: tuple(v) for k, v in self.changes.items()}))
 
     def as_dict(self):
+        final = {**self.expected, **self.changes}
+        codes = tuple(final[name][self.key - 1] for name in STAGES)
         return {"format": "cbus-classic-key-plan-v1", "unit_type": self.unit_type,
-                "key": self.key, "preset": PRESETS[self.preset].as_dict(), "block": self.block,
+                "key": self.key, "preset": preset_dict(self.preset, codes), "block": self.block,
                 "expected": {k: list(v) for k, v in self.expected.items()},
                 "changes": {k: list(v) for k, v in self.changes.items()},
                 "shared_keys": list(self.shared_keys), "saved": False}
@@ -261,6 +308,28 @@ class ClassicKeys:
         except MemoryError as exc:
             raise MacroError(str(exc)) from exc
         return KeyPlan(self.unit_type, key, preset, selected, original, changes, shared)
+
+    def plan_micro_functions(self, current: Mapping[str, Any], *, key: int, stages) -> KeyPlan:
+        """Plan TfrmKeyMicroFunctions cell edits: only the named stages change."""
+        key = _int(key, "Key")
+        if not 1 <= key <= self.key_count:
+            raise MacroError(f"{self.unit_type} has {self.key_count} physical key(s)")
+        edits = custom_stages(stages)
+        original = self._snapshot(current)
+        changes = {}
+        for name, value in edits.items():
+            values = list(original[name])
+            values[key - 1] = value
+            if tuple(values) != original[name]:
+                changes[name] = tuple(values)
+        try:
+            self.codec.encode_many(changes)
+        except MemoryError as exc:
+            raise MacroError(str(exc)) from exc
+        return KeyPlan(self.unit_type, key, CUSTOM, None, original, changes)
+
+    def configure_micro_functions(self, session, *, key, stages):
+        return self.apply(session, self.plan_micro_functions(session.values(), key=key, stages=stages))
 
     def _verify_session(self, session):
         # PP INFO exposes the actual native schema, avoiding accidental writes

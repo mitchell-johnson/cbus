@@ -12,8 +12,8 @@ from uuid import uuid4
 import xml.etree.ElementTree as ET
 
 from cbus_toolkit.macros import (ClassicKeys, EXCLUDED_PRESETS, GUARDED_PARAMETERS, HELP_TABLE_EVENTS, KeyPlan,
-                                 MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, SUPPORTED_UNITS,
-                                 TRIGGER_PRESETS, _READ_FIELDS, _numbers)
+                                 MacroApplyError, MacroError, MICRO_FUNCTION_LABELS, MICRO_FUNCTIONS, PRESETS,
+                                 STAGES, SUPPORTED_UNITS, TRIGGER_PRESETS, _READ_FIELDS, _numbers)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 
@@ -131,6 +131,32 @@ class MacroTests(unittest.TestCase):
                 data = self.keys.codec.encode_many({name: updated[name] for name in STAGES}).apply(before)
                 self.assertEqual(data.read(0x34, 2), bytes([expected_first, expected_second]))
                 self.assertEqual(tuple(updated[name][0] for name in STAGES), (11, 0, 0, 0))
+
+    def test_custom_micro_functions_change_only_named_stages(self):
+        current = self.spec.defaults()
+        plan = self.keys.plan_micro_functions(current, key=3, stages={"jp": "on", "LRCommand": 15})
+        self.assertEqual(set(plan.changes), {"JPCommand", "LRCommand"})
+        self.assertEqual(plan.changes["JPCommand"], (11, 11, 13, 11))
+        result = plan.as_dict()
+        self.assertEqual(result["preset"]["name"], "custom")
+        self.assertEqual(result["preset"]["codes"], {"JPCommand": 13, "SRCommand": 0, "LPCommand": 0, "LRCommand": 15})
+        self.assertEqual(result["preset"]["labels"]["LRCommand"], "Off Key")
+        self.assertIsNone(result["preset"]["matched_preset"])
+        # Toolkit re-matches an exact group to its template.
+        bell = self.keys.plan_micro_functions(current, key=1, stages={"jp": 13, "sr": 15, "lp": 0, "lr": 15})
+        self.assertEqual(bell.as_dict()["preset"]["matched_preset"], "bellpress")
+        self.assertEqual(set(MICRO_FUNCTION_LABELS), set(range(16)))
+        for stages in ({}, {"jp": 16}, {"jp": -1}, {"xx": 1}, {"jp": True}, {"jp": "ramp_on"},
+                       {"jp": 1, "JPCommand": 2}):
+            with self.subTest(stages=stages), self.assertRaises(MacroError):
+                self.keys.plan_micro_functions(current, key=1, stages=stages)
+        with self.assertRaises(MacroError):
+            self.keys.plan_micro_functions(current, key=5, stages={"jp": 1})
+        unchanged = self.keys.plan_micro_functions(current, key=1, stages={"jp": 11})
+        self.assertEqual(unchanged.changes, {})
+        applied = self.keys.apply(self.session, plan)
+        self.assertTrue(applied["verified"])
+        self.assertEqual([name for name, _ in self.session.calls], ["JPCommand", "LRCommand"])
 
     def test_trigger_presets_require_trigger_control_application(self):
         for preset in sorted(TRIGGER_PRESETS):

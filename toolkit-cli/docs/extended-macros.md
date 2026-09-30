@@ -58,8 +58,9 @@ The following specifications are refused explicitly:
 - Every first-generation `_A.xml` specification uses `I_NEO.xml`, 14 differing
   parameters and the `TCBusNeoInputCGateAgent` save path.
 
-DLT/eDLT/NCC units, other firmware, virtual scene keys and custom
-micro-functions are outside this implementation.
+DLT/eDLT/NCC units, other firmware and virtual scene keys are outside this
+implementation. Custom micro-functions and indicator options are described
+below.
 
 ## Python API
 
@@ -105,6 +106,73 @@ Options are `key`, `preset`, `group`, `block`, `application`, `timer_seconds`,
 - Applying an ordinary preset clears the selected `SceneKeySelector` bit.
   The scene table and other keys' mode bits are preserved. Stored scenes are
   not deleted when that key becomes an ordinary input key.
+
+## Custom micro-functions
+
+`ExtendedKeys.plan_micro_functions(values, key=..., stages=...)` and
+`configure_micro_functions(session, ...)` edit a key's JP/SR/LP/LR cells with
+the domain and rules of the [classic editor](macros.md#custom-micro-functions):
+codes 0–15 on every stage, only the named stages change, and the result is
+rematched to a preset or reported as `custom`. Neo-core profiles use the same
+`TfrmKeyMicroFunctions` grid (`TddNeoPro`/`TddKeyM8`). A scene key's column is
+read-only there (`TInputKey.GetIsSceneKey`), so a key whose `SceneKeySelector`
+bit is set is refused. Apply a preset first to make it an ordinary key.
+Keys are limited to the standard columns (`MaximumKeyCount`). Join, IR and
+virtual key columns are not admitted.
+
+```sh
+cbus-toolkit keys --spec-dir "$CBUS_UNITSPEC_DIR" neo-custom-plan KEYM4.xml values.json --key 4 --sr store1
+cbus-toolkit cgate unit ... neo-key-micro-functions --spec KEYM4.xml --key 4 --sr store1
+```
+
+## Indicator options and styles
+
+`neo_indicators.py` implements Toolkit's two Neo Unit Magic pages. Both follow
+each class's C-Gate agent save path:
+
+- The "Indicator Options" page (`TfrmNeoIndicatorOptions`) works on every
+  admitted family except Classic Neo. `TUnitMagicNeoIndicatorOptions.IsUnitEligible`
+  excludes `TCBusNeoProClassicInputUnit`.
+- The "Indicator Styles and Colours" page (`TfrmNeoLED`) works on Standard
+  (KEYM, KEYDV) and Saturn-derived (KEYB, KEYE1, KEYH, KEYP, KEYV) profiles.
+  `TUnitMagicNeoLED.IsUnitEligible` excludes Classic and Reflection classes.
+
+| Option | Parameter written |
+| --- | --- |
+| `brightness="fixed", brightness_percent=p` | `IndicatorBrightness = p*255 div 100`, then 0→4, 2→5, 5→6 (`PercentToLevel`, `IndicatorBrightnessLevelToLevel`), so $04–$FF |
+| `brightness="group", brightness_group=g` | `IndicatorBrightness = $00`; ninth `GroupAddress` entry = g (255 = unused) |
+| `brightness="first_block"` | `IndicatorBrightness = $01` |
+| `key_press_level=n`, `key_press_seconds=d` | `IndicatorPressedLevel = n` (0–15), `TimerDuration = d` (1–15; 0 disables and keeps the level) |
+| `nightlight` | `EnableNightlightOnPA6` for Standard classes, `EnableNightlightOnPCx` for Reflection and Saturn; the other bit and `EnableNightlight` are written 0 |
+| `ignore_first_key_press` | `FirstKeyThrowAway` |
+| `timer_flash` | `DisableTimerFlash = not timer_flash` |
+| `id_backlight` | `IDBacklightIllumination` |
+| `colour="blue"/"orange"` | `PrimaryColour` 0/1 on all eight entries (always written) |
+| `style=always_off/always_on/status_on/status_dual` | `IndicatorFunction` 0–3 on all eight entries; omitted = leave unchanged |
+
+The dialog's dependencies are enforced on the resulting values. The nightlight
+needs key-press brightening, and ignoring the first press needs the nightlight
+(`UpdateKeyPressUI`). Setting a key-press level needs a non-zero duration.
+
+Two differences from Toolkit need care:
+
+- Omitted options keep their current values. The wizard itself overwrites
+  every option on every selected unit, so pass them all to reproduce it.
+- On Avanti (KEYV) units, Toolkit only shows a note that blue means red and
+  orange means green. The stored values are the same.
+
+The LED page loops over every input key. The plan writes all eight array
+entries. This is inferred from the eight-entry arrays that the Neo agent
+serializes.
+
+```sh
+cbus-toolkit keys --spec-dir "$CBUS_UNITSPEC_DIR" neo-indicator-plan KEYM4.xml values.json \
+  --brightness fixed --brightness-percent 50 --key-press-level 9 --key-press-seconds 4 --nightlight
+cbus-toolkit cgate unit ... neo-indicator-styles --spec KEYB4.xml --colour blue --style status_dual
+```
+
+The per-unit indicator editor (`TfrmNeoInputIndicators8`), `NightlightColour`
+and `EnableNightlightControl` are not covered.
 
 ## Event and memory mapping
 
@@ -216,7 +284,9 @@ Set `CBUS_NEO_PROFILES=KEYM2.xml,KEYDV4.xml` to limit a diagnostic run.
 The native test creates a unique project with a closed network whose CNI
 address is an owned idle loopback listener. It creates a database unit for
 every profile from its catalogue number. It resets native defaults, starts the
-highest key in scene mode, applies all 18 presets, and compares stage values
+highest key in scene mode, applies all 18 presets (each trigger preset is first
+refused without writes on a Lighting block, then applied on application 202),
+and compares stage values
 and packed raw bytes. After every preset, it compares all parameters outside
 the 15 preset fields, including the scene table. Additional raw-byte assertions
 cover group, secondary mask, expiry, timer, recall and indicator fields. Each
@@ -229,9 +299,21 @@ assignments, stale plans, rollback, layout rejection and bit preservation.
 This establishes the source-defined configuration semantics for the listed
 profiles and tested firmware. It does not establish physical button behavior,
 every firmware, complete GUI before/after parity, automatic GUI indicator
-reassignment, DLT/eDLT widgets, NCC programming, custom macros, persistent
+reassignment, DLT/eDLT widgets, NCC programming, join/IR/virtual key custom
+micro-functions, persistent
 scene triggers or device firmware updates. Ramp rates, debounce/long-press
 timings, LED styles, corridor linking and join mode remain their existing
 settings and can affect physical behavior. Full physical acceptance is still
 required. See [extended-macros-acceptance-summary.json](extended-macros-acceptance-summary.json)
 for counts and source hashes.
+
+`tests/test_input_options.py` adds native acceptance for the following, each
+with unrelated-parameter preservation, save and project close/reload:
+
+- All 16 custom codes on every stage of KEYM4, KEYB6, KEYDV2 and KEYE1,
+  including refusal of scene keys.
+- Indicator options on KEYM4, KEYDV2, KEYB4, KEYH2, KEYV2 and KEYA3, with raw
+  `$32`–`$34` and `$58` bytes checked.
+- Styles and colours on the five eligible profiles among them, with raw
+  `$60`–`$67` bytes checked.
+- The CLI dry-run and persist paths.

@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from types import MappingProxyType
 import xml.etree.ElementTree as ET
 
-from .macros import (MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, TRIGGER_APPLICATION,
-                     TRIGGER_PRESETS, _int, _numbers)
+from .macros import (CUSTOM, MacroApplyError, MacroError, MICRO_FUNCTIONS, PRESETS, STAGES, TRIGGER_APPLICATION,
+                     TRIGGER_PRESETS, custom_stages, preset_dict, _int, _numbers)
 from .memory import MemoryCodec
 from .programming import xml_text
 
@@ -89,8 +89,10 @@ class ExtendedKeyPlan:
             object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in getattr(self, name).items()}))
 
     def as_dict(self):
+        final = {**self.expected, **self.changes}
+        codes = tuple(final[name][self.key - 1] for name in STAGES)
         return {'format': 'cbus-neo-key-plan-v1', 'unit_type': self.unit_type,
-                'spec_filename': self.spec_filename, 'key': self.key, 'preset': PRESETS[self.preset].as_dict(),
+                'spec_filename': self.spec_filename, 'key': self.key, 'preset': preset_dict(self.preset, codes),
                 'block': self.block, 'shared_keys': list(self.shared_keys),
                 'expected': {k: list(v) for k, v in self.expected.items()},
                 'changes': {k: list(v) for k, v in self.changes.items()}, 'saved': False}
@@ -199,6 +201,28 @@ class ExtendedKeys:
         changes = {name: tuple(values) for name, values in updates.items() if tuple(values) != original[name]}
         self.codec.encode_many(changes)
         return ExtendedKeyPlan(self.unit_type, self.spec.filename, key, preset, selected, original, changes, shared)
+
+    def plan_micro_functions(self, current, *, key, stages):
+        """Plan TfrmKeyMicroFunctions cell edits: only the named stages change."""
+        key = _int(key, 'Key')
+        if not 1 <= key <= self.key_count:
+            raise MacroError(f'{self.unit_type} has {self.key_count} supported physical key(s)')
+        edits = custom_stages(stages)
+        original = self._snapshot(current)
+        # The grid shows a scene key's column read-only (TInputKey.GetIsSceneKey).
+        if original['SceneKeySelector'][key - 1]:
+            raise MacroError('Toolkit shows scene keys read-only; apply a preset to make the key ordinary first')
+        changes = {}
+        for name, value in edits.items():
+            values = list(original[name])
+            values[key - 1] = value
+            if tuple(values) != original[name]:
+                changes[name] = tuple(values)
+        self.codec.encode_many(changes)
+        return ExtendedKeyPlan(self.unit_type, self.spec.filename, key, CUSTOM, None, original, changes)
+
+    def configure_micro_functions(self, session, *, key, stages):
+        return self.apply(session, self.plan_micro_functions(session.values(), key=key, stages=stages))
 
     def _verify_session(self, session):
         if session.unit_type != self.unit_type:

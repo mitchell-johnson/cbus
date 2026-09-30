@@ -1,6 +1,6 @@
 {
   "format": "cbus-extended-macros-acceptance-v2",
-  "scope": "Toolkit help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior",
+  "scope": "Toolkit micro-function-group/help/binary-grounded Neo-core presets through native PP;closed database only;no physical button behavior",
   "backend": "owned loopback C-Gate (research/local_cgate.py)",
   "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
   "profiles": [
@@ -287,21 +287,21 @@
   "passed": true,
   "project_close_reload_passed": true,
   "test_file": "tests/test_extended_macros.py",
-  "test_count": 14,
+  "test_count": 16,
   "skipped": 0,
   "native_preset_cases": 558,
   "physical_hardware_verified": false,
   "source_hashes": {
-    "src/cbus_toolkit/macros.py": "7aac4c3d2c1f6ce4d84e6a47a2d5d1e44c8a6e81f71d1e67dcf28e173d7cf41b",
-    "src/cbus_toolkit/extended_macros.py": "6c22cb1f1ba51895233a6e199ebbd8f93b59de6c4a3467079a83206754d9039b",
-    "research/key_preset_families.py": "ea28f8678e2da42ea5fa9059f8268d0f1f7af255e8ea409de09ecc2a1f90273e",
-    "research/fixtures/key-preset-family-equivalence.json": "888897eee22372f4c1aa5e75fbd55ac80f634cda3a16047fe7d6027507c78ccf",
+    "src/cbus_toolkit/macros.py": "9db99b787d510d3c3d6902e69a1a4eb03ff320564bf605970c2e0844cd57cc53",
+    "src/cbus_toolkit/extended_macros.py": "1b95067d373321de9889c431144056b074fc2707cda7233947e506ef2f92bd7b",
+    "research/key_preset_families.py": "d26ee519dd64608956f14fdf925e82d5c789966f24a69f180b49a20212e544c9",
+    "research/fixtures/key-preset-family-equivalence.json": "d4200b34590a0298fd76d0aaf2dbb4c800e117a7613845ee03c5310ccda0dfc0",
     "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
     "research/vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "research/vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "research/vendor/cgate/app/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
     "research/vendor/cgate/app/unitspec/cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
-    "tests/test_extended_macros.py": "62ded372e22e0e5ef2a6199b8a4d04925348781cf5ad51b2df133bea540317e3",
+    "tests/test_extended_macros.py": "70d0281c23a8528b3b1d28cde0ba71c9eddd2590bf132ea1f7333b3620fe75d3",
     "research/vendor/unitspec-plain/KEYE.xml": "8f9aae67a141b6a2919a4551dbd72762d56be1f97fbd8f51d66d4cce54cbeed4",
     "research/vendor/unitspec-plain/KEYM2.xml": "0fff94c46333df97e7e7471176c3816c1c7b4864e35283f765721db1b9f3a8ca",
     "research/vendor/unitspec-plain/KEYM4.xml": "d2512412f2304db00bcc77e5568b6c493b50d1fd44bd64187d8ef51457478995",
@@ -343,7 +343,8 @@
     "Other firmware revisions",
     "Complete GUI before/after parity",
     "Automatic GUI indicator reassignment",
-    "DLT/eDLT/NCC widgets and custom macros",
+    "DLT/eDLT/NCC widgets and join/IR/virtual key custom micro-functions",
     "KEYM6, KEYCIR1, KEYV1SP and _A specifications (refused)"
-  ]
+  ],
+  "native_trigger_refusals_without_writes": 62
 }
