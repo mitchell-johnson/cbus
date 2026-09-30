@@ -1,0 +1,2961 @@
+{
+ "format": "cbus-toolkit-conversion-tweaker-registry-v1",
+ "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+ "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+ "original_code_executed": false,
+ "registration_count": 292,
+ "class_counts": {
+  "TTweakerDIMDN_TO_DIMDU4": 4,
+  "TTweakerDIMDU4_TO_DIMDN": 4,
+  "TTweakerDLT": 117,
+  "TTweakerInputUnit": 11,
+  "TTweakerKeyToDLT": 15,
+  "TTweakerKeyToNeo": 98,
+  "TTweakerNeoToKey": 13,
+  "TTweakerPC_DAL2": 2,
+  "TTweakerPC_DAL2B": 2,
+  "TTweakerRELDN8_TO_X": 4,
+  "TTweakerRELDNX_TO_8": 4,
+  "TTweakerSENLL": 2,
+  "TTweakerSENPIR": 16
+ },
+ "toolkit_semantics": {
+  "uses_cgate_convertunit": false,
+  "lookup": "case-insensitive (source type, target type); first registration wins",
+  "alignment": "for each target agent attribute, copy the same-named source attribute (never OID); an empty source value clears the target mutable flag; when absent, a tweaker rename names the source attribute; then TweakParameters, then target BeforeUnitConversionSave",
+  "immutable": "SetMutableFalse clears the mutable flag, so no PP SET is issued and the target default remains",
+  "pp_set": "ParameterProgrammingSetAll issues PP SET, in attribute order, only for attributes that are both mutable and aligned; a failed PP SET is caught and ignored",
+  "initially_immutable_base_attributes": [
+   "FirmwareVersion",
+   "SerialNo",
+   "State",
+   "UnitType"
+  ]
+ },
+ "classes": {
+  "TTweakerDIMDN_TO_DIMDU4": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [],
+   "assignments": [
+    {
+     "target": "InterLockingChannel",
+     "literal": "4"
+    },
+    {
+     "target": "PowerUpDelay",
+     "from": "MaxDimmingLevel"
+    },
+    {
+     "target": "MaxDimmingLevel",
+     "literal": "0 0 0 0"
+    }
+   ],
+   "summary": "InterLockingChannel=4, PowerUpDelay takes the aligned MaxDimmingLevel, MaxDimmingLevel=0 0 0 0",
+   "refusal": null,
+   "call_sites": 4
+  },
+  "TTweakerDIMDU4_TO_DIMDN": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [],
+   "assignments": [
+    {
+     "target": "InterLockingChannel",
+     "literal": "0"
+    },
+    {
+     "target": "MaxDimmingLevel",
+     "from": "PowerUpDelay"
+    },
+    {
+     "target": "PowerUpDelay",
+     "literal": "0 0 0 0"
+    }
+   ],
+   "summary": "InterLockingChannel=0, MaxDimmingLevel takes the aligned PowerUpDelay, PowerUpDelay=0 0 0 0",
+   "refusal": null,
+   "call_sites": 4
+  },
+  "TTweakerDLT": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [
+    "IRBank",
+    "IDBacklightIllumination",
+    "PrimaryColour",
+    "EnableNightlight",
+    "EnableNightlightOnPCx",
+    "EnableNightlightOnPA6",
+    "DisableIR",
+    "DisableIRNEC"
+   ],
+   "assignments": [
+    {
+     "target": "LabelFlavourLSB",
+     "literal": "0"
+    },
+    {
+     "target": "LabelFlavourMSB",
+     "literal": "0"
+    }
+   ],
+   "summary": "marks eight attributes immutable and sets LabelFlavourLSB/MSB to 0",
+   "refusal": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 117
+  },
+  "TTweakerInputUnit": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [
+    "InfraRedBank",
+    "EnableNightlight",
+    "EnableNightlightControl",
+    "DisableTimerFlash",
+    "FirstKeyThrowAway",
+    "IndicatorPressedLevel",
+    "TimerDuration",
+    "IDBacklightIllumination",
+    "PrimaryColour",
+    "EnableNightlightOnPCx",
+    "EnableNightlightOnPA6",
+    "DisableIR",
+    "DisableIRNEC"
+   ],
+   "assignments": [],
+   "summary": "marks 13 Neo/IR attributes immutable (target default retained)",
+   "refusal": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 11
+  },
+  "TTweakerKeyToDLT": {
+   "recovered": true,
+   "inherits": "TTweakerDLT",
+   "renames": {},
+   "immutable": [
+    "IRBank",
+    "IDBacklightIllumination",
+    "PrimaryColour",
+    "EnableNightlight",
+    "EnableNightlightOnPCx",
+    "EnableNightlightOnPA6",
+    "DisableIR",
+    "DisableIRNEC",
+    "ControlAppGroupAddress",
+    "PatchEnable",
+    "SceneKeySelector",
+    "SceneTable",
+    "SceneTablePointer"
+   ],
+   "assignments": [
+    {
+     "target": "LabelFlavourLSB",
+     "literal": "0"
+    },
+    {
+     "target": "LabelFlavourMSB",
+     "literal": "0"
+    }
+   ],
+   "element_remap": {
+    "attribute": "IndicatorFunction",
+    "element_map": {
+     "1": 2,
+     "3": 1
+    },
+    "rewrite": "space-separated decimal elements, each followed by one space"
+   },
+   "summary": "TTweakerDLT rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1",
+   "refusal": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 15
+  },
+  "TTweakerKeyToNeo": {
+   "recovered": true,
+   "inherits": "TTweakerInputUnit",
+   "renames": {},
+   "immutable": [
+    "InfraRedBank",
+    "EnableNightlight",
+    "EnableNightlightControl",
+    "DisableTimerFlash",
+    "FirstKeyThrowAway",
+    "IndicatorPressedLevel",
+    "TimerDuration",
+    "IDBacklightIllumination",
+    "PrimaryColour",
+    "EnableNightlightOnPCx",
+    "EnableNightlightOnPA6",
+    "DisableIR",
+    "DisableIRNEC",
+    "ControlAppGroupAddress",
+    "PatchEnable",
+    "SceneKeySelector",
+    "SceneTable",
+    "SceneTablePointer"
+   ],
+   "assignments": [],
+   "element_remap": {
+    "attribute": "IndicatorFunction",
+    "element_map": {
+     "1": 2,
+     "3": 1
+    },
+    "rewrite": "space-separated decimal elements, each followed by one space"
+   },
+   "summary": "TTweakerInputUnit rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1",
+   "refusal": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 98
+  },
+  "TTweakerNeoToKey": {
+   "recovered": true,
+   "inherits": "TTweakerInputUnit",
+   "renames": {},
+   "immutable": [
+    "InfraRedBank",
+    "EnableNightlight",
+    "EnableNightlightControl",
+    "DisableTimerFlash",
+    "FirstKeyThrowAway",
+    "IndicatorPressedLevel",
+    "TimerDuration",
+    "IDBacklightIllumination",
+    "PrimaryColour",
+    "EnableNightlightOnPCx",
+    "EnableNightlightOnPA6",
+    "DisableIR",
+    "DisableIRNEC"
+   ],
+   "assignments": [],
+   "summary": "TTweakerInputUnit rules only",
+   "refusal": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 13
+  },
+  "TTweakerPC_DAL2": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [],
+   "assignments": [],
+   "application_swap": "Application becomes decimal element 1, one space, decimal element 0",
+   "summary": "swaps the two Application values",
+   "refusal": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet",
+   "call_sites": 2
+  },
+  "TTweakerPC_DAL2B": {
+   "recovered": true,
+   "renames": {},
+   "immutable": [],
+   "assignments": [],
+   "application_swap": "Application becomes decimal element 1, one space, decimal element 0",
+   "summary": "swaps the two Application values",
+   "refusal": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet",
+   "call_sites": 2
+  },
+  "TTweakerRELDN8_TO_X": {
+   "recovered": false,
+   "touched": [
+    "GroupAddress",
+    "LogicGA13Associations",
+    "LogicGA14Associations",
+    "LogicGA15Associations",
+    "LogicGA16Associations"
+   ],
+   "summary": "repacks GroupAddress and LogicGA13-16 arrays; element rule not recovered",
+   "refusal": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered",
+   "call_sites": 4
+  },
+  "TTweakerRELDNX_TO_8": {
+   "recovered": false,
+   "touched": [
+    "GroupAddress",
+    "LogicGA13Associations",
+    "LogicGA14Associations",
+    "LogicGA15Associations",
+    "LogicGA16Associations"
+   ],
+   "summary": "repacks GroupAddress and LogicGA13-16 arrays; element rule not recovered",
+   "refusal": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered",
+   "call_sites": 4
+  },
+  "TTweakerSENLL": {
+   "recovered": true,
+   "renames": {
+    "PECEnablerGroup": "EnableGroupAddress",
+    "EnableGroupAddress": "PECEnablerGroup"
+   },
+   "immutable": [],
+   "assignments": [],
+   "summary": "renames only (target <- source), no value rule",
+   "refusal": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 2
+  },
+  "TTweakerSENPIR": {
+   "recovered": true,
+   "renames": {
+    "PIREnablerGroup": "EnableGroupAddress",
+    "PIREnablerGroupLogic": "EnableGroupLogic",
+    "EnableGroupAddress": "PIREnablerGroup",
+    "EnableGroupLogic": "PIREnablerGroupLogic"
+   },
+   "immutable": [],
+   "assignments": [],
+   "summary": "renames only (target <- source), no value rule",
+   "refusal": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered",
+   "call_sites": 16
+  }
+ },
+ "agents": {
+  "TDinRailOutputCGateAgent": {
+   "unit_types": [
+    "DIMDN4",
+    "DIMDN4F",
+    "DIMDN8",
+    "DIMDN8F"
+   ],
+   "overrides_before_unit_conversion_save": false,
+   "attributes": [
+    [
+     "Application",
+     true
+    ],
+    [
+     "FirmwareVersion",
+     false
+    ],
+    [
+     "Project",
+     true
+    ],
+    [
+     "SerialNo",
+     false
+    ],
+    [
+     "State",
+     false
+    ],
+    [
+     "UnitAddress",
+     true
+    ],
+    [
+     "UnitName",
+     true
+    ],
+    [
+     "UnitType",
+     false
+    ],
+    [
+     "CheckSum",
+     true
+    ],
+    [
+     "Burden",
+     true
+    ],
+    [
+     "LocalToggleEnable",
+     true
+    ],
+    [
+     "ClockGenEnable",
+     true
+    ],
+    [
+     "LearnMode",
+     true
+    ],
+    [
+     "LearnAnyApplication",
+     true
+    ],
+    [
+     "LearnedFlag",
+     true
+    ],
+    [
+     "AreaGroupAddress",
+     true
+    ],
+    [
+     "PowerUpDelay",
+     true
+    ],
+    [
+     "NetworkPriority",
+     true
+    ],
+    [
+     "LightLevel",
+     true
+    ],
+    [
+     "LogicGA13Associations",
+     true
+    ],
+    [
+     "LogicGA14Associations",
+     true
+    ],
+    [
+     "LogicGA15Associations",
+     true
+    ],
+    [
+     "LogicGA16Associations",
+     true
+    ],
+    [
+     "LogicFunction",
+     true
+    ],
+    [
+     "GroupAddress",
+     true
+    ],
+    [
+     "MinDimmingLevel",
+     true
+    ],
+    [
+     "MaxDimmingLevel",
+     true
+    ],
+    [
+     "LevelStoreEnable",
+     true
+    ],
+    [
+     "LogicLevelStoreEnable",
+     true
+    ],
+    [
+     "InterLockingChannel",
+     true
+    ],
+    [
+     "RestrikeChannel",
+     true
+    ],
+    [
+     "RestrikeDelay",
+     true
+    ]
+   ]
+  },
+  "TDIMDNUXCGateAgent": {
+   "unit_types": [
+    "DIMDU4"
+   ],
+   "overrides_before_unit_conversion_save": false,
+   "attributes": [
+    [
+     "Application",
+     true
+    ],
+    [
+     "FirmwareVersion",
+     false
+    ],
+    [
+     "Project",
+     true
+    ],
+    [
+     "SerialNo",
+     false
+    ],
+    [
+     "State",
+     false
+    ],
+    [
+     "UnitAddress",
+     true
+    ],
+    [
+     "UnitName",
+     true
+    ],
+    [
+     "UnitType",
+     false
+    ],
+    [
+     "CheckSum",
+     true
+    ],
+    [
+     "Burden",
+     true
+    ],
+    [
+     "LocalToggleEnable",
+     true
+    ],
+    [
+     "ClockGenEnable",
+     true
+    ],
+    [
+     "LearnMode",
+     true
+    ],
+    [
+     "LearnAnyApplication",
+     true
+    ],
+    [
+     "LearnedFlag",
+     true
+    ],
+    [
+     "AreaGroupAddress",
+     true
+    ],
+    [
+     "PowerUpDelay",
+     true
+    ],
+    [
+     "NetworkPriority",
+     true
+    ],
+    [
+     "LightLevel",
+     true
+    ],
+    [
+     "LogicGA13Associations",
+     true
+    ],
+    [
+     "LogicGA14Associations",
+     true
+    ],
+    [
+     "LogicGA15Associations",
+     true
+    ],
+    [
+     "LogicGA16Associations",
+     true
+    ],
+    [
+     "LogicFunction",
+     true
+    ],
+    [
+     "GroupAddress",
+     true
+    ],
+    [
+     "MinDimmingLevel",
+     true
+    ],
+    [
+     "MaxDimmingLevel",
+     true
+    ],
+    [
+     "LevelStoreEnable",
+     true
+    ],
+    [
+     "LogicLevelStoreEnable",
+     true
+    ],
+    [
+     "InterLockingChannel",
+     true
+    ],
+    [
+     "RestrikeChannel",
+     true
+    ],
+    [
+     "RestrikeDelay",
+     true
+    ],
+    [
+     "ErrorMode",
+     true
+    ],
+    [
+     "ErrorRefreshTime",
+     true
+    ],
+    [
+     "EnableErrorGroup",
+     true
+    ],
+    [
+     "TriggerErrorGroup",
+     true
+    ],
+    [
+     "TriggerErrorAcSel",
+     true
+    ],
+    [
+     "TriggerErrorClearAcSel",
+     true
+    ],
+    [
+     "ErrorReportDeviceID",
+     true
+    ],
+    [
+     "DimmingCurveBit1",
+     true
+    ],
+    [
+     "DimmingCurveBit2",
+     true
+    ]
+   ]
+  }
+ },
+ "native_accepted_classes": [
+  "TTweakerDIMDN_TO_DIMDU4",
+  "TTweakerDIMDU4_TO_DIMDN"
+ ],
+ "registrations": [
+  {
+   "source": "PC_DAL2",
+   "target": "PC_DAL2B",
+   "tweaker_class": "TTweakerPC_DAL2",
+   "call_va": "0x139c3f0",
+   "decision": "refused",
+   "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+  },
+  {
+   "source": "PC_DAL2",
+   "target": "PC_DAL2C",
+   "tweaker_class": "TTweakerPC_DAL2",
+   "call_va": "0x139c40c",
+   "decision": "refused",
+   "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+  },
+  {
+   "source": "PC_DAL2B",
+   "target": "PC_DAL2",
+   "tweaker_class": "TTweakerPC_DAL2B",
+   "call_va": "0x139c490",
+   "decision": "refused",
+   "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+  },
+  {
+   "source": "PC_DAL2C",
+   "target": "PC_DAL2",
+   "tweaker_class": "TTweakerPC_DAL2B",
+   "call_va": "0x139c4ac",
+   "decision": "refused",
+   "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+  },
+  {
+   "source": "RELDN8",
+   "target": "RELDN12",
+   "tweaker_class": "TTweakerRELDN8_TO_X",
+   "call_va": "0x139c534",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN8",
+   "target": "RELDN4",
+   "tweaker_class": "TTweakerRELDN8_TO_X",
+   "call_va": "0x139c550",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN8",
+   "target": "RELDN8B",
+   "tweaker_class": "TTweakerRELDN8_TO_X",
+   "call_va": "0x139c56c",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN8",
+   "target": "RELSM8",
+   "tweaker_class": "TTweakerRELDN8_TO_X",
+   "call_va": "0x139c588",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN12",
+   "target": "RELDN8",
+   "tweaker_class": "TTweakerRELDNX_TO_8",
+   "call_va": "0x139c5a4",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN4",
+   "target": "RELDN8",
+   "tweaker_class": "TTweakerRELDNX_TO_8",
+   "call_va": "0x139c5c0",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELDN8B",
+   "target": "RELDN8",
+   "tweaker_class": "TTweakerRELDNX_TO_8",
+   "call_va": "0x139c5dc",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "RELSM8",
+   "target": "RELDN8",
+   "tweaker_class": "TTweakerRELDNX_TO_8",
+   "call_va": "0x139c5f8",
+   "decision": "refused",
+   "refusal_reason": "tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered"
+  },
+  {
+   "source": "DIMDN8",
+   "target": "DIMDU4",
+   "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+   "call_va": "0x139c6b0",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDN8F",
+   "target": "DIMDU4",
+   "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+   "call_va": "0x139c6cc",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDN4",
+   "target": "DIMDU4",
+   "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+   "call_va": "0x139c6e8",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDN4F",
+   "target": "DIMDU4",
+   "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+   "call_va": "0x139c704",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDU4",
+   "target": "DIMDN8",
+   "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+   "call_va": "0x139c720",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDU4",
+   "target": "DIMDN8F",
+   "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+   "call_va": "0x139c73c",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDU4",
+   "target": "DIMDN4",
+   "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+   "call_va": "0x139c758",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "DIMDU4",
+   "target": "DIMDN4F",
+   "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+   "call_va": "0x139c774",
+   "decision": "admitted",
+   "refusal_reason": null
+  },
+  {
+   "source": "KEYM2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c82c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c848",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM6",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c864",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM8",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c880",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c89c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c8b8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB6",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c8d4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c8f0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c90c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH3",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c928",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c944",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c960",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c97c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR6",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c998",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c9b4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA3",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c9d0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA6",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139c9ec",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA8",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca08",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca24",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca40",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca5c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca78",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ca94",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cab0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cacc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cae8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb04",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE3",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb20",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb3c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb58",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb74",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP6",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cb90",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cbac",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cbc8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR3",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cbe4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc00",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc1c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc38",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM6",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc54",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM8",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc70",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cc8c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cca8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB6",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ccc4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cce0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ccfc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH3",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cd18",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cd34",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cd50",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cd6c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR6",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cd88",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cda4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA3",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cdc0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA6",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cddc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA8",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cdf8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ce14",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ce30",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ce4c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ce68",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ce84",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cea0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cebc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139ced8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cef4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE3",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf10",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf2c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf48",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf64",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP6",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf80",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cf9c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cfb8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR3",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cfd4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139cff0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d00c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d028",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM6",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d044",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYM8",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d060",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d07c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d098",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYB6",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d0b4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d0d0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d0ec",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH3",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d108",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYH4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d124",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d140",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d15c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBIR6",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d178",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d194",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA3",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d1b0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA6",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d1cc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYA8",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d1e8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d204",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYAV4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d220",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d23c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d258",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d274",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d290",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d2ac",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d2c8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d2e4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE3",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d300",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYE4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d31c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d338",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d354",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYP6",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d370",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d38c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d3a8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR3",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d3c4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYEIR4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d3e0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d3fc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d418",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d434",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d450",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d46c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d488",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d4a4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d4c0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d4dc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d4f8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d514",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d530",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d54c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d568",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerKeyToDLT",
+   "call_va": "0x139d584",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYDL4",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d5a0",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYDL4",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d5bc",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYDL4",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d5d8",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYML5",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d5f4",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYML5",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d610",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYML5",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d62c",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBL5",
+   "target": "KEYBL5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d648",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBL5",
+   "target": "KEYDL4",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d664",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBL5",
+   "target": "KEYML5",
+   "tweaker_class": "TTweakerDLT",
+   "call_va": "0x139d680",
+   "decision": "refused",
+   "refusal_reason": "target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConversionSave; the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEY2",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db0c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEY4",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db28",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEY1",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db44",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEY4",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db60",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEY1",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db7c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEY2",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139db98",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC2",
+   "target": "KEYBC4",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139dbb4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC4",
+   "target": "KEYBC2",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139dbd0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "BCNC4A",
+   "target": "BCNC4B",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139dbec",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "BCNC4B",
+   "target": "BCNC4A",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139dc08",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPILL",
+   "target": "SENPILL",
+   "tweaker_class": "TTweakerInputUnit",
+   "call_va": "0x139dc24",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC2",
+   "target": "BCN2B",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dc40",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC2",
+   "target": "BCN4B",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dc5c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC4",
+   "target": "BCN2B",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dc78",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYBC4",
+   "target": "BCN4B",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dc94",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "DINAUX4",
+   "target": "BCI4A",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dcb0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYB2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dccc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYB2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dce8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYB2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd04",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYB2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd20",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYB2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd3c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYB4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd58",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYB4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd74",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYB4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dd90",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYB4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139ddac",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYB4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139ddc8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYB6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dde4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYB6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de00",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYB6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de1c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYB6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de38",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYB6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de54",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYH1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de70",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYH1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139de8c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYH1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dea8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYH1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dec4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYH1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dee0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYH2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139defc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYH2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139df18",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYH2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139df34",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYH2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139df50",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYH2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139df6c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYH3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139df88",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYH3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dfa4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYH3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dfc0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYH3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dfdc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYH3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139dff8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYH4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e014",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYH4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e030",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYH4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e04c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYH4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e068",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYH4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e084",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYM2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e0a0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYM2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e0bc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYM2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e0d8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYM2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e0f4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYM2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e110",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYM4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e12c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYM4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e148",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYM4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e164",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYM4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e180",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYM4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e19c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYM8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e1b8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYM8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e1d4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYM8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e1f0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYM8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e20c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYM8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e228",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYA1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e244",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYA1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e260",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYA1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e27c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYA1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e298",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYA1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e2b4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYA3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e2d0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYA3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e2ec",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYA3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e308",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYA3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e324",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYA3",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e340",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYA6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e35c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYA6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e378",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYA6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e394",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYA6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e3b0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYA6",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e3cc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYA8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e3e8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYA8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e404",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYA8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e420",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYA8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e43c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYA8",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e458",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYAV2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e474",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYAV2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e490",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYAV2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e4ac",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYAV2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e4c8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYAV2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e4e4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYAV4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e500",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYAV4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e51c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYAV4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e538",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYAV4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e554",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYAV4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e570",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYC1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e58c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYC2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e5a8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY1",
+   "target": "KEYC4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e5c4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYC1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e5e0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYC2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e5fc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY2",
+   "target": "KEYC4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e618",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYC1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e634",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYC2",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e650",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEY4",
+   "target": "KEYC4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e66c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYCIR1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e688",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR1",
+   "target": "KEYCIR4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e6a4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYCIR1",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e6c0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYIR4",
+   "target": "KEYCIR4",
+   "tweaker_class": "TTweakerKeyToNeo",
+   "call_va": "0x139e6dc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEY1",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e6f8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEY2",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e714",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC1",
+   "target": "KEY4",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e730",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEY1",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e74c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEY2",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e768",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC2",
+   "target": "KEY4",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e784",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEY1",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e7a0",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEY2",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e7bc",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYC4",
+   "target": "KEY4",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e7d8",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR1",
+   "target": "KEYIR1",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e7f4",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR1",
+   "target": "KEYIR4",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e810",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR4",
+   "target": "KEYIR1",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e82c",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "KEYCIR4",
+   "target": "KEYIR4",
+   "tweaker_class": "TTweakerNeoToKey",
+   "call_va": "0x139e848",
+   "decision": "refused",
+   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRSS",
+   "target": "SENPIRSS",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ebec",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRSS",
+   "target": "SENPIROA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec08",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRSS",
+   "target": "SENPIRIA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec24",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRSS",
+   "target": "SENPIRIB",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec40",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIROA",
+   "target": "SENPIRSS",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec5c",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIROA",
+   "target": "SENPIROA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec78",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIROA",
+   "target": "SENPIRIA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ec94",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIROA",
+   "target": "SENPIRIB",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ecb0",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIA",
+   "target": "SENPIRSS",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139eccc",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIA",
+   "target": "SENPIROA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ece8",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIA",
+   "target": "SENPIRIA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed04",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIA",
+   "target": "SENPIRIB",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed20",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIB",
+   "target": "SENPIRSS",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed3c",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIB",
+   "target": "SENPIROA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed58",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIB",
+   "target": "SENPIRIA",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed74",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENPIRIB",
+   "target": "SENPIRIB",
+   "tweaker_class": "TTweakerSENPIR",
+   "call_va": "0x139ed90",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENLL",
+   "target": "SENLL",
+   "tweaker_class": "TTweakerSENLL",
+   "call_va": "0x139ee38",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  },
+  {
+   "source": "SENLL",
+   "target": "SENPILL",
+   "tweaker_class": "TTweakerSENLL",
+   "call_va": "0x139ee54",
+   "decision": "refused",
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+  }
+ ],
+ "limits": "Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata (tag, description, serial, readdress, source deletion and project save) is outside this receipt. Only the DIMDUx classes are admitted, with native C-Gate PP acceptance; every other registered or unregistered pair is refused with the reason recorded here."
+}

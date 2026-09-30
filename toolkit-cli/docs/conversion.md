@@ -24,8 +24,9 @@ both units in the same project. The Python API accepts an explicit
 
 The native engine supports a narrower set of conversions than Toolkit's GUI:
 same-type firmware changes and selected DIN dimmer/relay transitions. Toolkit
-also has client-side conversion code for key inputs and sensors. The CLI does
-not claim that the native command implements those additional rules.
+does not use this command. It converts units client-side with 292 registered
+tweakers; see [toolkit-conversion-tweakers.md](toolkit-conversion-tweakers.md)
+for that registry and the admitted DIMDN/DIMDU4 subset.
 
 ## Admitted pairs and the mapping table
 
